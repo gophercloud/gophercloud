@@ -57,6 +57,20 @@ func TestCreateResourceProvider(t *testing.T) {
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
+func TestGetResourceProvider(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleResourceProviderGet(t)
+
+	expected := ExpectedResourceProvider1
+
+	actual, err := resourceproviders.Get(fake.ServiceClient(), ExpectedResourceProvider1.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
+
 func TestDeleteResourceProvider(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

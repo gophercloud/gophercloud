@@ -14,6 +14,10 @@ func deleteURL(client *gophercloud.ServiceClient, resourceProviderID string) str
 	return client.ServiceURL(apiName, resourceProviderID)
 }
 
+func getURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
+	return client.ServiceURL(apiName, resourceProviderID)
+}
+
 func getResourceProviderUsagesURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
 	return client.ServiceURL(apiName, resourceProviderID, "usages")
 }

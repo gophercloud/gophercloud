@@ -106,6 +106,13 @@ func Delete(c *gophercloud.ServiceClient, resourceProviderID string) (r DeleteRe
 	return
 }
 
+// Get retrieves a specific resource provider based on its unique ID.
+func Get(c *gophercloud.ServiceClient, resourceProviderID string) (r GetResult) {
+	resp, err := c.Get(getURL(c, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 func GetUsages(client *gophercloud.ServiceClient, resourceProviderID string) (r GetUsagesResult) {
 	resp, err := client.Get(getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
