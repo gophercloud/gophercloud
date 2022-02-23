@@ -97,6 +97,12 @@ type GetResult struct {
 	resourceProviderResult
 }
 
+// UpdateResult represents the result of a update operation. Call its Extract
+// method to interpret it as a ResourceProvider.
+type UpdateResult struct {
+	resourceProviderResult
+}
+
 // ResourceProvidersPage contains a single page of all resource providers from a List call.
 type ResourceProvidersPage struct {
 	pagination.SinglePageBase

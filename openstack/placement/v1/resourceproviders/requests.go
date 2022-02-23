@@ -113,6 +113,43 @@ func Get(c *gophercloud.ServiceClient, resourceProviderID string) (r GetResult) 
 	return
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToResourceProviderUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options used to update a resource provider.
+type UpdateOpts struct {
+	Name *string `json:"name,omitempty"`
+	// Available in version >= 1.37. It can be set to any existing provider UUID
+	// except to providers that would cause a loop. Also it can be set to null
+	// to transform the provider to a new root provider. This operation needs to
+	// be used carefully. Moving providers can mean that the original rules used
+	// to create the existing resource allocations may be invalidated by that move.
+	ParentProviderUUID *string `json:"parent_provider_uuid,omitempty"`
+}
+
+// ToResourceProviderUpdateMap constructs a request body from UpdateOpts.
+func (opts UpdateOpts) ToResourceProviderUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Update makes a request against the API to create a resource provider
+func Update(client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToResourceProviderUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(updateURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 func GetUsages(client *gophercloud.ServiceClient, resourceProviderID string) (r GetUsagesResult) {
 	resp, err := client.Get(getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

@@ -26,7 +26,12 @@ func TestResourceProviderList(t *testing.T) {
 	}
 }
 
-func TestResourceProviderCreate(t *testing.T) {
+func TestResourceProvider(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipRelease(t, "stable/pike")
+	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
@@ -40,9 +45,17 @@ func TestResourceProviderCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider2.UUID)
 
+	newName := tools.RandomString("TESTACC-", 8)
+	updateOpts := resourceproviders.UpdateOpts{
+		Name: &newName,
+	}
+	resourceProviderUpdate, err := resourceproviders.Update(client, resourceProvider2.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newName, resourceProviderUpdate.Name)
+
 	resourceProviderGet, err := resourceproviders.Get(client, resourceProvider2.UUID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, resourceProvider2.Name, resourceProviderGet.Name)
+	th.AssertEquals(t, newName, resourceProviderGet.Name)
 
 }
 

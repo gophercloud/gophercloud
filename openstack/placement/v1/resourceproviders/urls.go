@@ -18,6 +18,10 @@ func getURL(client *gophercloud.ServiceClient, resourceProviderID string) string
 	return client.ServiceURL(apiName, resourceProviderID)
 }
 
+func updateURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
+	return client.ServiceURL(apiName, resourceProviderID)
+}
+
 func getResourceProviderUsagesURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
 	return client.ServiceURL(apiName, resourceProviderID, "usages")
 }
