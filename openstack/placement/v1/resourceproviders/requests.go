@@ -69,6 +69,9 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	Name string `json:"name"`
 	UUID string `json:"uuid,omitempty"`
+	// The UUID of the immediate parent of the resource provider.
+	// Available in version >= 1.14
+	ParentProviderUUID string `json:"parent_provider_uuid,omitempty"`
 }
 
 // ToResourceProviderCreateMap constructs a request body from CreateOpts.

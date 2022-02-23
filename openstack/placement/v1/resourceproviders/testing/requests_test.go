@@ -46,8 +46,9 @@ func TestCreateResourceProvider(t *testing.T) {
 	expected := ExpectedResourceProvider1
 
 	opts := resourceproviders.CreateOpts{
-		Name: ExpectedResourceProvider1.Name,
-		UUID: ExpectedResourceProvider1.UUID,
+		Name:               ExpectedResourceProvider1.Name,
+		UUID:               ExpectedResourceProvider1.UUID,
+		ParentProviderUUID: ExpectedResourceProvider1.ParentProviderUUID,
 	}
 
 	actual, err := resourceproviders.Create(fake.ServiceClient(), opts).Extract()
