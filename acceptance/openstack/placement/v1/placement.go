@@ -54,3 +54,17 @@ func CreateResourceProviderWithParent(t *testing.T, client *gophercloud.ServiceC
 
 	return resourceProvider, nil
 }
+
+// DeleteResourceProvider will delete a resource provider with a specified ID.
+// A fatal error will occur if the delete was not successful. This works best when
+// used as a deferred function.
+func DeleteResourceProvider(t *testing.T, client *gophercloud.ServiceClient, resourceProviderID string) {
+	t.Logf("Attempting to delete resourceProvider: %s", resourceProviderID)
+
+	err := resourceproviders.Delete(client, resourceProviderID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete resourceProvider %s: %v", resourceProviderID, err)
+	}
+
+	t.Logf("Deleted resourceProvider: %s.", resourceProviderID)
+}

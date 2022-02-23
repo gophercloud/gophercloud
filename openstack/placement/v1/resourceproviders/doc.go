@@ -30,6 +30,15 @@ Example to create resource providers
 		panic(err)
 	}
 
+Example to Delete a resource provider
+
+	resourceProviderID := "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+	err := resourceproviders.Delete(placementClient, resourceProviderID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+
 Example to get resource providers usages
 
 	rp, err := resourceproviders.GetUsages(placementClient, resourceProviderID).Extract()

@@ -34,9 +34,11 @@ func TestResourceProviderCreate(t *testing.T) {
 
 	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	resourceProvider, err = CreateResourceProviderWithParent(t, client, resourceProvider.UUID)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 }
 
 func TestResourceProviderUsages(t *testing.T) {
@@ -50,6 +52,7 @@ func TestResourceProviderUsages(t *testing.T) {
 	// first create new resource provider
 	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the usages for the newly created resource provider
 	usage, err := resourceproviders.GetUsages(client, resourceProvider.UUID).Extract()
@@ -67,6 +70,7 @@ func TestResourceProviderInventories(t *testing.T) {
 	// first create new resource provider
 	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the inventories for the newly created resource provider
 	usage, err := resourceproviders.GetInventories(client, resourceProvider.UUID).Extract()
@@ -84,6 +88,7 @@ func TestResourceProviderTraits(t *testing.T) {
 	// first create new resource provider
 	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the traits for the newly created resource provider
 	usage, err := resourceproviders.GetTraits(client, resourceProvider.UUID).Extract()
@@ -101,6 +106,7 @@ func TestResourceProviderAllocations(t *testing.T) {
 	// first create new resource provider
 	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the allocations for the newly created resource provider
 	usage, err := resourceproviders.GetAllocations(client, resourceProvider.UUID).Extract()
