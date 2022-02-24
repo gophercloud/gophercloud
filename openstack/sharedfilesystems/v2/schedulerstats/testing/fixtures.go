@@ -14,16 +14,28 @@ const PoolsListBody = `
 {
     "pools": [
         {
-            "name": "opencloud@alpha#ALPHA_pool"
+            "name": "opencloud@alpha#ALPHA_pool",
+            "host": "opencloud",
+            "backend": "alpha",
+            "pool": "ALPHA_pool"
         },
         {
-            "name": "opencloud@beta#BETA_pool"
+            "name": "opencloud@beta#BETA_pool",
+            "host": "opencloud",
+            "backend": "beta",
+            "pool": "BETA_pool"
         },
         {
-            "name": "opencloud@gamma#GAMMA_pool"
+            "name": "opencloud@gamma#GAMMA_pool",
+            "host": "opencloud",
+            "backend": "gamma",
+            "pool": "GAMMA_pool"
         },
         {
-            "name": "opencloud@delta#DELTA_pool"
+            "name": "opencloud@delta#DELTA_pool",
+            "host": "opencloud",
+            "backend": "delta",
+            "pool": "DELTA_pool"
         }
     ]
 }
@@ -113,7 +125,6 @@ const PoolsListBodyDetail = `
                 "mount_snapshot_support": true,
                 "dedupe": false,
                 "compression": false,
-                "replication_domain": "replica_domain_store1",
                 "sg_consistent_snapshot_support": "pool",
                 "ipv4_support": true,
                 "ipv6_support": false
@@ -142,7 +153,6 @@ const PoolsListBodyDetail = `
                 "mount_snapshot_support": true,
                 "dedupe": false,
                 "compression": false,
-                "replication_domain": "replica_domain_store1",
                 "sg_consistent_snapshot_support": "pool",
                 "ipv4_support": true,
                 "ipv6_support": false
@@ -154,66 +164,102 @@ const PoolsListBodyDetail = `
 
 var (
 	PoolFake1 = schedulerstats.Pool{
-		Name: "opencloud@alpha#ALPHA_pool",
+		Name:    "opencloud@alpha#ALPHA_pool",
+		Host:    "opencloud",
+		Backend: "alpha",
+		Pool:    "ALPHA_pool",
 	}
 
 	PoolFake2 = schedulerstats.Pool{
-		Name: "opencloud@beta#BETA_pool",
+		Name:    "opencloud@beta#BETA_pool",
+		Host:    "opencloud",
+		Backend: "beta",
+		Pool:    "BETA_pool",
 	}
 
 	PoolFake3 = schedulerstats.Pool{
-		Name: "opencloud@gamma#GAMMA_pool",
+		Name:    "opencloud@gamma#GAMMA_pool",
+		Host:    "opencloud",
+		Backend: "gamma",
+		Pool:    "GAMMA_pool",
 	}
 
 	PoolFake4 = schedulerstats.Pool{
-		Name: "opencloud@delta#DELTA_pool",
+		Name:    "opencloud@delta#DELTA_pool",
+		Host:    "opencloud",
+		Backend: "delta",
+		Pool:    "DELTA_pool",
 	}
 
 	PoolDetailFake1 = schedulerstats.Pool{
-		Name: "opencloud@alpha#ALPHA_pool",
-		Host: "opencloud",
+		Name:    "opencloud@alpha#ALPHA_pool",
+		Host:    "opencloud",
+		Backend: "alpha",
+		Pool:    "ALPHA_pool",
 		Capabilities: schedulerstats.Capabilities{
-			DriverVersion:   "1.0",
-			FreeCapacityGB:  1210,
-			StorageProtocol: "NFS_CIFS",
-			TotalCapacityGB: 1230,
-			VendorName:      "Open Source",
+			DriverVersion:             "1.0",
+			FreeCapacityGB:            1210,
+			StorageProtocol:           "NFS_CIFS",
+			TotalCapacityGB:           1230,
+			VendorName:                "Open Source",
+			ShareBackendName:          "ALPHA",
+			Timestamp:                 "2019-05-07T00:28:02.935569",
+			DriverHandlesShareServers: true,
+			SnapshotSupport:           true,
 		},
 	}
 
 	PoolDetailFake2 = schedulerstats.Pool{
-		Name: "opencloud@beta#BETA_pool",
-		Host: "opencloud",
+		Name:    "opencloud@beta#BETA_pool",
+		Host:    "opencloud",
+		Backend: "beta",
+		Pool:    "BETA_pool",
 		Capabilities: schedulerstats.Capabilities{
-			DriverVersion:   "1.0",
-			FreeCapacityGB:  1210,
-			StorageProtocol: "NFS_CIFS",
-			TotalCapacityGB: 1230,
-			VendorName:      "Open Source",
+			DriverVersion:             "1.0",
+			FreeCapacityGB:            1210,
+			StorageProtocol:           "NFS_CIFS",
+			TotalCapacityGB:           1230,
+			VendorName:                "Open Source",
+			ShareBackendName:          "BETA",
+			Timestamp:                 "2019-05-07T00:28:02.817309",
+			DriverHandlesShareServers: true,
+			SnapshotSupport:           true,
 		},
 	}
 
 	PoolDetailFake3 = schedulerstats.Pool{
-		Name: "opencloud@gamma#GAMMA_pool",
-		Host: "opencloud",
+		Name:    "opencloud@gamma#GAMMA_pool",
+		Host:    "opencloud",
+		Backend: "gamma",
+		Pool:    "GAMMA_pool",
 		Capabilities: schedulerstats.Capabilities{
-			DriverVersion:   "1.0",
-			FreeCapacityGB:  1210,
-			StorageProtocol: "NFS_CIFS",
-			TotalCapacityGB: 1230,
-			VendorName:      "Open Source",
+			DriverVersion:             "1.0",
+			FreeCapacityGB:            1210,
+			StorageProtocol:           "NFS_CIFS",
+			TotalCapacityGB:           1230,
+			VendorName:                "Open Source",
+			ShareBackendName:          "GAMMA",
+			Timestamp:                 "2019-05-07T00:28:02.899888",
+			DriverHandlesShareServers: false,
+			SnapshotSupport:           true,
 		},
 	}
 
 	PoolDetailFake4 = schedulerstats.Pool{
-		Name: "opencloud@delta#DELTA_pool",
-		Host: "opencloud",
+		Name:    "opencloud@delta#DELTA_pool",
+		Host:    "opencloud",
+		Backend: "delta",
+		Pool:    "DELTA_pool",
 		Capabilities: schedulerstats.Capabilities{
-			DriverVersion:   "1.0",
-			FreeCapacityGB:  1210,
-			StorageProtocol: "NFS_CIFS",
-			TotalCapacityGB: 1230,
-			VendorName:      "Open Source",
+			DriverVersion:             "1.0",
+			FreeCapacityGB:            1210,
+			StorageProtocol:           "NFS_CIFS",
+			TotalCapacityGB:           1230,
+			VendorName:                "Open Source",
+			ShareBackendName:          "DELTA",
+			Timestamp:                 "2019-05-07T00:28:02.963660",
+			DriverHandlesShareServers: false,
+			SnapshotSupport:           true,
 		},
 	}
 )
