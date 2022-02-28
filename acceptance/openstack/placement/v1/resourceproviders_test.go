@@ -27,11 +27,6 @@ func TestResourceProviderList(t *testing.T) {
 }
 
 func TestResourceProviderCreate(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
@@ -52,11 +47,6 @@ func TestResourceProviderCreate(t *testing.T) {
 }
 
 func TestResourceProviderUsages(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	clients.RequireAdmin(t)
@@ -84,11 +74,6 @@ func TestResourceProviderUsages(t *testing.T) {
 }
 
 func TestResourceProviderInventories(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
@@ -114,11 +99,6 @@ func TestResourceProviderInventories(t *testing.T) {
 }
 
 func TestResourceProviderTraits(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
@@ -144,11 +124,6 @@ func TestResourceProviderTraits(t *testing.T) {
 }
 
 func TestResourceProviderAllocations(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
