@@ -2,7 +2,7 @@ name: functional-dns
 on:
   pull_request:
     paths:
-      - 'acceptance/openstack/dns**'
+      - '**openstack/dns**'
       - '**functional-dns.yaml'
   schedule:
     - cron: '0 0 * * *'
