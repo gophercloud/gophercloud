@@ -12,8 +12,6 @@ import (
 )
 
 func TestBuildInfo(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 
