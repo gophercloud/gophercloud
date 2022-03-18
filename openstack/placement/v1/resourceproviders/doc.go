@@ -46,6 +46,21 @@ Example to Get a resource provider
 		panic(err)
 	}
 
+Example to Update a resource provider
+
+	resourceProviderID := "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+
+	updateOpts := resourceproviders.UpdateOpts{
+		Name: "new-rp",
+		ParentProvider: "c7f50b40-6f32-4d7a-9f32-9384057be83b"
+	}
+
+	placementClient.Microversion = "1.37"
+	resourceProvider, err := resourceproviders.Update(placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to get resource providers usages
 
 	rp, err := resourceproviders.GetUsages(placementClient, resourceProviderID).Extract()
