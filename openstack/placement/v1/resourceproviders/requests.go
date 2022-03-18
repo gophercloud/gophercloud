@@ -99,6 +99,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// Delete accepts a unique ID and deletes the resource provider associated with it.
+func Delete(c *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+	resp, err := c.Delete(deleteURL(c, resourceProviderID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 func GetUsages(client *gophercloud.ServiceClient, resourceProviderID string) (r GetUsagesResult) {
 	resp, err := client.Get(getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

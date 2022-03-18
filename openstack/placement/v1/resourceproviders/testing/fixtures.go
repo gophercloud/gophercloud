@@ -270,6 +270,14 @@ func HandleResourceProviderCreate(t *testing.T) {
 	})
 }
 
+func HandleResourceProviderDelete(t *testing.T) {
+	th.Mux.HandleFunc("/resource_providers/b99b3ab4-3aa6-4fba-b827-69b88b9c544a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 func HandleResourceProviderGetUsages(t *testing.T) {
 	usageTestUrl := fmt.Sprintf("/resource_providers/%s/usages", ResourceProviderTestID)
 
