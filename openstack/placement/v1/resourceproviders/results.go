@@ -91,6 +91,12 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// GetResult represents the result of a create operation. Call its Extract
+// method to interpret it as a ResourceProvider.
+type GetResult struct {
+	resourceProviderResult
+}
+
 // ResourceProvidersPage contains a single page of all resource providers from a List call.
 type ResourceProvidersPage struct {
 	pagination.SinglePageBase

@@ -36,9 +36,14 @@ func TestResourceProviderCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	resourceProvider, err = CreateResourceProviderWithParent(t, client, resourceProvider.UUID)
+	resourceProvider2, err := CreateResourceProviderWithParent(t, client, resourceProvider.UUID)
 	th.AssertNoErr(t, err)
-	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+	defer DeleteResourceProvider(t, client, resourceProvider2.UUID)
+
+	resourceProviderGet, err := resourceproviders.Get(client, resourceProvider2.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, resourceProvider2.Name, resourceProviderGet.Name)
+
 }
 
 func TestResourceProviderUsages(t *testing.T) {
