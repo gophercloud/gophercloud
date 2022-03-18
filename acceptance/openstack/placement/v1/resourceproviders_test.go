@@ -32,18 +32,11 @@ func TestResourceProviderCreate(t *testing.T) {
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
 
-	tools.PrintResource(t, resourceProvider)
+	resourceProvider, err = CreateResourceProviderWithParent(t, client, resourceProvider.UUID)
+	th.AssertNoErr(t, err)
 }
 
 func TestResourceProviderUsages(t *testing.T) {
@@ -55,15 +48,7 @@ func TestResourceProviderUsages(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
 
 	// now get the usages for the newly created resource provider
@@ -80,15 +65,7 @@ func TestResourceProviderInventories(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
 
 	// now get the inventories for the newly created resource provider
@@ -105,15 +82,7 @@ func TestResourceProviderTraits(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
 
 	// now get the traits for the newly created resource provider
@@ -130,15 +99,7 @@ func TestResourceProviderAllocations(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
 
 	// now get the allocations for the newly created resource provider
