@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/messaging/v2/messages"
 	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestListMessages(t *testing.T) {
@@ -23,7 +24,10 @@ func TestListMessages(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	for i := 0; i < 3; i++ {
+	totalNumberOfMessages := 3
+	currentNumberOfMessages := 0
+
+	for i := 0; i < totalNumberOfMessages; i++ {
 		CreateMessage(t, client, createdQueueName)
 	}
 
@@ -41,11 +45,13 @@ func TestListMessages(t *testing.T) {
 		}
 
 		for _, message := range allMessages {
+			currentNumberOfMessages += 1
 			tools.PrintResource(t, message)
 		}
 
 		return true, nil
 	})
+	th.AssertEquals(t, totalNumberOfMessages, currentNumberOfMessages)
 }
 
 func TestCreateMessages(t *testing.T) {
