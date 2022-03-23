@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v1
@@ -12,8 +13,6 @@ import (
 )
 
 func TestStackResources(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 

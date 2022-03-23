@@ -1,3 +1,4 @@
+//go:build acceptance || networking || fwaas
 // +build acceptance networking fwaas
 
 package vpnaas
@@ -28,6 +29,7 @@ func TestServiceList(t *testing.T) {
 }
 
 func TestServiceCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/wallaby")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

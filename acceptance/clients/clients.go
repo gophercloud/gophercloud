@@ -211,7 +211,7 @@ func NewBlockStorageV2NoAuthClient() (*gophercloud.ServiceClient, error) {
 
 	client = configureDebug(client)
 
-	return blockstorageNoAuth.NewBlockStorageNoAuth(client, blockstorageNoAuth.EndpointOpts{
+	return blockstorageNoAuth.NewBlockStorageNoAuthV2(client, blockstorageNoAuth.EndpointOpts{
 		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
 	})
 }
@@ -230,7 +230,7 @@ func NewBlockStorageV3NoAuthClient() (*gophercloud.ServiceClient, error) {
 
 	client = configureDebug(client)
 
-	return blockstorageNoAuth.NewBlockStorageNoAuth(client, blockstorageNoAuth.EndpointOpts{
+	return blockstorageNoAuth.NewBlockStorageNoAuthV3(client, blockstorageNoAuth.EndpointOpts{
 		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
 	})
 }

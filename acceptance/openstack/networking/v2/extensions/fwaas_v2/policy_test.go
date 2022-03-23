@@ -1,3 +1,4 @@
+//go:build acceptance || networking || fwaas_v2
 // +build acceptance networking fwaas_v2
 
 package fwaas_v2
@@ -12,6 +13,8 @@ import (
 )
 
 func TestPolicyCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/ussuri")
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

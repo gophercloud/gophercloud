@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v1
@@ -12,8 +13,6 @@ import (
 )
 
 func TestStackTemplatesCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 
@@ -27,8 +26,6 @@ func TestStackTemplatesCRUD(t *testing.T) {
 }
 
 func TestStackTemplatesValidate(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 
@@ -42,7 +39,6 @@ func TestStackTemplatesValidate(t *testing.T) {
 }
 
 func TestStackTemplateWithFile(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 

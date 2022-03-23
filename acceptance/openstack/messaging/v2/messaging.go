@@ -21,7 +21,6 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 		QueueName:                  queueName,
 		MaxMessagesPostSize:        262143,
 		DefaultMessageTTL:          3700,
-		DefaultMessageDelay:        25,
 		DeadLetterQueueMessagesTTL: 3500,
 		MaxClaimCount:              10,
 		Extra:                      map[string]interface{}{"description": "Test Queue for Gophercloud acceptance tests."},

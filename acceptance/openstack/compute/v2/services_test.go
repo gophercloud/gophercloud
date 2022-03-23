@@ -1,3 +1,4 @@
+//go:build acceptance || compute || services
 // +build acceptance compute services
 
 package v2
@@ -65,7 +66,6 @@ func TestServicesListWithOpts(t *testing.T) {
 }
 
 func TestServicesUpdate(t *testing.T) {
-	clients.SkipRelease(t, "stable/ocata")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()

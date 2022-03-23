@@ -1,3 +1,4 @@
+//go:build acceptance || db
 // +build acceptance db
 
 package v1

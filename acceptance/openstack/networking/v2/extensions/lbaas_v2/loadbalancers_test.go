@@ -1,3 +1,4 @@
+//go:build acceptance || networking || lbaas_v2 || loadbalancers
 // +build acceptance networking lbaas_v2 loadbalancers
 
 package lbaas_v2
@@ -17,6 +18,7 @@ import (
 )
 
 func TestLoadbalancersList(t *testing.T) {
+	t.Skip("Neutron LBaaS v2 was replaced by Octavia and the API will be removed in a future release")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -32,6 +34,7 @@ func TestLoadbalancersList(t *testing.T) {
 }
 
 func TestLoadbalancersCRUD(t *testing.T) {
+	t.Skip("Neutron LBaaS v2 was replaced by Octavia and the API will be removed in a future release")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

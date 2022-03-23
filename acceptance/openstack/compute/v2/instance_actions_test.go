@@ -1,3 +1,4 @@
+//go:build acceptance || compute || limits
 // +build acceptance compute limits
 
 package v2
@@ -43,12 +44,6 @@ func TestInstanceActions(t *testing.T) {
 
 func TestInstanceActionsMicroversions(t *testing.T) {
 	clients.RequireLong(t)
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
 
 	now := time.Now()
 

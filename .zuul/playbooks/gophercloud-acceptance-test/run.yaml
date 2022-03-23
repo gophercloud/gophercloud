@@ -5,13 +5,13 @@
       go_version: '1.15'
     - clone-devstack-gate-to-workspace
     - role: create-devstack-local-conf
-      enable_services:
-        - 'manila'
-        - 'designate'
-        - 'zun'
-        - 'octavia'
-        - 'neutron-ext'
-    - install-devstack
+      enable_services: "{{ devstack_services | default(omit) }}"
+    - role: prefetch-amphora
+      when: prefetch_amphora|default(false)
+    - role: install-devstack
+      environment:
+        OVERRIDE_ENABLED_SERVICES: "{{ devstack_override_enabled_services | default('') }}"
+        PROJECTS: "{{ devstack_projects | default('') }}"
   tasks:
     - name: Run acceptance tests with gophercloud
       shell:
@@ -20,7 +20,7 @@
           set -o pipefail
           set -x
           echo $(export |grep OS_BRANCH)
-          export OS_DEBUG=1
+          export ACCEPTANCE_TESTS="{{ acceptance_tests|default('') }}"
           go get ./... || true
           ./script/acceptancetest -v 2>&1 | tee $TEST_RESULTS_TXT
         executable: /bin/bash

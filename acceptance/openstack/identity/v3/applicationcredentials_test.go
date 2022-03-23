@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v3
@@ -15,11 +16,6 @@ import (
 )
 
 func TestApplicationCredentialsCRD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-
 	// maps are required, because Application Credential roles are returned in a random order
 	rolesToMap := func(roles []applicationcredentials.Role) map[string]string {
 		rolesMap := map[string]string{}
@@ -173,13 +169,6 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 
 func TestApplicationCredentialsAccessRules(t *testing.T) {
 	clients.RequireAdmin(t)
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-	clients.SkipRelease(t, "stable/stein")
 
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)

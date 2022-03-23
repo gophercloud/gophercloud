@@ -1,3 +1,4 @@
+//go:build acceptance || networking || qos || policies
 // +build acceptance networking qos policies
 
 package policies
@@ -7,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/policies"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -14,6 +16,12 @@ import (
 func TestPoliciesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	extension, err := extensions.Get(client, "qos").Extract()
+	if err != nil {
+		t.Skip("This test requires qos Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create a QoS policy.
 	policy, err := CreateQoSPolicy(t, client)

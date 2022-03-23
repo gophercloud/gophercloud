@@ -1,3 +1,4 @@
+//go:build acceptance || clustering || events
 // +build acceptance clustering events
 
 package v1

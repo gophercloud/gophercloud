@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v2
@@ -13,8 +14,6 @@ import (
 )
 
 func TestRecordSetsListByZone(t *testing.T) {
-	clients.RequireDNS(t)
-
 	client, err := clients.NewDNSV2Client()
 	th.AssertNoErr(t, err)
 
@@ -55,8 +54,6 @@ func TestRecordSetsListByZone(t *testing.T) {
 }
 
 func TestRecordSetsCRUD(t *testing.T) {
-	clients.RequireDNS(t)
-
 	client, err := clients.NewDNSV2Client()
 	th.AssertNoErr(t, err)
 

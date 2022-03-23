@@ -1,8 +1,11 @@
+//go:build acceptance || networking || fwaas_v2
 // +build acceptance networking fwaas_v2
 
 package fwaas_v2
 
 import (
+	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -12,6 +15,7 @@ import (
 )
 
 func TestRuleCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/ussuri")
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -23,15 +27,19 @@ func TestRuleCRUD(t *testing.T) {
 	tools.PrintResource(t, rule)
 
 	ruleDescription := "Some rule description"
-	ruleProtocol := rules.ProtocolICMP
+	ruleSourcePortInt := strconv.Itoa(tools.RandomInt(1, 100))
+	ruleSourcePort := fmt.Sprintf("%s:%s", ruleSourcePortInt, ruleSourcePortInt)
+	ruleProtocol := rules.ProtocolTCP
 	updateOpts := rules.UpdateOpts{
 		Description: &ruleDescription,
 		Protocol:    &ruleProtocol,
+		SourcePort:  &ruleSourcePort,
 	}
 
 	ruleUpdated, err := rules.Update(client, rule.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ruleUpdated.Description, ruleDescription)
+	th.AssertEquals(t, ruleUpdated.SourcePort, ruleSourcePortInt)
 	th.AssertEquals(t, ruleUpdated.Protocol, string(ruleProtocol))
 
 	newRule, err := rules.Get(client, rule.ID).Extract()

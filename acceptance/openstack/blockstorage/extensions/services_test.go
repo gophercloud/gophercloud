@@ -1,3 +1,4 @@
+//go:build acceptance || blockstorage
 // +build acceptance blockstorage
 
 package extensions
@@ -12,7 +13,6 @@ import (
 )
 
 func TestServicesList(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	blockClient, err := clients.NewBlockStorageV3Client()

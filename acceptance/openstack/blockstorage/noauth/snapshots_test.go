@@ -1,3 +1,4 @@
+//go:build acceptance || blockstorage
 // +build acceptance blockstorage
 
 package noauth
@@ -7,11 +8,11 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/snapshots"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
 )
 
 func TestSnapshotsList(t *testing.T) {
-	client, err := clients.NewBlockStorageV2NoAuthClient()
+	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
@@ -32,7 +33,7 @@ func TestSnapshotsList(t *testing.T) {
 }
 
 func TestSnapshotsCreateDelete(t *testing.T) {
-	client, err := clients.NewBlockStorageV2NoAuthClient()
+	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}

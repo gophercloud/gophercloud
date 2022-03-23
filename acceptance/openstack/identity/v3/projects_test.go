@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v3
@@ -213,9 +214,6 @@ func TestProjectsNested(t *testing.T) {
 }
 
 func TestProjectsTags(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV3Client()

@@ -1,3 +1,4 @@
+//go:build acceptance || clustering || policies
 // +build acceptance clustering policies
 
 package v1
@@ -93,8 +94,8 @@ func TestNodesOps(t *testing.T) {
 		// TODO: Commented out due to backend returns error, as of 2018-12-14
 		//{Operation: nodes.RebuildOperation},
 		//{Operation: nodes.EvacuateOperation, Params: nodes.OperationParams{"EvacuateHost": node.ID, "EvacuateForce", "True"}},
+		//{Operation: nodes.ChangePasswordOperation, Params: nodes.OperationParams{"admin_pass": "test"}}, // QEMU guest agent is not enabled.
 		{Operation: nodes.RebootOperation, Params: nodes.OperationParams{"type": "SOFT"}},
-		{Operation: nodes.ChangePasswordOperation, Params: nodes.OperationParams{"admin_pass": "test"}},
 		{Operation: nodes.LockOperation},
 		{Operation: nodes.UnlockOperation},
 		{Operation: nodes.SuspendOperation},

@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v2
@@ -12,9 +13,6 @@ import (
 )
 
 func TestShareCreate(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -35,9 +33,6 @@ func TestShareCreate(t *testing.T) {
 }
 
 func TestShareExportLocations(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -72,9 +67,6 @@ func TestShareExportLocations(t *testing.T) {
 }
 
 func TestShareUpdate(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create shared file system client: %v", err)
@@ -124,9 +116,6 @@ func TestShareUpdate(t *testing.T) {
 }
 
 func TestShareListDetail(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -150,9 +139,6 @@ func TestShareListDetail(t *testing.T) {
 }
 
 func TestGrantAndRevokeAccess(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -179,9 +165,6 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 }
 
 func TestListAccessRights(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -217,9 +200,6 @@ func TestListAccessRights(t *testing.T) {
 }
 
 func TestExtendAndShrink(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -263,9 +243,6 @@ func TestExtendAndShrink(t *testing.T) {
 }
 
 func TestShareMetadata(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -325,9 +302,6 @@ func TestShareMetadata(t *testing.T) {
 }
 
 func TestRevert(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -380,9 +354,6 @@ func TestRevert(t *testing.T) {
 }
 
 func TestResetStatus(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -419,9 +390,6 @@ func TestResetStatus(t *testing.T) {
 }
 
 func TestForceDelete(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -454,8 +422,6 @@ func TestForceDelete(t *testing.T) {
 }
 
 func TestUnmanage(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()

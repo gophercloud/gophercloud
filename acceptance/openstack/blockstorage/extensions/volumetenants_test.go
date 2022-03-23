@@ -1,3 +1,4 @@
+//go:build acceptance || blockstorage
 // +build acceptance blockstorage
 
 package extensions
@@ -13,8 +14,6 @@ import (
 )
 
 func TestVolumeTenants(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	type volumeWithTenant struct {
 		volumes.Volume
 		volumetenants.VolumeTenantExt

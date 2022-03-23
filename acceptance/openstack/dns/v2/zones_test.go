@@ -1,3 +1,4 @@
+//go:build acceptance || dns || zones
 // +build acceptance dns zones
 
 package v2
@@ -12,8 +13,6 @@ import (
 )
 
 func TestZonesCRUD(t *testing.T) {
-	clients.RequireDNS(t)
-
 	client, err := clients.NewDNSV2Client()
 	th.AssertNoErr(t, err)
 

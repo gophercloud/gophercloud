@@ -1,3 +1,4 @@
+//go:build acceptance
 // +build acceptance
 
 package v3
@@ -57,8 +58,7 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	createOpts := roles.CreateOpts{
-		Name:     "testrole",
-		DomainID: "default",
+		Name: "testrole",
 		Extra: map[string]interface{}{
 			"description": "test role description",
 		},
@@ -72,9 +72,7 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
 
-	listOpts := roles.ListOpts{
-		DomainID: "default",
-	}
+	listOpts := roles.ListOpts{}
 	allPages, err := roles.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
@@ -111,24 +109,11 @@ func TestRolesCRUD(t *testing.T) {
 func TestRolesFilterList(t *testing.T) {
 	clients.RequireAdmin(t)
 
-	// For some reason this is not longer working.
-	clients.SkipRelease(t, "master")
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-	clients.SkipRelease(t, "stable/stein")
-	clients.SkipRelease(t, "stable/train")
-	clients.SkipRelease(t, "stable/ussuri")
-
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
 	createOpts := roles.CreateOpts{
-		Name:     "testrole",
-		DomainID: "default",
+		Name: "testrole",
 		Extra: map[string]interface{}{
 			"description": "test role description",
 		},
@@ -141,7 +126,7 @@ func TestRolesFilterList(t *testing.T) {
 
 	var listOpts roles.ListOpts
 	listOpts.Filters = map[string]string{
-		"name__contains": "TEST",
+		"name__contains": "test",
 	}
 
 	allPages, err := roles.List(client, listOpts).AllPages()

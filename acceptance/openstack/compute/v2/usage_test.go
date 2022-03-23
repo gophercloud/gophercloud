@@ -1,3 +1,4 @@
+//go:build acceptance || compute || usage
 // +build acceptance compute usage
 
 package v2
@@ -15,7 +16,8 @@ import (
 )
 
 func TestUsageSingleTenant(t *testing.T) {
-	t.Skip("This is not passing in OpenLab. Works locally")
+	// TODO(emilien): This test is failing for now
+	t.Skip("This is not passing now, will fix later")
 
 	clients.RequireLong(t)
 

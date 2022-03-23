@@ -1,3 +1,4 @@
+//go:build acceptance || networking || vpnaas
 // +build acceptance networking vpnaas
 
 package vpnaas
@@ -30,6 +31,7 @@ func TestConnectionList(t *testing.T) {
 }
 
 func TestConnectionCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/wallaby")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

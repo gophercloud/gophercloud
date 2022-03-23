@@ -62,6 +62,29 @@ const ResourceProviderCreateBody = `
 }
 `
 
+const ResourceProviderUpdateResponse = `
+{
+  "generation": 1,
+  "uuid": "4e8e5957-649f-477b-9e5b-f1f75b21c03c",
+  "links": [
+	{
+	  "href": "/resource_providers/4e8e5957-649f-477b-9e5b-f1f75b21c03c",
+	  "rel": "self"
+	}
+  ],
+  "name": "new_name",
+  "parent_provider_uuid": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+  "root_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8"
+}
+`
+
+const ResourceProviderUpdateRequest = `
+{
+  "name": "new_name",
+  "parent_provider_uuid": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+}
+`
+
 const UsagesBody = `
 {
     "resource_provider_generation": 1,
@@ -267,6 +290,41 @@ func HandleResourceProviderCreate(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, ResourceProviderCreateBody)
+	})
+}
+
+func HandleResourceProviderGet(t *testing.T) {
+	th.Mux.HandleFunc("/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ResourceProviderCreateBody)
+	})
+}
+
+func HandleResourceProviderDelete(t *testing.T) {
+	th.Mux.HandleFunc("/resource_providers/b99b3ab4-3aa6-4fba-b827-69b88b9c544a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleResourceProviderUpdate(t *testing.T) {
+	th.Mux.HandleFunc("/resource_providers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, ResourceProviderUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ResourceProviderUpdateResponse)
 	})
 }
 

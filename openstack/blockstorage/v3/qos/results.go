@@ -75,3 +75,70 @@ func ExtractQoS(r pagination.Page) ([]QoS, error) {
 	err := (r.(QoSPage)).ExtractInto(&s)
 	return s.QoSs, err
 }
+
+// GetResult is the response of a Get operations. Call its Extract method to
+// interpret it as a Flavor.
+type GetResult struct {
+	commonResult
+}
+
+// Extract interprets any updateResult as qosSpecs, if possible.
+func (r updateResult) Extract() (map[string]string, error) {
+	var s struct {
+		QosSpecs map[string]string `json:"qos_specs"`
+	}
+	err := r.ExtractInto(&s)
+	return s.QosSpecs, err
+}
+
+// updateResult contains the result of a call for (potentially) multiple
+// key-value pairs. Call its Extract method to interpret it as a
+// map[string]interface.
+type updateResult struct {
+	gophercloud.Result
+}
+
+// AssociateResult contains the response body and error from a Associate request.
+type AssociateResult struct {
+	gophercloud.ErrResult
+}
+
+// DisassociateResult contains the response body and error from a Disassociate request.
+type DisassociateResult struct {
+	gophercloud.ErrResult
+}
+
+// DisassociateAllResult contains the response body and error from a DisassociateAll request.
+type DisassociateAllResult struct {
+	gophercloud.ErrResult
+}
+
+// QoS contains all the information associated with an OpenStack QoS specification.
+type QosAssociation struct {
+	// Name is the name of the associated resource
+	Name string `json:"name"`
+	// Unique identifier of the associated resources
+	ID string `json:"id"`
+	// AssociationType of the QoS Association
+	AssociationType string `json:"association_type"`
+}
+
+// AssociationPage contains a single page of all Associations of a QoS
+type AssociationPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty indicates whether an Association page is empty.
+func (page AssociationPage) IsEmpty() (bool, error) {
+	v, err := ExtractAssociations(page)
+	return len(v) == 0, err
+}
+
+// ExtractAssociations interprets a page of results as a slice of QosAssociations
+func ExtractAssociations(r pagination.Page) ([]QosAssociation, error) {
+	var s struct {
+		QosAssociations []QosAssociation `json:"qos_associations"`
+	}
+	err := (r.(AssociationPage)).ExtractInto(&s)
+	return s.QosAssociations, err
+}

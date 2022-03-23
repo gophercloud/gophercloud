@@ -1,3 +1,4 @@
+//go:build acceptance || networking
 // +build acceptance networking
 
 package mtu
@@ -17,9 +18,6 @@ import (
 
 func TestMTUNetworkCRUDL(t *testing.T) {
 	clients.RequireAdmin(t)
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -36,7 +34,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 	// Create Network
 	var networkMTU int
 	if mtuWritable != nil {
-		networkMTU = 1449
+		networkMTU = 1440
 	}
 	network, err := CreateNetworkWithMTU(t, client, &networkMTU)
 	th.AssertNoErr(t, err)

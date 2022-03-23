@@ -140,7 +140,13 @@ func CreateDomain(t *testing.T, client *gophercloud.ServiceClient, c *domains.Cr
 // has so many options. An error will be returned if the role was
 // unable to be created.
 func CreateRole(t *testing.T, client *gophercloud.ServiceClient, c *roles.CreateOpts) (*roles.Role, error) {
-	name := tools.RandomString("ACPTTEST", 8)
+	var name string
+	if c.Name == "" {
+		name = tools.RandomString("ACPTTEST", 8)
+	} else {
+		name = c.Name
+	}
+
 	t.Logf("Attempting to create role: %s", name)
 
 	var createOpts roles.CreateOpts
@@ -149,7 +155,6 @@ func CreateRole(t *testing.T, client *gophercloud.ServiceClient, c *roles.Create
 	} else {
 		createOpts = roles.CreateOpts{}
 	}
-
 	createOpts.Name = name
 
 	role, err := roles.Create(client, createOpts).Extract()

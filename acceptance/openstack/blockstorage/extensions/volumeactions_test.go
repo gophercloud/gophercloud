@@ -1,3 +1,4 @@
+//go:build acceptance || blockstorage
 // +build acceptance blockstorage
 
 package extensions
@@ -15,8 +16,6 @@ import (
 )
 
 func TestVolumeActionsUploadImageDestroy(t *testing.T) {
-	t.Skip("Currently failing in OpenLab")
-
 	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 

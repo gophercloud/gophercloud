@@ -1,3 +1,4 @@
+//go:build acceptance || networking || loadbalancer || loadbalancers
 // +build acceptance networking loadbalancer loadbalancers
 
 package v2
@@ -17,13 +18,6 @@ import (
 )
 
 func TestLoadbalancersList(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	client, err := clients.NewLoadBalancerV2Client()
 	th.AssertNoErr(t, err)
 
@@ -39,13 +33,6 @@ func TestLoadbalancersList(t *testing.T) {
 }
 
 func TestLoadbalancersListByTags(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -109,13 +96,6 @@ func TestLoadbalancersListByTags(t *testing.T) {
 }
 
 func TestLoadbalancerHTTPCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -165,13 +145,6 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 }
 
 func TestLoadbalancersCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -471,13 +444,6 @@ func TestLoadbalancersCRUD(t *testing.T) {
 }
 
 func TestLoadbalancersCascadeCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -592,13 +558,6 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 }
 
 func TestLoadbalancersFullyPopulatedCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

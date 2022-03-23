@@ -1,3 +1,4 @@
+//go:build acceptance || keymanager || secrets
 // +build acceptance keymanager secrets
 
 package v1
@@ -13,10 +14,6 @@ import (
 )
 
 func TestSecretsCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -59,10 +56,6 @@ func TestSecretsCRUD(t *testing.T) {
 }
 
 func TestSecretsDelayedPayload(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -88,10 +81,6 @@ func TestSecretsDelayedPayload(t *testing.T) {
 }
 
 func TestSecretsMetadataCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -167,10 +156,6 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 }
 
 func TestSymmetricSecret(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -186,10 +171,6 @@ func TestSymmetricSecret(t *testing.T) {
 }
 
 func TestCertificateSecret(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -209,10 +190,6 @@ func TestCertificateSecret(t *testing.T) {
 }
 
 func TestPrivateSecret(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -232,10 +209,6 @@ func TestPrivateSecret(t *testing.T) {
 }
 
 func TestPublicSecret(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -254,10 +227,6 @@ func TestPublicSecret(t *testing.T) {
 }
 
 func TestPassphraseSecret(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
-
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 

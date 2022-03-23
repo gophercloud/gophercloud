@@ -29,9 +29,10 @@ type Capabilities struct {
 	ThickProvisioningSupport bool    `json:"thick_provisioning_support"`
 	TotalVolumes             int64   `json:"total_volumes"`
 	FilterFunction           string  `json:"filter_function"`
-	GoodnessFuction          string  `json:"goodness_function"`
+	GoodnessFunction         string  `json:"goodness_function"`
 	Multiattach              bool    `json:"multiattach"`
 	SparseCopyVolume         bool    `json:"sparse_copy_volume"`
+	AllocatedCapacityGB      float64 `json:"-"`
 }
 
 // StoragePool represents an individual StoragePool retrieved from the
@@ -45,6 +46,7 @@ func (r *Capabilities) UnmarshalJSON(b []byte) error {
 	type tmp Capabilities
 	var s struct {
 		tmp
+		AllocatedCapacityGB      interface{} `json:"allocated_capacity_gb"`
 		FreeCapacityGB           interface{} `json:"free_capacity_gb"`
 		MaxOverSubscriptionRatio interface{} `json:"max_over_subscription_ratio"`
 		TotalCapacityGB          interface{} `json:"total_capacity_gb"`
@@ -71,6 +73,7 @@ func (r *Capabilities) UnmarshalJSON(b []byte) error {
 		return 0.0
 	}
 
+	r.AllocatedCapacityGB = parseCapacity(s.AllocatedCapacityGB)
 	r.FreeCapacityGB = parseCapacity(s.FreeCapacityGB)
 	r.TotalCapacityGB = parseCapacity(s.TotalCapacityGB)
 

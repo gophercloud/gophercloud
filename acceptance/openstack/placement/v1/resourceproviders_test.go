@@ -26,7 +26,7 @@ func TestResourceProviderList(t *testing.T) {
 	}
 }
 
-func TestResourceProviderCreate(t *testing.T) {
+func TestResourceProvider(t *testing.T) {
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
 	clients.SkipRelease(t, "stable/ocata")
@@ -37,26 +37,29 @@ func TestResourceProviderCreate(t *testing.T) {
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	tools.PrintResource(t, resourceProvider)
+	resourceProvider2, err := CreateResourceProviderWithParent(t, client, resourceProvider.UUID)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider2.UUID)
+
+	newName := tools.RandomString("TESTACC-", 8)
+	updateOpts := resourceproviders.UpdateOpts{
+		Name: &newName,
+	}
+	resourceProviderUpdate, err := resourceproviders.Update(client, resourceProvider2.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newName, resourceProviderUpdate.Name)
+
+	resourceProviderGet, err := resourceproviders.Get(client, resourceProvider2.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newName, resourceProviderGet.Name)
+
 }
 
 func TestResourceProviderUsages(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	clients.RequireAdmin(t)
@@ -65,16 +68,9 @@ func TestResourceProviderUsages(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the usages for the newly created resource provider
 	usage, err := resourceproviders.GetUsages(client, resourceProvider.UUID).Extract()
@@ -84,27 +80,15 @@ func TestResourceProviderUsages(t *testing.T) {
 }
 
 func TestResourceProviderInventories(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the inventories for the newly created resource provider
 	usage, err := resourceproviders.GetInventories(client, resourceProvider.UUID).Extract()
@@ -114,27 +98,15 @@ func TestResourceProviderInventories(t *testing.T) {
 }
 
 func TestResourceProviderTraits(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the traits for the newly created resource provider
 	usage, err := resourceproviders.GetTraits(client, resourceProvider.UUID).Extract()
@@ -144,27 +116,15 @@ func TestResourceProviderTraits(t *testing.T) {
 }
 
 func TestResourceProviderAllocations(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
 	// first create new resource provider
-	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create resource provider: %s", name)
-
-	createOpts := resourceproviders.CreateOpts{
-		Name: name,
-	}
-
-	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the allocations for the newly created resource provider
 	usage, err := resourceproviders.GetAllocations(client, resourceProvider.UUID).Extract()

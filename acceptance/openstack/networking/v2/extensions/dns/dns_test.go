@@ -1,3 +1,4 @@
+//go:build acceptance || networking
 // +build acceptance networking
 
 package dns
@@ -146,6 +147,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 }
 
 func TestDNSFloatingIPCRDL(t *testing.T) {
+	t.Skip("Skipping TestDNSFloatingIPCRDL for now, as it doesn't work with ML2/OVN.")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()

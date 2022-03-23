@@ -1,3 +1,4 @@
+//go:build acceptance || clustering || policies
 // +build acceptance clustering policies
 
 package v1
@@ -473,8 +474,8 @@ func TestClustersOps(t *testing.T) {
 		// TODO: Commented out due to backend returns error, as of 2019-01-09
 		//{Operation: clusters.RebuildOperation},					// Error in set_admin_password in nova log
 		//{Operation: clusters.EvacuateOperation, Params: clusters.OperationParams{"host": cluster.ID, "force": "True"}},
+		//{Operation: clusters.ChangePasswordOperation, Params: clusters.OperationParams{"admin_pass": "test"}}, // QEMU guest agent is not enabled.
 		{Operation: clusters.RebootOperation, Params: clusters.OperationParams{"type": "SOFT"}},
-		{Operation: clusters.ChangePasswordOperation, Params: clusters.OperationParams{"admin_pass": "test"}},
 		{Operation: clusters.LockOperation},
 		{Operation: clusters.UnlockOperation},
 		{Operation: clusters.SuspendOperation},

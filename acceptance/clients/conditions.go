@@ -27,14 +27,6 @@ func RequirePortForwarding(t *testing.T) {
 	}
 }
 
-// RequireDNS will restrict a test to only be run in environments
-// that support DNSaaS.
-func RequireDNS(t *testing.T) {
-	if os.Getenv("OS_DNS_ENVIRONMENT") == "" {
-		t.Skip("this test requires DNSaaS")
-	}
-}
-
 // RequireGuestAgent will restrict a test to only be run in
 // environments that support the QEMU guest agent.
 func RequireGuestAgent(t *testing.T) {
@@ -88,4 +80,52 @@ func SkipRelease(t *testing.T, release string) {
 	if os.Getenv("OS_BRANCH") == release {
 		t.Skipf("this is not supported in %s", release)
 	}
+}
+
+// SkipReleasesBelow will have the test be skipped on releases below a certain
+// one. Releases are named such as 'stable/mitaka', master, etc.
+func SkipReleasesBelow(t *testing.T, release string) {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	if IsReleasesBelow(t, release) {
+		t.Skipf("this is not supported below %s, testing in %s", release, current_branch)
+	}
+}
+
+// SkipReleasesAbove will have the test be skipped on releases above a certain
+// one. The test is always skipped on master release. Releases are named such
+// as 'stable/mitaka', master, etc.
+func SkipReleasesAbove(t *testing.T, release string) {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	// Assume master is always too new
+	if IsReleasesAbove(t, release) {
+		t.Skipf("this is not supported above %s, testing in %s", release, current_branch)
+	}
+}
+
+// IsReleasesAbove will return true on releases above a certain
+// one. The result is always true on master release. Releases are named such
+// as 'stable/mitaka', master, etc.
+func IsReleasesAbove(t *testing.T, release string) bool {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	// Assume master is always too new
+	if current_branch == "master" || current_branch > release {
+		return true
+	}
+	t.Logf("Target release %s is below the current branch %s", release, current_branch)
+	return false
+}
+
+// IsReleasesBelow will return true on releases below a certain
+// one. Releases are named such as 'stable/mitaka', master, etc.
+func IsReleasesBelow(t *testing.T, release string) bool {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	if current_branch != "master" && current_branch < release {
+		return true
+	}
+	t.Logf("Target release %s is above the current branch %s", release, current_branch)
+	return false
 }

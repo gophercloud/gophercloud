@@ -1,3 +1,4 @@
+//go:build acceptance || networking || vpnaas
 // +build acceptance networking vpnaas
 
 package vpnaas

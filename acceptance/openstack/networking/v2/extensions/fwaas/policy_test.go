@@ -1,3 +1,4 @@
+//go:build acceptance || networking || fwaas
 // +build acceptance networking fwaas
 
 package fwaas
@@ -12,6 +13,7 @@ import (
 )
 
 func TestPolicyCRUD(t *testing.T) {
+	t.Skip("Skip this test, FWAAS v1 is old and will be removed from Gophercloud")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
