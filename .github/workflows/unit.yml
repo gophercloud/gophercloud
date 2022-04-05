@@ -23,8 +23,8 @@ jobs:
 
       - name: Setup environment
         run: |
-          go get github.com/wadey/gocovmerge
-          go get golang.org/x/tools/cmd/goimports
+          go install github.com/wadey/gocovmerge@master || go get github.com/wadey/gocovmerge
+          go install golang.org/x/tools/cmd/goimports@latest || go get golang.org/x/tools/cmd/goimports
 
       - name: Run go vet
         run: |
