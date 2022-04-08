@@ -41,6 +41,8 @@ jobs:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin zun https://opendev.org/openstack/zun ${{ matrix.openstack_version }}
+            enable_plugin kuryr-libnetwork https://opendev.org/openstack/kuryr-libnetwork ${{ matrix.openstack_version }}
+            enable_plugin devstack-plugin-container https://opendev.org/openstack/devstack-plugin-container ${{ matrix.openstack_version }}
       - name: Checkout go
         uses: actions/setup-go@v2
         with:
