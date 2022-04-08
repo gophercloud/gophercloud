@@ -94,6 +94,9 @@ type Cluster struct {
 	FlavorID           string                 `json:"flavor_id"`
 	KeyPair            string                 `json:"keypair"`
 	Labels             map[string]string      `json:"labels"`
+	LabelsAdded        map[string]string      `json:"labels_added"`
+	LabelsOverridden   map[string]string      `json:"labels_overridden"`
+	LabelsSkipped      map[string]string      `json:"labels_skipped"`
 	Links              []gophercloud.Link     `json:"links"`
 	MasterFlavorID     string                 `json:"master_flavor_id"`
 	MasterAddresses    []string               `json:"master_addresses"`
