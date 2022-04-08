@@ -34,6 +34,7 @@ jobs:
         run: |
           ./script/coverage
           ./script/format
+          ./script/unittest -v
 
       - uses: shogo82148/actions-goveralls@v1
         with:
