@@ -41,6 +41,8 @@ jobs:
           conf_overrides: |
             enable_plugin heat https://opendev.org/openstack/heat ${{ matrix.openstack_version }}
             enable_plugin magnum https://opendev.org/openstack/magnum ${{ matrix.openstack_version }}
+            GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
+            SWIFT_MAX_FILE_SIZE=5368709122
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
         uses: actions/setup-go@v2
