@@ -689,3 +689,25 @@ func TestDeleteSubscription(t *testing.T) {
 	err := nodes.DeleteSubscription(c, "1234asdf", method, deleteOpt).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestSetMaintenance(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleSetNodeMaintenanceSuccessfully(t)
+
+	c := client.ServiceClient()
+	err := nodes.SetMaintenance(c, "1234asdf", nodes.MaintenanceOpts{
+		Reason: "I'm tired",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnsetMaintenance(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUnsetNodeMaintenanceSuccessfully(t)
+
+	c := client.ServiceClient()
+	err := nodes.UnsetMaintenance(c, "1234asdf").ExtractErr()
+	th.AssertNoErr(t, err)
+}

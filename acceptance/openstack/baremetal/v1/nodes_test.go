@@ -68,6 +68,38 @@ func TestNodesUpdate(t *testing.T) {
 	th.AssertEquals(t, updated.Maintenance, true)
 }
 
+func TestNodesMaintenance(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.38"
+
+	node, err := CreateNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+
+	err = nodes.SetMaintenance(client, node.UUID, nodes.MaintenanceOpts{
+		Reason: "I'm tired",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	updated, err := nodes.Get(client, node.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, updated.Maintenance, true)
+	th.AssertEquals(t, updated.MaintenanceReason, "I'm tired")
+
+	err = nodes.UnsetMaintenance(client, node.UUID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	updated, err = nodes.Get(client, node.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, updated.Maintenance, false)
+	th.AssertEquals(t, updated.MaintenanceReason, "")
+}
+
 func TestNodesRAIDConfig(t *testing.T) {
 	clients.SkipReleasesBelow(t, "stable/ussuri")
 	clients.RequireLong(t)

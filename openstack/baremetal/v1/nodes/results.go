@@ -501,3 +501,9 @@ type SubscriptionVendorPassthru struct {
 	EventTypes  []string `json:"EventTypes"`
 	Protocol    string   `json:"Protocol"`
 }
+
+// SetMaintenanceResult is the response from a SetMaintenance operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type SetMaintenanceResult struct {
+	gophercloud.ErrResult
+}
