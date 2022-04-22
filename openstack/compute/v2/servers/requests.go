@@ -320,6 +320,13 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ActionResult) 
 	return
 }
 
+// Restore  a soft-deleted server.
+func Restore(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	resp, err := client.Post(actionURL(client, id), map[string]interface{}{"restore": ""}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // Get requests details on a single server, by ID.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{

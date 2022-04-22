@@ -935,6 +935,18 @@ func HandleServerForceDeletionSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleServerRestoreSuccessfully sets up the test server to respond to a server restore
+// request.
+func HandleServerRestoreSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/asdfasdfasdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "restore": "" }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
 // HandleServerGetSuccessfully sets up the test server to respond to a server Get request.
 func HandleServerGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
