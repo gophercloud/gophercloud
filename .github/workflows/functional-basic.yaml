@@ -17,6 +17,9 @@ jobs:
         openstack_version: ["master"]
         ubuntu_version: ["20.04"]
         include:
+          - name: "yoga"
+            openstack_version: "stable/yoga"
+            ubuntu_version: "20.04"
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"

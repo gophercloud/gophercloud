@@ -15,6 +15,10 @@ jobs:
         ubuntu_version: ["20.04"]
         devstack_conf_overrides: [""]
         include:
+          - name: "yoga"
+            openstack_version: "stable/yoga"
+            ubuntu_version: "20.04"
+            devstack_conf_overrides: ""
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
