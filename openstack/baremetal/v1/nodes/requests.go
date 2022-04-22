@@ -835,3 +835,47 @@ func CreateSubscription(client *gophercloud.ServiceClient, id string, method Cal
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return r
 }
+
+// MaintenanceOpts for a request to set the node's maintenance mode.
+type MaintenanceOpts struct {
+	Reason string `json:"reason,omitempty"`
+}
+
+// MaintenanceOptsBuilder allows extensions to add additional parameters to the SetMaintenance request.
+type MaintenanceOptsBuilder interface {
+	ToMaintenanceMap() (map[string]interface{}, error)
+}
+
+// ToMaintenanceMap assembles a request body based on the contents of a MaintenanceOpts.
+func (opts MaintenanceOpts) ToMaintenanceMap() (map[string]interface{}, error) {
+	body, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+// Request to set the Node's maintenance mode.
+func SetMaintenance(client *gophercloud.ServiceClient, id string, opts MaintenanceOptsBuilder) (r SetMaintenanceResult) {
+	reqBody, err := opts.ToMaintenanceMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(maintenanceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Request to unset the Node's maintenance mode.
+func UnsetMaintenance(client *gophercloud.ServiceClient, id string) (r SetMaintenanceResult) {
+	resp, err := client.Delete(maintenanceURL(client, id), &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

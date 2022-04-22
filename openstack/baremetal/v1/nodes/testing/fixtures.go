@@ -806,6 +806,12 @@ const NodeCreateSubscriptionVendorPassthruRequiredParametersBody = `
 }
 `
 
+const NodeSetMaintenanceBody = `
+{
+  "reason": "I'm tired"
+}
+`
+
 var (
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -1522,5 +1528,24 @@ func HandleDeleteSubscriptionVendorPassthruSuccessfully(t *testing.T) {
 		`)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleSetNodeMaintenanceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/maintenance", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeSetMaintenanceBody)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func HandleUnsetNodeMaintenanceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/maintenance", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
