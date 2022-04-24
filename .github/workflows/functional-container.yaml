@@ -43,6 +43,8 @@ jobs:
             enable_plugin zun https://opendev.org/openstack/zun ${{ matrix.openstack_version }}
             enable_plugin kuryr-libnetwork https://opendev.org/openstack/kuryr-libnetwork ${{ matrix.openstack_version }}
             enable_plugin devstack-plugin-container https://opendev.org/openstack/devstack-plugin-container ${{ matrix.openstack_version }}
+            # Force docker group until https://bugs.launchpad.net/devstack/+bug/1970129 is fixed
+            DOCKER_GROUP=docker
       - name: Checkout go
         uses: actions/setup-go@v2
         with:
