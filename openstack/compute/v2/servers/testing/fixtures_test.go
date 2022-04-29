@@ -158,7 +158,8 @@ const ServerListBody = `
 			"progress": 0,
 			"OS-EXT-STS:power_state": 1,
 			"config_drive": "",
-			"metadata": {}
+			"metadata": {},
+			"locked": true
 		},
 		{
 		"status": "ACTIVE",
@@ -297,7 +298,8 @@ const SingleServerBody = `
 		"progress": 0,
 		"OS-EXT-STS:power_state": 1,
 		"config_drive": "",
-		"metadata": {}
+		"metadata": {},
+		"locked": true
 	}
 }
 `
@@ -631,6 +633,7 @@ var (
 		TerminatedAt:       time.Time{},
 		DiskConfig:         servers.Manual,
 		AvailabilityZone:   "nova",
+		Locked:             func() *bool { b := true; return &b }(),
 	}
 
 	ConsoleOutput = "abc"
