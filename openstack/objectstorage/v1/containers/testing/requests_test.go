@@ -166,6 +166,8 @@ func TestGetContainer(t *testing.T) {
 		Write:         []string{"test2", "user4"},
 		StoragePolicy: "test_policy",
 		Timestamp:     1471298837.95721,
+		SyncKey:       "272465181849",
+		SyncTo:        "anotherContainer",
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)

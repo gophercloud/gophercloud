@@ -185,6 +185,8 @@ func HandleGetContainerSuccessfully(t *testing.T) {
 		w.Header().Set("X-Timestamp", "1471298837.95721")
 		w.Header().Set("X-Trans-Id", "tx554ed59667a64c61866f1-0057b4ba37")
 		w.Header().Set("X-Storage-Policy", "test_policy")
+		w.Header().Set("X-Sync-Key", "272465181849")
+		w.Header().Set("X-Sync-To", "anotherContainer")
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
