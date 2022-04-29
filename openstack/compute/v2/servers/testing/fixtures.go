@@ -158,7 +158,8 @@ const ServerListBody = `
 			"progress": 0,
 			"OS-EXT-STS:power_state": 1,
 			"config_drive": "",
-			"metadata": {}
+			"metadata": {},
+			"locked": true
 		},
 		{
 		"status": "ACTIVE",
@@ -297,7 +298,8 @@ const SingleServerBody = `
 		"progress": 0,
 		"OS-EXT-STS:power_state": 1,
 		"config_drive": "",
-		"metadata": {}
+		"metadata": {},
+		"locked": true
 	}
 }
 `
@@ -603,6 +605,7 @@ var (
 				"name": "default",
 			},
 		},
+		Locked: func() *bool { b := true; return &b }(),
 	}
 
 	ConsoleOutput = "abc"
