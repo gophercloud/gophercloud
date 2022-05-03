@@ -1,5 +1,8 @@
 on: [push, pull_request]
 name: go mod
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
