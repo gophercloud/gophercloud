@@ -57,7 +57,7 @@ jobs:
             MANILA_DEFAULT_SHARE_TYPE_EXTRA_SPECS='snapshot_support=True create_share_from_snapshot_support=True revert_to_snapshot_support=True mount_snapshot_support=True'
             MANILA_CONFIGURE_DEFAULT_TYPES=True
       - name: Checkout go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
