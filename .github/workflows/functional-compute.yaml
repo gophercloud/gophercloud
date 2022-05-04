@@ -57,7 +57,7 @@ jobs:
         if: failure()
       - name: Upload logs artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: functional-compute-${{ matrix.name }}
           path: /tmp/devstack-logs/*
