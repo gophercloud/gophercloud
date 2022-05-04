@@ -45,7 +45,7 @@ jobs:
     name: Deploy OpenStack ${{ matrix.name }} with Neutron and run networking acceptance tests
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Deploy devstack
         uses: EmilienM/devstack-action@v0.6
         with:
