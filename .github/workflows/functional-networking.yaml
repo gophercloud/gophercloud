@@ -53,6 +53,7 @@ jobs:
           conf_overrides: |
             Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
             enable_plugin neutron-vpnaas https://opendev.org/openstack/neutron-vpnaas ${{ matrix.openstack_version }}
+            enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing  ${{ matrix.openstack_version }}
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding'
       - name: Checkout go
