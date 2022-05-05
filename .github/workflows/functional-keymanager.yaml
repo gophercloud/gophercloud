@@ -45,7 +45,7 @@ jobs:
             enable_plugin barbican https://opendev.org/openstack/barbican ${{ matrix.openstack_version }}
           enabled_services: 'barbican-svc,barbican-retry,barbican-keystone-listener'
       - name: Checkout go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests

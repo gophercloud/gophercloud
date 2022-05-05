@@ -45,7 +45,7 @@ jobs:
             enable_plugin senlin https://opendev.org/openstack/senlin ${{ matrix.openstack_version }}
             enable_plugin zaqar https://opendev.org/openstack/zaqar ${{ matrix.openstack_version }}
       - name: Checkout go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
