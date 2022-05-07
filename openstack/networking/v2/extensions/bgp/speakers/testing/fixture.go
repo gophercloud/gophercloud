@@ -61,3 +61,31 @@ const GetBGPSpeakerResult = `
   }
 }
 `
+const CreateRequest = `
+{
+  "bgp_speaker": {
+    "advertise_floating_ip_host_routes": false,
+    "advertise_tenant_networks": true,
+    "ip_version": 6,
+    "local_as": "2000",
+    "name": "gophercloud-testing-bgp-speaker"
+  }
+}
+`
+
+const CreateResponse = `
+{
+  "bgp_speaker": {
+    "peers": [],
+    "project_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "name": "gophercloud-testing-bgp-speaker",
+    "tenant_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "local_as": 2000,
+    "advertise_tenant_networks": true,
+    "networks": [],
+    "ip_version": 6,
+    "advertise_floating_ip_host_routes": false,
+    "id": "26e98af2-4dc7-452a-91b0-65ee45f3e7c1"
+  }
+}
+`
