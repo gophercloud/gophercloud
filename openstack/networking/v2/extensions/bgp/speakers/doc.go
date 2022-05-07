@@ -31,4 +31,34 @@ Example:
                 log.Panic(nil)
         }
         log.Printf("%+v", *speaker)
+
+
+3. Create BGP Speaker, a.k.a. POST /bgp-speakers
+
+Example:
+
+	opts := speakers.CreateOpts{
+		IPVersion:                     6,
+		AdvertiseFloatingIPHostRoutes: false,
+		AdvertiseTenantNetworks:       true,
+		Name:                          "gophercloud-testing-bgp-speaker",
+		LocalAS:                       "2000",
+		Networks:                      []string{},
+	}
+        r, err := speaker.Create(c, opts).Extract()
+        if err != nil {
+                log.Panic(err)
+        }
+        log.Printf("%+v", *r)
+
+
+5. Delete BGP Speaker, a.k.a. DELETE /bgp-speakers/{id}
+
+Example:
+
+        err := speaker.Delete(auth, speakerID).ExtractErr()
+        if err != nil {
+                log.Panic(err)
+        }
+        log.Printf("Speaker Deleted")
 */
