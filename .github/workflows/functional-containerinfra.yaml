@@ -39,10 +39,12 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
+            enable_plugin barbican https://opendev.org/openstack/barbican ${{ matrix.openstack_version }}
             enable_plugin heat https://opendev.org/openstack/heat ${{ matrix.openstack_version }}
             enable_plugin magnum https://opendev.org/openstack/magnum ${{ matrix.openstack_version }}
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
+            KEYSTONE_ADMIN_ENDPOINT=true
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
         uses: actions/setup-go@v2
