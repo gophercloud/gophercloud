@@ -12,6 +12,8 @@ import (
 )
 
 func TestCertificatesCRUD(t *testing.T) {
+	t.Skip("Test must be rewritten to drop hardcoded cluster ID")
+
 	client, err := clients.NewContainerInfraV1Client()
 	th.AssertNoErr(t, err)
 

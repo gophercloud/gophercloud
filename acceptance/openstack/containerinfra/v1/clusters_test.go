@@ -14,6 +14,7 @@ import (
 )
 
 func TestClustersCRUD(t *testing.T) {
+	t.Skip("Failure to deploy cluster in CI")
 	client, err := clients.NewContainerInfraV1Client()
 	th.AssertNoErr(t, err)
 
