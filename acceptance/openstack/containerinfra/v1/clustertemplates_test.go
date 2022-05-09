@@ -16,7 +16,7 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	client, err := clients.NewContainerInfraV1Client()
 	th.AssertNoErr(t, err)
 
-	clusterTemplate, err := CreateClusterTemplate(t, client)
+	clusterTemplate, err := CreateKubernetesClusterTemplate(t, client)
 	th.AssertNoErr(t, err)
 	t.Log(clusterTemplate.Name)
 

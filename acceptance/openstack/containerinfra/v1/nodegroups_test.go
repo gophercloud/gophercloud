@@ -16,6 +16,7 @@ import (
 )
 
 func TestNodeGroupsCRUD(t *testing.T) {
+	t.Skip("Failure to deploy cluster in CI")
 	// API not available until Magnum train
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
