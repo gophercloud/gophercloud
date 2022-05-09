@@ -33,3 +33,8 @@ func createURL(c *gophercloud.ServiceClient) string {
 func deleteURL(c *gophercloud.ServiceClient, id string) string {
 	return resourceURL(c, id)
 }
+
+// return /v2.0/bgp-peers/{bgp-peer-id}
+func updateURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
+}
