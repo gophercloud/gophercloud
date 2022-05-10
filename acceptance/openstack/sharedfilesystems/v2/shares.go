@@ -16,7 +16,7 @@ import (
 // error will be returned if the share could not be created
 func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share, error) {
 	if testing.Short() {
-		t.Skip("Skipping test that requres share creation in short mode.")
+		t.Skip("Skipping test that requires share creation in short mode.")
 	}
 
 	iTrue := true
