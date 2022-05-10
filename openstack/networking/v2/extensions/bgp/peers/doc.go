@@ -54,4 +54,18 @@ Example:
                 log.Panic(err)
         }
         log.Printf("BGP Peer deleted")
+
+
+5. Update BGP Peer, a.k.a. PUT /bgp-peers/{id}
+
+Example:
+
+        var opt peers.UpdateOpts
+        opt.Name = "peer-name-updated"
+        opt.Password = "superStrong"
+        p, err := peers.Update(c, id, opts).Extract()
+        if err != nil {
+                log.Panic(err)
+        }
+        log.Printf("%+v", p)
 */
