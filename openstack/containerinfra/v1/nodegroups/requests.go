@@ -87,7 +87,8 @@ type CreateOpts struct {
 	// Node image ID. Defaults to cluster template image if unset.
 	ImageID string `json:"image_id,omitempty"`
 	// Node machine flavor ID. Defaults to cluster minion flavor if unset.
-	FlavorID string `json:"flavor_id,omitempty"`
+	FlavorID    string `json:"flavor_id,omitempty"`
+	MergeLabels *bool  `json:"merge_labels,omitempty"`
 }
 
 func (opts CreateOpts) ToNodeGroupCreateMap() (map[string]interface{}, error) {
