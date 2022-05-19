@@ -42,7 +42,7 @@ jobs:
           ./script/format
           ./script/unittest -v
 
-      - uses: shogo82148/actions-goveralls@v1
+      - uses: shogo82148/actions-goveralls@v1.6.0
         with:
           path-to-profile: cover.out
           flag-name: Go-${{ matrix.go-version }}
@@ -54,6 +54,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: shogo82148/actions-goveralls@v1
+      - uses: shogo82148/actions-goveralls@v1.6.0
         with:
           parallel-finished: true
