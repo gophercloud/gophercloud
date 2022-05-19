@@ -11,7 +11,7 @@ import (
 
 // MockListResponse provides mock responce for list snapshot API call
 func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/snapshots", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/snapshots/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
