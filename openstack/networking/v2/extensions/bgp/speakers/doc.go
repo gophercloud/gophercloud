@@ -45,7 +45,7 @@ Example:
 		LocalAS:                       "2000",
 		Networks:                      []string{},
 	}
-        r, err := speaker.Create(c, opts).Extract()
+        r, err := speakers.Create(c, opts).Extract()
         if err != nil {
                 log.Panic(err)
         }
@@ -56,9 +56,49 @@ Example:
 
 Example:
 
-        err := speaker.Delete(auth, speakerID).ExtractErr()
+        err := speakers.Delete(auth, speakerID).ExtractErr()
         if err != nil {
                 log.Panic(err)
         }
         log.Printf("Speaker Deleted")
+
+
+6. Update BGP Speaker
+
+Example:
+
+	opts := speakers.UpdateOpts{
+		Name:                          "testing-bgp-speaker",
+		AdvertiseTenantNetworks:       false,
+		AdvertiseFloatingIPHostRoutes: true,
+	}
+	spk, err := speakers.Update(c, bgpSpeakerID, opts).Extract()
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Printf("%+v", spk)
+
+
+7. Add BGP Peer, a.k.a. PUT /bgp-speakers/{id}/add_bgp_peer
+
+Example:
+
+	opts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeerID}
+        r, err := speakers.AddBGPPeer(c, bgpSpeakerID, opts).Extract()
+        if err != nil {
+                log.Panic(err)
+        }
+        log.Printf("%+v", r)
+
+
+8. Remove BGP Peer, a.k.a. PUT /bgp-speakers/{id}/remove_bgp_peer
+
+Example:
+
+	opts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeerID}
+        err := speakers.RemoveBGPPeer(c, bgpSpeakerID, opts).ExtractErr()
+        if err != nil {
+                log.Panic(err)
+        }
+        log.Printf("Successfully removed BGP Peer")
 */
