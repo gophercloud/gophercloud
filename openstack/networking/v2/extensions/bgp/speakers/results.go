@@ -76,6 +76,9 @@ func ExtractBGPSpeakers(r pagination.Page) ([]BGPSpeaker, error) {
 	return s, err
 }
 
+// ExtractBGPSpeakersInto accepts a Page struct and an interface{}. The former contains
+// a list of BGPSpeaker and the later should be used to store the result that would be
+// extracted from the former.
 func ExtractBGPSpeakersInto(r pagination.Page, v interface{}) error {
 	return r.(BGPSpeakerPage).Result.ExtractIntoSlicePtr(v, "bgp_speakers")
 }
@@ -95,5 +98,33 @@ type CreateResult struct {
 // DeleteResult represents the result of a delete operation. Call its
 // ExtractErr method to determine if the request succeeded or failed.
 type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as a BGPSpeaker.
+type UpdateResult struct {
+	commonResult
+}
+
+// AddBGPPeerResult represent the response of the PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add-bgp-peer
+type AddBGPPeerResult struct {
+	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts a AddBGPPeerResult resource
+func (r AddBGPPeerResult) Extract() (*AddBGPPeerOpts, error) {
+	var s AddBGPPeerOpts
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r AddBGPPeerResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "")
+}
+
+// RemoveBGPPeerResult represent the response of the PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove-bgp-peer
+// There is no body content for the response of a successful DELETE request.
+type RemoveBGPPeerResult struct {
 	gophercloud.ErrResult
 }

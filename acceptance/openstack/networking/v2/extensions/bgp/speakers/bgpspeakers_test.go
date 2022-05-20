@@ -1,58 +1,28 @@
 package speakers
 
 import (
-	"strconv"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	ap "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/bgp/peers"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/peers"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speakers"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func CreateBGPSpeaker(t *testing.T, client *gophercloud.ServiceClient) (*speakers.BGPSpeaker, error) {
-	opts := speakers.CreateOpts{
-		IPVersion:                     4,
-		AdvertiseFloatingIPHostRoutes: false,
-		AdvertiseTenantNetworks:       true,
-		Name:                          tools.RandomString("TESTACC-BGPSPEAKER-", 8),
-		LocalAS:                       "3000",
-		Networks:                      []string{},
-	}
-
-	t.Logf("Attempting to create BGP Speaker: %s", opts.Name)
-	bgpSpeaker, err := speakers.Create(client, opts).Extract()
-	if err != nil {
-		return bgpSpeaker, err
-	}
-
-	localas, err := strconv.Atoi(opts.LocalAS)
-	t.Logf("Successfully created BGP Speaker")
-	th.AssertEquals(t, bgpSpeaker.Name, opts.Name)
-	th.AssertEquals(t, bgpSpeaker.LocalAS, localas)
-	th.AssertEquals(t, bgpSpeaker.IPVersion, opts.IPVersion)
-	th.AssertEquals(t, bgpSpeaker.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
-	th.AssertEquals(t, bgpSpeaker.AdvertiseFloatingIPHostRoutes, opts.AdvertiseFloatingIPHostRoutes)
-	return bgpSpeaker, err
-}
-
-func TestBGPSpeakerCRD(t *testing.T) {
+func TestBGPSpeakerCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
-
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
 	// Create a BGP Speaker
-	bgpSpeakerCreated, err := CreateBGPSpeaker(t, client)
+	bgpSpeaker, err := CreateBGPSpeaker(t, client)
 	th.AssertNoErr(t, err)
-	tools.PrintResource(t, bgpSpeakerCreated)
 
-	// Get a BGP Speaker
-	bgpSpeakerGot, err := speakers.Get(client, bgpSpeakerCreated.ID).Extract()
+	// Create a BGP Peer
+	bgpPeer, err := ap.CreateBGPPeer(t, client)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, bgpSpeakerCreated.ID, bgpSpeakerGot.ID)
-	th.AssertEquals(t, bgpSpeakerCreated.Name, bgpSpeakerGot.Name)
 
 	// List BGP Speakers
 	allPages, err := speakers.List(client).AllPages()
@@ -64,13 +34,48 @@ func TestBGPSpeakerCRD(t *testing.T) {
 	tools.PrintResource(t, allSpeakers)
 	th.AssertIntGreaterOrEqual(t, len(allSpeakers), 1)
 
-	// Delete a BGP Speaker
-	t.Logf("Attempting to delete BGP Speaker: %s", bgpSpeakerGot.Name)
-	err = speakers.Delete(client, bgpSpeakerGot.ID).ExtractErr()
+	// Update BGP Speaker
+	opts := speakers.UpdateOpts{
+		Name:                          tools.RandomString("TESTACC-BGPSPEAKER-", 10),
+		AdvertiseTenantNetworks:       false,
+		AdvertiseFloatingIPHostRoutes: true,
+	}
+	speakerUpdated, err := speakers.Update(client, bgpSpeaker.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, speakerUpdated.Name, opts.Name)
+	t.Logf("Updated the BGP Speaker, name set from %s to %s", bgpSpeaker.Name, speakerUpdated.Name)
+
+	// Get a BGP Speaker
+	bgpSpeakerGot, err := speakers.Get(client, bgpSpeaker.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, bgpSpeaker.ID, bgpSpeakerGot.ID)
+	th.AssertEquals(t, opts.Name, bgpSpeakerGot.Name)
+
+	// AddBGPPeer
+	addBGPPeerOpts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeer.ID}
+	_, err = speakers.AddBGPPeer(client, bgpSpeaker.ID, addBGPPeerOpts).Extract()
+	th.AssertNoErr(t, err)
+	speakerGot, err := speakers.Get(client, bgpSpeaker.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, bgpPeer.ID, speakerGot.Peers[0])
+	t.Logf("Successfully added BGP Peer %s to BGP Speaker %s", bgpPeer.Name, speakerUpdated.Name)
+
+	// RemoveBGPPeer
+	removeBGPPeerOpts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeer.ID}
+	err = speakers.RemoveBGPPeer(client, bgpSpeaker.ID, removeBGPPeerOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+	speakerGot, err = speakers.Get(client, bgpSpeaker.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(speakerGot.Networks), 0)
+	t.Logf("Successfully removed BGP Peer %s to BGP Speaker %s", bgpPeer.Name, speakerUpdated.Name)
+
+	// Delete a BGP Peer
+	t.Logf("Delete the BGP Peer %s", bgpPeer.Name)
+	err = peers.Delete(client, bgpPeer.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	// Confirm the BGP Speaker is deleted
-	bgpSpeakerGot, err = speakers.Get(client, bgpSpeakerGot.ID).Extract()
-	th.AssertErr(t, err)
-	t.Logf("BGP Speaker %s deleted", bgpSpeakerCreated.Name)
+	// Delete a BGP Speaker
+	t.Logf("Delete the BGP Speaker %s", speakerUpdated.Name)
+	err = speakers.Delete(client, bgpSpeaker.ID).ExtractErr()
+	th.AssertNoErr(t, err)
 }
