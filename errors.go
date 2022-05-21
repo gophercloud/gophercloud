@@ -156,7 +156,7 @@ type ErrDefault500 struct {
 	ErrUnexpectedResponseCode
 }
 
-// ErrDefault500 is the default error type returned on a 502 HTTP response code.
+// ErrDefault502 is the default error type returned on a 502 HTTP response code.
 type ErrDefault502 struct {
 	ErrUnexpectedResponseCode
 }
