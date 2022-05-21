@@ -556,10 +556,20 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 			if error500er, ok := errType.(Err500er); ok {
 				err = error500er.Error500(respErr)
 			}
+		case http.StatusBadGateway:
+			err = ErrDefault502{respErr}
+			if error502er, ok := errType.(Err502er); ok {
+				err = error502er.Error502(respErr)
+			}
 		case http.StatusServiceUnavailable:
 			err = ErrDefault503{respErr}
 			if error503er, ok := errType.(Err503er); ok {
 				err = error503er.Error503(respErr)
+			}
+		case http.StatusGatewayTimeout:
+			err = ErrDefault504{respErr}
+			if error504er, ok := errType.(Err504er); ok {
+				err = error504er.Error504(respErr)
 			}
 		}
 
