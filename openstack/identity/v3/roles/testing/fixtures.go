@@ -428,6 +428,21 @@ func HandleListRoleAssignmentsWithNamesSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleListRoleAssignmentsWithSubtreeSuccessfully creates an HTTP handler at `/role_assignments` on the
+// test handler mux that responds with a list of two role assignments.
+func HandleListRoleAssignmentsWithSubtreeSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.AssertEquals(t, "include_subtree=true", r.URL.RawQuery)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListAssignmentOutput)
+	})
+}
+
 // RoleOnResource is the role in the ListAssignmentsOnResource request.
 var RoleOnResource = roles.Role{
 	ID: "9fe1d3",

@@ -208,6 +208,11 @@ type ListAssignmentsOpts struct {
 	// IncludeNames indicates whether to include names of any returned entities.
 	// Requires microversion 3.6 or later.
 	IncludeNames *bool `q:"include_names"`
+
+	// IncludeSubtree indicates whether to include relevant assignments in the project hierarchy below the project
+	// specified in the ScopeProjectID. Specify DomainID in ScopeProjectID to get a list for all projects in the domain.
+	// Requires microversion 3.6 or later.
+	IncludeSubtree *bool `q:"include_subtree"`
 }
 
 // ToRolesListAssignmentsQuery formats a ListAssignmentsOpts into a query string.
