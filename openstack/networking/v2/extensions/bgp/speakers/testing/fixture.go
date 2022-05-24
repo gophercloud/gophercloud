@@ -122,3 +122,28 @@ const AddRemoveBGPPeerJSON = `
   "bgp_peer_id": "f5884c7c-71d5-43a3-88b4-1742e97674aa"
 }
 `
+
+const GetAdvertisedRoutesResult = `
+{
+  "advertised_routes": [
+    {
+      "next_hop": "172.17.128.212",
+      "destination": "172.17.129.192/27"
+    },
+    {
+      "next_hop": "172.17.128.218",
+      "destination": "172.17.129.0/27"
+    },
+    {
+      "next_hop": "172.17.128.231",
+      "destination": "172.17.129.160/27"
+    }
+  ]
+}
+`
+
+const AddRemoveGatewayNetworkJSON = `
+{
+  "network_id": "ac13bb26-6219-49c3-a880-08847f6830b7"
+}
+`
