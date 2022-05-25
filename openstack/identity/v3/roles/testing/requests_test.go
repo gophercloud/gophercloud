@@ -171,6 +171,30 @@ func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListRoleAssignmentsWithSubtreeSuccessfully(t)
+
+	var includeSubtree = true
+	listOpts := roles.ListAssignmentsOpts{
+		IncludeSubtree: &includeSubtree,
+	}
+
+	count := 0
+	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := roles.ExtractRoleAssignments(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedRoleAssignmentsSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
 func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
