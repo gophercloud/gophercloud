@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	ap "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/bgp/peers"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/peers"
@@ -33,6 +34,11 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 	t.Logf("Retrieved BGP Speakers")
 	tools.PrintResource(t, allSpeakers)
 	th.AssertIntGreaterOrEqual(t, len(allSpeakers), 1)
+
+	// Create a network
+	network, err := networking.CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, client, network.ID)
 
 	// Update BGP Speaker
 	opts := speakers.UpdateOpts{
@@ -68,6 +74,27 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(speakerGot.Networks), 0)
 	t.Logf("Successfully removed BGP Peer %s to BGP Speaker %s", bgpPeer.Name, speakerUpdated.Name)
+
+	// GetAdvertisedRoutes
+	pages, err := speakers.GetAdvertisedRoutes(client, bgpSpeaker.ID).AllPages()
+	th.AssertNoErr(t, err)
+	routes, err := speakers.ExtractAdvertisedRoutes(pages)
+	th.AssertNoErr(t, err)
+	th.AssertIntGreaterOrEqual(t, len(routes), 0)
+	t.Logf("Successfully retrieved advertised routes")
+
+	// AddGatewayNetwork
+	optsAddGatewayNetwork := speakers.AddGatewayNetworkOpts{NetworkID: network.ID}
+	r, err := speakers.AddGatewayNetwork(client, bgpSpeaker.ID, optsAddGatewayNetwork).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, r.NetworkID, network.ID)
+	t.Logf("Successfully added gateway network %s to BGP Speaker", network.ID)
+
+	// RemoveGatewayNetwork
+	optsRemoveGatewayNetwork := speakers.RemoveGatewayNetworkOpts{NetworkID: network.ID}
+	err = speakers.RemoveGatewayNetwork(client, bgpSpeaker.ID, optsRemoveGatewayNetwork).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Successfully removed gateway network %s to BGP Speaker", network.ID)
 
 	// Delete a BGP Peer
 	t.Logf("Delete the BGP Peer %s", bgpPeer.Name)

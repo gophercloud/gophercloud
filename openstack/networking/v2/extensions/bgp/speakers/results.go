@@ -128,3 +128,54 @@ func (r AddBGPPeerResult) ExtractInto(v interface{}) error {
 type RemoveBGPPeerResult struct {
 	gophercloud.ErrResult
 }
+
+// AdvertisedRoute represents an advertised route
+type AdvertisedRoute struct {
+	// NextHop IP address
+	NextHop string `json:"next_hop"`
+
+	// Destination Network
+	Destination string `json:"destination"`
+}
+
+// AdvertisedRoutePage is the page returned by a pager when you call
+type AdvertisedRoutePage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty checks whether a AdvertisedRoutePage struct is empty.
+func (r AdvertisedRoutePage) IsEmpty() (bool, error) {
+	is, err := ExtractAdvertisedRoutes(r)
+	return len(is) == 0, err
+}
+
+// ExtractAdvertisedRoutes accepts a Page struct, a.k.a. AdvertisedRoutePage struct,
+// and extracts the elements into a slice of AdvertisedRoute structs.
+func ExtractAdvertisedRoutes(r pagination.Page) ([]AdvertisedRoute, error) {
+	var s []AdvertisedRoute
+	err := ExtractAdvertisedRoutesInto(r, &s)
+	return s, err
+}
+
+// ExtractAdvertisedRoutesInto extract the advertised routes from the first param into the 2nd
+func ExtractAdvertisedRoutesInto(r pagination.Page, v interface{}) error {
+	return r.(AdvertisedRoutePage).Result.ExtractIntoSlicePtr(v, "advertised_routes")
+}
+
+// AddGatewayNetworkResult represents the data that would be PUT to
+// /v2.0/bgp-speakers/{bgp-speaker-id}/add_gateway_network
+type AddGatewayNetworkResult struct {
+	gophercloud.Result
+}
+
+func (r AddGatewayNetworkResult) Extract() (*AddGatewayNetworkOpts, error) {
+	var s AddGatewayNetworkOpts
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// RemoveGatewayNetworkResult represents the data that would be PUT to
+// /v2.0/bgp-speakers/{bgp-speaker-id}/remove_gateway_network
+type RemoveGatewayNetworkResult struct {
+	gophercloud.ErrResult
+}
