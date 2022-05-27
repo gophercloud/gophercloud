@@ -35,12 +35,12 @@ jobs:
             openstack_version: "stable/ussuri"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin neutron-fwaas https://git.openstack.org/openstack/neutron-fwaas stable/ussuri
+              enable_plugin neutron-fwaas https://opendev.org/openstack/neutron-fwaas stable/ussuri
           - name: "train"
             openstack_version: "stable/train"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin neutron-fwaas https://git.openstack.org/openstack/neutron-fwaas stable/train
+              enable_plugin neutron-fwaas https://opendev.org/openstack/neutron-fwaas stable/train
               enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Neutron and run networking acceptance tests
