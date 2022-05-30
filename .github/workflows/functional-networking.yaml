@@ -13,34 +13,40 @@ jobs:
         name: ["master"]
         openstack_version: ["master"]
         ubuntu_version: ["20.04"]
-        devstack_conf_overrides: [""]
+        devstack_conf_overrides: ["enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing master"]
         include:
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: ""
+            devstack_conf_overrides: |
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: ""
+            devstack_conf_overrides: |
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing stable/xena
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: ""
+            devstack_conf_overrides: |
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing stable/wallaby
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: ""
+            devstack_conf_overrides: |
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin neutron-fwaas https://git.openstack.org/openstack/neutron-fwaas stable/ussuri
+              enable_plugin neutron-fwaas https://opendev.org/openstack/neutron-fwaas stable/ussuri
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing stable/ussuri
           - name: "train"
             openstack_version: "stable/train"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin neutron-fwaas https://git.openstack.org/openstack/neutron-fwaas stable/train
+              enable_plugin neutron-fwaas https://opendev.org/openstack/neutron-fwaas stable/train
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Neutron and run networking acceptance tests
     steps:
@@ -53,8 +59,6 @@ jobs:
           conf_overrides: |
             Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
             enable_plugin neutron-vpnaas https://opendev.org/openstack/neutron-vpnaas ${{ matrix.openstack_version }}
-            # Use github mirroring as stable/train branch no longer exists on opendev git repo
-            enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing ${{ matrix.openstack_version }}
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding'
       - name: Checkout go
