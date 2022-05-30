@@ -1,4 +1,4 @@
-## 0.25.0 (Unreleased)
+## 0.25.0 (May 30, 2022)
 
 BREAKING CHANGES
 
@@ -7,6 +7,7 @@ BREAKING CHANGES
 
 IMPROVEMENTS
 
+* Added `RequestOpts.OmitHeaders` to provider client [GH-2315](https://github.com/gophercloud/gophercloud/pull/2315)
 * Added `identity/v3/extensions/projectendpoints.List` [GH-2304](https://github.com/gophercloud/gophercloud/pull/2304)
 * Added `identity/v3/extensions/projectendpoints.Create` [GH-2304](https://github.com/gophercloud/gophercloud/pull/2304)
 * Added `identity/v3/extensions/projectendpoints.Delete` [GH-2304](https://github.com/gophercloud/gophercloud/pull/2304)
