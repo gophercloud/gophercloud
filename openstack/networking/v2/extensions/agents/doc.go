@@ -97,6 +97,35 @@ Example to List BGP speakers by dragent
 		log.Printf("%v", s)
 	}
 
+Example to Schedule bgp speaker to dragent
+
+	var opts agents.ScheduleBGPSpeakerOpts
+	opts.SpeakerID = speakerID
+	err := agents.ScheduleBGPSpeaker(c, agentID, opts).ExtractErr()
+	if err != nil {
+		log.Panic(err)
+	}
+
+Example to Remove bgp speaker from dragent
+
+	err := agents.RemoveBGPSpeaker(c, agentID, speakerID).ExtractErr()
+	if err != nil {
+		log.Panic(err)
+	}
+
+Example to list dragents hosting specific bgp speaker
+
+	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, speakerID).AllPages()
+	if err != nil {
+		log.Panic(err)
+	}
+	allAgents, err := agents.ExtractAgents(pages)
+	if err != nil {
+		log.Panic(err)
+	}
+	for _, a := range allAgents {
+		log.Printf("%+v", a)
+	}
 */
 
 package agents

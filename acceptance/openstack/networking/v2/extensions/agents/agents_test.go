@@ -8,8 +8,10 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	spk "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/bgp/speakers"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/agents"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speakers"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -91,4 +93,55 @@ func TestAgentsRUD(t *testing.T) {
 	// Delete a DHCP agent
 	err = agents.Delete(client, allAgents[0].ID).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestBGPAgentRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// List BGP Agents
+	listOpts := &agents.ListOpts{
+		AgentType: "BGP Dynamic Routing Agent",
+	}
+	allPages, err := agents.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allAgents, err := agents.ExtractAgents(allPages)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Retrieved BGP agents")
+	tools.PrintResource(t, allAgents)
+
+	// Create a BGP Speaker
+	bgpSpeaker, err := spk.CreateBGPSpeaker(t, client)
+	th.AssertNoErr(t, err)
+
+	// List the BGP Agent that accommodate the BGP Speaker
+	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, bgpSpeaker.ID).AllPages()
+	th.AssertNoErr(t, err)
+	bgpAgents, err := agents.ExtractAgents(pages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(bgpAgents), 1)
+	bgpAgent := bgpAgents[0]
+	t.Logf("BGP Speaker %s has been scheudled to agent %s", bgpSpeaker.ID, bgpAgent.ID)
+
+	// Remove the BGP speaker from the agent
+	err = agents.RemoveBGPSpeaker(client, bgpAgent.ID, bgpSpeaker.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Successfully removed speaker %s from agent %s", bgpSpeaker.ID, bgpAgent.ID)
+
+	// Schedule a BGP Speaker to an agent
+	opts := agents.ScheduleBGPSpeakerOpts{
+		SpeakerID: bgpSpeaker.ID,
+	}
+	err = agents.ScheduleBGPSpeaker(client, bgpAgent.ID, opts).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Successfully scheduled speaker %s to agent %s", bgpSpeaker.ID, bgpAgent.ID)
+
+	// Delete the BGP Speaker
+	speakers.Delete(client, bgpSpeaker.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Successfully deleted the BGP Speaker, %s", bgpSpeaker.ID)
 }
