@@ -60,3 +60,52 @@ const GetBGPPeerResult = `
   }
 }
 `
+
+const CreateRequest = `
+{
+  "bgp_peer": {
+    "auth_type": "md5",
+    "name": "gophercloud-testing-bgp-peer",
+    "password": "notSoStrong",
+    "peer_ip": "192.168.0.1",
+    "remote_as": 20000
+  }
+}
+`
+
+const CreateResponse = `
+{
+  "bgp_peer": {
+    "auth_type": "md5",
+    "project_id": "52a9d4ff-81b6-4b16-a7fa-5325d3bc1c5d",
+    "remote_as": 20000,
+    "name": "gophercloud-testing-bgp-peer",
+    "tenant_id": "52a9d4ff-81b6-4b16-a7fa-5325d3bc1c5d",
+    "peer_ip": "192.168.0.1",
+    "id": "b7ad63ea-b803-496a-ad59-f9ef513a5cb9"
+  }
+}
+`
+
+const UpdateBGPPeerRequest = `
+{
+  "bgp_peer": {
+    "name": "test-rename-bgp-peer",
+    "password": "superStrong"
+  }
+}
+`
+
+const UpdateBGPPeerResponse = `
+{
+  "bgp_peer": {
+    "auth_type": "md5",
+    "remote_as": 20000,
+    "name": "test-rename-bgp-peer",
+    "tenant_id": "52a9d4ff-81b6-4b16-a7fa-5325d3bc1c5d",
+    "peer_ip": "192.168.0.1",
+    "project_id": "52a9d4ff-81b6-4b16-a7fa-5325d3bc1c5d",
+    "id": "b7ad63ea-b803-496a-ad59-f9ef513a5cb9"
+  }
+}
+`

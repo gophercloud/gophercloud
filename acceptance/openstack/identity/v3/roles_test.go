@@ -170,6 +170,74 @@ func TestRolesFilterList(t *testing.T) {
 	th.AssertEquals(t, found, false)
 }
 
+func TestRoleListAssignmentIncludeNamesAndSubtree(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	project, err := CreateProject(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, client, project.ID)
+
+	domainID := "default"
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: domainID,
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	user, err := CreateUser(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteUser(t, client, user.ID)
+
+	t.Logf("Attempting to assign a role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name)
+
+	assignOpts := roles.AssignOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	}
+	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name)
+
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	})
+
+	iTrue := true
+	listAssignmentsOpts := roles.ListAssignmentsOpts{
+		UserID:         user.ID,
+		ScopeProjectID: domainID, // set domainID in ScopeProjectID field to list assignments on all projects in domain
+		IncludeSubtree: &iTrue,
+		IncludeNames:   &iTrue,
+	}
+	allPages, err := roles.ListAssignments(client, listAssignmentsOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err := roles.ExtractRoleAssignments(allPages)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Role assignments(with names) of user %s on projects in domain %s:", user.Name, domainID)
+	var found bool
+	for _, _role := range allRoles {
+		tools.PrintResource(t, _role)
+		if _role.Role.ID == role.ID &&
+			_role.User.Name == user.Name &&
+			_role.Scope.Project.Name == project.Name &&
+			_role.Scope.Project.Domain.ID == domainID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+}
+
 func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 	clients.RequireAdmin(t)
 

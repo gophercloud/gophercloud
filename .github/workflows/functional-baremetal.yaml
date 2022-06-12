@@ -36,9 +36,9 @@ jobs:
     name: Deploy OpenStack ${{ matrix.name }} with Ironic and run baremetal acceptance tests
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.6
+        uses: EmilienM/devstack-action@v0.7
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
@@ -75,7 +75,7 @@ jobs:
             SWIFT_TEMPURL_KEY=secretkey
           enabled_services: 'ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent'
       - name: Checkout go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
@@ -89,7 +89,7 @@ jobs:
         if: failure()
       - name: Upload logs artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: functional-baremetal-${{ matrix.name }}
           path: /tmp/devstack-logs/*

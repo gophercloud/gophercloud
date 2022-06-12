@@ -61,3 +61,89 @@ const GetBGPSpeakerResult = `
   }
 }
 `
+const CreateRequest = `
+{
+  "bgp_speaker": {
+    "advertise_floating_ip_host_routes": false,
+    "advertise_tenant_networks": true,
+    "ip_version": 6,
+    "local_as": "2000",
+    "name": "gophercloud-testing-bgp-speaker"
+  }
+}
+`
+
+const CreateResponse = `
+{
+  "bgp_speaker": {
+    "peers": [],
+    "project_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "name": "gophercloud-testing-bgp-speaker",
+    "tenant_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "local_as": 2000,
+    "advertise_tenant_networks": true,
+    "networks": [],
+    "ip_version": 6,
+    "advertise_floating_ip_host_routes": false,
+    "id": "26e98af2-4dc7-452a-91b0-65ee45f3e7c1"
+  }
+}
+`
+
+const UpdateBGPSpeakerRequest = `
+{
+  "bgp_speaker": {
+    "advertise_floating_ip_host_routes": true,
+    "advertise_tenant_networks": false,
+    "name": "testing-bgp-speaker"
+  }
+}
+`
+
+const UpdateBGPSpeakerResponse = `
+{
+  "bgp_speaker": {
+    "peers": [],
+    "project_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "name": "testing-bgp-speaker",
+    "tenant_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "local_as": 2000,
+    "advertise_tenant_networks": false,
+    "networks": [],
+    "ip_version": 4,
+    "advertise_floating_ip_host_routes": true,
+    "id": "d25d0036-7f17-49d7-8d02-4bf9dd49d5a9"
+  }
+}
+`
+
+const AddRemoveBGPPeerJSON = `
+{
+  "bgp_peer_id": "f5884c7c-71d5-43a3-88b4-1742e97674aa"
+}
+`
+
+const GetAdvertisedRoutesResult = `
+{
+  "advertised_routes": [
+    {
+      "next_hop": "172.17.128.212",
+      "destination": "172.17.129.192/27"
+    },
+    {
+      "next_hop": "172.17.128.218",
+      "destination": "172.17.129.0/27"
+    },
+    {
+      "next_hop": "172.17.128.231",
+      "destination": "172.17.129.160/27"
+    }
+  ]
+}
+`
+
+const AddRemoveGatewayNetworkJSON = `
+{
+  "network_id": "ac13bb26-6219-49c3-a880-08847f6830b7"
+}
+`

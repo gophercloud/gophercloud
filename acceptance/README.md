@@ -73,10 +73,18 @@ to set them manually.
 |`OS_DB_DATASTORE_VERSION`|The Datastore version to use. Example: `mariadb-10`|
 
 #### Shared file systems
+
 |Name|Description|
 |---|---|
 |`OS_NETWORK_ID`| The network ID to use when creating shared network|
 |`OS_SUBNET_ID`| The subnet ID to use when creating shared network|
+
+#### Container infra
+
+|Name|Description|
+|---|---|
+|`OS_MAGNUM_IMAGE_ID`| The ID of a valid magnum image|
+|`OS_MAGNUM_KEYPAIR`| The ID of a valid keypair|
 
 ### 3. Run the test suite
 

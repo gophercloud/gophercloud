@@ -132,7 +132,8 @@ func TestCreateNodeGroupSuccess(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
-		Name: "test-ng",
+		Name:        "test-ng",
+		MergeLabels: gophercloud.Enabled,
 	}
 
 	ng, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()

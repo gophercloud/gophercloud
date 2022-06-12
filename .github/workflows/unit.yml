@@ -1,7 +1,13 @@
 on: [push, pull_request]
 name: Unit Testing
+permissions:
+  contents: read
+
 jobs:
   test:
+    permissions:
+      checks: write  # for shogo82148/actions-goveralls to create a new check based on the results
+      contents: read  # for actions/checkout to fetch code
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,11 +21,11 @@ jobs:
 
     steps:
       - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup environment
         run: |
@@ -43,6 +49,8 @@ jobs:
           parallel: true
 
   finish:
+    permissions:
+      checks: write  # for shogo82148/actions-goveralls to create a new check based on the results
     needs: test
     runs-on: ubuntu-latest
     steps:

@@ -1,5 +1,8 @@
 on: [push, pull_request]
 name: Reauth retests
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -11,11 +14,11 @@ jobs:
 
     steps:
       - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Run reauth retests
         run: |
