@@ -28,10 +28,10 @@ jobs:
             ubuntu_version: "20.04"
           - name: "ussuri"
             openstack_version: "stable/ussuri"
-            ubuntu_version: "18.04"
+            ubuntu_version: "20.04"
           - name: "train"
             openstack_version: "stable/train"
-            ubuntu_version: "18.04"
+            ubuntu_version: "20.04"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Octavia and run loadbalancer acceptance tests
     steps:
@@ -44,6 +44,7 @@ jobs:
           conf_overrides: |
             enable_plugin octavia https://opendev.org/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://opendev.org/openstack/neutron ${{ matrix.openstack_version }}
+            FORCE=yes
           enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da'
       - name: Checkout go
         uses: actions/setup-go@v3
