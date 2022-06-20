@@ -121,3 +121,27 @@ func TestServicesUpdate(t *testing.T) {
 		th.AssertEquals(t, updated.ID, service.ID)
 	}
 }
+
+func TestDeleteService(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	listOpts := services.ListOpts{
+		Binary: "nova-compute",
+	}
+
+	client.Microversion = "2.53"
+	allPages, err := services.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allServices, err := services.ExtractServices(allPages)
+	th.AssertNoErr(t, err)
+
+	// delete all services
+	for _, service := range allServices {
+		updated, err := services.Delete(client, service.ID).Extract()
+		th.AssertNoErr(t, err)
+	}
+}
