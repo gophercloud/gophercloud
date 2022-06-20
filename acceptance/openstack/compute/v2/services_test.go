@@ -121,3 +121,11 @@ func TestServicesUpdate(t *testing.T) {
 		th.AssertEquals(t, updated.ID, service.ID)
 	}
 }
+
+func TestDeleteService(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeDeletionSuccessfully(t)
+	services.Delete(client.ServiceClient(), "asdfasservice")
+	th.AssertNoErr(t, res.Err)
+}
