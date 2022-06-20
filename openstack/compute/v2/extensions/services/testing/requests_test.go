@@ -90,3 +90,14 @@ func TestUpdateService(t *testing.T) {
 
 	testhelper.CheckDeepEquals(t, FakeServiceUpdateBody, *actual)
 }
+
+func TestDeleteService(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	client := client.ServiceClient()
+	res := services.Delete(client, "fake-service-id")
+
+	testhelper.AssertNoErr(t, res.Err)
+}

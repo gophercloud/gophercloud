@@ -288,3 +288,14 @@ func HandleUpdateSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, ServiceUpdate)
 	})
 }
+
+// HandleDeleteSuccessfully configures the test server to respond to a Delete
+// request to a Compute server with Pike+ release.
+func HandleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+	})
+}
