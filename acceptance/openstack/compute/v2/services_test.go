@@ -141,7 +141,7 @@ func TestDeleteService(t *testing.T) {
 
 	// delete all services
 	for _, service := range allServices {
-		updated, err := services.Delete(client, service.ID).Extract()
-		th.AssertNoErr(t, err)
+		res := services.Delete(client, service.ID)
+		th.AssertNoErr(t, res.Err)
 	}
 }
