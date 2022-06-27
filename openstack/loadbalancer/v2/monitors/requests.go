@@ -107,7 +107,7 @@ type CreateOpts struct {
 
 	// The domain name, which be injected into the HTTP Host Header to
 	// the backend server for HTTP health check. New in version 2.10.
-	DomainName string `json:"domain_name"`
+	DomainName string `json:"domain_name,omitempty"`
 
 	// Maximum number of seconds for a Monitor to wait for a ping reply
 	// before it times out. The value must be less than the delay value.
@@ -205,7 +205,7 @@ type UpdateOpts struct {
 
 	// The domain name, which be injected into the HTTP Host Header to
 	// the backend server for HTTP health check. New in version 2.10.
-	DomainName string `json:"domain_name"`
+	DomainName string `json:"domain_name,omitempty"`
 
 	// Maximum number of seconds for a Monitor to wait for a ping reply
 	// before it times out. The value must be less than the delay value.

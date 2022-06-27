@@ -70,6 +70,24 @@ const SingleHealthmonitorBody = `
 }
 `
 
+// CreatePingHealthmonitorBody is the canned body of a POST request to create a ping healthmonitor.
+const CreatePingHealthmonitorBody = `
+{
+	"healthmonitor": {
+		"admin_state_up":true,
+		"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
+		"delay":10,
+		"name":"web",
+		"max_retries":1,
+		"max_retries_down":7,
+		"timeout":1,
+		"type":"PING",
+		"pools": [{"id": "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d"}],
+		"id":"466c8345-28d8-4f84-a246-e04380b0461d"
+	}
+}
+`
+
 // PostUpdateHealthmonitorBody is the canned response body of a Update request on an existing healthmonitor.
 const PostUpdateHealthmonitorBody = `
 {
@@ -89,6 +107,24 @@ const PostUpdateHealthmonitorBody = `
 		"type":"HTTP",
 		"pools": [{"id": "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}],
 		"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7"
+	}
+}
+`
+
+// PostUpdatePingHealthmonitorBody is the canned response body of a Update request on an existing healthmonitor.
+const PostUpdatePingHealthmonitorBody = `
+{
+	"healthmonitor": {
+		"admin_state_up":true,
+		"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
+		"delay":10,
+		"name":"web",
+		"max_retries":1,
+		"max_retries_down":7,
+		"timeout":1,
+		"type":"PING",
+		"pools": [{"id": "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d"}],
+		"id":"466c8345-28d8-4f84-a246-e04380b0461d"
 	}
 }
 `
@@ -139,6 +175,18 @@ var (
 		HTTPVersion:    1.0,
 		ID:             "5d4b5228-33b0-4e60-b225-9b727c1a20e7",
 		Pools:          []monitors.PoolID{{ID: "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}},
+	}
+	HealthmonitorWebUpdated = monitors.Monitor{
+		AdminStateUp:   true,
+		Name:           "web",
+		ProjectID:      "83657cfcdfe44cd5920adaf26c48ceea",
+		Delay:          10,
+		MaxRetries:     1,
+		MaxRetriesDown: 7,
+		Timeout:        1,
+		Type:           "PING",
+		ID:             "466c8345-28d8-4f84-a246-e04380b0461d",
+		Pools:          []monitors.PoolID{{ID: "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d"}},
 	}
 )
 
@@ -191,6 +239,31 @@ func HandleHealthmonitorCreationSuccessfully(t *testing.T, response string) {
 	})
 }
 
+// HandlePingHealthmonitorCreationSuccessfully sets up the test server to respond to a ping healthmonitor creation request
+// with a given response.
+func HandlePingHealthmonitorCreationSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/v2.0/lbaas/healthmonitors", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"healthmonitor": {
+				"type":"PING",
+				"pool_id":"84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
+				"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
+				"delay":10,
+				"name":"web",
+				"timeout":1,
+				"max_retries":1,
+				"max_retries_down":7
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
 // HandleHealthmonitorGetSuccessfully sets up the test server to respond to a healthmonitor Get request.
 func HandleHealthmonitorGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v2.0/lbaas/healthmonitors/5d4b5228-33b0-4e60-b225-9b727c1a20e7", func(w http.ResponseWriter, r *http.Request) {
@@ -234,5 +307,26 @@ func HandleHealthmonitorUpdateSuccessfully(t *testing.T) {
 		}`)
 
 		fmt.Fprintf(w, PostUpdateHealthmonitorBody)
+	})
+}
+
+// HandlePingHealthmonitorUpdateSuccessfully sets up the test server to respond to a healthmonitor Update request.
+func HandlePingHealthmonitorUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/healthmonitors/5d4b5228-33b0-4e60-b225-9b727c1a20e7", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{
+			"healthmonitor": {
+				"delay":3,
+				"name":"NewHealthmonitorName",
+				"timeout":20,
+				"max_retries":10,
+				"max_retries_down":8
+			}
+		}`)
+
+		fmt.Fprintf(w, PostUpdatePingHealthmonitorBody)
 	})
 }
