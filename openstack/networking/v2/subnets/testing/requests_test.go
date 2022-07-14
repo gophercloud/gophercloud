@@ -601,6 +601,56 @@ func TestUpdateAllocationPool(t *testing.T) {
 	})
 }
 
+func TestUpdateRevision(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeaderUnset(t, r, "If-Match")
+		th.TestJSONRequest(t, r, SubnetUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, SubnetUpdateResponse)
+	})
+
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "If-Match", "revision_number=42")
+		th.TestJSONRequest(t, r, SubnetUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, SubnetUpdateResponse)
+	})
+
+	dnsNameservers := []string{"foo"}
+	name := "my_new_subnet"
+	opts := subnets.UpdateOpts{
+		Name:           &name,
+		DNSNameservers: &dnsNameservers,
+		HostRoutes: &[]subnets.HostRoute{
+			{NextHop: "bar"},
+		},
+	}
+	_, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	revisionNumber := 42
+	opts.RevisionNumber = &revisionNumber
+	_, err = subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1c", opts).Extract()
+	th.AssertNoErr(t, err)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

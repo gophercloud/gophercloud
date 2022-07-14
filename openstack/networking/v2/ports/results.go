@@ -107,6 +107,9 @@ type Port struct {
 
 	// Tags optionally set via extensions/attributestags
 	Tags []string `json:"tags"`
+
+	// RevisionNumber optionally set via extensions/standard-attr-revisions
+	RevisionNumber int `json:"revision_number"`
 }
 
 // PortPage is the page returned by a pager when traversing over a collection

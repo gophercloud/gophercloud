@@ -482,6 +482,57 @@ func TestUpdatePortSecurity(t *testing.T) {
 	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
 }
 
+func TestUpdateRevision(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeaderUnset(t, r, "If-Match")
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, UpdateResponse)
+	})
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "If-Match", "revision_number=42")
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, UpdateResponse)
+	})
+
+	name := "new_port_name"
+	options := ports.UpdateOpts{
+		Name: &name,
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+		},
+		SecurityGroups: &[]string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"},
+		AllowedAddressPairs: &[]ports.AddressPair{
+			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
+		},
+	}
+	_, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	th.AssertNoErr(t, err)
+
+	revisionNumber := 42
+	options.RevisionNumber = &revisionNumber
+	_, err = ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0e", options).Extract()
+	th.AssertNoErr(t, err)
+}
+
 func TestRemoveSecurityGroups(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

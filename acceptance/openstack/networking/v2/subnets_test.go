@@ -265,3 +265,70 @@ func TestSubnetDNSNameservers(t *testing.T) {
 	tools.PrintResource(t, newSubnet)
 	th.AssertEquals(t, len(newSubnet.DNSNameservers), 0)
 }
+
+func TestSubnetsRevision(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create Network
+	network, err := CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create Subnet
+	subnet, err := CreateSubnet(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	tools.PrintResource(t, subnet)
+
+	// Store the current revision number.
+	oldRevisionNumber := subnet.RevisionNumber
+
+	// Update Subnet without revision number.
+	// This should work.
+	newSubnetName := tools.RandomString("TESTACC-", 8)
+	newSubnetDescription := ""
+	updateOpts := &subnets.UpdateOpts{
+		Name:        &newSubnetName,
+		Description: &newSubnetDescription,
+	}
+	subnet, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, subnet)
+
+	// This should fail due to an old revision number.
+	newSubnetDescription = "new description"
+	updateOpts = &subnets.UpdateOpts{
+		Name:           &newSubnetName,
+		Description:    &newSubnetDescription,
+		RevisionNumber: &oldRevisionNumber,
+	}
+	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	th.AssertErr(t, err)
+	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
+		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
+	}
+
+	// Reread the subnet to show that it did not change.
+	subnet, err = subnets.Get(client, subnet.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, subnet)
+
+	// This should work because now we do provide a valid revision number.
+	newSubnetDescription = "new description"
+	updateOpts = &subnets.UpdateOpts{
+		Name:           &newSubnetName,
+		Description:    &newSubnetDescription,
+		RevisionNumber: &subnet.RevisionNumber,
+	}
+	subnet, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, subnet)
+
+	th.AssertEquals(t, subnet.Name, newSubnetName)
+	th.AssertEquals(t, subnet.Description, newSubnetDescription)
+}
