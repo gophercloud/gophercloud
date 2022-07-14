@@ -53,9 +53,13 @@ func (r Result) ExtractInto(to interface{}) error {
 		return json.NewDecoder(reader).Decode(to)
 	}
 
-	b, err := json.Marshal(r.Body)
-	if err != nil {
-		return err
+	var err error
+	b, bok := r.Body.([]byte)
+	if !bok {
+		b, err = json.Marshal(r.Body)
+		if err != nil {
+			return err
+		}
 	}
 	err = json.Unmarshal(b, to)
 
