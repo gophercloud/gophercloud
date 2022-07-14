@@ -32,6 +32,13 @@ Example of updating a service
 	if err != nil {
 		panic(err)
 	}
+
+Example of delete a service
+
+	updated, err := services.Delete(client, serviceID).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 
 package services

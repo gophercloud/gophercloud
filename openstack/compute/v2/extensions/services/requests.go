@@ -80,3 +80,12 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r Up
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Delete will delete the existing service with the provided ID.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(updateURL(client, id), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
