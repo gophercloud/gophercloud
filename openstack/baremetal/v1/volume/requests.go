@@ -21,7 +21,7 @@ type ListConnectorsOptsBuilder interface {
 }
 type ListConnectorsOpts struct {
 	// node uuid
-	Node string `q:node`
+	Node string `q:"node"`
 	// One or more fields to be returned in the response.
 	Fields []string `q:"fields"`
 	// Requests a page size of items.
@@ -144,7 +144,7 @@ type ListTargetsOptsBuilder interface {
 }
 type ListTargetsOpts struct {
 	// node uuid
-	Node string `q:node`
+	Node string `q:"node"`
 	// One or more fields to be returned in the response.
 	Fields []string `q:"fields"`
 	// Requests a page size of items.

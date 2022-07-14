@@ -1,9 +1,6 @@
 package bmvolume
 
 import (
-	//"encoding/json"
-	//"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -50,10 +47,6 @@ type Connectors struct {
 }
 
 func ExtractConnectorsInto(r pagination.Page, v interface{}) error {
-	//var c Connectors
-	//j := json.Unmarshal(r.(ConnectorPage).Result.Body.([]byte), &c)
-	//fmt.Println(c)
-	//return j
 	return r.(ConnectorPage).Result.ExtractIntoSlicePtr(v, "connectors")
 }
 func ExtractConnectors(r pagination.Page) ([]Connector, error) {
