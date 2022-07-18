@@ -1,6 +1,3 @@
-//go:build acceptance || baremetal || volume
-// +build acceptance baremetal volume
-
 package v1
 
 import (
