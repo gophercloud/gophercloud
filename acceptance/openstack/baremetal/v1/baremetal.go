@@ -137,7 +137,7 @@ func CreateVolumeConnector(t *testing.T, client *gophercloud.ServiceClient, node
 }
 
 func DeleteVolumeConnector(t *testing.T, client *gophercloud.ServiceClient, connector *bmvolume.Connector) {
-	err := bmvolume.DeleteConnector(client, connector.UUID).ExtractErr()
+	err := bmvolume.DeleteConnector(client, connector.UUID).Err
 	if err != nil {
 		t.Fatalf("Unable to delete volume connector %s", connector.UUID)
 	}
@@ -156,7 +156,7 @@ func CreateVolumeTarget(t *testing.T, client *gophercloud.ServiceClient, node *n
 }
 
 func DeleteVolumeTarget(t *testing.T, client *gophercloud.ServiceClient, target *bmvolume.Target) {
-	err := bmvolume.DeleteTarget(client, target.UUID).ExtractErr()
+	err := bmvolume.DeleteTarget(client, target.UUID).Err
 	if err != nil {
 		t.Fatalf("Unable to delete volume target %s", target.UUID)
 	}

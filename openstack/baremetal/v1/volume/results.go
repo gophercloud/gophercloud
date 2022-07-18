@@ -95,10 +95,6 @@ type DeleteConnectorResult struct {
 	gophercloud.ErrResult
 }
 
-func (r DeleteConnectorResult) ExtractErr() error {
-	return r.ExtractErr()
-}
-
 type GetConnectorResult struct {
 	connectorResult
 }
@@ -174,10 +170,6 @@ func (r UpdateTargetResult) Extract() (*Target, error) {
 
 type DeleteTargetResult struct {
 	gophercloud.ErrResult
-}
-
-func (r DeleteTargetResult) ExtractErr() error {
-	return r.ExtractErr()
 }
 
 type GetTargetResult struct {
