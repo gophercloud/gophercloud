@@ -31,7 +31,7 @@ func TestConnectorCreateDestroy(t *testing.T) {
 	connector, err := v1.CreateVolumeConnector(t, client, node)
 	th.AssertNoErr(t, err)
 	defer v1.DeleteNode(t, client, node)
-	defer v1.DeleteConnector(t, client, connector)
+	defer v1.DeleteVolumeConnector(t, client, connector)
 	found := false
 	err = bmvolume.ListConnectors(client, bmvolume.ListConnectorsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		connectorList, err := bmvolume.ExtractConnectors(page)
@@ -64,7 +64,7 @@ func TestConnectorUpdate(t *testing.T) {
 	connector, err := v1.CreateVolumeConnector(t, client, node)
 	th.AssertNoErr(t, err)
 	defer v1.DeleteNode(t, client, node)
-	defer v1.DeleteConnector(t, client, connector)
+	defer v1.DeleteVolumeConnector(t, client, connector)
 	updated, err := bmvolume.UpdateConnector(client, connector.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
