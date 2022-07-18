@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/allocations"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/nodes"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/ports"
+	bmvolume "github.com/gophercloud/gophercloud/openstack/baremetal/v1/volume"
 )
 
 // CreateNode creates a basic node with a randomly generated name.
@@ -112,4 +113,52 @@ func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Por
 
 	t.Logf("Deleted port: %s", port.UUID)
 
+}
+
+func UpdateNodeStorageInterface(client *gophercloud.ServiceClient, nodeId string, storage string) (*nodes.Node, error) {
+	updated, err := nodes.Update(client, nodeId, nodes.UpdateOpts{
+		nodes.UpdateOperation{
+			Op:    nodes.ReplaceOp,
+			Path:  "/storage_interface",
+			Value: storage,
+		},
+	}).Extract()
+	return updated, err
+}
+
+func CreateVolumeConnector(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node) (*bmvolume.Connector, error) {
+	connectorCreateOpts := bmvolume.CreateConnectorOpts{}
+	connectorCreateOpts.NodeUUID = node.UUID
+	connectorCreateOpts.ConnectorType = "iqn"
+	connectorCreateOpts.ConnectorId = "iqn.2017-07.org.openstack." + node.UUID
+	t.Logf("Attempting to create volume connector for Node: %s with connector: %s", node.UUID, connectorCreateOpts.ConnectorId)
+	connector, err := bmvolume.CreateConnector(client, connectorCreateOpts).Extract()
+	return connector, err
+}
+
+func DeleteVolumeConnector(t *testing.T, client *gophercloud.ServiceClient, connector *bmvolume.Connector) {
+	err := bmvolume.DeleteConnector(client, connector.UUID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete volume connector %s", connector.UUID)
+	}
+	t.Logf("Deleted volume connector: %s", connector.UUID)
+}
+
+func CreateVolumeTarget(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node, volumeId string) (*bmvolume.Target, error) {
+	targetCreateOpts := bmvolume.CreateTargetOpts{}
+	targetCreateOpts.NodeUUID = node.UUID
+	targetCreateOpts.BootIndex = "0"
+	targetCreateOpts.VolumeType = "iscsi"
+	targetCreateOpts.VolumeId = volumeId
+	t.Logf("Attempting to create volume target for Node: %s with volumeId: %s", node.UUID, volumeId)
+	target, err := bmvolume.CreateTarget(client, targetCreateOpts).Extract()
+	return target, err
+}
+
+func DeleteVolumeTarget(t *testing.T, client *gophercloud.ServiceClient, target *bmvolume.Target) {
+	err := bmvolume.DeleteTarget(client, target.UUID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete volume target %s", target.UUID)
+	}
+	t.Logf("Deleted volume target: %s", target.UUID)
 }
