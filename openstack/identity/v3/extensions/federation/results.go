@@ -107,31 +107,31 @@ type mappingResult struct {
 	gophercloud.Result
 }
 
-// CreateMappingResult is the response from a Create operation. Call its
-// Extract method to interpret it as a Mapping.
+// CreateMappingResult is the response from a CreateMapping operation.
+// Call its Extract method to interpret it as a Mapping.
 type CreateMappingResult struct {
 	mappingResult
 }
 
-// UpdateMappingResult is the response from a Create operation. Call its
-// Extract method to interpret it as a Mapping.
+// UpdateMappingResult is the response from a UpdateMapping operation.
+// Call its Extract method to interpret it as a Mapping.
 type UpdateMappingResult struct {
 	mappingResult
 }
 
-// DeleteMappingResult is the response from a Delete operation. Call its
-// ExtractErr to determine if the request succeeded or failed.
+// DeleteMappingResult is the response from a DeleteMapping operation.
+// Call its ExtractErr to determine if the request succeeded or failed.
 type DeleteMappingResult struct {
 	gophercloud.ErrResult
 }
 
-// MappingsPage is a single page of Region results.
+// MappingsPage is a single page of Mapping results.
 type MappingsPage struct {
 	pagination.LinkedPageBase
 }
 
-// GetMappingResult is the response from a Get operation. Call its Extract
-// method to interpret it as a Mapping.
+// GetMappingResult is the response from a GetMapping operation.
+// Call its Extract method to interpret it as a Mapping.
 type GetMappingResult struct {
 	mappingResult
 }
@@ -167,7 +167,7 @@ func ExtractMappings(r pagination.Page) ([]Mapping, error) {
 	return s.Mappings, err
 }
 
-// Extract interprets any mapping result as a Mapping.
+// Extract interprets any mappingResult as a Mapping.
 func (c mappingResult) Extract() (*Mapping, error) {
 	var s struct {
 		Mapping *Mapping `json:"mapping"`
