@@ -10,7 +10,6 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-// ListOutput provides a single page of List results.
 const ListOutput = `
 {
     "links": {
