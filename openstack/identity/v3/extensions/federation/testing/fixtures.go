@@ -243,7 +243,7 @@ const GetOutput = `
 }
 `
 
-var TestMapping = federation.Mapping{
+var MappingACME = federation.Mapping{
 	ID: "ACME",
 	Links: map[string]interface{}{
 		"self": "http://example.com/identity/v3/OS-FEDERATION/mappings/ACME",
@@ -314,7 +314,7 @@ var MappingUpdated = federation.Mapping{
 }
 
 // ExpectedMappingsSlice is the slice of mappings expected to be returned from ListOutput.
-var ExpectedMappingsSlice = []federation.Mapping{TestMapping}
+var ExpectedMappingsSlice = []federation.Mapping{MappingACME}
 
 // HandleListMappingsSuccessfully creates an HTTP handler at `/mappings` on the
 // test handler mux that responds with a list of two mappings.

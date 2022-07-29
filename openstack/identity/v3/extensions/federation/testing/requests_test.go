@@ -48,7 +48,7 @@ func TestGetMapping(t *testing.T) {
 
 	actual, err := federation.GetMapping(client.ServiceClient(), "ACME").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, TestMapping, *actual)
+	th.CheckDeepEquals(t, MappingACME, *actual)
 }
 
 func TestCreateMappings(t *testing.T) {
@@ -89,7 +89,7 @@ func TestCreateMappings(t *testing.T) {
 
 	actual, err := federation.CreateMapping(client.ServiceClient(), "ACME", createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, TestMapping, *actual)
+	th.CheckDeepEquals(t, MappingACME, *actual)
 }
 
 func TestDeleteMapping(t *testing.T) {
