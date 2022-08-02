@@ -1,6 +1,8 @@
 package ports
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -110,6 +112,9 @@ type Port struct {
 
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber int `json:"revision_number"`
+
+	// Timestamp when the port was last updated
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // PortPage is the page returned by a pager when traversing over a collection
