@@ -12,9 +12,6 @@ const (
 	UserTypeLocal     UserType = "local"
 )
 
-// TODO: add missing docs
-// TODO: name structs appropriately
-
 // Mapping a set of rules to map federation protocol attributes to
 // Identity API objects.
 type Mapping struct {
@@ -32,6 +29,7 @@ type MappingRule struct {
 	// References a local Identity API resource, such as a group or user to which the remote attributes will be mapped.
 	Local []RuleLocal `json:"local"`
 
+	// Each object contains a rule for mapping remote attributes to Identity API concepts.
 	Remote []RuleRemote `json:"remote"`
 }
 
@@ -63,44 +61,74 @@ type RuleLocal struct {
 	// Domain to which the remote attributes will be matched.
 	Domain *Domain `json:"domain,omitempty"`
 
+	// Group to which the remote attributes will be matched.
 	Group *Group `json:"group,omitempty"`
 
+	// Group IDs to which the remote attributes will be matched.
 	GroupIDs string `json:"group_ids,omitempty"`
 
+	// Groups to which the remote attributes will be matched.
 	Groups string `json:"groups,omitempty"`
 
+	// Projects to which the remote attributes will be matched.
 	Projects []RuleProject `json:"projects,omitempty"`
 
+	// User to which the remote attributes will be matched.
 	User *RuleUser `json:"user,omitempty"`
 }
 
 type Domain struct {
-	ID   string `json:"id,omitempty"`
+	// Domain ID
+	// This is mutually exclusive with Name.
+	ID string `json:"id,omitempty"`
+
+	// Domain Name
+	// This is mutually exclusive with ID.
 	Name string `json:"name,omitempty"`
 }
 
 type Group struct {
+	// Group ID to which the rule should match.
+	// This is mutually exclusive with Name and Domain.
 	ID string `json:"id,omitempty"`
 
-	Name   string  `json:"name,omitempty"`
+	// Group Name to which the rule should match.
+	// This is mutually exclusive with ID.
+	Name string `json:"name,omitempty"`
+
+	// Group Domain to which the rule should match.
+	// This is mutually exclusive with ID.
 	Domain *Domain `json:"domain,omitempty"`
 }
 
 type RuleProject struct {
-	Name  string            `json:"name,omitempty"`
+	// Project name
+	Name string `json:"name,omitempty"`
+
+	// Project roles
 	Roles []RuleProjectRole `json:"roles,omitempty"`
 }
 
 type RuleProjectRole struct {
+	// Role name
 	Name string `json:"name,omitempty"`
 }
 
 type RuleUser struct {
-	Domain *Domain   `json:"domain,omitempty"`
-	Email  string    `json:"email,omitempty"`
-	ID     string    `json:"id,omitempty"`
-	Name   string    `json:"name,omitempty"`
-	Type   *UserType `json:"type,omitempty"`
+	// User domain
+	Domain *Domain `json:"domain,omitempty"`
+
+	// User email
+	Email string `json:"email,omitempty"`
+
+	// User ID
+	ID string `json:"id,omitempty"`
+
+	// User name
+	Name string `json:"name,omitempty"`
+
+	// User type
+	Type *UserType `json:"type,omitempty"`
 }
 
 type mappingResult struct {
