@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -151,4 +152,66 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, networkWithExtensions)
+}
+
+func TestNetworksRevision(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create a network
+	network, err := CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNetwork(t, client, network.ID)
+
+	tools.PrintResource(t, network)
+
+	// Store the current revision number.
+	oldRevisionNumber := network.RevisionNumber
+
+	// Update the network without revision number.
+	// This should work.
+	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
+	updateOpts := &networks.UpdateOpts{
+		Name:        &newName,
+		Description: &newDescription,
+	}
+	network, err = networks.Update(client, network.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, network)
+
+	// This should fail due to an old revision number.
+	newDescription = "new description"
+	updateOpts = &networks.UpdateOpts{
+		Name:           &newName,
+		Description:    &newDescription,
+		RevisionNumber: &oldRevisionNumber,
+	}
+	_, err = networks.Update(client, network.ID, updateOpts).Extract()
+	th.AssertErr(t, err)
+	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
+		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
+	}
+
+	// Reread the network to show that it did not change.
+	network, err = networks.Get(client, network.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, network)
+
+	// This should work because now we do provide a valid revision number.
+	newDescription = "new description"
+	updateOpts = &networks.UpdateOpts{
+		Name:           &newName,
+		Description:    &newDescription,
+		RevisionNumber: &network.RevisionNumber,
+	}
+	network, err = networks.Update(client, network.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, network)
+
+	th.AssertEquals(t, network.Name, newName)
+	th.AssertEquals(t, network.Description, newDescription)
 }

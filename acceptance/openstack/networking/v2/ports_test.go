@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -374,4 +375,69 @@ func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
+}
+
+func TestPortsRevision(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create Network
+	network, err := CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create Subnet
+	subnet, err := CreateSubnet(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	// Create port
+	port, err := CreatePort(t, client, network.ID, subnet.ID)
+	th.AssertNoErr(t, err)
+	defer DeletePort(t, client, port.ID)
+
+	tools.PrintResource(t, port)
+
+	// Add an address pair to the port
+	// Use the RevisionNumber to test the revision / If-Match logic.
+	updateOpts := ports.UpdateOpts{
+		AllowedAddressPairs: &[]ports.AddressPair{
+			{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
+		},
+		RevisionNumber: &port.RevisionNumber,
+	}
+	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newPort)
+
+	// Remove the address pair - this should fail due to old revision number.
+	updateOpts = ports.UpdateOpts{
+		AllowedAddressPairs: &[]ports.AddressPair{},
+		RevisionNumber:      &port.RevisionNumber,
+	}
+	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	th.AssertErr(t, err)
+	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
+		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
+	}
+
+	// The previous ports.Update returns an empty object, so get the port again.
+	newPort, err = ports.Get(client, port.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, newPort)
+
+	// When not specifying  a RevisionNumber, then the If-Match mechanism
+	// should be bypassed.
+	updateOpts = ports.UpdateOpts{
+		AllowedAddressPairs: &[]ports.AddressPair{},
+	}
+	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newPort)
+
+	if len(newPort.AllowedAddressPairs) > 0 {
+		t.Fatalf("Unable to remove the address pair")
+	}
 }
