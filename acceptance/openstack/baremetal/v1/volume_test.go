@@ -121,7 +121,7 @@ func TestTargetUpdate(t *testing.T) {
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
 			Path:  "/volume_id",
-			Value: "cinder-volume2,
+			Value: "cinder-volume2",
 		},
 	}).Extract()
 	DeleteVolumeTarget(t, client, target)
