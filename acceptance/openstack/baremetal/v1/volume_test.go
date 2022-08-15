@@ -17,7 +17,7 @@ func TestConnectorCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.53"
+	client.Microversion = "1.38"
 	node, err := CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
 	unode, err := UpdateNodeStorageInterface(client, node.UUID, "cinder")
@@ -49,7 +49,7 @@ func TestConnectorUpdate(t *testing.T) {
 	clients.RequireLong(t)
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.53"
+	client.Microversion = "1.38"
 	node, err := CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
 	unode, err := UpdateNodeStorageInterface(client, node.UUID, "cinder")
@@ -74,7 +74,7 @@ func TestTargetCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.53"
+	client.Microversion = "1.38"
 	node, err := CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
 	unode, err := UpdateNodeStorageInterface(client, node.UUID, "cinder")
@@ -109,7 +109,7 @@ func TestTargetUpdate(t *testing.T) {
 	clients.RequireLong(t)
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.53"
+	client.Microversion = "1.38"
 	node, err := CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
 	unode, err := UpdateNodeStorageInterface(client, node.UUID, "cinder")
