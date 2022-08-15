@@ -5,7 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	v1 "github.com/gophercloud/gophercloud/acceptance/openstack/baremetal/v1"
-	"github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v3"
+
 	bmvolume "github.com/gophercloud/gophercloud/openstack/baremetal/v1/volume"
 	"github.com/gophercloud/gophercloud/pagination"
 
@@ -82,12 +82,8 @@ func TestTargetCreateDestroy(t *testing.T) {
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
-	vclient, err := clients.NewBlockStorageV3NoAuthClient()
-	th.AssertNoErr(t, err)
-	volume, err := v3.CreateVolume(t, vclient)
-	defer v3.DeleteVolume(t, vclient, volume)
-	th.AssertNoErr(t, err)
-	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
+	volumeId := "cinder-volume1"
+	target, err := v1.CreateVolumeTarget(t, client, node, volumeId)
 	th.AssertNoErr(t, err)
 	found := false
 	err = bmvolume.ListTargets(client, bmvolume.ListTargetsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
@@ -119,24 +115,17 @@ func TestTargetUpdate(t *testing.T) {
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
-	vclient, err := clients.NewBlockStorageV3NoAuthClient()
+	volumeId := "cinder-volume1"
+	target, err := v1.CreateVolumeTarget(t, client, node, volumeId)
 	th.AssertNoErr(t, err)
-	volume, err := v3.CreateVolume(t, vclient)
-	defer v3.DeleteVolume(t, vclient, volume)
-	th.AssertNoErr(t, err)
-	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
-	th.AssertNoErr(t, err)
-	another_volume, err := v3.CreateVolume(t, vclient)
-	th.AssertNoErr(t, err)
-	defer v3.DeleteVolume(t, vclient, another_volume)
 	updated, err := bmvolume.UpdateTarget(client, target.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
 			Path:  "/volume_id",
-			Value: another_volume.ID,
+			Value: "cinder-volume2",
 		},
 	}).Extract()
 	v1.DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, another_volume.ID, updated.VolumeId)
+	th.AssertEquals(t, "cinder-volume2", updated.VolumeId)
 }
