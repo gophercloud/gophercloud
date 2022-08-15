@@ -182,11 +182,11 @@ type CreateTargetOptsBuilder interface {
 }
 
 type CreateTargetOpts struct {
-	NodeUUID   string                 `json:"node_uuid,omitempty"`
-	VolumeType string                 `json:"volume_type,omitempty"` //iscsi, fibre_channel
+	NodeUUID   string                 `json:"node_uuid"`
+	VolumeType string                 `json:"volume_type"` //iscsi, fibre_channel
 	Properties map[string]interface{} `json:"properties,omitempty"`
-	BootIndex  string                 `json:"boot_index,omitempty"`
-	VolumeId   string                 `json:"volume_id,omitempty"`
+	BootIndex  int                    `json:"boot_index"`
+	VolumeId   string                 `json:"volume_id"`
 	Extra      map[string]interface{} `json:"Extra,omitempty"`
 	UUID       string                 `json:"uuid,omitempty"`
 }

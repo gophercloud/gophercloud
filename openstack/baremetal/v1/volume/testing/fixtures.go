@@ -210,7 +210,7 @@ func HandleTargetCreationSuccessfully(t *testing.T, response string) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
-          "boot_index": "0",
+          "boot_index": 0,
           "node_uuid": "6d85703a-565d-469a-96ce-30b6de53079d",
           "volume_id": "04452bed-5367-4202-8bf5-de4335ac56d2",
           "volume_type":"iscsi"

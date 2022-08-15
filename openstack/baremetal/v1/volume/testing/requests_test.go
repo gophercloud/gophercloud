@@ -137,7 +137,7 @@ func TestCreateTarget(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleTargetCreationSuccessfully(t, SingleTargetBody)
 	targetCreateOpts := bmvolume.CreateTargetOpts{}
-	targetCreateOpts.BootIndex = "0"
+	targetCreateOpts.BootIndex = 0
 	targetCreateOpts.NodeUUID = "6d85703a-565d-469a-96ce-30b6de53079d"
 	targetCreateOpts.VolumeType = "iscsi"
 	targetCreateOpts.VolumeId = "04452bed-5367-4202-8bf5-de4335ac56d2"
