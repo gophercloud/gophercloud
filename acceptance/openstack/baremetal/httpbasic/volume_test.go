@@ -21,14 +21,14 @@ func TestConnectorCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.38"
 	node, err := v1.CreateFakeNode(t, client)
+	defer v1.DeleteNode(t, client, node)
 	th.AssertNoErr(t, err)
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	connector, err := v1.CreateVolumeConnector(t, client, node)
-	th.AssertNoErr(t, err)
-	defer v1.DeleteNode(t, client, node)
 	defer v1.DeleteVolumeConnector(t, client, connector)
+	th.AssertNoErr(t, err)
 	found := false
 	err = bmvolume.ListConnectors(client, bmvolume.ListConnectorsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		connectorList, err := bmvolume.ExtractConnectors(page)
@@ -54,14 +54,14 @@ func TestConnectorUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.38"
 	node, err := v1.CreateFakeNode(t, client)
+	defer v1.DeleteNode(t, client, node)
 	th.AssertNoErr(t, err)
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	connector, err := v1.CreateVolumeConnector(t, client, node)
-	th.AssertNoErr(t, err)
-	defer v1.DeleteNode(t, client, node)
 	defer v1.DeleteVolumeConnector(t, client, connector)
+	th.AssertNoErr(t, err)
 	updated, err := bmvolume.UpdateConnector(client, connector.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
@@ -80,17 +80,17 @@ func TestTargetCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.38"
 	node, err := v1.CreateFakeNode(t, client)
+	defer v1.DeleteNode(t, client, node)
 	th.AssertNoErr(t, err)
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	volume, err := v3.CreateVolume(t, client)
+	defer v3.DeleteVolume(t, client, volume)
 	th.AssertNoErr(t, err)
 	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
-	th.AssertNoErr(t, err)
-	defer v1.DeleteNode(t, client, node)
 	defer v1.DeleteVolumeTarget(t, client, target)
-	defer v3.DeleteVolume(t, client, volume)
+	th.AssertNoErr(t, err)
 	found := false
 	err = bmvolume.ListTargets(client, bmvolume.ListTargetsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		targetList, err := bmvolume.ExtractTargets(page)
@@ -116,20 +116,20 @@ func TestTargetUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.38"
 	node, err := v1.CreateFakeNode(t, client)
+	defer v1.DeleteNode(t, client, node)
 	th.AssertNoErr(t, err)
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	volume, err := v3.CreateVolume(t, client)
+	defer v3.DeleteVolume(t, client, volume)
 	th.AssertNoErr(t, err)
 	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
-	th.AssertNoErr(t, err)
-	defer v1.DeleteNode(t, client, node)
 	defer v1.DeleteVolumeTarget(t, client, target)
-	defer v3.DeleteVolume(t, client, volume)
-	another_volume, err := v3.CreateVolume(t, client)
 	th.AssertNoErr(t, err)
+	another_volume, err := v3.CreateVolume(t, client)
 	defer v3.DeleteVolume(t, client, another_volume)
+	th.AssertNoErr(t, err)
 	updated, err := bmvolume.UpdateTarget(client, target.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
