@@ -156,7 +156,7 @@ func DeleteVolumeConnector(t *testing.T, client *gophercloud.ServiceClient, conn
 func CreateVolumeTarget(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node, volumeId string) (*bmvolume.Target, error) {
 	targetCreateOpts := bmvolume.CreateTargetOpts{}
 	targetCreateOpts.NodeUUID = node.UUID
-	targetCreateOpts.BootIndex = 0
+	targetCreateOpts.BootIndex = "0"
 	targetCreateOpts.VolumeType = "iscsi"
 	targetCreateOpts.VolumeId = volumeId
 	t.Logf("Attempting to create volume target for Node: %s with volumeId: %s", node.UUID, volumeId)
