@@ -25,7 +25,6 @@ func TestConnectorCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	connector, err := CreateVolumeConnector(t, client, node)
-	defer DeleteVolumeConnector(t, client, connector)
 	th.AssertNoErr(t, err)
 	found := false
 	err = bmvolume.ListConnectors(client, bmvolume.ListConnectorsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
@@ -57,7 +56,6 @@ func TestConnectorUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	connector, err := CreateVolumeConnector(t, client, node)
-	defer DeleteVolumeConnector(t, client, connector)
 	th.AssertNoErr(t, err)
 	updated, err := bmvolume.UpdateConnector(client, connector.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
