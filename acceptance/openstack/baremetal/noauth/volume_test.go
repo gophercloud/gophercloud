@@ -120,6 +120,8 @@ func TestTargetUpdate(t *testing.T) {
 	volumeId := "cinder-volume1"
 	target, err := v1.CreateVolumeTarget(t, client, node, volumeId)
 	th.AssertNoErr(t, err)
+	err = v1.SetNodePowerOff(client, node.UUID)
+	th.AssertNoErr(t, err)
 	updated, err := bmvolume.UpdateTarget(client, target.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
@@ -127,9 +129,7 @@ func TestTargetUpdate(t *testing.T) {
 			Value: "cinder-volume2",
 		},
 	}).Extract()
-	err = v1.SetNodePowerOff(client, node.UUID)
-	th.AssertNoErr(t, err)
-	v1.DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder-volume2", updated.VolumeId)
+	v1.DeleteVolumeTarget(t, client, target)
 }
