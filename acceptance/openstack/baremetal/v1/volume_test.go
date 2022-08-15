@@ -98,6 +98,8 @@ func TestTargetCreateDestroy(t *testing.T) {
 		}
 		return false, nil
 	})
+	err = SetNodePowerOff(client, node.UUID)
+	th.AssertNoErr(t, err)
 	DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, found, true)
@@ -124,6 +126,8 @@ func TestTargetUpdate(t *testing.T) {
 			Value: "cinder-volume2",
 		},
 	}).Extract()
+	err = SetNodePowerOff(client, node.UUID)
+	th.AssertNoErr(t, err)
 	DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder-volume2", updated.VolumeId)
