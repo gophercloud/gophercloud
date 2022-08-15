@@ -113,7 +113,7 @@ type Target struct {
 	UUID       string                 `json:"uuid"`
 	VolumeType string                 `json:"volume_type"`
 	Properties map[string]interface{} `json:"properties"`
-	BootIndex  string                 `json:"boot_index"`
+	BootIndex  int                    `json:"boot_index"`
 	VolumeId   string                 `json:"volume_id"`
 	Extra      map[string]interface{} `json:"extra"`
 	NodeUUID   string                 `json:"node_uuid"`

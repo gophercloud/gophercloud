@@ -69,7 +69,7 @@ const TargetListBody = `
 	{
   "targets": [
     {
-      "boot_index": "0",
+      "boot_index": 0,
       "links": [
         {
           "href": "http://127.0.0.1:6385/v1/volume/targets/bd4d008c-7d31-463d-abf9-6c23d9d55f7f",
@@ -113,7 +113,7 @@ const SingleConnectorBody = `
 
 const SingleTargetBody = `
 	{
-  "boot_index": "0",
+  "boot_index": 0,
   "created_at": "2016-08-18T22:28:48.643434+11:11",
   "extra": {},
   "links": [
