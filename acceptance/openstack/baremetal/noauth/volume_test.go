@@ -58,7 +58,7 @@ func TestConnectorUpdate(t *testing.T) {
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	connector, err := v1.CreateVolumeConnector(t, client, node)
 	th.AssertNoErr(t, err)
-	err := SetNodePowerOff(client, node.UUID)
+	err = SetNodePowerOff(client, node.UUID)
 	th.AssertNoErr(t, err)
 	updated, err := bmvolume.UpdateConnector(client, connector.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
