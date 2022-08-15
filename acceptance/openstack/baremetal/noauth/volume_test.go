@@ -84,7 +84,6 @@ func TestTargetCreateDestroy(t *testing.T) {
 	defer v3.DeleteVolume(t, client, volume)
 	th.AssertNoErr(t, err)
 	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
-	defer v1.DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	found := false
 	err = bmvolume.ListTargets(client, bmvolume.ListTargetsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
@@ -100,6 +99,7 @@ func TestTargetCreateDestroy(t *testing.T) {
 		}
 		return false, nil
 	})
+	v1.DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, found, true)
 }
@@ -119,7 +119,6 @@ func TestTargetUpdate(t *testing.T) {
 	defer v3.DeleteVolume(t, client, volume)
 	th.AssertNoErr(t, err)
 	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
-	defer v1.DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	another_volume, err := v3.CreateVolume(t, client)
 	th.AssertNoErr(t, err)
@@ -131,6 +130,7 @@ func TestTargetUpdate(t *testing.T) {
 			Value: another_volume.ID,
 		},
 	}).Extract()
+	v1.DeleteVolumeTarget(t, client, target)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, another_volume.ID, updated.VolumeId)
 }
