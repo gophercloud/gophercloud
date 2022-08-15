@@ -58,7 +58,7 @@ func TestConnectorUpdate(t *testing.T) {
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
 	connector, err := v1.CreateVolumeConnector(t, client, node)
 	th.AssertNoErr(t, err)
-	err = SetNodePowerOff(client, node.UUID)
+	err = v1.SetNodePowerOff(client, node.UUID)
 	th.AssertNoErr(t, err)
 	updated, err := bmvolume.UpdateConnector(client, connector.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
@@ -82,8 +82,10 @@ func TestTargetCreateDestroy(t *testing.T) {
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
-	volume, err := v3.CreateVolume(t, client)
-	defer v3.DeleteVolume(t, client, volume)
+	vclient, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+	volume, err := v3.CreateVolume(t, vclient)
+	defer v3.DeleteVolume(t, vclient, volume)
 	th.AssertNoErr(t, err)
 	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
 	th.AssertNoErr(t, err)
@@ -117,14 +119,16 @@ func TestTargetUpdate(t *testing.T) {
 	unode, err := v1.UpdateNodeStorageInterface(client, node.UUID, "cinder")
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "cinder", unode.StorageInterface)
-	volume, err := v3.CreateVolume(t, client)
-	defer v3.DeleteVolume(t, client, volume)
+	vclient, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+	volume, err := v3.CreateVolume(t, vclient)
+	defer v3.DeleteVolume(t, vclient, volume)
 	th.AssertNoErr(t, err)
 	target, err := v1.CreateVolumeTarget(t, client, node, volume.ID)
 	th.AssertNoErr(t, err)
-	another_volume, err := v3.CreateVolume(t, client)
+	another_volume, err := v3.CreateVolume(t, vclient)
 	th.AssertNoErr(t, err)
-	defer v3.DeleteVolume(t, client, another_volume)
+	defer v3.DeleteVolume(t, vclient, another_volume)
 	updated, err := bmvolume.UpdateTarget(client, target.UUID, bmvolume.UpdateOpts{
 		bmvolume.UpdateOperation{
 			Op:    bmvolume.ReplaceOp,
