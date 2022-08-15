@@ -126,6 +126,15 @@ func UpdateNodeStorageInterface(client *gophercloud.ServiceClient, nodeId string
 	return updated, err
 }
 
+func SetNodePowerOff(client *gophercloud.ServiceClient, nodeId string) error {
+	opts := nodes.PowerStateOpts{
+		Target:  nodes.PowerOff,
+		Timeout: 100,
+	}
+	err := nodes.ChangePowerState(client, nodeId, opts).ExtractErr()
+	return err
+}
+
 func CreateVolumeConnector(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node) (*bmvolume.Connector, error) {
 	connectorCreateOpts := bmvolume.CreateConnectorOpts{}
 	connectorCreateOpts.NodeUUID = node.UUID
