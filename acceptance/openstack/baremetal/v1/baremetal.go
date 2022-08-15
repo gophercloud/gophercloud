@@ -129,7 +129,7 @@ func UpdateNodeStorageInterface(client *gophercloud.ServiceClient, nodeId string
 func SetNodePowerOff(client *gophercloud.ServiceClient, nodeId string) error {
 	opts := nodes.PowerStateOpts{
 		Target:  nodes.PowerOff,
-		Timeout: 100,
+		Timeout: 1800,
 	}
 	err := nodes.ChangePowerState(client, nodeId, opts).ExtractErr()
 	return err
