@@ -17,6 +17,5 @@ Example to List Providers
 	for _, p := range allProviders {
 		fmt.Printf("%+v\n", p)
 	}
-
 */
 package providers

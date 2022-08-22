@@ -48,7 +48,8 @@ func TestExtractPassword_encrypted_pwd(t *testing.T) {
 
 // Ok - return decrypted password when private key is given.
 // Decrytion can be verified by:
-//   echo "<enc_pwd>" | base64 -D | openssl rsautl -decrypt -inkey <privateKey.pem>
+//
+//	echo "<enc_pwd>" | base64 -D | openssl rsautl -decrypt -inkey <privateKey.pem>
 func TestExtractPassword_decrypted_pwd(t *testing.T) {
 
 	privateKey, err := ssh.ParseRawPrivateKey([]byte(`

@@ -167,6 +167,5 @@ Example to List Users in a Group
 	for _, user := range allUsers {
 		fmt.Printf("%+v\n", user)
 	}
-
 */
 package users

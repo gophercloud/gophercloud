@@ -44,7 +44,6 @@ Example to Create an Endpoint
 		panic(err)
 	}
 
-
 Example to Update an Endpoint
 
 	endpointID := "ad59deeec5154d1fa0dcff518596f499"

@@ -61,6 +61,5 @@ Example to Delete a Service
 	if err != nil {
 		panic(err)
 	}
-
 */
 package services

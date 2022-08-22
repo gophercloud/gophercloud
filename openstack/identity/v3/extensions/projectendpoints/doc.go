@@ -22,6 +22,5 @@ Example to List Project Endpoints
 	for _, endpoint := range allEndpoints {
 		fmt.Printf("%+v\n", endpoint)
 	}
-
 */
 package projectendpoints

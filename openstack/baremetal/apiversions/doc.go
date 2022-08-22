@@ -18,6 +18,5 @@ Package apiversions provides information about the versions supported by a speci
 		if err != nil {
 			panic("unable to get API version: " + err.Error())
 		}
-
 */
 package apiversions

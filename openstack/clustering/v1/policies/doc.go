@@ -22,7 +22,6 @@ Example to List Policies
 		fmt.Printf("%+v\n", policy)
 	}
 
-
 Example to Create a Policy
 
 	createOpts := policies.CreateOpts{
@@ -50,13 +49,13 @@ Example to Create a Policy
 
 Example to Get a Policy
 
-    policyName := "get_policy"
-    policyDetail, err := policies.Get(clusteringClient, policyName).Extract()
-    if err != nil {
-        panic(err)
-    }
+	policyName := "get_policy"
+	policyDetail, err := policies.Get(clusteringClient, policyName).Extract()
+	if err != nil {
+	    panic(err)
+	}
 
-    fmt.Printf("%+v\n", policyDetail)
+	fmt.Printf("%+v\n", policyDetail)
 
 Example to Update a Policy
 

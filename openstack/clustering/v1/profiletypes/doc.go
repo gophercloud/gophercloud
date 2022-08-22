@@ -26,6 +26,7 @@ Example to Get a ProfileType
 	fmt.Printf("%+v\n", profileType)
 
 Example of list operations supported by a profile type
+
 	serviceClient.Microversion = "1.5"
 
 	profileTypeName := "os.nova.server-1.0"
@@ -42,6 +43,5 @@ Example of list operations supported by a profile type
 	for _, op := range ops {
 		fmt.Printf("%+v\n", op)
 	}
-
 */
 package profiletypes

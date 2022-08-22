@@ -1140,7 +1140,7 @@ func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Ser
 	})
 }
 
-//Convenience method to fill an QuotaSet-UpdateOpts-struct from a QuotaSet-struct
+// Convenience method to fill an QuotaSet-UpdateOpts-struct from a QuotaSet-struct
 func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOpts) {
 	dest.FixedIPs = &src.FixedIPs
 	dest.FloatingIPs = &src.FloatingIPs

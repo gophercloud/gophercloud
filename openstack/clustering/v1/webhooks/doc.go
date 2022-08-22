@@ -10,6 +10,5 @@ Example to Trigger webhook action
 	}
 
 	fmt.Println("result", result)
-
 */
 package webhooks
