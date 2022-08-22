@@ -51,6 +51,5 @@ Example to List IPSec policies
 	if err != nil {
 		panic(err)
 	}
-
 */
 package ipsecpolicies

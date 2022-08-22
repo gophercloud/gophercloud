@@ -238,7 +238,7 @@ const ServiceUpdate = `
 }
 `
 
-//FakeServiceUpdateBody represents the updated service
+// FakeServiceUpdateBody represents the updated service
 var FakeServiceUpdateBody = services.Service{
 	Binary:         "nova-scheduler",
 	DisabledReason: "test1",

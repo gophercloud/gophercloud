@@ -37,31 +37,31 @@ Get a workflow
 
 Create a workflow
 
-	workflowDefinition := `---
-      version: '2.0'
+		workflowDefinition := `---
+	      version: '2.0'
 
-      workflow_echo:
-        description: Simple workflow example
-        type: direct
-        input:
-          - msg
+	      workflow_echo:
+	        description: Simple workflow example
+	        type: direct
+	        input:
+	          - msg
 
-        tasks:
-          test:
-            action: std.echo output="<% $.msg %>"`
+	        tasks:
+	          test:
+	            action: std.echo output="<% $.msg %>"`
 
-	createOpts := &workflows.CreateOpts{
-		Definition: strings.NewReader(workflowDefinition),
-		Scope: "private",
-		Namespace: "some-namespace",
-	}
+		createOpts := &workflows.CreateOpts{
+			Definition: strings.NewReader(workflowDefinition),
+			Scope: "private",
+			Namespace: "some-namespace",
+		}
 
-	workflow, err := workflows.Create(mistralClient, createOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
+		workflow, err := workflows.Create(mistralClient, createOpts).Extract()
+		if err != nil {
+			panic(err)
+		}
 
-	fmt.Printf("%+v\n", workflow)
+		fmt.Printf("%+v\n", workflow)
 
 Delete a workflow
 

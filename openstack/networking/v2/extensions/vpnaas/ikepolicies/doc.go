@@ -2,7 +2,6 @@
 Package ikepolicies allows management and retrieval of IKE policies in the
 OpenStack Networking Service.
 
-
 Example to Create an IKE policy
 
 	createOpts := ikepolicies.CreateOpts{
@@ -23,7 +22,6 @@ Example to Show the details of a specific IKE policy by ID
 	if err != nil {
 		panic(err)
 	}
-
 
 Example to Delete a Policy
 
@@ -47,7 +45,6 @@ Example to Update an IKE policy
 		panic(err)
 	}
 
-
 Example to List IKE policies
 
 	allPages, err := ikepolicies.List(client, nil).AllPages()
@@ -59,6 +56,5 @@ Example to List IKE policies
 	if err != nil {
 		panic(err)
 	}
-
 */
 package ikepolicies

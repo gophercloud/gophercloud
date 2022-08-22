@@ -76,6 +76,5 @@ Example to Notify a Receiver
 	if err != nil {
 		panic(err)
 	}
-
 */
 package receivers

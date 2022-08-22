@@ -41,7 +41,6 @@ Example to Get a Profile
 
 	fmt.Print("profile", profile)
 
-
 Example to List Profiles
 
 	listOpts := profiles.ListOpts{
@@ -105,6 +104,5 @@ Example to Validate a profile
 	if err != nil {
 		panic(err)
 	}
-
 */
 package profiles

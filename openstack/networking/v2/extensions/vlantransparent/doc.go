@@ -4,33 +4,33 @@ with the vlan-transparent extension through the Neutron API.
 
 Example of Listing Networks with the vlan-transparent extension
 
-    iTrue := true
-    networkListOpts := networks.ListOpts{}
-    listOpts := vlantransparent.ListOptsExt{
-        ListOptsBuilder: networkListOpts,
-        VLANTransparent: &iTrue,
-    }
+	    iTrue := true
+	    networkListOpts := networks.ListOpts{}
+	    listOpts := vlantransparent.ListOptsExt{
+	        ListOptsBuilder: networkListOpts,
+	        VLANTransparent: &iTrue,
+	    }
 
-    type NetworkWithVLANTransparentExt struct {
-        networks.Network
-        vlantransparent.NetworkVLANTransparentExt
-    }
+	    type NetworkWithVLANTransparentExt struct {
+	        networks.Network
+	        vlantransparent.NetworkVLANTransparentExt
+	    }
 
-    var allNetworks []NetworkWithVLANTransparentExt
+	    var allNetworks []NetworkWithVLANTransparentExt
 
-    allPages, err := networks.List(networkClient, listOpts).AllPages()
-    if err != nil {
-        panic(err)
-    }
+	    allPages, err := networks.List(networkClient, listOpts).AllPages()
+	    if err != nil {
+	        panic(err)
+	    }
 
-    err = networks.ExtractNetworksInto(allPages, &allNetworks)
-    if err != nil {
-        panic(err)
-    }
+	    err = networks.ExtractNetworksInto(allPages, &allNetworks)
+	    if err != nil {
+	        panic(err)
+	    }
 
-    for _, network := range allNetworks {
-        fmt.Printf("%+v\n", network)
-	}
+	    for _, network := range allNetworks {
+	        fmt.Printf("%+v\n", network)
+		}
 
 Example of Getting a Network with the vlan-transparent extension
 

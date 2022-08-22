@@ -69,7 +69,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 }
 
 // CreateRule will create a Firewall Rule with a random source address and
-//source port, destination address and port. An error will be returned if
+// source port, destination address and port. An error will be returned if
 // the rule could not be created.
 func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, error) {
 	ruleName := tools.RandomString("TESTACC-", 8)

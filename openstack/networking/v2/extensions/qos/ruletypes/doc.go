@@ -17,13 +17,13 @@ Example of Listing QoS rule types
 
 Example of Getting a single QoS rule type by it's name
 
-    ruleTypeName := "bandwidth_limit"
+	ruleTypeName := "bandwidth_limit"
 
-    ruleType, err := ruletypes.Get(networkClient, ruleTypeName).Extract()
-    if err != nil {
-        panic(err)
-    }
+	ruleType, err := ruletypes.Get(networkClient, ruleTypeName).Extract()
+	if err != nil {
+	    panic(err)
+	}
 
-    fmt.Printf("%+v\n", ruleTypeName)
+	fmt.Printf("%+v\n", ruleTypeName)
 */
 package ruletypes

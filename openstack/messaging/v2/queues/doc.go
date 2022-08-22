@@ -6,24 +6,24 @@ Lists all queues and creates, shows information for updates, deletes, and action
 
 Example to List Queues
 
-	listOpts := queues.ListOpts{
-		Limit: 10,
-	}
-
-	pager := queues.List(client, listOpts)
-
-    err = pager.EachPage(func(page pagination.Page) (bool, error) {
-		queues, err := queues.ExtractQueues(page)
-		if err != nil {
-			panic(err)
+		listOpts := queues.ListOpts{
+			Limit: 10,
 		}
 
-		for _, queue := range queues {
-			fmt.Printf("%+v\n", queue)
-		}
+		pager := queues.List(client, listOpts)
 
-		return true, nil
-	})
+	    err = pager.EachPage(func(page pagination.Page) (bool, error) {
+			queues, err := queues.ExtractQueues(page)
+			if err != nil {
+				panic(err)
+			}
+
+			for _, queue := range queues {
+				fmt.Printf("%+v\n", queue)
+			}
+
+			return true, nil
+		})
 
 Example to Create a Queue
 

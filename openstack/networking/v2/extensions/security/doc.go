@@ -14,19 +14,19 @@
 // The basic characteristics of Neutron Security Groups are:
 //
 // For ingress traffic (to an instance)
-//  - Only traffic matched with security group rules are allowed.
-//  - When there is no rule defined, all traffic is dropped.
+//   - Only traffic matched with security group rules are allowed.
+//   - When there is no rule defined, all traffic is dropped.
 //
 // For egress traffic (from an instance)
-//  - Only traffic matched with security group rules are allowed.
-//  - When there is no rule defined, all egress traffic are dropped.
-//  - When a new security group is created, rules to allow all egress traffic
-//    is automatically added.
+//   - Only traffic matched with security group rules are allowed.
+//   - When there is no rule defined, all egress traffic are dropped.
+//   - When a new security group is created, rules to allow all egress traffic
+//     is automatically added.
 //
 // "default security group" is defined for each tenant.
-//  - For the default security group a rule which allows intercommunication
-//    among hosts associated with the default security group is defined by default.
-//  - As a result, all egress traffic and intercommunication in the default
-//    group are allowed and all ingress from outside of the default group is
-//    dropped by default (in the default security group).
+//   - For the default security group a rule which allows intercommunication
+//     among hosts associated with the default security group is defined by default.
+//   - As a result, all egress traffic and intercommunication in the default
+//     group are allowed and all ingress from outside of the default group is
+//     dropped by default (in the default security group).
 package security

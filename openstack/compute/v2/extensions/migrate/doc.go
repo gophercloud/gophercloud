@@ -25,6 +25,5 @@ Example of Live-Migrate Server (os-migrateLive Action)
 	if err != nil {
 		panic(err)
 	}
-
 */
 package migrate

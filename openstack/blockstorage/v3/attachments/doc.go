@@ -82,6 +82,5 @@ Example to Delete Attachment
 	if err != nil {
 		panic(err)
 	}
-
 */
 package attachments

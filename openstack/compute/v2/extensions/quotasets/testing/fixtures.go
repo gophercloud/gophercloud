@@ -136,13 +136,13 @@ var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
 	ServerGroupMembers:       quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 3},
 }
 
-//The expected update Body. Is also returned by PUT request
+// The expected update Body. Is also returned by PUT request
 const UpdateOutput = `{"quota_set":{"cores":200,"fixed_ips":0,"floating_ips":0,"injected_file_content_bytes":10240,"injected_file_path_bytes":255,"injected_files":5,"instances":25,"key_pairs":10,"metadata_items":128,"ram":9216000,"security_group_rules":20,"security_groups":10,"server_groups":2,"server_group_members":3}}`
 
-//The expected partialupdate Body. Is also returned by PUT request
+// The expected partialupdate Body. Is also returned by PUT request
 const PartialUpdateBody = `{"quota_set":{"cores":200, "force":true}}`
 
-//Result of Quota-update
+// Result of Quota-update
 var UpdatedQuotaSet = quotasets.UpdateOpts{
 	FixedIPs:                 gophercloud.IntToPointer(0),
 	FloatingIPs:              gophercloud.IntToPointer(0),

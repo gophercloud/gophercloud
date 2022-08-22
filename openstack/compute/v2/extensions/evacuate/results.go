@@ -5,8 +5,8 @@ import (
 )
 
 // EvacuateResult is the response from an Evacuate operation.
-//Call its ExtractAdminPass method to retrieve the admin password of the instance.
-//The admin password will be an empty string if the cloud is not configured to inject admin passwords..
+// Call its ExtractAdminPass method to retrieve the admin password of the instance.
+// The admin password will be an empty string if the cloud is not configured to inject admin passwords..
 type EvacuateResult struct {
 	gophercloud.Result
 }

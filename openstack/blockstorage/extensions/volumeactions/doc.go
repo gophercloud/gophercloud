@@ -25,7 +25,6 @@ Example of Attaching a Volume to an Instance
 		panic(err)
 	}
 
-
 Example of Creating an Image from a Volume
 
 	uploadImageOpts := volumeactions.UploadImageOpts{

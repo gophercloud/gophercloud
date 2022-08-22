@@ -13,6 +13,5 @@ Example to Create a Quota
 	if err != nil {
 		panic(err)
 	}
-
 */
 package quotas

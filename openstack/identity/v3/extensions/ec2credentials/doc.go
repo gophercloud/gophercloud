@@ -16,6 +16,5 @@ Example to Create an EC2 credential
 	if err != nil {
 		panic(err)
 	}
-
 */
 package ec2credentials
