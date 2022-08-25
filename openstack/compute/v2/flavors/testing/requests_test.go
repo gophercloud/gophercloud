@@ -38,7 +38,8 @@ func TestListFlavors(t *testing.T) {
 								"ram": 9216000,
 								"swap":"",
 								"os-flavor-access:is_public": true,
-								"OS-FLV-EXT-DATA:ephemeral": 10
+								"OS-FLV-EXT-DATA:ephemeral": 10,
+								"description": "foo"
 							},
 							{
 								"id": "2",
@@ -87,7 +88,7 @@ func TestListFlavors(t *testing.T) {
 		}
 
 		expected := []flavors.Flavor{
-			{ID: "1", Name: "m1.tiny", VCPUs: 1, Disk: 1, RAM: 9216000, Swap: 0, IsPublic: true, Ephemeral: 10},
+			{ID: "1", Name: "m1.tiny", VCPUs: 1, Disk: 1, RAM: 9216000, Swap: 0, IsPublic: true, Ephemeral: 10, Description: "foo"},
 			{ID: "2", Name: "m1.small", VCPUs: 1, Disk: 20, RAM: 2048, Swap: 1000, IsPublic: true, Ephemeral: 0},
 			{ID: "3", Name: "m1.medium", VCPUs: 2, Disk: 40, RAM: 4096, Swap: 1000, IsPublic: false, Ephemeral: 0},
 		}
@@ -124,7 +125,8 @@ func TestGetFlavor(t *testing.T) {
 					"ram": 512,
 					"vcpus": 1,
 					"rxtx_factor": 1,
-					"swap": ""
+					"swap": "",
+					"description": "foo"
 				}
 			}
 		`)
@@ -136,13 +138,14 @@ func TestGetFlavor(t *testing.T) {
 	}
 
 	expected := &flavors.Flavor{
-		ID:         "1",
-		Name:       "m1.tiny",
-		Disk:       1,
-		RAM:        512,
-		VCPUs:      1,
-		RxTxFactor: 1,
-		Swap:       0,
+		ID:          "1",
+		Name:        "m1.tiny",
+		Disk:        1,
+		RAM:         512,
+		VCPUs:       1,
+		RxTxFactor:  1,
+		Swap:        0,
+		Description: "foo",
 	}
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
@@ -167,7 +170,8 @@ func TestCreateFlavor(t *testing.T) {
 					"ram": 512,
 					"vcpus": 1,
 					"rxtx_factor": 1,
-					"swap": ""
+					"swap": "",
+					"description": "foo"
 				}
 			}
 		`)
@@ -175,12 +179,13 @@ func TestCreateFlavor(t *testing.T) {
 
 	disk := 1
 	opts := &flavors.CreateOpts{
-		ID:         "1",
-		Name:       "m1.tiny",
-		Disk:       &disk,
-		RAM:        512,
-		VCPUs:      1,
-		RxTxFactor: 1.0,
+		ID:          "1",
+		Name:        "m1.tiny",
+		Disk:        &disk,
+		RAM:         512,
+		VCPUs:       1,
+		RxTxFactor:  1.0,
+		Description: "foo",
 	}
 	actual, err := flavors.Create(fake.ServiceClient(), opts).Extract()
 	if err != nil {
@@ -188,13 +193,14 @@ func TestCreateFlavor(t *testing.T) {
 	}
 
 	expected := &flavors.Flavor{
-		ID:         "1",
-		Name:       "m1.tiny",
-		Disk:       1,
-		RAM:        512,
-		VCPUs:      1,
-		RxTxFactor: 1,
-		Swap:       0,
+		ID:          "1",
+		Name:        "m1.tiny",
+		Disk:        1,
+		RAM:         512,
+		VCPUs:       1,
+		RxTxFactor:  1,
+		Swap:        0,
+		Description: "foo",
 	}
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)

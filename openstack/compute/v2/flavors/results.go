@@ -69,6 +69,11 @@ type Flavor struct {
 
 	// Ephemeral is the amount of ephemeral disk space, measured in GB.
 	Ephemeral int `json:"OS-FLV-EXT-DATA:ephemeral"`
+
+	// Description is a free form description of the flavor. Limited to
+	// 65535 characters in length. Only printable characters are allowed.
+	// New in version 2.55
+	Description string `json:"description"`
 }
 
 func (r *Flavor) UnmarshalJSON(b []byte) error {

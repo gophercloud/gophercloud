@@ -208,15 +208,20 @@ func CreateDefaultRule(t *testing.T, client *gophercloud.ServiceClient) (dsr.Def
 // An error will be returned if the flavor could not be created.
 func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Flavor, error) {
 	flavorName := tools.RandomString("flavor_", 5)
+	flavorDescription := fmt.Sprintf("I am %s and i am a yummy flavor", flavorName)
+
+	// Microversion 2.55 is required to add description to flavor
+	client.Microversion = "2.55"
 	t.Logf("Attempting to create flavor %s", flavorName)
 
 	isPublic := true
 	createOpts := flavors.CreateOpts{
-		Name:     flavorName,
-		RAM:      1,
-		VCPUs:    1,
-		Disk:     gophercloud.IntToPointer(1),
-		IsPublic: &isPublic,
+		Name:        flavorName,
+		RAM:         1,
+		VCPUs:       1,
+		Disk:        gophercloud.IntToPointer(1),
+		IsPublic:    &isPublic,
+		Description: flavorDescription,
 	}
 
 	flavor, err := flavors.Create(client, createOpts).Extract()
@@ -231,6 +236,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 	th.AssertEquals(t, flavor.Disk, 1)
 	th.AssertEquals(t, flavor.VCPUs, 1)
 	th.AssertEquals(t, flavor.IsPublic, true)
+	th.AssertEquals(t, flavor.Description, flavorDescription)
 
 	return flavor, nil
 }
