@@ -1,0 +1,15 @@
+name: Semver labels
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/semver-labels.yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: micnncim/action-label-syncer@v1
+        with:
+          manifest: .github/semver-labels.yaml
