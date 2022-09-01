@@ -1,0 +1,19 @@
+name: 'Reset semver labels on PR push'
+
+# **What it does**: When the content of a PR changes, this workflow removes the semver label
+# **Why we have it**: To make sure semver labels are up-to-date.
+# **Who does it impact**: Pull requests.
+
+on:
+  pull_request:
+    types:
+      - synchronize
+
+jobs:
+  remove-semver-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove the semver label
+        uses: andymckay/labeler@1.0.4
+        with:
+          remove-labels: "semver:patch, semver:minor, semver:major"
