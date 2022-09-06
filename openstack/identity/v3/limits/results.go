@@ -1,8 +1,33 @@
 package limits
 
 import (
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
+
+// A model describing the configured enforcement model used by the deployment.
+type EnforcementModel struct {
+	// The name of the enforcement model.
+	Name string `json:"name"`
+
+	// A short description of the enforcement model used.
+	Description string `json:"description"`
+}
+
+// EnforcementModelResult is the response from a GetEnforcementModel operation. Call its Extract method
+// to interpret it as a EnforcementModel.
+type EnforcementModelResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets EnforcementModelResult as a EnforcementModel.
+func (r EnforcementModelResult) Extract() (*EnforcementModel, error) {
+	var out struct {
+		Model *EnforcementModel `json:"model"`
+	}
+	err := r.ExtractInto(&out)
+	return out.Model, err
+}
 
 // A limit is the limit that override the registered limit for each project.
 type Limit struct {
