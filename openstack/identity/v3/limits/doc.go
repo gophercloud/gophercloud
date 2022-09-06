@@ -24,5 +24,29 @@ Example to List Limits
 	if err != nil {
 		panic(err)
 	}
+
+Example to Create Limits
+
+	batchCreateOpts := limits.BatchCreateOpts{
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
+			RegionID:      "RegionOne",
+			ResourceName:  "snapshot",
+			ResourceLimit: 5,
+		},
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			DomainID:      "edbafc92be354ffa977c58aa79c7bdb2",
+			ResourceName:  "volume",
+			ResourceLimit: 10,
+			Description:   "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce",
+		},
+	}
+
+	createdLimits, err := limits.Create(identityClient, batchCreateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package limits

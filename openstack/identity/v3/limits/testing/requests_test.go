@@ -50,3 +50,30 @@ func TestListLimitsAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
 }
+
+func TestCreateLimits(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateLimitSuccessfully(t)
+
+	createOpts := limits.BatchCreateOpts{
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
+			RegionID:      "RegionOne",
+			ResourceName:  "snapshot",
+			ResourceLimit: 5,
+		},
+		limits.CreateOpts{
+			ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+			DomainID:      "edbafc92be354ffa977c58aa79c7bdb2",
+			ResourceName:  "volume",
+			ResourceLimit: 11,
+			Description:   "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce",
+		},
+	}
+
+	actual, err := limits.BatchCreate(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
+}

@@ -59,9 +59,20 @@ type Limit struct {
 	Links map[string]interface{} `json:"links"`
 }
 
+// A LimitsOutput is an array of limits returned by List and BatchCreate operations
+type LimitsOutput struct {
+	Limits []Limit `json:"limits"`
+}
+
 // LimitPage is a single page of Limit results.
 type LimitPage struct {
 	pagination.LinkedPageBase
+}
+
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Limits.
+type CreateResult struct {
+	gophercloud.Result
 }
 
 // IsEmpty determines whether or not a page of Limits contains any results.
@@ -88,9 +99,14 @@ func (r LimitPage) NextPageURL() (string, error) {
 // ExtractLimits returns a slice of Limits contained in a single page of
 // results.
 func ExtractLimits(r pagination.Page) ([]Limit, error) {
-	var s struct {
-		Limits []Limit `json:"limits"`
-	}
-	err := (r.(LimitPage)).ExtractInto(&s)
-	return s.Limits, err
+	var out LimitsOutput
+	err := (r.(LimitPage)).ExtractInto(&out)
+	return out.Limits, err
+}
+
+// Extract interprets CreateResult as slice of Limits.
+func (r CreateResult) Extract() ([]Limit, error) {
+	var out LimitsOutput
+	err := r.ExtractInto(&out)
+	return out.Limits, err
 }
