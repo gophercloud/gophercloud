@@ -90,6 +90,30 @@ func TestFlavorsCreateDelete(t *testing.T) {
 	tools.PrintResource(t, flavor)
 }
 
+func TestFlavorsCreateUpdateDelete(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	flavor, err := CreateFlavor(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteFlavor(t, client, flavor)
+
+	tools.PrintResource(t, flavor)
+
+	newFlavorDescription := "This is the new description"
+	updateOpts := flavors.UpdateOpts{
+		Description: newFlavorDescription,
+	}
+
+	flavor, err = flavors.Update(client, flavor.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, flavor.Description, newFlavorDescription)
+
+	tools.PrintResource(t, flavor)
+}
+
 func TestFlavorsAccessesList(t *testing.T) {
 	clients.RequireAdmin(t)
 

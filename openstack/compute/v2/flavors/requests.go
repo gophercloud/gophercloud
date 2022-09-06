@@ -154,6 +154,37 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+type UpdateOptsBuilder interface {
+	ToFlavorUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts specifies parameters used for updating a flavor.
+type UpdateOpts struct {
+	// Description is a free form description of the flavor. Limited to
+	// 65535 characters in length. Only printable characters are allowed.
+	// New in version 2.55
+	Description string `json:"description,omitempty"`
+}
+
+// ToFlavorUpdateMap constructs a request body from UpdateOpts.
+func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "flavor")
+}
+
+// Update requests the update of a new flavor.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToFlavorUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // Get retrieves details of a single flavor. Use Extract to convert its
 // result into a Flavor.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {

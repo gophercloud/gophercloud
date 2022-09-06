@@ -18,6 +18,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult is the response of a Put operation. Call its Extract method to
+// interpret it as a Flavor.
+type UpdateResult struct {
+	commonResult
+}
+
 // GetResult is the response of a Get operations. Call its Extract method to
 // interpret it as a Flavor.
 type GetResult struct {
