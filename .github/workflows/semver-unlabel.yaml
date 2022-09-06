@@ -5,12 +5,14 @@ name: 'Reset semver labels on PR push'
 # **Who does it impact**: Pull requests.
 
 on:
-  pull_request:
+  pull_request_target:
     types:
       - synchronize
 
 jobs:
   remove-semver-label:
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Remove the semver label
