@@ -5,15 +5,15 @@ updating and abandoning.
 
 Example for list events for a stack
 
-    pages, err := stackevents.List(client, stack.Name, stack.ID, nil).AllPages()
-    if err != nil {
-        panic(err)
-    }
-    events, err := stackevents.ExtractEvents(pages)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("Get Event List")
-    fmt.Println(events)
+	pages, err := stackevents.List(client, stack.Name, stack.ID, nil).AllPages()
+	if err != nil {
+	    panic(err)
+	}
+	events, err := stackevents.ExtractEvents(pages)
+	if err != nil {
+	    panic(err)
+	}
+	fmt.Println("Get Event List")
+	fmt.Println(events)
 */
 package stackevents

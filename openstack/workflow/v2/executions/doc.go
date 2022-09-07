@@ -5,7 +5,7 @@ An execution is a one-shot execution of a specific workflow. Each execution cont
 
 An execution represents also the execution of a cron trigger. Each run of a cron trigger will generate an execution.
 
-List executions
+# List executions
 
 To filter executions from a list request, you can use advanced filters with special FilterType to check for equality, non equality, values greater or lower, etc.
 Default Filter checks equality, but you can override it with provided filter type.
@@ -65,6 +65,5 @@ Delete an execution
 	if res.Err != nil {
 		panic(res.Err)
 	}
-
 */
 package executions

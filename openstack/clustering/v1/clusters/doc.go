@@ -225,15 +225,15 @@ Example to Complete Life Cycle
 
 Example to add nodes to a cluster
 
-	addNodesOpts := clusters.AddNodesOpts{
-		Nodes: []string{"node-123"},
-	}
-	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.AddNodes(serviceClient, clusterID, addNodesOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-    fmt.Println("action=", actionID)
+		addNodesOpts := clusters.AddNodesOpts{
+			Nodes: []string{"node-123"},
+		}
+		clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+		actionID, err := clusters.AddNodes(serviceClient, clusterID, addNodesOpts).Extract()
+		if err != nil {
+			panic(err)
+		}
+	    fmt.Println("action=", actionID)
 
 Example to remove nodes from a cluster
 
@@ -282,6 +282,5 @@ Example to perform an operation on a cluster
 	if err != nil {
 		panic(err)
 	}
-
 */
 package clusters

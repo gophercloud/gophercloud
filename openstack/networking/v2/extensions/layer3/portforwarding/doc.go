@@ -28,7 +28,6 @@ Example to Get a Port Forwarding with a certain ID
 		panic(err)
 	}
 
-
 Example to Create a Port Forwarding for a floating IP
 
 	createOpts := &portforwarding.CreateOpts{

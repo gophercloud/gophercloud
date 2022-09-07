@@ -9,6 +9,5 @@ Example of Show Diagnostics
 	}
 
 	fmt.Printf("%+v\n", diags)
-
 */
 package diagnostics

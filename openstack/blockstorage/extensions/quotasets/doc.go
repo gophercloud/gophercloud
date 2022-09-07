@@ -50,7 +50,6 @@ Example to Update a Quota set with volume_type quotas
 
 	fmt.Printf("%+v\n", quotaset)
 
-
 Example to Delete a Quota Set
 
 	err := quotasets.Delete(blockStorageClient, "project-id").ExtractErr()

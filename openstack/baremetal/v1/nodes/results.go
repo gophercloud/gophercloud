@@ -373,8 +373,8 @@ type DriverValidation struct {
 	Reason string `json:"reason"`
 }
 
-//  Ironic validates whether the Node’s driver has enough information to manage the Node. This polls each interface on
-//  the driver, and returns the status of that interface as an DriverValidation struct.
+// Ironic validates whether the Node’s driver has enough information to manage the Node. This polls each interface on
+// the driver, and returns the status of that interface as an DriverValidation struct.
 type NodeValidation struct {
 	BIOS       DriverValidation `json:"bios"`
 	Boot       DriverValidation `json:"boot"`

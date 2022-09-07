@@ -78,7 +78,6 @@ Example of updating QoSSpec
 	}
 	fmt.Printf("%+v\n", specs)
 
-
 Example of deleting specific keys/specs from a QoS
 
 	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
@@ -143,6 +142,5 @@ Example of listing all associations of a QoS
 	for _, association := range allAssociations {
 		fmt.Printf("Association: %+v\n", association)
 	}
-
 */
 package qos

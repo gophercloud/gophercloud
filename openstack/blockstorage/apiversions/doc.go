@@ -18,7 +18,6 @@ Example of Retrieving all API Versions
 		fmt.Printf("%+v\n", version)
 	}
 
-
 Example of Retrieving an API Version
 
 	version, err := apiversions.Get(client, "v3").Extract()

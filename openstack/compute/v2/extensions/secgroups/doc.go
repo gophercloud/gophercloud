@@ -92,8 +92,7 @@ Example to Remove a Security Group from a Server
 		panic(err)
 	}
 
-Example to Delete a Security Group
-
+# Example to Delete a Security Group
 
 	sgID := "37d94f8a-d136-465c-ae46-144f0d8ef141"
 	err := secgroups.Delete(computeClient, sgID).ExtractErr()

@@ -106,6 +106,5 @@ Example to Check a Node
 		panic(err)
 	}
 	fmt.Println("action=", actionID)
-
 */
 package nodes

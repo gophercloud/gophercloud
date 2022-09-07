@@ -4,7 +4,7 @@ Package crontriggers provides interaction with the cron triggers API in the Open
 Cron trigger is an object that allows to run Mistral workflows according to a time pattern (Unix crontab patterns format).
 Once a trigger is created it will run a specified workflow according to its properties: pattern, first_execution_time and remaining_executions.
 
-List cron triggers
+# List cron triggers
 
 To filter cron triggers from a list request, you can use advanced filters with special FilterType to check for equality, non equality, values greater or lower, etc.
 Default Filter checks equality, but you can override it with provided filter type.
@@ -68,6 +68,5 @@ Delete a cron trigger
 	if res.Err != nil {
 		panic(res.Err)
 	}
-
 */
 package crontriggers

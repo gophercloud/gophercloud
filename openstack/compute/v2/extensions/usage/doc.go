@@ -54,6 +54,5 @@ Example to Retrieve Usage for All Tenants:
 	if err != nil {
 		panic(err)
 	}
-
 */
 package usage

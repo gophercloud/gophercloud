@@ -12,7 +12,7 @@ type CreateOptsBuilder interface {
 }
 
 // CreateOpts contains options for creating a Volume attachment. This object is
-//passed to the Create function. For more information about these parameters,
+// passed to the Create function. For more information about these parameters,
 // see the Attachment object.
 type CreateOpts struct {
 	// VolumeUUID is the UUID of the Cinder volume to create the attachment

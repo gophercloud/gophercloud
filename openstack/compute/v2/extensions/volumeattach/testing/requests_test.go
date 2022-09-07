@@ -32,7 +32,7 @@ var ExpectedVolumeAttachmentSlice = []volumeattach.VolumeAttachment{FirstVolumeA
 var iTag = "foo"
 var iTrue = true
 
-//CreatedVolumeAttachment is the parsed result from CreatedOutput.
+// CreatedVolumeAttachment is the parsed result from CreatedOutput.
 var CreatedVolumeAttachment = volumeattach.VolumeAttachment{
 	Device:              "/dev/vdc",
 	ID:                  "a26887c6-c47b-4654-abb5-dfadf7d3f804",

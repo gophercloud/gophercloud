@@ -9,30 +9,29 @@ specific application stack.
 
 Example to get stack template
 
-    temp, err := stacktemplates.Get(client, stack.Name, stack.ID).Extract()
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("Get Stack Template for Stack ", stack.Name)
-    fmt.Println(string(temp))
+	temp, err := stacktemplates.Get(client, stack.Name, stack.ID).Extract()
+	if err != nil {
+	    panic(err)
+	}
+	fmt.Println("Get Stack Template for Stack ", stack.Name)
+	fmt.Println(string(temp))
 
 Example to validate stack template
 
-    f2, err := ioutil.ReadFile("template.err.yaml")
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println(string(f2))
-    validateOpts := &stacktemplates.ValidateOpts{
-        Template: string(f2),
-    }
-    validate_result, err := stacktemplates.Validate(client, validateOpts).Extract()
-    if err != nil {
-        // If validate failed, you will get error message here
-        fmt.Println("Validate failed: ", err.Error())
-    } else {
-        fmt.Println(validate_result.Parameters)
-    }
-
+	f2, err := ioutil.ReadFile("template.err.yaml")
+	if err != nil {
+	    panic(err)
+	}
+	fmt.Println(string(f2))
+	validateOpts := &stacktemplates.ValidateOpts{
+	    Template: string(f2),
+	}
+	validate_result, err := stacktemplates.Validate(client, validateOpts).Extract()
+	if err != nil {
+	    // If validate failed, you will get error message here
+	    fmt.Println("Validate failed: ", err.Error())
+	} else {
+	    fmt.Println(validate_result.Parameters)
+	}
 */
 package stacktemplates

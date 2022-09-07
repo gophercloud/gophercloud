@@ -100,6 +100,5 @@ Example of Create or Update Metadata
 		panic(err)
 	}
 	fmt.Printf("%+v\n", aggregate)
-
 */
 package aggregates

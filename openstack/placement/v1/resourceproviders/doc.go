@@ -88,6 +88,5 @@ Example to get resource providers allocations
 	if err != nil {
 		panic(err)
 	}
-
 */
 package resourceproviders

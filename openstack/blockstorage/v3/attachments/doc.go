@@ -29,7 +29,7 @@ Example to List Attachments
 Example to Create Attachment
 
 	createOpts := &attachments.CreateOpts{
-		InstanceiUUID: "uuid",
+		InstanceUUID: "uuid",
 		VolumeUUID: "uuid"
 	}
 
@@ -82,6 +82,5 @@ Example to Delete Attachment
 	if err != nil {
 		panic(err)
 	}
-
 */
 package attachments
