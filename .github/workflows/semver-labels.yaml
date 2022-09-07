@@ -1,15 +1,18 @@
-name: Semver labels
+name: Ensure labels
 on:
   push:
     branches:
       - master
     paths:
       - .github/semver-labels.yaml
+      - .github/workflows/semver-labels.yaml
 jobs:
-  build:
+  semver:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: micnncim/action-label-syncer@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           manifest: .github/semver-labels.yaml
