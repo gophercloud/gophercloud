@@ -1,4 +1,4 @@
-name: Pull Request Labels
+name: Verify PR Labels
 on:
   pull_request:
     types:
@@ -7,7 +7,7 @@ on:
       - unlabeled
       - synchronize
 jobs:
-  label:
+  semver:
     runs-on: ubuntu-latest
     steps:
       - uses: mheap/github-action-required-labels@v2
