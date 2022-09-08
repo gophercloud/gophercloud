@@ -97,7 +97,7 @@ func TestAgentsRUD(t *testing.T) {
 }
 
 func TestBGPAgentRUD(t *testing.T) {
-	waitTime := 30 * time.Second
+	timeout := 120 * time.Second
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
@@ -119,60 +119,82 @@ func TestBGPAgentRUD(t *testing.T) {
 	// Create a BGP Speaker
 	bgpSpeaker, err := spk.CreateBGPSpeaker(t, client)
 	th.AssertNoErr(t, err)
-	time.Sleep(waitTime)
-
-	// List the BGP Agents that accommodate the BGP Speaker
 	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, bgpSpeaker.ID).AllPages()
 	th.AssertNoErr(t, err)
 	bgpAgents, err := agents.ExtractAgents(pages)
 	th.AssertNoErr(t, err)
 	th.AssertIntGreaterOrEqual(t, len(bgpAgents), 1)
-	for _, agt := range bgpAgents {
-		t.Logf("BGP Speaker %s has been scheduled to agent %s", bgpSpeaker.ID, agt.ID)
-		bgpAgent, err := agents.Get(client, agt.ID).Extract()
-		th.AssertNoErr(t, err)
-		numOfSpeakers := int(bgpAgent.Configurations["bgp_speakers"].(float64))
-		th.AssertEquals(t, numOfSpeakers, 1)
-	}
+
+	// List the BGP Agents that accommodate the BGP Speaker
+	err = tools.WaitForTimeout(
+		func() (bool, error) {
+			flag := true
+			for _, agt := range bgpAgents {
+				t.Logf("BGP Speaker %s has been scheduled to agent %s", bgpSpeaker.ID, agt.ID)
+				bgpAgent, err := agents.Get(client, agt.ID).Extract()
+				th.AssertNoErr(t, err)
+				numOfSpeakers := int(bgpAgent.Configurations["bgp_speakers"].(float64))
+				flag = flag && (numOfSpeakers == 1)
+			}
+			return flag, nil
+		}, timeout)
+	th.AssertNoErr(t, err)
 
 	// Remove the BGP Speaker from the first agent
 	err = agents.RemoveBGPSpeaker(client, bgpAgents[0].ID, bgpSpeaker.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("BGP Speaker %s has been removed from agent %s", bgpSpeaker.ID, bgpAgents[0].ID)
-	time.Sleep(waitTime)
-	bgpAgent, err := agents.Get(client, bgpAgents[0].ID).Extract()
+	err = tools.WaitForTimeout(
+		func() (bool, error) {
+			bgpAgent, err := agents.Get(client, bgpAgents[0].ID).Extract()
+			th.AssertNoErr(t, err)
+			agentConf := bgpAgent.Configurations
+			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
+			t.Logf("Agent %s has %d speakers", bgpAgent.ID, numOfSpeakers)
+			return numOfSpeakers == 0, nil
+		}, timeout)
 	th.AssertNoErr(t, err)
-	agentConf := bgpAgent.Configurations
-	th.AssertEquals(t, int(agentConf["bgp_speakers"].(float64)), 0)
 
 	// Remove all BGP Speakers from the agent
-	pages, err = agents.ListBGPSpeakers(client, bgpAgent.ID).AllPages()
+	pages, err = agents.ListBGPSpeakers(client, bgpAgents[0].ID).AllPages()
 	th.AssertNoErr(t, err)
 	allSpeakers, err := agents.ExtractBGPSpeakers(pages)
 	th.AssertNoErr(t, err)
 	for _, speaker := range allSpeakers {
-		th.AssertNoErr(t, agents.RemoveBGPSpeaker(client, bgpAgent.ID, speaker.ID).ExtractErr())
+		th.AssertNoErr(t, agents.RemoveBGPSpeaker(client, bgpAgents[0].ID, speaker.ID).ExtractErr())
 	}
+
 	// Schedule a BGP Speaker to an agent
 	opts := agents.ScheduleBGPSpeakerOpts{
 		SpeakerID: bgpSpeaker.ID,
 	}
-	err = agents.ScheduleBGPSpeaker(client, bgpAgent.ID, opts).ExtractErr()
+	err = agents.ScheduleBGPSpeaker(client, bgpAgents[0].ID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
-	t.Logf("Successfully scheduled speaker %s to agent %s", bgpSpeaker.ID, bgpAgent.ID)
-	time.Sleep(waitTime)
-	bgpAgent, err = agents.Get(client, bgpAgent.ID).Extract()
+	t.Logf("Successfully scheduled speaker %s to agent %s", bgpSpeaker.ID, bgpAgents[0].ID)
+
+	err = tools.WaitForTimeout(
+		func() (bool, error) {
+			bgpAgent, err := agents.Get(client, bgpAgents[0].ID).Extract()
+			th.AssertNoErr(t, err)
+			agentConf := bgpAgent.Configurations
+			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
+			t.Logf("Agent %s has %d speakers", bgpAgent.ID, numOfSpeakers)
+			return 1 == numOfSpeakers, nil
+		}, timeout)
 	th.AssertNoErr(t, err)
-	agentConf = bgpAgent.Configurations
-	th.AssertEquals(t, 1, int(agentConf["bgp_speakers"].(float64)))
 
 	// Delete the BGP Speaker
 	speakers.Delete(client, bgpSpeaker.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully deleted the BGP Speaker, %s", bgpSpeaker.ID)
-	time.Sleep(waitTime)
-	bgpAgent, err = agents.Get(client, bgpAgent.ID).Extract()
+	err = tools.WaitForTimeout(
+		func() (bool, error) {
+			bgpAgent, err := agents.Get(client, bgpAgents[0].ID).Extract()
+			th.AssertNoErr(t, err)
+			agentConf := bgpAgent.Configurations
+			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
+			t.Logf("Agent %s has %d speakers", bgpAgent.ID, numOfSpeakers)
+			return 0 == numOfSpeakers, nil
+		}, timeout)
 	th.AssertNoErr(t, err)
-	agentConf = bgpAgent.Configurations
-	th.AssertEquals(t, 0, int(agentConf["bgp_speakers"].(float64)))
 }
