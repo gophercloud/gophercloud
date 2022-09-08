@@ -158,3 +158,50 @@ func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) pagination.Pa
 		return ListBGPSpeakersResult{pagination.SinglePageBase(r)}
 	})
 }
+
+// ScheduleBGPSpeakerOptsBuilder declare a function that build ScheduleBGPSpeakerOpts into a request body
+type ScheduleBGPSpeakerOptsBuilder interface {
+	ToAgentScheduleBGPSpeakerMap() (map[string]interface{}, error)
+}
+
+// ScheduleBGPSpeakerOpts represents the data that would be POST to the endpoint
+type ScheduleBGPSpeakerOpts struct {
+	SpeakerID string `json:"bgp_speaker_id" required:"true"`
+}
+
+// ToAgentScheduleBGPSpeakerMap builds a request body from ScheduleBGPSpeakerOpts
+func (opts ScheduleBGPSpeakerOpts) ToAgentScheduleBGPSpeakerMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// ScheduleBGPSpeaker schedule a BGP speaker to a BGP agent
+// POST /v2.0/agents/{agent-id}/bgp-drinstances
+func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, agentID string, opts ScheduleBGPSpeakerOptsBuilder) (r ScheduleBGPSpeakerResult) {
+	b, err := opts.ToAgentScheduleBGPSpeakerMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Post(scheduleBGPSpeakersURL(c, agentID), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RemoveBGPSpeaker removes a BGP speaker from a BGP agent
+// DELETE /v2.0/agents/{agent-id}/bgp-drinstances
+func RemoveBGPSpeaker(c *gophercloud.ServiceClient, agentID string, speakerID string) (r RemoveBGPSpeakerResult) {
+	resp, err := c.Delete(removeBGPSpeakersURL(c, agentID, speakerID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListDRAgentHostingBGPSpeakers the dragents that are hosting a specific bgp speaker
+// GET /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
+func ListDRAgentHostingBGPSpeakers(c *gophercloud.ServiceClient, bgpSpeakerID string) pagination.Pager {
+	url := listDRAgentHostingBGPSpeakersURL(c, bgpSpeakerID)
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return AgentPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}

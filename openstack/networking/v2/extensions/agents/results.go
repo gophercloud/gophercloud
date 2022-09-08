@@ -55,6 +55,20 @@ type RemoveDHCPNetworkResult struct {
 	gophercloud.ErrResult
 }
 
+// ScheduleBGPSpeakerResult represents the result of adding a BGP speaker to a
+// BGP DR Agent. ExtractErr method to determine if the request succeeded or
+// failed.
+type ScheduleBGPSpeakerResult struct {
+	gophercloud.ErrResult
+}
+
+// RemoveBGPSpeakerResult represents the result of removing a BGP speaker from a
+// BGP DR Agent. ExtractErr method to determine if the request succeeded or
+// failed.
+type RemoveBGPSpeakerResult struct {
+	gophercloud.ErrResult
+}
+
 // Agent represents a Neutron agent.
 type Agent struct {
 	// ID is the id of the agent.
