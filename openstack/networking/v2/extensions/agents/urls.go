@@ -5,6 +5,8 @@ import "github.com/gophercloud/gophercloud"
 const resourcePath = "agents"
 const dhcpNetworksResourcePath = "dhcp-networks"
 const bgpSpeakersResourcePath = "bgp-drinstances"
+const bgpDRAgentSpeakersResourcePath = "bgp-speakers"
+const bgpDRAgentAgentResourcePath = "bgp-dragents"
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(resourcePath, id)
@@ -63,5 +65,5 @@ func removeBGPSpeakersURL(c *gophercloud.ServiceClient, agentID string, speakerI
 
 // return /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
 func listDRAgentHostingBGPSpeakersURL(c *gophercloud.ServiceClient, speakerID string) string {
-	return c.ServiceURL("bgp-speakers", speakerID, "bgp-dragents")
+	return c.ServiceURL(bgpDRAgentSpeakersResourcePath, speakerID, bgpDRAgentAgentResourcePath)
 }
