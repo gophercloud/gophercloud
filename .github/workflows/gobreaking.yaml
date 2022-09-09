@@ -10,8 +10,5 @@ jobs:
   semver:
     runs-on: ubuntu-latest
     steps:
-      - uses: mheap/github-action-required-labels@v2
-        with:
-          mode: exactly
-          count: 1
-          labels: "semver:patch, semver:minor, semver:major"
+      - uses: actions/checkout@v3
+      - uses: pierreprinetti/gobreaking@v0
