@@ -313,3 +313,38 @@ func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *v
 
 	return nil
 }
+
+// ReImage will re-image a volume
+func ReImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume, imageID string) error {
+	t.Logf("Attempting to re-image volume %s", volume.ID)
+
+	reimageOpts := volumeactions.ReImageOpts{
+		ImageID:         imageID,
+		ReImageReserved: false,
+	}
+
+	err := volumeactions.ReImage(client, volume.ID, reimageOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	if err != nil {
+		return err
+	}
+
+	vol, err := v3.Get(client, volume.ID).Extract()
+	if err != nil {
+		return err
+	}
+
+	if vol.VolumeImageMetadata == nil {
+		return fmt.Errorf("volume does not have VolumeImageMetadata map")
+	}
+
+	if strings.ToLower(vol.VolumeImageMetadata["image_id"]) != imageID {
+		return fmt.Errorf("volume image id '%s', expected '%s'", vol.VolumeImageMetadata["image_id"], imageID)
+	}
+
+	return nil
+}

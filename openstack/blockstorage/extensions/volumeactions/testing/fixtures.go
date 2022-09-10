@@ -327,6 +327,26 @@ func MockSetBootableResponse(t *testing.T) {
 	})
 }
 
+func MockReImageResponse(t *testing.T) {
+	th.Mux.HandleFunc("/volumes/cd281d77-8217-4830-be95-9528227c105c/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+	"os-reimage": {
+		"image_id": "71543ced-a8af-45b6-a5c4-a46282108a90",
+		"reimage_reserved": false
+	}
+}
+		`)
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("Content-Length", "0")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
 func MockChangeTypeResponse(t *testing.T) {
 	th.Mux.HandleFunc("/volumes/cd281d77-8217-4830-be95-9528227c105c/action",
 		func(w http.ResponseWriter, r *http.Request) {

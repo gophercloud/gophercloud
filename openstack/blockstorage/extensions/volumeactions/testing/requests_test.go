@@ -195,6 +195,21 @@ func TestSetBootable(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestReImage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockReImageResponse(t)
+
+	options := volumeactions.ReImageOpts{
+		ImageID:         "71543ced-a8af-45b6-a5c4-a46282108a90",
+		ReImageReserved: false,
+	}
+
+	err := volumeactions.ReImage(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 func TestChangeType(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
