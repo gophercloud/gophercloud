@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/extradhcpopts"
@@ -30,7 +31,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	ports.List(fake.ServiceClient(), ports.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := ports.List(fake.ServiceClient(), ports.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ports.ExtractPorts(page)
 		if err != nil {
@@ -56,6 +57,8 @@ func TestList(t *testing.T) {
 				ID:             "d80b1a3b-4fc1-49f3-952e-1e2ab7081d8b",
 				SecurityGroups: []string{},
 				DeviceID:       "9ae135f4-b6e0-4dad-9e91-3c223e385824",
+				CreatedAt:      time.Date(2019, time.June, 30, 4, 15, 37, 0, time.UTC),
+				UpdatedAt:      time.Date(2019, time.June, 30, 5, 18, 49, 0, time.UTC),
 			},
 		}
 
@@ -63,6 +66,8 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -131,6 +136,8 @@ func TestGet(t *testing.T) {
 	th.AssertDeepEquals(t, n.SecurityGroups, []string{})
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertEquals(t, n.DeviceID, "5e3898d7-11be-483e-9732-b2f5eccd2b2e")
+	th.AssertEquals(t, n.CreatedAt, time.Date(2019, time.June, 30, 4, 15, 37, 0, time.UTC))
+	th.AssertEquals(t, n.UpdatedAt, time.Date(2019, time.June, 30, 5, 18, 49, 0, time.UTC))
 }
 
 func TestGetWithExtensions(t *testing.T) {

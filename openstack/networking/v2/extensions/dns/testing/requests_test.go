@@ -57,6 +57,8 @@ func TestPortList(t *testing.T) {
 				ID:             "d80b1a3b-4fc1-49f3-952e-1e2ab7081d8b",
 				SecurityGroups: []string{},
 				DeviceID:       "9ae135f4-b6e0-4dad-9e91-3c223e385824",
+				CreatedAt:      time.Date(2019, time.June, 30, 4, 15, 37, 0, time.UTC),
+				UpdatedAt:      time.Date(2019, time.June, 30, 5, 18, 49, 0, time.UTC),
 			},
 			PortDNSExt: dns.PortDNSExt{
 				DNSName: "test-port",
