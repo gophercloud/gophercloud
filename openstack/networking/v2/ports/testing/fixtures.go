@@ -30,7 +30,9 @@ const ListResponse = `
               }
             ],
             "device_id": "9ae135f4-b6e0-4dad-9e91-3c223e385824",
-            "port_security_enabled": false
+            "port_security_enabled": false,
+            "created_at": "2019-06-30T04:15:37",
+            "updated_at": "2019-06-30T05:18:49"
         }
     ]
 }
@@ -73,7 +75,9 @@ const GetResponse = `
             "fqdn": "test-port.openstack.local."
           }
         ],
-        "device_id": "5e3898d7-11be-483e-9732-b2f5eccd2b2e"
+        "device_id": "5e3898d7-11be-483e-9732-b2f5eccd2b2e",
+        "created_at": "2019-06-30T04:15:37Z",
+        "updated_at": "2019-06-30T05:18:49Z"
     }
 }
 `
