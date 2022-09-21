@@ -32,7 +32,8 @@ func TestCreate(t *testing.T) {
 				},
 			},
 		},
-		Size: 2,
+		Size:       2,
+		VolumeType: "ssd",
 	}
 
 	instance, err := instances.Create(fake.ServiceClient(), opts).Extract()
@@ -62,7 +63,8 @@ func TestCreateWithFault(t *testing.T) {
 				},
 			},
 		},
-		Size: 2,
+		Size:       2,
+		VolumeType: "ssd",
 	}
 
 	instance, err := instances.Create(fake.ServiceClient(), opts).Extract()

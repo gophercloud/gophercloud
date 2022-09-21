@@ -14,6 +14,8 @@ import (
 type Volume struct {
 	// The size in GB of the volume
 	Size int
+	// The type of the volume
+	Type string
 
 	Used float64
 }
