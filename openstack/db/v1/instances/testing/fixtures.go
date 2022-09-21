@@ -48,7 +48,8 @@ var instance = `
   "status": "BUILD",
   "updated": "` + timestamp + `",
   "volume": {
-    "size": 2
+    "size": 2,
+	"type": "ssd"
   }
 }
 `
@@ -86,6 +87,7 @@ var instanceGet = `
   "updated": "` + timestamp + `",
   "volume": {
     "size": 1,
+	"type": "ssd",
     "used": 0.12
   },
   "addresses": [
@@ -128,7 +130,8 @@ var createReq = `
 			}
 		],
 		"volume": {
-			"size": 2
+			"size": 2,
+			"type": "ssd"
 		}
 	}
 }
@@ -166,7 +169,8 @@ var instanceWithFault = `
   "status": "BUILD",
   "updated": "` + timestamp + `",
   "volume": {
-    "size": 2
+    "size": 2,
+	"type": "ssd"
   },
   "fault": {
     "message": "some error message",
@@ -219,7 +223,7 @@ var expectedInstance = instances.Instance{
 	},
 	Name:   "json_rack_instance",
 	Status: "BUILD",
-	Volume: instances.Volume{Size: 2},
+	Volume: instances.Volume{Size: 2, Type: "ssd"},
 	Datastore: datastores.DatastorePartial{
 		Type:    "mysql",
 		Version: "5.6",
@@ -242,7 +246,7 @@ var expectedGetInstance = instances.Instance{
 	},
 	Name:   "test",
 	Status: "ACTIVE",
-	Volume: instances.Volume{Size: 1, Used: 0.12},
+	Volume: instances.Volume{Size: 1, Type: "ssd", Used: 0.12},
 	Datastore: datastores.DatastorePartial{
 		Type:    "mysql",
 		Version: "5.6",
@@ -270,7 +274,7 @@ var expectedInstanceWithFault = instances.Instance{
 	},
 	Name:   "json_rack_instance",
 	Status: "BUILD",
-	Volume: instances.Volume{Size: 2},
+	Volume: instances.Volume{Size: 2, Type: "ssd"},
 	Datastore: datastores.DatastorePartial{
 		Type:    "mysql",
 		Version: "5.6",
