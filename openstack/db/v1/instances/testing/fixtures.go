@@ -129,7 +129,8 @@ var createReq = `
 		],
 		"volume": {
 			"size": 2
-		}
+		},
+		"availability_zone": "nova"
 	}
 }
 `

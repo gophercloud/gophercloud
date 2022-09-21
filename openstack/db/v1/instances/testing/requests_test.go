@@ -17,8 +17,9 @@ func TestCreate(t *testing.T) {
 	HandleCreate(t)
 
 	opts := instances.CreateOpts{
-		Name:      "json_rack_instance",
-		FlavorRef: "1",
+		Name:             "json_rack_instance",
+		AvailabilityZone: "nova",
+		FlavorRef:        "1",
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			{Name: "nextround"},
@@ -47,8 +48,9 @@ func TestCreateWithFault(t *testing.T) {
 	HandleCreateWithFault(t)
 
 	opts := instances.CreateOpts{
-		Name:      "json_rack_instance",
-		FlavorRef: "1",
+		Name:             "json_rack_instance",
+		AvailabilityZone: "nova",
+		FlavorRef:        "1",
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			{Name: "nextround"},

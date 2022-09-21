@@ -56,6 +56,8 @@ type CreateOpts struct {
 	// Name of the instance to create. The length of the name is limited to
 	// 255 characters and any characters are permitted. Optional.
 	Name string
+	// The availability zone of the instance.
+	AvailabilityZone string
 	// A slice of database information options.
 	Databases db.CreateOptsBuilder
 	// A slice of user information options.
@@ -88,6 +90,9 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	if opts.Name != "" {
 		instance["name"] = opts.Name
+	}
+	if opts.AvailabilityZone != "" {
+		instance["availability_zone"] = opts.AvailabilityZone
 	}
 	if opts.Databases != nil {
 		dbs, err := opts.Databases.ToDBCreateMap()
