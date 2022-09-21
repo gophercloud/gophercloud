@@ -48,8 +48,7 @@ var instance = `
   "status": "BUILD",
   "updated": "` + timestamp + `",
   "volume": {
-    "size": 2,
-	"type": "ssd"
+    "size": 2
   }
 }
 `
@@ -168,8 +167,7 @@ var instanceWithFault = `
   "status": "BUILD",
   "updated": "` + timestamp + `",
   "volume": {
-    "size": 2,
-	"type": "ssd"
+    "size": 2
   },
   "fault": {
     "message": "some error message",
