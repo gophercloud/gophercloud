@@ -242,6 +242,9 @@ type Node struct {
 
 	// The UTC date and time when the resource was updated, ISO 8601 format. May be “null”.
 	UpdatedAt time.Time `json:"updated_at"`
+
+	// The UTC date and time when the provision state was updated, ISO 8601 format. May be “null”.
+	ProvisionUpdatedAt time.Time `json:"provision_updated_at"`
 }
 
 // NodePage abstracts the raw results of making a List() request against

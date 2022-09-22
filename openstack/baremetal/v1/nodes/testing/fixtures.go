@@ -144,7 +144,7 @@ const NodeListDetailBody = `
       "power_state": null,
       "properties": {},
       "provision_state": "enroll",
-      "provision_updated_at": null,
+      "provision_updated_at": "2019-02-15T17:21:29+00:00",
       "raid_config": {},
       "raid_interface": "no-raid",
       "rescue_interface": "no-rescue",
@@ -448,7 +448,7 @@ const SingleNodeBody = `
   "power_state": null,
   "properties": {},
   "provision_state": "enroll",
-  "provision_updated_at": null,
+  "provision_updated_at": "2019-02-15T17:21:29+00:00",
   "raid_config": {},
   "raid_interface": "no-raid",
   "rescue_interface": "no-rescue",
@@ -814,10 +814,11 @@ const NodeSetMaintenanceBody = `
 `
 
 var (
-	createdAtFoo, _ = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
-	createdAtBar, _ = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
-	createdAtBaz, _ = time.Parse(time.RFC3339, "2019-01-31T19:59:30+00:00")
-	updatedAt, _    = time.Parse(time.RFC3339, "2019-02-15T19:59:29+00:00")
+	createdAtFoo, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
+	createdAtBar, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
+	createdAtBaz, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:30+00:00")
+	updatedAt, _         = time.Parse(time.RFC3339, "2019-02-15T19:59:29+00:00")
+	provisonUpdatedAt, _ = time.Parse(time.RFC3339, "2019-02-15T17:21:29+00:00")
 
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -870,6 +871,7 @@ var (
 		ProtectedReason:     "",
 		CreatedAt:           createdAtFoo,
 		UpdatedAt:           updatedAt,
+		ProvisionUpdatedAt:  provisonUpdatedAt,
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
