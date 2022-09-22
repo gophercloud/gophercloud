@@ -1,6 +1,8 @@
 package nodes
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -234,6 +236,12 @@ type Node struct {
 
 	// Static network configuration to use during deployment and cleaning.
 	NetworkData map[string]interface{} `json:"network_data"`
+
+	// The UTC date and time when the resource was created, ISO 8601 format.
+	CreatedAt time.Time `json:"created_at"`
+
+	// The UTC date and time when the resource was updated, ISO 8601 format. May be “null”.
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // NodePage abstracts the raw results of making a List() request against

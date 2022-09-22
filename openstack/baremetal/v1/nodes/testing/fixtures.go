@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/nodes"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -164,7 +165,7 @@ const NodeListDetailBody = `
       "target_provision_state": null,
       "target_raid_config": {},
       "traits": [],
-      "updated_at": null,
+      "updated_at": "2019-02-15T19:59:29+00:00",
       "uuid": "d2630783-6ec8-4836-b556-ab427c4b581e",
       "vendor_interface": "ipmitool",
       "volume": [
@@ -261,7 +262,7 @@ const NodeListDetailBody = `
       "target_provision_state": null,
       "target_raid_config": {},
       "traits": [],
-      "updated_at": null,
+      "updated_at": "2019-02-15T19:59:29+00:00",
       "uuid": "08c84581-58f5-4ea2-a0c6-dd2e5d2b3662",
       "vendor_interface": "ipmitool",
       "volume": [
@@ -358,7 +359,7 @@ const NodeListDetailBody = `
       "target_provision_state": null,
       "target_raid_config": {},
       "traits": [],
-      "updated_at": null,
+      "updated_at": "2019-02-15T19:59:29+00:00",
       "uuid": "c9afd385-5d89-4ecb-9e1c-68194da6b474",
       "vendor_interface": "ipmitool",
       "volume": [
@@ -468,7 +469,7 @@ const SingleNodeBody = `
   "target_provision_state": null,
   "target_raid_config": {},
   "traits": [],
-  "updated_at": null,
+  "updated_at": "2019-02-15T19:59:29+00:00",
   "uuid": "d2630783-6ec8-4836-b556-ab427c4b581e",
   "vendor_interface": "ipmitool",
   "volume": [
@@ -813,6 +814,11 @@ const NodeSetMaintenanceBody = `
 `
 
 var (
+	createdAtFoo, _ = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
+	createdAtBar, _ = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
+	createdAtBaz, _ = time.Parse(time.RFC3339, "2019-01-31T19:59:30+00:00")
+	updatedAt, _    = time.Parse(time.RFC3339, "2019-02-15T19:59:29+00:00")
+
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
 		Name:                 "foo",
@@ -862,6 +868,8 @@ var (
 		ConductorGroup:      "",
 		Protected:           false,
 		ProtectedReason:     "",
+		CreatedAt:           createdAtFoo,
+		UpdatedAt:           updatedAt,
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
@@ -959,6 +967,8 @@ var (
 		ConductorGroup:       "",
 		Protected:            false,
 		ProtectedReason:      "",
+		CreatedAt:            createdAtBar,
+		UpdatedAt:            updatedAt,
 	}
 
 	NodeBaz = nodes.Node{
@@ -1003,6 +1013,8 @@ var (
 		ConductorGroup:       "",
 		Protected:            false,
 		ProtectedReason:      "",
+		CreatedAt:            createdAtBaz,
+		UpdatedAt:            updatedAt,
 	}
 
 	ConfigDriveMap = nodes.ConfigDrive{
