@@ -115,10 +115,10 @@ type Port struct {
 	RevisionNumber int `json:"revision_number"`
 
 	// Timestamp when the port was created
-	CreatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// Timestamp when the port was last updated
-	UpdatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (r *Port) UnmarshalJSON(b []byte) error {
