@@ -193,6 +193,7 @@ const SubnetCreateRequest = `
         "gateway_ip": "192.168.199.1",
         "cidr": "192.168.199.0/24",
         "dns_nameservers": ["foo"],
+        "service_types": ["network:routed"],
         "allocation_pools": [
             {
                 "start": "192.168.199.2",
@@ -212,7 +213,8 @@ const SubnetCreateResult = `
         "enable_dhcp": true,
         "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
-        "dns_nameservers": [],
+        "dns_nameservers": ["foo"],
+        "service_types": ["network:routed"],
         "allocation_pools": [
             {
                 "start": "192.168.199.2",
