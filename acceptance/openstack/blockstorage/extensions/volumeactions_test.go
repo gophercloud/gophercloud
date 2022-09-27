@@ -145,6 +145,26 @@ func TestVolumeActionsChangeType(t *testing.T) {
 	tools.PrintResource(t, newVolume)
 }
 
+func TestVolumeActionsReImage(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/yoga")
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	blockClient, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+	blockClient.Microversion = "3.68"
+
+	volume, err := blockstorage.CreateVolume(t, blockClient)
+	th.AssertNoErr(t, err)
+	defer blockstorage.DeleteVolume(t, blockClient, volume)
+
+	err = ReImage(t, blockClient, volume, choices.ImageID)
+	th.AssertNoErr(t, err)
+}
+
 // Note(jtopjian): I plan to work on this at some point, but it requires
 // setting up a server with iscsi utils.
 /*
