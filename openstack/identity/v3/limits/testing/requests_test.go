@@ -9,6 +9,16 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+func TestGetEnforcementModel(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetEnforcementModelSuccessfully(t)
+
+	actual, err := limits.GetEnforcementModel(client.ServiceClient()).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, Model, *actual)
+}
+
 func TestListLimits(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

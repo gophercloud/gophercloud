@@ -10,6 +10,15 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+const GetEnforcementModelOutput = `
+{
+    "model": {
+        "description": "Limit enforcement and validation does not take project hierarchy into consideration.",
+        "name": "flat"
+    }
+}
+`
+
 // ListOutput provides a single page of List results.
 const ListOutput = `
 {
@@ -49,6 +58,12 @@ const ListOutput = `
 }
 `
 
+// Model is the enforcement model in the GetEnforcementModel request.
+var Model = limits.EnforcementModel{
+	Name:        "flat",
+	Description: "Limit enforcement and validation does not take project hierarchy into consideration.",
+}
+
 // FirstLimit is the first limit in the List request.
 var FirstLimit = limits.Limit{
 	ResourceName: "volume",
@@ -77,6 +92,20 @@ var SecondLimit = limits.Limit{
 
 // ExpectedLimitsSlice is the slice of limits expected to be returned from ListOutput.
 var ExpectedLimitsSlice = []limits.Limit{FirstLimit, SecondLimit}
+
+// HandleGetEnforcementModelSuccessfully creates an HTTP handler at `/limits/model` on the
+// test handler mux that responds with a enforcement model.
+func HandleGetEnforcementModelSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/limits/model", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetEnforcementModelOutput)
+	})
+}
 
 // HandleListLimitsSuccessfully creates an HTTP handler at `/limits` on the
 // test handler mux that responds with a list of two limits.
