@@ -419,7 +419,7 @@ func CreatePoolHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 // CreateL7Policy will create a l7 policy with a random name with a specified listener
 // and loadbalancer. An error will be returned if the l7 policy could not be
 // created.
-func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *listeners.Listener, lb *loadbalancers.LoadBalancer) (*l7policies.L7Policy, error) {
+func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *listeners.Listener, lb *loadbalancers.LoadBalancer, tags []string) (*l7policies.L7Policy, error) {
 	policyName := tools.RandomString("TESTACCT-", 8)
 	policyDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
@@ -431,6 +431,7 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 		ListenerID:  listener.ID,
 		Action:      l7policies.ActionRedirectToURL,
 		RedirectURL: "http://www.example.com",
+		Tags:        tags,
 	}
 
 	policy, err := l7policies.Create(client, createOpts).Extract()
@@ -449,18 +450,20 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 	th.AssertEquals(t, policy.ListenerID, listener.ID)
 	th.AssertEquals(t, policy.Action, string(l7policies.ActionRedirectToURL))
 	th.AssertEquals(t, policy.RedirectURL, "http://www.example.com")
+	th.AssertDeepEquals(t, policy.Tags, tags)
 
 	return policy, nil
 }
 
 // CreateL7Rule creates a l7 rule for specified l7 policy.
-func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID string, lb *loadbalancers.LoadBalancer) (*l7policies.Rule, error) {
+func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID string, lb *loadbalancers.LoadBalancer, tags []string) (*l7policies.Rule, error) {
 	t.Logf("Attempting to create l7 rule for policy %s", policyID)
 
 	createOpts := l7policies.CreateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeStartWith,
 		Value:       "/api",
+		Tags:        tags,
 	}
 
 	rule, err := l7policies.CreateRule(client, policyID, createOpts).Extract()
@@ -477,6 +480,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
 	th.AssertEquals(t, rule.CompareType, string(l7policies.CompareTypeStartWith))
 	th.AssertEquals(t, rule.Value, "/api")
+	th.AssertDeepEquals(t, rule.Tags, tags)
 
 	return rule, nil
 }

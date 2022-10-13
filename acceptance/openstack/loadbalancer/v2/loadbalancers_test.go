@@ -120,13 +120,16 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	defer DeleteListener(t, lbClient, lb.ID, listener.ID)
 
 	// L7 policy
-	policy, err := CreateL7Policy(t, lbClient, listener, lb)
+	tags := []string{"test"}
+	policy, err := CreateL7Policy(t, lbClient, listener, lb, tags)
 	th.AssertNoErr(t, err)
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 
+	tags = []string{"test", "test1"}
 	newDescription := ""
 	updateL7policyOpts := l7policies.UpdateOpts{
 		Description: &newDescription,
+		Tags:        &tags,
 	}
 	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -141,9 +144,11 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	tools.PrintResource(t, newPolicy)
 
 	th.AssertEquals(t, newPolicy.Description, newDescription)
+	th.AssertDeepEquals(t, newPolicy.Tags, tags)
 
 	// L7 rule
-	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb)
+	tags = []string{"test"}
+	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb, tags)
 	th.AssertNoErr(t, err)
 	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
@@ -155,10 +160,12 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 		tools.PrintResource(t, rule)
 	}
 
+	tags = []string{"test", "test1"}
 	updateL7ruleOpts := l7policies.UpdateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images/special*",
+		Tags:        &tags,
 	}
 	_, err = l7policies.UpdateRule(lbClient, policy.ID, rule.ID, updateL7ruleOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -171,6 +178,8 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
+
+	th.AssertDeepEquals(t, newRule.Tags, tags)
 
 	// Pool
 	pool, err := CreatePoolHTTP(t, lbClient, lb)
