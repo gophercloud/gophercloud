@@ -4,6 +4,7 @@ import "github.com/gophercloud/gophercloud"
 
 const resourcePath = "agents"
 const dhcpNetworksResourcePath = "dhcp-networks"
+const l3RoutersResourcePath = "l3-routers"
 const bgpSpeakersResourcePath = "bgp-drinstances"
 const bgpDRAgentSpeakersResourcePath = "bgp-speakers"
 const bgpDRAgentAgentResourcePath = "bgp-dragents"
@@ -36,16 +37,34 @@ func dhcpNetworksURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(resourcePath, id, dhcpNetworksResourcePath)
 }
 
+func l3RoutersURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(resourcePath, id, l3RoutersResourcePath)
+}
+
 func listDHCPNetworksURL(c *gophercloud.ServiceClient, id string) string {
 	return dhcpNetworksURL(c, id)
+}
+
+func listL3RoutersURL(c *gophercloud.ServiceClient, id string) string {
+	// TODO
+	// hmm list should be the plain l3RoutersURL but dhcp example tell otherwise
+	return l3RoutersURL(c, id)
 }
 
 func scheduleDHCPNetworkURL(c *gophercloud.ServiceClient, id string) string {
 	return dhcpNetworksURL(c, id)
 }
 
+func scheduleL3RouterURL(c *gophercloud.ServiceClient, id string) string {
+	return l3RoutersURL(c, id)
+}
+
 func removeDHCPNetworkURL(c *gophercloud.ServiceClient, id string, networkID string) string {
 	return c.ServiceURL(resourcePath, id, dhcpNetworksResourcePath, networkID)
+}
+
+func removeL3RouterURL(c *gophercloud.ServiceClient, id string, routerID string) string {
+	return c.ServiceURL(resourcePath, id, l3RoutersResourcePath, routerID)
 }
 
 // return /v2.0/agents/{agent-id}/bgp-drinstances
