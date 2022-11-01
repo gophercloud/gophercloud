@@ -344,8 +344,8 @@ func TestListL3Routers(t *testing.T) {
 
 	routes := []routers.Route{
 		{
-			"172.24.3.99",
-			"179.24.1.0/24",
+			NextHop:         "172.24.3.99",
+			DestinationCIDR: "179.24.1.0/24",
 		},
 	}
 
