@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/agents"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -17,6 +18,11 @@ import (
 func TestLayer3RouterScheduling(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	_, err = extensions.Get(client, "l3_agent_scheduler").Extract()
+	if err != nil {
+		t.Skip("Extension l3_agent_scheduler not present")
+	}
 
 	network, err := networking.CreateNetwork(t, client)
 	th.AssertNoErr(t, err)
