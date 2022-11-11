@@ -47,7 +47,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	th.AssertNoErr(t, err)
 	hostingAgents, err := routers.ExtractL3Agents(allPages)
 	th.AssertNoErr(t, err)
-	th.AssertIntGreaterOrEqual(t, len(hostingAgents), 0)
+	th.AssertIntGreaterOrEqual(t, len(hostingAgents), 1)
 	hostingAgent := hostingAgents[0]
 	t.Logf("Router %s is scheduled on %s", router.ID, hostingAgent.ID)
 
