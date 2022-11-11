@@ -142,7 +142,7 @@ Example to remove router from L3 agent
 
 	agentID := "0e1095ae-6f36-40f3-8322-8e1c9a5e68ca"
 	routerID := "e6fa0457-efc2-491d-ac12-17ab60417efd"
-        err = agents.RemoveL3Router(neutron, "0e1095ae-6f36-40f3-8322-8e1c9a5e68ca", "e6fa0457-efc2-491d-ac12-17ab60417efd").ExtractErr()
+        err = agents.RemoveL3Router(neutron, agentID, routerID).ExtractErr()
         if err != nil {
             log.Panic(err)
         }
@@ -151,7 +151,7 @@ Example to schedule router to L3 agent
 
 	agentID := "0e1095ae-6f36-40f3-8322-8e1c9a5e68ca"
 	routerID := "e6fa0457-efc2-491d-ac12-17ab60417efd"
-	err = agents.ScheduleL3Router(neutron, agentID, agents.ScheduleL3RouterOpts{routerID}).ExtractErr()
+	err = agents.ScheduleL3Router(neutron, agentID, agents.ScheduleL3RouterOpts{RouterID: routerID}).ExtractErr()
         if err != nil {
             log.Panic(err)
         }

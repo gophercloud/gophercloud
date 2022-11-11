@@ -46,8 +46,6 @@ func listDHCPNetworksURL(c *gophercloud.ServiceClient, id string) string {
 }
 
 func listL3RoutersURL(c *gophercloud.ServiceClient, id string) string {
-	// TODO
-	// hmm list should be the plain l3RoutersURL but dhcp example tell otherwise
 	return l3RoutersURL(c, id)
 }
 
