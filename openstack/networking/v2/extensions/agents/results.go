@@ -6,6 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speakers"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -207,4 +208,34 @@ func ExtractBGPSpeakers(r pagination.Page) ([]speakers.BGPSpeaker, error) {
 
 	err := (r.(ListBGPSpeakersResult)).ExtractInto(&s)
 	return s.Speakers, err
+}
+
+// ListL3RoutersResult is the response from a List operation.
+// Call its Extract method to interpret it as routers.
+type ListL3RoutersResult struct {
+	gophercloud.Result
+}
+
+// ScheduleL3RouterResult represents the result of a schedule a router to
+// a L3 agent operation. ExtractErr method to determine if the request
+// succeeded or failed.
+type ScheduleL3RouterResult struct {
+	gophercloud.ErrResult
+}
+
+// RemoveL3RouterResult represents the result of a remove a router from a
+// L3 agent operation. ExtractErr method to determine if the request succeeded
+// or failed.
+type RemoveL3RouterResult struct {
+	gophercloud.ErrResult
+}
+
+// Extract interprets any ListL3RoutesResult as an array of routers.
+func (r ListL3RoutersResult) Extract() ([]routers.Router, error) {
+	var s struct {
+		Routers []routers.Router `json:"routers"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Routers, err
 }
