@@ -2,6 +2,10 @@ package domains
 
 import "github.com/gophercloud/gophercloud"
 
+func listAvailableURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL("auth", "domains")
+}
+
 func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("domains")
 }
