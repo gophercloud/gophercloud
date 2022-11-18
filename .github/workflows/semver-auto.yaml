@@ -1,0 +1,37 @@
+name: Add PR semver labels on push
+on: [pull_request_target]
+jobs:
+  go-apidiff:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '1'
+
+    - name: Remove the semver label
+      uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: |
+          semver:patch
+          semver:minor
+          semver:major
+        github_token: ${{ github.token }}
+
+    - name: Checking Go API Compatibility
+      uses: joelanford/go-apidiff@main
+
+    - name: Add semver:minor label
+      if: ${{ success() }}
+      uses: actions-ecosystem/action-add-labels@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:minor
+
+    - name: Add semver:major label
+      if: ${{ failure() }}
+      uses: actions-ecosystem/action-add-labels@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:major
