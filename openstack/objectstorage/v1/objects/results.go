@@ -109,7 +109,7 @@ func ExtractNames(r pagination.Page) ([]string, error) {
 		}
 
 		return names, nil
-	case strings.HasPrefix(ct, "text/plain"):
+	case strings.HasPrefix(ct, "text/plain") || ct == "":
 		names := make([]string, 0, 50)
 
 		body := string(r.(ObjectPage).Body.([]uint8))
@@ -515,7 +515,7 @@ func extractLastMarker(r pagination.Page) (string, error) {
 		}
 
 		return lastObject.Subdir, nil
-	case strings.HasPrefix(ct, "text/plain"):
+	case strings.HasPrefix(ct, "text/plain") || ct == "":
 		names := make([]string, 0, 50)
 
 		body := string(r.(ObjectPage).Body.([]uint8))
