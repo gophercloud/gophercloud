@@ -1,12 +1,15 @@
 package testing
 
 import (
+	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shareaccessrules"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestGet(t *testing.T) {
@@ -36,4 +39,15 @@ func TestGet(t *testing.T) {
 			"key2": "value2",
 		},
 	}, accessRule)
+}
+
+func MockListResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareAccessRulesEndpoint, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, listResponse)
+	})
 }

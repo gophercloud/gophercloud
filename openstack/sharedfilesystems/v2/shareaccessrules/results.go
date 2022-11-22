@@ -63,3 +63,16 @@ func (r GetResult) Extract() (*ShareAccess, error) {
 	err := r.ExtractInto(&s)
 	return s.ShareAccess, err
 }
+
+// ListResult contains the response body and error from a List request.
+type ListResult struct {
+	gophercloud.Result
+}
+
+func (r ListResult) Extract() ([]ShareAccess, error) {
+	var s struct {
+		AccessList []ShareAccess `json:"access_list"`
+	}
+	err := r.ExtractInto(&s)
+	return s.AccessList, err
+}
