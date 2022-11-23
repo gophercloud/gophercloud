@@ -79,6 +79,18 @@ func TestListAllContainerNames(t *testing.T) {
 	th.CheckDeepEquals(t, ExpectedListNames, actual)
 }
 
+func TestListZeroContainerNames(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListZeroContainerNames204(t)
+
+	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{Full: false}).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := containers.ExtractNames(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, []string{}, actual)
+}
+
 func TestCreateContainer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
