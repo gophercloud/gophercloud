@@ -10,6 +10,37 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+// ListAvailableOutput provides a single page of available domain results.
+const ListAvailableOutput = `
+{
+    "domains": [
+        {
+            "id": "52af04aec5f84182b06959d2775d2000",
+            "name": "TestDomain",
+            "description": "Testing domain",
+            "enabled": false,
+            "links": {
+                "self": "https://example.com/v3/domains/52af04aec5f84182b06959d2775d2000"
+            }
+        },
+        {
+            "id": "a720688fb87f4575a4c000d818061eae",
+            "name": "ProdDomain",
+            "description": "Production domain",
+            "enabled": true,
+            "links": {
+                "self": "https://example.com/v3/domains/a720688fb87f4575a4c000d818061eae"
+            }
+        }
+    ],
+    "links": {
+        "next": null,
+        "self": "https://example.com/v3/auth/domains",
+        "previous": null
+    }
+}
+`
+
 // ListOutput provides a single page of Domain results.
 const ListOutput = `
 {
@@ -87,6 +118,28 @@ const UpdateOutput = `
 }
 `
 
+// ProdDomain is a domain fixture.
+var ProdDomain = domains.Domain{
+	Enabled: true,
+	ID:      "a720688fb87f4575a4c000d818061eae",
+	Links: map[string]interface{}{
+		"self": "https://example.com/v3/domains/a720688fb87f4575a4c000d818061eae",
+	},
+	Name:        "ProdDomain",
+	Description: "Production domain",
+}
+
+// TestDomain is a domain fixture.
+var TestDomain = domains.Domain{
+	Enabled: false,
+	ID:      "52af04aec5f84182b06959d2775d2000",
+	Links: map[string]interface{}{
+		"self": "https://example.com/v3/domains/52af04aec5f84182b06959d2775d2000",
+	},
+	Name:        "TestDomain",
+	Description: "Testing domain",
+}
+
 // FirstDomain is the first domain in the List request.
 var FirstDomain = domains.Domain{
 	Enabled: true,
@@ -119,8 +172,26 @@ var SecondDomainUpdated = domains.Domain{
 	Description: "Staging Domain",
 }
 
+// ExpectedAvailableDomainsSlice is the slice of domains expected to be returned
+// from ListAvailableOutput.
+var ExpectedAvailableDomainsSlice = []domains.Domain{TestDomain, ProdDomain}
+
 // ExpectedDomainsSlice is the slice of domains expected to be returned from ListOutput.
 var ExpectedDomainsSlice = []domains.Domain{FirstDomain, SecondDomain}
+
+// HandleListAvailableDomainsSuccessfully creates an HTTP handler at `/auth/domains`
+// on the test handler mux that responds with a list of two domains.
+func HandleListAvailableDomainsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/auth/domains", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListAvailableOutput)
+	})
+}
 
 // HandleListDomainsSuccessfully creates an HTTP handler at `/domains` on the
 // test handler mux that responds with a list of two domains.
