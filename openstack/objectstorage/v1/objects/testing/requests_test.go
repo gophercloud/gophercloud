@@ -75,7 +75,7 @@ func TestDownloadWithLastModified(t *testing.T) {
 	response2 := objects.Download(fake.ServiceClient(), "testContainer", "testObject", options2)
 	content, err2 := response2.ExtractContent()
 	th.AssertNoErr(t, err2)
-	th.AssertEquals(t, len(content), 0)
+	th.AssertEquals(t, 0, len(content))
 }
 
 func TestListObjectInfo(t *testing.T) {
@@ -95,7 +95,7 @@ func TestListObjectInfo(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListObjectSubdir(t *testing.T) {
@@ -115,7 +115,7 @@ func TestListObjectSubdir(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListObjectNames(t *testing.T) {
@@ -139,7 +139,7 @@ func TestListObjectNames(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 
 	// Check with delimiter.
 	count = 0
@@ -157,7 +157,7 @@ func TestListObjectNames(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestCreateObject(t *testing.T) {
@@ -290,7 +290,7 @@ func TestGetObject(t *testing.T) {
 	}
 	actualHeaders, err := objects.Get(fake.ServiceClient(), "testContainer", "testObject", getOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, actualHeaders.StaticLargeObject, true)
+	th.AssertEquals(t, true, actualHeaders.StaticLargeObject)
 }
 
 func TestETag(t *testing.T) {
@@ -303,7 +303,7 @@ func TestETag(t *testing.T) {
 	_, headers, _, err := createOpts.ToObjectCreateParams()
 	th.AssertNoErr(t, err)
 	_, ok := headers["ETag"]
-	th.AssertEquals(t, ok, false)
+	th.AssertEquals(t, false, ok)
 
 	hash := md5.New()
 	io.WriteString(hash, content)
@@ -316,7 +316,7 @@ func TestETag(t *testing.T) {
 
 	_, headers, _, err = createOpts.ToObjectCreateParams()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, headers["ETag"], localChecksum)
+	th.AssertEquals(t, localChecksum, headers["ETag"])
 }
 
 func TestObjectCreateParamsWithoutSeek(t *testing.T) {
@@ -329,7 +329,7 @@ func TestObjectCreateParamsWithoutSeek(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, ok := reader.(io.ReadSeeker)
-	th.AssertEquals(t, ok, true)
+	th.AssertEquals(t, true, ok)
 
 	c, err := ioutil.ReadAll(reader)
 	th.AssertNoErr(t, err)
