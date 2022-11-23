@@ -38,13 +38,13 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.7
+        uses: EmilienM/devstack-action@v0.9
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin octavia https://opendev.org/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://opendev.org/openstack/neutron ${{ matrix.openstack_version }}
-          enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da'
+          enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos'
       - name: Checkout go
         uses: actions/setup-go@v3
         with:

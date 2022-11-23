@@ -29,6 +29,10 @@ jobs:
 
       - name: Setup environment
         run: |
+          # Changing into a different directory to avoid polluting go.sum with "go get"
+          cd "$(mktemp -d)"
+
+          # we use "go get" for Go v1.14
           go install github.com/wadey/gocovmerge@master || go get github.com/wadey/gocovmerge
           go install golang.org/x/tools/cmd/goimports@latest || go get golang.org/x/tools/cmd/goimports
 

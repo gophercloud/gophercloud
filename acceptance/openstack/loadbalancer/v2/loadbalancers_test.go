@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
@@ -50,7 +51,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	// Add "test" tag intentionally to test the "not-tags" parameter. Because "test" tag is also used in other test
 	// cases, we use "test" tag to exclude load balancers created by other test case.
 	tags := []string{"tag1", "tag2", "test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags)
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "")
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
 
@@ -110,7 +111,7 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, nil)
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, nil, "")
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
 
@@ -239,6 +240,12 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
+	// Create QoS policy first as the loadbalancer and its port
+	//needs to be deleted before the QoS policy can be deleted
+	policy2, err := policies.CreateQoSPolicy(t, netClient)
+	th.AssertNoErr(t, err)
+	defer policies.DeleteQoSPolicy(t, netClient, policy2.ID)
+
 	lbClient, err := clients.NewLoadBalancerV2Client()
 	th.AssertNoErr(t, err)
 
@@ -250,14 +257,20 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
-	tags := []string{"test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags)
+	policy1, err := policies.CreateQoSPolicy(t, netClient)
 	th.AssertNoErr(t, err)
+	defer policies.DeleteQoSPolicy(t, netClient, policy1.ID)
+
+	tags := []string{"test"}
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, policy1.ID)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, lb.VipQosPolicyID, policy1.ID)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
 
 	lbDescription := ""
 	updateLoadBalancerOpts := loadbalancers.UpdateOpts{
-		Description: &lbDescription,
+		Description:    &lbDescription,
+		VipQosPolicyID: &policy2.ID,
 	}
 	_, err = loadbalancers.Update(lbClient, lb.ID, updateLoadBalancerOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -272,6 +285,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newLB)
 
 	th.AssertEquals(t, newLB.Description, lbDescription)
+	th.AssertEquals(t, newLB.VipQosPolicyID, policy2.ID)
 
 	lbStats, err := loadbalancers.GetStats(lbClient, lb.ID).Extract()
 	th.AssertNoErr(t, err)
@@ -449,7 +463,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
 	tags := []string{"test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags)
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "")
 	th.AssertNoErr(t, err)
 	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
 

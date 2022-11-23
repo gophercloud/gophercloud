@@ -65,6 +65,33 @@ func TestSubnetCRUD(t *testing.T) {
 	th.AssertEquals(t, found, true)
 }
 
+func TestSubnetsServiceType(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create Network
+	network, err := CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create Subnet
+	subnet, err := CreateSubnetWithServiceTypes(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	tools.PrintResource(t, subnet)
+
+	serviceTypes := []string{"network:floatingip"}
+	updateOpts := subnets.UpdateOpts{
+		ServiceTypes: &serviceTypes,
+	}
+
+	newSubnet, err := subnets.Update(client, subnet.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, newSubnet.ServiceTypes, serviceTypes)
+}
+
 func TestSubnetsDefaultGateway(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)

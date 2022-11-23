@@ -312,6 +312,45 @@ func CreateSubnet(t *testing.T, client *gophercloud.ServiceClient, networkID str
 	return subnet, nil
 }
 
+// CreateSubnet will create a subnet on the specified Network ID and service types.
+//
+//	An error will be returned if the subnet could not be created.
+func CreateSubnetWithServiceTypes(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*subnets.Subnet, error) {
+	subnetName := tools.RandomString("TESTACC-", 8)
+	subnetDescription := tools.RandomString("TESTACC-DESC-", 8)
+	subnetOctet := tools.RandomInt(1, 250)
+	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
+	subnetGateway := fmt.Sprintf("192.168.%d.1", subnetOctet)
+	serviceTypes := []string{"network:routed"}
+	createOpts := subnets.CreateOpts{
+		NetworkID:    networkID,
+		CIDR:         subnetCIDR,
+		IPVersion:    4,
+		Name:         subnetName,
+		Description:  subnetDescription,
+		EnableDHCP:   gophercloud.Disabled,
+		GatewayIP:    &subnetGateway,
+		ServiceTypes: serviceTypes,
+	}
+
+	t.Logf("Attempting to create subnet: %s", subnetName)
+
+	subnet, err := subnets.Create(client, createOpts).Extract()
+	if err != nil {
+		return subnet, err
+	}
+
+	t.Logf("Successfully created subnet.")
+
+	th.AssertEquals(t, subnet.Name, subnetName)
+	th.AssertEquals(t, subnet.Description, subnetDescription)
+	th.AssertEquals(t, subnet.GatewayIP, subnetGateway)
+	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
+	th.AssertDeepEquals(t, subnet.ServiceTypes, serviceTypes)
+
+	return subnet, nil
+}
+
 // CreateSubnetWithDefaultGateway will create a subnet on the specified Network
 // ID and have Neutron set the gateway by default An error will be returned if
 // the subnet could not be created.

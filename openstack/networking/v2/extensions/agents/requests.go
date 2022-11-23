@@ -205,3 +205,49 @@ func ListDRAgentHostingBGPSpeakers(c *gophercloud.ServiceClient, bgpSpeakerID st
 		return AgentPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// ListL3Routers returns a list of routers scheduled to a specific
+// L3 agent.
+func ListL3Routers(c *gophercloud.ServiceClient, id string) (r ListL3RoutersResult) {
+	resp, err := c.Get(listL3RoutersURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ScheduleL3RouterOptsBuilder allows extensions to add additional parameters
+// to the ScheduleL3Router request.
+type ScheduleL3RouterOptsBuilder interface {
+	ToAgentScheduleL3RouterMap() (map[string]interface{}, error)
+}
+
+// ScheduleL3RouterOpts represents the attributes used when scheduling a
+// router to a L3 agent.
+type ScheduleL3RouterOpts struct {
+	RouterID string `json:"router_id" required:"true"`
+}
+
+// ToAgentScheduleL3RouterMap builds a request body from ScheduleL3RouterOpts.
+func (opts ScheduleL3RouterOpts) ToAgentScheduleL3RouterMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// ScheduleL3Router schedule a router to a L3 agent.
+func ScheduleL3Router(c *gophercloud.ServiceClient, id string, opts ScheduleL3RouterOptsBuilder) (r ScheduleL3RouterResult) {
+	b, err := opts.ToAgentScheduleL3RouterMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Post(scheduleL3RouterURL(c, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RemoveL3Router removes a router from a L3 agent.
+func RemoveL3Router(c *gophercloud.ServiceClient, id string, routerID string) (r RemoveL3RouterResult) {
+	resp, err := c.Delete(removeL3RouterURL(c, id, routerID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

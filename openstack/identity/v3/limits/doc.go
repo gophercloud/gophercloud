@@ -2,6 +2,13 @@
 Package limits provides information and interaction with limits for the
 Openstack Identity service.
 
+Example to Get EnforcementModel
+
+	model, err := limits.GetEnforcementModel(identityClient).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to List Limits
 
 	listOpts := limits.ListOpts{

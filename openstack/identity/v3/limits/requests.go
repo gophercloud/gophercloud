@@ -5,6 +5,13 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// Get retrieves details on a single limit, by ID.
+func GetEnforcementModel(client *gophercloud.ServiceClient) (r EnforcementModelResult) {
+	resp, err := client.Get(enforcementModelURL(client), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // ListOptsBuilder allows extensions to add additional parameters to
 // the List request
 type ListOptsBuilder interface {

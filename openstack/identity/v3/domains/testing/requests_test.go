@@ -9,6 +9,26 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+func TestListAvailableDomains(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAvailableDomainsSuccessfully(t)
+
+	count := 0
+	err := domains.ListAvailable(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := domains.ExtractDomains(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedAvailableDomainsSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
 func TestListDomains(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

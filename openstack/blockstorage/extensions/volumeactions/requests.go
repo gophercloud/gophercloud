@@ -391,3 +391,30 @@ func ChangeType(client *gophercloud.ServiceClient, id string, opts ChangeTypeOpt
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ReImageOpts contains options for Re-image a volume.
+type ReImageOpts struct {
+	// New image id
+	ImageID string `json:"image_id"`
+	// set true to re-image volumes in reserved state
+	ReImageReserved bool `json:"reimage_reserved"`
+}
+
+// ToReImageMap assembles a request body based on the contents of a ReImageOpts.
+func (opts ReImageOpts) ToReImageMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "os-reimage")
+}
+
+// ReImage will re-image a volume based on the values in ReImageOpts
+func ReImage(client *gophercloud.ServiceClient, id string, opts ReImageOpts) (r ReImageResult) {
+	b, err := opts.ToReImageMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

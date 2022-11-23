@@ -118,6 +118,7 @@ func TestCreate(t *testing.T) {
 			},
 		},
 		DNSNameservers: []string{"foo"},
+		ServiceTypes:   []string{"network:routed"},
 		HostRoutes: []subnets.HostRoute{
 			{NextHop: "bar"},
 		},
@@ -130,7 +131,8 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{})
+	th.AssertDeepEquals(t, s.DNSNameservers, []string{"foo"})
+	th.AssertDeepEquals(t, s.ServiceTypes, []string{"network:routed"})
 	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
 		{
 			Start: "192.168.199.2",
@@ -319,7 +321,7 @@ func TestCreateWithNoCIDR(t *testing.T) {
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{})
+	th.AssertDeepEquals(t, s.DNSNameservers, []string{"foo"})
 	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
 		{
 			Start: "192.168.199.2",
@@ -368,7 +370,7 @@ func TestCreateWithPrefixlen(t *testing.T) {
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{})
+	th.AssertDeepEquals(t, s.DNSNameservers, []string{"foo"})
 	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
 		{
 			Start: "192.168.199.2",

@@ -53,6 +53,8 @@ type CreateOpts struct {
 	// Specifies the volume size in gigabytes (GB). The value must be between 1
 	// and 300. Required.
 	Size int
+	// Specifies the volume type.
+	VolumeType string
 	// Name of the instance to create. The length of the name is limited to
 	// 255 characters and any characters are permitted. Optional.
 	Name string
@@ -84,7 +86,6 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	}
 
 	instance := map[string]interface{}{
-		"volume":    map[string]int{"size": opts.Size},
 		"flavorRef": opts.FlavorRef,
 	}
 
@@ -127,6 +128,16 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		}
 		instance["nics"] = networks
 	}
+
+	volume := map[string]interface{}{
+		"size": opts.Size,
+	}
+
+	if opts.VolumeType != "" {
+		volume["type"] = opts.VolumeType
+	}
+
+	instance["volume"] = volume
 
 	return map[string]interface{}{"instance": instance}, nil
 }

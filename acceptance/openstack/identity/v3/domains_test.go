@@ -12,6 +12,23 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+func TestDomainsListAvailable(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	allPages, err := domains.ListAvailable(client).AllPages()
+	th.AssertNoErr(t, err)
+
+	allDomains, err := domains.ExtractDomains(allPages)
+	th.AssertNoErr(t, err)
+
+	for _, domain := range allDomains {
+		tools.PrintResource(t, domain)
+	}
+}
+
 func TestDomainsList(t *testing.T) {
 	clients.RequireAdmin(t)
 
