@@ -94,6 +94,19 @@ func HandleListContainerNamesSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleListZeroContainerNames204 creates an HTTP handler at `/` on the test handler mux that
+// responds with "204 No Content" when container names are requested. This happens on some, but not all,
+// objectstorage instances. This case is peculiar in that the server sends no `content-type` header.
+func HandleListZeroContainerNames204(t *testing.T) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "text/plain")
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 // HandleCreateContainerSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with a `Create` response.
 func HandleCreateContainerSuccessfully(t *testing.T) {

@@ -160,6 +160,29 @@ func TestListObjectNames(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestListZeroObjectNames204(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListZeroObjectNames204(t)
+
+	count := 0
+	options := &objects.ListOpts{Full: false}
+	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := objects.ExtractNames(page)
+		if err != nil {
+			t.Errorf("Failed to extract container names: %v", err)
+			return false, err
+		}
+
+		th.CheckDeepEquals(t, []string{}, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 0, count)
+}
+
 func TestCreateObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
