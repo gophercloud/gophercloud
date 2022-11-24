@@ -23,7 +23,7 @@ func TestAuth(t *testing.T) {
 
 	swiftClient, err := swauth.NewObjectStorageV1(providerClient, authOpts)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, swiftClient.TokenID, AuthResult.Token)
+	th.AssertEquals(t, AuthResult.Token, swiftClient.TokenID)
 }
 
 func TestBadAuth(t *testing.T) {

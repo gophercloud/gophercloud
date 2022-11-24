@@ -30,7 +30,7 @@ func TestListContainerInfo(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAllContainerInfo(t *testing.T) {
@@ -64,7 +64,7 @@ func TestListContainerNames(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAllContainerNames(t *testing.T) {
