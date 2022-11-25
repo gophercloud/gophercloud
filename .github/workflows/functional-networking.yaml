@@ -17,6 +17,12 @@ jobs:
             devstack_conf_overrides: |
               enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing master
               enable_plugin neutron-vpnaas https://opendev.org/openstack/neutron-vpnaas master
+          - name: "zed"
+            openstack_version: "stable/zed"
+            ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin neutron-dynamic-routing https://opendev.org/openstack/neutron-dynamic-routing stable/zed
+              enable_plugin neutron-vpnaas https://opendev.org/openstack/neutron-vpnaas stable/zed
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
