@@ -10,31 +10,63 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: ["master"]
-        openstack_version: ["master"]
-        ubuntu_version: ["20.04"]
         include:
+          - name: "master"
+            openstack_version: "master"
+            ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican master
+              enable_plugin heat https://opendev.org/openstack/heat master
+              enable_plugin magnum https://opendev.org/openstack/magnum master
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/zed
+              enable_plugin heat https://opendev.org/openstack/heat stable/zed
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/zed
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/yoga
+              enable_plugin heat https://opendev.org/openstack/heat stable/yoga
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/xena
+              enable_plugin heat https://opendev.org/openstack/heat stable/xena
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/xena
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/wallaby
+              enable_plugin heat https://opendev.org/openstack/heat stable/wallaby
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/wallaby
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/victoria
+              enable_plugin heat https://opendev.org/openstack/heat stable/victoria
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
             ubuntu_version: "18.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/ussuri
+              enable_plugin heat https://opendev.org/openstack/heat stable/ussuri
+              enable_plugin magnum https://opendev.org/openstack/magnum ussuri-eol
           - name: "train"
             openstack_version: "stable/train"
             ubuntu_version: "18.04"
+            devstack_conf_overrides: |
+              enable_plugin barbican https://opendev.org/openstack/barbican stable/train
+              enable_plugin heat https://opendev.org/openstack/heat stable/train
+              enable_plugin magnum https://opendev.org/openstack/magnum train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
@@ -45,9 +77,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin barbican https://opendev.org/openstack/barbican ${{ matrix.openstack_version }}
-            enable_plugin heat https://opendev.org/openstack/heat ${{ matrix.openstack_version }}
-            enable_plugin magnum https://opendev.org/openstack/magnum ${{ matrix.openstack_version }}
+            ${{ matrix.devstack_conf_overrides }}
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true
