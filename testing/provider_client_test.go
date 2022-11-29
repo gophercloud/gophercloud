@@ -32,17 +32,17 @@ func TestUserAgent(t *testing.T) {
 	p := &gophercloud.ProviderClient{}
 
 	p.UserAgent.Prepend("custom-user-agent/2.4.0")
-	expected := "custom-user-agent/2.4.0 gophercloud/2.0.0"
+	expected := "custom-user-agent/2.4.0 " + gophercloud.DefaultUserAgent
 	actual := p.UserAgent.Join()
 	th.CheckEquals(t, expected, actual)
 
 	p.UserAgent.Prepend("another-custom-user-agent/0.3.0", "a-third-ua/5.9.0")
-	expected = "another-custom-user-agent/0.3.0 a-third-ua/5.9.0 custom-user-agent/2.4.0 gophercloud/2.0.0"
+	expected = "another-custom-user-agent/0.3.0 a-third-ua/5.9.0 custom-user-agent/2.4.0 " + gophercloud.DefaultUserAgent
 	actual = p.UserAgent.Join()
 	th.CheckEquals(t, expected, actual)
 
 	p.UserAgent = gophercloud.UserAgent{}
-	expected = "gophercloud/2.0.0"
+	expected = gophercloud.DefaultUserAgent
 	actual = p.UserAgent.Join()
 	th.CheckEquals(t, expected, actual)
 }
