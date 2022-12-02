@@ -59,7 +59,7 @@ func TestCreateStackMissingRequiredInOpts(t *testing.T) {
 		DisableRollback: gophercloud.Disabled,
 	}
 	r := stacks.Create(fake.ServiceClient(), createOpts)
-	th.AssertEquals(t, "Missing input for argument [Name]", r.Err.Error())
+	th.AssertEquals(t, "error creating the options map: Missing input for argument [Name]", r.Err.Error())
 }
 
 func TestAdoptStack(t *testing.T) {
