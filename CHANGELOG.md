@@ -1,3 +1,9 @@
+## v1.1.1 (2022-12-07)
+
+The GOPROXY cache for v1.1.0 was corrupted with a tag pointing to the wrong commit. This release fixes the problem by exposing a new release with the same content.
+
+Please use `v1.1.1` instead of `v1.1.0` to avoid cache issues.
+
 ## v1.1.0 (2022-11-24)
 
 * [GH-2513](https://github.com/gophercloud/gophercloud/pull/2513) objectstorage: Do not parse NoContent responses
