@@ -43,7 +43,7 @@ func TestLimitsList(t *testing.T) {
 func TestCreateLimits(t *testing.T) {
 	limitDescription := tools.RandomString("TESTLIMITS-DESC-", 8)
 	resourceLimit := tools.RandomInt(1, 100)
-	resourceName := "volume"
+	resourceName := "image_size_total"
 
 	clients.RequireAdmin(t)
 
@@ -53,21 +53,29 @@ func TestCreateLimits(t *testing.T) {
 	project, err := CreateProject(t, client, nil)
 	th.AssertNoErr(t, err)
 
-	createServiceOpts := &services.CreateOpts{
-		Type:  resourceName,
-		Extra: map[string]interface{}{},
-	}
-
-	service, err := CreateService(t, client, createServiceOpts)
+	// Find image service (glance on Devstack) which has precreated registered limits.
+	// TODO: Use registered limits API to create global limit and then overwrite it with limit.
+	allPages, err := services.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
+
+	svList, err := services.ExtractServices(allPages)
+	serviceID := ""
+	for _, service := range svList {
+		if service.Type == "image" {
+			serviceID = service.ID
+			break
+		}
+	}
+	th.AssertIntGreaterOrEqual(t, len(serviceID), 1)
 
 	createOpts := limits.BatchCreateOpts{
 		limits.CreateOpts{
-			ServiceID:     service.ID,
+			ServiceID:     serviceID,
 			ProjectID:     project.ID,
 			ResourceName:  resourceName,
 			ResourceLimit: resourceLimit,
 			Description:   limitDescription,
+			RegionID:      "RegionOne",
 		},
 	}
 
@@ -77,6 +85,6 @@ func TestCreateLimits(t *testing.T) {
 	th.AssertEquals(t, limitDescription, createdLimits[0].Description)
 	th.AssertEquals(t, resourceLimit, createdLimits[0].ResourceLimit)
 	th.AssertEquals(t, resourceName, createdLimits[0].ResourceName)
-	th.AssertEquals(t, service.ID, createdLimits[0].ServiceID)
+	th.AssertEquals(t, serviceID, createdLimits[0].ServiceID)
 	th.AssertEquals(t, project.ID, createdLimits[0].ProjectID)
 }
