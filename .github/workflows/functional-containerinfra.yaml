@@ -10,28 +10,42 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: ["master"]
-        openstack_version: ["master"]
-        ubuntu_version: ["20.04"]
         include:
+          - name: "master"
+            openstack_version: "master"
+            ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum master
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/xena
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/wallaby
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
             ubuntu_version: "18.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum ussuri-eol
           - name: "train"
             openstack_version: "stable/train"
             ubuntu_version: "18.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://opendev.org/openstack/magnum train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
@@ -44,10 +58,11 @@ jobs:
           conf_overrides: |
             enable_plugin barbican https://opendev.org/openstack/barbican ${{ matrix.openstack_version }}
             enable_plugin heat https://opendev.org/openstack/heat ${{ matrix.openstack_version }}
-            enable_plugin magnum https://opendev.org/openstack/magnum ${{ matrix.openstack_version }}
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true
+            MAGNUMCLIENT_BRANCH=${{ matrix.openstack_version }}
+            ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
         uses: actions/setup-go@v3
