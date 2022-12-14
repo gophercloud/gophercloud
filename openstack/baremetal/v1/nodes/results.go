@@ -198,6 +198,12 @@ type Node struct {
 	// Interface used for node inspection, e.g. “no-inspect”.
 	InspectInterface string `json:"inspect_interface"`
 
+	// Time when inspection was started.
+	InspectionStartedAt *time.Time `json:"inspection_started_at"`
+
+	// Time when inspection was completed.
+	InspectionFinishedAt *time.Time `json:"inspection_finished_at"`
+
 	// For out-of-band node management, e.g. “ipmitool”.
 	ManagementInterface string `json:"management_interface"`
 

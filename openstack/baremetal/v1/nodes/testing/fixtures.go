@@ -101,7 +101,7 @@ const NodeListDetailBody = `
       "fault": null,
       "inspect_interface": "no-inspect",
       "inspection_finished_at": null,
-      "inspection_started_at": null,
+      "inspection_started_at": "2022-12-14T15:44:09+00:00",
       "instance_info": {},
       "instance_uuid": null,
       "last_error": null,
@@ -294,8 +294,8 @@ const NodeListDetailBody = `
       "extra": {},
       "fault": null,
       "inspect_interface": "no-inspect",
-      "inspection_finished_at": null,
       "inspection_started_at": null,
+      "inspection_finished_at": null,
       "instance_info": {},
       "instance_uuid": null,
       "last_error": null,
@@ -405,7 +405,7 @@ const SingleNodeBody = `
   "fault": null,
   "inspect_interface": "no-inspect",
   "inspection_finished_at": null,
-  "inspection_started_at": null,
+  "inspection_started_at": "2022-12-14T15:44:09+00:00",
   "instance_info": {},
   "instance_uuid": null,
   "last_error": null,
@@ -814,11 +814,13 @@ const NodeSetMaintenanceBody = `
 `
 
 var (
-	createdAtFoo, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
-	createdAtBar, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
-	createdAtBaz, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:30+00:00")
-	updatedAt, _         = time.Parse(time.RFC3339, "2019-02-15T19:59:29+00:00")
-	provisonUpdatedAt, _ = time.Parse(time.RFC3339, "2019-02-15T17:21:29+00:00")
+	createdAtFoo, _         = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
+	createdAtBar, _         = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
+	createdAtBaz, _         = time.Parse(time.RFC3339, "2019-01-31T19:59:30+00:00")
+	updatedAt, _            = time.Parse(time.RFC3339, "2019-02-15T19:59:29+00:00")
+	provisonUpdatedAt, _    = time.Parse(time.RFC3339, "2019-02-15T17:21:29+00:00")
+	inspectionStartedAt, _  = time.Parse(time.RFC3339, "2022-12-14T15:44:09+00:00")
+	inspectionFinishedAt, _ = time.Parse(time.RFC3339, "")
 
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -841,37 +843,39 @@ var (
 			"deploy_ramdisk": "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
 			"ipmi_password":  "admin",
 		},
-		DriverInternalInfo:  map[string]interface{}{},
-		Properties:          map[string]interface{}{},
-		InstanceInfo:        map[string]interface{}{},
-		InstanceUUID:        "",
-		ChassisUUID:         "",
-		Extra:               map[string]interface{}{},
-		ConsoleEnabled:      false,
-		RAIDConfig:          map[string]interface{}{},
-		TargetRAIDConfig:    map[string]interface{}{},
-		CleanStep:           map[string]interface{}{},
-		DeployStep:          map[string]interface{}{},
-		ResourceClass:       "",
-		BIOSInterface:       "no-bios",
-		BootInterface:       "pxe",
-		ConsoleInterface:    "no-console",
-		DeployInterface:     "iscsi",
-		InspectInterface:    "no-inspect",
-		ManagementInterface: "ipmitool",
-		NetworkInterface:    "flat",
-		PowerInterface:      "ipmitool",
-		RAIDInterface:       "no-raid",
-		RescueInterface:     "no-rescue",
-		StorageInterface:    "noop",
-		Traits:              []string{},
-		VendorInterface:     "ipmitool",
-		ConductorGroup:      "",
-		Protected:           false,
-		ProtectedReason:     "",
-		CreatedAt:           createdAtFoo,
-		UpdatedAt:           updatedAt,
-		ProvisionUpdatedAt:  provisonUpdatedAt,
+		DriverInternalInfo:   map[string]interface{}{},
+		Properties:           map[string]interface{}{},
+		InstanceInfo:         map[string]interface{}{},
+		InstanceUUID:         "",
+		ChassisUUID:          "",
+		Extra:                map[string]interface{}{},
+		ConsoleEnabled:       false,
+		RAIDConfig:           map[string]interface{}{},
+		TargetRAIDConfig:     map[string]interface{}{},
+		CleanStep:            map[string]interface{}{},
+		DeployStep:           map[string]interface{}{},
+		ResourceClass:        "",
+		BIOSInterface:        "no-bios",
+		BootInterface:        "pxe",
+		ConsoleInterface:     "no-console",
+		DeployInterface:      "iscsi",
+		InspectInterface:     "no-inspect",
+		InspectionStartedAt:  &inspectionStartedAt,
+		InspectionFinishedAt: nil,
+		ManagementInterface:  "ipmitool",
+		NetworkInterface:     "flat",
+		PowerInterface:       "ipmitool",
+		RAIDInterface:        "no-raid",
+		RescueInterface:      "no-rescue",
+		StorageInterface:     "noop",
+		Traits:               []string{},
+		VendorInterface:      "ipmitool",
+		ConductorGroup:       "",
+		Protected:            false,
+		ProtectedReason:      "",
+		CreatedAt:            createdAtFoo,
+		UpdatedAt:            updatedAt,
+		ProvisionUpdatedAt:   provisonUpdatedAt,
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
