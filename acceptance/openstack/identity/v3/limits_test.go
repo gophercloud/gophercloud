@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -41,6 +42,10 @@ func TestLimitsList(t *testing.T) {
 }
 
 func TestCreateLimits(t *testing.T) {
+	err := os.Setenv("OS_SYSTEM_SCOPE", "all")
+	th.AssertNoErr(t, err)
+	defer os.Unsetenv("OS_SYSTEM_SCOPE")
+
 	limitDescription := tools.RandomString("TESTLIMITS-DESC-", 8)
 	resourceLimit := tools.RandomInt(1, 100)
 	resourceName := "image_size_total"
@@ -87,4 +92,5 @@ func TestCreateLimits(t *testing.T) {
 	th.AssertEquals(t, resourceName, createdLimits[0].ResourceName)
 	th.AssertEquals(t, serviceID, createdLimits[0].ServiceID)
 	th.AssertEquals(t, project.ID, createdLimits[0].ProjectID)
+
 }
