@@ -40,3 +40,44 @@ func TestListMappingsAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedMappingsSlice, actual)
 }
+
+func TestCreateMappings(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateMappingSuccessfully(t)
+
+	createOpts := federation.CreateMappingOpts{
+		Rules: []federation.MappingRule{
+			{
+				Local: []federation.RuleLocal{
+					{
+						User: &federation.RuleUser{
+							Name: "{0}",
+						},
+					},
+					{
+						Group: &federation.Group{
+							ID: "0cd5e9",
+						},
+					},
+				},
+				Remote: []federation.RuleRemote{
+					{
+						Type: "UserName",
+					},
+					{
+						Type: "orgPersonType",
+						NotAnyOf: []string{
+							"Contractor",
+							"Guest",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	actual, err := federation.CreateMapping(client.ServiceClient(), "ACME", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, MappingACME, *actual)
+}

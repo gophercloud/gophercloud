@@ -1,6 +1,7 @@
 package federation
 
 import (
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -128,6 +129,25 @@ type RuleUser struct {
 
 	// User type
 	Type *UserType `json:"type,omitempty"`
+}
+
+type mappingResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any mappingResult as a Mapping.
+func (c mappingResult) Extract() (*Mapping, error) {
+	var s struct {
+		Mapping *Mapping `json:"mapping"`
+	}
+	err := c.ExtractInto(&s)
+	return s.Mapping, err
+}
+
+// CreateMappingResult is the response from a CreateMapping operation.
+// Call its Extract method to interpret it as a Mapping.
+type CreateMappingResult struct {
+	mappingResult
 }
 
 // MappingsPage is a single page of Mapping results.
