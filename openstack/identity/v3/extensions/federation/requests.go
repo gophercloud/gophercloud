@@ -80,3 +80,10 @@ func UpdateMapping(client *gophercloud.ServiceClient, mappingID string, opts Upd
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// DeleteMapping deletes a mapping.
+func DeleteMapping(client *gophercloud.ServiceClient, mappingID string) (r DeleteMappingResult) {
+	resp, err := client.Delete(mappingsResourceURL(client, mappingID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

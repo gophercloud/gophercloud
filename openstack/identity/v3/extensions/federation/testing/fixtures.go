@@ -332,3 +332,14 @@ func HandleUpdateMappingSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, UpdateOutput)
 	})
 }
+
+// HandleDeleteMappingSuccessfully creates an HTTP handler at `/mappings` on the
+// test handler mux that tests mapping deletion.
+func HandleDeleteMappingSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

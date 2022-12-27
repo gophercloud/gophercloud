@@ -132,3 +132,12 @@ func TestUpdateMapping(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingUpdated, *actual)
 }
+
+func TestDeleteMapping(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteMappingSuccessfully(t)
+
+	res := federation.DeleteMapping(client.ServiceClient(), "ACME")
+	th.AssertNoErr(t, res.Err)
+}

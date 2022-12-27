@@ -109,4 +109,7 @@ func TestMappingsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(updateOpts.Rules), len(updatedMapping.Rules))
 	th.CheckDeepEquals(t, updateOpts.Rules[0], updatedMapping.Rules[0])
+
+	err = federation.DeleteMapping(client, mappingName).ExtractErr()
+	th.AssertNoErr(t, err)
 }

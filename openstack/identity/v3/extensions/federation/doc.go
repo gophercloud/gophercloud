@@ -94,5 +94,12 @@ Example to Update a Mapping
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a Mapping
+
+	err := federation.DeleteMapping(identityClient, "ACME").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package federation
