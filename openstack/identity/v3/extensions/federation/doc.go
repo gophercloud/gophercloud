@@ -45,5 +45,10 @@ Example to Create Mappings
 			},
 		},
 	}
+
+	createdMapping, err := federation.CreateMapping(identityClient, "ACME", createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package federation
