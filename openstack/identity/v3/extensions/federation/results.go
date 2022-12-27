@@ -156,6 +156,12 @@ type GetMappingResult struct {
 	mappingResult
 }
 
+// UpdateMappingResult is the response from a UpdateMapping operation.
+// Call its Extract method to interpret it as a Mapping.
+type UpdateMappingResult struct {
+	mappingResult
+}
+
 // MappingsPage is a single page of Mapping results.
 type MappingsPage struct {
 	pagination.LinkedPageBase
