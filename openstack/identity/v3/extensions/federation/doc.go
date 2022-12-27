@@ -50,5 +50,12 @@ Example to Create Mappings
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get a Mapping
+
+	mapping, err := federation.GetMapping(identityClient, "ACME").Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package federation

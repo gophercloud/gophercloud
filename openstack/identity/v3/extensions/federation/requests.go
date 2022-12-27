@@ -42,3 +42,10 @@ func CreateMapping(client *gophercloud.ServiceClient, mappingID string, opts Cre
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// GetMapping retrieves details on a single mapping, by ID.
+func GetMapping(client *gophercloud.ServiceClient, mappingID string) (r GetMappingResult) {
+	resp, err := client.Get(mappingsResourceURL(client, mappingID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

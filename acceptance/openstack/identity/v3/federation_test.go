@@ -64,7 +64,13 @@ func TestMappingsCRUD(t *testing.T) {
 		},
 	}
 
-	actual, err := federation.CreateMapping(client, mappingName, createOpts).Extract()
+	createdMapping, err := federation.CreateMapping(client, mappingName, createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, createOpts.Rules[0], actual.Rules[0])
+	th.AssertEquals(t, len(createOpts.Rules), len(createdMapping.Rules))
+	th.CheckDeepEquals(t, createOpts.Rules[0], createdMapping.Rules[0])
+
+	mapping, err := federation.GetMapping(client, mappingName).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(createOpts.Rules), len(mapping.Rules))
+	th.CheckDeepEquals(t, createOpts.Rules[0], mapping.Rules[0])
 }
