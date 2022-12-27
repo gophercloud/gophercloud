@@ -25,7 +25,9 @@ func TestListMappings(t *testing.T) {
 	tools.PrintResource(t, mappings)
 }
 
-func TestCreateMapping(t *testing.T) {
+func TestMappingsCRUD(t *testing.T) {
+	mappingName := tools.RandomString("TESTMAPPING-", 8)
+
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV3Client()
@@ -62,7 +64,7 @@ func TestCreateMapping(t *testing.T) {
 		},
 	}
 
-	actual, err := federation.CreateMapping(client, "ACME", createOpts).Extract()
+	actual, err := federation.CreateMapping(client, mappingName, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, createOpts.Rules[0], actual.Rules[0])
 }
