@@ -102,4 +102,16 @@ func TestLimitsCRUD(t *testing.T) {
 	limit, err := limits.Get(client, limitID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, createdLimits[0], *limit)
+
+	newLimitDescription := tools.RandomString("TESTLIMITS-DESC-CHNGD-", 8)
+	newResourceLimit := tools.RandomInt(1, 100)
+	updateOpts := limits.UpdateOpts{
+		Description:   &newLimitDescription,
+		ResourceLimit: &newResourceLimit,
+	}
+
+	updatedLimit, err := limits.Update(client, limitID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newLimitDescription, updatedLimit.Description)
+	th.AssertEquals(t, newResourceLimit, updatedLimit.ResourceLimit)
 }

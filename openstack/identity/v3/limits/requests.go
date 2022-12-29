@@ -126,3 +126,37 @@ func Get(client *gophercloud.ServiceClient, limitID string) (r GetResult) {
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToLimitUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents parameters to update a domain.
+type UpdateOpts struct {
+	// Description of the limit.
+	Description *string `json:"description,omitempty"`
+
+	// ResourceLimit is the override limit.
+	ResourceLimit *int `json:"resource_limit,omitempty"`
+}
+
+// ToLimitUpdateMap formats UpdateOpts into an update request.
+func (opts UpdateOpts) ToLimitUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "limit")
+}
+
+// Update modifies the attributes of a limit.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToLimitUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Patch(resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

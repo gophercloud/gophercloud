@@ -87,3 +87,20 @@ func TestGetLimit(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstLimit, *actual)
 }
+
+func TestUpdateLimit(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateLimitSuccessfully(t)
+
+	var description = "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+	var resourceLimit = 5
+	updateOpts := limits.UpdateOpts{
+		Description:   &description,
+		ResourceLimit: &resourceLimit,
+	}
+
+	actual, err := limits.Update(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondLimitUpdated, *actual)
+}

@@ -55,5 +55,21 @@ Example to Get a Limit
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a Limit
+
+	limitID := "0fe36e73809d46aeae6705c39077b1b3"
+
+	description := "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+	resourceLimit := 5
+	updateOpts := limits.UpdateOpts{
+	  Description:   &description,
+	  ResourceLimit: &resourceLimit,
+	}
+
+	limit, err := limits.Update(identityClient, limitID, updateOpts).Extract()
+	if err != nil {
+	  panic(err)
+	}
 */
 package limits
