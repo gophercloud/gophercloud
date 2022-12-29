@@ -48,5 +48,12 @@ Example to Create Limits
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get a Limit
+
+	limit, err := limits.Get(identityClient, "25a04c7a065c430590881c646cdcdd58").Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package limits

@@ -41,7 +41,7 @@ func TestLimitsList(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestCreateLimits(t *testing.T) {
+func TestLimitsCRUD(t *testing.T) {
 	// TODO: After https://github.com/gophercloud/gophercloud/issues/2290 is implemented
 	// use registered limits API to create global registered limit and then overwrite it with limit.
 	// Current solution (using glance limit) only works with Openstack Xena and above.
@@ -97,4 +97,9 @@ func TestCreateLimits(t *testing.T) {
 	th.AssertEquals(t, serviceID, createdLimits[0].ServiceID)
 	th.AssertEquals(t, project.ID, createdLimits[0].ProjectID)
 
+	limitID := createdLimits[0].ID
+
+	limit, err := limits.Get(client, limitID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, createdLimits[0], *limit)
 }
