@@ -71,5 +71,13 @@ Example to Update a Limit
 	if err != nil {
 	  panic(err)
 	}
+
+Example to Delete a Limit
+
+	limitID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := limits.Delete(identityClient, limitID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package limits

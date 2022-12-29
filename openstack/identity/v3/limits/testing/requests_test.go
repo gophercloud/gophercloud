@@ -104,3 +104,12 @@ func TestUpdateLimit(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondLimitUpdated, *actual)
 }
+
+func TestDeleteLimit(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteLimitSuccessfully(t)
+
+	err := limits.Delete(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05").ExtractErr()
+	th.AssertNoErr(t, err)
+}
