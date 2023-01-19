@@ -6,9 +6,9 @@ package v1
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumetypes"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/v1/volumetypes"
 )
 
 func TestVolumeTypesList(t *testing.T) {

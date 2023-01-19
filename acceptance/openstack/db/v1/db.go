@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/db/v1/databases"
-	"github.com/gophercloud/gophercloud/openstack/db/v1/instances"
-	"github.com/gophercloud/gophercloud/openstack/db/v1/users"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/db/v1/databases"
+	"github.com/bizflycloud/gophercloud/openstack/db/v1/instances"
+	"github.com/bizflycloud/gophercloud/openstack/db/v1/users"
 )
 
 // CreateDatabase will create a database with a randomly generated name.

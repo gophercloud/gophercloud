@@ -1,7 +1,7 @@
 package shareaccessrules
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 const shareAccessRulesEndpoint = "share-access-rules"

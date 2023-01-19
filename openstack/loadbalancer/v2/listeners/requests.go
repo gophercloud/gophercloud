@@ -1,10 +1,10 @@
 package listeners
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/l7policies"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/pools"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // Type Protocol represents a listener protocol.

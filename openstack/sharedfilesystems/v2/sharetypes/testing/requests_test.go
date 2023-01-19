@@ -3,10 +3,10 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharetypes"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/sharedfilesystems/v2/sharetypes"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 // Verifies that a share type can be created correctly

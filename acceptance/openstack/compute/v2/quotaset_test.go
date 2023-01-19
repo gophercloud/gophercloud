@@ -8,12 +8,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/extensions/quotasets"
+	"github.com/bizflycloud/gophercloud/openstack/identity/v3/projects"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestQuotasetGet(t *testing.T) {

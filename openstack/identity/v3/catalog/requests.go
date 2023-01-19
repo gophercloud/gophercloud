@@ -1,8 +1,8 @@
 package catalog
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // List enumerates the services available to a specific user.

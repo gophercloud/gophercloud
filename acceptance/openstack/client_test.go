@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/credentials"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/ec2tokens"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack"
+	"github.com/bizflycloud/gophercloud/openstack/identity/v3/credentials"
+	"github.com/bizflycloud/gophercloud/openstack/identity/v3/extensions/ec2tokens"
+	"github.com/bizflycloud/gophercloud/openstack/identity/v3/tokens"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestAuthenticatedClient(t *testing.T) {

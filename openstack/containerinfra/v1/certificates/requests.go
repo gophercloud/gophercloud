@@ -1,7 +1,7 @@
 package certificates
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // CreateOptsBuilder allows extensions to add additional parameters

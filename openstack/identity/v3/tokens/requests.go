@@ -1,6 +1,6 @@
 package tokens
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 // Scope allows a created token to be limited to a specific domain or project.
 type Scope struct {

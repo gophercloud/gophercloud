@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/subnets"
 )
 
 const SubnetListResult = `

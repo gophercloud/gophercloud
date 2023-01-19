@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/usage"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/extensions/usage"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 const FirstTenantID = "aabbccddeeff112233445566"

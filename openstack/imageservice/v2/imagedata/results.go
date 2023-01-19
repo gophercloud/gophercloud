@@ -3,7 +3,7 @@ package imagedata
 import (
 	"io"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // UploadResult is the result of an upload image operation. Call its ExtractErr

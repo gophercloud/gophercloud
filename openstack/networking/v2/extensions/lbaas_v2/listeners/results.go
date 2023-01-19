@@ -1,10 +1,10 @@
 package listeners
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/l7policies"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/l7policies"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 type LoadBalancerID struct {
@@ -58,7 +58,7 @@ type Listener struct {
 
 	// L7policies are the L7 policies which are part of this listener.
 	// This field seems to only be returned during a call to a load balancer's /status
-	// see: https://github.com/gophercloud/gophercloud/issues/1352
+	// see: https://github.com/bizflycloud/gophercloud/issues/1352
 	L7Policies []l7policies.L7Policy `json:"l7policies"`
 
 	// The provisioning status of the listener.

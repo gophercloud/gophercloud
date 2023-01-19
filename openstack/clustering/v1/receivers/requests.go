@@ -1,8 +1,8 @@
 package receivers
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // ReceiverType represents a valid type of receiver

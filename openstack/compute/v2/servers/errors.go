@@ -3,7 +3,7 @@ package servers
 import (
 	"fmt"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // ErrNeitherImageIDNorImageNameProvided is the error when neither the image

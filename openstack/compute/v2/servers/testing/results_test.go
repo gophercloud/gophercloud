@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 	"golang.org/x/crypto/ssh"
 )
 

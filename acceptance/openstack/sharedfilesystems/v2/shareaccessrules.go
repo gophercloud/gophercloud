@@ -3,8 +3,8 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shareaccessrules"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/sharedfilesystems/v2/shareaccessrules"
 )
 
 func ShareAccessRuleGet(t *testing.T, client *gophercloud.ServiceClient, accessID string) (*shareaccessrules.ShareAccess, error) {

@@ -9,7 +9,7 @@
 ## New Contributor Tutorial
 
 For new contributors, we've put together a detailed tutorial
-[here](https://github.com/gophercloud/gophercloud/tree/master/docs/contributor-tutorial)!
+[here](https://github.com/bizflycloud/gophercloud/tree/master/docs/contributor-tutorial)!
 
 ## 3 ways to get involved
 
@@ -20,7 +20,7 @@ each is described briefly below.
 
 If you want to start fixing open bugs, we'd really appreciate that! Bug fixing
 is central to any project. The best way to get started is by heading to our
-[bug tracker](https://github.com/gophercloud/gophercloud/issues) and finding open
+[bug tracker](https://github.com/bizflycloud/gophercloud/issues) and finding open
 bugs that you think nobody is working on. It might be useful to comment on the
 thread to see the current state of the issue and if anybody has made any
 breakthroughs on it so far.
@@ -28,7 +28,7 @@ breakthroughs on it so far.
 ### 2. Improving documentation
 
 Gophercloud's documentation is automatically generated from the source code
-and can be read online at [godoc.org](https://godoc.org/github.com/gophercloud/gophercloud).
+and can be read online at [godoc.org](https://godoc.org/github.com/bizflycloud/gophercloud).
 
 If you feel that a certain section could be improved - whether it's to clarify
 ambiguity, correct a technical mistake, or to fix a grammatical error - please
@@ -68,13 +68,13 @@ way than just downloading it. Here are the basic instructions:
 get dependencies for unit and acceptance tests.
 
    ```bash
-   go get -tags "fixtures acceptance" github.com/gophercloud/gophercloud
+   go get -tags "fixtures acceptance" github.com/bizflycloud/gophercloud
    ```
 
 2. Move into the directory that houses your local repository:
 
    ```bash
-   cd ${GOPATH}/src/github.com/gophercloud/gophercloud
+   cd ${GOPATH}/src/github.com/bizflycloud/gophercloud
    ```
 
 3. Fork the `gophercloud/gophercloud` repository and update your remote refs. You
@@ -107,7 +107,7 @@ need to checkout a new feature branch:
    git commit
    ```
 
-7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/master/docs/STYLEGUIDE.md).
+7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/bizflycloud/gophercloud/blob/master/docs/STYLEGUIDE.md).
 
 > Further information about using Git can be found [here](https://git-scm.com/book/en/v2).
 
@@ -136,7 +136,7 @@ process of testing expectations with assertions:
 import (
   "testing"
 
-  "github.com/gophercloud/gophercloud/testhelper"
+  "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestSomething(t *testing.T) {
@@ -162,9 +162,9 @@ Here is a truncated example of mocked HTTP responses:
 import (
 	"testing"
 
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	fake "github.com/bizflycloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
 )
 
 func TestGet(t *testing.T) {

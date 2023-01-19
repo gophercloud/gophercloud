@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // CreateResult is the response of a Post operations. Call its Extract method to interpret it as a list of Workflows.

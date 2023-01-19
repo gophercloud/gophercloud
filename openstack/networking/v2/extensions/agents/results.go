@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speakers"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/bgp/speakers"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 type commonResult struct {

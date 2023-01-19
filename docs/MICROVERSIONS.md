@@ -57,7 +57,7 @@ service. You may need to use a pointer field in order for this to work.
 When adding a new field, please make sure to include a GoDoc comment about
 what microversions the field is valid for.
 
-Please see [here](https://github.com/gophercloud/gophercloud/blob/917735ee91e24fe1493e57869c3b42ee89bc95d8/openstack/compute/v2/servers/requests.go#L215-L217) for an example.
+Please see [here](https://github.com/bizflycloud/gophercloud/blob/917735ee91e24fe1493e57869c3b42ee89bc95d8/openstack/compute/v2/servers/requests.go#L215-L217) for an example.
 
 ### New Response Fields
 
@@ -70,7 +70,7 @@ from a microversioned result.
 When adding a new field, please make sure to include a GoDoc comment about
 what microversions the field is valid for.
 
-Please see [here](https://github.com/gophercloud/gophercloud/blob/ed4deec00ff1d4d4c8a762af0c6360d4184a4bf4/openstack/compute/v2/servers/results.go#L221-L223) for an example.
+Please see [here](https://github.com/bizflycloud/gophercloud/blob/ed4deec00ff1d4d4c8a762af0c6360d4184a4bf4/openstack/compute/v2/servers/results.go#L221-L223) for an example.
 
 ### Modified Response Fields
 
@@ -82,7 +82,7 @@ struct and new result struct.
 These new structs and methods need to be defined in a new `microversions.go`
 file.
 
-Please see [here](https://github.com/gophercloud/gophercloud/blob/917735ee91e24fe1493e57869c3b42ee89bc95d8/openstack/container/v1/capsules/microversions.go) for an example.
+Please see [here](https://github.com/bizflycloud/gophercloud/blob/917735ee91e24fe1493e57869c3b42ee89bc95d8/openstack/container/v1/capsules/microversions.go) for an example.
 
 ## Application Developer Information
 

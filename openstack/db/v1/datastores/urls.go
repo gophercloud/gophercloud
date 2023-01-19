@@ -1,6 +1,6 @@
 package datastores
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 func baseURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("datastores")

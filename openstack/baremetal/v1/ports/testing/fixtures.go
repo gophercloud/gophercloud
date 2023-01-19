@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/ports"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/baremetal/v1/ports"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 // PortListBody contains the canned body of a ports.List response, without detail.

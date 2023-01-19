@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // PageResult stores the HTTP response that returned the current page of results.

@@ -1,6 +1,6 @@
 package drivers
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 func driversURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("drivers")

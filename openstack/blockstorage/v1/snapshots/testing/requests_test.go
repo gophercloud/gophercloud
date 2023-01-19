@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/snapshots"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/v1/snapshots"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 func TestList(t *testing.T) {

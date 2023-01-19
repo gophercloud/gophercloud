@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/extradhcpopts"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/extradhcpopts"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/ports"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/subnets"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 // PortWithExtraDHCPOpts represents a port with extra DHCP options configuration.
@@ -568,7 +568,7 @@ func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string) error
 	})
 }
 
-// This is duplicated from https://github.com/gophercloud/utils
+// This is duplicated from https://github.com/bizflycloud/utils
 // so that Gophercloud "core" doesn't have a dependency on the
 // complementary utils repository.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {

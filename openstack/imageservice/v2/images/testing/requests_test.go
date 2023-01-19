@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/imageservice/v2/images"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	fakeclient "github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 func TestListImage(t *testing.T) {

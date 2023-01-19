@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 type ManilaError struct {

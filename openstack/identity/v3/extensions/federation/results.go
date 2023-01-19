@@ -1,7 +1,7 @@
 package federation
 
 import (
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 type UserType string

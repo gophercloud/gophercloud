@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/federation"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/identity/v3/extensions/federation"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 const ListOutput = `

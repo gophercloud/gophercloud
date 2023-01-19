@@ -1,8 +1,8 @@
 package resetnetwork
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/extensions"
 )
 
 // ResetNetwork will reset the network of a server

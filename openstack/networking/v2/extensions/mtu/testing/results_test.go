@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/mtu"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	nettest "github.com/gophercloud/gophercloud/openstack/networking/v2/networks/testing"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/bizflycloud/gophercloud/openstack/networking/v2/common"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/mtu"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
+	nettest "github.com/bizflycloud/gophercloud/openstack/networking/v2/networks/testing"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 type NetworkMTU struct {

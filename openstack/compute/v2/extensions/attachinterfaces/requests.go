@@ -1,8 +1,8 @@
 package attachinterfaces
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // List makes a request against the nova API to list the server's interfaces.

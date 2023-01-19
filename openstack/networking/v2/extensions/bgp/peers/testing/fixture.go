@@ -1,6 +1,6 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/peers"
+import "github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/bgp/peers"
 
 const ListBGPPeersResult = `
 {

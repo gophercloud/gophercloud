@@ -3,7 +3,7 @@ package queues
 import (
 	"net/url"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 const (

@@ -1,8 +1,8 @@
 package rules
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // SecGroupRule represents a rule to dictate the behaviour of incoming or

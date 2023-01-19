@@ -36,7 +36,7 @@
   append. It makes it difficult for the reviewer to see what's changed from one
   review to the next.
 
-- See [#583](https://github.com/gophercloud/gophercloud/issues/583) as an example of a
+- See [#583](https://github.com/bizflycloud/gophercloud/issues/583) as an example of a
   well-formatted issue which contains all relevant information we need to review and approve.
 
 ## On Code

@@ -1,7 +1,7 @@
 package lockunlock
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // LockResult and UnlockResult are the responses from a Lock and Unlock

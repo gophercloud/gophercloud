@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 // ListInterfacesExpected represents an expected repsonse from a ListInterfaces request.

@@ -3,16 +3,16 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/l7policies"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/listeners"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/monitors"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/pools"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
-	fake "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/testhelper"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
+	fake "github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/testhelper"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestListLoadbalancers(t *testing.T) {

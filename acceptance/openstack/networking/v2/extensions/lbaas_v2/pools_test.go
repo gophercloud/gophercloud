@@ -6,9 +6,9 @@ package lbaas_v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
 )
 
 func TestPoolsList(t *testing.T) {

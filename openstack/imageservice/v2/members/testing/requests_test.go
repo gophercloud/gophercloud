@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/members"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/imageservice/v2/members"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	fakeclient "github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 const createdAtString = "2013-09-20T19:22:19Z"

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/subnets"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestHostRoute(t *testing.T) {

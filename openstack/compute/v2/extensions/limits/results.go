@@ -1,7 +1,7 @@
 package limits
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // Limits is a struct that contains the response of a limit query.

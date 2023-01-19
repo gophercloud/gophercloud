@@ -1,6 +1,6 @@
 package base
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 // HomeDocument is a resource that contains all the resources for the CDN API.
 type HomeDocument map[string]interface{}

@@ -6,9 +6,9 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestRemoteConsoleCreate(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/qos"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/v3/qos"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	fake "github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 var createQoSExpected = qos.QoS{

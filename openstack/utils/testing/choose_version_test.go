@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/utils"
-	"github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/utils"
+	"github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func setupVersionHandler() {

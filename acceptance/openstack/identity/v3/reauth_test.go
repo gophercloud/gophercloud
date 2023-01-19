@@ -6,12 +6,12 @@ package v3
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/openstack"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/openstack"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/identity/v3/projects"
 )
 
 func TestReauthAuthResultDeadlock(t *testing.T) {

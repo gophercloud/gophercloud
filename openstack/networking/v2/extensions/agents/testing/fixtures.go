@@ -3,7 +3,7 @@ package testing
 import (
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/agents"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/agents"
 )
 
 // AgentsListResult represents raw response for the List request.

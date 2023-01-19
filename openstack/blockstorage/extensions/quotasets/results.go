@@ -3,8 +3,8 @@ package quotasets
 import (
 	"encoding/json"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // QuotaSet is a set of operational limits that allow for control of block

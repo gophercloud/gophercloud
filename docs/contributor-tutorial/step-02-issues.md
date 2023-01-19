@@ -14,12 +14,12 @@ can.
 
 The following issues are good examples for reporting a bug:
 
-* https://github.com/gophercloud/gophercloud/issues/108
-* https://github.com/gophercloud/gophercloud/issues/212
-* https://github.com/gophercloud/gophercloud/issues/424
-* https://github.com/gophercloud/gophercloud/issues/588
-* https://github.com/gophercloud/gophercloud/issues/629
-* https://github.com/gophercloud/gophercloud/issues/647
+* https://github.com/bizflycloud/gophercloud/issues/108
+* https://github.com/bizflycloud/gophercloud/issues/212
+* https://github.com/bizflycloud/gophercloud/issues/424
+* https://github.com/bizflycloud/gophercloud/issues/588
+* https://github.com/bizflycloud/gophercloud/issues/629
+* https://github.com/bizflycloud/gophercloud/issues/647
 
 Feature Request
 ---------------
@@ -43,10 +43,10 @@ other requests since a change to core will affect _all_ of Gophercloud.
 
 The following issues are examples of core change discussions:
 
-* https://github.com/gophercloud/gophercloud/issues/310
-* https://github.com/gophercloud/gophercloud/issues/613
-* https://github.com/gophercloud/gophercloud/issues/729
-* https://github.com/gophercloud/gophercloud/issues/713
+* https://github.com/bizflycloud/gophercloud/issues/310
+* https://github.com/bizflycloud/gophercloud/issues/613
+* https://github.com/bizflycloud/gophercloud/issues/729
+* https://github.com/bizflycloud/gophercloud/issues/713
 
 ### Adding a Missing Field
 
@@ -59,13 +59,13 @@ defines the missing field.
 
 The following issues are examples of missing fields:
 
-* https://github.com/gophercloud/gophercloud/issues/620
-* https://github.com/gophercloud/gophercloud/issues/621
-* https://github.com/gophercloud/gophercloud/issues/658
+* https://github.com/bizflycloud/gophercloud/issues/620
+* https://github.com/bizflycloud/gophercloud/issues/621
+* https://github.com/bizflycloud/gophercloud/issues/658
 
 There's one situation which can make adding fields more difficult: if the field
 is part of an API extension rather than the base API itself. An example of this
-can be seen in [this](https://github.com/gophercloud/gophercloud/issues/749)
+can be seen in [this](https://github.com/bizflycloud/gophercloud/issues/749)
 issue.
 
 Here, a user reported fields missing in the `Get` function of
@@ -78,8 +78,8 @@ they're just part of various Networking extensions located in
 If you've found a missing API action, create an issue with details of
 the action. For example:
 
-* https://github.com/gophercloud/gophercloud/issues/715
-* https://github.com/gophercloud/gophercloud/issues/719
+* https://github.com/bizflycloud/gophercloud/issues/715
+* https://github.com/bizflycloud/gophercloud/issues/719
 
 You'll want to make sure the API call is part of the upstream OpenStack project
 and not an extension created by a third-party or vendor. Gophercloud only
@@ -92,11 +92,11 @@ Request. However, you can use a single issue for all PRs.
 
 Examples of issues which track the addition of a missing API suite are:
 
-* https://github.com/gophercloud/gophercloud/issues/539
-* https://github.com/gophercloud/gophercloud/issues/555
-* https://github.com/gophercloud/gophercloud/issues/571
-* https://github.com/gophercloud/gophercloud/issues/583
-* https://github.com/gophercloud/gophercloud/issues/605
+* https://github.com/bizflycloud/gophercloud/issues/539
+* https://github.com/bizflycloud/gophercloud/issues/555
+* https://github.com/bizflycloud/gophercloud/issues/571
+* https://github.com/bizflycloud/gophercloud/issues/583
+* https://github.com/bizflycloud/gophercloud/issues/605
 
 Note how the issue breaks down the implementation by request types (Create,
 Update, Delete, Get, List).
@@ -116,7 +116,7 @@ interaction with the Gophercloud team.
 An example of how to create an issue for an entire project can be seen
 here:
 
-* https://github.com/gophercloud/gophercloud/issues/723
+* https://github.com/bizflycloud/gophercloud/issues/723
 
 ---
 

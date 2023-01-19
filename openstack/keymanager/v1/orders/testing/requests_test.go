@@ -3,10 +3,10 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/keymanager/v1/orders"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/keymanager/v1/orders"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 func TestListOrders(t *testing.T) {

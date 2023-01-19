@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // ShareAccess contains information associated with an OpenStack share access rule.

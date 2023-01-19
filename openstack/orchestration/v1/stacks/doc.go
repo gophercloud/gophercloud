@@ -12,9 +12,9 @@ of the application framework or component.
 import (
 
 	"fmt"
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack"
-	"github.com/gophercloud/gophercloud/openstack/orchestration/v1/stacks"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack"
+	"github.com/bizflycloud/gophercloud/openstack/orchestration/v1/stacks"
 
 )
 

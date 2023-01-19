@@ -1,6 +1,6 @@
 package hypervisors
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 func hypervisorsListDetailURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("os-hypervisors", "detail")

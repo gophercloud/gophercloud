@@ -3,8 +3,8 @@ package queues
 import (
 	"encoding/json"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // commonResult is the response of a base result.

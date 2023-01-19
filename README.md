@@ -6,7 +6,7 @@ Gophercloud is an OpenStack Go SDK.
 
 ## Useful links
 
-* [Reference documentation](http://godoc.org/github.com/gophercloud/gophercloud)
+* [Reference documentation](http://godoc.org/github.com/bizflycloud/gophercloud)
 * [Effective Go](https://golang.org/doc/effective_go.html)
 
 ## How to install
@@ -14,7 +14,7 @@ Gophercloud is an OpenStack Go SDK.
 Reference a Gophercloud package in your code:
 
 ```Go
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 ```
 
 Then update your `go.mod`:
@@ -49,7 +49,7 @@ prompted for your password.
 ### Authentication
 
 > NOTE: It is now recommended to use the `clientconfig` package found at
-> https://github.com/gophercloud/utils/tree/master/openstack/clientconfig
+> https://github.com/bizflycloud/utils/tree/master/openstack/clientconfig
 > for all authentication purposes.
 >
 > The below documentation is still relevant. clientconfig simply implements
@@ -62,9 +62,9 @@ explicitly, or tell Gophercloud to use environment variables:
 
 ```go
 import (
-  "github.com/gophercloud/gophercloud"
-  "github.com/gophercloud/gophercloud/openstack"
-  "github.com/gophercloud/gophercloud/openstack/utils"
+  "github.com/bizflycloud/gophercloud"
+  "github.com/bizflycloud/gophercloud/openstack"
+  "github.com/bizflycloud/gophercloud/openstack/utils"
 )
 
 // Option 1: Pass in the values yourself
@@ -107,7 +107,7 @@ in the flavor ID (hardware specification) and image ID (operating system) we're
 interested in:
 
 ```go
-import "github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+import "github.com/bizflycloud/gophercloud/openstack/compute/v2/servers"
 
 server, err := servers.Create(client, servers.CreateOpts{
   Name:      "My new server!",
@@ -118,7 +118,7 @@ server, err := servers.Create(client, servers.CreateOpts{
 
 The above code sample creates a new server with the parameters, and embodies the
 new resource in the `server` variable (a
-[`servers.Server`](http://godoc.org/github.com/gophercloud/gophercloud) struct).
+[`servers.Server`](http://godoc.org/github.com/bizflycloud/gophercloud) struct).
 
 ## Advanced Usage
 
@@ -137,7 +137,7 @@ See the [contributing guide](./.github/CONTRIBUTING.md).
 ## Help and feedback
 
 If you're struggling with something or have spotted a potential bug, feel free
-to submit an issue to our [bug tracker](https://github.com/gophercloud/gophercloud/issues).
+to submit an issue to our [bug tracker](https://github.com/bizflycloud/gophercloud/issues).
 
 ## Thank You
 

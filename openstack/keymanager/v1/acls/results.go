@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // ACL represents an ACL on a resource.

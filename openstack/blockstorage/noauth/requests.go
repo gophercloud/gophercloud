@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // EndpointOpts specifies a "noauth" Cinder Endpoint.

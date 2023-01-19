@@ -3,11 +3,11 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/defsecrules"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/extensions/defsecrules"
+	"github.com/bizflycloud/gophercloud/openstack/compute/v2/extensions/secgroups"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 const ruleID = "{ruleID}"

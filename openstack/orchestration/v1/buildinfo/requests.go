@@ -1,6 +1,6 @@
 package buildinfo
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 // Get retreives data for the given stack template.
 func Get(c *gophercloud.ServiceClient) (r GetResult) {

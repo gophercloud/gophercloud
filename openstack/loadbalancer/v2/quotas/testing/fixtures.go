@@ -1,6 +1,6 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/quotas"
+import "github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/quotas"
 
 const GetResponseRaw_1 = `
 {

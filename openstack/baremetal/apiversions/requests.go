@@ -1,7 +1,7 @@
 package apiversions
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // List lists all the API versions available to end users.

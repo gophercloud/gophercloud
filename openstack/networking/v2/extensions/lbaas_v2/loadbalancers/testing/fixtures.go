@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/listeners"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/loadbalancers"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/listeners"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/loadbalancers"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
+	th "github.com/bizflycloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/testhelper/client"
 )
 
 // LoadbalancersListBody contains the canned body of a loadbalancer list response.

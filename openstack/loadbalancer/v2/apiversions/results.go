@@ -1,6 +1,6 @@
 package apiversions
 
-import "github.com/gophercloud/gophercloud/pagination"
+import "github.com/bizflycloud/gophercloud/pagination"
 
 // APIVersion represents an API version for load balancer. It contains
 // the status of the API, and its unique ID.

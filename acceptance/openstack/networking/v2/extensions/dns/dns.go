@@ -3,13 +3,13 @@ package dns
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/dns"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/dns"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/ports"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 // PortWithDNSExt represents a port with the DNS fields

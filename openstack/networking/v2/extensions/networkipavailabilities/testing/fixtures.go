@@ -1,8 +1,8 @@
 package testing
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/networkipavailabilities"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/networkipavailabilities"
 )
 
 // NetworkIPAvailabilityListResult represents raw server response from a server to a list call.

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestServiceURL(t *testing.T) {

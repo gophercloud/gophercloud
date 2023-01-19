@@ -6,10 +6,10 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	bs "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	bs "github.com/bizflycloud/gophercloud/acceptance/openstack/blockstorage/v2"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestVolumeAttachAttachment(t *testing.T) {

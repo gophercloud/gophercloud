@@ -1,6 +1,6 @@
 package trusts
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 const resourcePath = "OS-TRUST/trusts"
 

@@ -3,10 +3,10 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/amphorae"
-	fake "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/testhelper"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/amphorae"
+	fake "github.com/bizflycloud/gophercloud/openstack/loadbalancer/v2/testhelper"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestListAmphorae(t *testing.T) {

@@ -7,17 +7,17 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
-	"github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/layer3"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/common/extensions"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/dns"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	networking "github.com/bizflycloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/bizflycloud/gophercloud/acceptance/openstack/networking/v2/extensions/layer3"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/common/extensions"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/dns"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/ports"
+	"github.com/bizflycloud/gophercloud/pagination"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestDNSPortCRUDL(t *testing.T) {

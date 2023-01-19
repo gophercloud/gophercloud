@@ -6,7 +6,7 @@ able to prove your code correctly works with the OpenStack service in
 question.
 
 Let's use the following issue as an example:
-[https://github.com/gophercloud/gophercloud/issues/621](https://github.com/gophercloud/gophercloud/issues/621).
+[https://github.com/bizflycloud/gophercloud/issues/621](https://github.com/bizflycloud/gophercloud/issues/621).
 In this issue, there's a request being made to add support for
 `availability_zone_hints` to the `networking/v2/networks` package.
 Meaning, we want to change:
@@ -77,11 +77,11 @@ or bug fix is correctly added to Gophercloud.
 
 Examples of good code hunting can be seen here:
 
-* https://github.com/gophercloud/gophercloud/issues/539
-* https://github.com/gophercloud/gophercloud/issues/555
-* https://github.com/gophercloud/gophercloud/issues/571
-* https://github.com/gophercloud/gophercloud/issues/583
-* https://github.com/gophercloud/gophercloud/issues/605
+* https://github.com/bizflycloud/gophercloud/issues/539
+* https://github.com/bizflycloud/gophercloud/issues/555
+* https://github.com/bizflycloud/gophercloud/issues/571
+* https://github.com/bizflycloud/gophercloud/issues/583
+* https://github.com/bizflycloud/gophercloud/issues/605
 
 Code Hunting Tips
 -----------------

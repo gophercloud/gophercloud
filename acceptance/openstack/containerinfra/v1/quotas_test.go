@@ -6,9 +6,9 @@ package v1
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestQuotasCRUD(t *testing.T) {

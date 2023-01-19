@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 type commonResult struct {

@@ -6,11 +6,11 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	networkingv2 "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/common/extensions"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	networkingv2 "github.com/bizflycloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/common/extensions"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestVLANTransparentCRUD(t *testing.T) {

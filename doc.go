@@ -10,7 +10,7 @@ collection of services. You will generally want to create one Provider
 client per OpenStack cloud.
 
 	It is now recommended to use the `clientconfig` package found at
-	https://github.com/gophercloud/utils/tree/master/openstack/clientconfig
+	https://github.com/bizflycloud/utils/tree/master/openstack/clientconfig
 	for all authentication purposes.
 
 	The below documentation is still relevant. clientconfig simply implements

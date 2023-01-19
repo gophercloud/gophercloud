@@ -6,11 +6,11 @@ package extensions
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/schedulerhints"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/extensions/schedulerhints"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/v3/volumes"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestSchedulerHints(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // AttachResult contains the response body and error from an Attach request.

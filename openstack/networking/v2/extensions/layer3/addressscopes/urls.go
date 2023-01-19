@@ -1,6 +1,6 @@
 package addressscopes
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 const resourcePath = "address-scopes"
 

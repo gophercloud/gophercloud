@@ -1,6 +1,6 @@
 package stackresources
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 func findURL(c *gophercloud.ServiceClient, stackName string) string {
 	return c.ServiceURL("stacks", stackName, "resources")

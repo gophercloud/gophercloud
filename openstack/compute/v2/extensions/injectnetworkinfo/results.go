@@ -1,7 +1,7 @@
 package injectnetworkinfo
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // InjectNetworkResult is the response of a InjectNetworkInfo operation. Call

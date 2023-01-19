@@ -1,6 +1,6 @@
 package objects
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 // ErrWrongChecksum is the error when the checksum generated for an object
 // doesn't match the ETAG header.

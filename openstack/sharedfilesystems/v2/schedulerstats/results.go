@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"math"
 
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // Capabilities represents the information of an individual Pool.

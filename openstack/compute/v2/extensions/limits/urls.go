@@ -1,7 +1,7 @@
 package limits
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 const resourcePath = "limits"

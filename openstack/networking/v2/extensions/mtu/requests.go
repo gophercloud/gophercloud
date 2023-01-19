@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/networks"
 )
 
 // ListOptsExt adds an MTU option to the base ListOpts.

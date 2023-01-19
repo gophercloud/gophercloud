@@ -16,9 +16,9 @@ jobs:
           Thank you for reporting your first issue! Be sure that we will be looking at it, but keep in mind
           this sometimes takes a while.
           Please let the maintainers know if your issue has not got enough attention after a few days.
-          If any doubt, please consult our issue [tutorial](https://github.com/gophercloud/gophercloud/blob/master/docs/contributor-tutorial/step-02-issues.md).
+          If any doubt, please consult our issue [tutorial](https://github.com/bizflycloud/gophercloud/blob/master/docs/contributor-tutorial/step-02-issues.md).
         pr-message: |
           Thank you for submitting your first PR! Be sure that we will be looking at it but keep in mind
           this sometimes takes a while.
           Please let the maintainers know if your PR has not got enough attention after a few days.
-          If any doubt, please consult our PR [tutorial](https://github.com/gophercloud/gophercloud/blob/master/docs/contributor-tutorial/step-05-pull-requests.md).
+          If any doubt, please consult our PR [tutorial](https://github.com/bizflycloud/gophercloud/blob/master/docs/contributor-tutorial/step-05-pull-requests.md).

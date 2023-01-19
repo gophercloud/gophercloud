@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/workflow/v2/workflows"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/workflow/v2/workflows"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 // GetEchoWorkflowDefinition returns a simple workflow definition that does nothing except a simple "echo" command.

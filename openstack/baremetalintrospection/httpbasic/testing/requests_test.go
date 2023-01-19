@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/baremetalintrospection/httpbasic"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/openstack/baremetalintrospection/httpbasic"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestNoAuth(t *testing.T) {

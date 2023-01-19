@@ -6,10 +6,10 @@ package v1
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policytypes"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/clustering/v1/policytypes"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestPolicyTypeList(t *testing.T) {

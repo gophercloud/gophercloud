@@ -6,11 +6,11 @@ package v3
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	identity "github.com/bizflycloud/gophercloud/acceptance/openstack/identity/v3"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/v3/volumetypes"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestVolumeTypes(t *testing.T) {

@@ -6,9 +6,9 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharetypes"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/sharedfilesystems/v2/sharetypes"
 )
 
 func TestShareTypeCreateDestroy(t *testing.T) {

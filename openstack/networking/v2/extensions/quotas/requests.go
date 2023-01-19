@@ -1,6 +1,6 @@
 package quotas
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/bizflycloud/gophercloud"
 
 // Get returns Networking Quotas for a project.
 func Get(client *gophercloud.ServiceClient, projectID string) (r GetResult) {

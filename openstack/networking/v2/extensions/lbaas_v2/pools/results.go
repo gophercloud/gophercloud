@@ -1,9 +1,9 @@
 package pools
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/bizflycloud/gophercloud"
+	"github.com/bizflycloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
+	"github.com/bizflycloud/gophercloud/pagination"
 )
 
 // SessionPersistence represents the session persistence feature of the load
@@ -104,7 +104,7 @@ type Pool struct {
 
 	// The operating status of the pool.
 	// This field seems to only be returned during a call to a load balancer's /status
-	// see: https://github.com/gophercloud/gophercloud/issues/1362
+	// see: https://github.com/bizflycloud/gophercloud/issues/1362
 	OperatingStatus string `json:"operating_status"`
 }
 
@@ -217,7 +217,7 @@ type Member struct {
 
 	// The operating status of the member.
 	// This field seems to only be returned during a call to a load balancer's /status
-	// see: https://github.com/gophercloud/gophercloud/issues/1362
+	// see: https://github.com/bizflycloud/gophercloud/issues/1362
 	OperatingStatus string `json:"operating_status"`
 }
 

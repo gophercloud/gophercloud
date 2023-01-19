@@ -1,7 +1,7 @@
 package resourcetypes
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // SupportStatus is a type for specifying by which support status to filter the

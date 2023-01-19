@@ -6,9 +6,9 @@ package v1
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/openstack/orchestration/v1/buildinfo"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	"github.com/bizflycloud/gophercloud/openstack/orchestration/v1/buildinfo"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestBuildInfo(t *testing.T) {

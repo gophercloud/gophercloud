@@ -1,7 +1,7 @@
 package apiversions
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 func getURL(c *gophercloud.ServiceClient, version string) string {

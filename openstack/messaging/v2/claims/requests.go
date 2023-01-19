@@ -1,7 +1,7 @@
 package claims
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/bizflycloud/gophercloud"
 )
 
 // CreateOptsBuilder Builder.

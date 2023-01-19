@@ -3,7 +3,7 @@ package testing
 import (
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/tasks"
+	"github.com/bizflycloud/gophercloud/openstack/imageservice/v2/tasks"
 )
 
 // TasksListResult represents raw server response from a server to a list call.

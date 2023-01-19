@@ -6,13 +6,13 @@ package extensions
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/acceptance/clients"
-	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
-	blockstorageV3 "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v3"
-	compute "github.com/gophercloud/gophercloud/acceptance/openstack/compute/v2"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/bizflycloud/gophercloud/acceptance/clients"
+	blockstorage "github.com/bizflycloud/gophercloud/acceptance/openstack/blockstorage/v2"
+	blockstorageV3 "github.com/bizflycloud/gophercloud/acceptance/openstack/blockstorage/v3"
+	compute "github.com/bizflycloud/gophercloud/acceptance/openstack/compute/v2"
+	"github.com/bizflycloud/gophercloud/acceptance/tools"
+	"github.com/bizflycloud/gophercloud/openstack/blockstorage/v2/volumes"
+	th "github.com/bizflycloud/gophercloud/testhelper"
 )
 
 func TestVolumeActionsUploadImageDestroy(t *testing.T) {
