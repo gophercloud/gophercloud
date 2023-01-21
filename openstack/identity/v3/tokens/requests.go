@@ -63,7 +63,8 @@ type AuthOptions struct {
 	ApplicationCredentialName   string `json:"-"`
 	ApplicationCredentialSecret string `json:"-"`
 
-	Scope Scope `json:"-"`
+	Scope   Scope  `json:"-"`
+	TrustID string `json:"-"`
 }
 
 // ToTokenV3CreateMap builds a request body from AuthOptions.
@@ -80,6 +81,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 		ApplicationCredentialID:     opts.ApplicationCredentialID,
 		ApplicationCredentialName:   opts.ApplicationCredentialName,
 		ApplicationCredentialSecret: opts.ApplicationCredentialSecret,
+		TrustID:                     opts.TrustID,
 	}
 
 	return gophercloudAuthOpts.ToTokenV3CreateMap(scope)

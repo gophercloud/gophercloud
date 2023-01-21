@@ -93,6 +93,8 @@ type AuthOptions struct {
 	ApplicationCredentialID     string `json:"-"`
 	ApplicationCredentialName   string `json:"-"`
 	ApplicationCredentialSecret string `json:"-"`
+
+	TrustID string `json:"-"`
 }
 
 // AuthScope allows a created token to be limited to a specific domain or project.
@@ -164,7 +166,8 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 	}
 
 	type tokenReq struct {
-		ID string `json:"id"`
+		ID      string `json:"id"`
+		TrustID string `json:"trust_id,omitempty"`
 	}
 
 	type applicationCredentialReq struct {
@@ -218,7 +221,8 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 			// Configure the request for Token authentication.
 			req.Auth.Identity.Methods = []string{"token"}
 			req.Auth.Identity.Token = &tokenReq{
-				ID: opts.TokenID,
+				ID:      opts.TokenID,
+				TrustID: opts.TrustID,
 			}
 
 		} else if opts.ApplicationCredentialID != "" {
