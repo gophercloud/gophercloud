@@ -214,7 +214,7 @@ type Server struct {
 	SecurityGroups []map[string]interface{} `json:"security_groups"`
 
 	// AttachedVolumes includes the volume attachments of this instance
-	AttachedVolumes []AttachedVolume `json:"os-extended-volumes:volumes_attached"`
+	AttachedVolumes *[]AttachedVolume `json:"os-extended-volumes:volumes_attached"`
 
 	// Fault contains failure information about a server.
 	Fault Fault `json:"fault"`
@@ -227,7 +227,13 @@ type Server struct {
 	// server groups to which the server belongs. Currently this can
 	// contain at most one entry.
 	// New in microversion 2.71
-	ServerGroups *[]string `json:"server_groups"`
+	ServerGroups     *[]string `json:"server_groups"`
+	LaunchedAt       *string   `json:"OS-SRV-USG:launched_at"`
+	TaskState        *string   `json:"OS-EXT-STS:task_state"`
+	VMState          *string   `json:"OS-EXT-STS:vm_state"`
+	AvailabilityZone *string   `json:"OS-EXT-AZ:availability_zone"`
+	IsAvailable      bool      `json:"OS-EXT-STS:is_available"`
+	Locked           bool      `json:"locked"`
 }
 
 type AttachedVolume struct {
