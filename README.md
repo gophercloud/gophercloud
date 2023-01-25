@@ -130,6 +130,8 @@ Gophercloud versioning follows [semver](https://semver.org/spec/v2.0.0.html).
 
 Before `v1.0.0`, there were no guarantees. Starting with v1, there will be no breaking changes within a major release.
 
+See the [Release instructions](./RELEASE.md).
+
 ## Contributing
 
 See the [contributing guide](./.github/CONTRIBUTING.md).
