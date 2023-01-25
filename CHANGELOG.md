@@ -174,7 +174,7 @@ IMPROVEMENTS
 NOTES / BREAKING CHANGES
 
 * `compute/v2/extensions/keypairs.List` now takes a `ListOptsBuilder` argument [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186)
-* `compute/v2/extensions/keypairs.Get` now takes a `GetOptsBuilder` argument [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186) 
+* `compute/v2/extensions/keypairs.Get` now takes a `GetOptsBuilder` argument [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186)
 * `compute/v2/extensions/keypairs.Delete` now takes a `DeleteOptsBuilder` argument [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186)
 * `compute/v2/extensions/hypervisors.List` now takes a `ListOptsBuilder` argument [GH-2187](https://github.com/gophercloud/gophercloud/pull/2187)
 
@@ -469,7 +469,7 @@ UPGRADE NOTES
 * The various `IDFromName` convenience functions have been moved to https://github.com/gophercloud/utils [GH-1897](https://github.com/gophercloud/gophercloud/pull/1897)
 * `sharedfilesystems/v2/shares.GetExportLocations` was renamed to `sharedfilesystems/v2/shares.ListExportLocations` [GH-1932](https://github.com/gophercloud/gophercloud/pull/1932)
 
-IMPROVEMENTS 
+IMPROVEMENTS
 
 * Added `blockstorage/extensions/volumeactions.SetBootable` [GH-1891](https://github.com/gophercloud/gophercloud/pull/1891)
 * Added `blockstorage/extensions/backups.Export` [GH-1894](https://github.com/gophercloud/gophercloud/pull/1894)
@@ -765,4 +765,4 @@ BUG FIXES
 
 ## 0.1.0 (May 27, 2019)
 
-Initial tagged release. 
+Initial tagged release.
