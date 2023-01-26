@@ -54,6 +54,10 @@ type BGPPeerPage struct {
 
 // IsEmpty checks whether a BGPPage struct is empty.
 func (r BGPPeerPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractBGPPeers(r)
 	return len(is) == 0, err
 }

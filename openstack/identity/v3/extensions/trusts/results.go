@@ -36,6 +36,10 @@ type GetResult struct {
 
 // IsEmpty determines whether or not a page of Trusts contains any results.
 func (t TrustPage) IsEmpty() (bool, error) {
+	if t.StatusCode == 204 {
+		return true, nil
+	}
+
 	roles, err := ExtractTrusts(t)
 	return len(roles) == 0, err
 }
@@ -109,6 +113,10 @@ type RolesPage struct {
 
 // IsEmpty determines whether or not a a Page contains any results.
 func (r RolesPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	accessTokenRoles, err := ExtractRoles(r)
 	return len(accessTokenRoles) == 0, err
 }

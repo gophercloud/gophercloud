@@ -29,6 +29,10 @@ type DefaultRulePage struct {
 
 // IsEmpty determines whether or not a page of default rules contains any results.
 func (page DefaultRulePage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	users, err := ExtractDefaultRules(page)
 	return len(users) == 0, err
 }

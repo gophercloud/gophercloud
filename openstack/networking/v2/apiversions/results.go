@@ -19,6 +19,10 @@ type APIVersionPage struct {
 
 // IsEmpty checks whether an APIVersionPage struct is empty.
 func (r APIVersionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractAPIVersions(r)
 	return len(is) == 0, err
 }
@@ -49,6 +53,10 @@ type APIVersionResourcePage struct {
 // IsEmpty is a concrete function which indicates whether an
 // APIVersionResourcePage is empty or not.
 func (r APIVersionResourcePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractVersionResources(r)
 	return len(is) == 0, err
 }

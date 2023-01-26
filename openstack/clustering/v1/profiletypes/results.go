@@ -48,6 +48,10 @@ type ProfileTypePage struct {
 
 // IsEmpty determines if ExtractProfileTypes contains any results.
 func (page ProfileTypePage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	profileTypes, err := ExtractProfileTypes(page)
 	return len(profileTypes) == 0, err
 }

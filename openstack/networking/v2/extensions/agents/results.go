@@ -160,6 +160,10 @@ func (r AgentPage) NextPageURL() (string, error) {
 
 // IsEmpty determines whether or not a AgentPage is empty.
 func (r AgentPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	agents, err := ExtractAgents(r)
 	return len(agents) == 0, err
 }
@@ -196,6 +200,10 @@ type ListBGPSpeakersResult struct {
 }
 
 func (r ListBGPSpeakersResult) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	speakers, err := ExtractBGPSpeakers(r)
 	return 0 == len(speakers), err
 }

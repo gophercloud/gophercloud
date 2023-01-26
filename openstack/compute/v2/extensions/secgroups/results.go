@@ -129,6 +129,10 @@ type SecurityGroupPage struct {
 // IsEmpty determines whether or not a page of Security Groups contains any
 // results.
 func (page SecurityGroupPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	users, err := ExtractSecurityGroups(page)
 	return len(users) == 0, err
 }

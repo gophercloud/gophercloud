@@ -58,6 +58,10 @@ func (r FirewallPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a FirewallPage struct is empty.
 func (r FirewallPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractFirewalls(r)
 	return len(is) == 0, err
 }

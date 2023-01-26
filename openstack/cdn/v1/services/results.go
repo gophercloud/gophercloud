@@ -229,6 +229,10 @@ type ServicePage struct {
 
 // IsEmpty returns true if a ListResult contains no services.
 func (r ServicePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	services, err := ExtractServices(r)
 	return len(services) == 0, err
 }

@@ -35,6 +35,10 @@ type DBPage struct {
 
 // IsEmpty checks to see whether the collection is empty.
 func (page DBPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	dbs, err := ExtractDBs(page)
 	return len(dbs) == 0, err
 }

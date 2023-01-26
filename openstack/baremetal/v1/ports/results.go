@@ -82,6 +82,10 @@ type PortPage struct {
 
 // IsEmpty returns true if a page contains no Port results.
 func (r PortPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractPorts(r)
 	return len(s) == 0, err
 }

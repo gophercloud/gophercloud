@@ -113,6 +113,10 @@ func (r *Backup) UnmarshalJSON(b []byte) error {
 
 // IsEmpty returns true if a BackupPage contains no Backups.
 func (r BackupPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	volumes, err := ExtractBackups(r)
 	return len(volumes) == 0, err
 }

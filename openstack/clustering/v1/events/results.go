@@ -52,6 +52,10 @@ type EventPage struct {
 
 // IsEmpty determines if a EventPage contains any results.
 func (r EventPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	events, err := ExtractEvents(r)
 	return len(events) == 0, err
 }

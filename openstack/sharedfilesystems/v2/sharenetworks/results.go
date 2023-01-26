@@ -126,6 +126,10 @@ func (r ShareNetworkPage) LastMarker() (string, error) {
 
 // IsEmpty satisifies the IsEmpty method of the Page interface
 func (r ShareNetworkPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	shareNetworks, err := ExtractShareNetworks(r)
 	return len(shareNetworks) == 0, err
 }

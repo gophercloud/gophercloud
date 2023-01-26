@@ -60,6 +60,10 @@ type InstanceActionPage struct {
 
 // IsEmpty returns true if an InstanceActionPage contains no instance actions.
 func (r InstanceActionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	instanceactions, err := ExtractInstanceActions(r)
 	return len(instanceactions) == 0, err
 }

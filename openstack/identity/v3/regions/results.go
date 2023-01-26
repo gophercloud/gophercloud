@@ -90,6 +90,10 @@ type RegionPage struct {
 
 // IsEmpty determines whether or not a page of Regions contains any results.
 func (r RegionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	regions, err := ExtractRegions(r)
 	return len(regions) == 0, err
 }

@@ -81,6 +81,10 @@ type TaskPage struct {
 
 // IsEmpty returns true if a TaskPage contains no Tasks results.
 func (r TaskPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	tasks, err := ExtractTasks(r)
 	return len(tasks) == 0, err
 }

@@ -66,6 +66,10 @@ type LimitPage struct {
 
 // IsEmpty determines whether or not a page of Limits contains any results.
 func (r LimitPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	limits, err := ExtractLimits(r)
 	return len(limits) == 0, err
 }

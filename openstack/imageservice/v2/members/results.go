@@ -41,6 +41,10 @@ func ExtractMembers(r pagination.Page) ([]Member, error) {
 
 // IsEmpty determines whether or not a MemberPage contains any results.
 func (r MemberPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	members, err := ExtractMembers(r)
 	return len(members) == 0, err
 }

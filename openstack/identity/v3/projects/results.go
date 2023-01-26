@@ -113,6 +113,10 @@ type ProjectPage struct {
 
 // IsEmpty determines whether or not a page of Projects contains any results.
 func (r ProjectPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	projects, err := ExtractProjects(r)
 	return len(projects) == 0, err
 }

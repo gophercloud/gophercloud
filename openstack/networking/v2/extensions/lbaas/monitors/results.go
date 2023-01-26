@@ -88,6 +88,10 @@ func (r MonitorPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a PoolPage struct is empty.
 func (r MonitorPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractMonitors(r)
 	return len(is) == 0, err
 }

@@ -71,6 +71,10 @@ type SecurityServicePage struct {
 
 // IsEmpty returns true if a ListResult contains no SecurityServices.
 func (r SecurityServicePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	securityServices, err := ExtractSecurityServices(r)
 	return len(securityServices) == 0, err
 }

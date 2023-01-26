@@ -73,6 +73,10 @@ type Introspection struct {
 
 // IsEmpty returns true if a page contains no Introspection results.
 func (r IntrospectionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractIntrospections(r)
 	return len(s) == 0, err
 }

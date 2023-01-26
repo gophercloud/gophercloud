@@ -106,6 +106,10 @@ type WorkflowPage struct {
 
 // IsEmpty checks if an WorkflowPage contains any results.
 func (r WorkflowPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	exec, err := ExtractWorkflows(r)
 	return len(exec) == 0, err
 }

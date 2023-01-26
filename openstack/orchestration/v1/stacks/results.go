@@ -42,6 +42,10 @@ type StackPage struct {
 
 // IsEmpty returns true if a ListResult contains no Stacks.
 func (r StackPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	stacks, err := ExtractStacks(r)
 	return len(stacks) == 0, err
 }

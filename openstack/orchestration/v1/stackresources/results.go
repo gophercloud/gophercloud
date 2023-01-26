@@ -89,6 +89,10 @@ type ResourcePage struct {
 
 // IsEmpty returns true if a page contains no Server results.
 func (r ResourcePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	resources, err := ExtractResources(r)
 	return len(resources) == 0, err
 }
@@ -141,6 +145,10 @@ type ResourceTypePage struct {
 
 // IsEmpty returns true if a ResourceTypePage contains no resource types.
 func (r ResourceTypePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	rts, err := ExtractResourceTypes(r)
 	return len(rts) == 0, err
 }

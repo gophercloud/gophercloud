@@ -36,6 +36,10 @@ func (r ProviderPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a ProviderPage struct is empty.
 func (r ProviderPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractProviders(r)
 	return len(is) == 0, err
 }

@@ -155,6 +155,10 @@ type ClusterPage struct {
 
 // IsEmpty determines whether or not a page of Clusters contains any results.
 func (page ClusterPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	clusters, err := ExtractClusters(page)
 	return len(clusters) == 0, err
 }
@@ -167,6 +171,10 @@ type ClusterPolicyPage struct {
 // IsEmpty determines whether or not a page of ClusterPolicies contains any
 // results.
 func (page ClusterPolicyPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	clusterPolicies, err := ExtractClusterPolicies(page)
 	return len(clusterPolicies) == 0, err
 }

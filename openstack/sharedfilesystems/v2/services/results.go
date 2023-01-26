@@ -57,6 +57,10 @@ type ServicePage struct {
 
 // IsEmpty determines whether or not a page of Services contains any results.
 func (page ServicePage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	services, err := ExtractServices(page)
 	return len(services) == 0, err
 }

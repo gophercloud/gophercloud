@@ -93,6 +93,10 @@ type GroupPage struct {
 
 // IsEmpty determines whether or not a page of Groups contains any results.
 func (r GroupPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	groups, err := ExtractGroups(r)
 	return len(groups) == 0, err
 }

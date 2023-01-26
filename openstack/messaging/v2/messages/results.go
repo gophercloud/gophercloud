@@ -109,6 +109,10 @@ func ExtractMessages(r pagination.Page) ([]Message, error) {
 
 // IsEmpty determines if a MessagePage contains any results.
 func (r MessagePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractMessages(r)
 	return len(s) == 0, err
 }

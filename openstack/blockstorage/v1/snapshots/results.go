@@ -89,6 +89,10 @@ type SnapshotPage struct {
 
 // IsEmpty returns true if a SnapshotPage contains no Snapshots.
 func (r SnapshotPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	volumes, err := ExtractSnapshots(r)
 	return len(volumes) == 0, err
 }

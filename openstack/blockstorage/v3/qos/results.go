@@ -49,6 +49,10 @@ type QoSPage struct {
 
 // IsEmpty determines if a QoSPage contains any results.
 func (page QoSPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	qos, err := ExtractQoS(page)
 	return len(qos) == 0, err
 }
@@ -130,6 +134,10 @@ type AssociationPage struct {
 
 // IsEmpty indicates whether an Association page is empty.
 func (page AssociationPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	v, err := ExtractAssociations(page)
 	return len(v) == 0, err
 }

@@ -58,6 +58,10 @@ type DomainPage struct {
 
 // IsEmpty determines whether or not a page of Domains contains any results.
 func (r DomainPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	domains, err := ExtractDomains(r)
 	return len(domains) == 0, err
 }

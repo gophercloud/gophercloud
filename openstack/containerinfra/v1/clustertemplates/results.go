@@ -99,6 +99,10 @@ func (r ClusterTemplatePage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a ClusterTemplatePage struct is empty.
 func (r ClusterTemplatePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractClusterTemplates(r)
 	return len(is) == 0, err
 }

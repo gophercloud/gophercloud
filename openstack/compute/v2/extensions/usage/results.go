@@ -122,6 +122,10 @@ type SingleTenantPage struct {
 
 // IsEmpty determines whether or not a SingleTenantPage is empty.
 func (r SingleTenantPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	ks, err := ExtractSingleTenant(r)
 	return ks == nil, err
 }
@@ -165,6 +169,10 @@ func ExtractAllTenants(page pagination.Page) ([]TenantUsage, error) {
 
 // IsEmpty determines whether or not an AllTenantsPage is empty.
 func (r AllTenantsPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	usages, err := ExtractAllTenants(r)
 	return len(usages) == 0, err
 }

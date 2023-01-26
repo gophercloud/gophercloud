@@ -130,6 +130,10 @@ type CronTriggerPage struct {
 
 // IsEmpty checks if an CronTriggerPage contains any results.
 func (r CronTriggerPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	exec, err := ExtractCronTriggers(r)
 	return len(exec) == 0, err
 }

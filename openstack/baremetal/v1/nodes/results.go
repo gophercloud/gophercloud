@@ -263,6 +263,10 @@ type NodePage struct {
 
 // IsEmpty returns true if a page contains no Node results.
 func (r NodePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractNodes(r)
 	return len(s) == 0, err
 }

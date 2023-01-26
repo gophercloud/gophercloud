@@ -56,6 +56,10 @@ type CredentialPage struct {
 
 // IsEmpty determines whether or not a CredentialPage contains any results.
 func (r CredentialPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	credentials, err := ExtractCredentials(r)
 	return len(credentials) == 0, err
 }

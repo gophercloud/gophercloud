@@ -105,6 +105,10 @@ type ApplicationCredentialPage struct {
 
 // IsEmpty determines whether or not a an ApplicationCredentialPage contains any results.
 func (r ApplicationCredentialPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	applicationCredentials, err := ExtractApplicationCredentials(r)
 	return len(applicationCredentials) == 0, err
 }
@@ -155,6 +159,10 @@ type AccessRulePage struct {
 
 // IsEmpty determines whether or not a an AccessRulePage contains any results.
 func (r AccessRulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	accessRules, err := ExtractAccessRules(r)
 	return len(accessRules) == 0, err
 }

@@ -175,6 +175,10 @@ type MappingsPage struct {
 
 // IsEmpty determines whether or not a page of Mappings contains any results.
 func (c MappingsPage) IsEmpty() (bool, error) {
+	if c.StatusCode == 204 {
+		return true, nil
+	}
+
 	mappings, err := ExtractMappings(c)
 	return len(mappings) == 0, err
 }

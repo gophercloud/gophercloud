@@ -47,6 +47,10 @@ type ConfigPage struct {
 
 // IsEmpty indicates whether a ConfigPage is empty.
 func (r ConfigPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractConfigs(r)
 	return len(is) == 0, err
 }
@@ -114,6 +118,10 @@ type ParamPage struct {
 
 // IsEmpty indicates whether a ParamPage is empty.
 func (r ParamPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractParams(r)
 	return len(is) == 0, err
 }

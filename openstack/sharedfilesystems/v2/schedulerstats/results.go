@@ -101,6 +101,10 @@ type PoolPage struct {
 // IsEmpty satisfies the IsEmpty method of the Page interface. It returns true
 // if a List contains no results.
 func (page PoolPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	va, err := ExtractPools(page)
 	return len(va) == 0, err
 }
