@@ -38,6 +38,7 @@ type CreateOpts struct {
 	ServerType          string            `json:"server_type,omitempty"`
 	TLSDisabled         *bool             `json:"tls_disabled,omitempty"`
 	VolumeDriver        string            `json:"volume_driver,omitempty"`
+	Hidden              *bool             `json:"hidden,omitempty"`
 }
 
 // ToClusterCreateMap constructs a request body from CreateOpts.
