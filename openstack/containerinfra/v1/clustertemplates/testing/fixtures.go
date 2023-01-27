@@ -55,7 +55,8 @@ const ClusterTemplateResponse = `
 	"updated_at": null,
 	"user_id": "c48d66144e9c4a54ae2b164b85cfefe3",
 	"uuid": "79c0f9e5-93b8-4719-8fab-063afc67bffe",
-	"volume_driver": "cinder"
+	"volume_driver": "cinder",
+	"hidden": false
 }`
 
 const ClusterTemplateResponse_EmptyTime = `
@@ -98,7 +99,8 @@ const ClusterTemplateResponse_EmptyTime = `
 	"tls_disabled": false,
 	"updated_at": null,
 	"uuid": "472807c2-f175-4946-9765-149701a5aba7",
-	"volume_driver": null
+	"volume_driver": null,
+	"hidden": false
 }`
 
 const ClusterTemplateListResponse = `
@@ -146,7 +148,8 @@ const ClusterTemplateListResponse = `
 			"updated_at": null,
 			"user_id": "c48d66144e9c4a54ae2b164b85cfefe3",
 			"uuid": "79c0f9e5-93b8-4719-8fab-063afc67bffe",
-			"volume_driver": "cinder"
+			"volume_driver": "cinder",
+			"hidden": false
 		},
 		{
 			"apiserver_port": null,
@@ -187,7 +190,8 @@ const ClusterTemplateListResponse = `
 			"tls_disabled": false,
 			"updated_at": null,
 			"uuid": "472807c2-f175-4946-9765-149701a5aba7",
-			"volume_driver": null
+			"volume_driver": null,
+			"hidden": false
 		}
 	]
 }`
@@ -229,6 +233,7 @@ var ExpectedClusterTemplate = clustertemplates.ClusterTemplate{
 	UpdatedAt:       time.Time{},
 	UserID:          "c48d66144e9c4a54ae2b164b85cfefe3",
 	VolumeDriver:    "cinder",
+	Hidden:          false,
 }
 
 var ExpectedClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
@@ -264,6 +269,7 @@ var ExpectedClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
 	UUID:            "472807c2-f175-4946-9765-149701a5aba7",
 	UpdatedAt:       time.Time{},
 	VolumeDriver:    "",
+	Hidden:          false,
 }
 
 var ExpectedClusterTemplates = []clustertemplates.ClusterTemplate{ExpectedClusterTemplate, ExpectedClusterTemplate_EmptyTime}
@@ -374,7 +380,8 @@ const UpdateResponse = `
 	"tls_disabled": false,
 	"updated_at": null,
 	"uuid": "472807c2-f175-4946-9765-149701a5aba7",
-	"volume_driver": null
+	"volume_driver": null,
+	"hidden": false
 }`
 
 const UpdateResponse_EmptyTime = `
@@ -417,7 +424,8 @@ const UpdateResponse_EmptyTime = `
 	"tls_disabled": false,
 	"updated_at": null,
 	"uuid": "472807c2-f175-4946-9765-149701a5aba7",
-	"volume_driver": null
+	"volume_driver": null,
+	"hidden": false
 }`
 
 const UpdateResponse_InvalidUpdate = `
@@ -458,6 +466,7 @@ var ExpectedUpdateClusterTemplate = clustertemplates.ClusterTemplate{
 	UUID:            "472807c2-f175-4946-9765-149701a5aba7",
 	UpdatedAt:       time.Time{},
 	VolumeDriver:    "",
+	Hidden:          false,
 }
 
 var ExpectedUpdateClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
@@ -493,6 +502,7 @@ var ExpectedUpdateClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
 	UUID:            "472807c2-f175-4946-9765-149701a5aba7",
 	UpdatedAt:       time.Time{},
 	VolumeDriver:    "",
+	Hidden:          false,
 }
 
 func HandleUpdateClusterTemplateSuccessfully(t *testing.T) {

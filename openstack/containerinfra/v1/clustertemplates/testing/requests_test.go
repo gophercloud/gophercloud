@@ -42,6 +42,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 		FlavorID:            "m1.small",
 		MasterLBEnabled:     &boolTrue,
 		DNSNameServer:       "8.8.8.8",
+		Hidden:              &boolTrue,
 	}
 
 	sc := fake.ServiceClient()
