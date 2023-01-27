@@ -56,6 +56,80 @@ const ListOutput = `
 }
 `
 
+const CreateRequest = `
+  {
+    "mapping": {
+        "rules": [
+            {
+                "local": [
+                    {
+                        "user": {
+                            "name": "{0}"
+                        }
+                    },
+                    {
+                        "group": {
+                            "id": "0cd5e9"
+                        }
+                    }
+                ],
+                "remote": [
+                    {
+                        "type": "UserName"
+                    },
+                    {
+                        "type": "orgPersonType",
+                        "not_any_of": [
+                            "Contractor",
+                            "Guest"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+`
+
+const CreateOutput = `
+{
+    "mapping": {
+        "id": "ACME",
+        "links": {
+            "self": "http://example.com/identity/v3/OS-FEDERATION/mappings/ACME"
+        },
+        "rules": [
+            {
+                "local": [
+                    {
+                        "user": {
+                            "name": "{0}"
+                        }
+                    },
+                    {
+                        "group": {
+                            "id": "0cd5e9"
+                        }
+                    }
+                ],
+                "remote": [
+                    {
+                        "type": "UserName"
+                    },
+                    {
+                        "type": "orgPersonType",
+                        "not_any_of": [
+                            "Contractor",
+                            "Guest"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+`
+
 var MappingACME = federation.Mapping{
 	ID: "ACME",
 	Links: map[string]interface{}{
@@ -105,5 +179,18 @@ func HandleListMappingsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListOutput)
+	})
+}
+
+// HandleCreateMappingSuccessfully creates an HTTP handler at `/mappings` on the
+// test handler mux that tests mapping creation.
+func HandleCreateMappingSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, CreateOutput)
 	})
 }
