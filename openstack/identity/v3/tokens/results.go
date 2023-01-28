@@ -76,6 +76,15 @@ type Project struct {
 	Name   string `json:"name"`
 }
 
+type UserInfo struct {
+	User    *User    `json:"user"`
+	Roles   []Role   `json:"roles"`
+	ID      string   `json:"id"`
+	Name    string   `json:"name"`
+	Project *Project `json:"project"`
+	Email   string   `json:"email"`
+}
+
 // commonResult is the response from a request. A commonResult has various
 // methods which can be used to extract different details about the result.
 type commonResult struct {
@@ -125,12 +134,10 @@ func (r commonResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 }
 
 // ExtractUser returns the User that is the owner of the Token.
-func (r commonResult) ExtractUser() (*User, error) {
-	var s struct {
-		User *User `json:"user"`
-	}
+func (r commonResult) ExtractUser() (*UserInfo, error) {
+	var s UserInfo
 	err := r.ExtractInto(&s)
-	return s.User, err
+	return &s, err
 }
 
 // ExtractRoles returns Roles to which User is authorized.
