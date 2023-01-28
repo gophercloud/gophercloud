@@ -20,14 +20,6 @@ type KeyPair struct {
 	// "ssh-rsa AAAAB3Nz..."
 	PublicKey string `json:"public_key"`
 
-	// PrivateKey is the private key from this pair, in PEM format.
-	// "-----BEGIN RSA PRIVATE KEY-----\nMIICXA..."
-	// It is only present if this KeyPair was just returned from a Create call.
-	PrivateKey string `json:"private_key"`
-
-	// UserID is the user who owns this KeyPair.
-	UserID string `json:"user_id"`
-
 	// The type of the keypair
 	Type string `json:"type"`
 }
