@@ -1,7 +1,9 @@
 package openstack
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"reflect"
 	"strings"
 
@@ -74,11 +76,14 @@ Example:
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 */
-func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
+func AuthenticatedClient(options gophercloud.AuthOptions, httpClient http.Client, ctx context.Context) (*gophercloud.ProviderClient, error) {
 	client, err := NewClient(options.IdentityEndpoint)
 	if err != nil {
 		return nil, err
 	}
+	// Set the traced HTTP client and context
+	client.HTTPClient = httpClient
+	client.Context = ctx
 
 	err = Authenticate(client, options)
 	if err != nil {
