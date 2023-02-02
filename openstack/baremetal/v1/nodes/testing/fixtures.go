@@ -197,8 +197,8 @@ const NodeListDetailBody = `
       "extra": {},
       "fault": null,
       "inspect_interface": "no-inspect",
-      "inspection_finished_at": null,
-      "inspection_started_at": null,
+      "inspection_finished_at": "2023-02-02T14:45:59.705249Z",
+      "inspection_started_at": "2023-02-02T14:35:59.682403Z",
       "instance_info": {},
       "instance_uuid": null,
       "last_error": null,
@@ -240,7 +240,7 @@ const NodeListDetailBody = `
       "power_interface": "ipmitool",
       "power_state": null,
       "properties": {},
-      "provision_state": "enroll",
+      "provision_state": "available",
       "provision_updated_at": null,
       "raid_config": {},
       "raid_interface": "no-raid",
@@ -927,12 +927,15 @@ var (
 		"disk",
 	}
 
+	InspectionStartedAt  = time.Date(2023, time.February, 2, 14, 35, 59, 682403000, time.UTC)
+	InspectionFinishedAt = time.Date(2023, time.February, 2, 14, 45, 59, 705249000, time.UTC)
+
 	NodeBar = nodes.Node{
 		UUID:                 "08c84581-58f5-4ea2-a0c6-dd2e5d2b3662",
 		Name:                 "bar",
 		PowerState:           "",
 		TargetPowerState:     "",
-		ProvisionState:       "enroll",
+		ProvisionState:       "available",
 		TargetProvisionState: "",
 		Maintenance:          false,
 		MaintenanceReason:    "",
@@ -971,6 +974,8 @@ var (
 		ProtectedReason:      "",
 		CreatedAt:            createdAtBar,
 		UpdatedAt:            updatedAt,
+		InspectionStartedAt:  &InspectionStartedAt,
+		InspectionFinishedAt: &InspectionFinishedAt,
 	}
 
 	NodeBaz = nodes.Node{
