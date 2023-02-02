@@ -81,3 +81,13 @@ func TestCreateMappings(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingACME, *actual)
 }
+
+func TestGetMapping(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetMappingSuccessfully(t)
+
+	actual, err := federation.GetMapping(client.ServiceClient(), "ACME").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, MappingACME, *actual)
+}

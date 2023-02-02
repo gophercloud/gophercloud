@@ -130,6 +130,8 @@ const CreateOutput = `
 }
 `
 
+const GetOutput = CreateOutput
+
 var MappingACME = federation.Mapping{
 	ID: "ACME",
 	Links: map[string]interface{}{
@@ -192,5 +194,19 @@ func HandleCreateMappingSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, CreateOutput)
+	})
+}
+
+// HandleGetMappingSuccessfully creates an HTTP handler at `/mappings` on the
+// test handler mux that responds with a single mapping.
+func HandleGetMappingSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
 	})
 }
