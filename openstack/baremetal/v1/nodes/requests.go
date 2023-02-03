@@ -61,6 +61,7 @@ const (
 	TargetAdopt    TargetProvisionState = "adopt"
 	TargetRescue   TargetProvisionState = "rescue"
 	TargetUnrescue TargetProvisionState = "unrescue"
+	TargetRebuild  TargetProvisionState = "rebuild"
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through
