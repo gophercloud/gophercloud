@@ -245,6 +245,12 @@ type Node struct {
 
 	// The UTC date and time when the provision state was updated, ISO 8601 format. May be “null”.
 	ProvisionUpdatedAt time.Time `json:"provision_updated_at"`
+
+	// The UTC date and time when the last inspection was started, ISO 8601 format. May be “null” if inspection hasn't been started yet.
+	InspectionStartedAt *time.Time `json:"inspection_started_at"`
+
+	// The UTC date and time when the last inspection was finished, ISO 8601 format. May be “null” if inspection hasn't been finished yet.
+	InspectionFinishedAt *time.Time `json:"inspection_finished_at"`
 }
 
 // NodePage abstracts the raw results of making a List() request against
