@@ -115,8 +115,8 @@ func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, er
 }
 
 // Download is a function that retrieves the content and metadata for an object.
-// To extract just the content, pass the DownloadResult response to the
-// ExtractContent function.
+// To extract just the content, call the DownloadResult method ExtractContent,
+// after checking DownloadResult's Err field.
 func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts DownloadOptsBuilder) (r DownloadResult) {
 	url := downloadURL(c, containerName, objectName)
 	h := make(map[string]string)
