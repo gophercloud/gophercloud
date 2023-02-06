@@ -51,9 +51,12 @@ func (opts ListOpts) ToObjectListParams() (bool, string, error) {
 // pass the ListResult response to the ExtractInfo or ExtractNames function,
 // respectively.
 func List(c *gophercloud.ServiceClient, containerName string, opts ListOptsBuilder) pagination.Pager {
-	headers := map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
+	url, err := listURL(c, containerName)
+	if err != nil {
+		return pagination.Pager{Err: err}
+	}
 
-	url := listURL(c, containerName)
+	headers := map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 	if opts != nil {
 		full, query, err := opts.ToObjectListParams()
 		if err != nil {
@@ -118,7 +121,12 @@ func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, er
 // To extract just the content, pass the DownloadResult response to the
 // ExtractContent function.
 func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts DownloadOptsBuilder) (r DownloadResult) {
-	url := downloadURL(c, containerName, objectName)
+	url, err := downloadURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
 	h := make(map[string]string)
 	if opts != nil {
 		headers, query, err := opts.ToObjectDownloadParams()
@@ -224,7 +232,11 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 // checksum, the failed request will automatically be retried up to a maximum
 // of 3 times.
 func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateOptsBuilder) (r CreateResult) {
-	url := createURL(c, containerName, objectName)
+	url, err := createURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	h := make(map[string]string)
 	var b io.Reader
 	if opts != nil {
@@ -277,18 +289,22 @@ func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 
 // Copy is a function that copies one object to another.
 func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts CopyOptsBuilder) (r CopyResult) {
+	url, err := copyURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
 	h := make(map[string]string)
 	headers, err := opts.ToObjectCopyMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-
 	for k, v := range headers {
 		h[k] = v
 	}
 
-	url := copyURL(c, containerName, objectName)
 	resp, err := c.Request("COPY", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
@@ -316,7 +332,11 @@ func (opts DeleteOpts) ToObjectDeleteQuery() (string, error) {
 
 // Delete is a function that deletes an object.
 func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts DeleteOptsBuilder) (r DeleteResult) {
-	url := deleteURL(c, containerName, objectName)
+	url, err := deleteURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	if opts != nil {
 		query, err := opts.ToObjectDeleteQuery()
 		if err != nil {
@@ -361,7 +381,11 @@ func (opts GetOpts) ToObjectGetParams() (map[string]string, string, error) {
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
 func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts GetOptsBuilder) (r GetResult) {
-	url := getURL(c, containerName, objectName)
+	url, err := getURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	h := make(map[string]string)
 	if opts != nil {
 		headers, query, err := opts.ToObjectGetParams()
@@ -421,6 +445,11 @@ func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes an object's metadata.
 func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts UpdateOptsBuilder) (r UpdateResult) {
+	url, err := updateURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToObjectUpdateMap()
@@ -433,7 +462,6 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 			h[k] = v
 		}
 	}
-	url := updateURL(c, containerName, objectName)
 	resp, err := c.Post(url, nil, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 	})
@@ -474,6 +502,11 @@ type CreateTempURLOpts struct {
 // allows users to have "GET" or "POST" access to a particular tenant's object
 // for a limited amount of time.
 func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateTempURLOpts) (string, error) {
+	url, err := getURL(c, containerName, objectName)
+	if err != nil {
+		return "", err
+	}
+
 	if opts.Split == "" {
 		opts.Split = "/v1/"
 	}
@@ -502,7 +535,6 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 		tempURLKey = getHeader.TempURLKey
 	}
 	secretKey := []byte(tempURLKey)
-	url := getURL(c, containerName, objectName)
 	splitPath := strings.Split(url, opts.Split)
 	baseURL, objectPath := splitPath[0], splitPath[1]
 	objectPath = opts.Split + objectPath

@@ -14,6 +14,74 @@ var (
 	metadata = map[string]string{"gophercloud-test": "containers"}
 )
 
+func TestContainerNames(t *testing.T) {
+	for _, tc := range [...]struct {
+		name          string
+		containerName string
+	}{
+		{
+			"rejects_a_slash",
+			"one/two",
+		},
+		{
+			"rejects_an_escaped_slash",
+			"one%2Ftwo",
+		},
+		{
+			"rejects_an_escaped_slash_lowercase",
+			"one%2ftwo",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Run("create", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleCreateContainerSuccessfully(t)
+
+				_, err := containers.Create(fake.ServiceClient(), tc.containerName, nil).Extract()
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("delete", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleDeleteContainerSuccessfully(t, WithPath("/"))
+
+				res := containers.Delete(fake.ServiceClient(), tc.containerName)
+				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("update", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleUpdateContainerSuccessfully(t, WithPath("/"))
+
+				contentType := "text/plain"
+				options := &containers.UpdateOpts{
+					Metadata:         map[string]string{"foo": "bar"},
+					ContainerWrite:   new(string),
+					ContainerRead:    new(string),
+					ContainerSyncTo:  new(string),
+					ContainerSyncKey: new(string),
+					ContentType:      &contentType,
+				}
+				res := containers.Update(fake.ServiceClient(), tc.containerName, options)
+				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("get", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleGetContainerSuccessfully(t, WithPath("/"))
+
+				res := containers.Get(fake.ServiceClient(), tc.containerName, nil)
+				_, err := res.ExtractMetadata()
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+
+				_, err = res.Extract()
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+			})
+		})
+	}
+}
+
 func TestListContainerInfo(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

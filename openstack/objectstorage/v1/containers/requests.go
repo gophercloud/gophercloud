@@ -96,6 +96,11 @@ func (opts CreateOpts) ToContainerCreateMap() (map[string]string, error) {
 
 // Create is a function that creates a new container.
 func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) (r CreateResult) {
+	url, err := createURL(c, containerName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToContainerCreateMap()
@@ -107,7 +112,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 			h[k] = v
 		}
 	}
-	resp, err := c.Request("PUT", createURL(c, containerName), &gophercloud.RequestOpts{
+	resp, err := c.Request("PUT", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
@@ -138,7 +143,12 @@ func BulkDelete(c *gophercloud.ServiceClient, containers []string) (r BulkDelete
 
 // Delete is a function that deletes a container.
 func Delete(c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, containerName), nil)
+	url, err := deleteURL(c, containerName)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Delete(url, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -189,6 +199,11 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 // Update is a function that creates, updates, or deletes a container's
 // metadata.
 func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) (r UpdateResult) {
+	url, err := updateURL(c, containerName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToContainerUpdateMap()
@@ -201,7 +216,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 			h[k] = v
 		}
 	}
-	resp, err := c.Request("POST", updateURL(c, containerName), &gophercloud.RequestOpts{
+	resp, err := c.Request("POST", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
@@ -229,6 +244,11 @@ func (opts GetOpts) ToContainerGetMap() (map[string]string, error) {
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
 func Get(c *gophercloud.ServiceClient, containerName string, opts GetOptsBuilder) (r GetResult) {
+	url, err := getURL(c, containerName)
+	if err != nil {
+		r.Err = err
+		return
+	}
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToContainerGetMap()
@@ -241,7 +261,7 @@ func Get(c *gophercloud.ServiceClient, containerName string, opts GetOptsBuilder
 			h[k] = v
 		}
 	}
-	resp, err := c.Head(getURL(c, containerName), &gophercloud.RequestOpts{
+	resp, err := c.Head(url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200, 204},
 	})
