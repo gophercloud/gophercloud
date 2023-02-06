@@ -13,10 +13,29 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+type handlerOptions struct {
+	path string
+}
+
+type option func(*handlerOptions)
+
+func WithPath(s string) option {
+	return func(h *handlerOptions) {
+		h.path = s
+	}
+}
+
 // HandleDownloadObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Download` response.
-func HandleDownloadObjectSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+func HandleDownloadObjectSuccessfully(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer/testObject",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		date := time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -79,8 +98,15 @@ var ExpectedListNames = []string{"hello", "goodbye"}
 
 // HandleListObjectsInfoSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with a `List` response when full info is requested.
-func HandleListObjectsInfoSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
+func HandleListObjectsInfoSuccessfully(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -177,8 +203,15 @@ func HandleListZeroObjectNames204(t *testing.T) {
 
 // HandleCreateTextObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux
 // that responds with a `Create` response. A Content-Type of "text/plain" is expected.
-func HandleCreateTextObjectSuccessfully(t *testing.T, content string) {
-	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateTextObjectSuccessfully(t *testing.T, content string, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer/testObject",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "text/plain")
@@ -250,8 +283,15 @@ func HandleCopyObjectSuccessfully(t *testing.T) {
 
 // HandleDeleteObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Delete` response.
-func HandleDeleteObjectSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteObjectSuccessfully(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer/testObject",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -290,8 +330,15 @@ func HandleBulkDeleteSuccessfully(t *testing.T) {
 
 // HandleUpdateObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Update` response.
-func HandleUpdateObjectSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateObjectSuccessfully(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer/testObject",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -309,8 +356,15 @@ func HandleUpdateObjectSuccessfully(t *testing.T) {
 
 // HandleGetObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Get` response.
-func HandleGetObjectSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetObjectSuccessfully(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer/testObject",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

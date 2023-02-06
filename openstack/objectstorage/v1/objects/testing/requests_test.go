@@ -12,12 +12,111 @@ import (
 	"time"
 
 	accountTesting "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/accounts/testing"
+	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
 	containerTesting "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers/testing"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
+
+func TestContainerNames(t *testing.T) {
+	for _, tc := range [...]struct {
+		name          string
+		containerName string
+	}{
+		{
+			"rejects_a_slash",
+			"one/two",
+		},
+		{
+			"rejects_an_escaped_slash",
+			"one%2Ftwo",
+		},
+		{
+			"rejects_an_escaped_slash_lowercase",
+			"one%2ftwo",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Run("list", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleListObjectsInfoSuccessfully(t, WithPath("/"))
+
+				_, err := objects.List(fake.ServiceClient(), tc.containerName, nil).AllPages()
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("download", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleDownloadObjectSuccessfully(t, WithPath("/"))
+
+				_, err := objects.Download(fake.ServiceClient(), tc.containerName, "testObject", nil).Extract()
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("create", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				content := "Ceci n'est pas une pipe"
+				HandleCreateTextObjectSuccessfully(t, content, WithPath("/"))
+
+				res := objects.Create(fake.ServiceClient(), tc.containerName, "testObject", &objects.CreateOpts{
+					ContentType: "text/plain",
+					Content:     strings.NewReader(content),
+				})
+				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("delete", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleDeleteObjectSuccessfully(t, WithPath("/"))
+
+				res := objects.Delete(fake.ServiceClient(), tc.containerName, "testObject", nil)
+				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("get", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleGetObjectSuccessfully(t, WithPath("/"))
+
+				_, err := objects.Get(fake.ServiceClient(), tc.containerName, "testObject", nil).ExtractMetadata()
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("update", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleUpdateObjectSuccessfully(t)
+
+				res := objects.Update(fake.ServiceClient(), tc.containerName, "testObject", &objects.UpdateOpts{
+					Metadata: map[string]string{"Gophercloud-Test": "objects"},
+				})
+				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+			})
+			t.Run("createTempURL", func(t *testing.T) {
+				port := 33200
+				th.SetupHTTP()
+				th.SetupPersistentPortHTTP(t, port)
+				defer th.TeardownHTTP()
+
+				// Handle fetching of secret key inside of CreateTempURL
+				containerTesting.HandleGetContainerSuccessfully(t)
+				accountTesting.HandleGetAccountSuccessfully(t)
+				client := fake.ServiceClient()
+
+				// Append v1/ to client endpoint URL to be compliant with tempURL generator
+				client.Endpoint = client.Endpoint + "v1/"
+				_, err := objects.CreateTempURL(client, tc.containerName, "testObject/testFile.txt", objects.CreateTempURLOpts{
+					Method:    http.MethodGet,
+					TTL:       60,
+					Timestamp: time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC),
+				})
+
+				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+			})
+		})
+	}
+}
 
 func TestDownloadReader(t *testing.T) {
 	th.SetupHTTP()

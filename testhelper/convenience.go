@@ -3,6 +3,7 @@ package testhelper
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"reflect"
@@ -351,6 +352,29 @@ func AssertErr(t *testing.T, e error) {
 // CheckNoErr is similar to AssertNoErr, except with a non-fatal error
 func CheckNoErr(t *testing.T, e error) {
 	if e != nil {
+		logError(t, fmt.Sprintf("unexpected error %s", yellow(e.Error())))
+	}
+}
+
+// CheckErr is similar to AssertErr, except with a non-fatal error. If expected
+// errors are passed, this function also checks that an error in e's tree is
+// assignable to one of them. The tree consists of e itself, followed by the
+// errors obtained by repeatedly calling Unwrap.
+//
+// CheckErr panics if expected contains anything other than non-nil pointers to
+// either a type that implements error, or to any interface type.
+func CheckErr(t *testing.T, e error, expected ...interface{}) {
+	if e == nil {
+		logError(t, "expected error, got nil")
+		return
+	}
+
+	if len(expected) > 0 {
+		for _, expectedError := range expected {
+			if errors.As(e, expectedError) {
+				return
+			}
+		}
 		logError(t, fmt.Sprintf("unexpected error %s", yellow(e.Error())))
 	}
 }
