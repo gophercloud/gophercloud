@@ -14,19 +14,22 @@ type Snapshot struct {
 	ID string `json:"id"`
 
 	// Date created.
-	CreatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// Date updated.
-	UpdatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"updated_at"`
 
 	// Display name.
 	Name string `json:"name"`
 
 	// Display description.
-	Description string `json:"description"`
+	Description *string `json:"description"`
 
 	// ID of the Volume from which this Snapshot was created.
 	VolumeID string `json:"volume_id"`
+
+	// ID of the Volume Type from which this Snapshot was created.
+	VolumeTypeID string `json:"volume_type_id"`
 
 	// Currect status of the Snapshot.
 	Status string `json:"status"`
@@ -36,6 +39,9 @@ type Snapshot struct {
 
 	// User-defined key-value pairs.
 	Metadata map[string]string `json:"metadata"`
+
+	// The ID of the project this snapshot is associated with.
+	ProjectID string `json:"os-extended-snapshot-attributes:project_id"`
 }
 
 // CreateResult contains the response body and error from a Create request.
