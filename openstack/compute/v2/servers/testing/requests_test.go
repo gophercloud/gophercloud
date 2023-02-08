@@ -49,9 +49,9 @@ func TestListServers(t *testing.T) {
 func TestListAllServers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleServerListSuccessfully(t)
+	HandleServerListSimpleSuccessfully(t)
 
-	allPages, err := servers.List(client.ServiceClient(), servers.ListOpts{}).AllPages()
+	allPages, err := servers.ListSimple(client.ServiceClient(), servers.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 	actual, err := servers.ExtractServers(allPages)
 	th.AssertNoErr(t, err)

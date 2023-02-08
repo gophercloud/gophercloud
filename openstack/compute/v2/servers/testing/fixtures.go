@@ -893,7 +893,27 @@ func HandleServerCreationWithMetadata(t *testing.T, response string) {
 	})
 }
 
-// HandleServerListSuccessfully sets up the test server to respond to a server List request.
+// HandleServerListSimpleSuccessfully sets up the test server to respond to a server List request.
+func HandleServerListSimpleSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, ServerListBody)
+		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
+			fmt.Fprintf(w, `{ "servers": [] }`)
+		default:
+			t.Fatalf("/servers invoked with unexpected marker=[%s]", marker)
+		}
+	})
+}
+
+// HandleServerListSuccessfully sets up the test server to respond to a server detail List request.
 func HandleServerListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
