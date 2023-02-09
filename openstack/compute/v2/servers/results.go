@@ -221,7 +221,7 @@ type Server struct {
 
 	// Tags is a slice/list of string tags in a server.
 	// The requires microversion 2.26 or later.
-	Tags *[]string `json:"tags"`
+	Tags []string `json:"tags"`
 
 	// ServerGroups is a slice of strings containing the UUIDs of the
 	// server groups to which the server belongs. Currently this can
