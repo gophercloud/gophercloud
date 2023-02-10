@@ -19,7 +19,9 @@ type serverResult struct {
 
 // Extract interprets any serverResult as a Server, if possible.
 func (r serverResult) Extract() (*Server, error) {
-	var s Server
+	s := Server{
+		Tags: []string{},
+	}
 	err := r.ExtractInto(&s)
 	return &s, err
 }
@@ -305,6 +307,11 @@ func (r ServerPage) NextPageURL() (string, error) {
 func ExtractServers(r pagination.Page) ([]Server, error) {
 	var s []Server
 	err := ExtractServersInto(r, &s)
+	for i := range s {
+		if s[i].Tags == nil {
+			s[i].Tags = []string{}
+		}
+	}
 	return s, err
 }
 
