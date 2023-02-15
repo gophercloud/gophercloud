@@ -15,7 +15,7 @@ func getURL(c *gophercloud.ServiceClient, id string) string {
 }
 
 func listURL(c *gophercloud.ServiceClient) string {
-	return createURL(c)
+	return c.ServiceURL("snapshots", "detail")
 }
 
 func updateURL(c *gophercloud.ServiceClient, id string) string {
