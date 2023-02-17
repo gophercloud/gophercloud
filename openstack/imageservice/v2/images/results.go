@@ -90,6 +90,18 @@ type Image struct {
 	// VirtualSize is the virtual size of the image
 	VirtualSize int64 `json:"virtual_size"`
 
+	// OSHidden controls whether an image is displayed in the default image-list response
+	OSHidden bool `json:"os_hidden"`
+
+	// OSHashAlgo is the algorithm used to compute a secure hash of the image data for this image
+	OSHashAlgo string `json:"os_hash_algo"`
+
+	// OSHashValue is the hexdigest of the secure hash of the image data
+	OSHashValue string `json:"ods_hash_value"`
+
+	// DirectURL is the URL to access the image kept in external store
+	DirectURL string `json:"direct_url"`
+
 	// OpenStackImageImportMethods is a slice listing the types of import
 	// methods available in the cloud.
 	OpenStackImageImportMethods []string `json:"-"`
