@@ -142,6 +142,9 @@ type ListOpts struct {
 	// Requests a page size of items.
 	Limit int `q:"limit"`
 
+	// Marker for pagination.
+	Marker string `q:"marker"`
+
 	// Used in conjunction with limit to return a slice of items.
 	Offset int `q:"offset"`
 
