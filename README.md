@@ -101,7 +101,6 @@ credentials explicitly or tell Gophercloud to use environment variables:
 import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
-	"github.com/gophercloud/gophercloud/openstack/utils"
 )
 
 // Option 1: Pass in the values yourself
