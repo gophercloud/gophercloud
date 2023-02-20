@@ -145,8 +145,12 @@ type ListOpts struct {
 	// Used in conjunction with limit to return a slice of items.
 	Offset int `q:"offset"`
 
-	// The ID of the last-seen item.
-	Marker string `q:"marker"`
+	// Size will filter by the specified size.
+	Size int `q:"size"`
+	// AvailabilityZone will filter by the specified availability zone.
+	AvailabilityZone string `q:"availability_zone"`
+	// Bootable will filter by the specified bootable status.
+	Bootable string `q:"bootable"`
 }
 
 // ToVolumeListQuery formats a ListOpts into a query string.
