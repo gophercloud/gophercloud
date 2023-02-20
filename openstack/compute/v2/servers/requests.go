@@ -86,6 +86,9 @@ type ListOpts struct {
 
 	// Display servers based on their availability zone (Admin only until microversion 2.82).
 	AvailabilityZone string `q:"availability_zone"`
+
+	// SortDir is the direction in which to sort the results.
+	SortDir string `q:"sort_dir"`
 }
 
 // ToServerListQuery formats a ListOpts into a query string.
