@@ -93,6 +93,15 @@ type Network struct {
 
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber int `json:"revision_number"`
+
+	// MTU is the Maximum Transmission Unit of the network.
+	MTU int `json:"mtu"`
+
+	// AvailabilityZones is the list of availability zones where the network is available.
+	AvailabilityZones []string `json:"availability_zones"`
+
+	// QoSPolicyID is the ID of the QoS policy associated with the network.
+	QoSPolicyID string `json:"qos_policy_id"`
 }
 
 func (r *Network) UnmarshalJSON(b []byte) error {

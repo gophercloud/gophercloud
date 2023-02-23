@@ -51,6 +51,7 @@ type DeleteResult struct {
 type IP struct {
 	SubnetID  string `json:"subnet_id"`
 	IPAddress string `json:"ip_address,omitempty"`
+	IPVersion int    `json:"ip_version,omitempty"`
 }
 
 // AddressPair contains the IP Address and the MAC address.
