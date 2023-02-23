@@ -33,7 +33,7 @@ func NewBareMetalIntrospectionNoAuth(eo EndpointOpts) (*gophercloud.ServiceClien
 		return nil, err
 	}
 
-	sc.Type = "baremetal-inspector"
+	sc.Type = "baremetal-introspection"
 
 	return sc, nil
 }
