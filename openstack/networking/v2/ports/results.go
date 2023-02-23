@@ -111,6 +111,9 @@ type Port struct {
 	// Tags optionally set via extensions/attributestags
 	Tags []string `json:"tags"`
 
+	// PropagateUplinkStatus enables/disables propagate uplink status on the port.
+	PropagateUplinkStatus bool `json:"propagate_uplink_status"`
+
 	// Extra parameters to include in the request.
 	ValueSpecs map[string]string `json:"value_specs"`
 
