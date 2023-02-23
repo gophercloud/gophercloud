@@ -10,3 +10,10 @@ func Get(client *gophercloud.ServiceClient, accessID string) (r GetResult) {
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// List gets all access rules of a share.
+func List(client *gophercloud.ServiceClient, shareID string) (r ListResult) {
+	resp, err := client.Get(listURL(client, shareID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
