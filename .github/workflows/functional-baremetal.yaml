@@ -39,7 +39,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin ironic https://opendev.org/openstack/ironic ${{ matrix.openstack_version }}
+            enable_plugin ironic https://github.com/openstack/ironic ${{ matrix.openstack_version }}
             LIBS_FROM_GIT=pyghmi,virtualbmc
             FORCE_CONFIG_DRIVE=True
             Q_AGENT=openvswitch
