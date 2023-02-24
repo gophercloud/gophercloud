@@ -15,37 +15,37 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum master
+              enable_plugin magnum https://github.com/openstack/magnum master
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum stable/yoga
+              enable_plugin magnum https://github.com/openstack/magnum stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum stable/xena
+              enable_plugin magnum https://github.com/openstack/magnum stable/xena
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum stable/wallaby
+              enable_plugin magnum https://github.com/openstack/magnum stable/wallaby
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum stable/victoria
+              enable_plugin magnum https://github.com/openstack/magnum stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum ussuri-eol
+              enable_plugin magnum https://github.com/openstack/magnum ussuri-eol
           - name: "train"
             openstack_version: "stable/train"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin magnum https://opendev.org/openstack/magnum train-eol
+              enable_plugin magnum https://github.com/openstack/magnum train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
@@ -56,8 +56,8 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin barbican https://opendev.org/openstack/barbican ${{ matrix.openstack_version }}
-            enable_plugin heat https://opendev.org/openstack/heat ${{ matrix.openstack_version }}
+            enable_plugin barbican https://github.com/openstack/barbican ${{ matrix.openstack_version }}
+            enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true

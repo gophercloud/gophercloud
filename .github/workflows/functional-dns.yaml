@@ -16,37 +16,37 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate master
+              enable_plugin designate https://github.com/openstack/designate master
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate stable/yoga
+              enable_plugin designate https://github.com/openstack/designate stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate stable/xena
+              enable_plugin designate https://github.com/openstack/designate stable/xena
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate stable/wallaby
+              enable_plugin designate https://github.com/openstack/designate stable/wallaby
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate stable/victoria
+              enable_plugin designate https://github.com/openstack/designate stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate stable/ussuri
+              enable_plugin designate https://github.com/openstack/designate stable/ussuri
           - name: "train"
             openstack_version: "stable/train"
             ubuntu_version: "18.04"
             devstack_conf_overrides: |
-              enable_plugin designate https://opendev.org/openstack/designate train-eol
+              enable_plugin designate https://github.com/openstack/designate train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Designate and run dns acceptance tests
     steps:

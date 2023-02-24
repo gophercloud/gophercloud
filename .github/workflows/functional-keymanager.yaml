@@ -42,7 +42,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin barbican https://opendev.org/openstack/barbican ${{ matrix.openstack_version }}
+            enable_plugin barbican https://github.com/openstack/barbican ${{ matrix.openstack_version }}
           enabled_services: 'barbican-svc,barbican-retry,barbican-keystone-listener'
       - name: Checkout go
         uses: actions/setup-go@v3

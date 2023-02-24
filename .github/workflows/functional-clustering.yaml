@@ -42,8 +42,8 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin senlin https://opendev.org/openstack/senlin ${{ matrix.openstack_version }}
-            enable_plugin zaqar https://opendev.org/openstack/zaqar ${{ matrix.openstack_version }}
+            enable_plugin senlin https://github.com/openstack/senlin ${{ matrix.openstack_version }}
+            enable_plugin zaqar https://github.com/openstack/zaqar ${{ matrix.openstack_version }}
             ZAQARCLIENT_BRANCH=${{ matrix.openstack_version }}
       - name: Checkout go
         uses: actions/setup-go@v3

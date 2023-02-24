@@ -42,7 +42,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin heat https://opendev.org/openstack/heat ${{ matrix.openstack_version }}
+            enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
         uses: actions/setup-go@v3
