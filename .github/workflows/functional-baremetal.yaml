@@ -39,6 +39,8 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
+            # pyghmi is not mirrored on github
+            PYGHMI_REPO=https://opendev.org/x/pyghmi
             enable_plugin ironic https://github.com/openstack/ironic ${{ matrix.openstack_version }}
             LIBS_FROM_GIT=pyghmi,virtualbmc
             FORCE_CONFIG_DRIVE=True
