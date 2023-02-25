@@ -252,3 +252,7 @@ func ExtractImages(r pagination.Page) ([]Image, error) {
 func splitFunc(c rune) bool {
 	return c == ','
 }
+
+func ExtractImagesInto(r pagination.Page, v interface{}) error {
+	return r.(ImagePage).Result.ExtractIntoSlicePtr(v, "images")
+}

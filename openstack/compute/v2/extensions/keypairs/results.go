@@ -67,6 +67,14 @@ func (r keyPairResult) Extract() (*KeyPair, error) {
 	return s.KeyPair, err
 }
 
+func (r keyPairResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "keypair")
+}
+
+func ExtractKeyPairsInto(r pagination.Page, v interface{}) error {
+	return r.(KeyPairPage).Result.ExtractIntoSlicePtr(v, "keypairs")
+}
+
 // CreateResult is the response from a Create operation. Call its Extract method
 // to interpret it as a KeyPair.
 type CreateResult struct {

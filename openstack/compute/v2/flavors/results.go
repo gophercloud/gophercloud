@@ -261,3 +261,7 @@ func (r extraSpecResult) Extract() (map[string]string, error) {
 	err := r.ExtractInto(&s)
 	return s, err
 }
+
+func ExtractFlavorsInto(r pagination.Page, v interface{}) error {
+	return r.(FlavorPage).Result.ExtractIntoSlicePtr(v, "flavors")
+}

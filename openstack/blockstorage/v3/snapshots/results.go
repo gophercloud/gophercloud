@@ -143,3 +143,7 @@ func (r commonResult) Extract() (*Snapshot, error) {
 	err := r.ExtractInto(&s)
 	return s.Snapshot, err
 }
+
+func ExtractSnapshotsInto(r pagination.Page, v interface{}) error {
+	return r.(SnapshotPage).Result.ExtractIntoSlicePtr(v, "snapshots")
+}

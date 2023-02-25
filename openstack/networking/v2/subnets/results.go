@@ -156,3 +156,7 @@ func ExtractSubnets(r pagination.Page) ([]Subnet, error) {
 	err := (r.(SubnetPage)).ExtractInto(&s)
 	return s.Subnets, err
 }
+
+func ExtractSubnetsInto(r pagination.Page, v interface{}) error {
+	return r.(SubnetPage).Result.ExtractIntoSlicePtr(v, "subnets")
+}
