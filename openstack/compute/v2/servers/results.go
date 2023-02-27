@@ -203,7 +203,7 @@ type Server struct {
 	Links []interface{} `json:"links"`
 
 	// KeyName indicates which public key was injected into the server on launch.
-	KeyName string `json:"key_name"`
+	KeyName *string `json:"key_name"`
 
 	// AdminPass will generally be empty ("").  However, it will contain the
 	// administrative password chosen when provisioning a new server without a
