@@ -228,6 +228,10 @@ type Server struct {
 	// contain at most one entry.
 	// New in microversion 2.71
 	ServerGroups *[]string `json:"server_groups"`
+
+	// Locked indicates the lock status of the server
+	// This requires microversion 2.9 or later
+	Locked *bool `json:"locked"`
 }
 
 type AttachedVolume struct {
