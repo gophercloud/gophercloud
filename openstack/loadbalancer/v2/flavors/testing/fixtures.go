@@ -157,7 +157,7 @@ func HandleFlavorUpdateSuccessfully(t *testing.T) {
 			"flavor": {
 				"name": "Basic v2",
 				"description": "Rename flavor",
-				"enabled": false
+				"enabled": true
 			}
 		}`)
 
