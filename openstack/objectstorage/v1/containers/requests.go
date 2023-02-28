@@ -80,6 +80,7 @@ type CreateOpts struct {
 	TempURLKey        string `h:"X-Container-Meta-Temp-URL-Key"`
 	TempURLKey2       string `h:"X-Container-Meta-Temp-URL-Key-2"`
 	StoragePolicy     string `h:"X-Storage-Policy"`
+	VersionsEnabled   bool   `h:"X-Versions-Enabled"`
 }
 
 // ToContainerCreateMap formats a CreateOpts into a map of headers.
@@ -176,6 +177,7 @@ type UpdateOpts struct {
 	HistoryLocation        string  `h:"X-History-Location"`
 	TempURLKey             string  `h:"X-Container-Meta-Temp-URL-Key"`
 	TempURLKey2            string  `h:"X-Container-Meta-Temp-URL-Key-2"`
+	VersionsEnabled        *bool   `h:"X-Versions-Enabled"`
 }
 
 // ToContainerUpdateMap formats a UpdateOpts into a map of headers.

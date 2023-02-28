@@ -281,6 +281,20 @@ func HandleCopyObjectSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleCopyObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
+// responds with a `Copy` response.
+func HandleCopyObjectVersionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "COPY")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Destination", "/newTestContainer/newTestObject")
+		th.TestFormValues(t, r, map[string]string{"version-id": "123456788"})
+		w.Header().Set("X-Object-Version-Id", "123456789")
+		w.WriteHeader(http.StatusCreated)
+	})
+}
+
 // HandleDeleteObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Delete` response.
 func HandleDeleteObjectSuccessfully(t *testing.T, options ...option) {
