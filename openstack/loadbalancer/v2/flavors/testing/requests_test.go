@@ -108,7 +108,7 @@ func TestUpdateFlavor(t *testing.T) {
 	actual, err := flavors.Update(client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0", flavors.UpdateOpts{
 		Name:        "Basic v2",
 		Description: "Rename flavor",
-		Enabled:     false,
+		Enabled:     true,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)

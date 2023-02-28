@@ -8,6 +8,8 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/flavorprofiles"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/flavors"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
@@ -675,4 +677,73 @@ func WaitForLoadBalancerState(client *gophercloud.ServiceClient, lbID, status st
 
 		return false, nil
 	})
+}
+
+func CreateFlavorProfile(t *testing.T, client *gophercloud.ServiceClient) (*flavorprofiles.FlavorProfile, error) {
+	flavorProfileName := tools.RandomString("TESTACCT-", 8)
+	flavorProfileDriver := "amphora"
+	flavorProfileData := "{\"loadbalancer_topology\": \"SINGLE\"}"
+
+	createOpts := flavorprofiles.CreateOpts{
+		Name:         flavorProfileName,
+		ProviderName: flavorProfileDriver,
+		FlavorData:   flavorProfileData,
+	}
+
+	flavorProfile, err := flavorprofiles.Create(client, createOpts).Extract()
+	if err != nil {
+		return flavorProfile, err
+	}
+
+	t.Logf("Successfully created flavorprofile %s", flavorProfileName)
+
+	th.AssertEquals(t, flavorProfileName, flavorProfile.Name)
+	th.AssertEquals(t, flavorProfileDriver, flavorProfile.ProviderName)
+	th.AssertEquals(t, flavorProfileData, flavorProfile.FlavorData)
+
+	return flavorProfile, nil
+}
+
+func DeleteFlavorProfile(t *testing.T, client *gophercloud.ServiceClient, flavorProfile *flavorprofiles.FlavorProfile) {
+	err := flavorprofiles.Delete(client, flavorProfile.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete flavorprofile: %v", err)
+	}
+
+	t.Logf("Successfully deleted flavorprofile %s", flavorProfile.Name)
+}
+
+func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile *flavorprofiles.FlavorProfile) (*flavors.Flavor, error) {
+	flavorName := tools.RandomString("TESTACCT-", 8)
+	description := tools.RandomString("TESTACCT-desc-", 32)
+
+	createOpts := flavors.CreateOpts{
+		Name:            flavorName,
+		Description:     description,
+		FlavorProfileId: flavorProfile.ID,
+		Enabled:         true,
+	}
+
+	flavor, err := flavors.Create(client, createOpts).Extract()
+	if err != nil {
+		return flavor, err
+	}
+
+	t.Logf("Successfully created flavor %s with flavorprofile %s", flavor.Name, flavorProfile.Name)
+
+	th.AssertEquals(t, flavorName, flavor.Name)
+	th.AssertEquals(t, description, flavor.Description)
+	th.AssertEquals(t, flavorProfile.ID, flavor.FlavorProfileId)
+	th.AssertEquals(t, true, flavor.Enabled)
+
+	return flavor, nil
+}
+
+func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavors.Flavor) {
+	err := flavors.Delete(client, flavor.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete flavor: %v", err)
+	}
+
+	t.Logf("Successfully deleted flavor %s", flavor.Name)
 }
