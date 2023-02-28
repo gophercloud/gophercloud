@@ -46,10 +46,10 @@ type NetworkIPAvailability struct {
 	SubnetIPAvailabilities []SubnetIPAvailability `json:"subnet_ip_availability"`
 
 	// TotalIPs represents a number of IP addresses in the network.
-	TotalIPs string `json:"-"`
+	TotalIPs string `json:"total_ips"`
 
 	// UsedIPs represents a number of used IP addresses in the network.
-	UsedIPs string `json:"-"`
+	UsedIPs string `json:"used_ips"`
 }
 
 func (r *NetworkIPAvailability) UnmarshalJSON(b []byte) error {
@@ -87,10 +87,10 @@ type SubnetIPAvailability struct {
 	IPVersion int `json:"ip_version"`
 
 	// TotalIPs represents a number of IP addresses in the subnet.
-	TotalIPs string `json:"-"`
+	TotalIPs string `json:"total_ips"`
 
 	// UsedIPs represents a number of used IP addresses in the subnet.
-	UsedIPs string `json:"-"`
+	UsedIPs string `json:"used_ips"`
 }
 
 func (r *SubnetIPAvailability) UnmarshalJSON(b []byte) error {
