@@ -44,6 +44,9 @@ jobs:
           conf_overrides: |
             SWIFT_ENABLE_TEMPURLS=True
             SWIFT_TEMPURL_KEY=secretkey
+            [[post-config|\$SWIFT_CONFIG_PROXY_SERVER]]
+            [filter:versioned_writes]
+            allow_object_versioning = true
           enabled_services: 's-account,s-container,s-object,s-proxy'
       - name: Checkout go
         uses: actions/setup-go@v3
