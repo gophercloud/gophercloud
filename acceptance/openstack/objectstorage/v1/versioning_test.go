@@ -15,7 +15,7 @@ import (
 )
 
 func TestObjectsVersioning(t *testing.T) {
-	t.Skip("Skip this test, versioning is not yet supported by test env")
+	clients.SkipReleasesBelow(t, "stable/ussuri")
 
 	client, err := clients.NewObjectStorageV1Client()
 	if err != nil {
