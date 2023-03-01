@@ -107,6 +107,6 @@ func TestMappingsCRUD(t *testing.T) {
 
 	updatedMapping, err := federation.UpdateMapping(client, mappingName, updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, len(createOpts.Rules), len(mapping.Rules))
+	th.AssertEquals(t, len(updateOpts.Rules), len(updatedMapping.Rules))
 	th.CheckDeepEquals(t, updateOpts.Rules[0], updatedMapping.Rules[0])
 }
