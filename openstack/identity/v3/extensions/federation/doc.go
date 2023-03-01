@@ -57,5 +57,42 @@ Example to Get a Mapping
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a Mapping
+
+	updateOpts := federation.UpdateMappingOpts{
+		Rules: []federation.MappingRule{
+			{
+				Local: []federation.RuleLocal{
+					{
+						User: &federation.RuleUser{
+							Name: "{0}",
+						},
+					},
+					{
+						Group: &federation.Group{
+							ID: "0cd5e9",
+						},
+					},
+				},
+				Remote: []federation.RuleRemote{
+					{
+						Type: "UserName",
+					},
+					{
+						Type: "orgPersonType",
+						AnyOneOf: []string{
+							"Contractor",
+							"SubContractor",
+						},
+					},
+				},
+			},
+		},
+	}
+	updatedMapping, err := federation.UpdateMapping(identityClient, "ACME", updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package federation

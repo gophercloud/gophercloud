@@ -132,6 +132,80 @@ const CreateOutput = `
 
 const GetOutput = CreateOutput
 
+const UpdateRequest = `
+{
+    "mapping": {
+        "rules": [
+            {
+                "local": [
+                    {
+                        "user": {
+                            "name": "{0}"
+                        }
+                    },
+                    {
+                        "group": {
+                            "id": "0cd5e9"
+                        }
+                    }
+                ],
+                "remote": [
+                    {
+                        "type": "UserName"
+                    },
+                    {
+                        "type": "orgPersonType",
+                        "any_one_of": [
+                            "Contractor",
+                            "SubContractor"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+`
+
+const UpdateOutput = `
+{
+    "mapping": {
+        "id": "ACME",
+        "links": {
+            "self": "http://example.com/identity/v3/OS-FEDERATION/mappings/ACME"
+        },
+        "rules": [
+            {
+                "local": [
+                    {
+                        "user": {
+                            "name": "{0}"
+                        }
+                    },
+                    {
+                        "group": {
+                            "id": "0cd5e9"
+                        }
+                    }
+                ],
+                "remote": [
+                    {
+                        "type": "UserName"
+                    },
+                    {
+                        "type": "orgPersonType",
+                        "any_one_of": [
+                            "Contractor",
+                            "SubContractor"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+`
+
 var MappingACME = federation.Mapping{
 	ID: "ACME",
 	Links: map[string]interface{}{
@@ -160,6 +234,41 @@ var MappingACME = federation.Mapping{
 					NotAnyOf: []string{
 						"Contractor",
 						"Guest",
+					},
+				},
+			},
+		},
+	},
+}
+
+var MappingUpdated = federation.Mapping{
+	ID: "ACME",
+	Links: map[string]interface{}{
+		"self": "http://example.com/identity/v3/OS-FEDERATION/mappings/ACME",
+	},
+	Rules: []federation.MappingRule{
+		{
+			Local: []federation.RuleLocal{
+				{
+					User: &federation.RuleUser{
+						Name: "{0}",
+					},
+				},
+				{
+					Group: &federation.Group{
+						ID: "0cd5e9",
+					},
+				},
+			},
+			Remote: []federation.RuleRemote{
+				{
+					Type: "UserName",
+				},
+				{
+					Type: "orgPersonType",
+					AnyOneOf: []string{
+						"Contractor",
+						"SubContractor",
 					},
 				},
 			},
@@ -208,5 +317,18 @@ func HandleGetMappingSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleUpdateMappingSuccessfully creates an HTTP handler at `/mappings` on the
+// test handler mux that tests mapping update.
+func HandleUpdateMappingSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
 	})
 }

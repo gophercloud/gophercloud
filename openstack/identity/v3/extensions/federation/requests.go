@@ -49,3 +49,34 @@ func GetMapping(client *gophercloud.ServiceClient, mappingID string) (r GetMappi
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// UpdateMappingOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateMappingOptsBuilder interface {
+	ToMappingUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateMappingOpts provides options for updating a mapping.
+type UpdateMappingOpts struct {
+	// The list of rules used to map remote users into local users
+	Rules []MappingRule `json:"rules"`
+}
+
+// ToMappingUpdateMap formats a UpdateOpts into an update request.
+func (opts UpdateMappingOpts) ToMappingUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "mapping")
+}
+
+// UpdateMapping updates an existing mapping.
+func UpdateMapping(client *gophercloud.ServiceClient, mappingID string, opts UpdateMappingOptsBuilder) (r UpdateMappingResult) {
+	b, err := opts.ToMappingUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Patch(mappingsResourceURL(client, mappingID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

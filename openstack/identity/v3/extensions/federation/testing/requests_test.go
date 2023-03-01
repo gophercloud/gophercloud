@@ -91,3 +91,44 @@ func TestGetMapping(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingACME, *actual)
 }
+
+func TestUpdateMapping(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateMappingSuccessfully(t)
+
+	updateOpts := federation.UpdateMappingOpts{
+		Rules: []federation.MappingRule{
+			{
+				Local: []federation.RuleLocal{
+					{
+						User: &federation.RuleUser{
+							Name: "{0}",
+						},
+					},
+					{
+						Group: &federation.Group{
+							ID: "0cd5e9",
+						},
+					},
+				},
+				Remote: []federation.RuleRemote{
+					{
+						Type: "UserName",
+					},
+					{
+						Type: "orgPersonType",
+						AnyOneOf: []string{
+							"Contractor",
+							"SubContractor",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	actual, err := federation.UpdateMapping(client.ServiceClient(), "ACME", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, MappingUpdated, *actual)
+}

@@ -73,4 +73,40 @@ func TestMappingsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(createOpts.Rules), len(mapping.Rules))
 	th.CheckDeepEquals(t, createOpts.Rules[0], mapping.Rules[0])
+
+	updateOpts := federation.UpdateMappingOpts{
+		Rules: []federation.MappingRule{
+			{
+				Local: []federation.RuleLocal{
+					{
+						User: &federation.RuleUser{
+							Name: "{0}",
+						},
+					},
+					{
+						Group: &federation.Group{
+							ID: "0cd5e9",
+						},
+					},
+				},
+				Remote: []federation.RuleRemote{
+					{
+						Type: "UserName",
+					},
+					{
+						Type: "orgPersonType",
+						AnyOneOf: []string{
+							"Contractor",
+							"SubContractor",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	updatedMapping, err := federation.UpdateMapping(client, mappingName, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Rules), len(updatedMapping.Rules))
+	th.CheckDeepEquals(t, updateOpts.Rules[0], updatedMapping.Rules[0])
 }
