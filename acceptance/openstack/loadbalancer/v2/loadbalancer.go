@@ -195,7 +195,7 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 				Description: poolDescription,
 				Protocol:    pools.ProtocolHTTP,
 				LBMethod:    pools.LBMethodLeastConnections,
-				Members: []pools.BatchUpdateMemberOpts{{
+				Members: []pools.CreateMemberOpts{{
 					Name:         &memberName,
 					ProtocolPort: memberPort,
 					Weight:       &memberWeight,
