@@ -6,6 +6,7 @@ package v3
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/federation"
@@ -109,4 +110,12 @@ func TestMappingsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(updateOpts.Rules), len(updatedMapping.Rules))
 	th.CheckDeepEquals(t, updateOpts.Rules[0], updatedMapping.Rules[0])
+
+	err = federation.DeleteMapping(client, mappingName).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	resp := federation.GetMapping(client, mappingName)
+	th.AssertErr(t, resp.Err)
+	_, ok := resp.Err.(gophercloud.ErrDefault404)
+	th.AssertEquals(t, true, ok)
 }

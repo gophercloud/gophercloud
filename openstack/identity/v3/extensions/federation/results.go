@@ -162,6 +162,12 @@ type UpdateMappingResult struct {
 	mappingResult
 }
 
+// DeleteMappingResult is the response from a DeleteMapping operation.
+// Call its ExtractErr to determine if the request succeeded or failed.
+type DeleteMappingResult struct {
+	gophercloud.ErrResult
+}
+
 // MappingsPage is a single page of Mapping results.
 type MappingsPage struct {
 	pagination.LinkedPageBase
