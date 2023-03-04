@@ -4,7 +4,7 @@ on:
     paths:
       - '**networking**'
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 */3 * *'
 jobs:
   functional-networking:
     strategy:
