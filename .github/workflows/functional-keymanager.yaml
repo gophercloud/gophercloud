@@ -14,6 +14,9 @@ jobs:
         openstack_version: ["master"]
         ubuntu_version: ["20.04"]
         include:
+          - name: "zed"
+            openstack_version: "stable/zed"
+            ubuntu_version: "20.04"
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
