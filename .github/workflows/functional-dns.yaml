@@ -17,6 +17,11 @@ jobs:
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
               enable_plugin designate https://github.com/openstack/designate master
+          - name: "zed"
+            openstack_version: "stable/zed"
+            ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin designate https://github.com/openstack/designate stable/zed
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
