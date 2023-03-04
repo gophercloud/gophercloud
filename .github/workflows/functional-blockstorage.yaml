@@ -4,7 +4,7 @@ on:
     paths:
       - '**blockstorage**'
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 */3 * *'
 jobs:
   functional-blockstorage:
     strategy:
