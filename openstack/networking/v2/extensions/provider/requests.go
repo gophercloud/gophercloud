@@ -26,3 +26,26 @@ func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
 
 	return base, nil
 }
+
+// UpdateOptsExt adds a Segments option to the base Network UpdateOpts.
+type UpdateOptsExt struct {
+	networks.UpdateOptsBuilder
+	Segments *[]Segment `json:"segments,omitempty"`
+}
+
+// ToNetworkUpdateMap adds segments to the base network update options.
+func (opts UpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, error) {
+	base, err := opts.UpdateOptsBuilder.ToNetworkUpdateMap()
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Segments == nil {
+		return base, nil
+	}
+
+	providerMap := base["network"].(map[string]interface{})
+	providerMap["segments"] = opts.Segments
+
+	return base, nil
+}
