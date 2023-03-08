@@ -106,6 +106,10 @@ type ReceiverPage struct {
 
 // IsEmpty determines if a ReceiverPage contains any results.
 func (page ReceiverPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	receivers, err := ExtractReceivers(page)
 	return len(receivers) == 0, err
 }

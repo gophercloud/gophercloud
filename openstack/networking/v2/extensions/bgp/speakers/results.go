@@ -63,6 +63,10 @@ type BGPSpeakerPage struct {
 
 // IsEmpty checks whether a BGPSpeakerPage struct is empty.
 func (r BGPSpeakerPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractBGPSpeakers(r)
 	return len(is) == 0, err
 }
@@ -145,6 +149,10 @@ type AdvertisedRoutePage struct {
 
 // IsEmpty checks whether a AdvertisedRoutePage struct is empty.
 func (r AdvertisedRoutePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractAdvertisedRoutes(r)
 	return len(is) == 0, err
 }

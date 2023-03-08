@@ -110,6 +110,10 @@ type ResourceProvidersPage struct {
 
 // IsEmpty determines if a ResourceProvidersPage contains any results.
 func (page ResourceProvidersPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	resourceProviders, err := ExtractResourceProviders(page)
 	return len(resourceProviders) == 0, err
 }

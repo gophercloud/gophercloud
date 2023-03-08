@@ -86,6 +86,10 @@ func (r NodeGroupPage) NextPageURL() (string, error) {
 }
 
 func (r NodeGroupPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractNodeGroups(r)
 	return len(s) == 0, err
 }

@@ -51,6 +51,10 @@ type TransferRequestPage struct {
 
 // IsEmpty returns true if the page contains no results.
 func (r TransferRequestPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractTransferRequests(r)
 	return len(s) == 0, err
 }

@@ -187,6 +187,10 @@ func (r PortPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a PortPage struct is empty.
 func (r PortPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractPorts(r)
 	return len(is) == 0, err
 }

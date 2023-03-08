@@ -108,6 +108,10 @@ func (r VIPPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a VIPPage struct is empty.
 func (r VIPPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractVIPs(r)
 	return len(is) == 0, err
 }

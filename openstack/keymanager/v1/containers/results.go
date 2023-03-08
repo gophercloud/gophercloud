@@ -108,6 +108,10 @@ type ContainerPage struct {
 
 // IsEmpty determines whether or not a page of Container contains any results.
 func (r ContainerPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	containers, err := ExtractContainers(r)
 	return len(containers) == 0, err
 }
@@ -204,6 +208,10 @@ type ConsumerPage struct {
 
 // IsEmpty determines whether or not a page of consumers contains any results.
 func (r ConsumerPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	consumers, err := ExtractConsumers(r)
 	return len(consumers) == 0, err
 }

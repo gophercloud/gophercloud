@@ -114,6 +114,10 @@ func (r ConnectionPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a ConnectionPage struct is empty.
 func (r ConnectionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractConnections(r)
 	return len(is) == 0, err
 }

@@ -136,6 +136,10 @@ type SecretPage struct {
 
 // IsEmpty determines whether or not a page of secrets contains any results.
 func (r SecretPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	secrets, err := ExtractSecrets(r)
 	return len(secrets) == 0, err
 }

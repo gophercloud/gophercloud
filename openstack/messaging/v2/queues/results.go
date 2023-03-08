@@ -150,6 +150,10 @@ func ExtractQueues(r pagination.Page) ([]Queue, error) {
 
 // IsEmpty determines if a QueuesPage contains any results.
 func (r QueuePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractQueues(r)
 	return len(s) == 0, err
 }

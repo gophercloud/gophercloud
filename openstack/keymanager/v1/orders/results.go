@@ -135,6 +135,10 @@ type OrderPage struct {
 
 // IsEmpty determines whether or not a page of ordersS contains any results.
 func (r OrderPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	orders, err := ExtractOrders(r)
 	return len(orders) == 0, err
 }

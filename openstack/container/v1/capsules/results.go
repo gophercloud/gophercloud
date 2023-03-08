@@ -241,6 +241,10 @@ func (r CapsulePage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a CapsulePage struct is empty.
 func (r CapsulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractCapsules(r)
 	if err != nil {
 		return false, err

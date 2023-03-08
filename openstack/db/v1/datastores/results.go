@@ -47,6 +47,10 @@ type DatastorePage struct {
 
 // IsEmpty indicates whether a Datastore collection is empty.
 func (r DatastorePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractDatastores(r)
 	return len(is) == 0, err
 }
@@ -77,6 +81,10 @@ type VersionPage struct {
 
 // IsEmpty indicates whether a collection of version resources is empty.
 func (r VersionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractVersions(r)
 	return len(is) == 0, err
 }

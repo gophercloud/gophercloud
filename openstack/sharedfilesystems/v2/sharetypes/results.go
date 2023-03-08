@@ -50,6 +50,10 @@ type ShareTypePage struct {
 
 // IsEmpty returns true if a ListResult contains no ShareTypes.
 func (r ShareTypePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	shareTypes, err := ExtractShareTypes(r)
 	return len(shareTypes) == 0, err
 }

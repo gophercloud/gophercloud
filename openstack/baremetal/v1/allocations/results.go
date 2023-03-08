@@ -71,6 +71,10 @@ type AllocationPage struct {
 
 // IsEmpty returns true if a page contains no Allocation results.
 func (r AllocationPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractAllocations(r)
 	return len(s) == 0, err
 }

@@ -65,6 +65,10 @@ type MessagePage struct {
 
 // IsEmpty returns true if a ListResult contains no Messages.
 func (r MessagePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	messages, err := ExtractMessages(r)
 	return len(messages) == 0, err
 }

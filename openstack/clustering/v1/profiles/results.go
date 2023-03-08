@@ -152,6 +152,10 @@ type ProfilePage struct {
 
 // IsEmpty determines if a ProfilePage contains any results.
 func (page ProfilePage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	profiles, err := ExtractProfiles(page)
 	return len(profiles) == 0, err
 }

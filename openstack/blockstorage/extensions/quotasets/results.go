@@ -139,6 +139,10 @@ type QuotaSetPage struct {
 
 // IsEmpty determines whether or not a QuotaSetsetPage is empty.
 func (r QuotaSetPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	ks, err := ExtractQuotaSets(r)
 	return len(ks) == 0, err
 }

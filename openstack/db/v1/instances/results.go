@@ -173,6 +173,10 @@ type InstancePage struct {
 
 // IsEmpty checks to see whether the collection is empty.
 func (page InstancePage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	instances, err := ExtractInstances(page)
 	return len(instances) == 0, err
 }

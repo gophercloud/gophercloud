@@ -44,6 +44,10 @@ type ResourcePage struct {
 
 // IsEmpty determines whether or not a page of RESOURCES contains any results.
 func (r ResourcePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	resources, err := ExtractResources(r)
 	return len(resources) == 0, err
 }

@@ -54,6 +54,10 @@ type PolicyTypePage struct {
 
 // IsEmpty determines if a PolicyType contains any results.
 func (page PolicyTypePage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	policyTypes, err := ExtractPolicyTypes(page)
 	return len(policyTypes) == 0, err
 }

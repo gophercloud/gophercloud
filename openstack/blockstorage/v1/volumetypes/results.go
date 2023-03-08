@@ -34,6 +34,10 @@ type VolumeTypePage struct {
 
 // IsEmpty returns true if a VolumeTypePage contains no Volume Types.
 func (r VolumeTypePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	volumeTypes, err := ExtractVolumeTypes(r)
 	return len(volumeTypes) == 0, err
 }

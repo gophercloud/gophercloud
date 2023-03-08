@@ -135,6 +135,10 @@ type UserPage struct {
 
 // IsEmpty determines whether or not a UserPage contains any results.
 func (r UserPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	users, err := ExtractUsers(r)
 	return len(users) == 0, err
 }

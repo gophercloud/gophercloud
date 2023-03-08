@@ -60,6 +60,10 @@ type AttachmentPage struct {
 
 // IsEmpty returns true if a ListResult contains no Attachments.
 func (r AttachmentPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	attachments, err := ExtractAttachments(r)
 	return len(attachments) == 0, err
 }

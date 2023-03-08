@@ -71,6 +71,10 @@ type AggregatesPage struct {
 
 // IsEmpty determines whether or not a page of Aggregates contains any results.
 func (page AggregatesPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	aggregates, err := ExtractAggregates(page)
 	return len(aggregates) == 0, err
 }

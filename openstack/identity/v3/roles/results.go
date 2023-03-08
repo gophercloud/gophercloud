@@ -90,6 +90,10 @@ type RolePage struct {
 
 // IsEmpty determines whether or not a page of Roles contains any results.
 func (r RolePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	roles, err := ExtractRoles(r)
 	return len(roles) == 0, err
 }
@@ -182,6 +186,10 @@ type RoleAssignmentPage struct {
 
 // IsEmpty returns true if the RoleAssignmentPage contains no results.
 func (r RoleAssignmentPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	roleAssignments, err := ExtractRoleAssignments(r)
 	return len(roleAssignments) == 0, err
 }

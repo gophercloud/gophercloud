@@ -132,6 +132,10 @@ type ExecutionPage struct {
 
 // IsEmpty checks if an ExecutionPage contains any results.
 func (r ExecutionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	exec, err := ExtractExecutions(r)
 	return len(exec) == 0, err
 }

@@ -134,6 +134,10 @@ type DriverPage struct {
 
 // IsEmpty returns true if a page contains no Driver results.
 func (r DriverPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	s, err := ExtractDrivers(r)
 	return len(s) == 0, err
 }

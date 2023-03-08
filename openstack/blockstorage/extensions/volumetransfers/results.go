@@ -86,6 +86,10 @@ type TransferPage struct {
 
 // IsEmpty returns true if a ListResult contains no Transfers.
 func (r TransferPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	transfers, err := ExtractTransfers(r)
 	return len(transfers) == 0, err
 }

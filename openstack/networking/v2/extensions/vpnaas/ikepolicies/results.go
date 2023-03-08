@@ -85,6 +85,10 @@ func (r PolicyPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a PolicyPage struct is empty.
 func (r PolicyPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractPolicies(r)
 	return len(is) == 0, err
 }

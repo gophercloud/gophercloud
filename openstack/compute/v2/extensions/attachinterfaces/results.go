@@ -65,6 +65,10 @@ type InterfacePage struct {
 
 // IsEmpty returns true if an InterfacePage contains no interfaces.
 func (r InterfacePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	interfaces, err := ExtractInterfaces(r)
 	return len(interfaces) == 0, err
 }

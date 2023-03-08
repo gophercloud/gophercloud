@@ -82,6 +82,10 @@ type RBACPolicyPage struct {
 
 // IsEmpty checks whether a RBACPolicyPage struct is empty.
 func (r RBACPolicyPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractRBACPolicies(r)
 	return len(is) == 0, err
 }

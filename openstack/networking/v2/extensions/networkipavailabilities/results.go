@@ -121,6 +121,10 @@ type NetworkIPAvailabilityPage struct {
 
 // IsEmpty determines whether or not a NetworkIPAvailability is empty.
 func (r NetworkIPAvailabilityPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	networkipavailabilities, err := ExtractNetworkIPAvailabilities(r)
 	return len(networkipavailabilities) == 0, err
 }

@@ -92,6 +92,10 @@ type ActionPage struct {
 
 // IsEmpty determines if a ActionPage contains any results.
 func (r ActionPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	actions, err := ExtractActions(r)
 	return len(actions) == 0, err
 }

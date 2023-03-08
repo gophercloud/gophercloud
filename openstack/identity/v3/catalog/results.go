@@ -12,6 +12,10 @@ type ServiceCatalogPage struct {
 
 // IsEmpty returns true if the ServiceCatalogPage contains no results.
 func (r ServiceCatalogPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	services, err := ExtractServiceCatalog(r)
 	return len(services) == 0, err
 }

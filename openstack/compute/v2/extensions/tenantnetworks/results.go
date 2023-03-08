@@ -24,6 +24,10 @@ type NetworkPage struct {
 
 // IsEmpty determines whether or not a NetworkPage is empty.
 func (page NetworkPage) IsEmpty() (bool, error) {
+	if page.StatusCode == 204 {
+		return true, nil
+	}
+
 	va, err := ExtractNetworks(page)
 	return len(va) == 0, err
 }

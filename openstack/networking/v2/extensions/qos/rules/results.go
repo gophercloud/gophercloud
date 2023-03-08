@@ -70,6 +70,10 @@ type BandwidthLimitRulePage struct {
 
 // IsEmpty checks whether a BandwidthLimitRulePage is empty.
 func (r BandwidthLimitRulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractBandwidthLimitRules(r)
 	return len(is) == 0, err
 }
@@ -142,6 +146,10 @@ type DSCPMarkingRulePage struct {
 
 // IsEmpty checks whether a DSCPMarkingRulePage is empty.
 func (r DSCPMarkingRulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractDSCPMarkingRules(r)
 	return len(is) == 0, err
 }
@@ -217,6 +225,10 @@ type MinimumBandwidthRulePage struct {
 
 // IsEmpty checks whether a MinimumBandwidthRulePage is empty.
 func (r MinimumBandwidthRulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	is, err := ExtractMinimumBandwidthRules(r)
 	return len(is) == 0, err
 }

@@ -47,6 +47,10 @@ type ListRuleTypesPage struct {
 }
 
 func (r ListRuleTypesPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	v, err := ExtractRuleTypes(r)
 	return len(v) == 0, err
 }

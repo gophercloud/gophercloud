@@ -33,6 +33,10 @@ type FlavorPage struct {
 
 // IsEmpty returns true if a FlavorPage contains no Flavors.
 func (r FlavorPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	flavors, err := ExtractFlavors(r)
 	return len(flavors) == 0, err
 }
