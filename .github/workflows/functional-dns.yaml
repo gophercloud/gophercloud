@@ -39,12 +39,12 @@ jobs:
               enable_plugin designate https://github.com/openstack/designate stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
-            ubuntu_version: "18.04"
+            ubuntu_version: "20.04"
             devstack_conf_overrides: |
               enable_plugin designate https://github.com/openstack/designate stable/ussuri
           - name: "train"
             openstack_version: "stable/train"
-            ubuntu_version: "18.04"
+            ubuntu_version: "20.04"
             devstack_conf_overrides: |
               enable_plugin designate https://github.com/openstack/designate train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
