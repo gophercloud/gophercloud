@@ -31,31 +31,34 @@ type SecGroupRule struct {
 	// rule. If the protocol is TCP or UDP, this value must be less than or equal
 	// to the value of the PortRangeMax attribute. If the protocol is ICMP, this
 	// value must be an ICMP type.
-	PortRangeMin int `json:"port_range_min"`
+	PortRangeMin *int `json:"port_range_min"`
 
 	// The maximum port number in the range that is matched by the security group
 	// rule. The PortRangeMin attribute constrains the PortRangeMax attribute. If
 	// the protocol is ICMP, this value must be an ICMP type.
-	PortRangeMax int `json:"port_range_max"`
+	PortRangeMax *int `json:"port_range_max"`
 
 	// The protocol that is matched by the security group rule. Valid values are
 	// "tcp", "udp", "icmp" or an empty string.
-	Protocol string
+	Protocol *string
 
 	// The remote group ID to be associated with this security group rule. You
 	// can specify either RemoteGroupID or RemoteIPPrefix.
-	RemoteGroupID string `json:"remote_group_id"`
+	RemoteGroupID *string `json:"remote_group_id"`
 
 	// The remote IP prefix to be associated with this security group rule. You
 	// can specify either RemoteGroupID or RemoteIPPrefix . This attribute
 	// matches the specified IP prefix as the source IP address of the IP packet.
-	RemoteIPPrefix string `json:"remote_ip_prefix"`
+	RemoteIPPrefix *string `json:"remote_ip_prefix"`
 
 	// TenantID is the project owner of this security group rule.
 	TenantID string `json:"tenant_id"`
 
 	// ProjectID is the project owner of this security group rule.
 	ProjectID string `json:"project_id"`
+
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // SecGroupRulePage is the page returned by a pager when traversing over a
