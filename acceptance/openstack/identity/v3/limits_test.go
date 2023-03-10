@@ -42,6 +42,11 @@ func TestLimitsList(t *testing.T) {
 }
 
 func TestCreateLimits(t *testing.T) {
+	// TODO: After https://github.com/gophercloud/gophercloud/issues/2290 is implemented
+	// use registered limits API to create global registered limit and then overwrite it with limit.
+	// Current solution (using glance limit) only works with Openstack Xena and above.
+	clients.SkipReleasesBelow(t, "stable/xena")
+
 	err := os.Setenv("OS_SYSTEM_SCOPE", "all")
 	th.AssertNoErr(t, err)
 	defer os.Unsetenv("OS_SYSTEM_SCOPE")
@@ -59,7 +64,6 @@ func TestCreateLimits(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Find image service (glance on Devstack) which has precreated registered limits.
-	// TODO: Use registered limits API to create global limit and then overwrite it with limit.
 	allPages, err := services.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
