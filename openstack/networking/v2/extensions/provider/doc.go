@@ -60,7 +60,7 @@ Example to Create a Provider Network
 		Shared:       &iTrue,
 	}
 
-	createOpts : provider.CreateOptsExt{
+	createOpts := provider.CreateOptsExt{
 		CreateOptsBuilder: networkCreateOpts,
 		Segments:          segments,
 	}
