@@ -37,6 +37,9 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
+      - name: Set force option for deprecated distros
+        id: force
+        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
         uses: EmilienM/devstack-action@v0.11
         with:
@@ -45,6 +48,7 @@ jobs:
             enable_plugin octavia https://github.com/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://github.com/openstack/neutron ${{ matrix.openstack_version }}
           enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos'
+          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:

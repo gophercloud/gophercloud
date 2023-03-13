@@ -37,6 +37,9 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
+      - name: Set force option for deprecated distros
+        id: force
+        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
         uses: EmilienM/devstack-action@v0.11
         with:
@@ -57,6 +60,7 @@ jobs:
             MANILA_DEFAULT_SHARE_TYPE_EXTRA_SPECS='snapshot_support=True create_share_from_snapshot_support=True revert_to_snapshot_support=True mount_snapshot_support=True'
             MANILA_CONFIGURE_DEFAULT_TYPES=True
             MANILA_INSTALL_TEMPEST_PLUGIN_SYSTEMWIDE=false
+          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:

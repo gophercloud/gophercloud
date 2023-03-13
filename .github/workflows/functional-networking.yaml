@@ -60,6 +60,9 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
+      - name: Set force option for deprecated distros
+        id: force
+        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
         uses: EmilienM/devstack-action@v0.11
         with:
@@ -68,6 +71,7 @@ jobs:
             Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding'
+          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:

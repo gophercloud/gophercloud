@@ -37,6 +37,9 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
+      - name: Set force option for deprecated distros
+        id: force
+        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
         uses: EmilienM/devstack-action@v0.11
         with:
@@ -44,6 +47,7 @@ jobs:
           conf_overrides: |
             CINDER_ISCSI_HELPER=tgtadm
           enabled_services: 's-account,s-container,s-object,s-proxy,c-bak'
+          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:
