@@ -40,6 +40,16 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
+      - name: Force using legacy iptables for Train and Ussuri
+        if: ${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install iptables arptables ebtables
+
+          sudo update-alternatives --set iptables /usr/sbin/iptables-legacy || true
+          sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
+          sudo update-alternatives --set arptables /usr/sbin/arptables-legacy || true
+          sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy || true
       - name: Set force option for deprecated distros
         id: force
         run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"

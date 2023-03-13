@@ -28,26 +28,22 @@ jobs:
             ubuntu_version: "20.04"
           - name: "ussuri"
             openstack_version: "stable/ussuri"
-            ubuntu_version: "20.04"
+            ubuntu_version: "18.04"
           - name: "train"
             openstack_version: "stable/train"
-            ubuntu_version: "20.04"
+            ubuntu_version: "18.04"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Cinder and run blockstorage acceptance tests
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
-      - name: Set force option for deprecated distros
-        id: force
-        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.10
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             CINDER_ISCSI_HELPER=tgtadm
           enabled_services: 's-account,s-container,s-object,s-proxy,c-bak'
-          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:

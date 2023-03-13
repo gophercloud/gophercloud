@@ -43,14 +43,14 @@ jobs:
               enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
-            ubuntu_version: "20.04"
+            ubuntu_version: "18.04"
             devstack_conf_overrides: |
               enable_plugin neutron-fwaas https://github.com/openstack/neutron-fwaas stable/ussuri
               enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing stable/ussuri
               enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas ussuri-eol
           - name: "train"
             openstack_version: "stable/train"
-            ubuntu_version: "20.04"
+            ubuntu_version: "18.04"
             devstack_conf_overrides: |
               enable_plugin neutron-fwaas https://github.com/openstack/neutron-fwaas stable/train
               enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing train-eol
@@ -60,18 +60,14 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
-      - name: Set force option for deprecated distros
-        id: force
-        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.10
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding'
-          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:

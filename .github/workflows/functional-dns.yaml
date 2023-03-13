@@ -39,12 +39,12 @@ jobs:
               enable_plugin designate https://github.com/openstack/designate stable/victoria
           - name: "ussuri"
             openstack_version: "stable/ussuri"
-            ubuntu_version: "20.04"
+            ubuntu_version: "18.04"
             devstack_conf_overrides: |
               enable_plugin designate https://github.com/openstack/designate stable/ussuri
           - name: "train"
             openstack_version: "stable/train"
-            ubuntu_version: "20.04"
+            ubuntu_version: "18.04"
             devstack_conf_overrides: |
               enable_plugin designate https://github.com/openstack/designate train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
@@ -52,17 +52,13 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v3
-      - name: Set force option for deprecated distros
-        id: force
-        run: echo force=${{ contains(fromJSON('["train", "ussuri"]'), matrix.name) && 'yes' || 'no' }} >> "$GITHUB_OUTPUT"
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.10
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'designate,designate-central,designate-api,designate-worker,designate-producer,designate-mdns'
-          force: ${{ steps.force.outputs.force }}
       - name: Checkout go
         uses: actions/setup-go@v3
         with:
