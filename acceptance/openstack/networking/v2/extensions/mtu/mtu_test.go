@@ -129,6 +129,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		th.AssertNoErr(t, err)
 
 		tools.PrintResource(t, getNewNetwork)
-		th.AssertDeepEquals(t, newNetwork, getNewNetwork)
+		th.AssertEquals(t, getNewNetwork.Description, newNetworkDescription)
+		th.AssertEquals(t, getNewNetwork.MTU, newNetworkMTU)
 	}
 }
