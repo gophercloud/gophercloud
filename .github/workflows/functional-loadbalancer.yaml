@@ -46,7 +46,7 @@ jobs:
             enable_plugin neutron https://github.com/openstack/neutron ${{ matrix.openstack_version }}
           enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos'
       - name: Checkout go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests

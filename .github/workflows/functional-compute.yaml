@@ -44,7 +44,7 @@ jobs:
           conf_overrides: |
             CINDER_ISCSI_HELPER=tgtadm
       - name: Checkout go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests

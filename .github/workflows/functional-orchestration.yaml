@@ -45,7 +45,7 @@ jobs:
             enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
