@@ -45,7 +45,7 @@ jobs:
             CINDER_ISCSI_HELPER=tgtadm
           enabled_services: 's-account,s-container,s-object,s-proxy,c-bak'
       - name: Checkout go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests

@@ -60,7 +60,7 @@ jobs:
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'designate,designate-central,designate-api,designate-worker,designate-producer,designate-mdns'
       - name: Checkout go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
