@@ -58,11 +58,34 @@ const ListOutput = `
 }
 `
 
+const CreateRequest = `
+{
+    "limits":[
+        {
+            "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
+            "project_id": "3a705b9f56bb439381b43c4fe59dccce",
+            "region_id": "RegionOne",
+            "resource_name": "snapshot",
+            "resource_limit": 5
+        },
+        {
+            "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
+            "domain_id": "edbafc92be354ffa977c58aa79c7bdb2",
+            "resource_name": "volume",
+            "resource_limit": 11,
+            "description": "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce"
+        }
+    ]
+}
+`
+
 // Model is the enforcement model in the GetEnforcementModel request.
 var Model = limits.EnforcementModel{
 	Name:        "flat",
 	Description: "Limit enforcement and validation does not take project hierarchy into consideration.",
 }
+
+const CreateOutput = ListOutput
 
 // FirstLimit is the first limit in the List request.
 var FirstLimit = limits.Limit{
@@ -118,5 +141,18 @@ func HandleListLimitsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListOutput)
+	})
+}
+
+// HandleCreateLimitSuccessfully creates an HTTP handler at `/limits` on the
+// test handler mux that tests limit creation.
+func HandleCreateLimitSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/limits", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, CreateOutput)
 	})
 }
