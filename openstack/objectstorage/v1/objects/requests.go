@@ -604,3 +604,34 @@ func BulkDelete(c *gophercloud.ServiceClient, container string, objects []string
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// BulkDeleteWithBuffer is a function that bulk deletes objects.
+func BulkDeleteWithBuffer(c *gophercloud.ServiceClient, container string, objects []string) (r BulkDeleteResult) {
+	err := containers.CheckContainerName(container)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var body bytes.Buffer
+	for i := range objects {
+		if objects[i] == "" {
+			r.Err = fmt.Errorf("object names must not be the empty string")
+			return
+		}
+		body.WriteString(container)
+		body.WriteRune('/')
+		body.WriteString(objects[i])
+		body.WriteRune('\n')
+	}
+
+	resp, err := c.Post(bulkDeleteURL(c), &body, &r.Body, &gophercloud.RequestOpts{
+		MoreHeaders: map[string]string{
+			"Accept":       "application/json",
+			"Content-Type": "text/plain",
+		},
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -386,6 +387,86 @@ func TestBulkDelete(t *testing.T) {
 	resp, err := objects.BulkDelete(fake.ServiceClient(), "testContainer", []string{"testObject1", "testObject2"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, *resp)
+}
+
+func BenchmarkBulkDelete(b *testing.B) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBulkDeleteBenchmark(b)
+
+	objectNames := make([]string, 10000)
+	for i := range objectNames {
+		objectNames[i] = "a long, long name for very many objects that are not stored anywhere. Number " + strconv.Itoa(i) + "."
+	}
+
+	serviceClient := fake.ServiceClient()
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if res := objects.BulkDelete(serviceClient, "this is the container name", objectNames); res.Err != nil {
+			b.Errorf("unexpected error: %v", res.Err)
+		}
+	}
+}
+
+func BenchmarkBulkDeleteFewerObjects(b *testing.B) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBulkDeleteBenchmark(b)
+
+	objectNames := make([]string, 10)
+	for i := range objectNames {
+		objectNames[i] = "a long, long name for very many objects that are not stored anywhere. Number " + strconv.Itoa(i) + "."
+	}
+
+	serviceClient := fake.ServiceClient()
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if res := objects.BulkDelete(serviceClient, "this is the container name", objectNames); res.Err != nil {
+			b.Errorf("unexpected error: %v", res.Err)
+		}
+	}
+}
+
+func BenchmarkBulkDeleteWithBuffer(b *testing.B) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBulkDeleteBenchmark(b)
+
+	objectNames := make([]string, 10000)
+	for i := range objectNames {
+		objectNames[i] = "a long, long name for very many objects that are not stored anywhere. Number " + strconv.Itoa(i) + "."
+	}
+
+	serviceClient := fake.ServiceClient()
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if res := objects.BulkDeleteWithBuffer(serviceClient, "this is the container name", objectNames); res.Err != nil {
+			b.Errorf("unexpected error: %v", res.Err)
+		}
+	}
+}
+
+func BenchmarkBulkDeleteWithBufferFewerObjects(b *testing.B) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBulkDeleteBenchmark(b)
+
+	objectNames := make([]string, 10)
+	for i := range objectNames {
+		objectNames[i] = "a long, long name for very many objects that are not stored anywhere. Number " + strconv.Itoa(i) + "."
+	}
+
+	serviceClient := fake.ServiceClient()
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if res := objects.BulkDeleteWithBuffer(serviceClient, "this is the container name", objectNames); res.Err != nil {
+			b.Errorf("unexpected error: %v", res.Err)
+		}
+	}
 }
 
 func TestUpateObjectMetadata(t *testing.T) {

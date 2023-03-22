@@ -342,6 +342,16 @@ func HandleBulkDeleteSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleBulkDeleteBenchmark creates an HTTP handler at `/` on the test
+// handler mux that does as little as possible.
+func HandleBulkDeleteBenchmark(b *testing.B) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, bulkDeleteResponse)
+	})
+}
+
 // HandleUpdateObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Update` response.
 func HandleUpdateObjectSuccessfully(t *testing.T, options ...option) {
