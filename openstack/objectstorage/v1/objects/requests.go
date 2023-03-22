@@ -576,11 +576,21 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 
 // BulkDelete is a function that bulk deletes objects.
 func BulkDelete(c *gophercloud.ServiceClient, container string, objects []string) (r BulkDeleteResult) {
+	err := containers.CheckContainerName(container)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
 	// urlencode object names to be on the safe side
 	// https://github.com/openstack/swift/blob/stable/train/swift/common/middleware/bulk.py#L160
 	// https://github.com/openstack/swift/blob/stable/train/swift/common/swob.py#L302
 	encodedObjects := make([]string, len(objects))
 	for i, v := range objects {
+		if v == "" {
+			r.Err = fmt.Errorf("object names must not be the empty string")
+			return
+		}
 		encodedObjects[i] = strings.Join([]string{container, v}, "/")
 	}
 	b := strings.NewReader(strings.Join(encodedObjects, "\n") + "\n")
