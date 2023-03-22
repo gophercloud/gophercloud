@@ -575,38 +575,12 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 }
 
 // BulkDelete is a function that bulk deletes objects.
+// In Swift, the maximum number of deletes per request is set by default to 10000.
+//
+// See:
+// * https://github.com/openstack/swift/blob/6d3d4197151f44bf28b51257c1a4c5d33411dcae/etc/proxy-server.conf-sample#L1029-L1034
+// * https://github.com/openstack/swift/blob/e8cecf7fcc1630ee83b08f9a73e1e59c07f8d372/swift/common/middleware/bulk.py#L309
 func BulkDelete(c *gophercloud.ServiceClient, container string, objects []string) (r BulkDeleteResult) {
-	err := containers.CheckContainerName(container)
-	if err != nil {
-		r.Err = err
-		return
-	}
-
-	// urlencode object names to be on the safe side
-	// https://github.com/openstack/swift/blob/stable/train/swift/common/middleware/bulk.py#L160
-	// https://github.com/openstack/swift/blob/stable/train/swift/common/swob.py#L302
-	encodedObjects := make([]string, len(objects))
-	for i, v := range objects {
-		if v == "" {
-			r.Err = fmt.Errorf("object names must not be the empty string")
-			return
-		}
-		encodedObjects[i] = strings.Join([]string{container, v}, "/")
-	}
-	b := strings.NewReader(strings.Join(encodedObjects, "\n") + "\n")
-	resp, err := c.Post(bulkDeleteURL(c), b, &r.Body, &gophercloud.RequestOpts{
-		MoreHeaders: map[string]string{
-			"Accept":       "application/json",
-			"Content-Type": "text/plain",
-		},
-		OkCodes: []int{200},
-	})
-	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
-	return
-}
-
-// BulkDeleteWithBuffer is a function that bulk deletes objects.
-func BulkDeleteWithBuffer(c *gophercloud.ServiceClient, container string, objects []string) (r BulkDeleteResult) {
 	err := containers.CheckContainerName(container)
 	if err != nil {
 		r.Err = err
