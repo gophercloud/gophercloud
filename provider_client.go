@@ -412,6 +412,10 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
 			req.Header.Set(k, v)
+			// Set the Host header
+			if k == "Host" {
+				req.Host = v
+			}
 		}
 	}
 
