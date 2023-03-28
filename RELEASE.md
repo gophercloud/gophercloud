@@ -15,36 +15,57 @@ Automation prevents merges if the label is not present.
 
 ### Metadata
 
-The release notes for a given release are generated based on the PR title and its milestone:
-* make sure that the PR title is descriptive
-* add a milestone based on the semver label: x++ if major, y++ if minor, z++ if patch.
+The release notes for a given release are generated based on the PR title: make
+sure that the PR title is descriptive.
 
 ## Release of a new version
 
-### Step 1: Check the metadata
+Requirements:
+* [`gh`](https://github.com/cli/cli)
+* [`jq`](https://stedolan.github.io/jq/)
 
-Check that all pull requests merged since the last release have the right milestone.
+### Step 1: Collect all PRs since the last release
 
-### Step 2: Release notes and version string
+Supposing that the base release is `v1.2.0`:
 
-Once all PRs have a sensible title and are added to the right milestone, generate the release notes with the [`gh`](https://github.com/cli/cli) tool:
-```shell
-gh pr list \
-        --state merged \
-        --search 'milestone:vx.y.z' \
-        --json number,title \
-        --template \
-        '{{range .}}* {{ printf "[GH-%v](https://github.com/gophercloud/gophercloud/pull/%v)" .number .number }} {{ .title }}
-{{end}}'
+```
+for commit_sha in $(git log --pretty=format:"%h" v1.2.0..HEAD); do
+        gh pr list --search "$commit_sha" --state merged --json number,title,labels,url
+done | jq '.[]' | jq --slurp 'unique_by(.number)' > prs.json
 ```
 
-Replace `x.y.z` with the current milestone.
+This JSON file will be useful later.
+
+### Step 2: Determine the version
+
+In order to determine the version of the next release, we first check that no incompatible change is detected in the code that has been merged since the last release. This step can be automated with the `gorelease` tool:
+
+```shell
+gorelease | grep -B2 -A0 '^## incompatible changes'
+```
+
+If the tool detects incompatible changes outside a `testing` package, then the bump is major.
+
+Next, we check all PRs merged since the last release using the file `prs.json` that we generated above.
+
+* Find PRs labeled with `semver:major`: `jq 'map(select(contains({labels: [{name: "semver:major"}]}) ))' prs.json`
+* Find PRs labeled with `semver:minor`: `jq 'map(select(contains({labels: [{name: "semver:minor"}]}) ))' prs.json`
+
+The highest semver descriptor determines the release bump.
+
+### Step 3: Release notes and version string
+
+Once all PRs have a sensible title, generate the release notes:
+
+```shell
+jq -r '.[] | "* [GH-\(.number)](\(.url)) \(.title)"' prs.json
+```
 
 Add that to the top of `CHANGELOG.md`. Also add any information that could be useful to consumers willing to upgrade.
 
 **Set the new version string in the `DefaultUserAgent` constant in `provider_client.go`.**
 
-Create a PR with these two changes. The new PR should be labeled with the semver label corresponding to the type of bump, and the milestone corresponding to its version.
+Create a PR with these two changes. The new PR should be labeled with the semver label corresponding to the type of bump.
 
 ### Step 3: Git tag and Github release
 
