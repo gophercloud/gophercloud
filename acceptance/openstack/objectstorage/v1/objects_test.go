@@ -4,11 +4,12 @@
 package v1
 
 import (
-	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -34,7 +35,10 @@ func TestObjects(t *testing.T) {
 
 	// Create a container to hold the test objects.
 	cName := tools.RandomString("test-container-", 8)
-	header, err := containers.Create(client, cName, nil).Extract()
+	opts := containers.CreateOpts{
+		TempURLKey: "super-secret",
+	}
+	header, err := containers.Create(client, cName, opts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Create object headers: %+v\n", header)
 
@@ -45,11 +49,11 @@ func TestObjects(t *testing.T) {
 	}()
 
 	// Create a slice of buffers to hold the test object content.
-	oContents := make([]*bytes.Buffer, numObjects)
+	oContents := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
+		oContents[i] = tools.RandomString("", 10)
 		createOpts := objects.CreateOpts{
-			Content: oContents[i],
+			Content: strings.NewReader(oContents[i]),
 		}
 		res := objects.Create(client, cName, oNames[i], createOpts)
 		th.AssertNoErr(t, res.Err)
@@ -95,12 +99,37 @@ func TestObjects(t *testing.T) {
 		})
 		th.AssertNoErr(t, err)
 
-		resp, err := http.Get(objURLs[i])
+		resp, err := client.ProviderClient.HTTPClient.Get(objURLs[i])
 		th.AssertNoErr(t, err)
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			th.AssertNoErr(t, fmt.Errorf("unexpected response code: %d", resp.StatusCode))
+		}
 
 		body, err := ioutil.ReadAll(resp.Body)
 		th.AssertNoErr(t, err)
-		th.AssertDeepEquals(t, oContents[i].Bytes(), body)
+		th.AssertDeepEquals(t, oContents[i], string(body))
+		resp.Body.Close()
+
+		// custom Temp URL key with a sha256 digest and exact timestamp
+		objURLs[i], err = objects.CreateTempURL(client, cName, oNames[i], objects.CreateTempURLOpts{
+			Method:     http.MethodGet,
+			Timestamp:  time.Now().UTC().Add(180 * time.Second),
+			Digest:     "sha256",
+			TempURLKey: opts.TempURLKey,
+		})
+		th.AssertNoErr(t, err)
+
+		resp, err = client.ProviderClient.HTTPClient.Get(objURLs[i])
+		th.AssertNoErr(t, err)
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			th.AssertNoErr(t, fmt.Errorf("unexpected response code: %d", resp.StatusCode))
+		}
+
+		body, err = ioutil.ReadAll(resp.Body)
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, oContents[i], string(body))
 		resp.Body.Close()
 	}
 
@@ -235,11 +264,11 @@ func TestObjectsListSubdir(t *testing.T) {
 	}()
 
 	// Create a slice of buffers to hold the test object content.
-	oContents1 := make([]*bytes.Buffer, numObjects)
+	oContents1 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents1[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
+		oContents1[i] = tools.RandomString("", 10)
 		createOpts := objects.CreateOpts{
-			Content: oContents1[i],
+			Content: strings.NewReader(oContents1[i]),
 		}
 		res := objects.Create(client, cName, oNames1[i], createOpts)
 		th.AssertNoErr(t, res.Err)
@@ -253,11 +282,11 @@ func TestObjectsListSubdir(t *testing.T) {
 		}
 	}()
 
-	oContents2 := make([]*bytes.Buffer, numObjects)
+	oContents2 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents2[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
+		oContents2[i] = tools.RandomString("", 10)
 		createOpts := objects.CreateOpts{
-			Content: oContents2[i],
+			Content: strings.NewReader(oContents2[i]),
 		}
 		res := objects.Create(client, cName, oNames2[i], createOpts)
 		th.AssertNoErr(t, res.Err)
@@ -354,21 +383,21 @@ func TestObjectsBulkDelete(t *testing.T) {
 	}()
 
 	// Create a slice of buffers to hold the test object content.
-	oContents1 := make([]*bytes.Buffer, numObjects)
+	oContents1 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents1[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
+		oContents1[i] = tools.RandomString("", 10)
 		createOpts := objects.CreateOpts{
-			Content: oContents1[i],
+			Content: strings.NewReader(oContents1[i]),
 		}
 		res := objects.Create(client, cName, oNames1[i], createOpts)
 		th.AssertNoErr(t, res.Err)
 	}
 
-	oContents2 := make([]*bytes.Buffer, numObjects)
+	oContents2 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents2[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
+		oContents2[i] = tools.RandomString("", 10)
 		createOpts := objects.CreateOpts{
-			Content: oContents2[i],
+			Content: strings.NewReader(oContents2[i]),
 		}
 		res := objects.Create(client, cName, oNames2[i], createOpts)
 		th.AssertNoErr(t, res.Err)

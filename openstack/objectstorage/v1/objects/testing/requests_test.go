@@ -454,7 +454,7 @@ func TestETag(t *testing.T) {
 
 func TestObjectCreateParamsWithoutSeek(t *testing.T) {
 	content := "I do not implement Seek()"
-	buf := bytes.NewBuffer([]byte(content))
+	buf := strings.NewReader(content)
 
 	createOpts := objects.CreateOpts{Content: buf}
 	reader, headers, _, err := createOpts.ToObjectCreateParams()
@@ -515,6 +515,14 @@ func TestCreateTempURL(t *testing.T) {
 	expiry := "1593565980"
 	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject/testFile.txt?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
 
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expectedURL, tempURL)
+
+	// Test TTL=0, but different timestamp
+	tempURL, err = objects.CreateTempURL(client, "testContainer", "testObject/testFile.txt", objects.CreateTempURLOpts{
+		Method:    http.MethodGet,
+		Timestamp: time.Date(2020, 07, 01, 01, 13, 00, 00, time.UTC),
+	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedURL, tempURL)
 }
