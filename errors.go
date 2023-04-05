@@ -94,9 +94,24 @@ func (e ErrUnexpectedResponseCode) Error() string {
 	return e.choseErrString()
 }
 
+// GetBody returns the original error message
+func (e ErrUnexpectedResponseCode) GetBody() []byte {
+	return e.Body
+}
+
 // GetStatusCode returns the actual status code of the error.
 func (e ErrUnexpectedResponseCode) GetStatusCode() int {
 	return e.Actual
+}
+
+// BodyError is a convenience interface to easily allow access to the
+// body field of the various ErrDefault* types.
+//
+// By using this interface, you only have to make a single type cast of
+// the returned error to err.(BodyError) and then call GetBody().
+type BodyError interface {
+	Error() string
+	GetBody() []byte
 }
 
 // StatusCodeError is a convenience interface to easily allow access to the

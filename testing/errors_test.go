@@ -7,13 +7,15 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+var body = []byte("error message")
+
 func returnsUnexpectedResp(code int) gophercloud.ErrUnexpectedResponseCode {
 	return gophercloud.ErrUnexpectedResponseCode{
 		URL:            "http://example.com",
 		Method:         "GET",
 		Expected:       []int{200},
 		Actual:         code,
-		Body:           nil,
+		Body:           body,
 		ResponseHeader: nil,
 	}
 }
@@ -40,4 +42,12 @@ func TestGetResponseCode504(t *testing.T) {
 	err, ok := err504.(gophercloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, err.GetStatusCode(), 504)
+}
+
+func TestGetResponseBody(t *testing.T) {
+	var err404 error = gophercloud.ErrDefault404{ErrUnexpectedResponseCode: returnsUnexpectedResp(404)}
+
+	err, ok := err404.(gophercloud.BodyError)
+	th.AssertEquals(t, true, ok)
+	th.AssertByteArrayEquals(t, err.GetBody(), body)
 }
