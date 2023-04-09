@@ -29,12 +29,6 @@ jobs:
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
-          - name: "ussuri"
-            openstack_version: "stable/ussuri"
-            ubuntu_version: "18.04"
-          - name: "train"
-            openstack_version: "stable/train"
-            ubuntu_version: "18.04"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Zaqar and run messaging acceptance tests
     steps:
