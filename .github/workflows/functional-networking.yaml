@@ -47,20 +47,6 @@ jobs:
             devstack_conf_overrides: |
               enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing stable/victoria
               enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas stable/victoria
-          - name: "ussuri"
-            openstack_version: "stable/ussuri"
-            ubuntu_version: "18.04"
-            devstack_conf_overrides: |
-              enable_plugin neutron-fwaas https://github.com/openstack/neutron-fwaas stable/ussuri
-              enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing stable/ussuri
-              enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas ussuri-eol
-          - name: "train"
-            openstack_version: "stable/train"
-            ubuntu_version: "18.04"
-            devstack_conf_overrides: |
-              enable_plugin neutron-fwaas https://github.com/openstack/neutron-fwaas stable/train
-              enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing train-eol
-              enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Neutron and run networking acceptance tests
     steps:

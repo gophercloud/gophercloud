@@ -41,16 +41,6 @@ jobs:
             ubuntu_version: "20.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/victoria
-          - name: "ussuri"
-            openstack_version: "stable/ussuri"
-            ubuntu_version: "18.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum ussuri-eol
-          - name: "train"
-            openstack_version: "stable/train"
-            ubuntu_version: "18.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum train-eol
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
