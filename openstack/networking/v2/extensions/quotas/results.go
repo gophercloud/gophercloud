@@ -34,6 +34,10 @@ func (r detailResult) Extract() (*QuotaDetailSet, error) {
 	return s.Quota, err
 }
 
+func (r detailResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "quota")
+}
+
 // GetResult represents the result of a get operation. Call its Extract
 // method to interpret it as a Quota.
 type GetResult struct {
