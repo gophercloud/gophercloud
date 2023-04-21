@@ -155,6 +155,10 @@ func (r quotaResult) Extract() (*QuotaSet, error) {
 	return s.QuotaSet, err
 }
 
+func (r quotaResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "quota_set")
+}
+
 // GetResult is the response from a Get operation. Call its Extract method to
 // interpret it as a QuotaSet.
 type GetResult struct {
