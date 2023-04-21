@@ -39,7 +39,7 @@ type QuotaSet struct {
 
 	// Extra is a collection of miscellaneous key/values used to set
 	// quota per volume_type
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]interface{} `json:"extra"`
 }
 
 // UnmarshalJSON is used on QuotaSet to unmarshal extra keys that are
@@ -190,12 +190,9 @@ type GetUsageResult struct {
 
 // Extract is a method that attempts to interpret any QuotaUsageSet resource
 // response as a set of QuotaUsageSet structs.
-func (r quotaUsageResult) Extract() (QuotaUsageSet, error) {
-	var s struct {
-		QuotaUsageSet QuotaUsageSet `json:"quota_set"`
-	}
-	err := r.ExtractInto(&s)
-	return s.QuotaUsageSet, err
+func (r quotaUsageResult) Extract(to interface{}) error {
+	err := r.ExtractInto(&to)
+	return err
 }
 
 // DeleteResult is the response from a Delete operation. Call its ExtractErr
