@@ -37,3 +37,33 @@ func TestAssign(t *testing.T) {
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestValidate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleValidateSuccessfully(t)
+
+	err := osinherit.Validate(client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = osinherit.Validate(client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = osinherit.Validate(client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = osinherit.Validate(client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

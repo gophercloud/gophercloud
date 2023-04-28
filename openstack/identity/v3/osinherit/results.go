@@ -7,3 +7,9 @@ import "github.com/gophercloud/gophercloud"
 type AssignmentResult struct {
 	gophercloud.ErrResult
 }
+
+// ValidateResult represents the result of an validate operation.
+// Call ExtractErr method to determine if the request succeeded or failed.
+type ValidateResult struct {
+	gophercloud.ErrResult
+}

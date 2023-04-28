@@ -31,5 +31,20 @@ Example to Assign a Inherited Role to a User to a Project's subtree
 	if err != nil {
 		panic(err)
 	}
+
+Example to validate a Inherited Role to a User to a Project's subtree
+
+	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
+	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
+	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
+
+	err := osinherit.Assign(identityClient, roleID, osinherit.AssignOpts{
+		UserID:    userID,
+		ProjectID: projectID,
+	}).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
 */
 package osinherit

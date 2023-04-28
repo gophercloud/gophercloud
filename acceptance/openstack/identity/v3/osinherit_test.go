@@ -49,6 +49,16 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
 		role.Name, user.Name, project.Name)
 
+	validateOpts := osinherit.ValidateOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	}
+	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully validated inherited role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name)
+
 }
 
 func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
@@ -86,6 +96,17 @@ func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a domain %s",
+		role.Name, user.Name, domain.Name)
+
+	validateOpts := osinherit.ValidateOpts{
+		UserID:   user.ID,
+		DomainID: domain.ID,
+	}
+
+	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully validated inherited role %s to a user %s on a domain %s",
 		role.Name, user.Name, domain.Name)
 
 }
@@ -129,6 +150,18 @@ func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
 
 	t.Logf("Successfully assigned a role %s to a group %s on a domain %s",
 		role.Name, group.Name, domain.Name)
+
+	validateOpts := osinherit.ValidateOpts{
+		GroupID:  group.ID,
+		DomainID: domain.ID,
+	}
+
+	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully validated inherited role %s to a group %s on a domain %s",
+		role.Name, group.Name, domain.Name)
+
 }
 
 func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
@@ -166,6 +199,16 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a project %s",
+		role.Name, group.Name, project.Name)
+
+	validateOpts := osinherit.ValidateOpts{
+		GroupID:   group.ID,
+		ProjectID: project.ID,
+	}
+	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully validated inherited role %s to a group %s on a project %s",
 		role.Name, group.Name, project.Name)
 
 }
