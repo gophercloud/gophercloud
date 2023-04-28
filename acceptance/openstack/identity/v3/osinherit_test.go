@@ -1,0 +1,171 @@
+//go:build acceptance
+// +build acceptance
+
+package v3
+
+import (
+	"testing"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/osinherit"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
+	th "github.com/gophercloud/gophercloud/testhelper"
+)
+
+func TestInheritRolesAssignToUserOnProject(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	project, err := CreateProject(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, client, project.ID)
+
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	user, err := CreateUser(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteUser(t, client, user.ID)
+
+	t.Logf("Attempting to assign an inherited role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name)
+
+	assignOpts := osinherit.AssignOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	}
+	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name)
+
+}
+
+func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	domain, err := CreateDomain(t, client, &domains.CreateOpts{
+		Enabled: gophercloud.Disabled,
+	})
+	th.AssertNoErr(t, err)
+	defer DeleteDomain(t, client, domain.ID)
+
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	user, err := CreateUser(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteUser(t, client, user.ID)
+
+	t.Logf("Attempting to assign a role %s to a user %s on a domain %s",
+		role.Name, user.Name, domain.Name)
+
+	assignOpts := osinherit.AssignOpts{
+		UserID:   user.ID,
+		DomainID: domain.ID,
+	}
+
+	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully assigned a role %s to a user %s on a domain %s",
+		role.Name, user.Name, domain.Name)
+
+}
+
+func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	domain, err := CreateDomain(t, client, &domains.CreateOpts{
+		Enabled: gophercloud.Disabled,
+	})
+	th.AssertNoErr(t, err)
+	defer DeleteDomain(t, client, domain.ID)
+
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	groupCreateOpts := &groups.CreateOpts{
+		DomainID: "default",
+	}
+	group, err := CreateGroup(t, client, groupCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteGroup(t, client, group.ID)
+
+	t.Logf("Attempting to assign a role %s to a group %s on a domain %s",
+		role.Name, group.Name, domain.Name)
+
+	assignOpts := osinherit.AssignOpts{
+		GroupID:  group.ID,
+		DomainID: domain.ID,
+	}
+
+	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully assigned a role %s to a group %s on a domain %s",
+		role.Name, group.Name, domain.Name)
+}
+
+func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	project, err := CreateProject(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, client, project.ID)
+
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	groupCreateOpts := &groups.CreateOpts{
+		DomainID: "default",
+	}
+	group, err := CreateGroup(t, client, groupCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteGroup(t, client, group.ID)
+
+	t.Logf("Attempting to assign a role %s to a group %s on a project %s",
+		role.Name, group.Name, project.Name)
+
+	assignOpts := osinherit.AssignOpts{
+		GroupID:   group.ID,
+		ProjectID: project.ID,
+	}
+	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully assigned a role %s to a group %s on a project %s",
+		role.Name, group.Name, project.Name)
+
+}
