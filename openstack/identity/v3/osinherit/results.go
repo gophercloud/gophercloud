@@ -13,3 +13,9 @@ type AssignmentResult struct {
 type ValidateResult struct {
 	gophercloud.ErrResult
 }
+
+// UnassignmentResult represents the result of an unassign operation.
+// Call ExtractErr method to determine if the request succeeded or failed.
+type UnassignmentResult struct {
+	gophercloud.ErrResult
+}

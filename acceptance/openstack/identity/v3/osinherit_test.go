@@ -59,6 +59,16 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 	t.Logf("Successfully validated inherited role %s to a user %s on a project %s",
 		role.Name, user.Name, project.Name)
 
+	unassignOpts := osinherit.UnassignOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	}
+	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully unassgined inherited role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name)
+
 }
 
 func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
@@ -107,6 +117,17 @@ func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully validated inherited role %s to a user %s on a domain %s",
+		role.Name, user.Name, domain.Name)
+
+	unassignOpts := osinherit.UnassignOpts{
+		UserID:   user.ID,
+		DomainID: domain.ID,
+	}
+
+	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully unassigned inherited role %s to a user %s on a domain %s",
 		role.Name, user.Name, domain.Name)
 
 }
@@ -162,6 +183,17 @@ func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
 	t.Logf("Successfully validated inherited role %s to a group %s on a domain %s",
 		role.Name, group.Name, domain.Name)
 
+	unassignOpts := osinherit.UnassignOpts{
+		GroupID:  group.ID,
+		DomainID: domain.ID,
+	}
+
+	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully unassigned inherited role %s to a group %s on a domain %s",
+		role.Name, group.Name, domain.Name)
+
 }
 
 func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
@@ -209,6 +241,16 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully validated inherited role %s to a group %s on a project %s",
+		role.Name, group.Name, project.Name)
+
+	unassignOpts := osinherit.UnassignOpts{
+		GroupID:   group.ID,
+		ProjectID: project.ID,
+	}
+	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully unassgined inherited role %s to a group %s on a project %s",
 		role.Name, group.Name, project.Name)
 
 }

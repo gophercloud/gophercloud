@@ -67,3 +67,33 @@ func TestValidate(t *testing.T) {
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestUnassign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUnassignSuccessfully(t)
+
+	err := osinherit.Unassign(client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = osinherit.Unassign(client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = osinherit.Unassign(client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = osinherit.Unassign(client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

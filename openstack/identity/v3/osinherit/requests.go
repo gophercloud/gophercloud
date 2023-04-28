@@ -2,21 +2,21 @@ package osinherit
 
 import "github.com/gophercloud/gophercloud"
 
-// AssignOpts provides options to assign a role
+// AssignOpts provides options to assign an inherited role
 type AssignOpts struct {
-	// UserID is the ID of a user to assign a inherited role
+	// UserID is the ID of a user to assign an inherited role
 	// Note: exactly one of UserID or GroupID must be provided
 	UserID string `xor:"GroupID"`
 
-	// GroupID is the ID of a group to assign a inherited role
+	// GroupID is the ID of a group to assign an inherited role
 	// Note: exactly one of UserID or GroupID must be provided
 	GroupID string `xor:"UserID"`
 
-	// ProjectID is the ID of a project to assign a inherited role on
+	// ProjectID is the ID of a project to assign an inherited role on
 	// Note: exactly one of ProjectID or DomainID must be provided
 	ProjectID string `xor:"DomainID"`
 
-	// DomainID is the ID of a domain to assign a inherited role on
+	// DomainID is the ID of a domain to assign an inherited role on
 	// Note: exactly one of ProjectID or DomainID must be provided
 	DomainID string `xor:"ProjectID"`
 }
@@ -40,7 +40,26 @@ type ValidateOpts struct {
 	DomainID string `xor:"ProjectID"`
 }
 
-// Assign is the operation responsible for assigning a inherited role
+// UnassignOpts provides options to unassign an inherited role
+type UnassignOpts struct {
+	// UserID is the ID of a user to unassign an inherited role
+	// Note: exactly one of UserID or GroupID must be provided
+	UserID string `xor:"GroupID"`
+
+	// GroupID is the ID of a group to unassign an inherited role
+	// Note: exactly one of UserID or GroupID must be provided
+	GroupID string `xor:"UserID"`
+
+	// ProjectID is the ID of a project to assign an inherited role on
+	// Note: exactly one of ProjectID or DomainID must be provided
+	ProjectID string `xor:"DomainID"`
+
+	// DomainID is the ID of a domain to assign an inherited role on
+	// Note: exactly one of ProjectID or DomainID must be provided
+	DomainID string `xor:"ProjectID"`
+}
+
+// Assign is the operation responsible for assigning an inherited role
 // to a user/group on a project/domain.
 func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
 	// Check xor conditions
@@ -110,6 +129,44 @@ func Validate(client *gophercloud.ServiceClient, roleID string, opts ValidateOpt
 	}
 
 	resp, err := client.Head(assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Unassign is the operation responsible for unassigning an inherited
+// role to a user/group on a project/domain.
+func Unassign(client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
+	// Check xor conditions
+	_, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	// Get corresponding URL
+	var targetID string
+	var targetType string
+	if opts.ProjectID != "" {
+		targetID = opts.ProjectID
+		targetType = "projects"
+	} else {
+		targetID = opts.DomainID
+		targetType = "domains"
+	}
+
+	var actorID string
+	var actorType string
+	if opts.UserID != "" {
+		actorID = opts.UserID
+		actorType = "users"
+	} else {
+		actorID = opts.GroupID
+		actorType = "groups"
+	}
+
+	resp, err := client.Delete(assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
