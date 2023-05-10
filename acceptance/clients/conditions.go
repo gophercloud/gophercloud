@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+// RequiredSystemScope will restrict a test to only be run by system scope.
+func RequiredSystemScope(t *testing.T) {
+	if os.Getenv("OS_SYSTEM_SCOPE") != "all" {
+		t.Skip("must use system scope to run this test")
+	}
+}
+
 // RequireAdmin will restrict a test to only be run by admin users.
 func RequireAdmin(t *testing.T) {
 	if os.Getenv("OS_USERNAME") != "admin" {
