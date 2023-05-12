@@ -119,3 +119,10 @@ func BatchCreate(client *gophercloud.ServiceClient, opts BatchCreateOptsBuilder)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Get retrieves details on a single limit, by ID.
+func Get(client *gophercloud.ServiceClient, limitID string) (r GetResult) {
+	resp, err := client.Get(resourceURL(client, limitID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

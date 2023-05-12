@@ -77,3 +77,13 @@ func TestCreateLimits(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
 }
+
+func TestGetLimit(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetLimitSuccessfully(t)
+
+	actual, err := limits.Get(client.ServiceClient(), "25a04c7a065c430590881c646cdcdd58").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FirstLimit, *actual)
+}

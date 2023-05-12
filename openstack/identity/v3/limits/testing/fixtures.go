@@ -79,6 +79,23 @@ const CreateRequest = `
 }
 `
 
+const GetOutput = `
+{
+    "limit": {
+        "resource_name": "volume",
+        "region_id": null,
+        "links": {
+            "self": "http://10.3.150.25/identity/v3/limits/25a04c7a065c430590881c646cdcdd58"
+        },
+        "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
+        "project_id": "3a705b9f56bb439381b43c4fe59dccce",
+        "id": "25a04c7a065c430590881c646cdcdd58",
+        "resource_limit": 11,
+        "description": "Number of volumes for project 3a705b9f56bb439381b43c4fe59dccce"
+    }
+}
+`
+
 // Model is the enforcement model in the GetEnforcementModel request.
 var Model = limits.EnforcementModel{
 	Name:        "flat",
@@ -154,5 +171,19 @@ func HandleCreateLimitSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, CreateOutput)
+	})
+}
+
+// HandleGetLimitSuccessfully creates an HTTP handler at `/limits` on the
+// test handler mux that responds with a single limit.
+func HandleGetLimitSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/limits/25a04c7a065c430590881c646cdcdd58", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
 	})
 }

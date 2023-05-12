@@ -64,6 +64,11 @@ type LimitsOutput struct {
 	Limits []Limit `json:"limits"`
 }
 
+// A LimitOutput is an encapsulated Limit returned by Get and Update operations
+type LimitOutput struct {
+	Limit *Limit `json:"limit"`
+}
+
 // LimitPage is a single page of Limit results.
 type LimitPage struct {
 	pagination.LinkedPageBase
@@ -73,6 +78,16 @@ type LimitPage struct {
 // to interpret it as a Limits.
 type CreateResult struct {
 	gophercloud.Result
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as a Limit.
+type GetResult struct {
+	commonResult
 }
 
 // IsEmpty determines whether or not a page of Limits contains any results.
@@ -113,4 +128,11 @@ func (r CreateResult) Extract() ([]Limit, error) {
 	var out LimitsOutput
 	err := r.ExtractInto(&out)
 	return out.Limits, err
+}
+
+// Extract interprets any commonResult as a Limit.
+func (r commonResult) Extract() (*Limit, error) {
+	var out LimitOutput
+	err := r.ExtractInto(&out)
+	return out.Limit, err
 }
