@@ -66,7 +66,7 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Successfully unassgined inherited role %s to a user %s on a project %s",
+	t.Logf("Successfully unassigned inherited role %s to a user %s on a project %s",
 		role.Name, user.Name, project.Name)
 
 }
@@ -250,7 +250,7 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Successfully unassgined inherited role %s to a group %s on a project %s",
+	t.Logf("Successfully unassigned inherited role %s to a group %s on a project %s",
 		role.Name, group.Name, project.Name)
 
 }
