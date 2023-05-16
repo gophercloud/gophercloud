@@ -90,6 +90,12 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult is the result of an Update request. Call its Extract method to
+// interpret it as a Limit.
+type UpdateResult struct {
+	commonResult
+}
+
 // IsEmpty determines whether or not a page of Limits contains any results.
 func (r LimitPage) IsEmpty() (bool, error) {
 	if r.StatusCode == 204 {

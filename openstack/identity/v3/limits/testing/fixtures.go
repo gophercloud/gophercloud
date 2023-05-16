@@ -96,6 +96,32 @@ const GetOutput = `
 }
 `
 
+const UpdateRequest = `
+{
+    "limit": {
+        "resource_limit": 5,
+        "description": "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+    }
+}
+`
+
+const UpdateOutput = `
+{
+    "limit": {
+        "resource_name": "snapshot",
+        "region_id": "RegionOne",
+        "links": {
+            "self": "http://10.3.150.25/identity/v3/limits/3229b3849f584faea483d6851f7aab05"
+        },
+        "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
+        "project_id": "3a705b9f56bb439381b43c4fe59dccce",
+        "id": "3229b3849f584faea483d6851f7aab05",
+        "resource_limit": 5,
+        "description": "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+    }
+}
+`
+
 // Model is the enforcement model in the GetEnforcementModel request.
 var Model = limits.EnforcementModel{
 	Name:        "flat",
@@ -128,6 +154,20 @@ var SecondLimit = limits.Limit{
 	ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
 	ID:            "3229b3849f584faea483d6851f7aab05",
 	ResourceLimit: 5,
+}
+
+// SecondLimitUpdated is the updated limit in the Update request.
+var SecondLimitUpdated = limits.Limit{
+	ResourceName: "snapshot",
+	RegionID:     "RegionOne",
+	Links: map[string]interface{}{
+		"self": "http://10.3.150.25/identity/v3/limits/3229b3849f584faea483d6851f7aab05",
+	},
+	ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
+	ProjectID:     "3a705b9f56bb439381b43c4fe59dccce",
+	ID:            "3229b3849f584faea483d6851f7aab05",
+	ResourceLimit: 5,
+	Description:   "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce",
 }
 
 // ExpectedLimitsSlice is the slice of limits expected to be returned from ListOutput.
@@ -185,5 +225,18 @@ func HandleGetLimitSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleUpdateLimitSuccessfully creates an HTTP handler at `/limits` on the
+// test handler mux that tests limit update.
+func HandleUpdateLimitSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
 	})
 }
