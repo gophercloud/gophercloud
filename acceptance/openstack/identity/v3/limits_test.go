@@ -117,4 +117,7 @@ func TestLimitsCRUD(t *testing.T) {
 
 	err = limits.Delete(client, limitID).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	_, err = limits.Get(client, limitID).Extract()
+	th.AssertErr(t, err)
 }
