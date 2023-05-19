@@ -188,6 +188,7 @@ func TestCreate(t *testing.T) {
       "a6af1e56-b12b-4733-8f77-49166afd5719"
     ],
     "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+	"egress_firewall_policy_id": "43a11f3a-ddac-4129-9469-02b9df26548e",
     "name": "test"
   }
 }
@@ -204,7 +205,7 @@ func TestCreate(t *testing.T) {
     "name": "test",
     "description": "",
     "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
-    "egress_firewall_policy_id": null,
+    "egress_firewall_policy_id": "43a11f3a-ddac-4129-9469-02b9df26548e",
     "admin_state_up": true,
     "ports": [
       "a6af1e56-b12b-4733-8f77-49166afd5719"
@@ -221,6 +222,7 @@ func TestCreate(t *testing.T) {
 		Name:                    "test",
 		Description:             "",
 		IngressFirewallPolicyID: "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+		EgressFirewallPolicyID:  "43a11f3a-ddac-4129-9469-02b9df26548e",
 		Ports: []string{
 			"a6af1e56-b12b-4733-8f77-49166afd5719",
 		},
@@ -264,7 +266,7 @@ func TestUpdate(t *testing.T) {
     "name": "test",
     "description": "some information",
     "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
-    "egress_firewall_policy_id": null,
+    "egress_firewall_policy_id": "43a11f3a-ddac-4129-9469-02b9df26548e",
     "admin_state_up": true,
     "ports": [
       "a6af1e56-b12b-4733-8f77-49166afd5719",
@@ -293,6 +295,102 @@ func TestUpdate(t *testing.T) {
 
 	_, err := groups.Update(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428", options).Extract()
 	th.AssertNoErr(t, err)
+}
+
+func TestRemoveIngressPolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_groups/6bfb0f10-07f7-4a40-b534-bad4b4ca3428", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "firewall_group":{
+        "ingress_firewall_policy_id": null
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "firewall_group": {
+    "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
+    "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778",
+    "name": "test",
+    "description": "some information",
+    "ingress_firewall_policy_id": null,
+    "egress_firewall_policy_id": "43a11f3a-ddac-4129-9469-02b9df26548e",
+    "admin_state_up": true,
+    "ports": [
+      "a6af1e56-b12b-4733-8f77-49166afd5719",
+			"11a58c87-76be-ae7c-a74e-b77fffb88a32"
+    ],
+    "status": "ACTIVE",
+    "shared": false,
+    "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+  }
+}
+    `)
+	})
+
+	removeIngressPolicy, err := groups.RemoveIngressPolicy(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, removeIngressPolicy.IngressFirewallPolicyID, "")
+	th.AssertEquals(t, removeIngressPolicy.EgressFirewallPolicyID, "43a11f3a-ddac-4129-9469-02b9df26548e")
+}
+
+func TestRemoveEgressPolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_groups/6bfb0f10-07f7-4a40-b534-bad4b4ca3428", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "firewall_group":{
+        "egress_firewall_policy_id": null
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "firewall_group": {
+    "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
+    "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778",
+    "name": "test",
+    "description": "some information",
+    "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+    "egress_firewall_policy_id": null,
+    "admin_state_up": true,
+    "ports": [
+      "a6af1e56-b12b-4733-8f77-49166afd5719",
+			"11a58c87-76be-ae7c-a74e-b77fffb88a32"
+    ],
+    "status": "ACTIVE",
+    "shared": false,
+    "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+  }
+}
+    `)
+	})
+
+	removeEgressPolicy, err := groups.RemoveEgressPolicy(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, removeEgressPolicy.IngressFirewallPolicyID, "e3f11142-3792-454b-8d3e-91ac1bf127b4")
+	th.AssertEquals(t, removeEgressPolicy.EgressFirewallPolicyID, "")
 }
 
 func TestDelete(t *testing.T) {
