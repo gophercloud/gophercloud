@@ -74,10 +74,19 @@ func RequireIronicHTTPBasic(t *testing.T) {
 	}
 }
 
+func getReleaseFromEnv(t *testing.T) string {
+	current_branch := os.Getenv("OS_BRANCH")
+	if current_branch == "" {
+		t.Fatal("this test requires OS_BRANCH to be set but it wasn't")
+	}
+	return current_branch
+}
+
 // SkipRelease will have the test be skipped on a certain
 // release. Releases are named such as 'stable/mitaka', master, etc.
 func SkipRelease(t *testing.T, release string) {
-	if os.Getenv("OS_BRANCH") == release {
+	current_branch := getReleaseFromEnv(t)
+	if current_branch == release {
 		t.Skipf("this is not supported in %s", release)
 	}
 }
@@ -85,7 +94,7 @@ func SkipRelease(t *testing.T, release string) {
 // SkipReleasesBelow will have the test be skipped on releases below a certain
 // one. Releases are named such as 'stable/mitaka', master, etc.
 func SkipReleasesBelow(t *testing.T, release string) {
-	current_branch := os.Getenv("OS_BRANCH")
+	current_branch := getReleaseFromEnv(t)
 
 	if IsReleasesBelow(t, release) {
 		t.Skipf("this is not supported below %s, testing in %s", release, current_branch)
@@ -96,7 +105,7 @@ func SkipReleasesBelow(t *testing.T, release string) {
 // one. The test is always skipped on master release. Releases are named such
 // as 'stable/mitaka', master, etc.
 func SkipReleasesAbove(t *testing.T, release string) {
-	current_branch := os.Getenv("OS_BRANCH")
+	current_branch := getReleaseFromEnv(t)
 
 	// Assume master is always too new
 	if IsReleasesAbove(t, release) {
@@ -108,7 +117,7 @@ func SkipReleasesAbove(t *testing.T, release string) {
 // one. The result is always true on master release. Releases are named such
 // as 'stable/mitaka', master, etc.
 func IsReleasesAbove(t *testing.T, release string) bool {
-	current_branch := os.Getenv("OS_BRANCH")
+	current_branch := getReleaseFromEnv(t)
 
 	// Assume master is always too new
 	if current_branch == "master" || current_branch > release {
@@ -121,7 +130,7 @@ func IsReleasesAbove(t *testing.T, release string) bool {
 // IsReleasesBelow will return true on releases below a certain
 // one. Releases are named such as 'stable/mitaka', master, etc.
 func IsReleasesBelow(t *testing.T, release string) bool {
-	current_branch := os.Getenv("OS_BRANCH")
+	current_branch := getReleaseFromEnv(t)
 
 	if current_branch != "master" && current_branch < release {
 		return true
