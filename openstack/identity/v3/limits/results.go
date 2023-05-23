@@ -96,6 +96,12 @@ type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // IsEmpty determines whether or not a page of Limits contains any results.
 func (r LimitPage) IsEmpty() (bool, error) {
 	if r.StatusCode == 204 {

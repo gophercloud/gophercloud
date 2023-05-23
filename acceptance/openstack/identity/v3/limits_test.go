@@ -114,4 +114,10 @@ func TestLimitsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newLimitDescription, updatedLimit.Description)
 	th.AssertEquals(t, newResourceLimit, updatedLimit.ResourceLimit)
+
+	err = limits.Delete(client, limitID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	_, err = limits.Get(client, limitID).Extract()
+	th.AssertErr(t, err)
 }

@@ -240,3 +240,14 @@ func HandleUpdateLimitSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, UpdateOutput)
 	})
 }
+
+// HandleDeleteLimitSuccessfully creates an HTTP handler at `/limits` on the
+// test handler mux that tests limit deletion.
+func HandleDeleteLimitSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

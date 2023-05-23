@@ -160,3 +160,10 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Delete deletes a limit.
+func Delete(client *gophercloud.ServiceClient, limitID string) (r DeleteResult) {
+	resp, err := client.Delete(resourceURL(client, limitID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
