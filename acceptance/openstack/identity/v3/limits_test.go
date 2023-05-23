@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/limits"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/registeredlimits"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/services"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -42,18 +43,9 @@ func TestLimitsList(t *testing.T) {
 }
 
 func TestLimitsCRUD(t *testing.T) {
-	// TODO: After https://github.com/gophercloud/gophercloud/issues/2290 is implemented
-	// use registered limits API to create global registered limit and then overwrite it with limit.
-	// Current solution (using glance limit) only works with Openstack Xena and above.
-	clients.SkipReleasesBelow(t, "stable/xena")
-
 	err := os.Setenv("OS_SYSTEM_SCOPE", "all")
 	th.AssertNoErr(t, err)
 	defer os.Unsetenv("OS_SYSTEM_SCOPE")
-
-	limitDescription := tools.RandomString("TESTLIMITS-DESC-", 8)
-	resourceLimit := tools.RandomInt(1, 100)
-	resourceName := "image_size_total"
 
 	clients.RequireAdmin(t)
 
@@ -63,25 +55,47 @@ func TestLimitsCRUD(t *testing.T) {
 	project, err := CreateProject(t, client, nil)
 	th.AssertNoErr(t, err)
 
-	// Find image service (glance on Devstack) which has precreated registered limits.
+	// Get the service to register the limit against.
 	allPages, err := services.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
 	svList, err := services.ExtractServices(allPages)
 	serviceID := ""
 	for _, service := range svList {
-		if service.Type == "image" {
-			serviceID = service.ID
-			break
-		}
+		serviceID = service.ID
+		break
 	}
 	th.AssertIntGreaterOrEqual(t, len(serviceID), 1)
+
+	// Create global registered limit
+	description := tools.RandomString("GLOBALLIMIT-DESC-", 8)
+	defaultLimit := tools.RandomInt(1, 100)
+	globalResourceName := tools.RandomString("GLOBALLIMIT-", 8)
+
+	createRegisteredLimitsOpts := registeredlimits.BatchCreateOpts{
+		registeredlimits.CreateOpts{
+			ServiceID:    serviceID,
+			ResourceName: globalResourceName,
+			DefaultLimit: defaultLimit,
+			Description:  description,
+			RegionID:     "RegionOne",
+		},
+	}
+
+	createdRegisteredLimits, err := registeredlimits.BatchCreate(client, createRegisteredLimitsOpts).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, createdRegisteredLimits[0])
+	th.AssertIntGreaterOrEqual(t, 1, len(createdRegisteredLimits))
+
+	// Override global limit in specific project
+	limitDescription := tools.RandomString("TESTLIMITS-DESC-", 8)
+	resourceLimit := tools.RandomInt(1, 1000)
 
 	createOpts := limits.BatchCreateOpts{
 		limits.CreateOpts{
 			ServiceID:     serviceID,
 			ProjectID:     project.ID,
-			ResourceName:  resourceName,
+			ResourceName:  globalResourceName,
 			ResourceLimit: resourceLimit,
 			Description:   limitDescription,
 			RegionID:      "RegionOne",
@@ -93,7 +107,7 @@ func TestLimitsCRUD(t *testing.T) {
 	th.AssertIntGreaterOrEqual(t, 1, len(createdLimits))
 	th.AssertEquals(t, limitDescription, createdLimits[0].Description)
 	th.AssertEquals(t, resourceLimit, createdLimits[0].ResourceLimit)
-	th.AssertEquals(t, resourceName, createdLimits[0].ResourceName)
+	th.AssertEquals(t, globalResourceName, createdLimits[0].ResourceName)
 	th.AssertEquals(t, serviceID, createdLimits[0].ServiceID)
 	th.AssertEquals(t, project.ID, createdLimits[0].ProjectID)
 
@@ -115,9 +129,18 @@ func TestLimitsCRUD(t *testing.T) {
 	th.AssertEquals(t, newLimitDescription, updatedLimit.Description)
 	th.AssertEquals(t, newResourceLimit, updatedLimit.ResourceLimit)
 
+	// Verify Deleting registered limit fails as it has project specific limit associated with it
+	del_err := registeredlimits.Delete(client, createdRegisteredLimits[0].ID).ExtractErr()
+	th.AssertErr(t, del_err)
+
+	// Delete project specific limit
 	err = limits.Delete(client, limitID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	_, err = limits.Get(client, limitID).Extract()
 	th.AssertErr(t, err)
+
+	// Delete registered limit
+	err = registeredlimits.Delete(client, createdRegisteredLimits[0].ID).ExtractErr()
+	th.AssertNoErr(t, err)
 }
