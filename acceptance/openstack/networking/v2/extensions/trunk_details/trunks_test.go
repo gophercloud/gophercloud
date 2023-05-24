@@ -89,6 +89,8 @@ func TestListPortWithSubports(t *testing.T) {
 	// exclude it from the comparison here in case it's ever added. MAC
 	// address is returned in GET queries, so we do assert that in the GET
 	// test below.
+	// Tracked in https://bugs.launchpad.net/neutron/+bug/2020552
+	// TODO: Remove this workaround when the bug is resolved
 	th.AssertDeepEquals(t, trunks.Subport{
 		SegmentationID:   1,
 		SegmentationType: "vlan",
