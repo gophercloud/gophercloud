@@ -45,7 +45,7 @@ func TestShareExportLocations(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -219,7 +219,7 @@ func TestExtendAndShrink(t *testing.T) {
 	}
 
 	// We need to wait till the Extend operation is done
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -233,7 +233,7 @@ func TestExtendAndShrink(t *testing.T) {
 	}
 
 	// We need to wait till the Shrink operation is done
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -315,7 +315,7 @@ func TestRevert(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -340,7 +340,7 @@ func TestRevert(t *testing.T) {
 	}
 
 	// We need to wait till the Extend operation is done
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -351,6 +351,73 @@ func TestRevert(t *testing.T) {
 	}
 
 	t.Logf("Share %s successfuly reverted", share.ID)
+}
+
+func TestShareRestoreFromSnapshot(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+	client.Microversion = "2.27"
+
+	shareType := "default"
+	share, err := CreateShare(t, client, shareType)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	_, err = waitForStatus(t, client, share.ID, "available")
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	snapshot, err := CreateSnapshot(t, client, share.ID)
+	if err != nil {
+		t.Fatalf("Unable to create a snapshot: %v", err)
+	}
+	defer DeleteSnapshot(t, client, snapshot)
+
+	err = waitForSnapshotStatus(t, client, snapshot.ID, "available")
+	if err != nil {
+		t.Fatalf("Snapshot status error: %v", err)
+	}
+
+	// create a bigger share from a snapshot
+	iTrue := true
+	newSize := share.Size + 1
+	createOpts := shares.CreateOpts{
+		Size:        newSize,
+		Name:        "My Test Share",
+		Description: "My Test Description",
+		ShareProto:  "NFS",
+		ShareType:   shareType,
+		SnapshotID:  snapshot.ID,
+		IsPublic:    &iTrue,
+	}
+	restored, err := shares.Create(client, createOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to create a share from a snapshot: %v", err)
+	}
+	defer DeleteShare(t, client, restored)
+
+	if restored.Size != newSize {
+		t.Fatalf("Unexpected restored share size: %d", restored.Size)
+	}
+
+	// We need to wait till the Extend operation is done
+	checkShare, err := waitForStatus(t, client, restored.ID, "available")
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	t.Logf("Share %s has been successfully restored: %+#v", checkShare.ID, checkShare)
+
+	err = waitForSnapshotStatus(t, client, snapshot.ID, "available")
+	if err != nil {
+		t.Fatalf("Snapshot status error: %v", err)
+	}
 }
 
 func TestResetStatus(t *testing.T) {
@@ -367,7 +434,7 @@ func TestResetStatus(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -381,7 +448,7 @@ func TestResetStatus(t *testing.T) {
 	}
 
 	// We need to wait till the Extend operation is done
-	err = waitForStatus(t, client, share.ID, "error")
+	_, err = waitForStatus(t, client, share.ID, "error")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -403,7 +470,7 @@ func TestForceDelete(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -413,7 +480,7 @@ func TestForceDelete(t *testing.T) {
 		t.Fatalf("Unable to force delete a share: %v", err)
 	}
 
-	err = waitForStatus(t, client, share.ID, "deleted")
+	_, err = waitForStatus(t, client, share.ID, "deleted")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -437,7 +504,7 @@ func TestUnmanage(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
@@ -447,7 +514,7 @@ func TestUnmanage(t *testing.T) {
 		t.Fatalf("Unable to unmanage a share: %v", err)
 	}
 
-	err = waitForStatus(t, client, share.ID, "deleted")
+	_, err = waitForStatus(t, client, share.ID, "deleted")
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}

@@ -14,18 +14,22 @@ import (
 
 // CreateShare will create a share with a name, and a size of 1Gb. An
 // error will be returned if the share could not be created
-func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share, error) {
+func CreateShare(t *testing.T, client *gophercloud.ServiceClient, optShareType ...string) (*shares.Share, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires share creation in short mode.")
 	}
 
 	iTrue := true
+	shareType := "dhss_false"
+	if len(optShareType) > 0 {
+		shareType = optShareType[0]
+	}
 	createOpts := shares.CreateOpts{
 		Size:        1,
 		Name:        "My Test Share",
 		Description: "My Test Description",
 		ShareProto:  "NFS",
-		ShareType:   "dhss_false",
+		ShareType:   shareType,
 		IsPublic:    &iTrue,
 	}
 
@@ -35,7 +39,7 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 		return nil, err
 	}
 
-	err = waitForStatus(t, client, share.ID, "available")
+	_, err = waitForStatus(t, client, share.ID, "available")
 	if err != nil {
 		t.Logf("Failed to get %s share status", share.ID)
 		DeleteShare(t, client, share)
@@ -91,7 +95,7 @@ func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 		t.Errorf("Unable to delete share %s: %v", share.ID, err)
 	}
 
-	err = waitForStatus(t, client, share.ID, "deleted")
+	_, err = waitForStatus(t, client, share.ID, "deleted")
 	if err != nil {
 		t.Errorf("Failed to wait for 'deleted' status for %s share: %v", share.ID, err)
 	} else {
@@ -129,9 +133,13 @@ func PrintMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error 
 	return nil
 }
 
-func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) error {
+func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) (*shares.Share, error) {
+	var current *shares.Share
+
 	err := tools.WaitFor(func() (bool, error) {
-		current, err := shares.Get(c, id).Extract()
+		var err error
+
+		current, err = shares.Get(c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {
@@ -158,9 +166,9 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return fmt.Errorf("Share status is '%s' and unable to get manila messages: %s", err, mErr)
+			return current, fmt.Errorf("Share status is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 
-	return err
+	return current, err
 }
