@@ -128,7 +128,7 @@ type UpdateOpts struct {
 	Shared                  *bool     `json:"shared,omitempty"`
 }
 
-// ToFirewallGroupUpdateMap casts a CreateOpts struct to a map.
+// ToFirewallGroupUpdateMap casts a UpdateOpts struct to a map.
 func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_group")
 }
@@ -136,6 +136,45 @@ func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]interface{}, error
 // Update allows firewall groups to be updated.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFirewallGroupUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Because of fwaas_v2 wait only UUID not string and base updateOpts has omitempty,
+// only set nil allows firewall group policies to be unset.
+// Two different functions, because can not specify both policy in one function.
+// New functions needs new structs without omitempty.
+// Separate function for BuildRequestBody is missing due to complication
+// of code readability and bulkiness.
+
+type RemoveIngressPolicyOpts struct {
+	IngressFirewallPolicyID *string `json:"ingress_firewall_policy_id"`
+}
+
+func RemoveIngressPolicy(c *gophercloud.ServiceClient, id string) (r UpdateResult) {
+	b, err := gophercloud.BuildRequestBody(RemoveIngressPolicyOpts{IngressFirewallPolicyID: nil}, "firewall_group")
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+type RemoveEgressPolicyOpts struct {
+	EgressFirewallPolicyID *string `json:"egress_firewall_policy_id"`
+}
+
+func RemoveEgressPolicy(c *gophercloud.ServiceClient, id string) (r UpdateResult) {
+	b, err := gophercloud.BuildRequestBody(RemoveEgressPolicyOpts{EgressFirewallPolicyID: nil}, "firewall_group")
 	if err != nil {
 		r.Err = err
 		return
