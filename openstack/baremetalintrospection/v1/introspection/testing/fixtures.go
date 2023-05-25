@@ -160,7 +160,8 @@ const IntrospectionDataJSONSample = `
                 "mac_address": "52:54:00:4e:3d:30",
                 "name": "eth0",
                 "product": "0x0001",
-                "vendor": "0x1af4"
+                "vendor": "0x1af4",
+		"speed_mbps": 1000
             }
         ],
         "memory": {
@@ -170,10 +171,25 @@ const IntrospectionDataJSONSample = `
         "system_vendor": {
             "manufacturer": "Bochs",
             "product_name": "Bochs",
-            "serial_number": "Not Specified"
+            "serial_number": "Not Specified",
+	    "firmware": {
+		"version": "1.2.3.4"
+	    }
         }
     },
     "ipmi_address": "192.167.2.134",
+    "lldp_raw": {
+	"eth0": [
+	    [
+		1,
+		"04112233aabbcc"
+	    ],
+	    [
+		5,
+		"737730312d646973742d31622d623132"
+	    ]
+	]
+    },
     "local_gb": 12,
     "macs": [
         "52:54:00:4e:3d:30"
@@ -377,6 +393,9 @@ var (
 				Manufacturer: "Bochs",
 				ProductName:  "Bochs",
 				SerialNumber: "Not Specified",
+				Firmware: introspection.SystemFirmwareType{
+					Version: "1.2.3.4",
+				},
 			},
 			BmcAddress: "192.167.2.134",
 			Boot: introspection.BootInfoType{
@@ -425,6 +444,7 @@ var (
 							Value: "737730312d646973742d31622d623132",
 						},
 					},
+					SpeedMbps: 1000,
 				},
 			},
 			Memory: introspection.MemoryType{
@@ -448,6 +468,18 @@ var (
 				LLDPProcessed: map[string]interface{}{
 					"switch_chassis_id":  "11:22:33:aa:bb:cc",
 					"switch_system_name": "sw01-dist-1b-b12",
+				},
+			},
+		},
+		RawLLDP: map[string][]introspection.LLDPTLVType{
+			"eth0": {
+				{
+					Type:  1,
+					Value: "04112233aabbcc",
+				},
+				{
+					Type:  5,
+					Value: "737730312d646973742d31622d623132",
 				},
 			},
 		},
