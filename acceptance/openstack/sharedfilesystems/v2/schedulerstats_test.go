@@ -14,8 +14,8 @@ import (
 
 func TestSchedulerStatsList(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
-	client.Microversion = "2.23"
 	th.AssertNoErr(t, err)
+	client.Microversion = "2.23"
 
 	allPages, err := schedulerstats.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)

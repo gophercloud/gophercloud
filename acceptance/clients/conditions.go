@@ -12,6 +12,14 @@ func RequiredSystemScope(t *testing.T) {
 	}
 }
 
+// RequireManilaReplicas will restrict a test to only be run with enabled
+// manila replicas.
+func RequireManilaReplicas(t *testing.T) {
+	if os.Getenv("OS_MANILA_REPLICAS") != "true" {
+		t.Skip("manila replicas must be enabled to run this test")
+	}
+}
+
 // RequireAdmin will restrict a test to only be run by admin users.
 func RequireAdmin(t *testing.T) {
 	if os.Getenv("OS_USERNAME") != "admin" {
