@@ -1,12 +1,12 @@
-name: functional-networking
+name: functional-fwaas_v2
 on:
   pull_request:
     paths:
-      - '**networking**'
+      - '**networking/extensions/fwaas_v2**'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
-  functional-networking:
+  functional-fwaas_v2:
     strategy:
       fail-fast: false
       matrix:
@@ -57,5 +57,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: functional-networking-${{ matrix.name }}
+          name: functional-fwaas_v2-${{ matrix.name }}
           path: /tmp/devstack-logs/*
