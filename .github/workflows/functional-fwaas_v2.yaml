@@ -38,8 +38,6 @@ jobs:
             Q_ML2_PLUGIN_TYPE_DRIVERS=flat,gre,vlan,vxlan
             Q_ML2_TENANT_NETWORK_TYPE=vxlan
             Q_TUNNEL_TYPES=vxlan,gre
-            enable_plugin neutron-fwaas https://opendev.org/openstack/neutron-fwaas stable/zed
-            enable_plugin neutron-fwaas-dashboard https://opendev.org/openstack/neutron-fwaas-dashboard stable/zed
           enabled_services: 'q-svc,q-agt,q-dhcp,q-l3,q-meta,q-fwaas-v2'
           disabled_services: 'ovn,ovn-controller,ovn-northd,q-ovn-metadata-agent,cinder,c-sch,c-api,c-vol,horizon,tempest,swift'
       - name: Checkout go
