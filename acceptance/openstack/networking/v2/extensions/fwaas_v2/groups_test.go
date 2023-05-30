@@ -13,7 +13,9 @@ import (
 )
 
 func TestGroupCRUD(t *testing.T) {
-	clients.SkipReleasesAbove(t, "stable/ussuri")
+	// Releases below Victoria are not maintained.
+	// FWaaS_v2 is not compatible with releases below Zed.
+	clients.SkipReleasesBelow(t, "stable/zed")
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -48,21 +50,21 @@ func TestGroupCRUD(t *testing.T) {
 		EgressFirewallPolicyID:  &firewall_policy_id,
 	}
 
-	groupUpdated, err := groups.Update(client, createdGroup.ID, updateOpts).Extract()
+	updatedGroup, err := groups.Update(client, createdGroup.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update firewall group %s: %v", createdGroup.ID, err)
 	}
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, groupUpdated.Name, groupName)
-	th.AssertEquals(t, groupUpdated.Description, description)
-	th.AssertEquals(t, groupUpdated.AdminStateUp, adminStateUp)
-	th.AssertEquals(t, groupUpdated.IngressFirewallPolicyID, firewall_policy_id)
-	th.AssertEquals(t, groupUpdated.EgressFirewallPolicyID, firewall_policy_id)
+	th.AssertEquals(t, updatedGroup.Name, groupName)
+	th.AssertEquals(t, updatedGroup.Description, description)
+	th.AssertEquals(t, updatedGroup.AdminStateUp, adminStateUp)
+	th.AssertEquals(t, updatedGroup.IngressFirewallPolicyID, firewall_policy_id)
+	th.AssertEquals(t, updatedGroup.EgressFirewallPolicyID, firewall_policy_id)
 
-	t.Logf("Updated firewall group %s", groupUpdated.ID)
+	t.Logf("Updated firewall group %s", updatedGroup.ID)
 
-	removeIngressPolicy, err := groups.RemoveIngressPolicy(client, groupUpdated.ID).Extract()
+	removeIngressPolicy, err := groups.RemoveIngressPolicy(client, updatedGroup.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove ingress firewall policy from firewall group %s: %v", removeIngressPolicy.ID, err)
 	}
@@ -70,16 +72,16 @@ func TestGroupCRUD(t *testing.T) {
 	th.AssertEquals(t, removeIngressPolicy.IngressFirewallPolicyID, "")
 	th.AssertEquals(t, removeIngressPolicy.EgressFirewallPolicyID, firewall_policy_id)
 
-	t.Logf("Ingress policy removed from firewall group %s", groupUpdated.ID)
+	t.Logf("Ingress policy removed from firewall group %s", updatedGroup.ID)
 
-	removeEgressPolicy, err := groups.RemoveEgressPolicy(client, groupUpdated.ID).Extract()
+	removeEgressPolicy, err := groups.RemoveEgressPolicy(client, updatedGroup.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove egress firewall policy from firewall group %s: %v", removeEgressPolicy.ID, err)
 	}
 
 	th.AssertEquals(t, removeEgressPolicy.EgressFirewallPolicyID, "")
 
-	t.Logf("Egress policy removed from firewall group %s", groupUpdated.ID)
+	t.Logf("Egress policy removed from firewall group %s", updatedGroup.ID)
 
 	allPages, err := groups.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)

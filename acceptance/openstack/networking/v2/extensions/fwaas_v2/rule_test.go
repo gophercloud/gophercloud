@@ -15,7 +15,9 @@ import (
 )
 
 func TestRuleCRUD(t *testing.T) {
-	clients.SkipReleasesAbove(t, "stable/ussuri")
+	// Releases below Victoria are not maintained.
+	// FWaaS_v2 is not compatible with releases below Zed.
+	clients.SkipReleasesBelow(t, "stable/zed")
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
