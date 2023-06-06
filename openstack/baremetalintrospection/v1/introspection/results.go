@@ -254,7 +254,7 @@ type RootDiskType struct {
 
 type SystemFirmwareType struct {
 	Version   string `json:"version"`
-	BuildDate string `json:"build_data"`
+	BuildDate string `json:"build_date"`
 	Vendor    string `json:"vendor"`
 }
 
