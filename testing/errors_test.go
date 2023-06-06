@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -13,7 +14,7 @@ func returnsUnexpectedResp(code int) gophercloud.ErrUnexpectedResponseCode {
 		Method:         "GET",
 		Expected:       []int{200},
 		Actual:         code,
-		Body:           nil,
+		Body:           []byte("the response body"),
 		ResponseHeader: nil,
 	}
 }
@@ -24,6 +25,17 @@ func TestGetResponseCode404(t *testing.T) {
 	err, ok := err404.(gophercloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, err.GetStatusCode(), 404)
+
+	t.Run("wraps ErrUnexpectedResponseCode", func(t *testing.T) {
+		var unexpectedResponseCode gophercloud.ErrUnexpectedResponseCode
+		if errors.As(err, &unexpectedResponseCode) {
+			if want, have := "the response body", string(unexpectedResponseCode.Body); want != have {
+				t.Errorf("expected the wrapped error to contain the response body, found %q", have)
+			}
+		} else {
+			t.Errorf("err.Unwrap() didn't return ErrUnexpectedResponseCode")
+		}
+	})
 }
 
 func TestGetResponseCode502(t *testing.T) {
@@ -32,6 +44,17 @@ func TestGetResponseCode502(t *testing.T) {
 	err, ok := err502.(gophercloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, err.GetStatusCode(), 502)
+
+	t.Run("wraps ErrUnexpectedResponseCode", func(t *testing.T) {
+		var unexpectedResponseCode gophercloud.ErrUnexpectedResponseCode
+		if errors.As(err, &unexpectedResponseCode) {
+			if want, have := "the response body", string(unexpectedResponseCode.Body); want != have {
+				t.Errorf("expected the wrapped error to contain the response body, found %q", have)
+			}
+		} else {
+			t.Errorf("err.Unwrap() didn't return ErrUnexpectedResponseCode")
+		}
+	})
 }
 
 func TestGetResponseCode504(t *testing.T) {
@@ -40,4 +63,34 @@ func TestGetResponseCode504(t *testing.T) {
 	err, ok := err504.(gophercloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, err.GetStatusCode(), 504)
+
+	t.Run("wraps ErrUnexpectedResponseCode", func(t *testing.T) {
+		var unexpectedResponseCode gophercloud.ErrUnexpectedResponseCode
+		if errors.As(err, &unexpectedResponseCode) {
+			if want, have := "the response body", string(unexpectedResponseCode.Body); want != have {
+				t.Errorf("expected the wrapped error to contain the response body, found %q", have)
+			}
+		} else {
+			t.Errorf("err.Unwrap() didn't return ErrUnexpectedResponseCode")
+		}
+	})
 }
+
+// Compile-time check that all response-code errors implement `Unwrap()`
+type unwrapper interface {
+	Unwrap() error
+}
+
+var (
+	_ unwrapper = gophercloud.ErrDefault401{}
+	_ unwrapper = gophercloud.ErrDefault403{}
+	_ unwrapper = gophercloud.ErrDefault404{}
+	_ unwrapper = gophercloud.ErrDefault405{}
+	_ unwrapper = gophercloud.ErrDefault408{}
+	_ unwrapper = gophercloud.ErrDefault409{}
+	_ unwrapper = gophercloud.ErrDefault429{}
+	_ unwrapper = gophercloud.ErrDefault500{}
+	_ unwrapper = gophercloud.ErrDefault502{}
+	_ unwrapper = gophercloud.ErrDefault503{}
+	_ unwrapper = gophercloud.ErrDefault504{}
+)
