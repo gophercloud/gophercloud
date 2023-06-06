@@ -176,6 +176,7 @@ type Data struct {
 	RootDisk      RootDiskType                 `json:"root_disk"`
 	Extra         ExtraHardwareDataType        `json:"extra"`
 	NUMATopology  NUMATopology                 `json:"numa_topology"`
+	RawLLDP       map[string][]LLDPTLVType     `json:"lldp_raw"`
 }
 
 // Sub Types defined under Data and deeper in the structure
@@ -207,16 +208,18 @@ type LLDPTLVType struct {
 }
 
 type InterfaceType struct {
-	BIOSDevName string        `json:"biosdevname"`
-	ClientID    string        `json:"client_id"`
-	HasCarrier  bool          `json:"has_carrier"`
-	IPV4Address string        `json:"ipv4_address"`
-	IPV6Address string        `json:"ipv6_address"`
-	LLDP        []LLDPTLVType `json:"lldp"`
-	MACAddress  string        `json:"mac_address"`
-	Name        string        `json:"name"`
-	Product     string        `json:"product"`
-	Vendor      string        `json:"vendor"`
+	BIOSDevName string `json:"biosdevname"`
+	ClientID    string `json:"client_id"`
+	HasCarrier  bool   `json:"has_carrier"`
+	IPV4Address string `json:"ipv4_address"`
+	IPV6Address string `json:"ipv6_address"`
+	// Deprecated, see Data.RawLLDP
+	LLDP       []LLDPTLVType `json:"lldp"`
+	MACAddress string        `json:"mac_address"`
+	Name       string        `json:"name"`
+	Product    string        `json:"product"`
+	SpeedMbps  int           `json:"speed_mbps"`
+	Vendor     string        `json:"vendor"`
 }
 
 type InventoryType struct {
@@ -249,10 +252,17 @@ type RootDiskType struct {
 	WwnWithExtension   string `json:"wwn_with_extension"`
 }
 
+type SystemFirmwareType struct {
+	Version   string `json:"version"`
+	BuildDate string `json:"build_date"`
+	Vendor    string `json:"vendor"`
+}
+
 type SystemVendorType struct {
-	Manufacturer string `json:"manufacturer"`
-	ProductName  string `json:"product_name"`
-	SerialNumber string `json:"serial_number"`
+	Manufacturer string             `json:"manufacturer"`
+	ProductName  string             `json:"product_name"`
+	SerialNumber string             `json:"serial_number"`
+	Firmware     SystemFirmwareType `json:"firmware"`
 }
 
 type ExtraHardwareData map[string]interface{}
