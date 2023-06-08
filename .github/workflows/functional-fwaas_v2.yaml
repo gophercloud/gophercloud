@@ -31,7 +31,6 @@ jobs:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin neutron-fwaas https://opendev.org/openstack/neutron-fwaas ${{ matrix.openstack_version }}
-            enable_plugin neutron-fwaas-dashboard https://opendev.org/openstack/neutron-fwaas-dashboard ${{ matrix.openstack_version }}
             Q_AGENT=openvswitch
             Q_ML2_PLUGIN_MECHANISM_DRIVERS=openvswitch,l2population
             Q_ML2_PLUGIN_TYPE_DRIVERS=flat,gre,vlan,vxlan
