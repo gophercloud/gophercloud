@@ -174,16 +174,16 @@ func TestEncryptionVolumeTypes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteVolumeType(t, client, vt)
 
-  createEncryptionOpts := volumetypes.EncryptionOptions{
+  createEncryptionOpts := volumetypes.CreateEncryptionOpts{
     KeySize: 256,
     Provider: "luks",
     ControlLocation: "front-end",
     Cipher: "aes-xts-plain64",
   }
 
-  eVT, err := volumetypes.CreateEncryption(client, vt.ID, createEncryptionOpts)
+  eVT, err := volumetypes.CreateEncryption(client, vt.ID, createEncryptionOpts).Extract()
   th.AssertNoErr(t, err)
-  defer DeleteEncryption(t, client, evt)
+  defer volumetypes.DeleteEncryption(client, eVT.VolumeTypeID, eVT.EncryptionID)
 
 	geVT, err := volumetypes.GetEncryption(client, vt.ID).Extract()
 	th.AssertNoErr(t, err)
@@ -195,13 +195,13 @@ func TestEncryptionVolumeTypes(t *testing.T) {
   tools.PrintResource(t, gesVT)
 
 
-	updateEncryptionOpts := volumetypes.EncryptionUpdateOpts{
+	updateEncryptionOpts := volumetypes.UpdateEncryptionOpts{
 		ControlLocation:    "back-end",
 	}
 
-	newEVT, err := volumetypes.Update(client, vt.ID, updateEncryptionOpts).Extract()
+	newEVT, err := volumetypes.UpdateEncryption(client, vt.ID, eVT.EncryptionID, updateEncryptionOpts).Extract()
+  tools.PrintResource(t, newEVT)
 	th.AssertNoErr(t, err)
 
-	tools.PrintResource(t, newEVT)
-	th.AssertEquals(t, "back-end", newEVT.ControlLocation)
+		th.AssertEquals(t, "back-end", newEVT.ControlLocation)
 }
