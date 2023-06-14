@@ -147,7 +147,7 @@ func IsReleasesAbove(t *testing.T, release string) bool {
 func IsReleasesBelow(t *testing.T, release string) bool {
 	current_branch := getReleaseFromEnv(t)
 
-	if current_branch != "master" && current_branch < release {
+	if current_branch != "master" || current_branch < release {
 		return true
 	}
 	t.Logf("Target release %s is above the current branch %s", release, current_branch)
