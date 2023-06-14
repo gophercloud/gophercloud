@@ -63,7 +63,7 @@ type commonResult struct {
 	gophercloud.Result
 }
 
-// Extract will get the Replica object from the commonResul.t
+// Extract will get the Replica object from the commonResult.
 func (r commonResult) Extract() (*Replica, error) {
 	var s struct {
 		Replica *Replica `json:"share_replica"`
@@ -149,16 +149,18 @@ func (r ReplicaPage) IsEmpty() (bool, error) {
 	return len(replicas) == 0, err
 }
 
-// ExtractReplicas extracts and returns a Replica slice. It is used while
-// iterating over a replicas.List call.
+// ExtractReplicas extracts and returns Replicas. It is used while iterating
+// over a replicas.List or replicas.ListDetail calls.
 func ExtractReplicas(r pagination.Page) ([]Replica, error) {
-	var s struct {
-		Replicas []Replica `json:"share_replicas"`
-	}
+	var s []Replica
+	err := ExtractReplicasInto(r, &s)
+	return s, err
+}
 
-	err := (r.(ReplicaPage)).ExtractInto(&s)
-
-	return s.Replicas, err
+// ExtractReplicasInto similar to ExtractReplicas but operates on a `list` of
+// replicas.
+func ExtractReplicasInto(r pagination.Page, v interface{}) error {
+	return r.(ReplicaPage).Result.ExtractIntoSlicePtr(v, "share_replicas")
 }
 
 // DeleteResult contains the response body and error from a Delete request.

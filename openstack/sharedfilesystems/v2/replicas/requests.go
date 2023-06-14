@@ -51,7 +51,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // ListOpts holds options for listing Share Replicas. This object is passed to the
-// replicas.List function.
+// replicas.List or replicas.ListDetail functions.
 type ListOpts struct {
 	// The UUID of the share.
 	ShareID string `q:"share_id"`
