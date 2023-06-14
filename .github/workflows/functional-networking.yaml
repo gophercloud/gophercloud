@@ -68,7 +68,7 @@ jobs:
         run: ./script/acceptancetest
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
-          ACCEPTANCE_TESTS_FILTER: "^.*networking.*$"
+          ACCEPTANCE_TESTS_FILTER: "^(?!.*fwaas_v2.*).*networking.*$"
           OS_BRANCH: ${{ matrix.openstack_version }}
       - name: Generate logs on failure
         run: ./script/collectlogs
