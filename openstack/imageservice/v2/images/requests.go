@@ -155,6 +155,9 @@ type CreateOpts struct {
 	// Id is the the image ID.
 	ID string `json:"id,omitempty"`
 
+	// Description is the description of the new image.
+	Description string `json:"description,omitempty"`
+
 	// Visibility defines who can see/use the image.
 	Visibility *ImageVisibility `json:"visibility,omitempty"`
 
