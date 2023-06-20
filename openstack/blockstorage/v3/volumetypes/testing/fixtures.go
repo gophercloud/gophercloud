@@ -258,3 +258,120 @@ func HandleExtraSpecDeleteSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func MockEncryptionCreateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "encryption": {
+        "key_size": 256,
+        "provider": "luks",
+        "control_location": "front-end",
+        "cipher": "aes-xts-plain64"
+   }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "encryption": {
+        "volume_type_id": "a5082c24-2a27-43a4-b48e-fcec1240e36b",
+        "control_location": "front-end",
+        "encryption_id": "81e069c6-7394-4856-8df7-3b237ca61f74",
+        "key_size": 256,
+        "provider": "luks",
+        "cipher": "aes-xts-plain64"
+    }
+}
+    `)
+	})
+}
+
+func MockDeleteEncryptionResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/81e069c6-7394-4856-8df7-3b237ca61f74", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func MockEncryptionUpdateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/81e069c6-7394-4856-8df7-3b237ca61f74", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "encryption": {
+        "key_size": 256,
+        "provider": "luks",
+        "control_location": "front-end",
+        "cipher": "aes-xts-plain64"
+   }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "encryption": {
+        "control_location": "front-end",
+        "key_size": 256,
+        "provider": "luks",
+        "cipher": "aes-xts-plain64"
+    }
+}
+    `)
+	})
+}
+
+func MockEncryptionGetResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "volume_type_id": "a5082c24-2a27-43a4-b48e-fcec1240e36b",
+    "control_location": "front-end",
+    "deleted": false,
+    "created_at": "2016-12-28T02:32:25.000000",
+    "updated_at": null,
+    "encryption_id": "81e069c6-7394-4856-8df7-3b237ca61f74",
+    "key_size": 256,
+    "provider": "luks",
+    "deleted_at": null,
+    "cipher": "aes-xts-plain64"
+}
+    `)
+	})
+}
+
+func MockEncryptionGetSpecResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/cipher", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "cipher": "aes-xts-plain64"
+}
+    `)
+	})
+}

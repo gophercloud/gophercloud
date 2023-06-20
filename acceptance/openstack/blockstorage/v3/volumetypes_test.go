@@ -163,3 +163,44 @@ func TestVolumeTypesAccess(t *testing.T) {
 
 	th.AssertEquals(t, len(accessList), 0)
 }
+
+func TestEncryptionVolumeTypes(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	vt, err := CreateVolumeType(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
+
+	createEncryptionOpts := volumetypes.CreateEncryptionOpts{
+		KeySize:         256,
+		Provider:        "luks",
+		ControlLocation: "front-end",
+		Cipher:          "aes-xts-plain64",
+	}
+
+	eVT, err := volumetypes.CreateEncryption(client, vt.ID, createEncryptionOpts).Extract()
+	th.AssertNoErr(t, err)
+	defer volumetypes.DeleteEncryption(client, eVT.VolumeTypeID, eVT.EncryptionID)
+
+	geVT, err := volumetypes.GetEncryption(client, vt.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, geVT)
+
+	key := "cipher"
+	gesVT, err := volumetypes.GetEncryptionSpec(client, vt.ID, key).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, gesVT)
+
+	updateEncryptionOpts := volumetypes.UpdateEncryptionOpts{
+		ControlLocation: "back-end",
+	}
+
+	newEVT, err := volumetypes.UpdateEncryption(client, vt.ID, eVT.EncryptionID, updateEncryptionOpts).Extract()
+	tools.PrintResource(t, newEVT)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "back-end", newEVT.ControlLocation)
+}
