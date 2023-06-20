@@ -201,14 +201,13 @@ type RemoveAccessResult struct {
 	gophercloud.ErrResult
 }
 
-
 type EncryptionType struct {
 	// Unique identifier for the volume type.
-  VolumeTypeID string `json:"volume_type_id"`
+	VolumeTypeID string `json:"volume_type_id"`
 	// Notional service where encryption is performed.
 	ControlLocation string `json:"control_location"`
 	// Unique identifier for encryption type.
-  EncryptionID string `json:"encryption_id"`
+	EncryptionID string `json:"encryption_id"`
 	// Size of encryption key.
 	KeySize int `json:"key_size"`
 	// Class that provides encryption support.
@@ -247,25 +246,25 @@ type DeleteEncryptionResult struct {
 }
 
 type GetEncryptionType struct {
-  // Unique identifier for the volume type.
-  VolumeTypeID string `json:"volume_type_id"`
+	// Unique identifier for the volume type.
+	VolumeTypeID string `json:"volume_type_id"`
 	// Notional service where encryption is performed.
 	ControlLocation string `json:"control_location"`
-  // Shows if the resource is deleted or Notional
-  Deleted bool `json:"deleted"`
-  // Shows the date and time the resource was created.
-  CreatedAt string `json:"created_at"`
-  // Shows the date and time when resource was updated.
-  UpdatedAt string `json:"updated_at"`
-  // Unique identifier for encryption type.
-  EncryptionID string `json:"encryption_id"`
+	// Shows if the resource is deleted or Notional
+	Deleted bool `json:"deleted"`
+	// Shows the date and time the resource was created.
+	CreatedAt string `json:"created_at"`
+	// Shows the date and time when resource was updated.
+	UpdatedAt string `json:"updated_at"`
+	// Unique identifier for encryption type.
+	EncryptionID string `json:"encryption_id"`
 	// Size of encryption key.
 	KeySize int `json:"key_size"`
 	// Class that provides encryption support.
 	Provider string `json:"provider"`
-  // Shows the date and time the reousrce was deleted.
-  DeletedAt string `json:"deleted_at"`
-  // The encryption algorithm or mode.
+	// Shows the date and time the reousrce was deleted.
+	DeletedAt string `json:"deleted_at"`
+	// The encryption algorithm or mode.
 	Cipher string `json:"cipher"`
 }
 
@@ -274,7 +273,7 @@ type encryptionShowResult struct {
 }
 
 // Extract interprets any extraSpecResult as an ExtraSpec, if possible.
-func (r encryptionShowResult) Extract() (* GetEncryptionType, error) {
+func (r encryptionShowResult) Extract() (*GetEncryptionType, error) {
 	var s GetEncryptionType
 	err := r.ExtractInto(&s)
 	return &s, err
@@ -284,8 +283,8 @@ type GetEncryptionResult struct {
 	encryptionShowResult
 }
 
-type encryptionShowSpecResult struct{
-  gophercloud.Result
+type encryptionShowSpecResult struct {
+	gophercloud.Result
 }
 
 // Extract interprets any empty interface Result as an empty interface.
@@ -295,7 +294,6 @@ func (r encryptionShowSpecResult) Extract() (map[string]interface{}, error) {
 	return s, err
 }
 
-type GetEncryptionSpecResult struct{
-  encryptionShowSpecResult
+type GetEncryptionSpecResult struct {
+	encryptionShowSpecResult
 }
-
