@@ -55,17 +55,17 @@ func createEncryptionURL(client *gophercloud.ServiceClient, id string) string {
 }
 
 func deleteEncryptionURL(client *gophercloud.ServiceClient, id, encryptionID string) string {
-  return client.ServiceURL("types", id, "encryption", encryptionID)
+	return client.ServiceURL("types", id, "encryption", encryptionID)
 }
 
 func getEncryptionURL(client *gophercloud.ServiceClient, id string) string {
-  return client.ServiceURL("types", id, "encryption")
+	return client.ServiceURL("types", id, "encryption")
 }
 
 func getEncryptionSpecURL(client *gophercloud.ServiceClient, id, key string) string {
-  return client.ServiceURL("types", id, "encryption", key)
+	return client.ServiceURL("types", id, "encryption", key)
 }
 
 func updateEncryptionURL(client *gophercloud.ServiceClient, id, encryptionID string) string {
-  return client.ServiceURL("types", id, "encryption", encryptionID)
+	return client.ServiceURL("types", id, "encryption", encryptionID)
 }

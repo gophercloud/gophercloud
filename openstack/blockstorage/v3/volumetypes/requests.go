@@ -315,14 +315,14 @@ type CreateEncryptionOptsBuilder interface {
 // This object is passed to the volumetypes.CreateEncryption function.
 // For more information about these parameters,see the Encryption Type object.
 type CreateEncryptionOpts struct {
-  // The size of the encryption key.
-  KeySize int `json:"key_size"`
-  // The class of that provides the encryption support.
-  Provider string `json:"provider" required:"true"`
-  // Notional service where encryption is performed.
-  ControlLocation string `json:"control_location"`
-  // The encryption algorithm or mode.
-  Cipher string `json:"cipher"`
+	// The size of the encryption key.
+	KeySize int `json:"key_size"`
+	// The class of that provides the encryption support.
+	Provider string `json:"provider" required:"true"`
+	// Notional service where encryption is performed.
+	ControlLocation string `json:"control_location"`
+	// The encryption algorithm or mode.
+	Cipher string `json:"cipher"`
 }
 
 // ToEncryptionCreateMap assembles a request body based on the contents of a
@@ -355,7 +355,7 @@ func DeleteEncryption(client *gophercloud.ServiceClient, id, encryptionID string
 }
 
 // GetEncryption retrieves the encryption type for an existing VolumeType with the provided ID.
-func GetEncryption(client *gophercloud.ServiceClient, id string) (r GetEncryptionResult){
+func GetEncryption(client *gophercloud.ServiceClient, id string) (r GetEncryptionResult) {
 	resp, err := client.Get(getEncryptionURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -378,14 +378,14 @@ type UpdateEncryptionOptsBuilder interface {
 // the volumetypes.UpdateEncryption function. For more information about these parameters,
 // see the Update Encryption Type object.
 type UpdateEncryptionOpts struct {
-  // The size of the encryption key.
-  KeySize int `json:"key_size"`
-  // The class of that provides the encryption support.
-  Provider string `json:"provider"`
-  // Notional service where encryption is performed.
-  ControlLocation string `json:"control_location"`
-  // The encryption algorithm or mode.
-  Cipher string `json:"cipher"`
+	// The size of the encryption key.
+	KeySize int `json:"key_size"`
+	// The class of that provides the encryption support.
+	Provider string `json:"provider"`
+	// Notional service where encryption is performed.
+	ControlLocation string `json:"control_location"`
+	// The encryption algorithm or mode.
+	Cipher string `json:"cipher"`
 }
 
 // ToEncryptionCreateMap assembles a request body based on the contents of a
@@ -397,7 +397,7 @@ func (opts UpdateEncryptionOpts) ToUpdateEncryptionMap() (map[string]interface{}
 // Update will update an existing encryption for a Volume Type based on the values in UpdateEncryptionOpts.
 // To extract the UpdateEncryption Type object from the response, call the Extract method on the
 // UpdateEncryptionResult.
-func UpdateEncryption(client *gophercloud.ServiceClient, id,encryptionID string, opts UpdateEncryptionOptsBuilder) (r UpdateEncryptionResult) {
+func UpdateEncryption(client *gophercloud.ServiceClient, id, encryptionID string, opts UpdateEncryptionOptsBuilder) (r UpdateEncryptionResult) {
 	b, err := opts.ToUpdateEncryptionMap()
 	if err != nil {
 		r.Err = err
