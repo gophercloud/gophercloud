@@ -1,0 +1,46 @@
+package v2
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
+	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharetransfers"
+)
+
+func CreateTransferRequest(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, name string) (*sharetransfers.Transfer, error) {
+	opts := sharetransfers.CreateOpts{
+		ShareID: share.ID,
+		Name:    name,
+	}
+	transfer, err := sharetransfers.Create(client, opts).Extract()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a share transfer request: %s", err)
+	}
+
+	return transfer, nil
+}
+
+func AcceptTransfer(t *testing.T, client *gophercloud.ServiceClient, transferRequest *sharetransfers.Transfer) error {
+	opts := sharetransfers.AcceptOpts{
+		AuthKey:          transferRequest.AuthKey,
+		ClearAccessRules: true,
+	}
+	err := sharetransfers.Accept(client, transferRequest.ID, opts).ExtractErr()
+	if err != nil {
+		return fmt.Errorf("failed to accept a share transfer request: %s", err)
+	}
+
+	return nil
+}
+
+func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, transfer *sharetransfers.Transfer) {
+	err := sharetransfers.Delete(client, transfer.ID).ExtractErr()
+	if err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			return
+		}
+		t.Errorf("Unable to delete share transfer %s: %v", transfer.ID, err)
+	}
+}
