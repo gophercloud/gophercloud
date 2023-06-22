@@ -99,7 +99,7 @@ func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, optio
 
 	switch chosen.ID {
 	case v2:
-		return v2auth(ctx, client, endpoint, options, gophercloud.EndpointOpts{})
+		return v2auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
 	case v3:
 		return v3auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
 	default:
@@ -109,11 +109,17 @@ func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, optio
 }
 
 // AuthenticateV2 explicitly authenticates against the identity v2 endpoint.
-func AuthenticateV2(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
+func AuthenticateV2(ctx context.Context, client *gophercloud.ProviderClient, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
 	return v2auth(ctx, client, "", options, eo)
 }
 
-func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
+type v2TokenNoReauth struct {
+	tokens2.AuthOptionsBuilder
+}
+
+func (v2TokenNoReauth) CanReauth() bool { return false }
+
+func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
 	v2Client, err := NewIdentityV2(client, eo)
 	if err != nil {
 		return err
@@ -123,17 +129,7 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		v2Client.Endpoint = endpoint
 	}
 
-	v2Opts := tokens2.AuthOptions{
-		IdentityEndpoint: options.IdentityEndpoint,
-		Username:         options.Username,
-		Password:         options.Password,
-		TenantID:         options.TenantID,
-		TenantName:       options.TenantName,
-		AllowReauth:      options.AllowReauth,
-		TokenID:          options.TokenID,
-	}
-
-	result := tokens2.Create(ctx, v2Client, v2Opts)
+	result := tokens2.Create(ctx, v2Client, options)
 
 	err = client.SetTokenAndAuthResult(result)
 	if err != nil {
@@ -145,7 +141,7 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		return err
 	}
 
-	if options.AllowReauth {
+	if options.CanReauth() {
 		// here we're creating a throw-away client (tac). it's a copy of the user's provider client, but
 		// with the token and reauth func zeroed out. combined with setting `AllowReauth` to `false`,
 		// this should retry authentication only once
@@ -156,10 +152,8 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		if err != nil {
 			return err
 		}
-		tao := options
-		tao.AllowReauth = false
 		client.ReauthFunc = func(ctx context.Context) error {
-			err := v2auth(ctx, &tac, endpoint, tao, eo)
+			err := v2auth(ctx, &tac, endpoint, &v2TokenNoReauth{options}, eo)
 			if err != nil {
 				return err
 			}
