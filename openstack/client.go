@@ -116,7 +116,11 @@ func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.Auth
 	return v2auth(client, "", options, eo)
 }
 
-func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
+func AuthenticateV2Ext(client *gophercloud.ProviderClient, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
+	return v2auth(client, "", options, eo)
+}
+
+func v2auth(client *gophercloud.ProviderClient, endpoint string, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
 	v2Client, err := NewIdentityV2(client, eo)
 	if err != nil {
 		return err
@@ -126,17 +130,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v2Client.Endpoint = endpoint
 	}
 
-	v2Opts := tokens2.AuthOptions{
-		IdentityEndpoint: options.IdentityEndpoint,
-		Username:         options.Username,
-		Password:         options.Password,
-		TenantID:         options.TenantID,
-		TenantName:       options.TenantName,
-		AllowReauth:      options.AllowReauth,
-		TokenID:          options.TokenID,
-	}
-
-	result := tokens2.Create(v2Client, v2Opts)
+	result := tokens2.Create(v2Client, options)
 
 	err = client.SetTokenAndAuthResult(result)
 	if err != nil {
@@ -148,7 +142,10 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		return err
 	}
 
-	if options.AllowReauth {
+	// use if the client's ReauthFunc is set to avoid needing to copy the AuthOptions and mutating the AllowReauth value
+	// when creating the reauthentication function below. this allows breaking of the loop without v2auth having to have
+	// knowledge of the supplied struct, allowing for out of tree extensions
+	if client.ReauthFunc != nil {
 		// here we're creating a throw-away client (tac). it's a copy of the user's provider client, but
 		// with the token and reauth func zeroed out. combined with setting `AllowReauth` to `false`,
 		// this should retry authentication only once
@@ -156,8 +153,19 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		tac.SetThrowaway(true)
 		tac.ReauthFunc = nil
 		tac.SetTokenAndAuthResult(nil)
-		tao := options
-		tao.AllowReauth = false
+		var tao tokens2.AuthOptionsBuilder
+		switch ot := options.(type) {
+		case *gophercloud.AuthOptions:
+			o := *ot
+			o.AllowReauth = false
+			tao = &o
+		case *tokens2.AuthOptions:
+			o := *ot
+			o.AllowReauth = false
+			tao = &o
+		default:
+			tao = options
+		}
 		client.ReauthFunc = func() error {
 			err := v2auth(&tac, endpoint, tao, eo)
 			if err != nil {
