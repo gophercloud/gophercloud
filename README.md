@@ -1,13 +1,11 @@
 # Gophercloud: an OpenStack SDK for Go
-[![Build Status](https://travis-ci.org/gophercloud/gophercloud.svg?branch=master)](https://travis-ci.org/gophercloud/gophercloud)
 [![Coverage Status](https://coveralls.io/repos/github/gophercloud/gophercloud/badge.svg?branch=master)](https://coveralls.io/github/gophercloud/gophercloud?branch=master)
 
-Gophercloud is an OpenStack Go SDK.
+[Reference documentation](http://godoc.org/github.com/gophercloud/gophercloud)
 
-## Useful links
+Gophercloud is a Go SDK for OpenStack.
 
-* [Reference documentation](http://godoc.org/github.com/gophercloud/gophercloud)
-* [Effective Go](https://golang.org/doc/effective_go.html)
+This is the development branch of Gophercloud; stable releases are cut from the branch `v1`.
 
 ## How to install
 

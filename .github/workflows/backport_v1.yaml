@@ -1,0 +1,31 @@
+name: Pull Request backporting
+
+on:
+  pull_request_target:
+    types:
+      - closed
+      - labeled
+
+jobs:
+  backporting:
+    name: "Backporting"
+    # Only react to merged PRs for security reasons.
+    # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
+    if: >
+      github.event.pull_request.merged
+      && (
+        github.event.action == 'closed'
+          && contains(github.event.pull_request.labels.*.name, 'backport-v1')
+        || (
+          github.event.action == 'labeled'
+          && contains(github.event.label.name, 'backport-v1')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backporting
+        uses: pierreprinetti/backport@v1
+        with:
+          target-branch: v1
+          pull-request: ${{ github.event.pull_request.url }}
+          auth: ${{ secrets.GITHUB_TOKEN }}
