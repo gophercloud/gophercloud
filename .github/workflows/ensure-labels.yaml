@@ -2,7 +2,8 @@ name: Ensure labels
 on:
   push:
     paths:
-      - .github/semver-labels.yaml
+      - .github/ensure-labels.yaml
+      - .github/backport-labels.yaml
       - .github/workflows/semver-labels.yaml
 jobs:
   semver:
@@ -14,3 +15,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           manifest: .github/semver-labels.yaml
+  backport:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: micnncim/action-label-syncer@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          manifest: .github/backport-labels.yaml
