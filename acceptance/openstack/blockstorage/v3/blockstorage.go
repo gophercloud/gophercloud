@@ -177,6 +177,36 @@ func CreateVolumeTypeNoExtraSpecs(t *testing.T, client *gophercloud.ServiceClien
 	return vt, nil
 }
 
+// CreateVolumeTypeMultiAttach will create a volume type with a random name and
+// extra specs for multi-attach. An error will be returned if the volume type was
+// unable to be created.
+func CreateVolumeTypeMultiAttach(t *testing.T, client *gophercloud.ServiceClient) (*volumetypes.VolumeType, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	description := "create_from_gophercloud"
+	t.Logf("Attempting to create volume type: %s", name)
+
+	createOpts := volumetypes.CreateOpts{
+		Name:        name,
+		ExtraSpecs:  map[string]string{"multiattach": "<is> True"},
+		Description: description,
+	}
+
+	vt, err := volumetypes.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, vt)
+	th.AssertEquals(t, vt.IsPublic, true)
+	th.AssertEquals(t, vt.Name, name)
+	th.AssertEquals(t, vt.Description, description)
+	th.AssertEquals(t, vt.ExtraSpecs["multiattach"], "<is> True")
+
+	t.Logf("Successfully created volume type: %s", vt.ID)
+
+	return vt, nil
+}
+
 // CreatePrivateVolumeType will create a private volume type with a random
 // name and no extra specs. An error will be returned if the volume type was
 // unable to be created.
@@ -268,7 +298,7 @@ func DeleteVolumeType(t *testing.T, client *gophercloud.ServiceClient, vt *volum
 
 	err := volumetypes.Delete(client, vt.ID).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to delete volume %s: %v", vt.ID, err)
+		t.Fatalf("Unable to delete volume type %s: %v", vt.ID, err)
 	}
 
 	t.Logf("Successfully deleted volume type: %s", vt.ID)
