@@ -117,6 +117,7 @@ type CreateOpts struct {
 	Protocol             Protocol              `json:"protocol" required:"true"`
 	Action               Action                `json:"action" required:"true"`
 	TenantID             string                `json:"tenant_id,omitempty"`
+	ProjectID            string                `json:"project_id,omitempty"`
 	Name                 string                `json:"name,omitempty"`
 	Description          string                `json:"description,omitempty"`
 	IPVersion            gophercloud.IPVersion `json:"ip_version,omitempty"`
