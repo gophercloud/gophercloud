@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
@@ -395,7 +396,9 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		return nil, err
 	}
 	if client.Context != nil {
-		req = req.WithContext(client.Context)
+		ctx, cancel := context.WithTimeout(client.Context, 10*time.Second)
+		defer cancel()
+		req = req.WithContext(ctx)
 	}
 
 	// Populate the request headers.
