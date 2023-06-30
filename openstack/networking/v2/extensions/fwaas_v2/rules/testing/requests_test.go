@@ -37,6 +37,7 @@ func TestList(t *testing.T) {
             "id": "f03bd950-6c56-4f5e-a307-45967078f507",
             "name": "ssh_form_any",
             "tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+			"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
             "enabled": true,
             "action": "allow",
             "ip_version": 4,
@@ -53,6 +54,7 @@ func TestList(t *testing.T) {
             "id": "ab7bd950-6c56-4f5e-a307-45967078f890",
             "name": "deny_all_udp",
             "tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+			"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
             "enabled": true,
             "action": "deny",
             "ip_version": 4,
@@ -85,6 +87,7 @@ func TestList(t *testing.T) {
 				ID:                   "f03bd950-6c56-4f5e-a307-45967078f507",
 				Name:                 "ssh_form_any",
 				TenantID:             "80cf934d6ffb4ef5b244f1c512ad1e61",
+				ProjectID:            "80cf934d6ffb4ef5b244f1c512ad1e61",
 				Enabled:              true,
 				Action:               string(rules.ActionAllow),
 				IPVersion:            4,
@@ -101,6 +104,7 @@ func TestList(t *testing.T) {
 				ID:                   "ab7bd950-6c56-4f5e-a307-45967078f890",
 				Name:                 "deny_all_udp",
 				TenantID:             "80cf934d6ffb4ef5b244f1c512ad1e61",
+				ProjectID:            "80cf934d6ffb4ef5b244f1c512ad1e61",
 				Enabled:              true,
 				Action:               "deny",
 				IPVersion:            4,
@@ -135,7 +139,8 @@ func TestCreate(t *testing.T) {
 		"destination_port": "22",
 		"name": "ssh_form_any",
 		"action": "allow",
-		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61"
+		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61"
 	}
 }
       `)
@@ -157,6 +162,7 @@ func TestCreate(t *testing.T) {
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
 		"name": "ssh_form_any",
 		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
 		"enabled": true,
 		"action": "allow",
 		"ip_version": 4,
@@ -168,6 +174,7 @@ func TestCreate(t *testing.T) {
 
 	options := rules.CreateOpts{
 		TenantID:             "80cf934d6ffb4ef5b244f1c512ad1e61",
+		ProjectID:            "80cf934d6ffb4ef5b244f1c512ad1e61",
 		Protocol:             rules.ProtocolTCP,
 		Description:          "ssh rule",
 		DestinationIPAddress: "192.168.1.0/24",
@@ -197,7 +204,8 @@ func TestCreateAnyProtocol(t *testing.T) {
 		"destination_ip_address": "192.168.1.0/24",
 		"name": "any_to_192.168.1.0/24",
 		"action": "allow",
-		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61"
+		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61"
 	}
 }
       `)
@@ -219,6 +227,7 @@ func TestCreateAnyProtocol(t *testing.T) {
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
 		"name": "any_to_192.168.1.0/24",
 		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
 		"enabled": true,
 		"action": "allow",
 		"ip_version": 4,
@@ -230,6 +239,7 @@ func TestCreateAnyProtocol(t *testing.T) {
 
 	options := rules.CreateOpts{
 		TenantID:             "80cf934d6ffb4ef5b244f1c512ad1e61",
+		ProjectID:            "80cf934d6ffb4ef5b244f1c512ad1e61",
 		Protocol:             rules.ProtocolAny,
 		Description:          "any to 192.168.1.0/24",
 		DestinationIPAddress: "192.168.1.0/24",
@@ -266,6 +276,7 @@ func TestGet(t *testing.T) {
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
 		"name": "ssh_form_any",
 		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
 		"enabled": true,
 		"action": "allow",
 		"ip_version": 4,
@@ -287,6 +298,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "f03bd950-6c56-4f5e-a307-45967078f507", rule.ID)
 	th.AssertEquals(t, "ssh_form_any", rule.Name)
 	th.AssertEquals(t, "80cf934d6ffb4ef5b244f1c512ad1e61", rule.TenantID)
+	th.AssertEquals(t, "80cf934d6ffb4ef5b244f1c512ad1e61", rule.ProjectID)
 	th.AssertEquals(t, true, rule.Enabled)
 	th.AssertEquals(t, "allow", rule.Action)
 	th.AssertEquals(t, 4, rule.IPVersion)
@@ -331,6 +343,7 @@ func TestUpdate(t *testing.T) {
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
 		"name": "ssh_form_any",
 		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"project_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
 		"enabled": false,
 		"action": "allow",
 		"ip_version": 4,
