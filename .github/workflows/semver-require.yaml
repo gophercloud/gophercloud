@@ -1,6 +1,8 @@
 name: Verify PR Labels
 on:
   pull_request:
+    branches:
+      - master
     types:
       - opened
       - labeled
