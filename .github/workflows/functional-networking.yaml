@@ -3,8 +3,6 @@ on:
   pull_request:
     paths:
       - '**networking**'
-  schedule:
-    - cron: '0 0 */3 * *'
 jobs:
   functional-networking:
     strategy:

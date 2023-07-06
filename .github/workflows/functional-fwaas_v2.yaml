@@ -3,8 +3,6 @@ on:
   pull_request:
     paths:
       - '**networking/extensions/fwaas_v2**'
-  schedule:
-    - cron: '0 0 */3 * *'
 jobs:
   functional-fwaas_v2:
     strategy:
