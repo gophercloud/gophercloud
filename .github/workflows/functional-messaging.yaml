@@ -3,8 +3,6 @@ on:
   pull_request:
     paths:
       - '**messaging**'
-  schedule:
-    - cron: '0 0 */3 * *'
 jobs:
   functional-messaging:
     strategy:

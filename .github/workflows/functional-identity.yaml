@@ -3,8 +3,6 @@ on:
   pull_request:
     paths:
       - '**identity**'
-  schedule:
-    - cron: '0 0 */3 * *'
 jobs:
   functional-identity:
     strategy:

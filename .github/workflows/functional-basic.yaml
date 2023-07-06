@@ -6,8 +6,6 @@ on:
       - '**.md'
       - '**.gitignore'
       - '**LICENSE'
-  schedule:
-    - cron: '0 0 */3 * *'
 jobs:
   functional-basic:
     strategy:
