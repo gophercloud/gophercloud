@@ -1,8 +1,6 @@
 name: Ensure labels
 on:
   push:
-    branches:
-      - master
     paths:
       - .github/semver-labels.yaml
       - .github/workflows/semver-labels.yaml
