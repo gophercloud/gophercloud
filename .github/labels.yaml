@@ -7,9 +7,6 @@
 - color: '6E7624'
   description: No API change
   name: semver:patch
-- color: '30ABB9'
-  description: This PR will be backported to v1
-  name: backport-v1
 - color: 'BCF611'
   description: A good issue for first-time contributors
   name: good first issue
