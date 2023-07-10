@@ -5,6 +5,8 @@
 
 Gophercloud is a Go SDK for OpenStack.
 
+Join us on kubernetes slack, on [#gophercloud](https://kubernetes.slack.com/archives/C05G4NJ6P6X). Visit [slack.k8s.io](https://slack.k8s.io) for an invitation.
+
 This is the development branch of Gophercloud; stable releases are cut from the branch `v1`.
 
 ## How to install
