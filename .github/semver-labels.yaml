@@ -1,9 +1,0 @@
-- name: semver:major
-  description: Breaking change
-  color: '9E1957'
-- name: semver:minor
-  description: Backwards-compatible change
-  color: 'FBCA04'
-- name: semver:patch
-  description: No API change
-  color: '6E7624'
