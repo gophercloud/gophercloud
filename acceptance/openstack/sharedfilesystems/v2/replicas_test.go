@@ -13,8 +13,9 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+// 2.56 is required for a /v2/replicas/XXX URL support
 // otherwise we need to set "X-OpenStack-Manila-API-Experimental: true"
-const replicasMicroversion = "2.60"
+const replicasPathMicroversion = "2.56"
 
 func TestReplicaCreate(t *testing.T) {
 	clients.RequireManilaReplicas(t)
@@ -23,7 +24,7 @@ func TestReplicaCreate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = replicasMicroversion
+	client.Microversion = replicasPathMicroversion
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -60,7 +61,7 @@ func TestReplicaPromote(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = replicasMicroversion
+	client.Microversion = replicasPathMicroversion
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -136,7 +137,7 @@ func TestReplicaExportLocations(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = replicasMicroversion
+	client.Microversion = replicasPathMicroversion
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -203,7 +204,7 @@ func TestReplicaListDetail(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = replicasMicroversion
+	client.Microversion = replicasPathMicroversion
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -236,7 +237,7 @@ func TestReplicaResetStatus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = replicasMicroversion
+	client.Microversion = replicasPathMicroversion
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -278,7 +279,7 @@ func TestReplicaForceDelete(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = replicasMicroversion
+	client.Microversion = replicasPathMicroversion
 
 	share, err := CreateShare(t, client)
 	if err != nil {
