@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Backporting
-        uses: kiegroup/git-backporting@265955dda77a8191fd1f64517fec20e8d5f8c5b4
+        uses: kiegroup/git-backporting@e29dae5073d5b026781931f9be00fc19d0453acb
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
