@@ -39,7 +39,10 @@ func TestListFlavors(t *testing.T) {
 								"swap":"",
 								"os-flavor-access:is_public": true,
 								"OS-FLV-EXT-DATA:ephemeral": 10,
-								"description": "foo"
+								"description": "foo",
+								"extra_specs": {
+									"hw:cpu_policy": "CPU-POLICY"
+								}
 							},
 							{
 								"id": "2",
@@ -88,7 +91,7 @@ func TestListFlavors(t *testing.T) {
 		}
 
 		expected := []flavors.Flavor{
-			{ID: "1", Name: "m1.tiny", VCPUs: 1, Disk: 1, RAM: 9216000, Swap: 0, IsPublic: true, Ephemeral: 10, Description: "foo"},
+			{ID: "1", Name: "m1.tiny", VCPUs: 1, Disk: 1, RAM: 9216000, Swap: 0, IsPublic: true, Ephemeral: 10, Description: "foo", ExtraSpecs: map[string]string{"hw:cpu_policy": "CPU-POLICY"}},
 			{ID: "2", Name: "m1.small", VCPUs: 1, Disk: 20, RAM: 2048, Swap: 1000, IsPublic: true, Ephemeral: 0},
 			{ID: "3", Name: "m1.medium", VCPUs: 2, Disk: 40, RAM: 4096, Swap: 1000, IsPublic: false, Ephemeral: 0},
 		}
@@ -126,7 +129,10 @@ func TestGetFlavor(t *testing.T) {
 					"vcpus": 1,
 					"rxtx_factor": 1,
 					"swap": "",
-					"description": "foo"
+					"description": "foo",
+					"extra_specs": {
+						"hw:cpu_policy": "CPU-POLICY"
+					}
 				}
 			}
 		`)
@@ -146,6 +152,9 @@ func TestGetFlavor(t *testing.T) {
 		RxTxFactor:  1,
 		Swap:        0,
 		Description: "foo",
+		ExtraSpecs: map[string]string{
+			"hw:cpu_policy": "CPU-POLICY",
+		},
 	}
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)

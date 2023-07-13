@@ -80,6 +80,12 @@ type Flavor struct {
 	// 65535 characters in length. Only printable characters are allowed.
 	// New in version 2.55
 	Description string `json:"description"`
+
+	// ExtraSpecs is a dictionary of the flavor's extra_specs, and may be
+	// used to avoid extra calls to Get/ListExtraSpecs.  This is only available
+	// in microversion 2.61 and greater, and only if allowed by the compute
+	// service's policy.
+	ExtraSpecs map[string]string `json:"extra_specs"`
 }
 
 func (r *Flavor) UnmarshalJSON(b []byte) error {
