@@ -1,3 +1,15 @@
+- color: '30ABB9'
+  description: This PR will be backported to v1
+  name: backport-v1
+- color: '0366d6'
+  description: Pull requests that update a dependency file
+  name: dependencies
+- color: '000000'
+  description: Pull requests that update GitHub Actions code
+  name: github_actions
+- color: 'BCF611'
+  description: A good issue for first-time contributors
+  name: good first issue
 - color: '9E1957'
   description: Breaking change
   name: semver:major
@@ -7,9 +19,3 @@
 - color: '6E7624'
   description: No API change
   name: semver:patch
-- color: '30ABB9'
-  description: This PR will be backported to v1
-  name: backport-v1
-- color: 'BCF611'
-  description: A good issue for first-time contributors
-  name: good first issue
