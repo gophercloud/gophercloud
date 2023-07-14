@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -260,7 +261,7 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) (r Up
 		b[i] = patch.ToCDNServiceUpdateMap()
 	}
 
-	resp, err := c.Request("PATCH", url, &gophercloud.RequestOpts{
+	resp, err := c.Request(context.Background(), "PATCH", url, &gophercloud.RequestOpts{
 		JSONBody: &b,
 		OkCodes:  []int{202},
 	})

@@ -1,6 +1,10 @@
 package swauth
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 // AuthOptsBuilder describes struct types that can be accepted by the Auth call.
 type AuthOptsBuilder interface {
@@ -37,7 +41,7 @@ func Auth(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult)
 		}
 	}
 
-	resp, err := c.Request("GET", getURL(c), &gophercloud.RequestOpts{
+	resp, err := c.Request(context.Background(), "GET", getURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})

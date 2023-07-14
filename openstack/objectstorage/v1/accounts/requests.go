@@ -1,6 +1,10 @@
 package accounts
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 // GetOptsBuilder allows extensions to add additional headers to the Get
 // request.
@@ -92,7 +96,7 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResul
 			h[k] = v
 		}
 	}
-	resp, err := c.Request("POST", updateURL(c), &gophercloud.RequestOpts{
+	resp, err := c.Request(context.Background(), "POST", updateURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})

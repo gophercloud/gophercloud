@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -59,7 +60,7 @@ func ChooseVersion(client *gophercloud.ProviderClient, recognized []*Version) (*
 	}
 
 	var resp response
-	_, err := client.Request("GET", client.IdentityBase, &gophercloud.RequestOpts{
+	_, err := client.Request(context.Background(), "GET", client.IdentityBase, &gophercloud.RequestOpts{
 		JSONResponse: &resp,
 		OkCodes:      []int{200, 300},
 	})
