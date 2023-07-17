@@ -18,6 +18,7 @@ func TestCreate(t *testing.T) {
 
 	opts := instances.CreateOpts{
 		Name:      "json_rack_instance",
+		ReplicaOf: "1234-sample-source-database-id-1234",
 		FlavorRef: "1",
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
@@ -49,6 +50,7 @@ func TestCreateWithFault(t *testing.T) {
 
 	opts := instances.CreateOpts{
 		Name:      "json_rack_instance",
+		ReplicaOf: "1234-sample-source-database-id-1234",
 		FlavorRef: "1",
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},

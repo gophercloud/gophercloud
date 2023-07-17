@@ -116,6 +116,7 @@ var createReq = `
 		],
 		"flavorRef": "1",
 		"name": "json_rack_instance",
+		"replica_of": "1234-sample-source-database-id-1234",
 		"users": [
 			{
 				"databases": [

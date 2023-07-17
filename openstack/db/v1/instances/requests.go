@@ -55,8 +55,8 @@ type CreateOpts struct {
 	Size int
 	// Specifies the volume type.
 	VolumeType string
-  // ID or name of an existing instance to replicate from. Optional.
-  ReplicaOf string
+	// ID or name of an existing instance to replicate from. Optional.
+	ReplicaOf string
 	// Name of the instance to create. The length of the name is limited to
 	// 255 characters and any characters are permitted. Optional.
 	Name string
