@@ -129,3 +129,40 @@ func TestUpdate(t *testing.T) {
 	th.CheckEquals(t, "snapshot-002", v.Name)
 	th.CheckEquals(t, "Daily backup 002", v.Description)
 }
+
+func TestResetStatus(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockResetStatusResponse(t)
+
+	opts := &snapshots.ResetStatusOpts{
+		Status: "error",
+	}
+	res := snapshots.ResetStatus(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdateStatus(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateStatusResponse(t)
+
+	opts := &snapshots.UpdateStatusOpts{
+		Status:   "error",
+		Progress: "80%",
+	}
+	res := snapshots.UpdateStatus(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestForceDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockForceDeleteResponse(t)
+
+	res := snapshots.ForceDelete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(t, res.Err)
+}
