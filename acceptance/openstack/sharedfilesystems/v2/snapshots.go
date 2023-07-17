@@ -54,6 +54,9 @@ func ListSnapshots(t *testing.T, client *gophercloud.ServiceClient) ([]snapshots
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {
 	err := snapshots.Delete(client, snapshot.ID).ExtractErr()
 	if err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			return
+		}
 		t.Errorf("Unable to delete snapshot %s: %v", snapshot.ID, err)
 	}
 
