@@ -4,8 +4,10 @@
 package v3
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
@@ -71,5 +73,127 @@ func TestSnapshots(t *testing.T) {
 		return true, nil
 	})
 
+	th.AssertNoErr(t, err)
+}
+
+func TestSnapshotsResetStatus(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volume1, err := CreateVolume(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolume(t, client, volume1)
+
+	snapshot1, err := CreateSnapshot(t, client, volume1)
+	th.AssertNoErr(t, err)
+	defer DeleteSnapshot(t, client, snapshot1)
+
+	// Reset snapshot status to error
+	resetOpts := snapshots.ResetStatusOpts{
+		Status: "error",
+	}
+	t.Logf("Attempting to reset snapshot status to %s", resetOpts.Status)
+	err = snapshots.ResetStatus(client, snapshot1.ID, resetOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	snapshot, err := snapshots.Get(client, snapshot1.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	if snapshot.Status != resetOpts.Status {
+		th.AssertNoErr(t, fmt.Errorf("unexpected %q snapshot status", snapshot.Status))
+	}
+
+	// Reset snapshot status to available
+	resetOpts = snapshots.ResetStatusOpts{
+		Status: "available",
+	}
+	t.Logf("Attempting to reset snapshot status to %s", resetOpts.Status)
+	err = snapshots.ResetStatus(client, snapshot1.ID, resetOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	snapshot, err = snapshots.Get(client, snapshot1.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	if snapshot.Status != resetOpts.Status {
+		th.AssertNoErr(t, fmt.Errorf("unexpected %q snapshot status", snapshot.Status))
+	}
+}
+
+func TestSnapshotsUpdateStatus(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volume1, err := CreateVolume(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolume(t, client, volume1)
+
+	snapshot1, err := CreateSnapshot(t, client, volume1)
+	th.AssertNoErr(t, err)
+	defer DeleteSnapshot(t, client, snapshot1)
+
+	// Update snapshot status to error
+	resetOpts := snapshots.ResetStatusOpts{
+		Status: "creating",
+	}
+	t.Logf("Attempting to update snapshot status to %s", resetOpts.Status)
+	err = snapshots.ResetStatus(client, snapshot1.ID, resetOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	snapshot, err := snapshots.Get(client, snapshot1.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	if snapshot.Status != resetOpts.Status {
+		th.AssertNoErr(t, fmt.Errorf("unexpected %q snapshot status", snapshot.Status))
+	}
+
+	// Update snapshot status to available
+	updateOpts := snapshots.UpdateStatusOpts{
+		Status: "available",
+	}
+	t.Logf("Attempting to update snapshot status to %s", updateOpts.Status)
+	err = snapshots.UpdateStatus(client, snapshot1.ID, updateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	snapshot, err = snapshots.Get(client, snapshot1.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	if snapshot.Status != updateOpts.Status {
+		th.AssertNoErr(t, fmt.Errorf("unexpected %q snapshot status", snapshot.Status))
+	}
+}
+
+func TestSnapshotsForceDelete(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volume, err := CreateVolume(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolume(t, client, volume)
+
+	snapshot, err := CreateSnapshot(t, client, volume)
+	th.AssertNoErr(t, err)
+	defer DeleteSnapshot(t, client, snapshot)
+
+	// Force delete snapshot
+	t.Logf("Attempting to force delete %s snapshot", snapshot.ID)
+	err = snapshots.ForceDelete(client, snapshot.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = tools.WaitFor(func() (bool, error) {
+		_, err := snapshots.Get(client, snapshot.ID).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok {
+				return true, nil
+			}
+		}
+
+		return false, nil
+	})
 	th.AssertNoErr(t, err)
 }

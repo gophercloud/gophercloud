@@ -118,7 +118,7 @@ func TestQuotasetUpdate(t *testing.T) {
 	// test that resultQuotas.Extra is populated with the 3 new quota types
 	// for the new volumeType foo, don't take into account other volume types
 	count := 0
-	for k, _ := range resultQuotas.Extra {
+	for k := range resultQuotas.Extra {
 		tools.PrintResource(t, k)
 		switch k {
 		case
