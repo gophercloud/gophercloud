@@ -110,17 +110,18 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 
 // CreateLoadBalancer will create a load balancer with a random name on a given
 // subnet. An error will be returned if the loadbalancer could not be created.
-func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string, policyID string) (*loadbalancers.LoadBalancer, error) {
+func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string, policyID string, additionalVips []loadbalancers.AdditionalVip) (*loadbalancers.LoadBalancer, error) {
 	lbName := tools.RandomString("TESTACCT-", 8)
 	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
 	t.Logf("Attempting to create loadbalancer %s on subnet %s", lbName, subnetID)
 
 	createOpts := loadbalancers.CreateOpts{
-		Name:         lbName,
-		Description:  lbDescription,
-		VipSubnetID:  subnetID,
-		AdminStateUp: gophercloud.Enabled,
+		Name:           lbName,
+		Description:    lbDescription,
+		VipSubnetID:    subnetID,
+		AdminStateUp:   gophercloud.Enabled,
+		AdditionalVips: additionalVips,
 	}
 	if len(tags) > 0 {
 		createOpts.Tags = tags
