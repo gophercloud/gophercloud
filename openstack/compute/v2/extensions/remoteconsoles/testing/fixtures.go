@@ -10,7 +10,7 @@ const RemoteConsoleCreateRequest = `
 }
 `
 
-// RemoteConsoleCreateResult represents a raw server responce to the RemoteConsoleCreateRequest.
+// RemoteConsoleCreateResult represents a raw server response to the RemoteConsoleCreateRequest.
 const RemoteConsoleCreateResult = `
 {
     "remote_console": {

@@ -224,3 +224,19 @@ func TestChangeType(t *testing.T) {
 	err := volumeactions.ChangeType(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestResetStatus(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockResetStatusResponse(t)
+
+	options := &volumeactions.ResetStatusOpts{
+		Status:          "error",
+		AttachStatus:    "detached",
+		MigrationStatus: "migrating",
+	}
+
+	err := volumeactions.ResetStatus(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}

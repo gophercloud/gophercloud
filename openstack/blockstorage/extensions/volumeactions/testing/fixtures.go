@@ -370,3 +370,24 @@ func MockChangeTypeResponse(t *testing.T) {
 			fmt.Fprintf(w, `{}`)
 		})
 }
+
+func MockResetStatusResponse(t *testing.T) {
+	th.Mux.HandleFunc("/volumes/cd281d77-8217-4830-be95-9528227c105c/action",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestJSONRequest(t, r, `
+{
+    "os-reset_status":
+    {
+		"status": "error",
+		"attach_status": "detached",
+		"migration_status": "migrating"
+    }
+}
+          `)
+
+			w.WriteHeader(http.StatusAccepted)
+		})
+}
