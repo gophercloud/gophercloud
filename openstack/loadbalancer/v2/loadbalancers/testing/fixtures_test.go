@@ -19,7 +19,7 @@ import (
 const LoadbalancersListBody = `
 {
 	"loadbalancers":[
-	         {
+		{
 			"id": "c331058c-6a40-4144-948e-b9fb1df9db4b",
 			"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
 			"created_at": "2019-06-30T04:15:37",
@@ -52,7 +52,8 @@ const LoadbalancersListBody = `
 			"admin_state_up": true,
 			"provisioning_status": "PENDING_CREATE",
 			"operating_status": "OFFLINE",
-			"tags": ["test", "stage"]
+			"tags": ["test", "stage"],
+			"additional_vips": [{"subnet_id": "0d4f6a08-60b7-44ab-8903-f7d76ec54095", "ip_address" : "192.168.10.10"}]
 		}
 	]
 }
@@ -77,7 +78,8 @@ const SingleLoadbalancerBody = `
 		"admin_state_up": true,
 		"provisioning_status": "PENDING_CREATE",
 		"operating_status": "OFFLINE",
-		"tags": ["test", "stage"]
+		"tags": ["test", "stage"],
+		"additional_vips": [{"subnet_id": "0d4f6a08-60b7-44ab-8903-f7d76ec54095", "ip_address" : "192.168.10.10"}]
 	}
 }
 `
@@ -287,7 +289,12 @@ var (
 		ProvisioningStatus: "PENDING_CREATE",
 		OperatingStatus:    "OFFLINE",
 		Tags:               []string{"test", "stage"},
-	}
+		AdditionalVips: []loadbalancers.AdditionalVip{
+			{
+				SubnetID:  "0d4f6a08-60b7-44ab-8903-f7d76ec54095",
+				IPAddress: "192.168.10.10",
+			},
+		}}
 	LoadbalancerUpdated = loadbalancers.LoadBalancer{
 		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
 		ProjectID:          "54030507-44f7-473c-9342-b4d14a95f692",
@@ -540,7 +547,8 @@ func HandleLoadbalancerCreationSuccessfully(t *testing.T, response string) {
 				"flavor_id": "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
 				"provider": "haproxy",
 				"admin_state_up": true,
-				"tags": ["test", "stage"]
+				"tags": ["test", "stage"],
+				"additional_vips": [{"subnet_id": "0d4f6a08-60b7-44ab-8903-f7d76ec54095", "ip_address" : "192.168.10.10"}]
 			}
 		}`)
 

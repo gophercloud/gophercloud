@@ -77,6 +77,16 @@ type LoadBalancer struct {
 	// Tags is a list of resource tags. Tags are arbitrarily defined strings
 	// attached to the resource.
 	Tags []string `json:"tags"`
+
+	// The additional ips of the loadbalancer. Subnets must all belong to the same network as the primary VIP.
+	// New in version 2.26
+	AdditionalVips []AdditionalVip `json:"additional_vips"`
+}
+
+// AdditionalVip represent additional ip of a loadbalancer. IpAddress field is optional.
+type AdditionalVip struct {
+	SubnetID  string `json:"subnet_id"`
+	IPAddress string `json:"ip_address,omitempty"`
 }
 
 func (r *LoadBalancer) UnmarshalJSON(b []byte) error {
