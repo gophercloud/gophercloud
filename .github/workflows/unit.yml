@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-          - "1.14"
+          - "1.20"
           - "1"
 
     env:
@@ -33,9 +33,8 @@ jobs:
           cd "$(mktemp -d)"
           go mod init unit_tests
 
-          # we use "go get" for Go v1.14
-          go install github.com/wadey/gocovmerge@master || go get github.com/wadey/gocovmerge
-          go install golang.org/x/tools/cmd/goimports@latest || go get golang.org/x/tools/cmd/goimports@v0.8.0
+          go install github.com/wadey/gocovmerge@master
+          go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Run go vet
         run: |
