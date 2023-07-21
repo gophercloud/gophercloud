@@ -339,3 +339,13 @@ func (r ImportBackup) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(s)
 }
+
+// ResetStatusResult contains the response error from a ResetStatus request.
+type ResetStatusResult struct {
+	gophercloud.ErrResult
+}
+
+// ForceDeleteResult contains the response error from a ForceDelete request.
+type ForceDeleteResult struct {
+	gophercloud.ErrResult
+}

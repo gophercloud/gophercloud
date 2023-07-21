@@ -150,6 +150,20 @@ const ImportResponse = `
 }
 `
 
+const ResetRequest = `
+{
+  "os-reset_status": {
+    "status": "error"
+  }
+}
+`
+
+const ForceDeleteRequest = `
+{
+  "os-force_delete": {}
+}
+`
+
 var (
 	status           = "available"
 	availabilityZone = "region1b"
@@ -296,5 +310,29 @@ func MockImportResponse(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		fmt.Fprintf(w, ImportResponse)
+	})
+}
+
+// MockResetStatusResponse provides mock response for reset backup status API call
+func MockResetStatusResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, ResetRequest)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+// MockForceDeleteResponse provides mock response for force delete backup API call
+func MockForceDeleteResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, ForceDeleteRequest)
+
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

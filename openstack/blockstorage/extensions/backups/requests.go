@@ -301,3 +301,52 @@ func Import(client *gophercloud.ServiceClient, opts ImportOpts) (r ImportResult)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ResetStatusOptsBuilder allows extensions to add additional parameters to the
+// ResetStatus request.
+type ResetStatusOptsBuilder interface {
+	ToBackupResetStatusMap() (map[string]interface{}, error)
+}
+
+// ResetStatusOpts contains options for resetting a Backup status.
+// For more information about these parameters, please, refer to the Block Storage API V3,
+// Backup Actions, ResetStatus backup documentation.
+type ResetStatusOpts struct {
+	// Status is a backup status to reset to.
+	Status string `json:"status"`
+}
+
+// ToBackupResetStatusMap assembles a request body based on the contents of a
+// ResetStatusOpts.
+func (opts ResetStatusOpts) ToBackupResetStatusMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "os-reset_status")
+}
+
+// ResetStatus will reset the existing backup status. ResetStatusResult contains only the error.
+// To extract it, call the ExtractErr method on the ResetStatusResult.
+func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+	b, err := opts.ToBackupResetStatusMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Post(resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ForceDelete will delete the existing backup in any state. ForceDeleteResult contains only the error.
+// To extract it, call the ExtractErr method on the ForceDeleteResult.
+func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+	b := map[string]interface{}{
+		"os-force_delete": struct{}{},
+	}
+	resp, err := client.Post(forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

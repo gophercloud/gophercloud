@@ -248,7 +248,7 @@ func (opts UpdateStatusOpts) ToSnapshotUpdateStatusMap() (map[string]interface{}
 	return gophercloud.BuildRequestBody(opts, "os-update_snapshot_status")
 }
 
-// UpdateStatus will reset the existing snapshot status. UpdateStatusResult contains only the error.
+// UpdateStatus will update the existing snapshot status. UpdateStatusResult contains only the error.
 // To extract it, call the ExtractErr method on the UpdateStatusResult.
 func UpdateStatus(client *gophercloud.ServiceClient, id string, opts UpdateStatusOptsBuilder) (r UpdateStatusResult) {
 	b, err := opts.ToSnapshotUpdateStatusMap()
