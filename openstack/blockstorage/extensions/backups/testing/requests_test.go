@@ -187,3 +187,26 @@ func TestImport(t *testing.T) {
 
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
+
+func TestResetStatus(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockResetStatusResponse(t)
+
+	opts := &backups.ResetStatusOpts{
+		Status: "error",
+	}
+	res := backups.ResetStatus(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestForceDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockForceDeleteResponse(t)
+
+	res := backups.ForceDelete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(t, res.Err)
+}

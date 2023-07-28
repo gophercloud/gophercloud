@@ -37,3 +37,11 @@ func exportURL(c *gophercloud.ServiceClient, id string) string {
 func importURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("backups", "import_record")
 }
+
+func resetStatusURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("backups", id, "action")
+}
+
+func forceDeleteURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("backups", id, "action")
+}

@@ -40,3 +40,44 @@ func TestBackupsCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 }
+
+func TestBackupsResetStatus(t *testing.T) {
+	blockClient, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volume, err := blockstorage.CreateVolume(t, blockClient)
+	th.AssertNoErr(t, err)
+	defer blockstorage.DeleteVolume(t, blockClient, volume)
+
+	backup, err := CreateBackup(t, blockClient, volume.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteBackup(t, blockClient, backup.ID)
+
+	err = ResetBackupStatus(t, blockClient, backup, "error")
+	th.AssertNoErr(t, err)
+
+	err = ResetBackupStatus(t, blockClient, backup, "available")
+	th.AssertNoErr(t, err)
+}
+
+func TestBackupsForceDelete(t *testing.T) {
+	blockClient, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volume, err := blockstorage.CreateVolume(t, blockClient)
+	th.AssertNoErr(t, err)
+	defer blockstorage.DeleteVolume(t, blockClient, volume)
+
+	backup, err := CreateBackup(t, blockClient, volume.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteBackup(t, blockClient, backup.ID)
+
+	err = WaitForBackupStatus(blockClient, backup.ID, "available")
+	th.AssertNoErr(t, err)
+
+	err = backups.ForceDelete(blockClient, backup.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = WaitForBackupStatus(blockClient, backup.ID, "deleted")
+	th.AssertNoErr(t, err)
+}

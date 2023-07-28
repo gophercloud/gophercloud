@@ -227,6 +227,10 @@ func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID stri
 // could not be deleted. This works best when used as a deferred function.
 func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID string) {
 	if err := backups.Delete(client, backupID).ExtractErr(); err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			t.Logf("Backup %s is already deleted", backupID)
+			return
+		}
 		t.Fatalf("Unable to delete backup %s: %s", backupID, err)
 	}
 
@@ -239,6 +243,9 @@ func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) e
 	return tools.WaitFor(func() (bool, error) {
 		current, err := backups.Get(client, id).Extract()
 		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "deleted" {
+				return true, nil
+			}
 			return false, err
 		}
 
@@ -331,6 +338,21 @@ func ResetVolumeStatus(t *testing.T, client *gophercloud.ServiceClient, volume *
 	}
 
 	return nil
+}
+
+// ResetBackupStatus will reset the status of a backup.
+func ResetBackupStatus(t *testing.T, client *gophercloud.ServiceClient, backup *backups.Backup, status string) error {
+	t.Logf("Attempting to reset the status of backup %s from %s to %s", backup.ID, backup.Status, status)
+
+	resetOpts := backups.ResetStatusOpts{
+		Status: status,
+	}
+	err := backups.ResetStatus(client, backup.ID, resetOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	return WaitForBackupStatus(client, backup.ID, status)
 }
 
 // ReImage will re-image a volume

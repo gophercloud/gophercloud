@@ -259,6 +259,7 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 	err := snapshots.Delete(client, snapshot.ID).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			t.Logf("Snapshot %s is already deleted", snapshot.ID)
 			return
 		}
 		t.Fatalf("Unable to delete snapshot %s: %+v", snapshot.ID, err)
@@ -289,6 +290,7 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 	err := volumes.Delete(client, volume.ID, volumes.DeleteOpts{}).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			t.Logf("Volume %s is already deleted", volume.ID)
 			return
 		}
 		t.Fatalf("Unable to delete volume %s: %v", volume.ID, err)
