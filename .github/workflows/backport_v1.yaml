@@ -23,14 +23,18 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
+      - name: Generate a token from the gophercloud-backport-bot github-app
+        id: generate_token
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: ${{ secrets.BACKPORT_APP_ID }}
+          private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
+
       - name: Backporting
         uses: kiegroup/git-backporting@c19a56a9ad85adf9c74df7b416ec47257f1f8e91
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
-          # We need to use a Personal Access Token (PAT) when creating the pull request because we
-          # expect GitHub Actions workflows to be triggered when the pull request is opened.
-          # BACKPORT_PR_PAT is a secret that contains that token which will expire on August 1st 2024.
-          auth: ${{ secrets.BACKPORT_PR_PAT }}
+          auth: ${{ steps.generate_token.outputs.token }}
           no-squash: true
           strategy-option: find-renames
