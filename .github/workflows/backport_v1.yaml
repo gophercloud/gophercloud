@@ -28,6 +28,9 @@ jobs:
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
-          auth: ${{ secrets.GITHUB_TOKEN }}
+          # We need to use a Personal Access Token (PAT) when creating the pull request because we
+          # expect GitHub Actions workflows to be triggered when the pull request is opened.
+          # BACKPORT_PR_PAT is a secret that contains that token which will expire on August 1st 2024.
+          auth: ${{ secrets.BACKPORT_PR_PAT }}
           no-squash: true
           strategy-option: find-renames
