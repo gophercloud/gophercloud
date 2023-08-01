@@ -40,7 +40,7 @@ You will need to retrieve the following:
   Credentials, a pre-generated token, or any other supported authentication
   mechanism.
 
-For users that have the OpenStack dashboard installed, there's a shortcut. If
+For users who have the OpenStack dashboard installed, there's a shortcut. If
 you visit the `project/api_access` path in Horizon and click on the
 "Download OpenStack RC File" button at the top right hand corner, you can
 download either a `clouds.yaml` file or an `openrc` bash file that exports all
