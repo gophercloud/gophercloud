@@ -67,10 +67,15 @@ func TestVolumes(t *testing.T) {
 }
 
 func TestVolumesMultiAttach(t *testing.T) {
+	clients.RequireAdmin(t)
 	clients.RequireLong(t)
 
 	client, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
+
+	vt, err := CreateVolumeTypeMultiAttach(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
 
 	volumeName := tools.RandomString("ACPTTEST", 16)
 
@@ -78,19 +83,17 @@ func TestVolumesMultiAttach(t *testing.T) {
 		Size:        1,
 		Name:        volumeName,
 		Description: "Testing creation of multiattach enabled volume",
-		Multiattach: true,
+		VolumeType:  vt.ID,
 	}
 
 	vol, err := volumes.Create(client, volOpts).Extract()
 	th.AssertNoErr(t, err)
+	defer DeleteVolume(t, client, vol)
 
 	err = volumes.WaitForStatus(client, vol.ID, "available", 60)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, vol.Multiattach, true)
-
-	err = volumes.Delete(client, vol.ID, volumes.DeleteOpts{}).ExtractErr()
-	th.AssertNoErr(t, err)
 }
 
 func TestVolumesCascadeDelete(t *testing.T) {
