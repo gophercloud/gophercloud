@@ -58,6 +58,10 @@ type L7Policy struct {
 
 	// Rules are List of associated L7 rule IDs.
 	Rules []Rule `json:"rules"`
+
+	// Tags is a list of resource tags. Tags are arbitrarily defined strings
+	// attached to the resource.
+	Tags []string `json:"tags"`
 }
 
 // Rule represents layer 7 load balancing rule.
@@ -94,6 +98,10 @@ type Rule struct {
 
 	// The operating status of the L7 policy.
 	OperatingStatus string `json:"operating_status"`
+
+	// Tags is a list of resource tags. Tags are arbitrarily defined strings
+	// attached to the resource.
+	Tags []string `json:"tags"`
 }
 
 type commonResult struct {
