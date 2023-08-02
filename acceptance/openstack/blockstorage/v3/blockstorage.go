@@ -38,6 +38,11 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 		return snapshot, err
 	}
 
+	snapshot, err = snapshots.Get(client, snapshot.ID).Extract()
+	if err != nil {
+		return snapshot, err
+	}
+
 	tools.PrintResource(t, snapshot)
 	th.AssertEquals(t, snapshot.Name, snapshotName)
 	th.AssertEquals(t, snapshot.VolumeID, volume.ID)
@@ -66,6 +71,11 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 	}
 
 	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	if err != nil {
+		return volume, err
+	}
+
+	volume, err = volumes.Get(client, volume.ID).Extract()
 	if err != nil {
 		return volume, err
 	}
@@ -101,6 +111,11 @@ func CreateVolumeWithType(t *testing.T, client *gophercloud.ServiceClient, vt *v
 	}
 
 	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	if err != nil {
+		return volume, err
+	}
+
+	volume, err = volumes.Get(client, volume.ID).Extract()
 	if err != nil {
 		return volume, err
 	}
@@ -243,6 +258,9 @@ func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {
 	err := snapshots.Delete(client, snapshot.ID).ExtractErr()
 	if err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			return
+		}
 		t.Fatalf("Unable to delete snapshot %s: %+v", snapshot.ID, err)
 	}
 
@@ -270,6 +288,9 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 
 	err := volumes.Delete(client, volume.ID, volumes.DeleteOpts{}).ExtractErr()
 	if err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			return
+		}
 		t.Fatalf("Unable to delete volume %s: %v", volume.ID, err)
 	}
 

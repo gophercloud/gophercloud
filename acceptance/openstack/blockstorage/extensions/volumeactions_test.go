@@ -145,6 +145,23 @@ func TestVolumeActionsChangeType(t *testing.T) {
 	tools.PrintResource(t, newVolume)
 }
 
+func TestVolumeActionsResetStatus(t *testing.T) {
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volume, err := blockstorageV3.CreateVolume(t, client)
+	th.AssertNoErr(t, err)
+	defer blockstorageV3.DeleteVolume(t, client, volume)
+
+	tools.PrintResource(t, volume)
+
+	err = ResetVolumeStatus(t, client, volume, "error")
+	th.AssertNoErr(t, err)
+
+	err = ResetVolumeStatus(t, client, volume, "available")
+	th.AssertNoErr(t, err)
+}
+
 func TestVolumeActionsReImage(t *testing.T) {
 	clients.SkipReleasesBelow(t, "stable/yoga")
 

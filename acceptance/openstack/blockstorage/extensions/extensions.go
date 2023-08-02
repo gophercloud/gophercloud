@@ -314,6 +314,25 @@ func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *v
 	return nil
 }
 
+// ResetVolumeStatus will reset the status of a volume.
+func ResetVolumeStatus(t *testing.T, client *gophercloud.ServiceClient, volume *v3.Volume, status string) error {
+	t.Logf("Attempting to reset the status of volume %s from %s to %s", volume.ID, volume.Status, status)
+
+	resetOpts := volumeactions.ResetStatusOpts{
+		Status: status,
+	}
+	err := volumeactions.ResetStatus(client, volume.ID, resetOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	if err := volumes.WaitForStatus(client, volume.ID, status, 60); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ReImage will re-image a volume
 func ReImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume, imageID string) error {
 	t.Logf("Attempting to re-image volume %s", volume.ID)
