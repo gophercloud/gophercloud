@@ -110,7 +110,7 @@ func TestCreateFullyPopulatedLoadbalancer(t *testing.T) {
 				LBMethod: pools.LBMethodRoundRobin,
 				Protocol: "HTTP",
 				Name:     "Example pool",
-				Members: []pools.BatchUpdateMemberOpts{{
+				Members: []pools.CreateMemberOpts{{
 					Address:      "192.0.2.51",
 					ProtocolPort: 80,
 				}, {

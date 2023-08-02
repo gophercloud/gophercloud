@@ -123,12 +123,12 @@ type CreateOpts struct {
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 
-	// Members is a slice of BatchUpdateMemberOpts which allows a set of
+	// Members is a slice of CreateMemberOpts which allows a set of
 	// members to be created at the same time the pool is created.
 	//
 	// This is only possible to use when creating a fully populated
 	// Loadbalancer.
-	Members []BatchUpdateMemberOpts `json:"members,omitempty"`
+	Members []CreateMemberOpts `json:"members,omitempty"`
 
 	// Monitor is an instance of monitors.CreateOpts which allows a monitor
 	// to be created at the same time the pool is created.
