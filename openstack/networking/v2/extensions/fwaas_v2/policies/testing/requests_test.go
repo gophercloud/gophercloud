@@ -33,6 +33,7 @@ func TestList(t *testing.T) {
                 "c9e77ca0-1bc8-497d-904d-948107873dc6"
             ],
             "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+			"project_id": "9145d91459d248b1b02fdaca97c6a75d",
             "audited": true,
 			"shared": false,
             "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
@@ -44,6 +45,7 @@ func TestList(t *testing.T) {
                 "03d2a6ad-633f-431a-8463-4370d06a22c8"
             ],
             "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+			"project_id": "9145d91459d248b1b02fdaca97c6a75d",
             "audited": false,
 			"shared": true,
             "id": "c854fab5-bdaf-4a86-9359-78de93e5df01",
@@ -72,6 +74,7 @@ func TestList(t *testing.T) {
 					"c9e77ca0-1bc8-497d-904d-948107873dc6",
 				},
 				TenantID:    "9145d91459d248b1b02fdaca97c6a75d",
+				ProjectID:   "9145d91459d248b1b02fdaca97c6a75d",
 				Audited:     true,
 				Shared:      false,
 				ID:          "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
@@ -83,6 +86,7 @@ func TestList(t *testing.T) {
 					"03d2a6ad-633f-431a-8463-4370d06a22c8",
 				},
 				TenantID:    "9145d91459d248b1b02fdaca97c6a75d",
+				ProjectID:   "9145d91459d248b1b02fdaca97c6a75d",
 				Audited:     false,
 				Shared:      true,
 				ID:          "c854fab5-bdaf-4a86-9359-78de93e5df01",
@@ -119,6 +123,7 @@ func TestCreate(t *testing.T) {
         ],
         "description": "Firewall policy",
 		"tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+		"project_id": "9145d91459d248b1b02fdaca97c6a75d",
 		"audited": true,
 		"shared": false
     }
@@ -137,6 +142,7 @@ func TestCreate(t *testing.T) {
             "11a58c87-76be-ae7c-a74e-b77fffb88a32"
         ],
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+		"project_id": "9145d91459d248b1b02fdaca97c6a75d",
         "audited": false,
         "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
         "description": "Firewall policy"
@@ -147,6 +153,7 @@ func TestCreate(t *testing.T) {
 
 	options := policies.CreateOpts{
 		TenantID:    "9145d91459d248b1b02fdaca97c6a75d",
+		ProjectID:   "9145d91459d248b1b02fdaca97c6a75d",
 		Name:        "policy",
 		Description: "Firewall policy",
 		Shared:      gophercloud.Disabled,
@@ -211,7 +218,7 @@ func TestInsertRule(t *testing.T) {
 	th.AssertEquals(t, "e3c78ab6-e827-4297-8d68-739063865a8b", policy.ID)
 	th.AssertEquals(t, "TESTACC-DESC-8P12aLfW", policy.Description)
 	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", policy.TenantID)
-
+	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", policy.ProjectID)
 }
 
 func TestInsertRuleWithInvalidParameters(t *testing.T) {
@@ -253,6 +260,7 @@ func TestGet(t *testing.T) {
             "03d2a6ad-633f-431a-8463-4370d06a22c8"
         ],
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+		"project_id": "9145d91459d248b1b02fdaca97c6a75d",
         "audited": false,
         "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
         "description": "Firewall policy web"
@@ -272,6 +280,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "c9e77ca0-1bc8-497d-904d-948107873dc6", policy.Rules[1])
 	th.AssertEquals(t, "03d2a6ad-633f-431a-8463-4370d06a22c8", policy.Rules[2])
 	th.AssertEquals(t, "9145d91459d248b1b02fdaca97c6a75d", policy.TenantID)
+	th.AssertEquals(t, "9145d91459d248b1b02fdaca97c6a75d", policy.ProjectID)
 }
 
 func TestUpdate(t *testing.T) {
@@ -309,6 +318,7 @@ func TestUpdate(t *testing.T) {
             "03d2a6ad-633f-431a-8463-4370d06a22c8"
         ],
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+        "project_id": "9145d91459d248b1b02fdaca97c6a75d",
         "audited": false,
         "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
         "description": "Firewall policy"
