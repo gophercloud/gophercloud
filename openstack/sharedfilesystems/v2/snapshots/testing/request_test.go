@@ -125,3 +125,27 @@ func TestListDetail(t *testing.T) {
 		},
 	})
 }
+
+func TestResetStatusSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockResetStatusResponse(t)
+
+	c := client.ServiceClient()
+
+	err := snapshots.ResetStatus(c, snapshotID, &snapshots.ResetStatusOpts{Status: "error"}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestForceDeleteSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockForceDeleteResponse(t)
+
+	c := client.ServiceClient()
+
+	err := snapshots.ForceDelete(c, snapshotID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
