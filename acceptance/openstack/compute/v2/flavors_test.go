@@ -77,6 +77,37 @@ func TestFlavorsGet(t *testing.T) {
 	th.AssertEquals(t, flavor.ID, choices.FlavorID)
 }
 
+func TestFlavorExtraSpecsGet(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	// Microversion 2.61 is required to add extra_specs to flavor
+	client.Microversion = "2.61"
+
+	flavor, err := CreatePrivateFlavor(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteFlavor(t, client, flavor)
+
+	createOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_policy":        "CPU-POLICY",
+		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
+	}
+	createdExtraSpecs, err := flavors.CreateExtraSpecs(client, flavor.ID, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, createdExtraSpecs)
+
+	flavor, err = flavors.Get(client, flavor.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, flavor)
+	th.AssertEquals(t, len(flavor.ExtraSpecs), 2)
+	th.AssertEquals(t, flavor.ExtraSpecs["hw:cpu_policy"], "CPU-POLICY")
+	th.AssertEquals(t, flavor.ExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY")
+}
+
 func TestFlavorsCreateDelete(t *testing.T) {
 	clients.RequireAdmin(t)
 
