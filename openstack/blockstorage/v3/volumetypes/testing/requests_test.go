@@ -276,3 +276,99 @@ func TestVolumeTypeRemoveAccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 }
+
+func TestCreateEncryption(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockEncryptionCreateResponse(t)
+
+	options := &volumetypes.CreateEncryptionOpts{
+		KeySize:         256,
+		Provider:        "luks",
+		ControlLocation: "front-end",
+		Cipher:          "aes-xts-plain64",
+	}
+	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
+	n, err := volumetypes.CreateEncryption(client.ServiceClient(), id, options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "a5082c24-2a27-43a4-b48e-fcec1240e36b", n.VolumeTypeID)
+	th.AssertEquals(t, "front-end", n.ControlLocation)
+	th.AssertEquals(t, "81e069c6-7394-4856-8df7-3b237ca61f74", n.EncryptionID)
+	th.AssertEquals(t, 256, n.KeySize)
+	th.AssertEquals(t, "luks", n.Provider)
+	th.AssertEquals(t, "aes-xts-plain64", n.Cipher)
+}
+
+func TestDeleteEncryption(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteEncryptionResponse(t)
+
+	res := volumetypes.DeleteEncryption(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", "81e069c6-7394-4856-8df7-3b237ca61f74")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdateEncryption(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockEncryptionUpdateResponse(t)
+
+	options := &volumetypes.UpdateEncryptionOpts{
+		KeySize:         256,
+		Provider:        "luks",
+		ControlLocation: "front-end",
+		Cipher:          "aes-xts-plain64",
+	}
+	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
+	encryptionID := "81e069c6-7394-4856-8df7-3b237ca61f74"
+	n, err := volumetypes.UpdateEncryption(client.ServiceClient(), id, encryptionID, options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "front-end", n.ControlLocation)
+	th.AssertEquals(t, 256, n.KeySize)
+	th.AssertEquals(t, "luks", n.Provider)
+	th.AssertEquals(t, "aes-xts-plain64", n.Cipher)
+}
+
+func TestGetEncryption(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockEncryptionGetResponse(t)
+	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
+	n, err := volumetypes.GetEncryption(client.ServiceClient(), id).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "a5082c24-2a27-43a4-b48e-fcec1240e36b", n.VolumeTypeID)
+	th.AssertEquals(t, "front-end", n.ControlLocation)
+	th.AssertEquals(t, false, n.Deleted)
+	th.AssertEquals(t, "2016-12-28T02:32:25.000000", n.CreatedAt)
+	th.AssertEquals(t, "", n.UpdatedAt)
+	th.AssertEquals(t, "81e069c6-7394-4856-8df7-3b237ca61f74", n.EncryptionID)
+	th.AssertEquals(t, 256, n.KeySize)
+	th.AssertEquals(t, "luks", n.Provider)
+	th.AssertEquals(t, "", n.DeletedAt)
+	th.AssertEquals(t, "aes-xts-plain64", n.Cipher)
+}
+
+func TestGetEncryptionSpec(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockEncryptionGetSpecResponse(t)
+	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
+	n, err := volumetypes.GetEncryptionSpec(client.ServiceClient(), id, "cipher").Extract()
+	th.AssertNoErr(t, err)
+
+	key := "cipher"
+	testVar, exists := n[key]
+	if exists {
+		th.AssertEquals(t, "aes-xts-plain64", testVar)
+	} else {
+		t.Fatalf("Key %s does not exist in map.", key)
+	}
+}
