@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -89,7 +90,7 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToStackCreateMap()
 	if err != nil {
-		r.Err = err
+		r.Err = fmt.Errorf("error creating the options map: %w", err)
 		return
 	}
 	resp, err := c.Post(createURL(c), b, &r.Body, nil)
