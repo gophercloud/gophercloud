@@ -14,7 +14,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestConductorsList(t *testing.T) {
+func TestConductorsListAndGet(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewBareMetalV1Client()
@@ -28,6 +28,13 @@ func TestConductorsList(t *testing.T) {
 		}
 
 		tools.PrintResource(t, conductorList)
+
+		if len(conductorList) > 0 {
+			conductor, err := conductors.Get(client, conductorList[0].Hostname).Extract()
+			th.AssertNoErr(t, err)
+
+			tools.PrintResource(t, conductor)
+		}
 
 		return true, nil
 	})
