@@ -24,13 +24,11 @@ type InterfaceType struct {
 	HasCarrier  bool   `json:"has_carrier"`
 	IPV4Address string `json:"ipv4_address"`
 	IPV6Address string `json:"ipv6_address"`
-	// Deprecated, see Data.RawLLDP
-	LLDP       []LLDPTLVType `json:"lldp"`
-	MACAddress string        `json:"mac_address"`
-	Name       string        `json:"name"`
-	Product    string        `json:"product"`
-	SpeedMbps  int           `json:"speed_mbps"`
-	Vendor     string        `json:"vendor"`
+	MACAddress  string `json:"mac_address"`
+	Name        string `json:"name"`
+	Product     string `json:"product"`
+	SpeedMbps   int    `json:"speed_mbps"`
+	Vendor      string `json:"vendor"`
 }
 
 type LLDPTLVType struct {

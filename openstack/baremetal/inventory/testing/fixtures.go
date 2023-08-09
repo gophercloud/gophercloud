@@ -40,7 +40,6 @@ const InventorySample = `{
 	    "client_id": null,
 	    "has_carrier": true,
 	    "ipv4_address": "172.24.42.101",
-	    "lldp": [],
 	    "mac_address": "52:54:00:47:20:4d",
 	    "name": "eth1",
 	    "product": "0x0001",
@@ -50,16 +49,6 @@ const InventorySample = `{
 	    "client_id": null,
 	    "has_carrier": true,
 	    "ipv4_address": "172.24.42.100",
-	    "lldp": [
-		[
-		    1,
-		    "04112233aabbcc"
-		],
-		[
-		    5,
-		    "737730312d646973742d31622d623132"
-		]
-	    ],
 	    "mac_address": "52:54:00:4e:3d:30",
 	    "name": "eth0",
 	    "product": "0x0001",
@@ -118,7 +107,6 @@ var Inventory = inventory.InventoryType{
 			Name:        "eth1",
 			Product:     "0x0001",
 			IPV4Address: "172.24.42.101",
-			LLDP:        []inventory.LLDPTLVType{},
 		},
 		{
 			IPV4Address: "172.24.42.100",
@@ -127,17 +115,7 @@ var Inventory = inventory.InventoryType{
 			Product:     "0x0001",
 			HasCarrier:  true,
 			Vendor:      "0x1af4",
-			LLDP: []inventory.LLDPTLVType{
-				{
-					Type:  1,
-					Value: "04112233aabbcc",
-				},
-				{
-					Type:  5,
-					Value: "737730312d646973742d31622d623132",
-				},
-			},
-			SpeedMbps: 1000,
+			SpeedMbps:   1000,
 		},
 	},
 	Memory: inventory.MemoryType{
