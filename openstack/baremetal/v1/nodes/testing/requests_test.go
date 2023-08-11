@@ -711,3 +711,22 @@ func TestUnsetMaintenance(t *testing.T) {
 	err := nodes.UnsetMaintenance(c, "1234asdf").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetInventory(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetInventorySuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.GetInventory(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeInventoryData.Inventory, actual.Inventory)
+
+	pluginData, err := actual.PluginData.AsMap()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "x86_64", pluginData["cpu_arch"].(string))
+
+	compatData, err := actual.PluginData.AsInspectorData()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "x86_64", compatData.CPUArch)
+}

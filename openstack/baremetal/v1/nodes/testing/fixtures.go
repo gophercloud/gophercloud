@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	inventorytest "github.com/gophercloud/gophercloud/openstack/baremetal/inventory/testing"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/nodes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -813,6 +814,20 @@ const NodeSetMaintenanceBody = `
 }
 `
 
+var NodeInventoryBody = fmt.Sprintf(`
+{
+  "inventory": %s,
+  "plugin_data":{
+    "macs":[
+      "52:54:00:90:35:d6"
+    ],
+    "local_gb":10,
+    "cpu_arch":"x86_64",
+    "memory_mb":2048
+  }
+}
+`, inventorytest.InventorySample)
+
 var (
 	createdAtFoo, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
 	createdAtBar, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
@@ -1172,6 +1187,10 @@ var (
 		Destination: "https://someurl",
 		EventTypes:  []string{"Alert"},
 		Protocol:    "Redfish",
+	}
+
+	NodeInventoryData = nodes.InventoryData{
+		Inventory: inventorytest.Inventory,
 	}
 )
 
@@ -1566,5 +1585,15 @@ func HandleUnsetNodeMaintenanceSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+// HandleGetInventorySuccessfully sets up the test server to respond to a get inventory request for a node
+func HandleGetInventorySuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/inventory", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, NodeInventoryBody)
 	})
 }
