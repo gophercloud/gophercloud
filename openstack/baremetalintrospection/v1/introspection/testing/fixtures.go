@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
+	inventorytesting "github.com/gophercloud/gophercloud/openstack/baremetal/inventory/testing"
 	"github.com/gophercloud/gophercloud/openstack/baremetalintrospection/v1/introspection"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -67,7 +69,7 @@ const IntrospectionStatus = `
 `
 
 // IntrospectionDataJSONSample contains sample data reported by the introspection process.
-const IntrospectionDataJSONSample = `
+var IntrospectionDataJSONSample = fmt.Sprintf(`
 {
     "all_interfaces": {
         "eth0": {
@@ -99,84 +101,7 @@ const IntrospectionDataJSONSample = `
             "pxe": true
         }
     },
-    "inventory": {
-        "bmc_address": "192.167.2.134",
-        "boot": {
-            "current_boot_mode": "bios",
-            "pxe_interface": "52:54:00:4e:3d:30"
-        },
-        "cpu": {
-            "architecture": "x86_64",
-            "count": 2,
-            "flags": [
-                "fpu",
-                "mmx",
-                "fxsr",
-                "sse",
-                "sse2"
-            ],
-            "frequency": "2100.084"
-        },
-        "disks": [
-            {
-                "hctl": null,
-                "model": "",
-                "name": "/dev/vda",
-                "rotational": true,
-                "serial": null,
-                "size": 13958643712,
-                "vendor": "0x1af4",
-                "wwn": null,
-                "wwn_vendor_extension": null,
-                "wwn_with_extension": null
-            }
-        ],
-        "hostname": "myawesomehost",
-        "interfaces": [
-            {
-                "client_id": null,
-                "has_carrier": true,
-                "ipv4_address": "172.24.42.101",
-                "lldp": [],
-                "mac_address": "52:54:00:47:20:4d",
-                "name": "eth1",
-                "product": "0x0001",
-                "vendor": "0x1af4"
-            },
-            {
-                "client_id": null,
-                "has_carrier": true,
-                "ipv4_address": "172.24.42.100",
-                "lldp": [
-                    [
-                        1,
-                        "04112233aabbcc"
-                    ],
-                    [
-                        5,
-                        "737730312d646973742d31622d623132"
-                    ]
-                ],
-                "mac_address": "52:54:00:4e:3d:30",
-                "name": "eth0",
-                "product": "0x0001",
-                "vendor": "0x1af4",
-		"speed_mbps": 1000
-            }
-        ],
-        "memory": {
-            "physical_mb": 2048,
-            "total": 2105864192
-        },
-        "system_vendor": {
-            "manufacturer": "Bochs",
-            "product_name": "Bochs",
-            "serial_number": "Not Specified",
-	    "firmware": {
-		"version": "1.2.3.4"
-	    }
-        }
-    },
+    "inventory": %s,
     "ipmi_address": "192.167.2.134",
     "lldp_raw": {
 	"eth0": [
@@ -208,7 +133,7 @@ const IntrospectionDataJSONSample = `
         "wwn_with_extension": null
     }
 }
-`
+`, inventorytesting.InventorySample)
 
 // IntrospectionExtraHardwareJSONSample contains extra hardware sample data
 // reported by the introspection process.
@@ -370,7 +295,7 @@ var (
 	IntrospectionDataRes = introspection.Data{
 		CPUArch: "x86_64",
 		MACs:    []string{"52:54:00:4e:3d:30"},
-		RootDisk: introspection.RootDiskType{
+		RootDisk: inventory.RootDiskType{
 			Rotational: true,
 			Model:      "",
 			Name:       "/dev/vda",
@@ -388,73 +313,9 @@ var (
 		BootInterface: "52:54:00:4e:3d:30",
 		MemoryMB:      2048,
 		IPMIAddress:   "192.167.2.134",
-		Inventory: introspection.InventoryType{
-			SystemVendor: introspection.SystemVendorType{
-				Manufacturer: "Bochs",
-				ProductName:  "Bochs",
-				SerialNumber: "Not Specified",
-				Firmware: introspection.SystemFirmwareType{
-					Version: "1.2.3.4",
-				},
-			},
-			BmcAddress: "192.167.2.134",
-			Boot: introspection.BootInfoType{
-				CurrentBootMode: "bios",
-				PXEInterface:    "52:54:00:4e:3d:30",
-			},
-			CPU: introspection.CPUType{
-				Count:        2,
-				Flags:        []string{"fpu", "mmx", "fxsr", "sse", "sse2"},
-				Frequency:    "2100.084",
-				Architecture: "x86_64",
-			},
-			Disks: []introspection.RootDiskType{
-				{
-					Rotational: true,
-					Model:      "",
-					Name:       "/dev/vda",
-					Size:       13958643712,
-					Vendor:     "0x1af4",
-				},
-			},
-			Interfaces: []introspection.InterfaceType{
-				{
-					Vendor:      "0x1af4",
-					HasCarrier:  true,
-					MACAddress:  "52:54:00:47:20:4d",
-					Name:        "eth1",
-					Product:     "0x0001",
-					IPV4Address: "172.24.42.101",
-					LLDP:        []introspection.LLDPTLVType{},
-				},
-				{
-					IPV4Address: "172.24.42.100",
-					MACAddress:  "52:54:00:4e:3d:30",
-					Name:        "eth0",
-					Product:     "0x0001",
-					HasCarrier:  true,
-					Vendor:      "0x1af4",
-					LLDP: []introspection.LLDPTLVType{
-						{
-							Type:  1,
-							Value: "04112233aabbcc",
-						},
-						{
-							Type:  5,
-							Value: "737730312d646973742d31622d623132",
-						},
-					},
-					SpeedMbps: 1000,
-				},
-			},
-			Memory: introspection.MemoryType{
-				PhysicalMb: 2048.0,
-				Total:      2.105864192e+09,
-			},
-			Hostname: "myawesomehost",
-		},
-		Error:   "",
-		LocalGB: 12,
+		Inventory:     inventorytesting.Inventory,
+		Error:         "",
+		LocalGB:       12,
 		AllInterfaces: map[string]introspection.BaseInterfaceType{
 			"eth1": {
 				IP:  "172.24.42.101",
@@ -471,7 +332,7 @@ var (
 				},
 			},
 		},
-		RawLLDP: map[string][]introspection.LLDPTLVType{
+		RawLLDP: map[string][]inventory.LLDPTLVType{
 			"eth0": {
 				{
 					Type:  1,
