@@ -9,7 +9,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestIntrospectionNUMA(t *testing.T) {
+func TestInventory(t *testing.T) {
 	var output inventory.InventoryType
 	err := json.Unmarshal([]byte(InventorySample), &output)
 	if err != nil {

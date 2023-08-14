@@ -174,8 +174,8 @@ type Data struct {
 	MACs          []string                           `json:"macs"`
 	MemoryMB      int                                `json:"memory_mb"`
 	RootDisk      inventory.RootDiskType             `json:"root_disk"`
-	Extra         ExtraHardwareDataType              `json:"extra"`
-	NUMATopology  NUMATopology                       `json:"numa_topology"`
+	Extra         inventory.ExtraDataType            `json:"extra"`
+	NUMATopology  inventory.NUMATopology             `json:"numa_topology"`
 	RawLLDP       map[string][]inventory.LLDPTLVType `json:"lldp_raw"`
 }
 
@@ -187,42 +187,6 @@ type BaseInterfaceType struct {
 	MAC           string                 `json:"mac"`
 	PXE           bool                   `json:"pxe"`
 	LLDPProcessed map[string]interface{} `json:"lldp_processed"`
-}
-
-type ExtraHardwareData map[string]interface{}
-
-type ExtraHardwareDataSection map[string]ExtraHardwareData
-
-type ExtraHardwareDataType struct {
-	CPU      ExtraHardwareDataSection `json:"cpu"`
-	Disk     ExtraHardwareDataSection `json:"disk"`
-	Firmware ExtraHardwareDataSection `json:"firmware"`
-	IPMI     ExtraHardwareDataSection `json:"ipmi"`
-	Memory   ExtraHardwareDataSection `json:"memory"`
-	Network  ExtraHardwareDataSection `json:"network"`
-	System   ExtraHardwareDataSection `json:"system"`
-}
-
-type NUMATopology struct {
-	CPUs []NUMACPU `json:"cpus"`
-	NICs []NUMANIC `json:"nics"`
-	RAM  []NUMARAM `json:"ram"`
-}
-
-type NUMACPU struct {
-	CPU            int   `json:"cpu"`
-	NUMANode       int   `json:"numa_node"`
-	ThreadSiblings []int `json:"thread_siblings"`
-}
-
-type NUMANIC struct {
-	Name     string `json:"name"`
-	NUMANode int    `json:"numa_node"`
-}
-
-type NUMARAM struct {
-	NUMANode int `json:"numa_node"`
-	SizeKB   int `json:"size_kb"`
 }
 
 // Extract interprets any IntrospectionDataResult as IntrospectionData, if possible.
