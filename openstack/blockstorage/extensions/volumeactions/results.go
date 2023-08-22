@@ -219,3 +219,8 @@ type ChangeTypeResult struct {
 type ReImageResult struct {
 	gophercloud.ErrResult
 }
+
+// ResetStateResult contains the response body and error from a ResetState request.
+type ResetStateResult struct {
+	gophercloud.ErrResult
+}

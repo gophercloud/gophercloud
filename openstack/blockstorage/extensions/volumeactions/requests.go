@@ -418,3 +418,32 @@ func ReImage(client *gophercloud.ServiceClient, id string, opts ReImageOpts) (r 
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ResetStateOptsBuilder allows extensions to add additional parameters to the
+type ResetStateOptsBuilder interface {
+	ToVolumeResetStateMap() (map[string]interface{}, error)
+}
+
+// ResetStateOpts contains options for resetting the status of an existing Volume.
+type ResetStateOpts struct {
+	Status          string `json:"status"`
+	AttachStatus    string `json:"attach_status,omitempty"`
+	MigrationStatus string `json:"migration_status,omitempty"`
+}
+
+// ToVolumeResetStateMap assembles a request body based on the contents of a
+func (opts ResetStateOpts) ToVolumeResetStateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "os-reset_status")
+}
+
+// ResetState will reset the volume status based on the provided information.
+func ResetState(client *gophercloud.ServiceClient, id string, opts ResetStateOptsBuilder) (r ResetStateResult) {
+	b, err := opts.ToVolumeResetStateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(actionURL(client, id), b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
