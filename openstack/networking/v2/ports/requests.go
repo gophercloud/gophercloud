@@ -158,6 +158,7 @@ type UpdateOpts struct {
 	DeviceOwner         *string        `json:"device_owner,omitempty"`
 	SecurityGroups      *[]string      `json:"security_groups,omitempty"`
 	AllowedAddressPairs *[]AddressPair `json:"allowed_address_pairs,omitempty"`
+	QoSPolicyId         *string        `json:"qos_policy_id,omitempty"`
 
 	// RevisionNumber implements extension:standard-attr-revisions. If != "" it
 	// will set revision_number=%s. If the revision number does not match, the
