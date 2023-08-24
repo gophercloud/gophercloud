@@ -1,8 +1,6 @@
 package accounts
 
 import (
-	"context"
-
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -96,7 +94,7 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResul
 			h[k] = v
 		}
 	}
-	resp, err := c.Request(context.Background(), "POST", updateURL(c), &gophercloud.RequestOpts{
+	resp, err := c.Request("POST", updateURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})

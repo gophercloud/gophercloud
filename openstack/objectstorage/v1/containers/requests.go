@@ -1,7 +1,6 @@
 package containers
 
 import (
-	"context"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -114,7 +113,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 			h[k] = v
 		}
 	}
-	resp, err := c.Request(context.Background(), "PUT", url, &gophercloud.RequestOpts{
+	resp, err := c.Request("PUT", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
@@ -219,7 +218,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 			h[k] = v
 		}
 	}
-	resp, err := c.Request(context.Background(), "POST", url, &gophercloud.RequestOpts{
+	resp, err := c.Request("POST", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})

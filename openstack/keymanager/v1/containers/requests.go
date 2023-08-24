@@ -1,8 +1,6 @@
 package containers
 
 import (
-	"context"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -209,7 +207,7 @@ func DeleteConsumer(client *gophercloud.ServiceClient, containerID string, opts 
 		return
 	}
 
-	resp, err := client.Request(context.Background(), "DELETE", url, &gophercloud.RequestOpts{
+	resp, err := client.Request("DELETE", url, &gophercloud.RequestOpts{
 		JSONBody:     b,
 		JSONResponse: &r.Body,
 		OkCodes:      []int{200},
@@ -254,7 +252,7 @@ func DeleteSecretRef(client *gophercloud.ServiceClient, containerID string, opts
 		return
 	}
 
-	resp, err := client.Request(context.Background(), "DELETE", url, &gophercloud.RequestOpts{
+	resp, err := client.Request("DELETE", url, &gophercloud.RequestOpts{
 		JSONBody: b,
 		OkCodes:  []int{204},
 	})

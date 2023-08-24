@@ -2,7 +2,6 @@ package objects
 
 import (
 	"bytes"
-	"context"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
@@ -354,7 +353,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		url += query
 	}
 
-	resp, err := c.Request(context.Background(), "COPY", url, &gophercloud.RequestOpts{
+	resp, err := c.Request("COPY", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})

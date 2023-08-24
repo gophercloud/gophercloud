@@ -74,7 +74,7 @@ func (client *ServiceClient) GetWithContext(ctx context.Context, url string, JSO
 		opts = new(RequestOpts)
 	}
 	client.initReqOpts(url, nil, JSONResponse, opts)
-	return client.Request(ctx, "GET", url, opts)
+	return client.RequestWithContext(ctx, "GET", url, opts)
 }
 
 func (client *ServiceClient) Get(url string, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
@@ -88,7 +88,7 @@ func (client *ServiceClient) PostWithContext(ctx context.Context, url string, JS
 		opts = new(RequestOpts)
 	}
 	client.initReqOpts(url, JSONBody, JSONResponse, opts)
-	return client.Request(ctx, "POST", url, opts)
+	return client.RequestWithContext(ctx, "POST", url, opts)
 }
 
 func (client *ServiceClient) Post(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
@@ -101,7 +101,7 @@ func (client *ServiceClient) PutWithContext(ctx context.Context, url string, JSO
 		opts = new(RequestOpts)
 	}
 	client.initReqOpts(url, JSONBody, JSONResponse, opts)
-	return client.Request(ctx, "PUT", url, opts)
+	return client.RequestWithContext(ctx, "PUT", url, opts)
 }
 
 func (client *ServiceClient) Put(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
@@ -114,7 +114,7 @@ func (client *ServiceClient) PatchWithContext(ctx context.Context, url string, J
 		opts = new(RequestOpts)
 	}
 	client.initReqOpts(url, JSONBody, JSONResponse, opts)
-	return client.Request(ctx, "PATCH", url, opts)
+	return client.RequestWithContext(ctx, "PATCH", url, opts)
 }
 
 func (client *ServiceClient) Patch(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
@@ -127,7 +127,7 @@ func (client *ServiceClient) DeleteWithContext(ctx context.Context, url string, 
 		opts = new(RequestOpts)
 	}
 	client.initReqOpts(url, nil, nil, opts)
-	return client.Request(ctx, "DELETE", url, opts)
+	return client.RequestWithContext(ctx, "DELETE", url, opts)
 }
 
 func (client *ServiceClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
@@ -140,7 +140,7 @@ func (client *ServiceClient) HeadWithContext(ctx context.Context, url string, op
 		opts = new(RequestOpts)
 	}
 	client.initReqOpts(url, nil, nil, opts)
-	return client.Request(ctx, "HEAD", url, opts)
+	return client.RequestWithContext(ctx, "HEAD", url, opts)
 }
 
 func (client *ServiceClient) Head(url string, opts *RequestOpts) (*http.Response, error) {
@@ -167,7 +167,12 @@ func (client *ServiceClient) setMicroversionHeader(opts *RequestOpts) {
 }
 
 // Request carries out the HTTP operation for the service client
-func (client *ServiceClient) Request(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error) {
+func (client *ServiceClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
+	return client.RequestWithContext(context.Background(), method, url, options)
+}
+
+// RequestWithContext carries out the HTTP operation for the service client
+func (client *ServiceClient) RequestWithContext(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error) {
 	if len(client.MoreHeaders) > 0 {
 		if options == nil {
 			options = new(RequestOpts)
