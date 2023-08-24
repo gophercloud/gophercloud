@@ -1,9 +1,12 @@
 package nodes
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
+	"github.com/gophercloud/gophercloud/openstack/baremetalintrospection/v1/introspection"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -527,4 +530,44 @@ type SubscriptionVendorPassthru struct {
 // method to determine if the call succeeded or failed.
 type SetMaintenanceResult struct {
 	gophercloud.ErrResult
+}
+
+// PluginData is an abstraction around plugin-specific data from inspection.
+// The format of PluginData is different between ironic-inspector and the native in-band inspection in Ironic.
+// We may need an opaque structure that can be extracted in two (or more) ways.
+type PluginData struct {
+	// Raw JSON data.
+	json.RawMessage
+}
+
+// Interpret plugin data as a free-form mapping.
+func (pd PluginData) AsMap() (result map[string]interface{}, err error) {
+	err = json.Unmarshal(pd.RawMessage, &result)
+	return
+}
+
+// Interpret plugin data as coming from ironic-inspector.
+func (pd PluginData) AsInspectorData() (result introspection.Data, err error) {
+	err = json.Unmarshal(pd.RawMessage, &result)
+	return
+}
+
+// InventoryData is the full node inventory.
+type InventoryData struct {
+	// Formally specified bare metal node inventory.
+	Inventory inventory.InventoryType `json:"inventory"`
+	// Data from inspection plugins.
+	PluginData PluginData `json:"plugin_data"`
+}
+
+// InventoryResult is the response from a GetInventory operation.
+type InventoryResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a InventoryResult as a InventoryData struct, if possible.
+func (r InventoryResult) Extract() (*InventoryData, error) {
+	var data InventoryData
+	err := r.ExtractInto(&data)
+	return &data, err
 }

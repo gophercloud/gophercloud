@@ -880,3 +880,12 @@ func UnsetMaintenance(client *gophercloud.ServiceClient, id string) (r SetMainte
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// GetInventory return stored data from successful inspection.
+func GetInventory(client *gophercloud.ServiceClient, id string) (r InventoryResult) {
+	resp, err := client.Get(inventoryURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

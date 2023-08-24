@@ -77,3 +77,7 @@ func vendorPassthruCallURL(client *gophercloud.ServiceClient, id string) string 
 func maintenanceURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("nodes", id, "maintenance")
 }
+
+func inventoryURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "inventory")
+}
