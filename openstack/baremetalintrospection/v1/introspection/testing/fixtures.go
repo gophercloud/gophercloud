@@ -346,8 +346,8 @@ var (
 		},
 	}
 
-	IntrospectionExtraHardware = introspection.ExtraHardwareDataType{
-		CPU: introspection.ExtraHardwareDataSection{
+	IntrospectionExtraHardware = inventory.ExtraDataType{
+		CPU: inventory.ExtraDataSection{
 			"logical": map[string]interface{}{
 				"number": float64(16),
 			},
@@ -357,19 +357,19 @@ var (
 				"flags": "lm fpu fpu_exception wp vme de",
 			},
 		},
-		Disk: introspection.ExtraHardwareDataSection{
+		Disk: inventory.ExtraDataSection{
 			"sda": map[string]interface{}{
 				"rotational": float64(1),
 				"vendor":     "TEST",
 			},
 		},
-		Firmware: introspection.ExtraHardwareDataSection{
+		Firmware: inventory.ExtraDataSection{
 			"bios": map[string]interface{}{
 				"date":   "01/01/1970",
 				"vendor": "test",
 			},
 		},
-		IPMI: introspection.ExtraHardwareDataSection{
+		IPMI: inventory.ExtraDataSection{
 			"Fan1A RPM": map[string]interface{}{
 				"unit":  "RPM",
 				"value": float64(3120),
@@ -379,7 +379,7 @@ var (
 				"value": float64(2280),
 			},
 		},
-		Memory: introspection.ExtraHardwareDataSection{
+		Memory: inventory.ExtraDataSection{
 			"bank0": map[string]interface{}{
 				"clock":       1600000000.0,
 				"description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)",
@@ -389,7 +389,7 @@ var (
 				"description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)",
 			},
 		},
-		Network: introspection.ExtraHardwareDataSection{
+		Network: inventory.ExtraDataSection{
 			"em1": map[string]interface{}{
 				"Autonegotiate": "on",
 				"loopback":      "off [fixed]",
@@ -399,7 +399,7 @@ var (
 				"loopback":      "off [fixed]",
 			},
 		},
-		System: introspection.ExtraHardwareDataSection{
+		System: inventory.ExtraDataSection{
 			"ipmi": map[string]interface{}{
 				"channel": float64(1),
 			},
@@ -417,8 +417,8 @@ var (
 		},
 	}
 
-	IntrospectionNUMA = introspection.NUMATopology{
-		CPUs: []introspection.NUMACPU{
+	IntrospectionNUMA = inventory.NUMATopology{
+		CPUs: []inventory.NUMACPU{
 			{
 				CPU:            6,
 				NUMANode:       1,
@@ -430,7 +430,7 @@ var (
 				ThreadSiblings: []int{20, 44},
 			},
 		},
-		NICs: []introspection.NUMANIC{
+		NICs: []inventory.NUMANIC{
 			{
 				Name:     "p2p1",
 				NUMANode: 0,
@@ -440,7 +440,7 @@ var (
 				NUMANode: 1,
 			},
 		},
-		RAM: []introspection.NUMARAM{
+		RAM: []inventory.NUMARAM{
 			{
 				NUMANode: 0,
 				SizeKB:   99289532,

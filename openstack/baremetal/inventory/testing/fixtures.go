@@ -70,6 +70,126 @@ const InventorySample = `{
     }
 }`
 
+// ExtraDataJSONSample contains extra hardware sample data reported by the inspection process.
+const ExtraDataJSONSample = `
+{
+  "cpu": {
+    "logical": {
+      "number": 16
+    },
+    "physical": {
+      "clock": 2105032704,
+      "cores": 8,
+      "flags": "lm fpu fpu_exception wp vme de"
+    }
+  },
+  "disk": {
+    "sda": {
+      "rotational": 1,
+      "vendor": "TEST"
+    }
+  },
+  "firmware": {
+    "bios": {
+      "date": "01/01/1970",
+      "vendor": "test"
+    }
+  },
+  "ipmi": {
+    "Fan1A RPM": {
+      "unit": "RPM",
+      "value": 3120
+    },
+    "Fan1B RPM": {
+      "unit": "RPM",
+      "value": 2280
+    }
+  },
+  "memory": {
+    "bank0": {
+      "clock": 1600000000.0,
+      "description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)"
+    },
+    "bank1": {
+      "clock": 1600000000.0,
+      "description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)"
+    }
+  },
+  "network": {
+    "em1": {
+      "Autonegotiate": "on",
+      "loopback": "off [fixed]"
+    },
+    "p2p1": {
+      "Autonegotiate": "on",
+      "loopback": "off [fixed]"
+    }
+  },
+  "system": {
+    "ipmi": {
+      "channel": 1
+    },
+    "kernel": {
+      "arch": "x86_64",
+      "version": "3.10.0"
+    },
+    "motherboard": {
+      "vendor": "Test"
+    },
+    "product": {
+      "name": "test",
+      "vendor": "Test"
+    }
+  }
+}
+`
+
+// NUMADataJSONSample contains NUMA sample data reported by the inspection process.
+const NUMADataJSONSample = `
+{
+  "numa_topology": {
+    "cpus": [
+      {
+        "cpu": 6,
+        "numa_node": 1,
+        "thread_siblings": [
+          3,
+          27
+        ]
+      },
+      {
+        "cpu": 10,
+        "numa_node": 0,
+        "thread_siblings": [
+          20,
+          44
+        ]
+      }
+    ],
+    "nics": [
+      {
+        "name": "p2p1",
+        "numa_node": 0
+      },
+      {
+        "name": "p2p2",
+        "numa_node": 1
+      }
+    ],
+    "ram": [
+      {
+        "numa_node": 0,
+        "size_kb": 99289532
+      },
+      {
+        "numa_node": 1,
+        "size_kb": 100663296
+      }
+    ]
+  }
+}
+`
+
 var Inventory = inventory.InventoryType{
 	SystemVendor: inventory.SystemVendorType{
 		Manufacturer: "Bochs",
@@ -123,4 +243,110 @@ var Inventory = inventory.InventoryType{
 		Total:      2.105864192e+09,
 	},
 	Hostname: "myawesomehost",
+}
+
+var ExtraData = inventory.ExtraDataType{
+	CPU: inventory.ExtraDataSection{
+		"logical": map[string]interface{}{
+			"number": float64(16),
+		},
+		"physical": map[string]interface{}{
+			"clock": float64(2105032704),
+			"cores": float64(8),
+			"flags": "lm fpu fpu_exception wp vme de",
+		},
+	},
+	Disk: inventory.ExtraDataSection{
+		"sda": map[string]interface{}{
+			"rotational": float64(1),
+			"vendor":     "TEST",
+		},
+	},
+	Firmware: inventory.ExtraDataSection{
+		"bios": map[string]interface{}{
+			"date":   "01/01/1970",
+			"vendor": "test",
+		},
+	},
+	IPMI: inventory.ExtraDataSection{
+		"Fan1A RPM": map[string]interface{}{
+			"unit":  "RPM",
+			"value": float64(3120),
+		},
+		"Fan1B RPM": map[string]interface{}{
+			"unit":  "RPM",
+			"value": float64(2280),
+		},
+	},
+	Memory: inventory.ExtraDataSection{
+		"bank0": map[string]interface{}{
+			"clock":       1600000000.0,
+			"description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)",
+		},
+		"bank1": map[string]interface{}{
+			"clock":       1600000000.0,
+			"description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)",
+		},
+	},
+	Network: inventory.ExtraDataSection{
+		"em1": map[string]interface{}{
+			"Autonegotiate": "on",
+			"loopback":      "off [fixed]",
+		},
+		"p2p1": map[string]interface{}{
+			"Autonegotiate": "on",
+			"loopback":      "off [fixed]",
+		},
+	},
+	System: inventory.ExtraDataSection{
+		"ipmi": map[string]interface{}{
+			"channel": float64(1),
+		},
+		"kernel": map[string]interface{}{
+			"arch":    "x86_64",
+			"version": "3.10.0",
+		},
+		"motherboard": map[string]interface{}{
+			"vendor": "Test",
+		},
+		"product": map[string]interface{}{
+			"name":   "test",
+			"vendor": "Test",
+		},
+	},
+}
+
+var NUMATopology = inventory.NUMATopology{
+	CPUs: []inventory.NUMACPU{
+		{
+			CPU:            6,
+			NUMANode:       1,
+			ThreadSiblings: []int{3, 27},
+		},
+		{
+			CPU:            10,
+			NUMANode:       0,
+			ThreadSiblings: []int{20, 44},
+		},
+	},
+	NICs: []inventory.NUMANIC{
+		{
+			Name:     "p2p1",
+			NUMANode: 0,
+		},
+		{
+			Name:     "p2p2",
+			NUMANode: 1,
+		},
+	},
+	RAM: []inventory.NUMARAM{
+		{
+			NUMANode: 0,
+			SizeKB:   99289532,
+		},
+		{
+			NUMANode: 1,
+			SizeKB:   100663296,
+		},
+	},
 }

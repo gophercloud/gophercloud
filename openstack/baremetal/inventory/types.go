@@ -1,10 +1,5 @@
 package inventory
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 type BootInfoType struct {
 	CurrentBootMode string `json:"current_boot_mode"`
 	PXEInterface    string `json:"pxe_interface"`
@@ -29,11 +24,6 @@ type InterfaceType struct {
 	Product     string `json:"product"`
 	SpeedMbps   int    `json:"speed_mbps"`
 	Vendor      string `json:"vendor"`
-}
-
-type LLDPTLVType struct {
-	Type  int
-	Value string
 }
 
 type MemoryType struct {
@@ -77,30 +67,4 @@ type InventoryType struct {
 	Memory       MemoryType       `json:"memory"`
 	SystemVendor SystemVendorType `json:"system_vendor"`
 	Hostname     string           `json:"hostname"`
-}
-
-// UnmarshalJSON interprets an LLDP TLV [key, value] pair as an LLDPTLVType structure
-func (r *LLDPTLVType) UnmarshalJSON(data []byte) error {
-	var list []interface{}
-	if err := json.Unmarshal(data, &list); err != nil {
-		return err
-	}
-
-	if len(list) != 2 {
-		return fmt.Errorf("Invalid LLDP TLV key-value pair")
-	}
-
-	fieldtype, ok := list[0].(float64)
-	if !ok {
-		return fmt.Errorf("LLDP TLV key is not number")
-	}
-
-	value, ok := list[1].(string)
-	if !ok {
-		return fmt.Errorf("LLDP TLV value is not string")
-	}
-
-	r.Type = int(fieldtype)
-	r.Value = value
-	return nil
 }
