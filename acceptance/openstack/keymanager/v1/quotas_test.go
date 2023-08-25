@@ -44,15 +44,12 @@ func TestQuotasCRUD(t *testing.T) {
 	// Get quota
 	quota, err := quotas.GetProjectQuota(client, project.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, quotas.ProjectQuota{
-		Quota: quotas.Quota{
-			Secrets:    gophercloud.IntToPointer(1),
-			Orders:     gophercloud.IntToPointer(2),
-			Containers: gophercloud.IntToPointer(3),
-			Consumers:  gophercloud.IntToPointer(4),
-			CAS:        gophercloud.IntToPointer(5),
-		},
-		ProjectID: project.ID,
+	th.AssertDeepEquals(t, &quotas.Quota{
+		Secrets:    gophercloud.IntToPointer(1),
+		Orders:     gophercloud.IntToPointer(2),
+		Containers: gophercloud.IntToPointer(3),
+		Consumers:  gophercloud.IntToPointer(4),
+		CAS:        gophercloud.IntToPointer(5),
 	}, quota)
 
 	// Delete quota
