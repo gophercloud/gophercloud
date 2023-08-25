@@ -262,11 +262,11 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, netClient, network.ID)
 
-	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
+	subnet, err := networking.CreateSubnetWithCIDR(t, netClient, network.ID, "192.168.1.0/24", "192.168.1.1")
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
-	additionalSubnet, err := networking.CreateSubnet(t, netClient, network.ID)
+	additionalSubnet, err := networking.CreateSubnetWithCIDR(t, netClient, network.ID, "192.168.2.0/24", "192.168.2.1")
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, additionalSubnet.ID)
 

@@ -280,11 +280,17 @@ func CreatePortWithMultipleFixedIPs(t *testing.T, client *gophercloud.ServiceCli
 // CreateSubnet will create a subnet on the specified Network ID. An error
 // will be returned if the subnet could not be created.
 func CreateSubnet(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*subnets.Subnet, error) {
-	subnetName := tools.RandomString("TESTACC-", 8)
-	subnetDescription := tools.RandomString("TESTACC-DESC-", 8)
 	subnetOctet := tools.RandomInt(1, 250)
 	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
 	subnetGateway := fmt.Sprintf("192.168.%d.1", subnetOctet)
+	return CreateSubnetWithCIDR(t, client, networkID, subnetCIDR, subnetGateway)
+}
+
+// CreateSubnetWithCIDR will create a subnet on the specified Network ID and CIDR. An error
+// will be returned if the subnet could not be created.
+func CreateSubnetWithCIDR(t *testing.T, client *gophercloud.ServiceClient, networkID, subnetCIDR, subnetGateway string) (*subnets.Subnet, error) {
+	subnetName := tools.RandomString("TESTACC-", 8)
+	subnetDescription := tools.RandomString("TESTACC-DESC-", 8)
 	createOpts := subnets.CreateOpts{
 		NetworkID:   networkID,
 		CIDR:        subnetCIDR,
