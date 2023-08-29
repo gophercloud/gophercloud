@@ -2,6 +2,7 @@ package stacks
 
 import (
 	"fmt"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -67,7 +68,8 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 					return err
 				}
 			} else if !ignoreIf(k, value) {
-				// at this point, the k, v pair has a reference to an external template.
+				// at this point, the k, v pair has a reference to an external template
+				// or file (for 'get_file' function).
 				// The assumption of heatclient is that value v is a reference
 				// to a file in the users environment
 
@@ -76,15 +78,15 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 
 				// initialize child template
 
-				// get the base location of the child template
-				baseURL, err := gophercloud.NormalizePathURL(t.baseURL, value)
-				if err != nil {
-					return err
+				// get the base location of the child template. Child path is relative
+				// to its parent location so that templates can be composed
+				if t.URL != "" {
+					childTemplate.baseURL = filepath.Dir(t.URL)
 				}
-				childTemplate.baseURL = baseURL
+				childTemplate.URL = value
 				childTemplate.client = t.client
 
-				// fetch the contents of the child template
+				// fetch the contents of the child template or file
 				if err := childTemplate.Fetch(); err != nil {
 					return err
 				}
@@ -98,14 +100,20 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 							if err := childTemplate.getFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
 								return err
 							}
+							childTemplate.fixFileRefs()
 						}
 					}
 				}
+
 				// update parent template with current child templates' content.
 				// At this point, the child template has been parsed recursively.
 				t.fileMaps[value] = childTemplate.URL
 				t.Files[childTemplate.URL] = string(childTemplate.Bin)
 
+				// Also add child templates' own children (templates or get_file)!
+				for k, v := range childTemplate.Files {
+					t.Files[k] = v
+				}
 			}
 		}
 		return nil
