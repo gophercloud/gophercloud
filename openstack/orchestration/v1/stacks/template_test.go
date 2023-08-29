@@ -143,7 +143,7 @@ resources:
 			},
 		},
 	}
-	te.Parse()
+	th.AssertNoErr(t, te.Parse())
 	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
 }
 
@@ -195,6 +195,95 @@ resources:
 			},
 		},
 	}
-	te.Parse()
+	th.AssertNoErr(t, te.Parse())
+	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
+}
+
+func TestGetFileContentsComposeRelativePath(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	baseurl, err := getBasePath()
+	th.AssertNoErr(t, err)
+
+	novaPath := strings.Join([]string{"templates", "my_nova.yaml"}, "/")
+	novaURL := strings.Join([]string{baseurl, novaPath}, "/")
+	novaURLParse, err := url.Parse(novaURL)
+	th.AssertNoErr(t, err)
+	myNovaContent := `heat_template_version: 2014-10-16
+parameters:
+  flavor:
+    type: string
+    description: Flavor for the server to be created
+    default: 4353
+    hidden: true
+resources:
+  test_server:
+    type: "OS::Nova::Server"
+    properties:
+      name: test-server
+      flavor: 2 GB General Purpose v1
+      image: Debian 7 (Wheezy) (PVHVM)
+      networks:
+      - {uuid: 11111111-1111-1111-1111-111111111111}`
+	th.Mux.HandleFunc(novaURLParse.Path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, myNovaContent)
+	})
+
+	subStacksPath := strings.Join([]string{"substacks", "my_substack.yaml"}, "/")
+	subStackURL := strings.Join([]string{baseurl, subStacksPath}, "/")
+	subStackURLParsed, err := url.Parse(subStackURL)
+	th.AssertNoErr(t, err)
+	mySubStackContentFmt := `heat_template_version: 2015-04-30
+resources:
+  my_server:
+    type: %s
+  my_backend:
+    type: "OS::Nova::Server"
+    properties:
+      name: test-backend
+      flavor: 4 GB General Purpose v1
+      image: Debian 7 (Wheezy) (PVHVM)
+      networks:
+      - {uuid: 11111111-1111-1111-1111-111111111111}`
+	th.Mux.HandleFunc(subStackURLParsed.Path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, mySubStackContentFmt, "../templates/my_nova.yaml")
+	})
+
+	client := fakeClient{BaseClient: getHTTPClient()}
+	te := new(Template)
+	te.Bin = []byte(`heat_template_version: 2015-04-30
+resources:
+  my_stack:
+    type: substacks/my_substack.yaml`)
+	te.client = client
+
+	err = te.Parse()
+	th.AssertNoErr(t, err)
+	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
+	th.AssertNoErr(t, err)
+
+	expectedFiles := map[string]string{
+		"templates/my_nova.yaml":     myNovaContent,
+		"substacks/my_substack.yaml": fmt.Sprintf(mySubStackContentFmt, novaURLParse),
+	}
+	th.AssertEquals(t, expectedFiles[novaPath], te.Files[novaURL])
+	th.AssertEquals(t, expectedFiles[subStacksPath], te.Files[subStackURL])
+
+	te.fixFileRefs()
+	expectedParsed := map[string]interface{}{
+		"heat_template_version": "2015-04-30",
+		"resources": map[string]interface{}{
+			"my_stack": map[string]interface{}{
+				"type": subStackURL,
+			},
+		},
+	}
+	th.AssertNoErr(t, te.Parse())
 	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
 }
