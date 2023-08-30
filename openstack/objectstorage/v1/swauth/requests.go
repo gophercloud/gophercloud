@@ -41,7 +41,31 @@ func Auth(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult)
 		}
 	}
 
-	resp, err := c.Request(context.Background(), "GET", getURL(c), &gophercloud.RequestOpts{
+	resp, err := c.Request("GET", getURL(c), &gophercloud.RequestOpts{
+		MoreHeaders: h,
+		OkCodes:     []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return r
+}
+
+// AuthWithContext performs an authentication request for a Swauth-based user.
+func AuthWithContext(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult) {
+	h := make(map[string]string)
+
+	if opts != nil {
+		headers, err := opts.ToAuthOptsMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+
+		for k, v := range headers {
+			h[k] = v
+		}
+	}
+
+	resp, err := c.RequestWithContext(context.Background(), "GET", getURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})

@@ -181,7 +181,7 @@ func (client *ServiceClient) RequestWithContext(ctx context.Context, method, url
 			options.MoreHeaders[k] = v
 		}
 	}
-	return client.ProviderClient.Request(ctx, method, url, options)
+	return client.ProviderClient.RequestWithContext(ctx, method, url, options)
 }
 
 // ParseResponse is a helper function to parse http.Response to constituents.

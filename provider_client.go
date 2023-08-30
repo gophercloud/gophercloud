@@ -353,8 +353,14 @@ var applicationJSON = "application/json"
 
 // Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
 // header will automatically be provided.
-func (client *ProviderClient) Request(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error) {
+func (client *ProviderClient) RequestWithContext(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error) {
 	return client.doRequest(ctx, method, url, options, &requestState{
+		hasReauthenticated: false,
+	})
+}
+
+func (client *ProviderClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
+	return client.doRequest(context.Background(), method, url, options, &requestState{
 		hasReauthenticated: false,
 	})
 }
