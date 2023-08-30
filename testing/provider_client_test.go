@@ -3,7 +3,7 @@ package testing
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -123,7 +123,7 @@ func TestConcurrentReauth(t *testing.T) {
 				return
 			}
 			defer resp.Body.Close()
-			actual, err := ioutil.ReadAll(resp.Body)
+			actual, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Errorf("error reading response body: %s", err)
 				return
@@ -304,7 +304,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 				return
 			}
 			defer resp.Body.Close()
-			actual, err := ioutil.ReadAll(resp.Body)
+			actual, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Errorf("error reading response body: %s", err)
 				return
@@ -379,7 +379,7 @@ func TestRequestWithContext(t *testing.T) {
 
 	res, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
 	th.AssertNoErr(t, err)
-	_, err = ioutil.ReadAll(res.Body)
+	_, err = io.ReadAll(res.Body)
 	th.AssertNoErr(t, err)
 	err = res.Body.Close()
 	th.AssertNoErr(t, err)

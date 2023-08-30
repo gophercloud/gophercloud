@@ -18,7 +18,7 @@ Example to get stack template
 
 Example to validate stack template
 
-	f2, err := ioutil.ReadFile("template.err.yaml")
+	f2, err := os.ReadFile("template.err.yaml")
 	if err != nil {
 	    panic(err)
 	}

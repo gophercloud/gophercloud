@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -15,7 +15,7 @@ func HandlePutImageDataSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
-		b, err := ioutil.ReadAll(r.Body)
+		b, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Unable to read request body: %v", err)
 		}
@@ -32,7 +32,7 @@ func HandleStageImageDataSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
-		b, err := ioutil.ReadAll(r.Body)
+		b, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Unable to read request body: %v", err)
 		}

@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"strings"
 	"time"
 
@@ -232,7 +231,7 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 	// file content into memory first.
 	readSeeker, isReadSeeker := opts.Content.(io.ReadSeeker)
 	if !isReadSeeker {
-		data, err := ioutil.ReadAll(opts.Content)
+		data, err := io.ReadAll(opts.Content)
 		if err != nil {
 			return nil, nil, "", err
 		}

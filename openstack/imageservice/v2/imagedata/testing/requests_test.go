@@ -3,7 +3,6 @@ package testing
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/imagedata"
@@ -96,7 +95,7 @@ func TestDownload(t *testing.T) {
 
 	defer rdr.Close()
 
-	bs, err := ioutil.ReadAll(rdr)
+	bs, err := io.ReadAll(rdr)
 	th.AssertNoErr(t, err)
 
 	th.AssertByteArrayEquals(t, []byte{34, 87, 0, 23, 23, 23, 56, 255, 254, 0}, bs)

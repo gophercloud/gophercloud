@@ -3,7 +3,6 @@ package secrets
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -122,7 +121,7 @@ func (r PayloadResult) Extract() ([]byte, error) {
 		return nil, r.Err
 	}
 	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
 	}

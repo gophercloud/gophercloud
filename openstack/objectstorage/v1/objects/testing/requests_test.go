@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -464,7 +463,7 @@ func TestObjectCreateParamsWithoutSeek(t *testing.T) {
 	_, ok := reader.(io.ReadSeeker)
 	th.AssertEquals(t, true, ok)
 
-	c, err := ioutil.ReadAll(reader)
+	c, err := io.ReadAll(reader)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, content, string(c))
@@ -483,7 +482,7 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 	_, ok := reader.(io.ReadSeeker)
 	th.AssertEquals(t, ok, true)
 
-	c, err := ioutil.ReadAll(reader)
+	c, err := io.ReadAll(reader)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, content, string(c))
