@@ -5,7 +5,7 @@ package v1
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -106,7 +106,7 @@ func TestObjects(t *testing.T) {
 			th.AssertNoErr(t, fmt.Errorf("unexpected response code: %d", resp.StatusCode))
 		}
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		th.AssertNoErr(t, err)
 		th.AssertDeepEquals(t, oContents[i], string(body))
 		resp.Body.Close()
@@ -127,7 +127,7 @@ func TestObjects(t *testing.T) {
 			th.AssertNoErr(t, fmt.Errorf("unexpected response code: %d", resp.StatusCode))
 		}
 
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 		th.AssertNoErr(t, err)
 		th.AssertDeepEquals(t, oContents[i], string(body))
 		resp.Body.Close()

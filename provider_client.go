@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
@@ -458,7 +457,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	}
 
 	if !ok {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		respErr := ErrUnexpectedResponseCode{
 			URL:            url,
@@ -604,7 +603,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		// Don't decode JSON when there is no content
 		if resp.StatusCode == http.StatusNoContent {
 			// read till EOF, otherwise the connection will be closed and cannot be reused
-			_, err = io.Copy(ioutil.Discard, resp.Body)
+			_, err = io.Copy(io.Discard, resp.Body)
 			return resp, err
 		}
 		if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
@@ -626,7 +625,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	if !options.KeepResponseBody && options.JSONResponse == nil {
 		defer resp.Body.Close()
 		// read till EOF, otherwise the connection will be closed and cannot be reused
-		if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
 			return nil, err
 		}
 	}

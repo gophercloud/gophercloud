@@ -43,7 +43,7 @@ Example to Download Image Data
 	// close the reader, when reading has finished
 	defer image.Close()
 
-	imageData, err := ioutil.ReadAll(image)
+	imageData, err := io.ReadAll(image)
 	if err != nil {
 		panic(err)
 	}
