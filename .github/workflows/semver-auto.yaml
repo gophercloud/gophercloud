@@ -6,6 +6,16 @@ jobs:
   go-apidiff:
     runs-on: ubuntu-latest
     steps:
+    - name: Remove the semver labels
+      uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0
+      with:
+        labels: |
+          semver:patch
+          semver:minor
+          semver:major
+          semver:unknown
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -26,16 +36,6 @@ jobs:
     - uses: actions/setup-go@v4
       with:
         go-version: '1'
-
-    - name: Remove the semver label
-      uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0
-      with:
-        labels: |
-          semver:patch
-          semver:minor
-          semver:major
-          semver:unknown
-        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Checking Go API Compatibility
       id: go-apidiff
