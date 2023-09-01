@@ -30,9 +30,7 @@ func TestNetworksExternalList(t *testing.T) {
 	var allNetworks []networkWithExt
 
 	iTrue := true
-	networkListOpts := networks.ListOpts{
-		ID: choices.ExternalNetworkID,
-	}
+	networkListOpts := networks.ListOptsMulti{}.ID(choices.ExternalNetworkID)
 	listOpts := external.ListOptsExt{
 		ListOptsBuilder: networkListOpts,
 		External:        &iTrue,
@@ -54,9 +52,7 @@ func TestNetworksExternalList(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	iFalse := false
-	networkListOpts = networks.ListOpts{
-		ID: choices.ExternalNetworkID,
-	}
+	networkListOpts = networks.ListOptsMulti{}.ID(choices.ExternalNetworkID)
 	listOpts = external.ListOptsExt{
 		ListOptsBuilder: networkListOpts,
 		External:        &iFalse,

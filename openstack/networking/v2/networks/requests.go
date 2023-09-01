@@ -2,8 +2,10 @@ package networks
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -41,6 +43,92 @@ type ListOpts struct {
 func (opts ListOpts) ToNetworkListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
+}
+
+type ListOptsMulti common.NeutronListOpts
+
+func (opts ListOptsMulti) ToNetworkListQuery() (string, error) {
+	return common.NeutronListOpts(opts).ToQueryString()
+}
+
+func (opts ListOptsMulti) Status(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("status", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) Name(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("name", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) Description(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("description", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) AdminStateUp(v ...bool) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptBool("admin_state_up", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) TenantID(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("tenant_id", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) ProjectID(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("project_id", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) Shared(v ...bool) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptBool("shared", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) ID(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("id", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) Tags(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("tags", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) TagsAny(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("tags-any", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) NotTags(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("not-tags", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) NotTagsAny(v ...string) ListOptsMulti {
+	common.NeutronListOpts(opts).MultiOptString("not-tags-any", v...)
+	return opts
+}
+
+func (opts ListOptsMulti) SortKey(v string) ListOptsMulti {
+	common.NeutronListOpts(opts).SingleOptString("sort_key", v)
+	return opts
+}
+
+func (opts ListOptsMulti) SortDir(v string) ListOptsMulti {
+	common.NeutronListOpts(opts).SingleOptString("sort_dir", v)
+	return opts
+}
+
+func (opts ListOptsMulti) Marker(v string) ListOptsMulti {
+	common.NeutronListOpts(opts).SingleOptString("marker", v)
+	return opts
+}
+
+func (opts ListOptsMulti) Limit(v int) ListOptsMulti {
+	common.NeutronListOpts(opts).SingleOptString("limit", strconv.Itoa(v))
+	return opts
 }
 
 // List returns a Pager which allows you to iterate over a collection of
