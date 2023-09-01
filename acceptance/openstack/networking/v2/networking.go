@@ -575,7 +575,7 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 	count := 0
 	id := ""
 
-	listOpts := networks.ListOptsMulti{}.Name(name)
+	listOpts := networks.NewListOptsBuilder(networks.Name(name))
 
 	pages, err := networks.List(client, listOpts).AllPages()
 	if err != nil {

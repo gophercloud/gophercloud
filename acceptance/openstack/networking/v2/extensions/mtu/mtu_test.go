@@ -46,7 +46,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		// List network successfully
 		var listOpts networks.ListOptsBuilder
 		listOpts = mtu.ListOptsExt{
-			ListOptsBuilder: networks.ListOpts{},
+			ListOptsBuilder: networks.NewListOptsBuilder(),
 			MTU:             networkMTU,
 		}
 		var listedNetworks []NetworkMTU
@@ -71,7 +71,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 
 		// List network unsuccessfully
 		listOpts = mtu.ListOptsExt{
-			ListOptsBuilder: networks.ListOpts{},
+			ListOptsBuilder: networks.NewListOptsBuilder(),
 			MTU:             1,
 		}
 		i = 0

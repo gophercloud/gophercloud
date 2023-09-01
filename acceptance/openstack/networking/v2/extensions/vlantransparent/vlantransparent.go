@@ -21,7 +21,7 @@ type VLANTransparentNetwork struct {
 // extension. An error will be returned networks could not be listed.
 func ListVLANTransparentNetworks(t *testing.T, client *gophercloud.ServiceClient) ([]*VLANTransparentNetwork, error) {
 	iTrue := true
-	networkListOpts := networks.ListOpts{}
+	networkListOpts := networks.NewListOptsBuilder()
 	listOpts := vlantransparent.ListOptsExt{
 		ListOptsBuilder: networkListOpts,
 		VLANTransparent: &iTrue,
