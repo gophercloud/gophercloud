@@ -12,7 +12,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - uses: peter-evans/rebase@56c359b35ff7ba8426d0fdb842958b35b1db827
+    - uses: peter-evans/rebase@56c359b35ff7ba8426d0fdb842958b35b1db8277
       with:
         base: ${{ github.base_ref }}
 
