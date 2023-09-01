@@ -12,6 +12,17 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - uses: peter-evans/rebase@56c359b35ff7ba8426d0fdb842958b35b1db827
+      with:
+        base: ${{ github.base_ref }}
+
+    - name: Add semver:unknown label
+      if: failure()
+      uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:unknown
+
     - uses: actions/setup-go@v4
       with:
         go-version: '1'
@@ -23,6 +34,7 @@ jobs:
           semver:patch
           semver:minor
           semver:major
+          semver:unknown
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Checking Go API Compatibility
