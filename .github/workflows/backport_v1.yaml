@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Generate a token from the gophercloud-backport-bot github-app
         id: generate_token
-        uses: tibdex/github-app-token@v1.8.0
+        uses: tibdex/github-app-token@v1.8.2
         with:
           app_id: ${{ secrets.BACKPORT_APP_ID }}
           private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
