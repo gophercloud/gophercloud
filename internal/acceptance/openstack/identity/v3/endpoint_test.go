@@ -39,6 +39,29 @@ func TestEndpointsList(t *testing.T) {
 	th.AssertEquals(t, found, true)
 }
 
+func TestEndpointsGet(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	allPages, err := endpoints.List(client, nil).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allEndpoints, err := endpoints.ExtractEndpoints(allPages)
+	th.AssertNoErr(t, err)
+
+	endpoint := allEndpoints[0]
+	e, err := endpoints.Get(context.TODO(), client, endpoint.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get endpoint: %v", err)
+	}
+
+	tools.PrintResource(t, e)
+
+	th.AssertEquals(t, e.Name, e.Name)
+}
+
 func TestEndpointsNavigateCatalog(t *testing.T) {
 	clients.RequireAdmin(t)
 
