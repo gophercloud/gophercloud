@@ -73,7 +73,7 @@ Example to List all tags of a Project
 		panic(err)
 	}
 
-Example to  modify all tags of a Project
+Example to modify all tags of a Project
 
 	projectID := "966b3c7d36a24facaf20b7e458bf2192"
 	tags := ["foo", "bar"]
