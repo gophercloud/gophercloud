@@ -88,6 +88,13 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
+// Get retrieves details on a single endpoint, by ID.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(endpointURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // UpdateOptsBuilder allows extensions to add parameters to the Update request.
 type UpdateOptsBuilder interface {
 	ToEndpointUpdateMap() (map[string]interface{}, error)
