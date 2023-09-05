@@ -13,7 +13,7 @@ jobs:
         include:
           - name: "master"
             openstack_version: "master"
-            ubuntu_version: "20.04"
+            ubuntu_version: "22.04"
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
