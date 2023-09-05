@@ -15,7 +15,7 @@ jobs:
       matrix:
         name: ["master"]
         openstack_version: ["master"]
-        ubuntu_version: ["20.04"]
+        ubuntu_version: ["22.04"]
         include:
           - name: "zed"
             openstack_version: "stable/zed"

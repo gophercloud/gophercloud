@@ -13,7 +13,7 @@ jobs:
         include:
           - name: "master"
             openstack_version: "master"
-            ubuntu_version: "20.04"
+            ubuntu_version: "22.04"
             devstack_conf_overrides: |
               enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing master
               enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas master
