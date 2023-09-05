@@ -24,6 +24,8 @@ jobs:
 
     - name: Rebase the PR against origin/github.base_ref to ensure actual API compatibility
       run: |
+        git config --global user.email "localrebase@gophercloud.io"
+        git config --global user.name "Local rebase"
         git rebase -i origin/${{ github.base_ref }}
       env:
         GIT_SEQUENCE_EDITOR: '/usr/bin/true'
