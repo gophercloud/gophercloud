@@ -37,7 +37,7 @@ jobs:
     name: Deploy OpenStack ${{ matrix.name }} with Heat and run orchestration acceptance tests
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy devstack
         uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
         with:
