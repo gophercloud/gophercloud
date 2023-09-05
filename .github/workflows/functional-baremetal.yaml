@@ -10,7 +10,7 @@ jobs:
       matrix:
         name: ["master"]
         openstack_version: ["master"]
-        ubuntu_version: ["20.04"]
+        ubuntu_version: ["22.04"]
         include:
           - name: "antelope"
             openstack_version: "stable/2023.1"
