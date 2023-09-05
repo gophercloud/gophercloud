@@ -24,7 +24,7 @@ jobs:
     name: Deploy OpenStack ${{ matrix.name }} with enabled FWaaS_v2 and run networking acceptance tests
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy devstack
         uses: EmilienM/devstack-action@v0.11
         with:
