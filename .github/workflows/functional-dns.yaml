@@ -13,36 +13,24 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin designate https://github.com/openstack/designate master
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin designate https://github.com/openstack/designate stable/zed
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin designate https://github.com/openstack/designate stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin designate https://github.com/openstack/designate stable/xena
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin designate https://github.com/openstack/designate stable/wallaby
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin designate https://github.com/openstack/designate stable/victoria
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Designate and run dns acceptance tests
     steps:
@@ -53,7 +41,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            ${{ matrix.devstack_conf_overrides }}
+            enable_plugin designate https://github.com/openstack/designate ${{ matrix.openstack_version }}
           enabled_services: 'designate,designate-central,designate-api,designate-worker,designate-producer,designate-mdns'
       - name: Checkout go
         uses: actions/setup-go@v4
