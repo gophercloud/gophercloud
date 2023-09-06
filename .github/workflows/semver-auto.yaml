@@ -1,0 +1,67 @@
+name: Add PR semver labels
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+jobs:
+  go-apidiff:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Remove the semver labels
+      uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0
+      with:
+        labels: |
+          semver:patch
+          semver:minor
+          semver:major
+          semver:unknown
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Rebase the PR against origin/github.base_ref to ensure actual API compatibility
+      run: |
+        git config --global user.email "localrebase@gophercloud.io"
+        git config --global user.name "Local rebase"
+        git rebase -i origin/${{ github.base_ref }}
+      env:
+        GIT_SEQUENCE_EDITOR: '/usr/bin/true'
+
+    - name: Add semver:unknown label
+      if: failure()
+      uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:unknown
+
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '1'
+
+    - name: Checking Go API Compatibility
+      id: go-apidiff
+      uses: joelanford/go-apidiff@v0.7.0
+
+    - name: Add semver:patch label
+      if: always() && steps.go-apidiff.outputs.semver-type == 'patch'
+      uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:patch
+
+    - name: Add semver:minor label
+      if: always() && steps.go-apidiff.outputs.semver-type == 'minor'
+      uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:minor
+
+    - name: Add semver:major label
+      if: always() && steps.go-apidiff.outputs.semver-type == 'major'
+      uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        labels: semver:major
