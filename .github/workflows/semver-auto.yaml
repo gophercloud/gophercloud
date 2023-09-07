@@ -43,24 +43,33 @@ jobs:
 
     - name: Checking Go API Compatibility
       id: go-apidiff
+      # if semver=major, this will return RC=1, so let's ignore the failure so label
+      # can be set later. We check for actual errors in the next step.
+      continue-on-error: true
       uses: joelanford/go-apidiff@v0.7.0
 
+    # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
+    # a failure. Instead let's just return a failure if go-apidiff failed to run.
+    - name: Return an error if Go API Compatibility couldn't be verified
+      if: steps.go-apidiff.outcome != 'success' && steps.go-apidiff.semver-type != 'major'
+      run: exit 1
+
     - name: Add semver:patch label
-      if: always() && steps.go-apidiff.outputs.semver-type == 'patch'
+      if: steps.go-apidiff.outputs.semver-type == 'patch'
       uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         labels: semver:patch
 
     - name: Add semver:minor label
-      if: always() && steps.go-apidiff.outputs.semver-type == 'minor'
+      if: steps.go-apidiff.outputs.semver-type == 'minor'
       uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         labels: semver:minor
 
     - name: Add semver:major label
-      if: always() && steps.go-apidiff.outputs.semver-type == 'major'
+      if: steps.go-apidiff.outputs.semver-type == 'major'
       uses: actions-ecosystem/action-add-labels@18f1af5e3544586314bbe15c0273249c770b2daf
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
