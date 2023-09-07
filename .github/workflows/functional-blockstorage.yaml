@@ -37,7 +37,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            CINDER_ISCSI_HELPER=tgtadm
+            CINDER_ISCSI_HELPER=lioadm
           enabled_services: 's-account,s-container,s-object,s-proxy,c-bak'
       - name: Checkout go
         uses: actions/setup-go@v4
