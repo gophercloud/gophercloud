@@ -42,7 +42,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            CINDER_ISCSI_HELPER=tgtadm
+            CINDER_ISCSI_HELPER=lioadm
       - name: Checkout go
         uses: actions/setup-go@v4
         with:
