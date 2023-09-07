@@ -111,7 +111,7 @@ func SkipRelease(t *testing.T, release string) {
 func SkipReleasesBelow(t *testing.T, release string) {
 	current_branch := getReleaseFromEnv(t)
 
-	if IsReleasesBelow(t, release) {
+	if IsCurrentBelow(t, release) {
 		t.Skipf("this is not supported below %s, testing in %s", release, current_branch)
 	}
 }
@@ -123,15 +123,15 @@ func SkipReleasesAbove(t *testing.T, release string) {
 	current_branch := getReleaseFromEnv(t)
 
 	// Assume master is always too new
-	if IsReleasesAbove(t, release) {
+	if IsCurrentAbove(t, release) {
 		t.Skipf("this is not supported above %s, testing in %s", release, current_branch)
 	}
 }
 
-// IsReleasesAbove will return true on releases above a certain
+// IsCurrentAbove will return true on releases above a certain
 // one. The result is always true on master release. Releases are named such
 // as 'stable/mitaka', master, etc.
-func IsReleasesAbove(t *testing.T, release string) bool {
+func IsCurrentAbove(t *testing.T, release string) bool {
 	current_branch := getReleaseFromEnv(t)
 
 	// Assume master is always too new
@@ -142,9 +142,9 @@ func IsReleasesAbove(t *testing.T, release string) bool {
 	return false
 }
 
-// IsReleasesBelow will return true on releases below a certain
+// IsCurrentBelow will return true on releases below a certain
 // one. Releases are named such as 'stable/mitaka', master, etc.
-func IsReleasesBelow(t *testing.T, release string) bool {
+func IsCurrentBelow(t *testing.T, release string) bool {
 	current_branch := getReleaseFromEnv(t)
 
 	if current_branch != "master" || current_branch < release {

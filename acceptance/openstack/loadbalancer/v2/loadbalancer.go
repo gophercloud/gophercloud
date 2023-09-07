@@ -71,7 +71,7 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 	}
 
 	// tls_version is only supported in microversion v2.17 introduced in victoria
-	if clients.IsReleasesAbove(t, "stable/ussuri") {
+	if clients.IsCurrentAbove(t, "stable/ussuri") {
 		tlsVersions = []listeners.TLSVersion{"TLSv1.2", "TLSv1.3"}
 		tlsVersionsExp = []string{"TLSv1.2", "TLSv1.3"}
 	}

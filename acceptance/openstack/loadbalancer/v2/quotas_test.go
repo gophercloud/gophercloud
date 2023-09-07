@@ -45,7 +45,7 @@ func TestQuotasUpdate(t *testing.T) {
 		Healthmonitor: gophercloud.IntToPointer(5),
 	}
 	// L7 parameters are only supported in microversion v2.19 introduced in victoria
-	if clients.IsReleasesAbove(t, "stable/ussuri") {
+	if clients.IsCurrentAbove(t, "stable/ussuri") {
 		quotaUpdateOpts.L7Policy = gophercloud.IntToPointer(55)
 		quotaUpdateOpts.L7Rule = gophercloud.IntToPointer(105)
 	}
@@ -67,7 +67,7 @@ func TestQuotasUpdate(t *testing.T) {
 		Healthmonitor: &originalQuotas.Healthmonitor,
 	}
 	// L7 parameters are only supported in microversion v2.19 introduced in victoria
-	if clients.IsReleasesAbove(t, "stable/ussuri") {
+	if clients.IsCurrentAbove(t, "stable/ussuri") {
 		restoredQuotaUpdate.L7Policy = &originalQuotas.L7Policy
 		restoredQuotaUpdate.L7Rule = &originalQuotas.L7Rule
 	}
