@@ -51,7 +51,7 @@ jobs:
     # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
     # a failure. Instead let's just return a failure if go-apidiff failed to run.
     - name: Return an error if Go API Compatibility couldn't be verified
-      if: steps.go-apidiff.outcome != 'success' && steps.go-apidiff.semver-type != 'major'
+      if: steps.go-apidiff.outcome != 'success' && steps.go-apidiff.outputs.semver-type != 'major'
       run: exit 1
 
     - name: Add semver:patch label
