@@ -12,8 +12,11 @@ jobs:
       matrix:
         name: ["master"]
         openstack_version: ["master"]
-        ubuntu_version: ["20.04"]
+        ubuntu_version: ["22.04"]
         include:
+          - name: "antelope"
+            openstack_version: "stable/2023.1"
+            ubuntu_version: "22.04"
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
@@ -39,7 +42,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            CINDER_ISCSI_HELPER=tgtadm
+            CINDER_ISCSI_HELPER=lioadm
           enabled_services: 's-account,s-container,s-object,s-proxy,c-bak'
       - name: Checkout go
         uses: actions/setup-go@v4
