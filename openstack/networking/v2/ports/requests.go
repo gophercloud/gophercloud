@@ -38,7 +38,6 @@ type ListOpts struct {
 	SortDir        string   `q:"sort_dir"`
 	Tags           string   `q:"tags"`
 	TagsAny        string   `q:"tags-any"`
-	NotTags        string   `q:"not-tags"`
 	NotTagsAny     string   `q:"not-tags-any"`
 	SecurityGroups []string `q:"security_groups"`
 	FixedIPs       []FixedIPOpts
