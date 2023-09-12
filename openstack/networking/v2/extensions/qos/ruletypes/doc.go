@@ -15,7 +15,7 @@ Example of Listing QoS rule types
 
 	fmt.Printf("%v <- Rule Types\n", rules)
 
-Example of Getting a single QoS rule type by it's name
+Example of Getting a single QoS rule type by name
 
 	ruleTypeName := "bandwidth_limit"
 
