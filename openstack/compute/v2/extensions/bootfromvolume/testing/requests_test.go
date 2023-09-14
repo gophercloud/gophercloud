@@ -47,3 +47,9 @@ func TestBootFromNewVolumeType(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, ExpectedNewVolumeTypeRequest, actual)
 }
+
+func TestAttachExistingVolumeWithTag(t *testing.T) {
+	actual, err := ImageAndExistingVolumeWithTagRequest.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, ExpectedImageAndExistingVolumeWithTagRequest, actual)
+}
