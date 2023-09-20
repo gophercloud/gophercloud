@@ -7,6 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/attachments"
 	v3 "github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/volumeattach"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
@@ -17,19 +18,18 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 		t.Skip("Skipping test that requires volume attachment in short mode.")
 	}
 
-	attachOpts := &attachments.CreateOpts{
-		VolumeUUID:   volume.ID,
-		InstanceUUID: server.ID,
-	}
-
 	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
 
 	var err error
-	var attachment *attachments.Attachment
-	if attachment, err = attachments.Create(client, attachOpts).Extract(); err != nil {
+	var attachment *volumeattach.VolumeAttachment
+	if attachment, err = volumeattach.Create(client, server.ID, volumeattach.CreateOpts{
+		VolumeID: volume.ID,
+	}).Extract(); err != nil {
 		return err
 	}
 
+	// The nova API doesn't provide a way to check whether the volume is really attached so
+	// we use the Cinder API to wait for the volume to become attached.
 	mv := client.Microversion
 	client.Microversion = "3.44"
 	defer func() {
@@ -38,7 +38,6 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 	if err = attachments.Complete(client, attachment.ID).ExtractErr(); err != nil {
 		return err
 	}
-
 	if err = attachments.WaitForStatus(client, attachment.ID, "attached", 60); err != nil {
 		e := attachments.Delete(client, attachment.ID).ExtractErr()
 		if e != nil {
@@ -47,27 +46,23 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 		return err
 	}
 
-	attachment, err = attachments.Get(client, attachment.ID).Extract()
+	attachment, err = volumeattach.Get(client, server.ID, attachment.ID).Extract()
 	if err != nil {
 		return err
 	}
 
-	listOpts := &attachments.ListOpts{
-		VolumeID:   volume.ID,
-		InstanceID: server.ID,
-	}
-	allPages, err := attachments.List(client, listOpts).AllPages()
+	allPages, err := volumeattach.List(client, server.ID).AllPages()
 	if err != nil {
 		return err
 	}
 
-	allAttachments, err := attachments.ExtractAttachments(allPages)
+	AllAttachments, err := volumeattach.ExtractVolumeAttachments(allPages)
 	if err != nil {
 		return err
 	}
 
-	if allAttachments[0].ID != attachment.ID {
-		return fmt.Errorf("Attachment IDs from get and list are not equal: %q != %q", allAttachments[0].ID, attachment.ID)
+	if AllAttachments[0].ID != attachment.ID {
+		return fmt.Errorf("attachment IDs from get and list are not equal: %q != %q", AllAttachments[0].ID, attachment.ID)
 	}
 
 	t.Logf("Attached volume %s to server %s within %q attachment", volume.ID, server.ID, attachment.ID)
@@ -80,7 +75,7 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, volume *v3.Volume) {
 	t.Logf("Attepting to detach volume volume: %s", volume.ID)
 
-	if err := attachments.Delete(client, volume.Attachments[0].AttachmentID).ExtractErr(); err != nil {
+	if err := volumeattach.Delete(client, volume.Attachments[0].ServerID, volume.Attachments[0].AttachmentID).ExtractErr(); err != nil {
 		t.Fatalf("Unable to detach volume %s: %v", volume.ID, err)
 	}
 
