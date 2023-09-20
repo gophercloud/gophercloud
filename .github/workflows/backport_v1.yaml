@@ -34,6 +34,8 @@ jobs:
         if: >
           contains(github.event.pull_request.labels.*.name, 'semver-patch')
           || contains(github.event.pull_request.labels.*.name, 'semver-minor')
+          || contains(github.event.label.name, 'semver-patch')
+          || contains(github.event.label.name, 'semver-minor')
         uses: kiegroup/git-backporting@4313be48e73b299a20b3c8290fd1ea8704e8dd5e
         with:
           target-branch: v1
@@ -46,6 +48,8 @@ jobs:
         if: >
           contains(github.event.pull_request.labels.*.name, 'semver-major')
           || contains(github.event.pull_request.labels.*.name, 'semver-unknown')
+          || contains(github.event.label.name, 'semver-major')
+          || contains(github.event.label.name, 'semver-unknown')
         uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f
         with:
           message: |
