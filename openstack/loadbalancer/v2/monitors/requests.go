@@ -19,25 +19,27 @@ type ListOptsBuilder interface {
 // sort by a particular Monitor attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID             string `q:"id"`
-	Name           string `q:"name"`
-	TenantID       string `q:"tenant_id"`
-	ProjectID      string `q:"project_id"`
-	PoolID         string `q:"pool_id"`
-	Type           string `q:"type"`
-	Delay          int    `q:"delay"`
-	Timeout        int    `q:"timeout"`
-	MaxRetries     int    `q:"max_retries"`
-	MaxRetriesDown int    `q:"max_retries_down"`
-	HTTPMethod     string `q:"http_method"`
-	URLPath        string `q:"url_path"`
-	ExpectedCodes  string `q:"expected_codes"`
-	AdminStateUp   *bool  `q:"admin_state_up"`
-	Status         string `q:"status"`
-	Limit          int    `q:"limit"`
-	Marker         string `q:"marker"`
-	SortKey        string `q:"sort_key"`
-	SortDir        string `q:"sort_dir"`
+	ID             string  `q:"id"`
+	Name           string  `q:"name"`
+	TenantID       string  `q:"tenant_id"`
+	ProjectID      string  `q:"project_id"`
+	PoolID         string  `q:"pool_id"`
+	Type           string  `q:"type"`
+	Delay          int     `q:"delay"`
+	DomainName     string  `q:"domain_name"`
+	Timeout        int     `q:"timeout"`
+	MaxRetries     int     `q:"max_retries"`
+	MaxRetriesDown int     `q:"max_retries_down"`
+	HTTPMethod     string  `q:"http_method"`
+	HTTPVersion    float32 `q:"http_version"`
+	URLPath        string  `q:"url_path"`
+	ExpectedCodes  string  `q:"expected_codes"`
+	AdminStateUp   *bool   `q:"admin_state_up"`
+	Status         string  `q:"status"`
+	Limit          int     `q:"limit"`
+	Marker         string  `q:"marker"`
+	SortKey        string  `q:"sort_key"`
+	SortDir        string  `q:"sort_dir"`
 }
 
 // ToMonitorListQuery formats a ListOpts into a query string.
@@ -103,6 +105,10 @@ type CreateOpts struct {
 	// The time, in seconds, between sending probes to members.
 	Delay int `json:"delay" required:"true"`
 
+	// The domain name, which be injected into the HTTP Host Header to
+	// the backend server for HTTP health check. New in version 2.10.
+	DomainName string `json:"domain_name"`
+
 	// Maximum number of seconds for a Monitor to wait for a ping reply
 	// before it times out. The value must be less than the delay value.
 	Timeout int `json:"timeout" required:"true"`
@@ -111,7 +117,7 @@ type CreateOpts struct {
 	// status to INACTIVE. Must be a number between 1 and 10.
 	MaxRetries int `json:"max_retries" required:"true"`
 
-	// Number of permissible ping failures befor changing the member's
+	// Number of permissible ping failures before changing the member's
 	// status to ERROR. Must be a number between 1 and 10.
 	MaxRetriesDown int `json:"max_retries_down,omitempty"`
 
@@ -121,6 +127,10 @@ type CreateOpts struct {
 	// The HTTP method used for requests by the Monitor. If this attribute
 	// is not specified, it defaults to "GET". Required for HTTP(S) types.
 	HTTPMethod string `json:"http_method,omitempty"`
+
+	// The HTTP version used for requests by the Monitor. If this attribute
+	// is not specified, it defaults to 1.0". Required for HTTP(S) types.
+	HTTPVersion float32 `json:"http_version,omitempty"`
 
 	// Expected HTTP codes for a passing HTTP(S) Monitor. You can either specify
 	// a single status like "200", a range like "200-202", or a combination like
@@ -193,6 +203,10 @@ type UpdateOpts struct {
 	// The time, in seconds, between sending probes to members.
 	Delay int `json:"delay,omitempty"`
 
+	// The domain name, which be injected into the HTTP Host Header to
+	// the backend server for HTTP health check. New in version 2.10.
+	DomainName string `json:"domain_name"`
+
 	// Maximum number of seconds for a Monitor to wait for a ping reply
 	// before it times out. The value must be less than the delay value.
 	Timeout int `json:"timeout,omitempty"`
@@ -212,6 +226,10 @@ type UpdateOpts struct {
 	// The HTTP method used for requests by the Monitor. If this attribute
 	// is not specified, it defaults to "GET". Required for HTTP(S) types.
 	HTTPMethod string `json:"http_method,omitempty"`
+
+	// The HTTP version used for requests by the Monitor. If this attribute
+	// is not specified, it defaults to 1.0". Required for HTTP(S) types.
+	HTTPVersion float32 `json:"http_version,omitempty"`
 
 	// Expected HTTP codes for a passing HTTP(S) Monitor. You can either specify
 	// a single status like "200", or a range like "200-202". Required for HTTP(S)

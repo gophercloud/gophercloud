@@ -159,9 +159,11 @@ const PostFullyPopulatedLoadbalancerBody = `
 				"admin_state_up": true,
 				"project_id": "e3cd678b11784734bc366148aa37580e",
 				"delay": 3,
+				"domain_name": "example.com",
 				"expected_codes": "200,201,202",
 				"max_retries": 2,
 				"http_method": "GET",
+				"http_version": 1.1,
 				"timeout": 1,
 				"max_retries_down": 3,
 				"url_path": "/index.html",
@@ -382,8 +384,10 @@ var (
 				Timeout:        1,
 				MaxRetries:     2,
 				Delay:          3,
+				DomainName:     "example.com",
 				MaxRetriesDown: 3,
 				HTTPMethod:     "GET",
+				HTTPVersion:    1.1,
 				URLPath:        "/index.html",
 				ExpectedCodes:  "200,201,202",
 				AdminStateUp:   true,
@@ -465,6 +469,7 @@ func HandleFullyPopulatedLoadbalancerCreationSuccessfully(t *testing.T, response
 						"default_pool": {
 							"healthmonitor": {
 								"delay": 3,
+								"domain_name": "example.com",
 								"expected_codes": "200",
 								"http_method": "GET",
 								"max_retries": 2,
@@ -472,6 +477,7 @@ func HandleFullyPopulatedLoadbalancerCreationSuccessfully(t *testing.T, response
 								"name": "db",
 								"timeout": 1,
 								"type": "HTTP",
+								"http_version": 1.1,
 								"url_path": "/index.html"
 							},
 							"lb_algorithm": "ROUND_ROBIN",
