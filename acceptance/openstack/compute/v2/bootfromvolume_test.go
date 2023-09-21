@@ -51,6 +51,11 @@ func TestBootFromNewVolume(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
+	// minimum required microversion for getting volume tags is 2.70
+	// https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id64
+	client.Microversion = "2.70"
+
+	tagName := "tag1"
 	blockDevices := []bootfromvolume.BlockDevice{
 		{
 			DeleteOnTermination: true,
@@ -58,6 +63,7 @@ func TestBootFromNewVolume(t *testing.T) {
 			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 			VolumeSize:          2,
+			Tag:                 tagName,
 		},
 	}
 
@@ -73,6 +79,8 @@ func TestBootFromNewVolume(t *testing.T) {
 
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
+	attachmentTag := *attachments[0].Tag
+	th.AssertEquals(t, attachmentTag, tagName)
 
 	if server.Image != nil {
 		t.Fatalf("server image should be nil")
