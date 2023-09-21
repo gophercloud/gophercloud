@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -42,6 +43,63 @@ func (opts ListOpts) ToNetworkListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
+
+type commonListOpts struct{ common.NeutronListOpts }
+
+func (opts commonListOpts) ToNetworkListQuery() (string, error) {
+	return opts.ToQueryString(), nil
+}
+
+func NewListOptsBuilder(config ...common.NeutronListOptsConfig) ListOptsBuilder {
+	opts := commonListOpts{}
+	for _, conf := range config {
+		conf(&opts)
+	}
+	return opts
+}
+
+func Status(v ...string) common.NeutronListOptsConfig {
+	return common.MultiOptString("status", v...)
+}
+
+func Name(v ...string) common.NeutronListOptsConfig {
+	return common.MultiOptString("name", v...)
+}
+
+func Description(v ...string) common.NeutronListOptsConfig {
+	return common.MultiOptString("description", v...)
+}
+
+func AdminStateUp(v ...bool) common.NeutronListOptsConfig {
+	return common.MultiOptBool("admin_state_up", v...)
+}
+
+func TenantID(v ...string) common.NeutronListOptsConfig {
+	return common.MultiOptString("tenant_id", v...)
+}
+
+func ProjectID(v ...string) common.NeutronListOptsConfig {
+	return common.MultiOptString("project_id", v...)
+}
+
+func Shared(v ...bool) common.NeutronListOptsConfig {
+	return common.MultiOptBool("shared", v...)
+}
+
+func ID(v ...string) common.NeutronListOptsConfig {
+	return common.MultiOptString("id", v...)
+}
+
+var (
+	Tags       = common.Tags
+	TagsAny    = common.TagsAny
+	NotTags    = common.NotTags
+	NotTagsAny = common.NotTagsAny
+	SortKey    = common.SortKey
+	SortDir    = common.SortDir
+	Marker     = common.Marker
+	Limit      = common.Limit
+)
 
 // List returns a Pager which allows you to iterate over a collection of
 // networks. It accepts a ListOpts struct, which allows you to filter and sort

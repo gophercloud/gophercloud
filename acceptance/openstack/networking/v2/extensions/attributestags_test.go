@@ -4,7 +4,6 @@
 package extensions
 
 import (
-	"fmt"
 	"sort"
 	"testing"
 
@@ -77,7 +76,7 @@ func TestTags(t *testing.T) {
 	th.AssertEquals(t, 0, len(tags))
 }
 
-func listNetworkWithTagOpts(t *testing.T, client *gophercloud.ServiceClient, listOpts networks.ListOpts) (ids []string) {
+func listNetworkWithTagOpts(t *testing.T, client *gophercloud.ServiceClient, listOpts networks.ListOptsBuilder) (ids []string) {
 	allPages, err := networks.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 	allNetworks, err := networks.ExtractNetworks(allPages)
@@ -106,27 +105,34 @@ func TestQueryByTags(t *testing.T) {
 	defer networking.DeleteNetwork(t, client, network2.ID)
 
 	// Tags - Networks that match all tags will be returned
-	listOpts := networks.ListOpts{
-		Tags: fmt.Sprintf("a,b,c,%s", testtag)}
+	listOpts := networks.NewListOptsBuilder(networks.Tags("a", "b", "c"), networks.Tags(testtag))
 	ids := listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network1.ID}, ids)
 
 	// TagsAny - Networks that match any tag will be returned
-	listOpts = networks.ListOpts{
-		SortKey: "id", SortDir: "asc",
-		TagsAny: fmt.Sprintf("a,b,c,%s", testtag)}
+	listOpts = networks.NewListOptsBuilder(
+		networks.TagsAny("a", "b", "c", testtag),
+		networks.SortKey("id"),
+		networks.SortDir("asc"),
+	)
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	expected_ids := []string{network1.ID, network2.ID}
 	sort.Strings(expected_ids)
 	th.AssertDeepEquals(t, expected_ids, ids)
 
 	// NotTags - Networks that match all tags will be excluded
-	listOpts = networks.ListOpts{Tags: testtag, NotTags: "a,b,c"}
+	listOpts = networks.NewListOptsBuilder(
+		networks.Tags(testtag),
+		networks.NotTags("a", "b", "c"),
+	)
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network2.ID}, ids)
 
 	// NotTagsAny - Networks that match any tag will be excluded.
-	listOpts = networks.ListOpts{Tags: testtag, NotTagsAny: "d"}
+	listOpts = networks.NewListOptsBuilder(
+		networks.Tags(testtag),
+		networks.NotTagsAny("d"),
+	)
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network1.ID}, ids)
 }
