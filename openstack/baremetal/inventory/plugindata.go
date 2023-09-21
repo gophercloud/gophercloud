@@ -71,3 +71,44 @@ func (r *LLDPTLVType) UnmarshalJSON(data []byte) error {
 	r.Value = value
 	return nil
 }
+
+type HardwareManager struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
+type ConfigurationType struct {
+	// Collectors is a list of enabled collectors - ramdisk-side inspection
+	// plugins that populated the plugin data.
+	Collectors []string `json:"collectors"`
+	// Managers is a list of hardware managers - ramdisk-side plugins that
+	// implement all actions, such as writing images or collecting
+	// inventory.
+	Managers []HardwareManager `json:"managers"`
+}
+
+type ProcessedInterfaceType struct {
+	InterfaceType
+	// Whether PXE was enabled on this interface during inspection
+	PXEEnabled bool `json:"pxe_enabled"`
+	// TODO(dtantsur): add LLDPProcessed once it's actually implemented
+}
+
+// StandardPluginData represents the plugin data as collected and processes
+// by a standard ramdisk and a standard Ironic deployment.
+// The format and contents of the stored data depends on the ramdisk used
+// and plugins enabled both in the ramdisk and in inspector itself.
+// This structure has been provided for basic compatibility but it
+// will need extensions.
+type StandardPluginData struct {
+	AllInterfaces   map[string]ProcessedInterfaceType `json:"all_interfaces"`
+	BootInterface   string                            `json:"boot_interface"`
+	Configuration   ConfigurationType                 `json:"configuration"`
+	Error           string                            `json:"error"`
+	Extra           ExtraDataType                     `json:"extra"`
+	MACs            []string                          `json:"macs"`
+	NUMATopology    NUMATopology                      `json:"numa_topology"`
+	RawLLDP         map[string][]LLDPTLVType          `json:"lldp_raw"`
+	RootDisk        RootDiskType                      `json:"root_disk"`
+	ValidInterfaces map[string]ProcessedInterfaceType `json:"valid_interfaces"`
+}
