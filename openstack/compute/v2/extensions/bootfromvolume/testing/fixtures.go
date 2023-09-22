@@ -308,3 +308,53 @@ var NewVolumeTypeRequest = bootfromvolume.CreateOptsExt{
 		},
 	},
 }
+
+const ExpectedImageAndExistingVolumeWithTagRequest = `
+{
+	"server": {
+		"name": "createdserver",
+		"imageRef": "asdfasdfasdf",
+		"flavorRef": "performance1-1",
+		"block_device_mapping_v2":[
+			{
+				"boot_index": 0,
+				"delete_on_termination": true,
+				"destination_type":"local",
+				"source_type":"image",
+				"uuid":"asdfasdfasdf"
+			},
+			{
+				"boot_index": -1,
+				"delete_on_termination": true,
+				"destination_type":"volume",
+				"source_type":"volume",
+				"tag": "volume-tag",
+				"uuid":"123456",
+				"volume_size": 1
+			}
+		]
+	}
+}
+`
+
+var ImageAndExistingVolumeWithTagRequest = bootfromvolume.CreateOptsExt{
+	CreateOptsBuilder: BaseCreateOptsWithImageRef,
+	BlockDevice: []bootfromvolume.BlockDevice{
+		{
+			BootIndex:           0,
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.DestinationLocal,
+			SourceType:          bootfromvolume.SourceImage,
+			UUID:                "asdfasdfasdf",
+		},
+		{
+			BootIndex:           -1,
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.DestinationVolume,
+			SourceType:          bootfromvolume.SourceVolume,
+			Tag:                 "volume-tag",
+			UUID:                "123456",
+			VolumeSize:          1,
+		},
+	},
+}

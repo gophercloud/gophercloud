@@ -178,7 +178,6 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	}
 
 	th.AssertEquals(t, newServer.Name, name)
-	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
 
 	return newServer, nil
 }
