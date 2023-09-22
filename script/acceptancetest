@@ -17,7 +17,7 @@ mkdir -p ${LOG_DIR}
 if [[ -z "${ACCEPTANCE_TESTS_FILTER}" ]]; then
     ACCEPTANCE_TESTS=($(python <<< "print(' '.join($ACCEPTANCE_TESTS))"))
 else
-    ACCEPTANCE_TESTS=$(find acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq | grep -P "$ACCEPTANCE_TESTS_FILTER")
+    ACCEPTANCE_TESTS=$(find internal/acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq | grep -P "$ACCEPTANCE_TESTS_FILTER")
     ACCEPTANCE_TESTS=($ACCEPTANCE_TESTS)
 fi
 
