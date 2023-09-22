@@ -20,10 +20,6 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 	attachOpts := &attachments.CreateOpts{
 		VolumeUUID:   volume.ID,
 		InstanceUUID: server.ID,
-		Connector: map[string]interface{}{
-			"mode":      "rw",
-			"initiator": "fake",
-		},
 	}
 
 	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
@@ -55,20 +51,6 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 	if err != nil {
 		return err
 	}
-
-	/*
-		// Not clear how perform a proper update, OpenStack returns "Unable to update the attachment."
-		updateOpts := &attachments.UpdateOpts{
-			Connector: map[string]interface{}{
-				"mode":      "ro",
-				"initiator": "fake",
-			},
-		}
-		attachment, err = attachments.Update(client, attachment.ID, updateOpts).Extract()
-		if err != nil {
-			return err
-		}
-	*/
 
 	listOpts := &attachments.ListOpts{
 		VolumeID:   volume.ID,
