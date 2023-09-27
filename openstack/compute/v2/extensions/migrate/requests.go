@@ -1,6 +1,8 @@
 package migrate
 
 import (
+	"fmt"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
 )
@@ -27,7 +29,7 @@ type LiveMigrateOpts struct {
 	// Set to True to migrate local disks by using block migration.
 	// If the source or destination host uses shared storage and you set
 	// this value to True, the live migration fails.
-	BlockMigration *bool `json:"block_migration,omitempty"`
+	BlockMigration interface{} `json:"block_migration,omitempty"`
 
 	// Set to True to enable over commit when the destination host is checked
 	// for available disk space. Set to False to disable over commit. This setting
@@ -37,7 +39,24 @@ type LiveMigrateOpts struct {
 
 // ToLiveMigrateMap constructs a request body from LiveMigrateOpts.
 func (opts LiveMigrateOpts) ToLiveMigrateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "os-migrateLive")
+	b, err := gophercloud.BuildRequestBody(opts, "os-migrateLive")
+	if err != nil {
+		return nil, err
+	}
+
+	switch blockMigration := opts.BlockMigration.(type) {
+	case string:
+		if blockMigration != "auto" && blockMigration != "True" && blockMigration != "False" {
+			return nil, fmt.Errorf("block_migration expected to be one of 'auto', 'True', 'False' but got '%s'", blockMigration)
+		}
+		// valid
+	case *bool:
+		// valid
+	default:
+		return nil, fmt.Errorf("expected block_migration type to be string or *bool, got '%t'", blockMigration)
+	}
+
+	return b, nil
 }
 
 // LiveMigrate will initiate a live-migration (without rebooting) of the instance to another host.
