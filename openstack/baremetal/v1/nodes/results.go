@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -546,10 +547,44 @@ func (pd PluginData) AsMap() (result map[string]interface{}, err error) {
 	return
 }
 
-// Interpret plugin data as coming from ironic-inspector.
+// AsStandardData interprets plugin data as coming from ironic native inspection.
+func (pd PluginData) AsStandardData() (result inventory.StandardPluginData, err error) {
+	err = json.Unmarshal(pd.RawMessage, &result)
+	return
+}
+
+// AsInspectorData interprets plugin data as coming from ironic-inspector.
 func (pd PluginData) AsInspectorData() (result introspection.Data, err error) {
 	err = json.Unmarshal(pd.RawMessage, &result)
 	return
+}
+
+// GuessFormat tries to guess which format the data is in. Unless there is
+// an error while parsing, one result will be valid, the other - nil.
+// Unknown (but still parseable) format defaults to standard.
+func (pd PluginData) GuessFormat() (*inventory.StandardPluginData, *introspection.Data, error) {
+	// Ironic and Inspector formats are compatible, don't expect an error in either case
+	ironic, err := pd.AsStandardData()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// The valid_interfaces field only exists in the Ironic data (it's called just interfaces in Inspector)
+	if len(ironic.ValidInterfaces) > 0 {
+		return &ironic, nil, nil
+	}
+
+	inspector, err := pd.AsInspectorData()
+	if err != nil {
+		return nil, nil, fmt.Errorf("cannot interpret PluginData as coming from inspector on conversion: %w", err)
+	}
+
+	// If the format does not match anything (but still parses), assume a heavily customized deployment
+	if len(inspector.Interfaces) == 0 {
+		return &ironic, nil, nil
+	}
+
+	return nil, &inspector, nil
 }
 
 // InventoryData is the full node inventory.

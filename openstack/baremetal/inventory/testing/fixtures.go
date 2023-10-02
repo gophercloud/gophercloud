@@ -1,6 +1,10 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
+import (
+	"fmt"
+
+	"github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
+)
 
 const InventorySample = `{
     "bmc_address": "192.167.2.134",
@@ -190,6 +194,84 @@ const NUMADataJSONSample = `
 }
 `
 
+var StandardPluginDataSample = fmt.Sprintf(`
+{
+    "all_interfaces": {
+        "eth0": {
+	    "client_id": null,
+	    "has_carrier": true,
+	    "ipv4_address": "172.24.42.101",
+	    "mac_address": "52:54:00:47:20:4d",
+	    "name": "eth1",
+	    "product": "0x0001",
+	    "vendor": "0x1af4",
+	    "pxe_enabled": true
+	},
+        "eth1": {
+	    "client_id": null,
+	    "has_carrier": true,
+	    "ipv4_address": "172.24.42.100",
+	    "mac_address": "52:54:00:4e:3d:30",
+	    "name": "eth0",
+	    "product": "0x0001",
+	    "vendor": "0x1af4",
+	    "speed_mbps": 1000,
+	    "pxe_enabled": false
+	}
+    },
+    "boot_interface": "52:54:00:4e:3d:30",
+    "configuration": {
+	"collectors": ["default", "logs"],
+	"managers": [
+	    {
+		"name": "generic_hardware_manager",
+		"version": "1.1"
+	    }
+	]
+    },
+    "error": null,
+    "extra": %s,
+    "valid_interfaces": {
+        "eth0": {
+	    "client_id": null,
+	    "has_carrier": true,
+	    "ipv4_address": "172.24.42.101",
+	    "mac_address": "52:54:00:47:20:4d",
+	    "name": "eth1",
+	    "product": "0x0001",
+	    "vendor": "0x1af4",
+	    "pxe_enabled": true
+	}
+    },
+    "lldp_raw": {
+	"eth0": [
+	    [
+		1,
+		"04112233aabbcc"
+	    ],
+	    [
+		5,
+		"737730312d646973742d31622d623132"
+	    ]
+	]
+    },
+    "macs": [
+        "52:54:00:4e:3d:30"
+    ],
+    "root_disk": {
+        "hctl": null,
+        "model": "",
+        "name": "/dev/vda",
+        "rotational": true,
+        "serial": null,
+        "size": 13958643712,
+        "vendor": "0x1af4",
+        "wwn": null,
+        "wwn_vendor_extension": null,
+        "wwn_with_extension": null
+    }
+}`, ExtraDataJSONSample)
+
 var Inventory = inventory.InventoryType{
 	SystemVendor: inventory.SystemVendorType{
 		Manufacturer: "Bochs",
@@ -347,6 +429,78 @@ var NUMATopology = inventory.NUMATopology{
 		{
 			NUMANode: 1,
 			SizeKB:   100663296,
+		},
+	},
+}
+
+var StandardPluginData = inventory.StandardPluginData{
+	AllInterfaces: map[string]inventory.ProcessedInterfaceType{
+		"eth0": {
+			InterfaceType: inventory.InterfaceType{
+				Vendor:      "0x1af4",
+				HasCarrier:  true,
+				MACAddress:  "52:54:00:47:20:4d",
+				Name:        "eth1",
+				Product:     "0x0001",
+				IPV4Address: "172.24.42.101",
+			},
+			PXEEnabled: true,
+		},
+		"eth1": {
+			InterfaceType: inventory.InterfaceType{
+				IPV4Address: "172.24.42.100",
+				MACAddress:  "52:54:00:4e:3d:30",
+				Name:        "eth0",
+				Product:     "0x0001",
+				HasCarrier:  true,
+				Vendor:      "0x1af4",
+				SpeedMbps:   1000,
+			},
+		},
+	},
+	BootInterface: "52:54:00:4e:3d:30",
+	Configuration: inventory.ConfigurationType{
+		Collectors: []string{"default", "logs"},
+		Managers: []inventory.HardwareManager{
+			{
+				Name:    "generic_hardware_manager",
+				Version: "1.1",
+			},
+		},
+	},
+	Error: "",
+	Extra: ExtraData,
+	MACs:  []string{"52:54:00:4e:3d:30"},
+	RawLLDP: map[string][]inventory.LLDPTLVType{
+		"eth0": {
+			{
+				Type:  1,
+				Value: "04112233aabbcc",
+			},
+			{
+				Type:  5,
+				Value: "737730312d646973742d31622d623132",
+			},
+		},
+	},
+	RootDisk: inventory.RootDiskType{
+		Rotational: true,
+		Model:      "",
+		Name:       "/dev/vda",
+		Size:       13958643712,
+		Vendor:     "0x1af4",
+	},
+	ValidInterfaces: map[string]inventory.ProcessedInterfaceType{
+		"eth0": {
+			InterfaceType: inventory.InterfaceType{
+				Vendor:      "0x1af4",
+				HasCarrier:  true,
+				MACAddress:  "52:54:00:47:20:4d",
+				Name:        "eth1",
+				Product:     "0x0001",
+				IPV4Address: "172.24.42.101",
+			},
+			PXEEnabled: true,
 		},
 	},
 }

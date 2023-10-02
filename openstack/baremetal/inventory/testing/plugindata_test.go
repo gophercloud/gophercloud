@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
-	"github.com/gophercloud/gophercloud/openstack/baremetalintrospection/v1/introspection"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -20,11 +19,22 @@ func TestExtraHardware(t *testing.T) {
 }
 
 func TestIntrospectionNUMA(t *testing.T) {
-	var output introspection.Data
+	var output inventory.StandardPluginData
 	err := json.Unmarshal([]byte(NUMADataJSONSample), &output)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal NUMA Data: %s", err)
 	}
 
 	th.CheckDeepEquals(t, NUMATopology, output.NUMATopology)
+}
+
+func TestStandardPluginData(t *testing.T) {
+	var output inventory.StandardPluginData
+
+	err := json.Unmarshal([]byte(StandardPluginDataSample), &output)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal plugin data: %s", err)
+	}
+
+	th.CheckDeepEquals(t, StandardPluginData, output)
 }
