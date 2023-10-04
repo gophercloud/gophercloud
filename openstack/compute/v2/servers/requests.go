@@ -167,6 +167,15 @@ func (f *File) MarshalJSON() ([]byte, error) {
 	return json.Marshal(file)
 }
 
+type BlockDeviceMappingV2 struct {
+	BootIndex           string `json:"boot_index"`
+	Uuid                string `json:"uuid"`
+	SourceType          string `json:"source_type"`
+	VolumeSize          string `json:"volume_size"`
+	DestinationType     string `json:"destination_type,omitempty"`
+	DeleteOnTermination bool   `json:"delete_on_termination,omitempty"`
+}
+
 // CreateOpts specifies server creation parameters.
 type CreateOpts struct {
 	// Name is the name to assign to the newly launched server.
@@ -182,11 +191,11 @@ type CreateOpts struct {
 
 	// SecurityGroups lists the names of the security groups to which this server
 	// should belong.
-	SecurityGroups []string `json:"-"`
+	SecurityGroups []string `json:"security_groups,omitempty"`
 
 	// UserData contains configuration information or scripts to use upon launch.
 	// Create will base64-encode it for you, if it isn't already.
-	UserData []byte `json:"-"`
+	UserData []byte `json:"user_data"`
 
 	// AvailabilityZone in which to launch the server.
 	AvailabilityZone string `json:"availability_zone,omitempty"`
@@ -196,7 +205,7 @@ type CreateOpts struct {
 	// tenant.
 	// Starting with microversion 2.37 networks can also be an "auto" or "none"
 	// string.
-	Networks interface{} `json:"-"`
+	Networks interface{} `json:"networks"`
 
 	// Metadata contains key-value pairs (up to 255 bytes each) to attach to the
 	// server.
@@ -227,7 +236,8 @@ type CreateOpts struct {
 
 	// Tags allows a server to be tagged with single-word metadata.
 	// Requires microversion 2.52 or later.
-	Tags []string `json:"tags,omitempty"`
+	Tags                 []string               `json:"tags,omitempty"`
+	BlockDeviceMappingV2 []BlockDeviceMappingV2 `json:"block_device_mapping_v2"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
