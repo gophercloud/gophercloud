@@ -199,6 +199,9 @@ type Node struct {
 	// Deploy interface for a node, e.g. “iscsi”.
 	DeployInterface string `json:"deploy_interface"`
 
+	// Firmware interface for a node, e.g. “redfish”.
+	FirmwareInterface string `json:"firmware_interface"`
+
 	// Interface used for node inspection, e.g. “no-inspect”.
 	InspectInterface string `json:"inspect_interface"`
 
@@ -405,6 +408,7 @@ type NodeValidation struct {
 	Boot       DriverValidation `json:"boot"`
 	Console    DriverValidation `json:"console"`
 	Deploy     DriverValidation `json:"deploy"`
+	Firmware   DriverValidation `json:"firmware"`
 	Inspect    DriverValidation `json:"inspect"`
 	Management DriverValidation `json:"management"`
 	Network    DriverValidation `json:"network"`
@@ -605,4 +609,36 @@ func (r InventoryResult) Extract() (*InventoryData, error) {
 	var data InventoryData
 	err := r.ExtractInto(&data)
 	return &data, err
+}
+
+// ListFirmwareResult is the response from a ListFirmware operation. Call its Extract method
+// to interpret it as an array of FirmwareComponent structs.
+type ListFirmwareResult struct {
+	gophercloud.Result
+}
+
+// A particular Firmware Component for a node
+type FirmwareComponent struct {
+	// The UTC date and time when the resource was created, ISO 8601 format.
+	CreatedAt time.Time `json:"created_at"`
+	// The UTC date and time when the resource was updated, ISO 8601 format. May be “null”.
+	UpdatedAt *time.Time `json:"updated_at"`
+	// The Component name
+	Component string `json:"component"`
+	// The initial version of the firmware component.
+	InitialVersion string `json:"initial_version"`
+	// The current version of the firmware component.
+	CurrentVersion string `json:"current_version"`
+	// The last firmware version updated for the component.
+	LastVersionFlashed string `json:"last_version_flashed,omitempty"`
+}
+
+// Extract interprets a ListFirmwareResult as an array of FirmwareComponent structs, if possible.
+func (r ListFirmwareResult) Extract() ([]FirmwareComponent, error) {
+	var s struct {
+		Components []FirmwareComponent `json:"firmware"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Components, err
 }

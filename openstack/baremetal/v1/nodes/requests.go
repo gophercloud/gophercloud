@@ -211,6 +211,9 @@ type CreateOpts struct {
 	// A set of one or more arbitrary metadata key and value pairs.
 	Extra map[string]interface{} `json:"extra,omitempty"`
 
+	// The firmware interface for a node, e.g. "redfish"
+	FirmwareInterface string `json:"firmware_interface,omitempty"`
+
 	// The interface used for node inspection, e.g. “no-inspect”.
 	InspectInterface string `json:"inspect_interface,omitempty"`
 
@@ -411,6 +414,7 @@ type StepInterface string
 const (
 	InterfaceBIOS       StepInterface = "bios"
 	InterfaceDeploy     StepInterface = "deploy"
+	InterfaceFirmware   StepInterface = "firmware"
 	InterfaceManagement StepInterface = "management"
 	InterfacePower      StepInterface = "power"
 	InterfaceRAID       StepInterface = "raid"
@@ -884,6 +888,15 @@ func UnsetMaintenance(client *gophercloud.ServiceClient, id string) (r SetMainte
 // GetInventory return stored data from successful inspection.
 func GetInventory(client *gophercloud.ServiceClient, id string) (r InventoryResult) {
 	resp, err := client.Get(inventoryURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListFirmware return the list of Firmware components for the given Node.
+func ListFirmware(client *gophercloud.ServiceClient, id string) (r ListFirmwareResult) {
+	resp, err := client.Get(firmwareListURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

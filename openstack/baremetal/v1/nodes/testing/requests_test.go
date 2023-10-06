@@ -104,6 +104,7 @@ func TestCreateNode(t *testing.T) {
 			"deploy_ramdisk": "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
 			"ipmi_password":  "admin",
 		},
+		FirmwareInterface: "no-firmware",
 	}).Extract()
 	th.AssertNoErr(t, err)
 
@@ -729,4 +730,15 @@ func TestGetInventory(t *testing.T) {
 	compatData, err := actual.PluginData.AsInspectorData()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "x86_64", compatData.CPUArch)
+}
+
+func TestListFirmware(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListFirmwareSuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.ListFirmware(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeFirmwareList, actual)
 }

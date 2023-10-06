@@ -100,6 +100,7 @@ const NodeListDetailBody = `
       "driver_internal_info": {},
       "extra": {},
       "fault": null,
+      "firmware_interface": "no-firmware",
       "inspect_interface": "no-inspect",
       "inspection_finished_at": null,
       "inspection_started_at": null,
@@ -197,6 +198,7 @@ const NodeListDetailBody = `
       "driver_internal_info": {},
       "extra": {},
       "fault": null,
+      "firmware_interface": "no-firmware",
       "inspect_interface": "no-inspect",
       "inspection_finished_at": "2023-02-02T14:45:59.705249Z",
       "inspection_started_at": "2023-02-02T14:35:59.682403Z",
@@ -294,6 +296,7 @@ const NodeListDetailBody = `
       "driver_internal_info": {},
       "extra": {},
       "fault": null,
+      "firmware_interface": "no-firmware",
       "inspect_interface": "no-inspect",
       "inspection_finished_at": null,
       "inspection_started_at": null,
@@ -404,6 +407,7 @@ const SingleNodeBody = `
   "driver_internal_info": {},
   "extra": {},
   "fault": null,
+  "firmware_interface": "no-firmware",
   "inspect_interface": "no-inspect",
   "inspection_finished_at": null,
   "inspection_started_at": null,
@@ -502,6 +506,10 @@ const NodeValidationBody = `
   },
   "deploy": {
     "reason": "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
+    "result": false
+  },
+  "firmware": {
+    "reason": "Driver ipmi does not support firmware (disabled or not implemented).",
     "result": false
   },
   "inspect": {
@@ -828,6 +836,29 @@ var NodeInventoryBody = fmt.Sprintf(`
 }
 `, inventorytest.InventorySample)
 
+const NodeFirmwareListBody = `
+{
+  "firmware": [
+   {
+      "created_at": "2023-10-03T18:30:00+00:00", 
+      "updated_at": null,
+      "component": "bios",
+      "initial_version": "U30 v2.36 (07/16/2020)",
+      "current_version": "U30 v2.36 (07/16/2020)",
+      "last_version_flashed": null
+   },
+   {
+      "created_at": "2023-10-03T18:30:00+00:00",
+      "updated_at": "2023-10-03T18:45:54+00:00", 
+      "component": "bmc",  
+      "initial_version": "iLO 5 v2.78", 
+      "current_version": "iLO 5 v2.81", 
+      "last_version_flashed": "iLO 5 v2.81"
+   }
+   ]
+}
+`
+
 var (
 	createdAtFoo, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
 	createdAtBar, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
@@ -872,6 +903,7 @@ var (
 		BootInterface:       "pxe",
 		ConsoleInterface:    "no-console",
 		DeployInterface:     "iscsi",
+		FirmwareInterface:   "no-firmware",
 		InspectInterface:    "no-inspect",
 		ManagementInterface: "ipmitool",
 		NetworkInterface:    "flat",
@@ -905,6 +937,10 @@ var (
 		Deploy: nodes.DriverValidation{
 			Result: false,
 			Reason: "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
+		},
+		Firmware: nodes.DriverValidation{
+			Result: false,
+			Reason: "Driver ipmi does not support firmware (disabled or not implemented).",
 		},
 		Inspect: nodes.DriverValidation{
 			Result: false,
@@ -975,6 +1011,7 @@ var (
 		BootInterface:        "pxe",
 		ConsoleInterface:     "no-console",
 		DeployInterface:      "iscsi",
+		FirmwareInterface:    "no-firmware",
 		InspectInterface:     "no-inspect",
 		ManagementInterface:  "ipmitool",
 		NetworkInterface:     "flat",
@@ -1023,6 +1060,7 @@ var (
 		BootInterface:        "pxe",
 		ConsoleInterface:     "no-console",
 		DeployInterface:      "iscsi",
+		FirmwareInterface:    "no-firmware",
 		InspectInterface:     "no-inspect",
 		ManagementInterface:  "ipmitool",
 		NetworkInterface:     "flat",
@@ -1192,6 +1230,28 @@ var (
 	NodeInventoryData = nodes.InventoryData{
 		Inventory: inventorytest.Inventory,
 	}
+
+	createdAtFirmware, _ = time.Parse(time.RFC3339, "2023-10-03T18:30:00+00:00")
+	updatedAtFirmware, _ = time.Parse(time.RFC3339, "2023-10-03T18:45:54+00:00")
+	lastVersion          = "iLO 5 v2.81"
+	NodeFirmwareList     = []nodes.FirmwareComponent{
+		{
+			CreatedAt:          createdAtFirmware,
+			UpdatedAt:          nil,
+			Component:          "bios",
+			InitialVersion:     "U30 v2.36 (07/16/2020)",
+			CurrentVersion:     "U30 v2.36 (07/16/2020)",
+			LastVersionFlashed: "",
+		},
+		{
+			CreatedAt:          createdAtFirmware,
+			UpdatedAt:          &updatedAtFirmware,
+			Component:          "bmc",
+			InitialVersion:     "iLO 5 v2.78",
+			CurrentVersion:     "iLO 5 v2.81",
+			LastVersionFlashed: lastVersion,
+		},
+	}
 )
 
 // HandleNodeListSuccessfully sets up the test server to respond to a server List request.
@@ -1244,6 +1304,7 @@ func HandleNodeCreationSuccessfully(t *testing.T, response string) {
             "ipmi_port": "6230",
             "ipmi_username": "admin"
           },
+          "firmware_interface": "no-firmware",
           "name": "foo"
         }`)
 
@@ -1595,5 +1656,15 @@ func HandleGetInventorySuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, NodeInventoryBody)
+	})
+}
+
+// HandleListFirmware
+func HandleListFirmwareSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/firmware", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, NodeFirmwareListBody)
 	})
 }

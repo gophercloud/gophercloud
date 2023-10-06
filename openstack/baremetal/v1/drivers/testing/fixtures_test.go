@@ -104,6 +104,7 @@ const SingleDriverDetails = `
   "default_boot_interface": "pxe",
   "default_console_interface": "no-console",
   "default_deploy_interface": "iscsi",
+  "default_firmware_interface": "no-firmware",
   "default_inspect_interface": "no-inspect",
   "default_management_interface": "ipmitool",
   "default_network_interface": "flat",
@@ -124,6 +125,9 @@ const SingleDriverDetails = `
   "enabled_deploy_interfaces": [
     "iscsi",
     "direct"
+  ],
+  "enabled_firmware_interfaces": [
+    "no-firmware"
   ],
   "enabled_inspect_interfaces": [
     "no-inspect"
@@ -281,6 +285,7 @@ var (
 		DefaultBootInterface:        "pxe",
 		DefaultConsoleInterface:     "no-console",
 		DefaultDeployInterface:      "iscsi",
+		DefaultFirmwareInterface:    "no-firmware",
 		DefaultInspectInterface:     "no-inspect",
 		DefaultManagementInterface:  "ipmitool",
 		DefaultNetworkInterface:     "flat",
@@ -293,6 +298,7 @@ var (
 		EnabledBootInterfaces:       []string{"pxe"},
 		EnabledConsoleInterface:     []string{"no-console"},
 		EnabledDeployInterfaces:     []string{"iscsi", "direct"},
+		EnabledFirmwareInterfaces:   []string{"no-firmware"},
 		EnabledInspectInterfaces:    []string{"no-inspect"},
 		EnabledManagementInterfaces: []string{"ipmitool"},
 		EnabledNetworkInterfaces:    []string{"flat", "noop"},

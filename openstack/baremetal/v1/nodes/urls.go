@@ -81,3 +81,7 @@ func maintenanceURL(client *gophercloud.ServiceClient, id string) string {
 func inventoryURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("nodes", id, "inventory")
 }
+
+func firmwareListURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "firmware")
+}

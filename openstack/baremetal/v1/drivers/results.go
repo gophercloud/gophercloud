@@ -51,6 +51,10 @@ type Driver struct {
 	// if no deploy interface is specified for the node.
 	DefaultDeployInterface string `json:"default_deploy_interface"`
 
+	// The default firmware interface used for a node with a dynamic driver,
+	// if no firmware interface is specified for the node.
+	DefaultFirmwareInterface string `json:"default_firmware_interface"`
+
 	// The default inspection interface used for a node with a dynamic driver,
 	// if no inspection interface is specified for the node.
 	DefaultInspectInterface string `json:"default_inspect_interface"`
@@ -94,6 +98,9 @@ type Driver struct {
 
 	// The enabled deploy interfaces for this driver.
 	EnabledDeployInterfaces []string `json:"enabled_deploy_interfaces"`
+
+	// The enabled firmware interfaces for this driver.
+	EnabledFirmwareInterfaces []string `json:"enabled_firmware_interfaces"`
 
 	// The enabled inspection interfaces for this driver.
 	EnabledInspectInterfaces []string `json:"enabled_inspect_interfaces"`
