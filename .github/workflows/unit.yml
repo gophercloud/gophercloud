@@ -6,7 +6,7 @@ permissions:
 jobs:
   test:
     permissions:
-      checks: write  # for shogo82148/actions-goveralls to create a new check based on the results
+      checks: write  # for coverallsapp/github-action to create a new check based on the results
       contents: read  # for actions/checkout to fetch code
     runs-on: ubuntu-latest
     strategy:
@@ -47,18 +47,22 @@ jobs:
           ./script/format
           ./script/unittest -v
 
-      - uses: shogo82148/actions-goveralls@v1
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@v2
         with:
-          path-to-profile: cover.out
+          file: cover.out
           flag-name: Go-${{ matrix.go-version }}
           parallel: true
 
   finish:
     permissions:
-      checks: write  # for shogo82148/actions-goveralls to create a new check based on the results
+      checks: write  # for coverallsapp/github-action to create a new check based on the results
     needs: test
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - uses: shogo82148/actions-goveralls@v1
-        with:
-          parallel-finished: true
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true
+        carryforward: Go-${{ join(matrix.go-version.*, '-') }}
