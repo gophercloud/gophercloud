@@ -79,6 +79,16 @@ jobs:
             SWIFT_ENABLE_TEMPURLS=True
             SWIFT_TEMPURL_KEY=secretkey
           enabled_services: 'ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent'
+      - name: Provide remote access
+        if: failure()
+        run: |
+          wget https://github.com/tmate-io/tmate/releases/download/2.4.0/tmate-2.4.0-static-linux-amd64.tar.xz
+          tar xf tmate-2.4.0-static-linux-amd64.tar.xz
+          cd tmate-2.4.0-static-linux-amd64
+          ./tmate -F &
+      - name: Sleep
+        if: failure()
+        run: sleep 5000
       - name: Checkout go
         uses: actions/setup-go@v4
         with:
