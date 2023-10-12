@@ -1001,17 +1001,30 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 }
 
 func TestPortsListOpts(t *testing.T) {
-	for expected, opts := range map[string]ports.ListOpts{
-		newValue("fixed_ips", `ip_address=1.2.3.4,subnet_id=42`): {
-			FixedIPs: []ports.FixedIPOpts{{IPAddress: "1.2.3.4", SubnetID: "42"}},
+	for _, tt := range []struct {
+		listOpts ports.ListOpts
+		params   []struct{ key, value string }
+	}{
+		{
+			listOpts: ports.ListOpts{
+				FixedIPs: []ports.FixedIPOpts{{IPAddress: "1.2.3.4", SubnetID: "42"}},
+			},
+			params: []struct {
+				key   string
+				value string
+			}{
+				{"fixed_ips", "ip_address=1.2.3.4"},
+				{"fixed_ips", "subnet_id=42"},
+			},
 		},
 	} {
-		actual, _ := opts.ToPortListQuery()
+		v := url.Values{}
+		for _, param := range tt.params {
+			v.Add(param.key, param.value)
+		}
+		expected := "?" + v.Encode()
+
+		actual, _ := tt.listOpts.ToPortListQuery()
 		th.AssertEquals(t, expected, actual)
 	}
-}
-func newValue(param, value string) string {
-	v := url.Values{}
-	v.Add(param, value)
-	return "?" + v.Encode()
 }

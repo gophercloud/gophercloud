@@ -3,7 +3,6 @@ package ports
 import (
 	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -50,7 +49,7 @@ type FixedIPOpts struct {
 	SubnetID        string
 }
 
-func (f FixedIPOpts) String() string {
+func (f FixedIPOpts) toParams() []string {
 	var res []string
 	if f.IPAddress != "" {
 		res = append(res, fmt.Sprintf("ip_address=%s", f.IPAddress))
@@ -61,7 +60,7 @@ func (f FixedIPOpts) String() string {
 	if f.SubnetID != "" {
 		res = append(res, fmt.Sprintf("subnet_id=%s", f.SubnetID))
 	}
-	return strings.Join(res, ",")
+	return res
 }
 
 // ToPortListQuery formats a ListOpts into a query string.
@@ -69,7 +68,9 @@ func (opts ListOpts) ToPortListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	params := q.Query()
 	for _, fixedIP := range opts.FixedIPs {
-		params.Add("fixed_ips", fixedIP.String())
+		for _, fixedIPParam := range fixedIP.toParams() {
+			params.Add("fixed_ips", fixedIPParam)
+		}
 	}
 	q = &url.URL{RawQuery: params.Encode()}
 	return q.String(), err
