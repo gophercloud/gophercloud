@@ -41,7 +41,7 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.12.1
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
@@ -49,7 +49,7 @@ jobs:
             enable_plugin barbican https://github.com/openstack/barbican ${{ matrix.openstack_version }}
             enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
-            SWIFT_MAX_FILE_SIZE=5368709122
+            SWIFT_MAX_FILE_SIZE=536870.12.12
             KEYSTONE_ADMIN_ENDPOINT=true
             MAGNUMCLIENT_BRANCH=${{ matrix.openstack_version }}
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
