@@ -148,3 +148,22 @@ func TestNodesRAIDConfig(t *testing.T) {
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestNodesFirmwareInterface(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/2023.2")
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.86"
+
+	node, err := CreateNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+
+	th.AssertEquals(t, node.FirmwareInterface, "no-firmware")
+
+	nodeFirmwareCmps, err := nodes.ListFirmware(client, node.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, nodeFirmwareCmps, []nodes.FirmwareComponent{})
+}
