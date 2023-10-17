@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Template is a structure that represents OpenStack Heat templates
@@ -74,7 +75,6 @@ func (t *Template) makeChildTemplate(childURL string, ignoreIf igFunc, recurse b
 				if err := childTemplate.getFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
 					return nil, err
 				}
-				childTemplate.fixFileRefs()
 			}
 		}
 	}
@@ -84,17 +84,17 @@ func (t *Template) makeChildTemplate(childURL string, ignoreIf igFunc, recurse b
 
 // Applies the transformation for getFileContents() to just one element of a map.
 // In case the element requires transforming, the function returns its new value.
-func (t *Template) mapElemFileContents(k interface{}, v interface{}, ignoreIf igFunc, recurse bool) error {
+func (t *Template) mapElemFileContents(k interface{}, v interface{}, ignoreIf igFunc, recurse bool) (interface{}, error) {
 	key, ok := k.(string)
 	if !ok {
-		return fmt.Errorf("can't convert map key to string: %v", k)
+		return nil, fmt.Errorf("can't convert map key to string: %v", k)
 	}
 
 	value, ok := v.(string)
 	if !ok {
 		// if the value is not a string, recursively parse that value
 		if err := t.getFileContents(v, ignoreIf, recurse); err != nil {
-			return err
+			return nil, err
 		}
 	} else if !ignoreIf(key, value) {
 		// at this point, the k, v pair has a reference to an external template
@@ -105,7 +105,7 @@ func (t *Template) mapElemFileContents(k interface{}, v interface{}, ignoreIf ig
 		// create a new child template with the referenced contents
 		childTemplate, err := t.makeChildTemplate(value, ignoreIf, recurse)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// update parent template with current child templates' content.
@@ -117,9 +117,11 @@ func (t *Template) mapElemFileContents(k interface{}, v interface{}, ignoreIf ig
 		for k, v := range childTemplate.Files {
 			t.Files[k] = v
 		}
+
+		return childTemplate.URL, nil
 	}
 
-	return nil
+	return nil, nil
 }
 
 // GetFileContents recursively parses a template to search for urls. These urls
@@ -136,32 +138,54 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	if t.fileMaps == nil {
 		t.fileMaps = make(map[string]string)
 	}
-	switch te.(type) {
-	// if te is a map
-	case map[string]interface{}, map[interface{}]interface{}:
-		teMap, err := toStringKeys(te)
-		if err != nil {
-			return err
-		}
-		for k, v := range teMap {
-			if err := t.mapElemFileContents(k, v, ignoreIf, recurse); err != nil {
+
+	updated := false
+
+	switch teTyped := (te).(type) {
+	// if te is a map[string], go check all elements for URLs to replace
+	case map[string]interface{}:
+		for k, v := range teTyped {
+			newVal, err := t.mapElemFileContents(k, v, ignoreIf, recurse)
+			if err != nil {
 				return err
+			} else if newVal != nil {
+				teTyped[k] = newVal
+				updated = true
 			}
 		}
-		return nil
+	// same if te is a map[non-string] (can't group with above case because we
+	// can't range over and update 'te' without knowing its key type)
+	case map[interface{}]interface{}:
+		for k, v := range teTyped {
+			newVal, err := t.mapElemFileContents(k, v, ignoreIf, recurse)
+			if err != nil {
+				return err
+			} else if newVal != nil {
+				teTyped[k] = newVal
+				updated = true
+			}
+		}
 	// if te is a slice, call the function on each element of the slice.
 	case []interface{}:
-		teSlice := te.([]interface{})
-		for i := range teSlice {
-			if err := t.getFileContents(teSlice[i], ignoreIf, recurse); err != nil {
+		for i := range teTyped {
+			if err := t.getFileContents(teTyped[i], ignoreIf, recurse); err != nil {
 				return err
 			}
 		}
-	// if te is anything else, return
+	// if te is anything else, there is nothing to do.
 	case string, bool, float64, nil, int:
 		return nil
 	default:
 		return gophercloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
+	}
+
+	// In case some element was updated, we have to regenerate the string representation
+	if updated {
+		var err error
+		t.Bin, err = yaml.Marshal(&t.Parsed)
+		if err != nil {
+			return fmt.Errorf("failed to marshal updated data: %w", err)
+		}
 	}
 	return nil
 }

@@ -52,7 +52,6 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 		return nil, err
 	}
-	opts.TemplateOpts.fixFileRefs()
 	b["template"] = string(opts.TemplateOpts.Bin)
 
 	files := make(map[string]string)
@@ -146,7 +145,6 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 		return nil, err
 	}
-	opts.TemplateOpts.fixFileRefs()
 	b["template"] = string(opts.TemplateOpts.Bin)
 
 	files := make(map[string]string)
@@ -371,7 +369,6 @@ func toStackUpdateMap(opts UpdateOpts) (map[string]interface{}, error) {
 		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
-		opts.TemplateOpts.fixFileRefs()
 		b["template"] = string(opts.TemplateOpts.Bin)
 
 		for k, v := range opts.TemplateOpts.Files {
@@ -479,7 +476,6 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 		return nil, err
 	}
-	opts.TemplateOpts.fixFileRefs()
 	b["template"] = string(opts.TemplateOpts.Bin)
 
 	files := make(map[string]string)
