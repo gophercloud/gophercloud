@@ -40,6 +40,88 @@ func (t *Template) Validate() error {
 	return ErrInvalidTemplateFormatVersion{Version: invalid}
 }
 
+func (t *Template) makeChildTemplate(childURL string, ignoreIf igFunc, recurse bool) (*Template, error) {
+	// create a new child template
+	childTemplate := new(Template)
+
+	// initialize child template
+
+	// get the base location of the child template. Child path is relative
+	// to its parent location so that templates can be composed
+	if t.URL != "" {
+		// Preserve all elements of the URL but take the directory part of the path
+		u, err := url.Parse(t.URL)
+		if err != nil {
+			return nil, err
+		}
+		u.Path = filepath.Dir(u.Path)
+		childTemplate.baseURL = u.String()
+	}
+	childTemplate.URL = childURL
+	childTemplate.client = t.client
+
+	// fetch the contents of the child template or file
+	if err := childTemplate.Fetch(); err != nil {
+		return nil, err
+	}
+
+	// process child template recursively if required. This is
+	// required if the child template itself contains references to
+	// other templates
+	if recurse {
+		if err := childTemplate.Parse(); err == nil {
+			if err := childTemplate.Validate(); err == nil {
+				if err := childTemplate.getFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
+					return nil, err
+				}
+				childTemplate.fixFileRefs()
+			}
+		}
+	}
+
+	return childTemplate, nil
+}
+
+// Applies the transformation for getFileContents() to just one element of a map.
+// In case the element requires transforming, the function returns its new value.
+func (t *Template) mapElemFileContents(k interface{}, v interface{}, ignoreIf igFunc, recurse bool) error {
+	key, ok := k.(string)
+	if !ok {
+		return fmt.Errorf("can't convert map key to string: %v", k)
+	}
+
+	value, ok := v.(string)
+	if !ok {
+		// if the value is not a string, recursively parse that value
+		if err := t.getFileContents(v, ignoreIf, recurse); err != nil {
+			return err
+		}
+	} else if !ignoreIf(key, value) {
+		// at this point, the k, v pair has a reference to an external template
+		// or file (for 'get_file' function).
+		// The assumption of heatclient is that value v is a reference
+		// to a file in the users environment, so we have to the path
+
+		// create a new child template with the referenced contents
+		childTemplate, err := t.makeChildTemplate(value, ignoreIf, recurse)
+		if err != nil {
+			return err
+		}
+
+		// update parent template with current child templates' content.
+		// At this point, the child template has been parsed recursively.
+		t.fileMaps[value] = childTemplate.URL
+		t.Files[childTemplate.URL] = string(childTemplate.Bin)
+
+		// Also add child templates' own children (templates or get_file)!
+		for k, v := range childTemplate.Files {
+			t.Files[k] = v
+		}
+	}
+
+	return nil
+}
+
 // GetFileContents recursively parses a template to search for urls. These urls
 // are assumed to point to other templates (known in OpenStack Heat as child
 // templates). The contents of these urls are fetched and stored in the `Files`
@@ -62,65 +144,8 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 			return err
 		}
 		for k, v := range teMap {
-			value, ok := v.(string)
-			if !ok {
-				// if the value is not a string, recursively parse that value
-				if err := t.getFileContents(v, ignoreIf, recurse); err != nil {
-					return err
-				}
-			} else if !ignoreIf(k, value) {
-				// at this point, the k, v pair has a reference to an external template
-				// or file (for 'get_file' function).
-				// The assumption of heatclient is that value v is a reference
-				// to a file in the users environment
-
-				// create a new child template
-				childTemplate := new(Template)
-
-				// initialize child template
-
-				// get the base location of the child template. Child path is relative
-				// to its parent location so that templates can be composed
-				if t.URL != "" {
-					// Preserve all elements of the URL but take the directory part of the path
-					u, err := url.Parse(t.URL)
-					if err != nil {
-						return err
-					}
-					u.Path = filepath.Dir(u.Path)
-					childTemplate.baseURL = u.String()
-				}
-				childTemplate.URL = value
-				childTemplate.client = t.client
-
-				// fetch the contents of the child template or file
-				if err := childTemplate.Fetch(); err != nil {
-					return err
-				}
-
-				// process child template recursively if required. This is
-				// required if the child template itself contains references to
-				// other templates
-				if recurse {
-					if err := childTemplate.Parse(); err == nil {
-						if err := childTemplate.Validate(); err == nil {
-							if err := childTemplate.getFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
-								return err
-							}
-							childTemplate.fixFileRefs()
-						}
-					}
-				}
-
-				// update parent template with current child templates' content.
-				// At this point, the child template has been parsed recursively.
-				t.fileMaps[value] = childTemplate.URL
-				t.Files[childTemplate.URL] = string(childTemplate.Bin)
-
-				// Also add child templates' own children (templates or get_file)!
-				for k, v := range childTemplate.Files {
-					t.Files[k] = v
-				}
+			if err := t.mapElemFileContents(k, v, ignoreIf, recurse); err != nil {
+				return err
 			}
 		}
 		return nil
