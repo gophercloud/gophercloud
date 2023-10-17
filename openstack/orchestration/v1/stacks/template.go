@@ -2,6 +2,7 @@ package stacks
 
 import (
 	"fmt"
+	"net/url"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -81,7 +82,13 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 				// get the base location of the child template. Child path is relative
 				// to its parent location so that templates can be composed
 				if t.URL != "" {
-					childTemplate.baseURL = filepath.Dir(t.URL)
+					// Preserve all elements of the URL but take the directory part of the path
+					u, err := url.Parse(t.URL)
+					if err != nil {
+						return err
+					}
+					u.Path = filepath.Dir(u.Path)
+					childTemplate.baseURL = u.String()
 				}
 				childTemplate.URL = value
 				childTemplate.client = t.client
