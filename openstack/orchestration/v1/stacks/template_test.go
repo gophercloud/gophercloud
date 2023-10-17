@@ -2,8 +2,6 @@ package stacks
 
 import (
 	"fmt"
-	"net/http"
-	"net/url"
 	"strings"
 	"testing"
 
@@ -91,15 +89,8 @@ func TestGetFileContentsWithType(t *testing.T) {
 	defer th.TeardownHTTP()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
-	fakeURL := strings.Join([]string{baseurl, "my_nova.yaml"}, "/")
-	urlparsed, err := url.Parse(fakeURL)
-	th.AssertNoErr(t, err)
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, myNovaContent)
-	})
+
+	fakeURL := th.ServeFile(t, baseurl, "my_nova.yaml", "application/json", myNovaContent)
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	te := new(Template)
@@ -148,16 +139,9 @@ func TestGetFileContentsWithFile(t *testing.T) {
 	defer th.TeardownHTTP()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
-	fakeURL := strings.Join([]string{baseurl, "somefile"}, "/")
-	urlparsed, err := url.Parse(fakeURL)
-	th.AssertNoErr(t, err)
+
 	somefile := `Welcome!`
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, somefile)
-	})
+	fakeURL := th.ServeFile(t, baseurl, "somefile", "text/plain", somefile)
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	te := new(Template)
@@ -200,20 +184,8 @@ func TestGetFileContentsComposeRelativePath(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	novaPath := strings.Join([]string{"templates", "my_nova.yaml"}, "/")
-	novaURL := strings.Join([]string{baseurl, novaPath}, "/")
-	novaURLParse, err := url.Parse(novaURL)
-	th.AssertNoErr(t, err)
-	th.Mux.HandleFunc(novaURLParse.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, myNovaContent)
-	})
+	novaURL := th.ServeFile(t, baseurl, novaPath, "application/json", myNovaContent)
 
-	subStacksPath := strings.Join([]string{"substacks", "my_substack.yaml"}, "/")
-	subStackURL := strings.Join([]string{baseurl, subStacksPath}, "/")
-	subStackURLParsed, err := url.Parse(subStackURL)
-	th.AssertNoErr(t, err)
 	mySubStackContentFmt := `heat_template_version: 2015-04-30
 resources:
   my_server:
@@ -226,12 +198,9 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`
-	th.Mux.HandleFunc(subStackURLParsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, mySubStackContentFmt, "../templates/my_nova.yaml")
-	})
+	subStacksPath := strings.Join([]string{"substacks", "my_substack.yaml"}, "/")
+	subStackURL := th.ServeFile(t, baseurl, subStacksPath, "application/json",
+		fmt.Sprintf(mySubStackContentFmt, "../templates/my_nova.yaml"))
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	te := new(Template)
@@ -246,7 +215,7 @@ resources:
 
 	expectedFiles := map[string]string{
 		"templates/my_nova.yaml":     myNovaContent,
-		"substacks/my_substack.yaml": fmt.Sprintf(mySubStackContentFmt, novaURLParse),
+		"substacks/my_substack.yaml": fmt.Sprintf(mySubStackContentFmt, novaURL),
 	}
 	th.AssertEquals(t, expectedFiles[novaPath], te.Files[novaURL])
 	th.AssertEquals(t, expectedFiles[subStacksPath], te.Files[subStackURL])
