@@ -1,0 +1,60 @@
+# # Taking User input
+print('Welcome to Child Nutrition Calculator')
+name = input('Hi User, Can you please tell me your name? ') 
+age = int(input(f'Great {name}, Now Please enter your age: '))
+weight = float(input('Now, pleas enter your weight in pounds: '))
+height = float(input('Lastly, enter your height in inches: '))
+
+# round(float_num, decimal_places)
+bmi = round((weight/height**2)*703, 2)
+
+if bmi < 16:
+  print(f'Sorry {name}, you\'re severly underweight')
+elif bmi >= 16 and bmi < 18.5:
+  print(f'Sorry {name}, you\'re underweight')
+elif bmi >= 18.5 and bmi < 25:
+  print(f'Hurray {name}, you\'re Healthy!!')
+elif bmi >= 25 and bmi < 30:
+  print(f'Oops {name}, you\'re overweight')
+else:
+  print(f'Oh Nooo {name}, you\'re an obese, consider going gym !!!')
+
+print(f'and your bmi is {bmi}')
+
+# Nutrition Calculation
+foods = {'Milk':1,
+         'Egg':1.55,
+         'Rice':1.3,
+         'Lentils':1.13,
+         'Vegetables':0.85,
+         'Meat':1.43}
+
+calories = {}
+total_calories = 0
+for i in foods.keys():
+  calories[i] = float(input(f'Enter the quantity in gms of food {i}'))
+  total_calories += (calories[i] * foods[i])
+
+if age >=0 and age < 2:
+  if total_calories >= 800:
+    print(f'Congrats, you are well nourished as your recommnded\
+    calorie intake is 800 and you are taking {total_calories}.')
+  else:
+    print(f'Sorry, you are mal-nourished as your recommnded\
+    calorie intake is 800 and you are taking {total_calories}.')
+elif age >=2 and age < 4:
+  if total_calories >= 1400:
+    print(f'Congrats, you are well nourished as your recommnded\
+    calorie intake is 1400 and you are taking {total_calories}.')
+  else:
+    print(f'Sorry, you are mal-nourished as your recommnded\
+    calorie intake is 1400 and you are taking {total_calories}.')     
+elif age >=4 and age < 8:
+  if total_calories >= 1800:
+    print(f'Congrats, you are well nourished as your recommnded\
+    calorie intake is 1800 and you are taking {total_calories}.')
+  else:
+    print(f'Sorry, you are mal-nourished as your recommnded\
+    calorie intake is 1800 and you are taking {total_calories}.')
+else:
+  print('Sorry you are not a child, can\'t use the program!!')
