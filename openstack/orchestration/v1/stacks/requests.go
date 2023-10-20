@@ -66,7 +66,6 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			files[k] = v
 		}
@@ -159,7 +158,6 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			files[k] = v
 		}
@@ -383,7 +381,6 @@ func toStackUpdateMap(opts UpdateOpts) (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			files[k] = v
 		}
@@ -490,7 +487,6 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			files[k] = v
 		}

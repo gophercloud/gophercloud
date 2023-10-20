@@ -1,6 +1,11 @@
 package stacks
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+
+	yaml "gopkg.in/yaml.v2"
+)
 
 // Environment is a structure that represents stack environments
 type Environment struct {
@@ -108,6 +113,16 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 		// if the resource registry contained any URL's, store them. This can
 		// then be passed as parameter to api calls to Heat api.
 		e.Files = tempTemplate.Files
+
+		// In case some element was updated, regenerate the string representation
+		if len(e.Files) > 0 {
+			var err error
+			e.Bin, err = yaml.Marshal(&e.Parsed)
+			if err != nil {
+				return fmt.Errorf("failed to marshal updated environment: %w", err)
+			}
+		}
+
 		return nil
 	default:
 		return nil

@@ -152,7 +152,6 @@ service_db:
 		"my_env.yaml": fakeEnvURL,
 		"my_db.yaml":  fakeDBURL,
 	}
-	env.fixFileRefs()
 
 	expectedParsed := map[string]interface{}{
 		"resource_registry": map[string]interface{}{
@@ -164,6 +163,6 @@ service_db:
 			},
 		},
 	}
-	env.Parse()
+	th.AssertNoErr(t, env.Parse())
 	th.AssertDeepEquals(t, expectedParsed, env.Parsed)
 }
