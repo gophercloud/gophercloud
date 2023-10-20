@@ -5,8 +5,17 @@ set -e
 n=1
 for testpkg in $(go list ./testing ./.../testing); do
   covpkg="${testpkg/"/testing"/}"
-  go test -covermode count -coverprofile "testing_"$n.coverprofile -coverpkg $covpkg $testpkg 2>/dev/null
+  go test -covermode count -coverprofile "testing_"$n.coverprofile -coverpkg "$covpkg" "$testpkg" 2>/dev/null
   n=$((n+1))
 done
+
+base_pkg=$(go list)
+# Look for additional test files
+for path in $(find . -path '*/testing' -prune -o -path '*/internal' -prune -o -name '*_test.go' -exec dirname {} \; | uniq); do
+  pkg="${base_pkg}${path:1}"
+  go test -covermode count -coverprofile "testing_"$n.coverprofile -coverpkg "$pkg" "$pkg" 2>/dev/null
+  n=$((n+1))
+done
+
 gocovmerge `ls *.coverprofile` > cover.out
-rm *.coverprofile
+rm ./*.coverprofile
