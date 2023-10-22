@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"reflect"
-	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	yaml "gopkg.in/yaml.v2"
@@ -142,17 +141,4 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 	default:
 		return nil, gophercloud.ErrUnexpectedType{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
 	}
-}
-
-// fix the reference to files by replacing relative URL's by absolute
-// URL's
-func (t *TE) fixFileRefs() {
-	tStr := string(t.Bin)
-	if t.fileMaps == nil {
-		return
-	}
-	for k, v := range t.fileMaps {
-		tStr = strings.Replace(tStr, k, v, -1)
-	}
-	t.Bin = []byte(tStr)
 }

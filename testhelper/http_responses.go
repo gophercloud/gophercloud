@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -46,6 +47,21 @@ func TeardownHTTP() {
 // Endpoint returns a fake endpoint that will actually target the Mux.
 func Endpoint() string {
 	return Server.URL + "/"
+}
+
+// Serves a static content at baseURL/relPath
+func ServeFile(t *testing.T, baseURL, relPath, contentType, content string) string {
+	rawURL := strings.Join([]string{baseURL, relPath}, "/")
+	parsedURL, err := url.Parse(rawURL)
+	AssertNoErr(t, err)
+	Mux.HandleFunc(parsedURL.Path, func(w http.ResponseWriter, r *http.Request) {
+		TestMethod(t, r, "GET")
+		w.Header().Set("Content-Type", contentType)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, content)
+	})
+
+	return rawURL
 }
 
 // TestFormValues ensures that all the URL parameters given to the http.Request are the same as values.

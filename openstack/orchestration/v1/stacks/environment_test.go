@@ -1,10 +1,6 @@
 package stacks
 
 import (
-	"fmt"
-	"net/http"
-	"net/url"
-	"strings"
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -132,28 +128,9 @@ service_db:
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
 
-	fakeEnvURL := strings.Join([]string{baseurl, "my_env.yaml"}, "/")
-	urlparsed, err := url.Parse(fakeEnvURL)
-	th.AssertNoErr(t, err)
-	// handler for my_env.yaml
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, environmentContent)
-	})
-
-	fakeDBURL := strings.Join([]string{baseurl, "my_db.yaml"}, "/")
-	urlparsed, err = url.Parse(fakeDBURL)
-	th.AssertNoErr(t, err)
-
-	// handler for my_db.yaml
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, dbContent)
-	})
+	// Serve "my_env.yaml" and "my_db.yaml"
+	fakeEnvURL := th.ServeFile(t, baseurl, "my_env.yaml", "application/json", environmentContent)
+	fakeDBURL := th.ServeFile(t, baseurl, "my_db.yaml", "application/json", dbContent)
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	env := new(Environment)
@@ -175,7 +152,6 @@ service_db:
 		"my_env.yaml": fakeEnvURL,
 		"my_db.yaml":  fakeDBURL,
 	}
-	env.fixFileRefs()
 
 	expectedParsed := map[string]interface{}{
 		"resource_registry": map[string]interface{}{
@@ -187,6 +163,6 @@ service_db:
 			},
 		},
 	}
-	env.Parse()
+	th.AssertNoErr(t, env.Parse())
 	th.AssertDeepEquals(t, expectedParsed, env.Parsed)
 }

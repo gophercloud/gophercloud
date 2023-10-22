@@ -1,9 +1,6 @@
 package stacks
 
 import (
-	"fmt"
-	"net/http"
-	"net/url"
 	"strings"
 	"testing"
 
@@ -13,17 +10,15 @@ import (
 func TestTemplateValidation(t *testing.T) {
 	templateJSON := new(Template)
 	templateJSON.Bin = []byte(ValidJSONTemplate)
-	err := templateJSON.Validate()
-	th.AssertNoErr(t, err)
+	th.AssertNoErr(t, templateJSON.Validate())
 
 	templateYAML := new(Template)
 	templateYAML.Bin = []byte(ValidYAMLTemplate)
-	err = templateYAML.Validate()
-	th.AssertNoErr(t, err)
+	th.AssertNoErr(t, templateYAML.Validate())
 
 	templateInvalid := new(Template)
 	templateInvalid.Bin = []byte(InvalidTemplateNoVersion)
-	if err = templateInvalid.Validate(); err == nil {
+	if err := templateInvalid.Validate(); err == nil {
 		t.Error("Template validation did not catch invalid template")
 	}
 }
@@ -31,19 +26,17 @@ func TestTemplateValidation(t *testing.T) {
 func TestTemplateParsing(t *testing.T) {
 	templateJSON := new(Template)
 	templateJSON.Bin = []byte(ValidJSONTemplate)
-	err := templateJSON.Parse()
-	th.AssertNoErr(t, err)
+	th.AssertNoErr(t, templateJSON.Parse())
 	th.AssertDeepEquals(t, ValidJSONTemplateParsed, templateJSON.Parsed)
 
 	templateYAML := new(Template)
 	templateYAML.Bin = []byte(ValidJSONTemplate)
-	err = templateYAML.Parse()
-	th.AssertNoErr(t, err)
+	th.AssertNoErr(t, templateYAML.Parse())
 	th.AssertDeepEquals(t, ValidJSONTemplateParsed, templateYAML.Parsed)
 
 	templateInvalid := new(Template)
 	templateInvalid.Bin = []byte("Keep Austin Weird")
-	err = templateInvalid.Parse()
+	err := templateInvalid.Parse()
 	if err == nil {
 		t.Error("Template parsing did not catch invalid template")
 	}
@@ -73,15 +66,7 @@ func TestIgnoreIfTemplate(t *testing.T) {
 	}
 }
 
-func TestGetFileContentsWithType(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	baseurl, err := getBasePath()
-	th.AssertNoErr(t, err)
-	fakeURL := strings.Join([]string{baseurl, "my_nova.yaml"}, "/")
-	urlparsed, err := url.Parse(fakeURL)
-	th.AssertNoErr(t, err)
-	myNovaContent := `heat_template_version: 2014-10-16
+const myNovaContent = `heat_template_version: 2014-10-16
 parameters:
   flavor:
     type: string
@@ -97,12 +82,41 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, myNovaContent)
-	})
+
+var myNovaExpected = map[string]interface{}{
+	"heat_template_version": "2014-10-16",
+	"parameters": map[string]interface{}{
+		"flavor": map[string]interface{}{
+			"type":        "string",
+			"description": "Flavor for the server to be created",
+			"default":     4353,
+			"hidden":      true,
+		},
+	},
+	"resources": map[string]interface{}{
+		"test_server": map[string]interface{}{
+			"type": "OS::Nova::Server",
+			"properties": map[string]interface{}{
+				"name":   "test-server",
+				"flavor": "2 GB General Purpose v1",
+				"image":  "Debian 7 (Wheezy) (PVHVM)",
+				"networks": []interface{}{
+					map[string]interface{}{
+						"uuid": "11111111-1111-1111-1111-111111111111",
+					},
+				},
+			},
+		},
+	},
+}
+
+func TestGetFileContentsWithType(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	baseurl, err := getBasePath()
+	th.AssertNoErr(t, err)
+
+	fakeURL := th.ServeFile(t, baseurl, "my_nova.yaml", "application/json", myNovaContent)
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	te := new(Template)
@@ -112,29 +126,10 @@ resources:
     type: my_nova.yaml`)
 	te.client = client
 
-	err = te.Parse()
-	th.AssertNoErr(t, err)
-	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
-	th.AssertNoErr(t, err)
-	expectedFiles := map[string]string{
-		"my_nova.yaml": `heat_template_version: 2014-10-16
-parameters:
-  flavor:
-    type: string
-    description: Flavor for the server to be created
-    default: 4353
-    hidden: true
-resources:
-  test_server:
-    type: "OS::Nova::Server"
-    properties:
-      name: test-server
-      flavor: 2 GB General Purpose v1
-      image: Debian 7 (Wheezy) (PVHVM)
-      networks:
-      - {uuid: 11111111-1111-1111-1111-111111111111}`}
-	th.AssertEquals(t, expectedFiles["my_nova.yaml"], te.Files[fakeURL])
-	te.fixFileRefs()
+	th.AssertNoErr(t, te.Parse())
+	th.AssertNoErr(t, te.getFileContents(te.Parsed, ignoreIfTemplate, true))
+
+	// Now check template and referenced file
 	expectedParsed := map[string]interface{}{
 		"heat_template_version": "2015-04-30",
 		"resources": map[string]interface{}{
@@ -145,6 +140,11 @@ resources:
 	}
 	th.AssertNoErr(t, te.Parse())
 	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
+
+	novaTe := new(Template)
+	novaTe.Bin = []byte(te.Files[fakeURL])
+	th.AssertNoErr(t, novaTe.Parse())
+	th.AssertDeepEquals(t, myNovaExpected, novaTe.Parsed)
 }
 
 func TestGetFileContentsWithFile(t *testing.T) {
@@ -152,42 +152,37 @@ func TestGetFileContentsWithFile(t *testing.T) {
 	defer th.TeardownHTTP()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
-	fakeURL := strings.Join([]string{baseurl, "somefile"}, "/")
-	urlparsed, err := url.Parse(fakeURL)
-	th.AssertNoErr(t, err)
+
 	somefile := `Welcome!`
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, somefile)
-	})
+	fakeURL := th.ServeFile(t, baseurl, "somefile", "text/plain", somefile)
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	te := new(Template)
+	// Note: We include the path that should be replaced also as a not-to-be-replaced
+	// keyword ("path: somefile" below) to validate that no updates happen outside of
+	// the real local URLs (child templates (type:) or included files (get_file:)).
 	te.Bin = []byte(`heat_template_version: 2015-04-30
 resources:
   test_resource:
     type: OS::Heat::TestResource
     properties:
-      value: {get_file: somefile }`)
+      path: somefile
+      value: { get_file: somefile }`)
 	te.client = client
 
-	err = te.Parse()
-	th.AssertNoErr(t, err)
-	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
-	th.AssertNoErr(t, err)
+	th.AssertNoErr(t, te.Parse())
+	th.AssertNoErr(t, te.getFileContents(te.Parsed, ignoreIfTemplate, true))
 	expectedFiles := map[string]string{
 		"somefile": "Welcome!",
 	}
 	th.AssertEquals(t, expectedFiles["somefile"], te.Files[fakeURL])
-	te.fixFileRefs()
 	expectedParsed := map[string]interface{}{
 		"heat_template_version": "2015-04-30",
 		"resources": map[string]interface{}{
 			"test_resource": map[string]interface{}{
 				"type": "OS::Heat::TestResource",
 				"properties": map[string]interface{}{
+					"path": "somefile",
 					"value": map[string]interface{}{
 						"get_file": fakeURL,
 					},
@@ -206,40 +201,12 @@ func TestGetFileContentsComposeRelativePath(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	novaPath := strings.Join([]string{"templates", "my_nova.yaml"}, "/")
-	novaURL := strings.Join([]string{baseurl, novaPath}, "/")
-	novaURLParse, err := url.Parse(novaURL)
-	th.AssertNoErr(t, err)
-	myNovaContent := `heat_template_version: 2014-10-16
-parameters:
-  flavor:
-    type: string
-    description: Flavor for the server to be created
-    default: 4353
-    hidden: true
-resources:
-  test_server:
-    type: "OS::Nova::Server"
-    properties:
-      name: test-server
-      flavor: 2 GB General Purpose v1
-      image: Debian 7 (Wheezy) (PVHVM)
-      networks:
-      - {uuid: 11111111-1111-1111-1111-111111111111}`
-	th.Mux.HandleFunc(novaURLParse.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, myNovaContent)
-	})
+	novaURL := th.ServeFile(t, baseurl, novaPath, "application/json", myNovaContent)
 
-	subStacksPath := strings.Join([]string{"substacks", "my_substack.yaml"}, "/")
-	subStackURL := strings.Join([]string{baseurl, subStacksPath}, "/")
-	subStackURLParsed, err := url.Parse(subStackURL)
-	th.AssertNoErr(t, err)
-	mySubStackContentFmt := `heat_template_version: 2015-04-30
+	mySubStackContent := `heat_template_version: 2015-04-30
 resources:
   my_server:
-    type: %s
+    type: ../templates/my_nova.yaml
   my_backend:
     type: "OS::Nova::Server"
     properties:
@@ -248,12 +215,29 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`
-	th.Mux.HandleFunc(subStackURLParsed.Path, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, mySubStackContentFmt, "../templates/my_nova.yaml")
-	})
+	mySubstrackExpected := map[string]interface{}{
+		"heat_template_version": "2015-04-30",
+		"resources": map[string]interface{}{
+			"my_server": map[string]interface{}{
+				"type": novaURL,
+			},
+			"my_backend": map[string]interface{}{
+				"type": "OS::Nova::Server",
+				"properties": map[string]interface{}{
+					"name":   "test-backend",
+					"flavor": "4 GB General Purpose v1",
+					"image":  "Debian 7 (Wheezy) (PVHVM)",
+					"networks": []interface{}{
+						map[string]interface{}{
+							"uuid": "11111111-1111-1111-1111-111111111111",
+						},
+					},
+				},
+			},
+		},
+	}
+	subStacksPath := strings.Join([]string{"substacks", "my_substack.yaml"}, "/")
+	subStackURL := th.ServeFile(t, baseurl, subStacksPath, "application/json", mySubStackContent)
 
 	client := fakeClient{BaseClient: getHTTPClient()}
 	te := new(Template)
@@ -263,19 +247,9 @@ resources:
     type: substacks/my_substack.yaml`)
 	te.client = client
 
-	err = te.Parse()
-	th.AssertNoErr(t, err)
-	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
-	th.AssertNoErr(t, err)
+	th.AssertNoErr(t, te.Parse())
+	th.AssertNoErr(t, te.getFileContents(te.Parsed, ignoreIfTemplate, true))
 
-	expectedFiles := map[string]string{
-		"templates/my_nova.yaml":     myNovaContent,
-		"substacks/my_substack.yaml": fmt.Sprintf(mySubStackContentFmt, novaURLParse),
-	}
-	th.AssertEquals(t, expectedFiles[novaPath], te.Files[novaURL])
-	th.AssertEquals(t, expectedFiles[subStacksPath], te.Files[subStackURL])
-
-	te.fixFileRefs()
 	expectedParsed := map[string]interface{}{
 		"heat_template_version": "2015-04-30",
 		"resources": map[string]interface{}{
@@ -286,4 +260,15 @@ resources:
 	}
 	th.AssertNoErr(t, te.Parse())
 	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
+
+	expectedFiles := map[string]interface{}{
+		novaURL:     myNovaExpected,
+		subStackURL: mySubstrackExpected,
+	}
+	for path, expected := range expectedFiles {
+		checkTe := new(Template)
+		checkTe.Bin = []byte(te.Files[path])
+		th.AssertNoErr(t, checkTe.Parse())
+		th.AssertDeepEquals(t, expected, checkTe.Parsed)
+	}
 }
