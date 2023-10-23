@@ -1,22 +1,35 @@
 package objects
 
 import (
+	"net/url"
+
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
+	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
 )
 
+// tempURL returns an unescaped virtual path to generate the HMAC signature.
+// Names must not be URL-encoded in this case.
+//
+// See: https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html#hmac-signature-for-temporary-urls
+func tempURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+	return c.ServiceURL(container, object), nil
+}
+
 func listURL(c *gophercloud.ServiceClient, container string) (string, error) {
-	if err := containers.CheckContainerName(container); err != nil {
+	if err := v1.CheckContainerName(container); err != nil {
 		return "", err
 	}
-	return c.ServiceURL(container), nil
+	return c.ServiceURL(url.PathEscape(container)), nil
 }
 
 func copyURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
-	if err := containers.CheckContainerName(container); err != nil {
+	if err := v1.CheckContainerName(container); err != nil {
 		return "", err
 	}
-	return c.ServiceURL(container, object), nil
+	if err := v1.CheckObjectName(object); err != nil {
+		return "", err
+	}
+	return c.ServiceURL(url.PathEscape(container), url.PathEscape(object)), nil
 }
 
 func createURL(c *gophercloud.ServiceClient, container, object string) (string, error) {

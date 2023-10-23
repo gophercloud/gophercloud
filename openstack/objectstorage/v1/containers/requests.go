@@ -1,21 +1,27 @@
 package containers
 
 import (
-	"strings"
+	"bytes"
+	"net/url"
 
 	"github.com/gophercloud/gophercloud"
+	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {
-	ToContainerListParams() (bool, string, error)
+	ToContainerListParams() (string, error)
 }
 
 // ListOpts is a structure that holds options for listing containers.
 type ListOpts struct {
-	Full      bool
+	// Full has been removed from the Gophercloud API. Gophercloud will now
+	// always request the "full" (json) listing, because simplified listing
+	// (plaintext) returns false results when names contain end-of-line
+	// characters.
+
 	Limit     int    `q:"limit"`
 	Marker    string `q:"marker"`
 	EndMarker string `q:"end_marker"`
@@ -24,30 +30,25 @@ type ListOpts struct {
 	Delimiter string `q:"delimiter"`
 }
 
-// ToContainerListParams formats a ListOpts into a query string and boolean
-// representing whether to list complete information for each container.
-func (opts ListOpts) ToContainerListParams() (bool, string, error) {
+// ToContainerListParams formats a ListOpts into a query string.
+func (opts ListOpts) ToContainerListParams() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return opts.Full, q.String(), err
+	return q.String(), err
 }
 
 // List is a function that retrieves containers associated with the account as
 // well as account metadata. It returns a pager which can be iterated with the
 // EachPage function.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	headers := map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
+	headers := map[string]string{"Accept": "application/json", "Content-Type": "application/json"}
 
 	url := listURL(c)
 	if opts != nil {
-		full, query, err := opts.ToContainerListParams()
+		query, err := opts.ToContainerListParams()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
 		url += query
-
-		if full {
-			headers = map[string]string{"Accept": "application/json", "Content-Type": "application/json"}
-		}
 	}
 
 	pager := pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
@@ -123,15 +124,18 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 
 // BulkDelete is a function that bulk deletes containers.
 func BulkDelete(c *gophercloud.ServiceClient, containers []string) (r BulkDeleteResult) {
-	// urlencode container names to be on the safe side
-	// https://github.com/openstack/swift/blob/stable/train/swift/common/middleware/bulk.py#L160
-	// https://github.com/openstack/swift/blob/stable/train/swift/common/swob.py#L302
-	encodedContainers := make([]string, len(containers))
-	for i, v := range containers {
-		encodedContainers[i] = v
+	var body bytes.Buffer
+
+	for i := range containers {
+		if err := v1.CheckContainerName(containers[i]); err != nil {
+			r.Err = err
+			return
+		}
+		body.WriteString(url.PathEscape(containers[i]))
+		body.WriteRune('\n')
 	}
-	b := strings.NewReader(strings.Join(encodedContainers, "\n") + "\n")
-	resp, err := c.Post(bulkDeleteURL(c), b, &r.Body, &gophercloud.RequestOpts{
+
+	resp, err := c.Post(bulkDeleteURL(c), &body, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{
 			"Accept":       "application/json",
 			"Content-Type": "text/plain",

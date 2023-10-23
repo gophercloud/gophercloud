@@ -94,7 +94,7 @@ var ExpectedListSubdir = []objects.Object{
 
 // ExpectedListNames is the result expected from a call to `List` when just
 // object names are requested.
-var ExpectedListNames = []string{"hello", "goodbye"}
+var ExpectedListNames = []string{"goodbye", "hello"}
 
 // HandleListObjectsInfoSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with a `List` response when full info is requested.
@@ -166,28 +166,6 @@ func HandleListSubdirSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleListObjectNamesSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
-// responds with a `List` response when only object names are requested.
-func HandleListObjectNamesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Accept", "text/plain")
-
-		w.Header().Set("Content-Type", "text/plain")
-		r.ParseForm()
-		marker := r.Form.Get("marker")
-		switch marker {
-		case "":
-			fmt.Fprintf(w, "hello\ngoodbye\n")
-		case "goodbye":
-			fmt.Fprintf(w, "")
-		default:
-			t.Fatalf("Unexpected marker: [%s]", marker)
-		}
-	})
-}
-
 // HandleListZeroObjectNames204 creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with "204 No Content" when object names are requested. This happens on some, but not all, objectstorage
 // instances. This case is peculiar in that the server sends no `content-type` header.
@@ -195,7 +173,7 @@ func HandleListZeroObjectNames204(t *testing.T) {
 	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Accept", "text/plain")
+		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -271,12 +249,12 @@ func HandleCreateTypelessObjectSuccessfully(t *testing.T, content string) {
 
 // HandleCopyObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Copy` response.
-func HandleCopyObjectSuccessfully(t *testing.T) {
+func HandleCopyObjectSuccessfully(t *testing.T, destination string) {
 	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "COPY")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "Destination", "/newTestContainer/newTestObject")
+		th.TestHeader(t, r, "Destination", destination)
 		w.WriteHeader(http.StatusCreated)
 	})
 }

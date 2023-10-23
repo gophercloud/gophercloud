@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
 	accountTesting "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/accounts/testing"
-	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
 	containerTesting "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers/testing"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -23,18 +23,17 @@ func TestContainerNames(t *testing.T) {
 	for _, tc := range [...]struct {
 		name          string
 		containerName string
+		expectedError error
 	}{
 		{
 			"rejects_a_slash",
 			"one/two",
+			v1.ErrInvalidContainerName{},
 		},
 		{
-			"rejects_an_escaped_slash",
-			"one%2Ftwo",
-		},
-		{
-			"rejects_an_escaped_slash_lowercase",
-			"one%2ftwo",
+			"rejects_an_empty_string",
+			"",
+			v1.ErrEmptyContainerName{},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -44,7 +43,7 @@ func TestContainerNames(t *testing.T) {
 				HandleListObjectsInfoSuccessfully(t, WithPath("/"))
 
 				_, err := objects.List(fake.ServiceClient(), tc.containerName, nil).AllPages()
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("download", func(t *testing.T) {
 				th.SetupHTTP()
@@ -52,7 +51,7 @@ func TestContainerNames(t *testing.T) {
 				HandleDownloadObjectSuccessfully(t, WithPath("/"))
 
 				_, err := objects.Download(fake.ServiceClient(), tc.containerName, "testObject", nil).Extract()
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("create", func(t *testing.T) {
 				th.SetupHTTP()
@@ -64,7 +63,7 @@ func TestContainerNames(t *testing.T) {
 					ContentType: "text/plain",
 					Content:     strings.NewReader(content),
 				})
-				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("delete", func(t *testing.T) {
 				th.SetupHTTP()
@@ -72,7 +71,7 @@ func TestContainerNames(t *testing.T) {
 				HandleDeleteObjectSuccessfully(t, WithPath("/"))
 
 				res := objects.Delete(fake.ServiceClient(), tc.containerName, "testObject", nil)
-				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("get", func(t *testing.T) {
 				th.SetupHTTP()
@@ -80,7 +79,7 @@ func TestContainerNames(t *testing.T) {
 				HandleGetObjectSuccessfully(t, WithPath("/"))
 
 				_, err := objects.Get(fake.ServiceClient(), tc.containerName, "testObject", nil).ExtractMetadata()
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("update", func(t *testing.T) {
 				th.SetupHTTP()
@@ -90,7 +89,7 @@ func TestContainerNames(t *testing.T) {
 				res := objects.Update(fake.ServiceClient(), tc.containerName, "testObject", &objects.UpdateOpts{
 					Metadata: map[string]string{"Gophercloud-Test": "objects"},
 				})
-				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("createTempURL", func(t *testing.T) {
 				port := 33200
@@ -111,7 +110,15 @@ func TestContainerNames(t *testing.T) {
 					Timestamp: time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC),
 				})
 
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
+			})
+			t.Run("bulk-delete", func(t *testing.T) {
+				th.SetupHTTP()
+				defer th.TeardownHTTP()
+				HandleBulkDeleteSuccessfully(t)
+
+				res := objects.BulkDelete(fake.ServiceClient(), tc.containerName, []string{"testObject"})
+				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 		})
 	}
@@ -182,7 +189,7 @@ func TestListObjectInfo(t *testing.T) {
 	HandleListObjectsInfoSuccessfully(t)
 
 	count := 0
-	options := &objects.ListOpts{Full: true}
+	options := &objects.ListOpts{}
 	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractInfo(page)
@@ -202,7 +209,7 @@ func TestListObjectSubdir(t *testing.T) {
 	HandleListSubdirSuccessfully(t)
 
 	count := 0
-	options := &objects.ListOpts{Full: true, Prefix: "", Delimiter: "/"}
+	options := &objects.ListOpts{Prefix: "", Delimiter: "/"}
 	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractInfo(page)
@@ -219,11 +226,11 @@ func TestListObjectSubdir(t *testing.T) {
 func TestListObjectNames(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListObjectNamesSuccessfully(t)
+	HandleListObjectsInfoSuccessfully(t)
 
 	// Check without delimiter.
 	count := 0
-	options := &objects.ListOpts{Full: false}
+	options := &objects.ListOpts{}
 	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
@@ -241,7 +248,7 @@ func TestListObjectNames(t *testing.T) {
 
 	// Check with delimiter.
 	count = 0
-	options = &objects.ListOpts{Full: false, Delimiter: "/"}
+	options = &objects.ListOpts{Delimiter: "/"}
 	err = objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
@@ -264,7 +271,7 @@ func TestListZeroObjectNames204(t *testing.T) {
 	HandleListZeroObjectNames204(t)
 
 	count := 0
-	options := &objects.ListOpts{Full: false}
+	options := &objects.ListOpts{}
 	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
@@ -341,13 +348,33 @@ func TestErrorIsRaisedForChecksumMismatch(t *testing.T) {
 */
 
 func TestCopyObject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCopyObjectSuccessfully(t)
+	t.Run("simple", func(t *testing.T) {
+		th.SetupHTTP()
+		defer th.TeardownHTTP()
+		HandleCopyObjectSuccessfully(t, "/newTestContainer/newTestObject")
 
-	options := &objects.CopyOpts{Destination: "/newTestContainer/newTestObject"}
-	res := objects.Copy(fake.ServiceClient(), "testContainer", "testObject", options)
-	th.AssertNoErr(t, res.Err)
+		options := &objects.CopyOpts{Destination: "/newTestContainer/newTestObject"}
+		res := objects.Copy(fake.ServiceClient(), "testContainer", "testObject", options)
+		th.AssertNoErr(t, res.Err)
+	})
+	t.Run("slash", func(t *testing.T) {
+		th.SetupHTTP()
+		defer th.TeardownHTTP()
+		HandleCopyObjectSuccessfully(t, "/newTestContainer/path%2Fto%2FnewTestObject")
+
+		options := &objects.CopyOpts{Destination: "/newTestContainer/path/to/newTestObject"}
+		res := objects.Copy(fake.ServiceClient(), "testContainer", "testObject", options)
+		th.AssertNoErr(t, res.Err)
+	})
+	t.Run("emojis", func(t *testing.T) {
+		th.SetupHTTP()
+		defer th.TeardownHTTP()
+		HandleCopyObjectSuccessfully(t, "/newTestContainer/new%F0%9F%98%8ATest%2C%3B%22O%28bject%21_%E7%AF%84")
+
+		options := &objects.CopyOpts{Destination: "/newTestContainer/new😊Test,;\"O(bject!_範"}
+		res := objects.Copy(fake.ServiceClient(), "testContainer", "testObject", options)
+		th.AssertNoErr(t, res.Err)
+	})
 }
 
 func TestCopyObjectVersion(t *testing.T) {
@@ -512,7 +539,7 @@ func TestCreateTempURL(t *testing.T) {
 
 	sig := "89be454a9c7e2e9f3f50a8441815e0b5801cba5b"
 	expiry := "1593565980"
-	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject/testFile.txt?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
+	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject%%2FtestFile.txt?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedURL, tempURL)

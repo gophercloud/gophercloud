@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -18,18 +19,17 @@ func TestContainerNames(t *testing.T) {
 	for _, tc := range [...]struct {
 		name          string
 		containerName string
+		expectedError error
 	}{
 		{
 			"rejects_a_slash",
 			"one/two",
+			v1.ErrInvalidContainerName{},
 		},
 		{
-			"rejects_an_escaped_slash",
-			"one%2Ftwo",
-		},
-		{
-			"rejects_an_escaped_slash_lowercase",
-			"one%2ftwo",
+			"rejects_an_empty_string",
+			"",
+			v1.ErrEmptyContainerName{},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -39,7 +39,7 @@ func TestContainerNames(t *testing.T) {
 				HandleCreateContainerSuccessfully(t)
 
 				_, err := containers.Create(fake.ServiceClient(), tc.containerName, nil).Extract()
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("delete", func(t *testing.T) {
 				th.SetupHTTP()
@@ -47,7 +47,7 @@ func TestContainerNames(t *testing.T) {
 				HandleDeleteContainerSuccessfully(t, WithPath("/"))
 
 				res := containers.Delete(fake.ServiceClient(), tc.containerName)
-				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("update", func(t *testing.T) {
 				th.SetupHTTP()
@@ -64,7 +64,7 @@ func TestContainerNames(t *testing.T) {
 					ContentType:      &contentType,
 				}
 				res := containers.Update(fake.ServiceClient(), tc.containerName, options)
-				th.CheckErr(t, res.Err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("get", func(t *testing.T) {
 				th.SetupHTTP()
@@ -73,10 +73,10 @@ func TestContainerNames(t *testing.T) {
 
 				res := containers.Get(fake.ServiceClient(), tc.containerName, nil)
 				_, err := res.ExtractMetadata()
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
 
 				_, err = res.Extract()
-				th.CheckErr(t, err, &containers.ErrInvalidContainerName{})
+				th.CheckErr(t, err, &tc.expectedError)
 			})
 		})
 	}
@@ -88,7 +88,7 @@ func TestListContainerInfo(t *testing.T) {
 	HandleListContainerInfoSuccessfully(t)
 
 	count := 0
-	err := containers.List(fake.ServiceClient(), &containers.ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+	err := containers.List(fake.ServiceClient(), &containers.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := containers.ExtractInfo(page)
 		th.AssertNoErr(t, err)
@@ -106,7 +106,7 @@ func TestListAllContainerInfo(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListContainerInfoSuccessfully(t)
 
-	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{Full: true}).AllPages()
+	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractInfo(allPages)
 	th.AssertNoErr(t, err)
@@ -116,10 +116,10 @@ func TestListAllContainerInfo(t *testing.T) {
 func TestListContainerNames(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListContainerNamesSuccessfully(t)
+	HandleListContainerInfoSuccessfully(t)
 
 	count := 0
-	err := containers.List(fake.ServiceClient(), &containers.ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
+	err := containers.List(fake.ServiceClient(), &containers.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := containers.ExtractNames(page)
 		if err != nil {
@@ -138,9 +138,9 @@ func TestListContainerNames(t *testing.T) {
 func TestListAllContainerNames(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListContainerNamesSuccessfully(t)
+	HandleListContainerInfoSuccessfully(t)
 
-	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{Full: false}).AllPages()
+	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractNames(allPages)
 	th.AssertNoErr(t, err)
@@ -152,7 +152,7 @@ func TestListZeroContainerNames(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListZeroContainerNames204(t)
 
-	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{Full: false}).AllPages()
+	allPages, err := containers.List(fake.ServiceClient(), &containers.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractNames(allPages)
 	th.AssertNoErr(t, err)

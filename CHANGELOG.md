@@ -1,3 +1,21 @@
+## v2 (unreleased)
+
+BREAKING CHANGES:
+
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Gophercloud now escapes container and object names in all `objects` and `containers` functions. If you were previously escaping names (with, for example: `url.PathEscape` or `url.QueryEscape`), then you should REMOVE that and pass the intended names to Gophercloud directly.
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) The `containers.ListOpts#Full` and `objects.ListOpts#Full` properties are REMOVED from the Gophercloud API. The reason for that is: plaintext listing is unfixably wrong and won't handle special characters reliably (i.e. `\n`).
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Empty container names, container names containing a slash (`/`), and empty object names are now rejected in Gophercloud before any call to Swift.
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) In `objectstorage`: `containers.ErrInvalidContainerName` is now `v1.ErrInvalidContainerName`.
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) New name validation errors in `objectstorage`:
+  * `v1.ErrEmptyContainerName`
+  * `v1.ErrEmptyObjectName`
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) In `objects.Copy`: the `destination` field (e.g. `objects.CopyOpts#Destination`) must be in the form `/container/object`: the function will reject a destination path if it doesn't start with a slash (`/`).
+
+New features and improvements:
+
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Bugfix: it is now possible to successfuly call `objects.CreateTempURL` with a container name or object name containing the string `/v1/`.
+
+
 ## v1.5.0 (2023-06-21)
 
 New features and improvements:

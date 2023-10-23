@@ -1,40 +1,21 @@
 package containers
 
 import (
-	"fmt"
-	"strings"
+	"net/url"
 
 	"github.com/gophercloud/gophercloud"
+	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
 )
-
-const forbiddenContainerRunes = "/"
-
-func CheckContainerName(s string) error {
-	if strings.ContainsAny(s, forbiddenContainerRunes) {
-		return ErrInvalidContainerName{}
-	}
-
-	// The input could (and should) already have been escaped. This cycle
-	// checks for the escaped versions of the forbidden characters. Note
-	// that a simple "contains" is sufficient, because Go's http library
-	// won't accept invalid escape sequences (e.g. "%%2F").
-	for _, r := range forbiddenContainerRunes {
-		if strings.Contains(strings.ToLower(s), fmt.Sprintf("%%%x", r)) {
-			return ErrInvalidContainerName{}
-		}
-	}
-	return nil
-}
 
 func listURL(c *gophercloud.ServiceClient) string {
 	return c.Endpoint
 }
 
 func createURL(c *gophercloud.ServiceClient, container string) (string, error) {
-	if err := CheckContainerName(container); err != nil {
+	if err := v1.CheckContainerName(container); err != nil {
 		return "", err
 	}
-	return c.ServiceURL(container), nil
+	return c.ServiceURL(url.PathEscape(container)), nil
 }
 
 func getURL(c *gophercloud.ServiceClient, container string) (string, error) {
