@@ -50,7 +50,7 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'semver:unknown')
           || contains(github.event.label.name, 'semver:major')
           || contains(github.event.label.name, 'semver:unknown')
-        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f
+        uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308
         with:
           message: |
             Labels `semver-major` or `semver-unknown` can not trigger backports.
