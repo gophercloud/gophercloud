@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -70,6 +71,92 @@ func TestPortsCRUD(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
+
+	ipAddress := port.FixedIPs[0].IPAddress
+	t.Logf("Port has IP address: %s", ipAddress)
+
+	// List ports by fixed IP
+	// All of the following listOpts should return the port
+	for _, tt := range []struct {
+		name          string
+		opts          ports.ListOpts
+		expectedPorts int
+	}{
+		{
+			name: "Port ID",
+			opts: ports.ListOpts{
+				ID: port.ID,
+			},
+			expectedPorts: 1,
+		},
+		{
+			name: "Network ID",
+			opts: ports.ListOpts{
+				NetworkID: port.NetworkID,
+			},
+			expectedPorts: 2, // Will also return DHCP port
+		},
+		{
+			name: "Subnet ID",
+			opts: ports.ListOpts{
+				FixedIPs: []ports.FixedIPOpts{
+					{SubnetID: subnet.ID},
+				},
+			},
+			expectedPorts: 1,
+		},
+		{
+			name: "IP Address",
+			opts: ports.ListOpts{
+				FixedIPs: []ports.FixedIPOpts{
+					{IPAddress: ipAddress},
+				},
+			},
+			expectedPorts: 1,
+		},
+		{
+			name: "Subnet ID and IP Address",
+			opts: ports.ListOpts{
+				FixedIPs: []ports.FixedIPOpts{
+					{SubnetID: subnet.ID, IPAddress: ipAddress},
+				},
+			},
+			expectedPorts: 1,
+		},
+	} {
+		t.Run(fmt.Sprintf("List ports by %s", tt.name), func(t *testing.T) {
+			allPages, err := ports.List(client, tt.opts).AllPages()
+			th.AssertNoErr(t, err)
+
+			allPorts, err := ports.ExtractPorts(allPages)
+			th.AssertNoErr(t, err)
+
+			logPorts := func() {
+				for _, port := range allPorts {
+					tools.PrintResource(t, port)
+				}
+			}
+
+			if len(allPorts) != tt.expectedPorts {
+				if len(allPorts) == 0 {
+					t.Fatalf("Port not found")
+				}
+				if len(allPorts) > 1 {
+					logPorts()
+					t.Fatalf("Expected %d port but got %d", tt.expectedPorts, len(allPorts))
+				}
+			}
+			func() {
+				for _, port := range allPorts {
+					if port.ID == newPort.ID {
+						return
+					}
+				}
+				logPorts()
+				t.Fatalf("Returned ports did not contain expected port")
+			}()
+		})
+	}
 }
 
 func TestPortsRemoveSecurityGroups(t *testing.T) {
