@@ -55,8 +55,8 @@ type ListOpts struct {
 	Marker    string `q:"marker"`
 	EndMarker string `q:"end_marker"`
 	Format    string `q:"format"`
-	Prefix    string `q:"prefix"`
 	Delimiter string `q:"delimiter"`
+	Prefix    string `q:"prefix"`
 	Path      string `q:"path"`
 	Versions  bool   `q:"versions"`
 }
