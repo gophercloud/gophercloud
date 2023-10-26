@@ -22,6 +22,7 @@ import (
 var numObjects = 2
 
 func TestObjects(t *testing.T) {
+	numObjects := numObjects + 1
 	client, err := clients.NewObjectStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create client: %v", err)
@@ -29,9 +30,10 @@ func TestObjects(t *testing.T) {
 
 	// Make a slice of length numObjects to hold the random object names.
 	oNames := make([]string, numObjects)
-	for i := 0; i < len(oNames); i++ {
+	for i := 0; i < len(oNames)-1; i++ {
 		oNames[i] = tools.RandomString("test-object-", 8)
 	}
+	oNames[len(oNames)-1] = "test-object-with-/v1/-in-the-name"
 
 	// Create a container to hold the test objects.
 	cName := tools.RandomString("test-container-", 8)
