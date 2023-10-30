@@ -84,6 +84,10 @@ type Monitor struct {
 
 	// The operating status of the monitor.
 	OperatingStatus string `json:"operating_status"`
+
+	// Tags is a list of resource tags. Tags are arbitrarily defined strings
+	// attached to the resource. New in version 2.5
+	Tags []string `json:"tags"`
 }
 
 // MonitorPage is the page returned by a pager when traversing over a

@@ -66,6 +66,7 @@ func TestCreateHealthmonitor(t *testing.T) {
 		Timeout:        10,
 		MaxRetries:     5,
 		MaxRetriesDown: 4,
+		Tags:           []string{},
 		URLPath:        "/check",
 		ExpectedCodes:  "200-299",
 	}).Extract()

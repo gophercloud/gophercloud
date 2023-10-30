@@ -19,25 +19,26 @@ type ListOptsBuilder interface {
 // sort by a particular Monitor attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID             string `q:"id"`
-	Name           string `q:"name"`
-	TenantID       string `q:"tenant_id"`
-	ProjectID      string `q:"project_id"`
-	PoolID         string `q:"pool_id"`
-	Type           string `q:"type"`
-	Delay          int    `q:"delay"`
-	Timeout        int    `q:"timeout"`
-	MaxRetries     int    `q:"max_retries"`
-	MaxRetriesDown int    `q:"max_retries_down"`
-	HTTPMethod     string `q:"http_method"`
-	URLPath        string `q:"url_path"`
-	ExpectedCodes  string `q:"expected_codes"`
-	AdminStateUp   *bool  `q:"admin_state_up"`
-	Status         string `q:"status"`
-	Limit          int    `q:"limit"`
-	Marker         string `q:"marker"`
-	SortKey        string `q:"sort_key"`
-	SortDir        string `q:"sort_dir"`
+	ID             string   `q:"id"`
+	Name           string   `q:"name"`
+	TenantID       string   `q:"tenant_id"`
+	ProjectID      string   `q:"project_id"`
+	PoolID         string   `q:"pool_id"`
+	Type           string   `q:"type"`
+	Delay          int      `q:"delay"`
+	Timeout        int      `q:"timeout"`
+	MaxRetries     int      `q:"max_retries"`
+	MaxRetriesDown int      `q:"max_retries_down"`
+	HTTPMethod     string   `q:"http_method"`
+	URLPath        string   `q:"url_path"`
+	ExpectedCodes  string   `q:"expected_codes"`
+	AdminStateUp   *bool    `q:"admin_state_up"`
+	Status         string   `q:"status"`
+	Limit          int      `q:"limit"`
+	Marker         string   `q:"marker"`
+	SortKey        string   `q:"sort_key"`
+	SortDir        string   `q:"sort_dir"`
+	Tags           []string `q:"tags"`
 }
 
 // ToMonitorListQuery formats a ListOpts into a query string.
@@ -141,6 +142,9 @@ type CreateOpts struct {
 	// The administrative state of the Monitor. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Tags is a set of resource tags. New in version 2.5
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToMonitorCreateMap builds a request body from CreateOpts.
@@ -224,6 +228,9 @@ type UpdateOpts struct {
 	// The administrative state of the Monitor. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Tags is a set of resource tags. New in version 2.5
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToMonitorUpdateMap builds a request body from UpdateOpts.

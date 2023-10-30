@@ -24,7 +24,8 @@ const HealthmonitorsListBody = `
 			"timeout":1,
 			"type":"PING",
 			"pools": [{"id": "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d"}],
-			"id":"466c8345-28d8-4f84-a246-e04380b0461d"
+			"id":"466c8345-28d8-4f84-a246-e04380b0461d",
+			"tags":[]
 		},
 		{
 			"admin_state_up":true,
@@ -39,7 +40,8 @@ const HealthmonitorsListBody = `
 			"url_path":"/",
 			"type":"HTTP",
 			"pools": [{"id": "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}],
-			"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7"
+			"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7",
+			"tags":["foobar"]
 		}
 	]
 }
@@ -61,7 +63,8 @@ const SingleHealthmonitorBody = `
 		"url_path":"/",
 		"type":"HTTP",
 		"pools": [{"id": "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}],
-		"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7"
+		"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7",
+		"tags":[]
 	}
 }
 `
@@ -82,7 +85,8 @@ const PostUpdateHealthmonitorBody = `
 		"url_path":"/another_check",
 		"type":"HTTP",
 		"pools": [{"id": "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}],
-		"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7"
+		"id":"5d4b5228-33b0-4e60-b225-9b727c1a20e7",
+		"tags":[]
 	}
 }
 `
@@ -99,6 +103,7 @@ var (
 		Type:           "PING",
 		ID:             "466c8345-28d8-4f84-a246-e04380b0461d",
 		Pools:          []monitors.PoolID{{ID: "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d"}},
+		Tags:           []string{},
 	}
 	HealthmonitorDb = monitors.Monitor{
 		AdminStateUp:   true,
@@ -114,6 +119,7 @@ var (
 		HTTPMethod:     "GET",
 		ID:             "5d4b5228-33b0-4e60-b225-9b727c1a20e7",
 		Pools:          []monitors.PoolID{{ID: "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}},
+		Tags:           []string{},
 	}
 	HealthmonitorUpdated = monitors.Monitor{
 		AdminStateUp:   true,
@@ -129,6 +135,7 @@ var (
 		HTTPMethod:     "GET",
 		ID:             "5d4b5228-33b0-4e60-b225-9b727c1a20e7",
 		Pools:          []monitors.PoolID{{ID: "d459f7d8-c6ee-439d-8713-d3fc08aeed8d"}},
+		Tags:           []string{},
 	}
 )
 
