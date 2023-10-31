@@ -82,30 +82,6 @@ func HandleListContainerInfoSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleListContainerNamesSuccessfully creates an HTTP handler at `/` on the test handler mux that
-// responds with a `ListNames` response when only container names are requested.
-func HandleListContainerNamesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Accept", "text/plain")
-
-		w.Header().Set("Content-Type", "text/plain")
-		r.ParseForm()
-		marker := r.Form.Get("marker")
-		switch marker {
-		case "":
-			fmt.Fprintf(w, "janeausten\nmarktwain\n")
-		case "janeausten":
-			fmt.Fprintf(w, "marktwain\n")
-		case "marktwain":
-			fmt.Fprintf(w, ``)
-		default:
-			t.Fatalf("Unexpected marker: [%s]", marker)
-		}
-	})
-}
-
 // HandleListZeroContainerNames204 creates an HTTP handler at `/` on the test handler mux that
 // responds with "204 No Content" when container names are requested. This happens on some, but not all,
 // objectstorage instances. This case is peculiar in that the server sends no `content-type` header.
@@ -113,7 +89,7 @@ func HandleListZeroContainerNames204(t *testing.T) {
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Accept", "text/plain")
+		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.WriteHeader(http.StatusNoContent)
 	})

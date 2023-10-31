@@ -108,7 +108,6 @@ func TestObjectsVersioning(t *testing.T) {
 
 	// List created objects
 	listOpts := objects.ListOpts{
-		Full:   true,
 		Prefix: "test-object-",
 	}
 
@@ -131,7 +130,6 @@ func TestObjectsVersioning(t *testing.T) {
 
 	// List all created objects
 	listOpts = objects.ListOpts{
-		Full:     true,
 		Prefix:   "test-object-",
 		Versions: true,
 	}

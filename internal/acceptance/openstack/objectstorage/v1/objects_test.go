@@ -22,6 +22,7 @@ import (
 var numObjects = 2
 
 func TestObjects(t *testing.T) {
+	numObjects := numObjects + 1
 	client, err := clients.NewObjectStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create client: %v", err)
@@ -29,12 +30,13 @@ func TestObjects(t *testing.T) {
 
 	// Make a slice of length numObjects to hold the random object names.
 	oNames := make([]string, numObjects)
-	for i := 0; i < len(oNames); i++ {
-		oNames[i] = tools.RandomString("test-object-", 8)
+	for i := 0; i < len(oNames)-1; i++ {
+		oNames[i] = "test-object-" + tools.RandomFunnyString(8)
 	}
+	oNames[len(oNames)-1] = "test-object-with-/v1/-in-the-name"
 
 	// Create a container to hold the test objects.
-	cName := tools.RandomString("test-container-", 8)
+	cName := "test-container-" + tools.RandomFunnyStringNoSlash(8)
 	opts := containers.CreateOpts{
 		TempURLKey: "super-secret",
 	}
@@ -51,7 +53,7 @@ func TestObjects(t *testing.T) {
 	// Create a slice of buffers to hold the test object content.
 	oContents := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents[i] = tools.RandomString("", 10)
+		oContents[i] = tools.RandomFunnyString(10)
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents[i]),
 		}
@@ -68,7 +70,6 @@ func TestObjects(t *testing.T) {
 
 	// List all created objects
 	listOpts := objects.ListOpts{
-		Full:   true,
 		Prefix: "test-object-",
 	}
 
@@ -135,7 +136,7 @@ func TestObjects(t *testing.T) {
 
 	// Copy the contents of one object to another.
 	copyOpts := objects.CopyOpts{
-		Destination: cName + "/" + oNames[1],
+		Destination: "/" + cName + "/" + oNames[1],
 	}
 	copyres := objects.Copy(client, cName, oNames[0], copyOpts)
 	th.AssertNoErr(t, copyres.Err)
@@ -237,22 +238,22 @@ func TestObjectsListSubdir(t *testing.T) {
 	}
 
 	// Create a random subdirectory name.
-	cSubdir1 := tools.RandomString("test-subdir-", 8)
-	cSubdir2 := tools.RandomString("test-subdir-", 8)
+	cSubdir1 := "test-subdir-" + tools.RandomFunnyStringNoSlash(8)
+	cSubdir2 := "test-subdir-" + tools.RandomFunnyStringNoSlash(8)
 
 	// Make a slice of length numObjects to hold the random object names.
 	oNames1 := make([]string, numObjects)
 	for i := 0; i < len(oNames1); i++ {
-		oNames1[i] = cSubdir1 + "/" + tools.RandomString("test-object-", 8)
+		oNames1[i] = cSubdir1 + "/test-object-" + tools.RandomFunnyString(8)
 	}
 
 	oNames2 := make([]string, numObjects)
 	for i := 0; i < len(oNames2); i++ {
-		oNames2[i] = cSubdir2 + "/" + tools.RandomString("test-object-", 8)
+		oNames2[i] = cSubdir2 + "/test-object-" + tools.RandomFunnyString(8)
 	}
 
 	// Create a container to hold the test objects.
-	cName := tools.RandomString("test-container-", 8)
+	cName := "test-container-" + tools.RandomFunnyStringNoSlash(8)
 	_, err = containers.Create(client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 
@@ -266,7 +267,7 @@ func TestObjectsListSubdir(t *testing.T) {
 	// Create a slice of buffers to hold the test object content.
 	oContents1 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents1[i] = tools.RandomString("", 10)
+		oContents1[i] = tools.RandomFunnyString(10)
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents1[i]),
 		}
@@ -284,7 +285,7 @@ func TestObjectsListSubdir(t *testing.T) {
 
 	oContents2 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents2[i] = tools.RandomString("", 10)
+		oContents2[i] = tools.RandomFunnyString(10)
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents2[i]),
 		}
@@ -301,7 +302,6 @@ func TestObjectsListSubdir(t *testing.T) {
 	}()
 
 	listOpts := objects.ListOpts{
-		Full:      true,
 		Delimiter: "/",
 	}
 
@@ -330,7 +330,6 @@ func TestObjectsListSubdir(t *testing.T) {
 	}
 
 	listOpts = objects.ListOpts{
-		Full:      true,
 		Delimiter: "/",
 		Prefix:    cSubdir2,
 	}
@@ -356,22 +355,22 @@ func TestObjectsBulkDelete(t *testing.T) {
 	}
 
 	// Create a random subdirectory name.
-	cSubdir1 := tools.RandomString("test-subdir-", 8)
-	cSubdir2 := tools.RandomString("test-subdir-", 8)
+	cSubdir1 := "test-subdir-" + tools.RandomFunnyString(8)
+	cSubdir2 := "test-subdir-" + tools.RandomFunnyString(8)
 
 	// Make a slice of length numObjects to hold the random object names.
 	oNames1 := make([]string, numObjects)
 	for i := 0; i < len(oNames1); i++ {
-		oNames1[i] = cSubdir1 + "/" + tools.RandomString("test-object-", 8)
+		oNames1[i] = cSubdir1 + "/test-object-" + tools.RandomFunnyString(8)
 	}
 
 	oNames2 := make([]string, numObjects)
 	for i := 0; i < len(oNames2); i++ {
-		oNames2[i] = cSubdir2 + "/" + tools.RandomString("test-object-", 8)
+		oNames2[i] = cSubdir2 + "/test-object-" + tools.RandomFunnyString(8)
 	}
 
 	// Create a container to hold the test objects.
-	cName := tools.RandomString("test-container-", 8)
+	cName := "test-container-" + tools.RandomFunnyStringNoSlash(8)
 	_, err = containers.Create(client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 
@@ -385,7 +384,7 @@ func TestObjectsBulkDelete(t *testing.T) {
 	// Create a slice of buffers to hold the test object content.
 	oContents1 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents1[i] = tools.RandomString("", 10)
+		oContents1[i] = tools.RandomFunnyString(10)
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents1[i]),
 		}
@@ -395,7 +394,7 @@ func TestObjectsBulkDelete(t *testing.T) {
 
 	oContents2 := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		oContents2[i] = tools.RandomString("", 10)
+		oContents2[i] = tools.RandomFunnyString(10)
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents2[i]),
 		}
@@ -416,7 +415,6 @@ func TestObjectsBulkDelete(t *testing.T) {
 
 	// Verify deletion
 	listOpts := objects.ListOpts{
-		Full:      true,
 		Delimiter: "/",
 	}
 

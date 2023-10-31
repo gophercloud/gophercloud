@@ -1,10 +1,10 @@
 package tools
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"errors"
-	mrand "math/rand"
+	"math/rand"
+	"strings"
 	"testing"
 	"time"
 )
@@ -47,22 +47,36 @@ func MakeNewPassword(oldPass string) string {
 
 // RandomString generates a string of given length, but random content.
 // All content will be within the ASCII graphic character set.
-// (Implementation from Even Shaw's contribution on
-// http://stackoverflow.com/questions/12771930/what-is-the-fastest-way-to-generate-a-long-random-string-in-go).
 func RandomString(prefix string, n int) string {
-	const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	var bytes = make([]byte, n)
-	rand.Read(bytes)
-	for i, b := range bytes {
-		bytes[i] = alphanum[b%byte(len(alphanum))]
+	charset := []rune("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+	return prefix + randomString(charset, n)
+}
+
+// RandomFunnyString returns a random string of the given length filled with
+// funny Unicode code points.
+func RandomFunnyString(length int) string {
+	charset := []rune("012abc \n\t🤖👾👩🏾‍🚀+.,;:*`~|\"'/\\]êà²×c師☷")
+	return randomString(charset, length)
+}
+
+// RandomFunnyStringNoSlash returns a random string of the given length filled with
+// funny Unicode code points, but no forward slash.
+func RandomFunnyStringNoSlash(length int) string {
+	charset := []rune("012abc \n\t🤖👾👩🏾‍🚀+.,;:*`~|\"'\\]êà²×c師☷")
+	return randomString(charset, length)
+}
+
+func randomString(charset []rune, length int) string {
+	var s strings.Builder
+	for i := 0; i < length; i++ {
+		s.WriteRune(charset[rand.Intn(len(charset))])
 	}
-	return prefix + string(bytes)
+	return s.String()
 }
 
 // RandomInt will return a random integer between a specified range.
 func RandomInt(min, max int) int {
-	mrand.Seed(time.Now().Unix())
-	return mrand.Intn(max-min) + min
+	return rand.Intn(max-min) + min
 }
 
 // Elide returns the first bit of its input string with a suffix of "..." if it's longer than

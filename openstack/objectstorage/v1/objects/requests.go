@@ -10,10 +10,12 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"net/url"
 	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/accounts"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -41,16 +43,16 @@ func (e ErrTempURLDigestNotValid) Error() string {
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {
-	ToObjectListParams() (bool, string, error)
+	ToObjectListParams() (string, error)
 }
 
 // ListOpts is a structure that holds parameters for listing objects.
 type ListOpts struct {
-	// Full is a true/false value that represents the amount of object information
-	// returned. If Full is set to true, then the content-type, number of bytes,
-	// hash date last modified, and name are returned. If set to false or not set,
-	// then only the object names are returned.
-	Full      bool
+	// Full has been removed from the Gophercloud API. Gophercloud will now
+	// always request the "full" (json) listing, because simplified listing
+	// (plaintext) returns false results when names contain end-of-line
+	// characters.
+
 	Limit     int    `q:"limit"`
 	Marker    string `q:"marker"`
 	EndMarker string `q:"end_marker"`
@@ -61,11 +63,10 @@ type ListOpts struct {
 	Versions  bool   `q:"versions"`
 }
 
-// ToObjectListParams formats a ListOpts into a query string and boolean
-// representing whether to list complete information for each object.
-func (opts ListOpts) ToObjectListParams() (bool, string, error) {
+// ToObjectListParams formats a ListOpts into a query string.
+func (opts ListOpts) ToObjectListParams() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return opts.Full, q.String(), err
+	return q.String(), err
 }
 
 // List is a function that retrieves all objects in a container. It also returns
@@ -78,17 +79,13 @@ func List(c *gophercloud.ServiceClient, containerName string, opts ListOptsBuild
 		return pagination.Pager{Err: err}
 	}
 
-	headers := map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
+	headers := map[string]string{"Accept": "application/json", "Content-Type": "application/json"}
 	if opts != nil {
-		full, query, err := opts.ToObjectListParams()
+		query, err := opts.ToObjectListParams()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
 		url += query
-
-		if full {
-			headers = map[string]string{"Accept": "application/json", "Content-Type": "application/json"}
-		}
 	}
 
 	pager := pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
@@ -301,8 +298,12 @@ type CopyOpts struct {
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
 	ContentType        string `h:"Content-Type"`
-	Destination        string `h:"Destination" required:"true"`
-	ObjectVersionID    string `q:"version-id"`
+
+	// Destination is where the object should be copied to, in the form:
+	// `/container/object`.
+	Destination string `h:"Destination" required:"true"`
+
+	ObjectVersionID string `q:"version-id"`
 }
 
 // ToObjectCopyMap formats a CopyOpts into a map of headers.
@@ -328,12 +329,6 @@ func (opts CopyOpts) ToObjectCopyQuery() (string, error) {
 
 // Copy is a function that copies one object to another.
 func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts CopyOptsBuilder) (r CopyResult) {
-	url, err := copyURL(c, containerName, objectName)
-	if err != nil {
-		r.Err = err
-		return
-	}
-
 	h := make(map[string]string)
 	headers, err := opts.ToObjectCopyMap()
 	if err != nil {
@@ -341,7 +336,32 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		return
 	}
 	for k, v := range headers {
+		if strings.ToLower(k) == "destination" {
+			// URL-encode the container name and the object name
+			// separately before joining them around the `/` slash
+			// separator. Note that the destination path is also
+			// expected to start with a slash.
+			segments := strings.SplitN(v, "/", 3)
+			if l := len(segments); l != 3 {
+				r.Err = fmt.Errorf("the destination field is expected to contain at least two slash / characters: the initial one, and the separator between the container name and the object name")
+				return
+			}
+			if segments[0] != "" {
+				r.Err = fmt.Errorf("the destination field is expected to start with a slash")
+				return
+			}
+			for i := range segments {
+				segments[i] = url.PathEscape(segments[i])
+			}
+			v = strings.Join(segments, "/")
+		}
 		h[k] = v
+	}
+
+	url, err := copyURL(c, containerName, objectName)
+	if err != nil {
+		r.Err = err
+		return
 	}
 
 	if opts, ok := opts.(CopyOptsQueryBuilder); ok {
@@ -574,6 +594,10 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 	if err != nil {
 		return "", err
 	}
+	urlToBeSigned, err := tempURL(c, containerName, objectName)
+	if err != nil {
+		return "", err
+	}
 
 	if opts.Split == "" {
 		opts.Split = "/v1/"
@@ -611,8 +635,10 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 	}
 
 	secretKey := []byte(tempURLKey)
-	splitPath := strings.Split(url, opts.Split)
-	baseURL, objectPath := splitPath[0], splitPath[1]
+	_, objectPath, splitFound := strings.Cut(urlToBeSigned, opts.Split)
+	if !splitFound {
+		return "", fmt.Errorf("URL prefix %q not found", opts.Split)
+	}
 	objectPath = opts.Split + objectPath
 	body := fmt.Sprintf("%s\n%d\n%s", opts.Method, expiry, objectPath)
 	var hash hash.Hash
@@ -628,7 +654,7 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 	}
 	hash.Write([]byte(body))
 	hexsum := fmt.Sprintf("%x", hash.Sum(nil))
-	return fmt.Sprintf("%s%s?temp_url_sig=%s&temp_url_expires=%d", baseURL, objectPath, hexsum, expiry), nil
+	return fmt.Sprintf("%s?temp_url_sig=%s&temp_url_expires=%d", url, hexsum, expiry), nil
 }
 
 // BulkDelete is a function that bulk deletes objects.
@@ -638,21 +664,22 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 // * https://github.com/openstack/swift/blob/6d3d4197151f44bf28b51257c1a4c5d33411dcae/etc/proxy-server.conf-sample#L1029-L1034
 // * https://github.com/openstack/swift/blob/e8cecf7fcc1630ee83b08f9a73e1e59c07f8d372/swift/common/middleware/bulk.py#L309
 func BulkDelete(c *gophercloud.ServiceClient, container string, objects []string) (r BulkDeleteResult) {
-	err := containers.CheckContainerName(container)
-	if err != nil {
+	if err := v1.CheckContainerName(container); err != nil {
 		r.Err = err
 		return
 	}
 
+	encodedContainer := url.PathEscape(container)
+
 	var body bytes.Buffer
 	for i := range objects {
-		if objects[i] == "" {
-			r.Err = fmt.Errorf("object names must not be the empty string")
+		if err := v1.CheckObjectName(objects[i]); err != nil {
+			r.Err = err
 			return
 		}
-		body.WriteString(container)
+		body.WriteString(encodedContainer)
 		body.WriteRune('/')
-		body.WriteString(objects[i])
+		body.WriteString(url.PathEscape(objects[i]))
 		body.WriteRune('\n')
 	}
 
