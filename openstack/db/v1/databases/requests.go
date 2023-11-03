@@ -136,7 +136,7 @@ func (opts BatchGrantOpts) ToDBGrantMap() (map[string]interface{}, error) {
 // BatchGrantOpts allows for multiple databases to be granted access.
 type BatchGrantOpts []GrantOpts
 
-// GrantUserAccess will grant the accessibility within a specified instance for a user.
+// GrantUserAccess will grant database access within a specified instance for a user.
 func GrantUserAccess(client *gophercloud.ServiceClient, instanceID, userName string, opts GranOptsBuilder) (r GrantAccessResult) {
 	b, err := opts.ToDBGrantMap()
 	if err != nil {
@@ -144,6 +144,13 @@ func GrantUserAccess(client *gophercloud.ServiceClient, instanceID, userName str
 		return
 	}
 	resp, err := client.Put(dbGrantAccessURL(client, instanceID, userName), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RevokeUserAccess will revoke database access a specified instance for a user.
+func RevokeUserAccess(client *gophercloud.ServiceClient, instanceID, userName, dbName string) (r DeleteResult) {
+	resp, err := client.Delete(dbRevokeAccessURL(client, instanceID, userName, dbName), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

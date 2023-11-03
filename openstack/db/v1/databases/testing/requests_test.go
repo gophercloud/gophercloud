@@ -80,3 +80,12 @@ func TestGrantAcess(t *testing.T) {
 	err := databases.GrantUserAccess(fake.ServiceClient(), instanceID, userName, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestRevokeAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRevoke(t)
+
+	err := databases.RevokeUserAccess(fake.ServiceClient(), instanceID, userName, "{dbName}").ExtractErr()
+	th.AssertNoErr(t, err)
+}

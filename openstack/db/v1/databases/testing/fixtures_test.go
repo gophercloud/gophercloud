@@ -74,3 +74,11 @@ func HandleList(t *testing.T) {
 func HandleDelete(t *testing.T) {
 	fixture.SetupHandler(t, resURL+"/{dbName}", "DELETE", "", "", 202)
 }
+
+func HandleGrant(t *testing.T) {
+	fixture.SetupHandler(t, grantURL, "PUT", GrantAccessReq, "", 202)
+}
+
+func HandleRevoke(t *testing.T) {
+	fixture.SetupHandler(t, grantURL+"/{dbName}", "DELETE", "", "", 202)
+}
