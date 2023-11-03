@@ -28,6 +28,11 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// GrantAccessResult represents the result of a Grant Access operation.
+type GrantAccessResult struct {
+	gophercloud.ErrResult
+}
+
 // DBPage represents a single page of a paginated DB collection.
 type DBPage struct {
 	pagination.LinkedPageBase

@@ -8,7 +8,9 @@ import (
 
 var (
 	instanceID = "{instanceID}"
+	userName   = "{userName}"
 	resURL     = "/instances/" + instanceID + "/databases"
+	grantURL   = "/instances/" + instanceID + "/users/" + userName + "/databases"
 )
 
 var createDBsReq = `
@@ -43,6 +45,19 @@ var listDBsResp = `
 		},
 		{
 			"name": "testingdb"
+		}
+	]
+}
+`
+
+var GrantAccessReq = `
+{
+	"databases": [
+		{
+			"name": "anotherexampledb"
+		},
+		{
+			"name": "exampledb"
 		}
 	]
 }

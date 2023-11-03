@@ -7,6 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/testhelper/fixture"
 )
 
 func TestCreate(t *testing.T) {
@@ -63,5 +64,19 @@ func TestDelete(t *testing.T) {
 	HandleDelete(t)
 
 	err := databases.Delete(fake.ServiceClient(), instanceID, "{dbName}").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestGrantAcess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, grantURL, "PUT", GrantAccessReq, "", 202)
+
+	opts := databases.BatchGrantOpts{
+		databases.GrantOpts{Name: "anotherexampledb"},
+		databases.GrantOpts{Name: "exampledb"},
+	}
+
+	err := databases.GrantUserAccess(fake.ServiceClient(), instanceID, userName, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
