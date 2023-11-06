@@ -47,6 +47,18 @@ func (e ErrInvalidInput) Error() string {
 	return e.choseErrString()
 }
 
+// ErrMultipleChoiceInput is the error when multiple input is selected but only one
+// option is allowed
+type ErrMultipleChoiceInput struct {
+	BaseError
+	Value []string
+}
+
+func (e ErrMultipleChoiceInput) Error() string {
+	e.DefaultErrString = fmt.Sprintf("Only one field in these fields is allowed to select %s", e.Value)
+	return e.choseErrString()
+}
+
 // ErrMissingEnvironmentVariable is the error when environment variable is required
 // in a particular situation but not provided by the user
 type ErrMissingEnvironmentVariable struct {

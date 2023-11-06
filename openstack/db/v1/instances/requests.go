@@ -45,6 +45,20 @@ func (opts NetworkOpts) ToMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
+// AccessOpts is used within CreateOpts to define how the database service is exposed.
+type AccessOpts struct {
+	// Specifies whether the database service is exposed to the public
+	IsPublic bool `json:"is_Public,omitempty"`
+	// A list of IPv4, IPv6 or mix of both CIDRs that restrict access to the database service
+	// 0.0.0.0/0 is used by default if this parameter is not provided.
+	AllowedCidrs []string `json:"allowed_cidrs,omitempty"`
+}
+
+// ToMap converts a AccessOpts to a map[string]string (for a request body)
+func (opts AccessOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
 // CreateOpts is the struct responsible for configuring a new database instance.
 type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
@@ -67,6 +81,23 @@ type CreateOpts struct {
 	Datastore *DatastoreOpts
 	// Networks dictates how this server will be attached to available networks.
 	Networks []NetworkOpts
+	// The backup id of the backup used from which a new instance is created.
+	// Only set this parameter or ReplicaOf parameter.
+	// Optional.
+	BackupRef string `json:"backupRef,omitempty"`
+	// Specifies the availability zone of the instance. Optional
+	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
+	// Specifies the unique ID or name of an existing instance to replicate from.
+	// Only set this parameter or BackupRef parameter.
+	// Optional.
+	ReplicaOf string `json:"replicaOf,omitempty"`
+	// Number of replicas to create (defaults to 1). Optional.
+	ReplicaCount int `json:"replicaCount,omitempty"`
+	// ID of the configuration group that you want to attach to the instance.
+	// Optional.
+	Configuration string `json:"configuration,omitempty"`
+	// Specifies how the database service is exposed
+	Access *AccessOpts `json:"access,omitempty"`
 }
 
 // ToInstanceCreateMap will render a JSON map.
@@ -81,6 +112,12 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	if opts.FlavorRef == "" {
 		return nil, gophercloud.ErrMissingInput{Argument: "instances.CreateOpts.FlavorRef"}
+	}
+
+	if opts.BackupRef != "" && opts.ReplicaOf != "" {
+		err := gophercloud.ErrMultipleChoiceInput{}
+		err.Value = []string{"instances.CreateOpts.BackupRef", "instances.CreateOpts.ReplicaOf"}
+		return nil, err
 	}
 
 	instance := map[string]interface{}{
@@ -133,6 +170,37 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	}
 
 	instance["volume"] = volume
+
+	if opts.BackupRef != "" {
+		restorePoint := map[string]interface{}{
+			"backupRef": opts.BackupRef,
+		}
+		instance["restorePoint"] = restorePoint
+	}
+
+	if opts.AvailabilityZone != "" {
+		instance["availability_zone"] = opts.AvailabilityZone
+	}
+
+	if opts.ReplicaOf != "" {
+		instance["replica_of"] = opts.ReplicaOf
+	}
+
+	if opts.ReplicaCount > 0 {
+		instance["replica_count"] = opts.ReplicaCount
+	}
+
+	if opts.Configuration != "" {
+		instance["configuration"] = opts.Configuration
+	}
+
+	if opts.Access != nil {
+		access, err := opts.Access.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["access"] = access
+	}
 
 	return map[string]interface{}{"instance": instance}, nil
 }
