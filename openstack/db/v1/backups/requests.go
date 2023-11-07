@@ -107,3 +107,10 @@ func Delete(client *gophercloud.ServiceClient, backupId string) (r DeleteResult)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ListOfInstance will get all the backups of an instance
+func ListOfInstance(client *gophercloud.ServiceClient, instanceId string) pagination.Pager {
+	return pagination.NewPager(client, listURL(client, instanceId), func(r pagination.PageResult) pagination.Page {
+		return BackupPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}

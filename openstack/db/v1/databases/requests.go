@@ -82,6 +82,14 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 	})
 }
 
+// ListForUser will list all databases that the user has access to for a
+// specified instance.
+func ListForUser(client *gophercloud.ServiceClient, instanceID, userName string) pagination.Pager {
+	return pagination.NewPager(client, dbAccessURL(client, instanceID, userName), func(r pagination.PageResult) pagination.Page {
+		return DBPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
 // Delete will permanently delete the database within a specified instance.
 // All contained data inside the database will also be permanently deleted.
 func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) (r DeleteResult) {

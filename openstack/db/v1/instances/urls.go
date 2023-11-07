@@ -17,3 +17,7 @@ func userRootURL(c *gophercloud.ServiceClient, id string) string {
 func actionURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("instances", id, "action")
 }
+
+func actionadminURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("mgmt", "instances", id, "action")
+}

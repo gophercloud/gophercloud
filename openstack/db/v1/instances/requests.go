@@ -48,7 +48,7 @@ func (opts NetworkOpts) ToMap() (map[string]interface{}, error) {
 // AccessOpts is used within CreateOpts to define how the database service is exposed.
 type AccessOpts struct {
 	// Specifies whether the database service is exposed to the public
-	IsPublic bool `json:"is_Public,omitempty"`
+	IsPublic bool `json:"is_public,omitempty"`
 	// A list of IPv4, IPv6 or mix of both CIDRs that restrict access to the database service
 	// 0.0.0.0/0 is used by default if this parameter is not provided.
 	AllowedCidrs []string `json:"allowed_cidrs,omitempty"`
@@ -81,23 +81,16 @@ type CreateOpts struct {
 	Datastore *DatastoreOpts
 	// Networks dictates how this server will be attached to available networks.
 	Networks []NetworkOpts
-	// The backup id of the backup used from which a new instance is created.
-	// Only set this parameter or ReplicaOf parameter.
-	// Optional.
-	BackupRef string `json:"backupRef,omitempty"`
 	// Specifies the availability zone of the instance. Optional
 	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
-	// Specifies the unique ID or name of an existing instance to replicate from.
-	// Only set this parameter or BackupRef parameter.
-	// Optional.
-	ReplicaOf string `json:"replicaOf,omitempty"`
-	// Number of replicas to create (defaults to 1). Optional.
-	ReplicaCount int `json:"replicaCount,omitempty"`
 	// ID of the configuration group that you want to attach to the instance.
 	// Optional.
 	Configuration string `json:"configuration,omitempty"`
 	// Specifies how the database service is exposed
 	Access *AccessOpts `json:"access,omitempty"`
+	// The scheduler hint when creating underlying Nova instances.
+	// Valide values are: affinity, anti-affinity.
+	Locality string `json:"locality,omitempty"`
 }
 
 // ToInstanceCreateMap will render a JSON map.
@@ -112,12 +105,6 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	if opts.FlavorRef == "" {
 		return nil, gophercloud.ErrMissingInput{Argument: "instances.CreateOpts.FlavorRef"}
-	}
-
-	if opts.BackupRef != "" && opts.ReplicaOf != "" {
-		err := gophercloud.ErrMultipleChoiceInput{}
-		err.Value = []string{"instances.CreateOpts.BackupRef", "instances.CreateOpts.ReplicaOf"}
-		return nil, err
 	}
 
 	instance := map[string]interface{}{
@@ -171,23 +158,8 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	instance["volume"] = volume
 
-	if opts.BackupRef != "" {
-		restorePoint := map[string]interface{}{
-			"backupRef": opts.BackupRef,
-		}
-		instance["restorePoint"] = restorePoint
-	}
-
 	if opts.AvailabilityZone != "" {
 		instance["availability_zone"] = opts.AvailabilityZone
-	}
-
-	if opts.ReplicaOf != "" {
-		instance["replica_of"] = opts.ReplicaOf
-	}
-
-	if opts.ReplicaCount > 0 {
-		instance["replica_count"] = opts.ReplicaCount
 	}
 
 	if opts.Configuration != "" {
@@ -202,6 +174,9 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		instance["access"] = access
 	}
 
+	if opts.Locality != "" {
+		instance["locality"] = opts.Locality
+	}
 	return map[string]interface{}{"instance": instance}, nil
 }
 
@@ -249,6 +224,13 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 // provides the user with a generated root password.
 func EnableRootUser(client *gophercloud.ServiceClient, id string) (r EnableRootUserResult) {
 	resp, err := client.Post(userRootURL(client, id), nil, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DisableRootUser disables the login for the root user
+func DisableRootUser(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(userRootURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -303,6 +285,243 @@ func AttachConfigurationGroup(client *gophercloud.ServiceClient, instanceID stri
 func DetachConfigurationGroup(client *gophercloud.ServiceClient, instanceID string) (r ConfigurationResult) {
 	b := map[string]interface{}{"instance": map[string]interface{}{}}
 	resp, err := client.Put(resourceURL(client, instanceID), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DetachReplica will detach a replica from its replication source.
+// Detaching replica from the source will make the replica a standalone instance
+func DetachReplica(client *gophercloud.ServiceClient, instanceID, replicaOf string) (r ReplicaResult) {
+	b := map[string]interface{}{"instance": map[string]interface{}{"replica_of": replicaOf}}
+	resp, err := client.Put(resourceURL(client, instanceID), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateInstanceAccessbility will update the accessbility of the instance
+//   - Specifies if the instance should be exposed to public or not. Default is private
+//   - Specifies the list of CIDRs that are allowd to access the database service.
+//     Not set means allowing everything
+func UpdateInstanceAccessbility(client *gophercloud.ServiceClient, instanceID string, opts AccessOpts) (r ReplicaResult) {
+	access, err := opts.ToMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	b := map[string]interface{}{"instance": map[string]interface{}{"access": access}}
+	resp, err := client.Put(resourceURL(client, instanceID), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Promote will promote a replica to master
+// Once this command is executed, the status of all the instances will be set to
+// PROMOTE and Trove will work its magic until all of them to come back to HEALTHY.
+func Promote(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{"promote_to_replica_source": struct{}{}}
+	resp, err := client.Post(actionURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Eject will eject the current master and force a re-eclection for the new master.
+// Once this command is executed, the status of all the instances will be set to
+// EJECT and Trove will work its magic until all of them to come back to HEALTHY.
+func Eject(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{"eject_replica_source": struct{}{}}
+	resp, err := client.Post(actionURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Reset will set instance service status to ERROR and clear the current task status.
+// Mark any running backup operations as FAILED.
+func Reset(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{"reset_status": struct{}{}}
+	resp, err := client.Post(actionURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Stop will stop database service inside an instance.
+// Admin only API.
+func Stop(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{"stop": struct{}{}}
+	resp, err := client.Post(actionadminURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Reboot will stop database service inside an instance.
+// Admin only API.
+func Reboot(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{"reboot": struct{}{}}
+	resp, err := client.Post(actionadminURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ResetTask will reset task status of an instance, mark any running backup operations as FAILED
+// Admin only API.
+func ResetTask(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{"reset-task-status": struct{}{}}
+	resp, err := client.Post(actionadminURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Rebuild will rebuild the Nova server’s operating system for the database instance.
+// Communication with the end users is needed as the database service goes offline during the process
+// User’s data in the database is not affected.
+// Admin only API.
+func Rebuild(client *gophercloud.ServiceClient, id, imageId string) (r ActionResult) {
+	b := map[string]interface{}{"rebuild": map[string]interface{}{"image_id": imageId}}
+	resp, err := client.Post(actionadminURL(client, id), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ReplicateOpts is the struct responsible for configuring a new database instance.
+type ReplicateOpts struct {
+	// Name of the instance to create. The length of the name is limited to
+	// 255 characters and any characters are permitted. Optional.
+	Name string `json:"name"`
+	// Networks dictates how this server will be attached to available networks.
+	Networks []NetworkOpts `json:"nics,omitempty"`
+	// Specifies the unique ID or name of an existing instance to replicate from.
+	ReplicaOf string `json:"replica_of"`
+	// Number of replicas to create (defaults to 1). Optional.
+	ReplicaCount int `json:"replica_count,omitempty"`
+}
+
+// ToMap converts a ReplicateOpts to a map[string]string (for a request body)
+func (opts ReplicateOpts) ToMap() (map[string]interface{}, error) {
+	if opts.ReplicaOf == "" {
+		return nil, gophercloud.ErrMissingInput{Argument: "instances.ReplicateOpts.ReplicaOf"}
+	}
+	return gophercloud.BuildRequestBody(opts, "instance")
+}
+
+// ReplicateOptsBuilder is a top-level interface which renders a JSON map.
+type ReplicateOptsBuilder interface {
+	ToMap() (map[string]interface{}, error)
+}
+
+// Replicate an instance from an existing database instance.
+func Replicate(client *gophercloud.ServiceClient, opts ReplicateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RestoreOpts is the struct responsible for configuring a new database instance.
+type RestoreOpts struct {
+	// Either the integer UUID (in string form) of the flavor, or its URI
+	// reference as specified in the response from the List() call. Required.
+	FlavorRef string
+	// Specifies the volume size in gigabytes (GB). The value must be between 1
+	// and 300. Required.
+	Size int
+	// Specifies the volume type.
+	VolumeType string
+	// Name of the instance to create. The length of the name is limited to
+	// 255 characters and any characters are permitted. Optional.
+	Name string `json:"name"`
+	// Options to configure the type of datastore the instance will use. This is
+	// optional, and if excluded will default to MySQL.
+	Datastore *DatastoreOpts
+	// Networks dictates how this server will be attached to available networks.
+	Networks []NetworkOpts
+	// The backup id of the backup used from which a new instance is created.
+	BackupRef string `json:"backupRef"`
+	// Number of replicas to create (defaults to 1). Optional.
+	ReplicaCount int `json:"replica_count,omitempty"`
+}
+
+// ToMap converts a RestoreOpts to a map[string]string (for a request body)
+func (opts RestoreOpts) ToMap() (map[string]interface{}, error) {
+	if opts.Size > 300 || opts.Size < 1 {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.RestoreOpts.Size"
+		err.Value = opts.Size
+		err.Info = "Size (GB) must be between 1-300"
+		return nil, err
+	}
+
+	if opts.BackupRef == "" {
+		return nil, gophercloud.ErrMissingInput{Argument: "instances.RestoreOpts.BackupRef"}
+	}
+
+	if opts.FlavorRef == "" {
+		return nil, gophercloud.ErrMissingInput{Argument: "instances.RestoreOpts.FlavorRef"}
+	}
+
+	restorePoint := map[string]interface{}{
+		"backupRef": opts.BackupRef,
+	}
+
+	instance := map[string]interface{}{
+		"flavorRef":    opts.FlavorRef,
+		"restorePoint": restorePoint,
+	}
+
+	if opts.Name != "" {
+		instance["name"] = opts.Name
+	}
+	if opts.Datastore != nil {
+		datastore, err := opts.Datastore.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["datastore"] = datastore
+	}
+
+	if len(opts.Networks) > 0 {
+		networks := make([]map[string]interface{}, len(opts.Networks))
+		for i, net := range opts.Networks {
+			var err error
+			networks[i], err = net.ToMap()
+			if err != nil {
+				return nil, err
+			}
+		}
+		instance["nics"] = networks
+	}
+
+	volume := map[string]interface{}{
+		"size": opts.Size,
+	}
+
+	if opts.VolumeType != "" {
+		volume["type"] = opts.VolumeType
+	}
+
+	instance["volume"] = volume
+
+	if opts.ReplicaCount > 0 {
+		instance["replica_count"] = opts.ReplicaCount
+	}
+	return map[string]interface{}{"instance": instance}, nil
+}
+
+// RestoreOptsBuilder is a top-level interface which renders a JSON map.
+type RestoreOptsBuilder interface {
+	ToMap() (map[string]interface{}, error)
+}
+
+// Restore an instance from a backup database.
+func Restore(client *gophercloud.ServiceClient, opts RestoreOptsBuilder) (r CreateResult) {
+	b, err := opts.ToMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

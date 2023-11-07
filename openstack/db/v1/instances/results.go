@@ -157,6 +157,16 @@ type ConfigurationResult struct {
 	gophercloud.ErrResult
 }
 
+// ReplicaResult represents the result of a DetachReplica operation.
+type ReplicaResult struct {
+	gophercloud.ErrResult
+}
+
+// AccessbilityResult represents the result of a UpdateInstanceAccessbility operation.
+type AccessbilityResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract will extract an Instance from various result structs.
 func (r commonResult) Extract() (*Instance, error) {
 	var s struct {
