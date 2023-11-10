@@ -399,6 +399,13 @@ func (opts ReplicateOpts) ToMap() (map[string]interface{}, error) {
 	if opts.ReplicaOf == "" {
 		return nil, gophercloud.ErrMissingInput{Argument: "instances.ReplicateOpts.ReplicaOf"}
 	}
+	if opts.ReplicaCount > 3 || opts.ReplicaCount < 1 {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.ReplicateOpts.ReplicaCount"
+		err.Value = opts.ReplicaCount
+		err.Info = "Replica Count must be between 1-3"
+		return nil, err
+	}
 	return gophercloud.BuildRequestBody(opts, "instance")
 }
 
@@ -453,6 +460,14 @@ func (opts RestoreOpts) ToMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
+	if opts.ReplicaCount > 3 || opts.ReplicaCount < 1 {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.RestoreOpts.ReplicaCount"
+		err.Value = opts.ReplicaCount
+		err.Info = "Replica Count must be between 1-3"
+		return nil, err
+	}
+
 	if opts.BackupRef == "" {
 		return nil, gophercloud.ErrMissingInput{Argument: "instances.RestoreOpts.BackupRef"}
 	}
@@ -502,10 +517,8 @@ func (opts RestoreOpts) ToMap() (map[string]interface{}, error) {
 	}
 
 	instance["volume"] = volume
+	instance["replica_count"] = opts.ReplicaCount
 
-	if opts.ReplicaCount > 0 {
-		instance["replica_count"] = opts.ReplicaCount
-	}
 	return map[string]interface{}{"instance": instance}, nil
 }
 
