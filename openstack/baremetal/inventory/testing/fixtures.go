@@ -258,6 +258,12 @@ var StandardPluginDataSample = fmt.Sprintf(`
     "macs": [
         "52:54:00:4e:3d:30"
     ],
+    "parsed_lldp": {
+        "eth0": {
+            "switch_chassis_id": "11:22:33:aa:bb:cc",
+            "switch_system_name": "sw01-dist-1b-b12"
+        }
+    },
     "root_disk": {
         "hctl": null,
         "model": "",
@@ -471,6 +477,12 @@ var StandardPluginData = inventory.StandardPluginData{
 	Error: "",
 	Extra: ExtraData,
 	MACs:  []string{"52:54:00:4e:3d:30"},
+	ParsedLLDP: map[string]inventory.ParsedLLDP{
+		"eth0": map[string]interface{}{
+			"switch_chassis_id":  "11:22:33:aa:bb:cc",
+			"switch_system_name": "sw01-dist-1b-b12",
+		},
+	},
 	RawLLDP: map[string][]inventory.LLDPTLVType{
 		"eth0": {
 			{
