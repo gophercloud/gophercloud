@@ -7,26 +7,26 @@ import (
 
 // Version represents a version API resource. Multiple versions belong to a Datastore.
 type Version struct {
-	ID    string
-	Links []gophercloud.Link
-	Name  string
+	ID    string             `json:"id"`
+	Links []gophercloud.Link `json:"links"`
+	Name  string             `json:"name"`
 }
 
 // Datastore represents a Datastore API resource.
 type Datastore struct {
-	DefaultVersion string `json:"default_version"`
-	ID             string
-	Links          []gophercloud.Link
-	Name           string
-	Versions       []Version
+	DefaultVersion string             `json:"default_version"`
+	ID             string             `json:"id"`
+	Links          []gophercloud.Link `json:"links"`
+	Name           string             `json:"name"`
+	Versions       []Version          `json:"versions"`
 }
 
 // DatastorePartial is a meta structure which is used in various API responses.
 // It is a lightweight and truncated version of a full Datastore resource,
 // offering details of the Version, Type and VersionID only.
 type DatastorePartial struct {
-	Version   string
-	Type      string
+	Version   string `json:"version"`
+	Type      string `json:"type"`
 	VersionID string `json:"version_id"`
 }
 

@@ -32,7 +32,7 @@ type Flavor struct {
 	Name string `json:"name"`
 
 	// Links to access the flavor.
-	Links []gophercloud.Link
+	Links []gophercloud.Link `json:"links"`
 
 	// The flavor's unique identifier as a string
 	StrID string `json:"str_id"`

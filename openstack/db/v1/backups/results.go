@@ -12,19 +12,19 @@ import (
 // Backup represents a database backup
 type Backup struct {
 	// Indicates the datetime that the backup was created
-	Created time.Time `json:"-"`
+	Created time.Time `json:"created"`
 
 	// Indicates the most recent datetime that the backup was updated.
-	Updated time.Time `json:"-"`
+	Updated time.Time `json:"updated"`
 
 	// Indicates the optional description for the backup.
-	Description string
+	Description string `json:"description"`
 
 	// Indicates the unique identifier for the backup resource.
-	ID string
+	ID string `json:"id"`
 
 	// Indicates how the instance stores data.
-	Datastore datastores.DatastorePartial
+	Datastore datastores.DatastorePartial `json:"datastore"`
 
 	// Indicates the unique identifier of the instance to create backup for.
 	InstanceID string `json:"instance_id"`
@@ -33,17 +33,17 @@ type Backup struct {
 	LocationRef string `json:"locationRef"`
 
 	// The human-readable name of the instance.
-	Name string
+	Name string `json:"name"`
 
 	// Indicates the unique identifier of the parent backup to perform
 	// an incremental backup from.
 	ParentId string `json:"parent_id"`
 
 	// Indicates the volume size of the backup in gigabytes (GB)
-	Size float64
+	Size float64 `json:"size"`
 
 	// The build status of the backup.
-	Status string
+	Status string `json:"status"`
 
 	// Indicates the unique identifier of the project ID of the backup
 	ProjectId string `json:"project_id"`

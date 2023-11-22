@@ -13,39 +13,39 @@ import (
 // Volume represents information about an attached volume for a database instance.
 type Volume struct {
 	// The size in GB of the volume
-	Size int
+	Size int `json:"volume"`
 
-	Used float64
+	Used float64 `json:"used"`
 }
 
 // Flavor represents (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
 	// The flavor's unique identifier.
-	ID string
+	ID string `json:"id"`
 	// Links to access the flavor.
-	Links []gophercloud.Link
+	Links []gophercloud.Link `json:"links"`
 }
 
 // Fault describes the fault reason in more detail when a database instance has errored
 type Fault struct {
 	// Indicates the time when the fault occured
-	Created time.Time `json:"-"`
+	Created time.Time `json:"created"`
 
 	// A message describing the fault reason
-	Message string
+	Message string `json:"message"`
 
 	// More details about the fault, for example a stack trace. Only filled
 	// in for admin users.
-	Details string
+	Details string `json:"details"`
 }
 
 // Address represents the IP address and its type to connect with the instance.
 type Address struct {
 	// The address type, e.g public
-	Type string
+	Type string `json:"type"`
 
 	// The actual IP address
-	Address string
+	Address string `json:"address"`
 }
 
 func (r *Fault) UnmarshalJSON(b []byte) error {
@@ -68,13 +68,13 @@ func (r *Fault) UnmarshalJSON(b []byte) error {
 // Instance represents a remote MySQL instance.
 type Instance struct {
 	// Indicates the datetime that the instance was created
-	Created time.Time `json:"-"`
+	Created time.Time `json:"created"`
 
 	// Indicates the most recent datetime that the instance was updated.
-	Updated time.Time `json:"-"`
+	Updated time.Time `json:"updated"`
 
 	// Indicates the hardware flavor the instance uses.
-	Flavor Flavor
+	Flavor Flavor `json:"flavor"`
 
 	// A DNS-resolvable hostname associated with the database instance (rather
 	// than an IPv4 address). Since the hostname always resolves to the correct
@@ -82,36 +82,36 @@ type Instance struct {
 	// of maintaining the mapping. Note that although the IP address may likely
 	// change on resizing, migrating, and so forth, the hostname always resolves
 	// to the correct database instance.
-	Hostname string
+	Hostname string `json:"hostname"`
 
 	// The IP addresses associated with the database instance
 	// Is empty if the instance has a hostname.
 	// Deprecated in favor of Addresses.
-	IP []string
+	IP []string `json:"ip"`
 
 	// Indicates the unique identifier for the instance resource.
-	ID string
+	ID string `json:"id"`
 
 	// Exposes various links that reference the instance resource.
-	Links []gophercloud.Link
+	Links []gophercloud.Link `json:"links"`
 
 	// The human-readable name of the instance.
-	Name string
+	Name string `json:"name"`
 
 	// The build status of the instance.
-	Status string
+	Status string `json:"status"`
 
 	// Fault information (only available when the instance has errored)
-	Fault *Fault
+	Fault *Fault `json:"fault"`
 
 	// Information about the attached volume of the instance.
-	Volume Volume
+	Volume Volume `json:"volume"`
 
 	// Indicates how the instance stores data.
-	Datastore datastores.DatastorePartial
+	Datastore datastores.DatastorePartial `json:"datastore"`
 
 	// The instance addresses
-	Addresses []Address
+	Addresses []Address `json:"addresses"`
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {

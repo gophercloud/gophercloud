@@ -9,13 +9,13 @@ import (
 // User represents a database user
 type User struct {
 	// The user name
-	Name string
+	Name string `json:"name"`
 
 	// The user password
-	Password string
+	Password string `json:"password"`
 
 	// The databases associated with this user
-	Databases []db.Database
+	Databases []db.Database `json:"databases"`
 }
 
 // CreateResult represents the result of a create operation.
