@@ -20,7 +20,7 @@ type ErrInvalidDataFormat struct {
 }
 
 func (e ErrInvalidDataFormat) Error() string {
-	return fmt.Sprintf("Data in neither json nor yaml format.")
+	return "Data in neither json nor yaml format."
 }
 
 type ErrInvalidTemplateFormatVersion struct {
@@ -29,7 +29,7 @@ type ErrInvalidTemplateFormatVersion struct {
 }
 
 func (e ErrInvalidTemplateFormatVersion) Error() string {
-	return fmt.Sprintf("Template format version not found.")
+	return "Template format version not found."
 }
 
 type ErrTemplateRequired struct {
@@ -37,5 +37,5 @@ type ErrTemplateRequired struct {
 }
 
 func (e ErrTemplateRequired) Error() string {
-	return fmt.Sprintf("Template required for this function.")
+	return "Template required for this function."
 }
