@@ -345,7 +345,7 @@ func AssertNoErr(t *testing.T, e error) {
 // nil
 func AssertErr(t *testing.T, e error) {
 	if e == nil {
-		logFatal(t, fmt.Sprintf("expected error, got nil"))
+		logFatal(t, "expected error, got nil")
 	}
 }
 

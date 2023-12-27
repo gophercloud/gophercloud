@@ -87,11 +87,12 @@ type ConfigurationType struct {
 	Managers []HardwareManager `json:"managers"`
 }
 
+type ParsedLLDP = map[string]interface{}
+
 type ProcessedInterfaceType struct {
 	InterfaceType
 	// Whether PXE was enabled on this interface during inspection
 	PXEEnabled bool `json:"pxe_enabled"`
-	// TODO(dtantsur): add LLDPProcessed once it's actually implemented
 }
 
 // StandardPluginData represents the plugin data as collected and processes
@@ -108,6 +109,7 @@ type StandardPluginData struct {
 	Extra           ExtraDataType                     `json:"extra"`
 	MACs            []string                          `json:"macs"`
 	NUMATopology    NUMATopology                      `json:"numa_topology"`
+	ParsedLLDP      map[string]ParsedLLDP             `json:"parsed_lldp"`
 	RawLLDP         map[string][]LLDPTLVType          `json:"lldp_raw"`
 	RootDisk        RootDiskType                      `json:"root_disk"`
 	ValidInterfaces map[string]ProcessedInterfaceType `json:"valid_interfaces"`
