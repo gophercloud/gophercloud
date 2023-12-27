@@ -32,7 +32,8 @@ func MockListResponse(t *testing.T) {
           "description": "Daily Backup",
           "status": "available",
           "size": 30,
-		  "created_at": "2017-05-30T03:35:03.000000"
+		      "created_at": "2017-05-30T03:35:03.000000",
+          "os-extended-snapshot-attributes:project_id": "89afd400-b646-4bbc-b12b-c0a4d63e5bd3"
         },
         {
           "id": "96c3bda7-c82a-4f50-be73-ca7621794835",
@@ -41,7 +42,8 @@ func MockListResponse(t *testing.T) {
           "description": "Weekly Backup",
           "status": "available",
           "size": 25,
-		  "created_at": "2017-05-30T03:35:03.000000"
+		      "created_at": "2017-05-30T03:35:03.000000",
+          "os-extended-snapshot-attributes:project_id": "89afd400-b646-4bbc-b12b-c0a4d63e5bd3"
         }
       ],
       "snapshots_links": [
@@ -76,7 +78,8 @@ func MockGetResponse(t *testing.T) {
         "volume_id": "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
         "status": "available",
         "size": 30,
-		"created_at": "2017-05-30T03:35:03.000000"
+		    "created_at": "2017-05-30T03:35:03.000000",
+        "os-extended-snapshot-attributes:project_id": "89afd400-b646-4bbc-b12b-c0a4d63e5bd3"
     }
 }
       `)

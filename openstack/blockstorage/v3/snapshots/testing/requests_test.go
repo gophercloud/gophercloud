@@ -4,11 +4,34 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/snapshotextensions"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
+
+func TestListAllWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+
+	type SnapshotWithExt struct {
+		snapshots.Snapshot
+		snapshotextensions.SnapshotExtension
+	}
+
+	allPages, err := snapshots.List(client.ServiceClient(), &snapshots.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	var actual []SnapshotWithExt
+	err = snapshots.ExtractSnapshotsInto(allPages, &actual)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 2, len(actual))
+	th.AssertEquals(t, "89afd400-b646-4bbc-b12b-c0a4d63e5bd3", actual[0].ProjectId)
+	th.AssertEquals(t, "89afd400-b646-4bbc-b12b-c0a4d63e5bd3", actual[1].ProjectId)
+}
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
@@ -68,6 +91,26 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, v.Name, "snapshot-001")
 	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+}
+
+func TestGetWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	var s struct {
+		snapshots.Snapshot
+		snapshotextensions.SnapshotExtension
+	}
+	err := snapshots.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&s)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "89afd400-b646-4bbc-b12b-c0a4d63e5bd3", s.ProjectId)
+
+	err = snapshots.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(s)
+	if err == nil {
+		t.Errorf("Expected error when providing non-pointer struct")
+	}
 }
 
 func TestCreate(t *testing.T) {
