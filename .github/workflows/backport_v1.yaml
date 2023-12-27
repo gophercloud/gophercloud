@@ -36,7 +36,7 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'semver:minor')
           || contains(github.event.label.name, 'semver:patch')
           || contains(github.event.label.name, 'semver:minor')
-        uses: kiegroup/git-backporting@4313be48e73b299a20b3c8290fd1ea8704e8dd5e
+        uses: kiegroup/git-backporting@204ebd4376d7501696d52aec8fea2a2f6e09328f
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
