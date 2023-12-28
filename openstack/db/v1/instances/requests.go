@@ -283,7 +283,7 @@ func AttachConfigurationGroup(client *gophercloud.ServiceClient, instanceID stri
 
 // DetachConfigurationGroup will dettach configuration group from the instance
 func DetachConfigurationGroup(client *gophercloud.ServiceClient, instanceID string) (r ConfigurationResult) {
-	b := map[string]interface{}{"instance": map[string]interface{}{}}
+	b := map[string]interface{}{"instance": map[string]interface{}{"configuration": nil}}
 	resp, err := client.Put(resourceURL(client, instanceID), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
