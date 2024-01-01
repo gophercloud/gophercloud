@@ -14,27 +14,51 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum master
+              MAGNUMCLIENT_BRANCH=master
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum stable/2023.2
+              MAGNUMCLIENT_BRANCH=stable/2023.2
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum stable/2023.1
+              MAGNUMCLIENT_BRANCH=stable/2023.1
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum stable/zed
+              MAGNUMCLIENT_BRANCH=stable/zed
           - name: "yoga"
             openstack_version: "stable/yoga"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum stable/yoga
+              MAGNUMCLIENT_BRANCH=stable/yoga
           - name: "xena"
             openstack_version: "stable/xena"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum xena-eol
+              MAGNUMCLIENT_BRANCH=xena-eol
           - name: "wallaby"
             openstack_version: "stable/wallaby"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum wallaby-eol
+              MAGNUMCLIENT_BRANCH=wallaby-eol
           - name: "victoria"
             openstack_version: "stable/victoria"
             ubuntu_version: "20.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum victoria-eol
+              MAGNUMCLIENT_BRANCH=victoria-em
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
@@ -45,13 +69,12 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin magnum https://github.com/openstack/magnum ${{ matrix.openstack_version }}
             enable_plugin barbican https://github.com/openstack/barbican ${{ matrix.openstack_version }}
             enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true
-            MAGNUMCLIENT_BRANCH=${{ matrix.openstack_version }}
+            ${{ matrix.devstack_conf_overrides }}
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
         uses: actions/setup-go@v5
