@@ -59,7 +59,6 @@ func TestPortsbindingCRUD(t *testing.T) {
 	finalUpdateOpts = portsbinding.UpdateOptsExt{
 		UpdateOptsBuilder: updateOpts,
 		HostID:            &newHostID,
-		VNICType:          "baremetal",
 		Profile:           newProfile,
 	}
 
@@ -76,6 +75,6 @@ func TestPortsbindingCRUD(t *testing.T) {
 	th.AssertEquals(t, newPort.Description, newPortName)
 	th.AssertEquals(t, newPort.Description, newPortDescription)
 	th.AssertEquals(t, newPort.HostID, newHostID)
-	th.AssertEquals(t, newPort.VNICType, "baremetal")
+	th.AssertEquals(t, newPort.VNICType, "normal")
 	th.AssertDeepEquals(t, newPort.Profile, newProfile)
 }
