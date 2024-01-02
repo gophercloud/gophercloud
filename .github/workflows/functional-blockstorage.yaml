@@ -62,7 +62,7 @@ jobs:
         if: failure()
       - name: Upload logs artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: functional-blockstorage-${{ matrix.name }}
           path: /tmp/devstack-logs/*
