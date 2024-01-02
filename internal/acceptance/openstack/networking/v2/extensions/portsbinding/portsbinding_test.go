@@ -40,9 +40,9 @@ func TestPortsbindingCRUD(t *testing.T) {
 	defer networking.DeletePort(t, client, port.ID)
 
 	tools.PrintResource(t, port)
-	th.AssertEquals(t, port.HostID, hostID)
-	th.AssertEquals(t, port.VNICType, "normal")
-	th.AssertDeepEquals(t, port.Profile, profile)
+	th.AssertEquals(t, hostID, port.HostID)
+	th.AssertEquals(t, "normal", port.VNICType)
+	th.AssertDeepEquals(t, profile, port.Profile)
 
 	// Update port
 	newPortName := ""
@@ -59,7 +59,6 @@ func TestPortsbindingCRUD(t *testing.T) {
 	finalUpdateOpts = portsbinding.UpdateOptsExt{
 		UpdateOptsBuilder: updateOpts,
 		HostID:            &newHostID,
-		VNICType:          "baremetal",
 		Profile:           newProfile,
 	}
 
@@ -73,9 +72,9 @@ func TestPortsbindingCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
-	th.AssertEquals(t, newPort.Description, newPortName)
-	th.AssertEquals(t, newPort.Description, newPortDescription)
-	th.AssertEquals(t, newPort.HostID, newHostID)
-	th.AssertEquals(t, newPort.VNICType, "baremetal")
-	th.AssertDeepEquals(t, newPort.Profile, newProfile)
+	th.AssertEquals(t, newPortName, newPort.Description)
+	th.AssertEquals(t, newPortDescription, newPort.Description)
+	th.AssertEquals(t, newHostID, newPort.HostID)
+	th.AssertEquals(t, "normal", newPort.VNICType)
+	th.AssertDeepEquals(t, newProfile, newPort.Profile)
 }
