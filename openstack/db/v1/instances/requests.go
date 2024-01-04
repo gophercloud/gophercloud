@@ -392,6 +392,8 @@ type ReplicateOpts struct {
 	ReplicaOf string `json:"replica_of"`
 	// Number of replicas to create (defaults to 1). Optional.
 	ReplicaCount int `json:"replica_count,omitempty"`
+	// Specifies how the database service is exposed
+	Access *AccessOpts `json:"access,omitempty"`
 }
 
 // ToMap converts a ReplicateOpts to a map[string]string (for a request body)
@@ -406,7 +408,42 @@ func (opts ReplicateOpts) ToMap() (map[string]interface{}, error) {
 		err.Info = "Replica Count must be between 1-3"
 		return nil, err
 	}
-	return gophercloud.BuildRequestBody(opts, "instance")
+
+	if opts.ReplicaOf == "" {
+		return nil, gophercloud.ErrMissingInput{Argument: "instances.ReplicateOpts.ReplicaOf"}
+	}
+
+	instance := map[string]interface{}{
+		"replica_of": opts.ReplicaOf,
+	}
+
+	if opts.Name != "" {
+		instance["name"] = opts.Name
+	}
+
+	if len(opts.Networks) > 0 {
+		networks := make([]map[string]interface{}, len(opts.Networks))
+		for i, net := range opts.Networks {
+			var err error
+			networks[i], err = net.ToMap()
+			if err != nil {
+				return nil, err
+			}
+		}
+		instance["nics"] = networks
+	}
+
+	instance["replica_count"] = opts.ReplicaCount
+
+	if opts.Access != nil {
+		access, err := opts.Access.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["access"] = access
+	}
+
+	return map[string]interface{}{"instance": instance}, nil
 }
 
 // ReplicateOptsBuilder is a top-level interface which renders a JSON map.
@@ -448,6 +485,8 @@ type RestoreOpts struct {
 	BackupRef string `json:"backupRef"`
 	// Number of replicas to create (defaults to 1). Optional.
 	ReplicaCount int `json:"replica_count,omitempty"`
+	// Specifies how the database service is exposed
+	Access *AccessOpts `json:"access,omitempty"`
 }
 
 // ToMap converts a RestoreOpts to a map[string]string (for a request body)
@@ -518,6 +557,14 @@ func (opts RestoreOpts) ToMap() (map[string]interface{}, error) {
 
 	instance["volume"] = volume
 	instance["replica_count"] = opts.ReplicaCount
+
+	if opts.Access != nil {
+		access, err := opts.Access.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["access"] = access
+	}
 
 	return map[string]interface{}{"instance": instance}, nil
 }
