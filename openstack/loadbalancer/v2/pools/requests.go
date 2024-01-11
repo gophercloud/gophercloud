@@ -1,9 +1,11 @@
 package pools
 
 import (
-	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/monitors"
-	"github.com/gophercloud/gophercloud/v2/pagination"
+	"net/url"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -473,21 +475,51 @@ func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]interface
 	return b, nil
 }
 
-// BatchUpdateMembers updates the pool members in batch
-func BatchUpdateMembers(c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
+func buildPoolMembersBody(opts []BatchUpdateMemberOpts) (map[string]interface{}, error) {
 	members := []map[string]interface{}{}
 	for _, opt := range opts {
 		b, err := opt.ToBatchMemberUpdateMap()
 		if err != nil {
-			r.Err = err
-			return
+			return nil, err
 		}
 		members = append(members, b)
 	}
+	return map[string]interface{}{"members": members}, nil
+}
 
-	b := map[string]interface{}{"members": members}
+// BatchUpdateMembers updates the pool members in batch
+func BatchUpdateMembers(c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
+	body, err := buildPoolMembersBody(opts)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(memberRootURL(c, poolID), body, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
 
-	resp, err := c.Put(memberRootURL(c, poolID), b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+// BatchUpdateMembers updates the pool members in batch with additive_only=true set
+// so there will be no deletion of existing members
+func BatchUpdateMembersAdditiveOnly(c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
+	body, err := buildPoolMembersBody(opts)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	memberUrl := memberRootURL(c, poolID)
+
+	parsedUrl, err := url.Parse(memberUrl)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	query := parsedUrl.Query()
+	query.Add("additive_only", "true")
+	parsedUrl.RawQuery = query.Encode()
+	memberUrl = parsedUrl.String()
+
+	resp, err := c.Put(memberUrl, body, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
