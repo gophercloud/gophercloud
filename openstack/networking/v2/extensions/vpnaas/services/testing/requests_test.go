@@ -203,7 +203,6 @@ func TestUpdate(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/v2.0/vpn/vpnservices/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
-
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -263,5 +262,4 @@ func TestUpdate(t *testing.T) {
 		Description:  "updated service",
 	}
 	th.AssertDeepEquals(t, expected, *actual)
-
 }

@@ -66,7 +66,6 @@ func TestNormalizeURL(t *testing.T) {
 	for i := 0; i < len(expected); i++ {
 		th.CheckEquals(t, expected[i], gophercloud.NormalizeURL(urls[i]))
 	}
-
 }
 
 func TestNormalizePathURL(t *testing.T) {
@@ -119,7 +118,6 @@ func TestNormalizePathURL(t *testing.T) {
 	result, _ = gophercloud.NormalizePathURL(basePath, rawPath)
 	expected = strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "only/file/even/more/very/nested/file.yaml"}, "/")
 	th.CheckEquals(t, expected, result)
-
 }
 
 func TestRemainingKeys(t *testing.T) {

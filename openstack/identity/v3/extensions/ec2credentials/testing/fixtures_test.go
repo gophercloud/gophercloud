@@ -10,8 +10,10 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const userID = "2844b2a08be147a08ef58317d6471f1f"
-const credentialID = "f741662395b249c9b8acdebf1722c5ae"
+const (
+	userID       = "2844b2a08be147a08ef58317d6471f1f"
+	credentialID = "f741662395b249c9b8acdebf1722c5ae"
+)
 
 // ListOutput provides a single page of EC2Credential results.
 const ListOutput = `

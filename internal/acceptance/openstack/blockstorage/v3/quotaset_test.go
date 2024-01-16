@@ -71,13 +71,15 @@ var UpdatedQuotas = quotasets.QuotaSet{
 	Groups:             350,
 }
 
-var VolumeTypeIsPublic = true
-var VolumeTypeCreateOpts = volumetypes.CreateOpts{
-	Name:        "foo",
-	IsPublic:    &VolumeTypeIsPublic,
-	Description: "foo",
-	ExtraSpecs:  map[string]string{},
-}
+var (
+	VolumeTypeIsPublic   = true
+	VolumeTypeCreateOpts = volumetypes.CreateOpts{
+		Name:        "foo",
+		IsPublic:    &VolumeTypeIsPublic,
+		Description: "foo",
+		ExtraSpecs:  map[string]string{},
+	}
+)
 
 func TestQuotasetUpdate(t *testing.T) {
 	clients.RequireAdmin(t)
@@ -101,7 +103,6 @@ func TestQuotasetUpdate(t *testing.T) {
 
 		_, err = quotasets.Update(client, projectID, restore).Extract()
 		th.AssertNoErr(t, err)
-
 	}()
 
 	// test Update

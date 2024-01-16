@@ -15,7 +15,6 @@ import (
 
 // Fail - No password in JSON.
 func TestExtractPassword_no_pwd_data(t *testing.T) {
-
 	var dejson interface{}
 	err := json.Unmarshal([]byte(`{ "Crappy data": ".-.-." }`), &dejson)
 	if err != nil {
@@ -30,7 +29,6 @@ func TestExtractPassword_no_pwd_data(t *testing.T) {
 
 // Ok - return encrypted password when no private key is given.
 func TestExtractPassword_encrypted_pwd(t *testing.T) {
-
 	var dejson interface{}
 	sejson := []byte(`{"password":"PP8EnwPO9DhEc8+O/6CKAkPF379mKsUsfFY6yyw0734XXvKsSdV9KbiHQ2hrBvzeZxtGMrlFaikVunCRizyLLWLMuOi4hoH+qy9F9sQid61gQIGkxwDAt85d/7Eau2/KzorFnZhgxArl7IiqJ67X6xjKkR3zur+Yp3V/mtVIehpPYIaAvPbcp2t4mQXl1I9J8yrQfEZOctLL1L4heDEVXnxvNihVLK6pivlVggp6SZCtjj9cduZGrYGsxsOCso1dqJQr7GCojfwvuLOoG0OYwEGuWVTZppxWxi/q1QgeHFhGKA5QUXlz7pS71oqpjYsTeViuHnfvlqb5TVYZpQ1haw=="}`)
 
@@ -51,7 +49,6 @@ func TestExtractPassword_encrypted_pwd(t *testing.T) {
 //
 //	echo "<enc_pwd>" | base64 -D | openssl rsautl -decrypt -inkey <privateKey.pem>
 func TestExtractPassword_decrypted_pwd(t *testing.T) {
-
 	privateKey, err := ssh.ParseRawPrivateKey([]byte(`
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEAo1ODZgwMVdTJYim9UYuYhowoPMhGEuV5IRZjcJ315r7RBSC+

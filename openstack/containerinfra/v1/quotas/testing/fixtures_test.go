@@ -9,8 +9,10 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const projectID = "aa5436ab58144c768ca4e9d2e9f5c3b2"
-const requestUUID = "req-781e9bdc-4163-46eb-91c9-786c53188bbb"
+const (
+	projectID   = "aa5436ab58144c768ca4e9d2e9f5c3b2"
+	requestUUID = "req-781e9bdc-4163-46eb-91c9-786c53188bbb"
+)
 
 var CreateResponse = fmt.Sprintf(`
 {

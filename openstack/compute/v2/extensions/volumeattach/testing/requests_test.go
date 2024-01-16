@@ -29,8 +29,10 @@ var SecondVolumeAttachment = volumeattach.VolumeAttachment{
 // from ListOutput, in the expected order.
 var ExpectedVolumeAttachmentSlice = []volumeattach.VolumeAttachment{FirstVolumeAttachment, SecondVolumeAttachment}
 
-var iTag = "foo"
-var iTrue = true
+var (
+	iTag  = "foo"
+	iTrue = true
+)
 
 // CreatedVolumeAttachment is the parsed result from CreatedOutput.
 var CreatedVolumeAttachment = volumeattach.VolumeAttachment{

@@ -273,7 +273,6 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 
 		r.ParseForm()
 		fmt.Fprintf(w, PoolsListBody)
-
 	})
 	testhelper.Mux.HandleFunc("/scheduler-stats/pools/detail", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")

@@ -97,7 +97,7 @@ func TestList(t *testing.T) {
 			Domain:      "",
 			ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
 			Name:        "SecServ2",
-			CreatedAt:   time.Date(2015, 9, 7, 12, 25, 03, 0, time.UTC),
+			CreatedAt:   time.Date(2015, 9, 7, 12, 25, 0o3, 0, time.UTC),
 			Description: "Creating my second Security Service",
 			UpdatedAt:   nilTime,
 			Server:      "",

@@ -8,8 +8,10 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/messages"
 )
 
-const requestID = "req-6f52cd8b-25a1-42cf-b497-7babf70f55f4"
-const minimumManilaMessagesMicroVersion = "2.37"
+const (
+	requestID                         = "req-6f52cd8b-25a1-42cf-b497-7babf70f55f4"
+	minimumManilaMessagesMicroVersion = "2.37"
+)
 
 func TestMessageList(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()

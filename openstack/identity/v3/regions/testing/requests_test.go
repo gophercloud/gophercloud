@@ -77,7 +77,7 @@ func TestUpdateRegion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateRegionSuccessfully(t)
 
-	var description = "First West sub-region of RegionOne"
+	description := "First West sub-region of RegionOne"
 	updateOpts := regions.UpdateOpts{
 		Description: &description,
 		/*

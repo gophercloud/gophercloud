@@ -98,6 +98,7 @@ const ListDriversBody = `
   ]
 }
 `
+
 const SingleDriverDetails = `
 {
   "default_bios_interface": "no-bios",

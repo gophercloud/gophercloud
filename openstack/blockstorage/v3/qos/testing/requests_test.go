@@ -54,9 +54,10 @@ func TestList(t *testing.T) {
 
 		expected := []qos.QoS{
 			{ID: "1", Consumer: "back-end", Name: "foo", Specs: map[string]string{}},
-			{ID: "2", Consumer: "front-end", Name: "bar", Specs: map[string]string{
-				"read_iops_sec": "20000",
-			},
+			{
+				ID: "2", Consumer: "front-end", Name: "bar", Specs: map[string]string{
+					"read_iops_sec": "20000",
+				},
 			},
 		}
 

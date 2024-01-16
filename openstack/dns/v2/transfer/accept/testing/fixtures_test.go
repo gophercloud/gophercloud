@@ -88,38 +88,42 @@ const GetOutput = `
 `
 
 // FirstTransferAccept is the first result in ListOutput
-var FirstTransferAcceptCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-10-12T08:38:58.000000")
-var FirstTransferAccept = transferAccepts.TransferAccept{
-	ID:                    "92236f39-0fad-4f8f-bf25-fbdf027de34d",
-	ZoneID:                "cd046f4b-f4dc-4e41-b946-1a2d32e1be40",
-	ProjectID:             "9f3cfb08bf52469abe598e127676cd57",
-	ZoneTransferRequestID: "fc46bb1f-bdf0-4e67-96e0-f8c04f26261c",
-	Key:                   "M2KA0Y20",
-	Status:                "COMPLETE",
-	CreatedAt:             FirstTransferAcceptCreatedAt,
-	Links: map[string]interface{}{
-		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/92236f39-0fad-4f8f-bf25-fbdf027de34d",
-		"zone": "https://127.0.0.1:9001/v2/zones/cd046f4b-f4dc-4e41-b946-1a2d32e1be40",
-	},
-}
+var (
+	FirstTransferAcceptCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-10-12T08:38:58.000000")
+	FirstTransferAccept             = transferAccepts.TransferAccept{
+		ID:                    "92236f39-0fad-4f8f-bf25-fbdf027de34d",
+		ZoneID:                "cd046f4b-f4dc-4e41-b946-1a2d32e1be40",
+		ProjectID:             "9f3cfb08bf52469abe598e127676cd57",
+		ZoneTransferRequestID: "fc46bb1f-bdf0-4e67-96e0-f8c04f26261c",
+		Key:                   "M2KA0Y20",
+		Status:                "COMPLETE",
+		CreatedAt:             FirstTransferAcceptCreatedAt,
+		Links: map[string]interface{}{
+			"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/92236f39-0fad-4f8f-bf25-fbdf027de34d",
+			"zone": "https://127.0.0.1:9001/v2/zones/cd046f4b-f4dc-4e41-b946-1a2d32e1be40",
+		},
+	}
+)
 
 // SecondTransferRequest is the second result in ListOutput
-var SecondTransferAcceptCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-10-12T09:38:58.000000")
-var SecondTransferAcceptUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-10-12T09:38:58.000000")
-var SecondTransferAccept = transferAccepts.TransferAccept{
-	ID:                    "f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
-	Status:                "ACTIVE",
-	ProjectID:             "9f3cfb08bf52469abe598e127676cd57",
-	ZoneID:                "30d67a9a-d6df-4ba7-9b55-fb49e7987f84",
-	ZoneTransferRequestID: "c5d11193-72ea-4d9f-ba04-7f80e99627fa",
-	Key:                   "SDF32HJ1",
-	CreatedAt:             SecondTransferAcceptCreatedAt,
-	UpdatedAt:             SecondTransferAcceptUpdatedAt,
-	Links: map[string]interface{}{
-		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
-		"zone": "https://127.0.0.1:9001/v2/zones/30d67a9a-d6df-4ba7-9b55-fb49e7987f84",
-	},
-}
+var (
+	SecondTransferAcceptCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-10-12T09:38:58.000000")
+	SecondTransferAcceptUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-10-12T09:38:58.000000")
+	SecondTransferAccept             = transferAccepts.TransferAccept{
+		ID:                    "f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
+		Status:                "ACTIVE",
+		ProjectID:             "9f3cfb08bf52469abe598e127676cd57",
+		ZoneID:                "30d67a9a-d6df-4ba7-9b55-fb49e7987f84",
+		ZoneTransferRequestID: "c5d11193-72ea-4d9f-ba04-7f80e99627fa",
+		Key:                   "SDF32HJ1",
+		CreatedAt:             SecondTransferAcceptCreatedAt,
+		UpdatedAt:             SecondTransferAcceptUpdatedAt,
+		Links: map[string]interface{}{
+			"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
+			"zone": "https://127.0.0.1:9001/v2/zones/30d67a9a-d6df-4ba7-9b55-fb49e7987f84",
+		},
+	}
+)
 
 // ExpectedTransferAcceptSlice is the slice of results that should be parsed
 // from ListOutput, in the expected order.

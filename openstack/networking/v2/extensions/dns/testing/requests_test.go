@@ -27,8 +27,10 @@ type NetworkDNS struct {
 	dns.NetworkDNSExt
 }
 
-var createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
-var updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+var (
+	createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
+	updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+)
 
 func TestPortList(t *testing.T) {
 	th.SetupHTTP()

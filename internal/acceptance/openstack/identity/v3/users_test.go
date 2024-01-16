@@ -317,7 +317,6 @@ func TestUsersGroups(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, false)
-
 }
 
 func TestUsersListProjects(t *testing.T) {

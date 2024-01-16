@@ -98,7 +98,6 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 
 		return false, nil
 	})
-
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
@@ -130,7 +129,6 @@ func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state s
 
 		return false, nil
 	})
-
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {

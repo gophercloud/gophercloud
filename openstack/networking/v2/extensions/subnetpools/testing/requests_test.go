@@ -91,6 +91,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.IsDefault, true)
 	th.AssertEquals(t, s.RevisionNumber, 2)
 }
+
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

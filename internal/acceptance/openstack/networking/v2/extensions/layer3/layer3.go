@@ -103,7 +103,6 @@ func DeletePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 		t.Fatalf("Failed to delete Port forwarding with ID %s for floating IP with ID %s", pfID, fipID)
 	}
 	t.Logf("Successfully deleted the port forwarding with ID %s for floating IP with ID %s", pfID, fipID)
-
 }
 
 // CreateExternalRouter creates a router on the external network. This requires

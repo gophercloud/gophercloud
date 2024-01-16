@@ -22,7 +22,6 @@ func TestListAll(t *testing.T) {
 	expected := []attachments.Attachment{*expectedAttachment}
 
 	th.CheckDeepEquals(t, expected, actual)
-
 }
 
 func TestGet(t *testing.T) {

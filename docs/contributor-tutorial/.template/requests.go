@@ -12,8 +12,7 @@ type ListOptsBuilder interface {
 }
 
 // ListOpts provides options to filter the List results.
-type ListOpts struct {
-}
+type ListOpts struct{}
 
 // ToResourceListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToResourceListQuery() (string, error) {
@@ -50,8 +49,7 @@ type CreateOptsBuilder interface {
 }
 
 // CreateOpts provides options used to create a RESOURCE.
-type CreateOpts struct {
-}
+type CreateOpts struct{}
 
 // ToResourceCreateMap formats a CreateOpts into a create request.
 func (opts CreateOpts) ToResourceCreateMap() (map[string]interface{}, error) {
@@ -86,8 +84,7 @@ type UpdateOptsBuilder interface {
 }
 
 // UpdateOpts represents parameters to update a RESOURCE.
-type UpdateOpts struct {
-}
+type UpdateOpts struct{}
 
 // ToUpdateCreateMap formats a UpdateOpts into an update request.
 func (opts UpdateOpts) ToResourceUpdateMap() (map[string]interface{}, error) {

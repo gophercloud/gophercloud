@@ -19,7 +19,7 @@ var ListExpected = []instanceactions.InstanceAction{
 		Message:      "",
 		ProjectID:    "6f70656e737461636b20342065766572",
 		RequestID:    "req-f8a59f03-76dc-412f-92c2-21f8612be728",
-		StartTime:    time.Date(2018, 04, 25, 1, 26, 29, 000000, time.UTC),
+		StartTime:    time.Date(2018, 0o4, 25, 1, 26, 29, 0o00000, time.UTC),
 		UserID:       "admin",
 	},
 	{
@@ -28,7 +28,7 @@ var ListExpected = []instanceactions.InstanceAction{
 		Message:      "test",
 		ProjectID:    "6f70656e737461636b20342065766572",
 		RequestID:    "req-50189019-626d-47fb-b944-b8342af09679",
-		StartTime:    time.Date(2018, 04, 25, 1, 26, 25, 000000, time.UTC),
+		StartTime:    time.Date(2018, 0o4, 25, 1, 26, 25, 0o00000, time.UTC),
 		UserID:       "admin",
 	},
 }
@@ -66,7 +66,7 @@ func HandleInstanceActionListSuccessfully(t *testing.T) {
 }
 
 var (
-	expectedUpdateAt    = time.Date(2018, 04, 25, 1, 26, 36, 0, time.UTC)
+	expectedUpdateAt    = time.Date(2018, 0o4, 25, 1, 26, 36, 0, time.UTC)
 	expectedEventHost   = "compute"
 	expectedEventHostID = "2091634baaccdc4c5a1d57069c833e402921df696b7f970791b12ec6"
 	expectedEvents      = []instanceactions.Event{{
@@ -74,8 +74,8 @@ var (
 		Host:       &expectedEventHost,
 		HostID:     &expectedEventHostID,
 		Result:     "Success",
-		StartTime:  time.Date(2018, 04, 25, 1, 26, 36, 0, time.UTC),
-		FinishTime: time.Date(2018, 04, 25, 1, 26, 36, 0, time.UTC),
+		StartTime:  time.Date(2018, 0o4, 25, 1, 26, 36, 0, time.UTC),
+		FinishTime: time.Date(2018, 0o4, 25, 1, 26, 36, 0, time.UTC),
 		Traceback:  "",
 	}}
 )
@@ -87,7 +87,7 @@ var GetExpected = instanceactions.InstanceActionDetail{
 	Message:      "",
 	ProjectID:    "6f70656e737461636b20342065766572",
 	RequestID:    "req-0d819d5c-1527-4669-bdf0-ffad31b5105b",
-	StartTime:    time.Date(2018, 04, 25, 1, 26, 36, 0, time.UTC),
+	StartTime:    time.Date(2018, 0o4, 25, 1, 26, 36, 0, time.UTC),
 	UpdatedAt:    &expectedUpdateAt,
 	UserID:       "admin",
 	Events:       &expectedEvents,

@@ -162,7 +162,6 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 
 		return false, nil
 	})
-
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {

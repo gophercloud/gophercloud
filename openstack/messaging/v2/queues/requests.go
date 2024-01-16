@@ -48,7 +48,6 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 	pager := pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return QueuePage{pagination.LinkedPageBase{PageResult: r}}
-
 	})
 	return pager
 }
@@ -109,7 +108,6 @@ func (opts CreateOpts) ToQueueCreateMap() (map[string]interface{}, error) {
 		for key, value := range opts.Extra {
 			b[key] = value
 		}
-
 	}
 	return b, nil
 }
@@ -179,7 +177,8 @@ func Update(client *gophercloud.ServiceClient, queueName string, opts UpdateOpts
 	resp, err := client.Patch(updateURL(client, queueName), opts, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 204},
 		MoreHeaders: map[string]string{
-			"Content-Type": "application/openstack-messaging-v2.0-json-patch"},
+			"Content-Type": "application/openstack-messaging-v2.0-json-patch",
+		},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

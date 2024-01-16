@@ -126,7 +126,7 @@ type Driver struct {
 	// The enabled vendor interfaces for this driver.
 	EnabledVendorInterfaces []string `json:"enabled_vendor_interfaces"`
 
-	//A list of relative links. Includes the self and bookmark links.
+	// A list of relative links. Includes the self and bookmark links.
 	Links []interface{} `json:"links"`
 
 	// A list of links to driver properties.

@@ -94,49 +94,53 @@ const GetOutput = `
 `
 
 // FirstZone is the first result in ListOutput
-var FirstZoneCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-07-07T18:25:31.275934")
-var FirstZone = zones.Zone{
-	ID:          "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
-	PoolID:      "572ba08c-d929-4c70-8e42-03824bb24ca2",
-	ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
-	Name:        "example.org.",
-	Email:       "joe@example.org",
-	TTL:         7200,
-	Serial:      1404757531,
-	Status:      "ACTIVE",
-	Action:      "CREATE",
-	Description: "This is an example zone.",
-	Masters:     []string{},
-	Type:        "PRIMARY",
-	Version:     1,
-	CreatedAt:   FirstZoneCreatedAt,
-	Links: map[string]interface{}{
-		"self": "https://127.0.0.1:9001/v2/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
-	},
-}
+var (
+	FirstZoneCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-07-07T18:25:31.275934")
+	FirstZone             = zones.Zone{
+		ID:          "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+		PoolID:      "572ba08c-d929-4c70-8e42-03824bb24ca2",
+		ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
+		Name:        "example.org.",
+		Email:       "joe@example.org",
+		TTL:         7200,
+		Serial:      1404757531,
+		Status:      "ACTIVE",
+		Action:      "CREATE",
+		Description: "This is an example zone.",
+		Masters:     []string{},
+		Type:        "PRIMARY",
+		Version:     1,
+		CreatedAt:   FirstZoneCreatedAt,
+		Links: map[string]interface{}{
+			"self": "https://127.0.0.1:9001/v2/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+		},
+	}
+)
 
-var SecondZoneCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-07-07T18:25:31.275934")
-var SecondZoneUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2015-02-25T20:23:01.234567")
-var SecondZone = zones.Zone{
-	ID:          "34c4561c-9205-4386-9df5-167436f5a222",
-	PoolID:      "572ba08c-d929-4c70-8e42-03824bb24ca2",
-	ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
-	Name:        "foo.example.com.",
-	Email:       "joe@foo.example.com",
-	TTL:         7200,
-	Serial:      1488053571,
-	Status:      "ACTIVE",
-	Action:      "CREATE",
-	Description: "This is another example zone.",
-	Masters:     []string{"example.com."},
-	Type:        "PRIMARY",
-	Version:     1,
-	CreatedAt:   SecondZoneCreatedAt,
-	UpdatedAt:   SecondZoneUpdatedAt,
-	Links: map[string]interface{}{
-		"self": "https://127.0.0.1:9001/v2/zones/34c4561c-9205-4386-9df5-167436f5a222",
-	},
-}
+var (
+	SecondZoneCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-07-07T18:25:31.275934")
+	SecondZoneUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2015-02-25T20:23:01.234567")
+	SecondZone             = zones.Zone{
+		ID:          "34c4561c-9205-4386-9df5-167436f5a222",
+		PoolID:      "572ba08c-d929-4c70-8e42-03824bb24ca2",
+		ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
+		Name:        "foo.example.com.",
+		Email:       "joe@foo.example.com",
+		TTL:         7200,
+		Serial:      1488053571,
+		Status:      "ACTIVE",
+		Action:      "CREATE",
+		Description: "This is another example zone.",
+		Masters:     []string{"example.com."},
+		Type:        "PRIMARY",
+		Version:     1,
+		CreatedAt:   SecondZoneCreatedAt,
+		UpdatedAt:   SecondZoneUpdatedAt,
+		Links: map[string]interface{}{
+			"self": "https://127.0.0.1:9001/v2/zones/34c4561c-9205-4386-9df5-167436f5a222",
+		},
+	}
+)
 
 // ExpectedZonesSlice is the slice of results that should be parsed
 // from ListOutput, in the expected order.

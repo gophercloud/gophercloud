@@ -436,7 +436,7 @@ const UpdateResponse_InvalidUpdate = `
 var ExpectedUpdateClusterTemplate = clustertemplates.ClusterTemplate{
 	COE:                 "kubernetes",
 	ClusterDistro:       "fedora-atomic",
-	CreatedAt:           time.Date(2016, 8, 10, 13, 47, 01, 0, time.UTC),
+	CreatedAt:           time.Date(2016, 8, 10, 13, 47, 0o1, 0, time.UTC),
 	DNSNameServer:       "8.8.8.8",
 	DockerStorageDriver: "",
 	DockerVolumeSize:    5,

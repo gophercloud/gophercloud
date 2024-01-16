@@ -26,7 +26,6 @@ func HandleCreateImageMemberSuccessfully(t *testing.T) {
 		    "status": "pending",
 		    "updated_at": "2013-09-20T19:25:31Z"
 			}`)
-
 	})
 }
 

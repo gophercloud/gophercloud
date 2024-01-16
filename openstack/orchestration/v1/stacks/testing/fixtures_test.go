@@ -12,8 +12,10 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-var Create_time, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
-var Updated_time, _ = time.Parse(time.RFC3339, "2018-06-26T07:59:17Z")
+var (
+	Create_time, _  = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
+	Updated_time, _ = time.Parse(time.RFC3339, "2018-06-26T07:59:17Z")
+)
 
 // CreateExpected represents the expected object from a Create request.
 var CreateExpected = &stacks.CreatedStack{

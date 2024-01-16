@@ -18,10 +18,10 @@ type imageEntry struct {
 
 // HandleImageListSuccessfully test setup
 func HandleImageListSuccessfully(t *testing.T) {
-
 	images := make([]imageEntry, 3)
 
-	images[0] = imageEntry{"cirros-0.3.4-x86_64-uec",
+	images[0] = imageEntry{
+		"cirros-0.3.4-x86_64-uec",
 		`{
             "status": "active",
             "name": "cirros-0.3.4-x86_64-uec",
@@ -47,8 +47,10 @@ func HandleImageListSuccessfully(t *testing.T) {
             "hw_disk_bus": "scsi",
             "hw_disk_bus_model": "virtio-scsi",
             "hw_scsi_model": "virtio-scsi"
-        }`}
-	images[1] = imageEntry{"cirros-0.3.4-x86_64-uec-ramdisk",
+        }`,
+	}
+	images[1] = imageEntry{
+		"cirros-0.3.4-x86_64-uec-ramdisk",
 		`{
             "status": "active",
             "name": "cirros-0.3.4-x86_64-uec-ramdisk",
@@ -72,8 +74,10 @@ func HandleImageListSuccessfully(t *testing.T) {
             "hw_disk_bus": "scsi",
             "hw_disk_bus_model": "virtio-scsi",
             "hw_scsi_model": "virtio-scsi"
-        }`}
-	images[2] = imageEntry{"cirros-0.3.4-x86_64-uec-kernel",
+        }`,
+	}
+	images[2] = imageEntry{
+		"cirros-0.3.4-x86_64-uec-kernel",
 		`{
             "status": "active",
             "name": "cirros-0.3.4-x86_64-uec-kernel",
@@ -97,7 +101,8 @@ func HandleImageListSuccessfully(t *testing.T) {
             "hw_disk_bus": "scsi",
             "hw_disk_bus_model": "virtio-scsi",
             "hw_scsi_model": "virtio-scsi"
-        }`}
+        }`,
+	}
 
 	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -155,7 +160,6 @@ func HandleImageListSuccessfully(t *testing.T) {
 			    "next": "/images?marker=%s&limit=%v",
 			    "schema": "/schemas/images",
 			    "first": "/images?limit=%v"}`, newMarker, limit, limit)
-
 	})
 }
 

@@ -98,24 +98,26 @@ var TransferRequest = sharetransfers.CreateOpts{
 	ShareID: "2f6f1684-1ded-40db-8a49-7c87dedbc758",
 }
 
-var createdAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-02-28T12:44:28.051989")
-var TransferResponse = sharetransfers.Transfer{
-	ID:         "b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
-	AuthKey:    "cb67e0e7387d9eac",
-	Name:       "",
-	ResourceID: "2f6f1684-1ded-40db-8a49-7c87dedbc758",
-	CreatedAt:  createdAt,
-	Links: []map[string]string{
-		{
-			"href": "https://share/v3/53c2b94f63fb4f43a21b92d119ce549f/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
-			"rel":  "self",
+var (
+	createdAt, _     = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-02-28T12:44:28.051989")
+	TransferResponse = sharetransfers.Transfer{
+		ID:         "b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
+		AuthKey:    "cb67e0e7387d9eac",
+		Name:       "",
+		ResourceID: "2f6f1684-1ded-40db-8a49-7c87dedbc758",
+		CreatedAt:  createdAt,
+		Links: []map[string]string{
+			{
+				"href": "https://share/v3/53c2b94f63fb4f43a21b92d119ce549f/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
+				"rel":  "self",
+			},
+			{
+				"href": "https://share/53c2b94f63fb4f43a21b92d119ce549f/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
+				"rel":  "bookmark",
+			},
 		},
-		{
-			"href": "https://share/53c2b94f63fb4f43a21b92d119ce549f/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
-			"rel":  "bookmark",
-		},
-	},
-}
+	}
+)
 
 var TransferListResponse = []sharetransfers.Transfer{TransferResponse}
 

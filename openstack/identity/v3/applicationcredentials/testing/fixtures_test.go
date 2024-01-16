@@ -11,9 +11,11 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const userID = "2844b2a08be147a08ef58317d6471f1f"
-const applicationCredentialID = "f741662395b249c9b8acdebf1722c5ae"
-const accessRuleID = "07d719df00f349ef8de77d542edf010c"
+const (
+	userID                  = "2844b2a08be147a08ef58317d6471f1f"
+	applicationCredentialID = "f741662395b249c9b8acdebf1722c5ae"
+	accessRuleID            = "07d719df00f349ef8de77d542edf010c"
+)
 
 // ListOutput provides a single page of ApplicationCredential results.
 const ListOutput = `
@@ -278,33 +280,35 @@ const GetAccessRuleOutput = `
 }
 `
 
-var nilTime time.Time
-var ApplicationCredential = applicationcredentials.ApplicationCredential{
-	ID:           "f741662395b249c9b8acdebf1722c5ae",
-	Name:         "test",
-	Description:  "",
-	Unrestricted: false,
-	Secret:       "",
-	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
-	Roles: []applicationcredentials.Role{
-		{
-			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
-			Name: "compute_viewer",
+var (
+	nilTime               time.Time
+	ApplicationCredential = applicationcredentials.ApplicationCredential{
+		ID:           "f741662395b249c9b8acdebf1722c5ae",
+		Name:         "test",
+		Description:  "",
+		Unrestricted: false,
+		Secret:       "",
+		ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
+		Roles: []applicationcredentials.Role{
+			{
+				ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
+				Name: "compute_viewer",
+			},
 		},
-	},
-	AccessRules: []applicationcredentials.AccessRule{
-		{
-			ID:      "07d719df00f349ef8de77d542edf010c",
-			Path:    "/v2.0/metrics",
-			Method:  "GET",
-			Service: "monitoring",
+		AccessRules: []applicationcredentials.AccessRule{
+			{
+				ID:      "07d719df00f349ef8de77d542edf010c",
+				Path:    "/v2.0/metrics",
+				Method:  "GET",
+				Service: "monitoring",
+			},
 		},
-	},
-	ExpiresAt: nilTime,
-	Links: map[string]interface{}{
-		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae",
-	},
-}
+		ExpiresAt: nilTime,
+		Links: map[string]interface{}{
+			"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae",
+		},
+	}
+)
 
 var ApplicationCredentialNoSecretResponse = applicationcredentials.ApplicationCredential{
 	ID:           "c4859fb437df4b87a51a8f5adcfb0bc7",
@@ -325,29 +329,31 @@ var ApplicationCredentialNoSecretResponse = applicationcredentials.ApplicationCr
 	},
 }
 
-var ApplationCredentialExpiresAt = time.Date(2019, 3, 12, 12, 12, 12, 123456000, time.UTC)
-var UnrestrictedApplicationCredential = applicationcredentials.ApplicationCredential{
-	ID:           "6b8cc7647da64166a4a3cc0c88ebbabb",
-	Name:         "test2",
-	Description:  "",
-	Unrestricted: true,
-	Secret:       "",
-	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
-	Roles: []applicationcredentials.Role{
-		{
-			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
-			Name: "compute_viewer",
+var (
+	ApplationCredentialExpiresAt      = time.Date(2019, 3, 12, 12, 12, 12, 123456000, time.UTC)
+	UnrestrictedApplicationCredential = applicationcredentials.ApplicationCredential{
+		ID:           "6b8cc7647da64166a4a3cc0c88ebbabb",
+		Name:         "test2",
+		Description:  "",
+		Unrestricted: true,
+		Secret:       "",
+		ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
+		Roles: []applicationcredentials.Role{
+			{
+				ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
+				Name: "compute_viewer",
+			},
+			{
+				ID:   "4494bc5bea1a4105ad7fbba6a7eb9ef4",
+				Name: "network_viewer",
+			},
 		},
-		{
-			ID:   "4494bc5bea1a4105ad7fbba6a7eb9ef4",
-			Name: "network_viewer",
+		ExpiresAt: ApplationCredentialExpiresAt,
+		Links: map[string]interface{}{
+			"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/6b8cc7647da64166a4a3cc0c88ebbabb",
 		},
-	},
-	ExpiresAt: ApplationCredentialExpiresAt,
-	Links: map[string]interface{}{
-		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/6b8cc7647da64166a4a3cc0c88ebbabb",
-	},
-}
+	}
+)
 
 var FirstApplicationCredential = applicationcredentials.ApplicationCredential{
 	ID:           "c4859fb437df4b87a51a8f5adcfb0bc7",

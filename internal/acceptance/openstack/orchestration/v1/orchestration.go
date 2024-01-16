@@ -10,8 +10,9 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-const basicTemplateResourceName = "secgroup_1"
-const basicTemplate = `
+const (
+	basicTemplateResourceName = "secgroup_1"
+	basicTemplate             = `
 	{
 		"heat_template_version": "2013-05-23",
 		"description": "Simple template to test heat commands",
@@ -26,6 +27,7 @@ const basicTemplate = `
 		}
 	}
 `
+)
 
 const validateTemplate = `
 	{

@@ -73,7 +73,7 @@ func TestGet(t *testing.T) {
 		Size:        1,
 		Status:      "available",
 		ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
-		CreatedAt:   time.Date(2019, time.January, 06, 11, 11, 02, 0, time.UTC),
+		CreatedAt:   time.Date(2019, time.January, 0o6, 11, 11, 0o2, 0, time.UTC),
 		Links: []map[string]string{
 			{
 				"href": "http://172.18.198.54:8786/v2/16e1ab15c35a457e9c2b2aa189f544e1/snapshots/bc082e99-3bdb-4400-b95e-b85c7a41622c",
@@ -111,7 +111,7 @@ func TestListDetail(t *testing.T) {
 			Size:        1,
 			Status:      "available",
 			ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
-			CreatedAt:   time.Date(2019, time.January, 06, 11, 11, 02, 0, time.UTC),
+			CreatedAt:   time.Date(2019, time.January, 0o6, 11, 11, 0o2, 0, time.UTC),
 			Links: []map[string]string{
 				{
 					"href": "http://172.18.198.54:8786/v2/16e1ab15c35a457e9c2b2aa189f544e1/snapshots/bc082e99-3bdb-4400-b95e-b85c7a41622c",

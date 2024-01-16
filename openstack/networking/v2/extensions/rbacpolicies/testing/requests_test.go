@@ -126,7 +126,6 @@ func TestListWithAllPages(t *testing.T) {
 
 	th.AssertEquals(t, allRBACpolicies[1].ProjectID, "1ae27ce0a2a54cc6ae06dc62dd0ec832")
 	th.AssertEquals(t, allRBACpolicies[1].TargetTenant, "1a547a3bcfe44702889fdeff3c3520c3")
-
 }
 
 func TestDelete(t *testing.T) {

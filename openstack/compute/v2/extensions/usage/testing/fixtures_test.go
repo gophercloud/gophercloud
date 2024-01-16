@@ -11,8 +11,10 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const FirstTenantID = "aabbccddeeff112233445566"
-const SecondTenantID = "665544332211ffeeddccbbaa"
+const (
+	FirstTenantID  = "aabbccddeeff112233445566"
+	SecondTenantID = "665544332211ffeeddccbbaa"
+)
 
 // GetSingleTenant holds the fixtures for the content of the request for a
 // single tenant.

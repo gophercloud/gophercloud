@@ -2,12 +2,14 @@ package agents
 
 import "github.com/gophercloud/gophercloud"
 
-const resourcePath = "agents"
-const dhcpNetworksResourcePath = "dhcp-networks"
-const l3RoutersResourcePath = "l3-routers"
-const bgpSpeakersResourcePath = "bgp-drinstances"
-const bgpDRAgentSpeakersResourcePath = "bgp-speakers"
-const bgpDRAgentAgentResourcePath = "bgp-dragents"
+const (
+	resourcePath                   = "agents"
+	dhcpNetworksResourcePath       = "dhcp-networks"
+	l3RoutersResourcePath          = "l3-routers"
+	bgpSpeakersResourcePath        = "bgp-drinstances"
+	bgpDRAgentSpeakersResourcePath = "bgp-speakers"
+	bgpDRAgentAgentResourcePath    = "bgp-dragents"
+)
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(resourcePath, id)

@@ -54,8 +54,9 @@ var FullListExpected = []resourcetypes.ResourceTypeSummary{
 	},
 }
 
-const listFilterRegex = "OS::Heat::.*"
-const FilteredListOutput = `
+const (
+	listFilterRegex    = "OS::Heat::.*"
+	FilteredListOutput = `
 {
     "resource_types": [
         {
@@ -65,6 +66,7 @@ const FilteredListOutput = `
     ]
 }
 `
+)
 
 var FilteredListExpected = []resourcetypes.ResourceTypeSummary{
 	{

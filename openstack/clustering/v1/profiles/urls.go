@@ -2,8 +2,10 @@ package profiles
 
 import "github.com/gophercloud/gophercloud"
 
-var apiVersion = "v1"
-var apiName = "profiles"
+var (
+	apiVersion = "v1"
+	apiName    = "profiles"
+)
 
 func commonURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(apiVersion, apiName)

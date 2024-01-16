@@ -72,7 +72,7 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	var isPublic = true
+	isPublic := true
 
 	options := &volumetypes.CreateOpts{
 		Name:        "test_type",
@@ -108,8 +108,8 @@ func TestUpdate(t *testing.T) {
 
 	MockUpdateResponse(t)
 
-	var isPublic = true
-	var name = "vol-type-002"
+	isPublic := true
+	name := "vol-type-002"
 	options := volumetypes.UpdateOpts{
 		Name:     &name,
 		IsPublic: &isPublic,
@@ -245,7 +245,6 @@ func TestVolumeTypeAddAccess(t *testing.T) {
 
 	err := volumetypes.AddAccess(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", addAccessOpts).ExtractErr()
 	th.AssertNoErr(t, err)
-
 }
 
 func TestVolumeTypeRemoveAccess(t *testing.T) {
@@ -274,7 +273,6 @@ func TestVolumeTypeRemoveAccess(t *testing.T) {
 
 	err := volumetypes.RemoveAccess(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", removeAccessOpts).ExtractErr()
 	th.AssertNoErr(t, err)
-
 }
 
 func TestCreateEncryption(t *testing.T) {

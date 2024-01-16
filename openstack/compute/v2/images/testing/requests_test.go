@@ -118,7 +118,6 @@ func TestListImages(t *testing.T) {
 
 		return false, nil
 	})
-
 	if err != nil {
 		t.Fatalf("EachPage error: %v", err)
 	}

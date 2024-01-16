@@ -204,6 +204,7 @@ const DomainToken = `
 
 var expectedTokenTime, _ = time.Parse(gophercloud.RFC3339Milli,
 	"2017-06-03T02:19:49.000000Z")
+
 var ExpectedToken = tokens.Token{
 	ID:        testTokenID,
 	ExpiresAt: expectedTokenTime,
@@ -237,6 +238,7 @@ var catalogEntry1 = tokens.CatalogEntry{
 		},
 	},
 }
+
 var catalogEntry2 = tokens.CatalogEntry{
 	ID:   "1cde0ea8cb3c49d8928cb172ca825ca5",
 	Name: "keystone",

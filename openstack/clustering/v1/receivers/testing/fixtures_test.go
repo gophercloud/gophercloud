@@ -168,8 +168,10 @@ const ListResponse = `
 	]
 }`
 
-var ExpectedReceiversList = []receivers.Receiver{ExpectedUpdateReceiver}
-var ExpectedNotifyRequestID = "66a81d68-bf48-4af5-897b-a3bfef7279a8"
+var (
+	ExpectedReceiversList   = []receivers.Receiver{ExpectedUpdateReceiver}
+	ExpectedNotifyRequestID = "66a81d68-bf48-4af5-897b-a3bfef7279a8"
+)
 
 func HandleCreateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/receivers", func(w http.ResponseWriter, r *http.Request) {

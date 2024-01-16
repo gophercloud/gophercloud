@@ -102,7 +102,7 @@ func TestUnmarshalAnonymousStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var singleResult = gophercloud.Result{
+	singleResult := gophercloud.Result{
 		Body: dejson,
 	}
 
@@ -125,7 +125,7 @@ func TestUnmarshalSliceOfAnonymousStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = gophercloud.Result{
+	multiResult := gophercloud.Result{
 		Body: dejson,
 	}
 
@@ -150,7 +150,7 @@ func TestUnmarshalSliceofStruct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = gophercloud.Result{
+	multiResult := gophercloud.Result{
 		Body: dejson,
 	}
 
@@ -172,7 +172,7 @@ func TestUnmarshalNamedStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var singleResult = gophercloud.Result{
+	singleResult := gophercloud.Result{
 		Body: dejson,
 	}
 
@@ -194,7 +194,7 @@ func TestUnmarshalSliceOfNamedStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = gophercloud.Result{
+	multiResult := gophercloud.Result{
 		Body: dejson,
 	}
 

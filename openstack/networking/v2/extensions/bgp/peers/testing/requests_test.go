@@ -30,7 +30,6 @@ func TestList(t *testing.T) {
 		func(page pagination.Page) (bool, error) {
 			count++
 			actual, err := peers.ExtractBGPPeers(page)
-
 			if err != nil {
 				t.Errorf("Failed to extract BGP Peers: %v", err)
 				return false, nil

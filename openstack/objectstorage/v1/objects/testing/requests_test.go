@@ -107,7 +107,7 @@ func TestContainerNames(t *testing.T) {
 				_, err := objects.CreateTempURL(client, tc.containerName, "testObject/testFile.txt", objects.CreateTempURLOpts{
 					Method:    http.MethodGet,
 					TTL:       60,
-					Timestamp: time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC),
+					Timestamp: time.Date(2020, 0o7, 0o1, 0o1, 12, 0o0, 0o0, time.UTC),
 				})
 
 				th.CheckErr(t, err, &tc.expectedError)
@@ -534,7 +534,7 @@ func TestCreateTempURL(t *testing.T) {
 	tempURL, err := objects.CreateTempURL(client, "testContainer", "testObject/testFile.txt", objects.CreateTempURLOpts{
 		Method:    http.MethodGet,
 		TTL:       60,
-		Timestamp: time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC),
+		Timestamp: time.Date(2020, 0o7, 0o1, 0o1, 12, 0o0, 0o0, time.UTC),
 	})
 
 	sig := "89be454a9c7e2e9f3f50a8441815e0b5801cba5b"
@@ -547,7 +547,7 @@ func TestCreateTempURL(t *testing.T) {
 	// Test TTL=0, but different timestamp
 	tempURL, err = objects.CreateTempURL(client, "testContainer", "testObject/testFile.txt", objects.CreateTempURLOpts{
 		Method:    http.MethodGet,
-		Timestamp: time.Date(2020, 07, 01, 01, 13, 00, 00, time.UTC),
+		Timestamp: time.Date(2020, 0o7, 0o1, 0o1, 13, 0o0, 0o0, time.UTC),
 	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedURL, tempURL)

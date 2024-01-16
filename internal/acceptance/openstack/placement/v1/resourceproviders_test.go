@@ -56,7 +56,6 @@ func TestResourceProvider(t *testing.T) {
 	resourceProviderGet, err := resourceproviders.Get(client, resourceProvider2.UUID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newName, resourceProviderGet.Name)
-
 }
 
 func TestResourceProviderUsages(t *testing.T) {

@@ -10,8 +10,10 @@ import (
 	fakeclient "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const createdAtString = "2013-09-20T19:22:19Z"
-const updatedAtString = "2013-09-20T19:25:31Z"
+const (
+	createdAtString = "2013-09-20T19:22:19Z"
+	updatedAtString = "2013-09-20T19:25:31Z"
+)
 
 func TestCreateMemberSuccessfully(t *testing.T) {
 	th.SetupHTTP()
@@ -36,7 +38,6 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 		Status:    "pending",
 		UpdatedAt: updatedAt,
 	}, *im)
-
 }
 
 func TestMemberListSuccessfully(t *testing.T) {
@@ -168,5 +169,4 @@ func TestMemberUpdateSuccessfully(t *testing.T) {
 		Status:    "accepted",
 		UpdatedAt: updatedAt,
 	}, *im)
-
 }

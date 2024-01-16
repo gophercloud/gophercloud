@@ -112,37 +112,39 @@ const GetOutput = `
 `
 
 // FirstNetwork is the first result in ListOutput.
-var nilTime time.Time
-var FirstNetwork = networks.Network{
-	Bridge:            "br100",
-	BridgeInterface:   "eth0",
-	Broadcast:         "10.0.0.7",
-	CIDR:              "10.0.0.0/29",
-	CIDRv6:            "",
-	CreatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 15, 6, 19, 19, 387525000, time.UTC)),
-	Deleted:           false,
-	DeletedAt:         gophercloud.JSONRFC3339MilliNoZ(nilTime),
-	DHCPStart:         "10.0.0.3",
-	DNS1:              "",
-	DNS2:              "",
-	Gateway:           "10.0.0.1",
-	Gatewayv6:         "",
-	Host:              "nsokolov-desktop",
-	ID:                "20c8acc0-f747-4d71-a389-46d078ebf047",
-	Injected:          false,
-	Label:             "mynet_0",
-	MultiHost:         false,
-	Netmask:           "255.255.255.248",
-	Netmaskv6:         "",
-	Priority:          0,
-	ProjectID:         "1234",
-	RXTXBase:          0,
-	UpdatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 16, 9, 26, 13, 48257000, time.UTC)),
-	VLAN:              100,
-	VPNPrivateAddress: "10.0.0.2",
-	VPNPublicAddress:  "127.0.0.1",
-	VPNPublicPort:     1000,
-}
+var (
+	nilTime      time.Time
+	FirstNetwork = networks.Network{
+		Bridge:            "br100",
+		BridgeInterface:   "eth0",
+		Broadcast:         "10.0.0.7",
+		CIDR:              "10.0.0.0/29",
+		CIDRv6:            "",
+		CreatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 15, 6, 19, 19, 387525000, time.UTC)),
+		Deleted:           false,
+		DeletedAt:         gophercloud.JSONRFC3339MilliNoZ(nilTime),
+		DHCPStart:         "10.0.0.3",
+		DNS1:              "",
+		DNS2:              "",
+		Gateway:           "10.0.0.1",
+		Gatewayv6:         "",
+		Host:              "nsokolov-desktop",
+		ID:                "20c8acc0-f747-4d71-a389-46d078ebf047",
+		Injected:          false,
+		Label:             "mynet_0",
+		MultiHost:         false,
+		Netmask:           "255.255.255.248",
+		Netmaskv6:         "",
+		Priority:          0,
+		ProjectID:         "1234",
+		RXTXBase:          0,
+		UpdatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 16, 9, 26, 13, 48257000, time.UTC)),
+		VLAN:              100,
+		VPNPrivateAddress: "10.0.0.2",
+		VPNPublicAddress:  "127.0.0.1",
+		VPNPublicPort:     1000,
+	}
+)
 
 // SecondNetwork is the second result in ListOutput.
 var SecondNetwork = networks.Network{

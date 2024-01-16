@@ -52,5 +52,4 @@ func TestProjectEndpoints(t *testing.T) {
 	// Detach endpoint
 	err = projectendpoints.Delete(client, project.ID, endpoint.ID).Err
 	th.AssertNoErr(t, err)
-
 }

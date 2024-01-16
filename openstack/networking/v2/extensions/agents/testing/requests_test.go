@@ -32,7 +32,6 @@ func TestList(t *testing.T) {
 	agents.List(fake.ServiceClient(), agents.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := agents.ExtractAgents(page)
-
 		if err != nil {
 			t.Errorf("Failed to extract agents: %v", err)
 			return false, nil
@@ -77,7 +76,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.Topic, "N/A")
 	th.AssertEquals(t, s.Host, "compute3")
 	th.AssertEquals(t, s.AgentType, "Open vSwitch agent")
-	th.AssertEquals(t, s.HeartbeatTimestamp, time.Date(2019, 1, 9, 11, 43, 01, 0, time.UTC))
+	th.AssertEquals(t, s.HeartbeatTimestamp, time.Date(2019, 1, 9, 11, 43, 0o1, 0, time.UTC))
 	th.AssertEquals(t, s.StartedAt, time.Date(2018, 6, 26, 21, 46, 20, 0, time.UTC))
 	th.AssertEquals(t, s.CreatedAt, time.Date(2017, 7, 26, 23, 2, 5, 0, time.UTC))
 	th.AssertDeepEquals(t, s.Configurations, map[string]interface{}{
@@ -165,7 +164,6 @@ func TestListDHCPNetworks(t *testing.T) {
 	th.AssertEquals(t, s[0].TenantID, "4fd44f30292945e481c7b8a0c8908869")
 	th.AssertDeepEquals(t, s[0].AvailabilityZoneHints, []string{})
 	th.AssertDeepEquals(t, s[0].Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
-
 }
 
 func TestScheduleDHCPNetwork(t *testing.T) {
@@ -309,7 +307,6 @@ func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
 		func(page pagination.Page) (bool, error) {
 			count++
 			actual, err := agents.ExtractAgents(page)
-
 			if err != nil {
 				t.Errorf("Failed to extract agents: %v", err)
 				return false, nil
@@ -380,7 +377,6 @@ func TestListL3Routers(t *testing.T) {
 	th.AssertDeepEquals(t, s[0].Tags, nilSlice)
 	th.AssertEquals(t, s[1].ID, "f8a44de0-fc8e-45df-93c7-f79bf3b01c95")
 	th.AssertEquals(t, s[1].Name, "router1")
-
 }
 
 func TestScheduleL3Router(t *testing.T) {

@@ -47,7 +47,6 @@ func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *
 	t.Logf("Uploaded volume %s as volume-backed image %s", volume.ID, imageName)
 
 	return volumeImage, nil
-
 }
 
 // DeleteUploadedImage deletes uploaded image. An error will be returned

@@ -156,7 +156,7 @@ func TestProjectsDomain(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	var iTrue = true
+	iTrue := true
 	createOpts := projects.CreateOpts{
 		IsDomain: &iTrue,
 	}
@@ -179,7 +179,7 @@ func TestProjectsDomain(t *testing.T) {
 
 	th.AssertEquals(t, project.DomainID, projectDomain.ID)
 
-	var iFalse = false
+	iFalse := false
 	updateOpts := projects.UpdateOpts{
 		Enabled: &iFalse,
 	}

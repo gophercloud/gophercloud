@@ -2,8 +2,10 @@ package events
 
 import "github.com/gophercloud/gophercloud"
 
-var apiVersion = "v1"
-var apiName = "events"
+var (
+	apiVersion = "v1"
+	apiName    = "events"
+)
 
 func commonURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(apiVersion, apiName)

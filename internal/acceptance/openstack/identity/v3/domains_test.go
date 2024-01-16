@@ -79,7 +79,7 @@ func TestDomainsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	var iTrue bool = true
-	var description = "Testing Domain"
+	description := "Testing Domain"
 	createOpts := domains.CreateOpts{
 		Description: description,
 		Enabled:     &iTrue,

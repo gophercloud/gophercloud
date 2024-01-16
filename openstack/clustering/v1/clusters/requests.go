@@ -600,8 +600,10 @@ func (opts OperationOpts) ToClusterOperationMap() (map[string]interface{}, error
 type OperationOptsBuilder interface {
 	ToClusterOperationMap() (map[string]interface{}, error)
 }
-type OperationFilters map[string]interface{}
-type OperationParams map[string]interface{}
+type (
+	OperationFilters map[string]interface{}
+	OperationParams  map[string]interface{}
+)
 
 // OperationOpts represents options used to perform an operation on a cluster
 type OperationOpts struct {

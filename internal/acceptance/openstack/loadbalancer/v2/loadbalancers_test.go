@@ -250,7 +250,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Create QoS policy first as the loadbalancer and its port
-	//needs to be deleted before the QoS policy can be deleted
+	// needs to be deleted before the QoS policy can be deleted
 	policy2, err := policies.CreateQoSPolicy(t, netClient)
 	th.AssertNoErr(t, err)
 	defer policies.DeleteQoSPolicy(t, netClient, policy2.ID)

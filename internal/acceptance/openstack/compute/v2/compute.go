@@ -660,7 +660,6 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 		Name:     name,
 		Policies: []string{policy},
 	}).Extract()
-
 	if err != nil {
 		return nil, err
 	}
@@ -688,7 +687,6 @@ func CreateServerGroupMicroversion(t *testing.T, client *gophercloud.ServiceClie
 			MaxServerPerHost: maxServerPerHost,
 		},
 	}).Extract()
-
 	if err != nil {
 		return nil, err
 	}
@@ -949,7 +947,6 @@ func DeleteServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGr
 // error will occur if the volume failed to detach. This works best when used
 // as a deferred function.
 func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volumeAttachment *volumeattach.VolumeAttachment) {
-
 	err := volumeattach.Delete(client, server.ID, volumeAttachment.VolumeID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to detach volume: %v", err)

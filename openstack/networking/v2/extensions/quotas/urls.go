@@ -2,8 +2,10 @@ package quotas
 
 import "github.com/gophercloud/gophercloud"
 
-const resourcePath = "quotas"
-const resourcePathDetail = "details.json"
+const (
+	resourcePath       = "quotas"
+	resourcePathDetail = "details.json"
+)
 
 func resourceURL(c *gophercloud.ServiceClient, projectID string) string {
 	return c.ServiceURL(resourcePath, projectID)

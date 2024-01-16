@@ -249,6 +249,7 @@ func TestToWorkflowListQuery(t *testing.T) {
 		th.AssertEquals(t, expected, actual)
 	}
 }
+
 func newValue(param, value string) string {
 	v := url.Values{}
 	v.Add(param, value)

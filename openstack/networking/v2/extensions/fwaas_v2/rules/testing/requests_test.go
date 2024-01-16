@@ -121,6 +121,7 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

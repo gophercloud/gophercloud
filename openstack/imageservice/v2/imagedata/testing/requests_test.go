@@ -70,7 +70,7 @@ func min(a int, b int) int {
 }
 
 func (rs *RS) Seek(offset int64, whence int) (int64, error) {
-	var offsetInt = int(offset)
+	offsetInt := int(offset)
 	if whence == 0 {
 		rs.offset = offsetInt
 	} else if whence == 1 {

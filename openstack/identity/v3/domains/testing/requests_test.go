@@ -99,7 +99,7 @@ func TestUpdateDomain(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateDomainSuccessfully(t)
 
-	var description = "Staging Domain"
+	description := "Staging Domain"
 	updateOpts := domains.UpdateOpts{
 		Description: &description,
 	}

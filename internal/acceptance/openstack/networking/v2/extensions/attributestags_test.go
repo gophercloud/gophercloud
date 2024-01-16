@@ -107,14 +107,16 @@ func TestQueryByTags(t *testing.T) {
 
 	// Tags - Networks that match all tags will be returned
 	listOpts := networks.ListOpts{
-		Tags: fmt.Sprintf("a,b,c,%s", testtag)}
+		Tags: fmt.Sprintf("a,b,c,%s", testtag),
+	}
 	ids := listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network1.ID}, ids)
 
 	// TagsAny - Networks that match any tag will be returned
 	listOpts = networks.ListOpts{
 		SortKey: "id", SortDir: "asc",
-		TagsAny: fmt.Sprintf("a,b,c,%s", testtag)}
+		TagsAny: fmt.Sprintf("a,b,c,%s", testtag),
+	}
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	expected_ids := []string{network1.ID, network2.ID}
 	sort.Strings(expected_ids)

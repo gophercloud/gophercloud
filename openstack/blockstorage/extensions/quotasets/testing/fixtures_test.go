@@ -154,7 +154,6 @@ var partiualUpdateExpectedQuotaSet = quotasets.QuotaSet{
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
 func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string, uriQueryParams map[string]string) {
-
 	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, httpMethod)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

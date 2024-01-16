@@ -5,12 +5,14 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-type AuthAlgorithm string
-type EncryptionAlgorithm string
-type PFS string
-type Unit string
-type IKEVersion string
-type Phase1NegotiationMode string
+type (
+	AuthAlgorithm         string
+	EncryptionAlgorithm   string
+	PFS                   string
+	Unit                  string
+	IKEVersion            string
+	Phase1NegotiationMode string
+)
 
 const (
 	AuthAlgorithmSHA1         AuthAlgorithm         = "sha1"
@@ -75,7 +77,7 @@ type CreateOpts struct {
 	// Default is v1.
 	IKEVersion IKEVersion `json:"ike_version,omitempty"`
 
-	//Lifetime is the lifetime of the security association
+	// Lifetime is the lifetime of the security association
 	Lifetime *LifetimeCreateOpts `json:"lifetime,omitempty"`
 }
 

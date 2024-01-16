@@ -112,7 +112,7 @@ func TestSubnetsDefaultGateway(t *testing.T) {
 		t.Fatalf("A default gateway was not created.")
 	}
 
-	var noGateway = ""
+	noGateway := ""
 	updateOpts := subnets.UpdateOpts{
 		GatewayIP: &noGateway,
 	}

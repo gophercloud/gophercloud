@@ -87,7 +87,7 @@ func TestUpdate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateSuccessfully(t)
 
-	var description = "Updated Description"
+	description := "Updated Description"
 	updateOpts := transferRequests.UpdateOpts{
 		Description: description,
 	}

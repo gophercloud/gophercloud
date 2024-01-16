@@ -153,12 +153,12 @@ func TestNodesRecover(t *testing.T) {
 		// MicroVersion >= 1.6 that supports Check where Check is true
 		{Check: &checkTrue},
 		{Operation: nodes.RebootRecovery, Check: &checkTrue},
-		//nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkTrue},
+		// nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkTrue},
 
 		// MicroVersion >= 1.6 that supports Check where Check is false
 		{Check: &checkFalse},
 		{Operation: nodes.RebootRecovery, Check: &checkFalse},
-		//nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkFalse},
+		// nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkFalse},
 	}
 
 	for _, recoverOpt := range ops {

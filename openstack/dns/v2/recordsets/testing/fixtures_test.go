@@ -141,55 +141,59 @@ const NextPageRequest = `
 `
 
 // FirstRecordSet is the first result in ListByZoneOutput
-var FirstRecordSetCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-10-24T19:59:44.000000")
-var FirstRecordSet = recordsets.RecordSet{
-	ID:          "f7b10e9b-0cae-4a91-b162-562bc6096648",
-	Description: "This is an example record set.",
-	UpdatedAt:   time.Time{},
-	Records:     []string{"10.1.0.2"},
-	TTL:         3600,
-	Name:        "example.org.",
-	ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
-	ZoneID:      "2150b1bf-dee2-4221-9d85-11f7886fb15f",
-	ZoneName:    "example.com.",
-	CreatedAt:   FirstRecordSetCreatedAt,
-	Version:     1,
-	Type:        "A",
-	Status:      "PENDING",
-	Action:      "CREATE",
-	Links: []gophercloud.Link{
-		{
-			Rel:  "self",
-			Href: "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+var (
+	FirstRecordSetCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-10-24T19:59:44.000000")
+	FirstRecordSet             = recordsets.RecordSet{
+		ID:          "f7b10e9b-0cae-4a91-b162-562bc6096648",
+		Description: "This is an example record set.",
+		UpdatedAt:   time.Time{},
+		Records:     []string{"10.1.0.2"},
+		TTL:         3600,
+		Name:        "example.org.",
+		ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
+		ZoneID:      "2150b1bf-dee2-4221-9d85-11f7886fb15f",
+		ZoneName:    "example.com.",
+		CreatedAt:   FirstRecordSetCreatedAt,
+		Version:     1,
+		Type:        "A",
+		Status:      "PENDING",
+		Action:      "CREATE",
+		Links: []gophercloud.Link{
+			{
+				Rel:  "self",
+				Href: "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+			},
 		},
-	},
-}
+	}
+)
 
 // SecondRecordSet is the first result in ListByZoneOutput
-var SecondRecordSetCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-10-24T19:59:44.000000")
-var SecondRecordSetUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2017-03-04T14:29:07.000000")
-var SecondRecordSet = recordsets.RecordSet{
-	ID:          "7423aeaf-b354-4bd7-8aba-2e831567b478",
-	Description: "This is another example record set.",
-	UpdatedAt:   SecondRecordSetUpdatedAt,
-	Records:     []string{"10.1.0.3", "10.1.0.4"},
-	TTL:         3600,
-	Name:        "foo.example.org.",
-	ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
-	ZoneID:      "2150b1bf-dee2-4221-9d85-11f7886fb15f",
-	ZoneName:    "example.com.",
-	CreatedAt:   SecondRecordSetCreatedAt,
-	Version:     1,
-	Type:        "A",
-	Status:      "PENDING",
-	Action:      "CREATE",
-	Links: []gophercloud.Link{
-		{
-			Rel:  "self",
-			Href: "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/7423aeaf-b354-4bd7-8aba-2e831567b478",
+var (
+	SecondRecordSetCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-10-24T19:59:44.000000")
+	SecondRecordSetUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2017-03-04T14:29:07.000000")
+	SecondRecordSet             = recordsets.RecordSet{
+		ID:          "7423aeaf-b354-4bd7-8aba-2e831567b478",
+		Description: "This is another example record set.",
+		UpdatedAt:   SecondRecordSetUpdatedAt,
+		Records:     []string{"10.1.0.3", "10.1.0.4"},
+		TTL:         3600,
+		Name:        "foo.example.org.",
+		ProjectID:   "4335d1f0-f793-11e2-b778-0800200c9a66",
+		ZoneID:      "2150b1bf-dee2-4221-9d85-11f7886fb15f",
+		ZoneName:    "example.com.",
+		CreatedAt:   SecondRecordSetCreatedAt,
+		Version:     1,
+		Type:        "A",
+		Status:      "PENDING",
+		Action:      "CREATE",
+		Links: []gophercloud.Link{
+			{
+				Rel:  "self",
+				Href: "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/7423aeaf-b354-4bd7-8aba-2e831567b478",
+			},
 		},
-	},
-}
+	}
+)
 
 // ExpectedRecordSetSlice is the slice of results that should be parsed
 // from ListByZoneOutput, in the expected order.
@@ -371,7 +375,7 @@ func HandleDeleteSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusAccepted)
-			//w.Header().Add("Content-Type", "application/json")
-			//fmt.Fprintf(w, DeleteZoneResponse)
+			// w.Header().Add("Content-Type", "application/json")
+			// fmt.Fprintf(w, DeleteZoneResponse)
 		})
 }

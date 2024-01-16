@@ -32,10 +32,10 @@ func TestServerWithUsageExt(t *testing.T) {
 	err := servers.Get(fake.ServiceClient(), "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithUsageExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, serverWithUsageExt.LaunchedAt, time.Date(2018, 07, 27, 9, 15, 55, 0, time.UTC))
+	th.AssertEquals(t, serverWithUsageExt.LaunchedAt, time.Date(2018, 0o7, 27, 9, 15, 55, 0, time.UTC))
 	th.AssertEquals(t, serverWithUsageExt.TerminatedAt, time.Time{})
-	th.AssertEquals(t, serverWithUsageExt.Created, time.Date(2018, 07, 27, 9, 15, 48, 0, time.UTC))
-	th.AssertEquals(t, serverWithUsageExt.Updated, time.Date(2018, 07, 27, 9, 15, 55, 0, time.UTC))
+	th.AssertEquals(t, serverWithUsageExt.Created, time.Date(2018, 0o7, 27, 9, 15, 48, 0, time.UTC))
+	th.AssertEquals(t, serverWithUsageExt.Updated, time.Date(2018, 0o7, 27, 9, 15, 55, 0, time.UTC))
 	th.AssertEquals(t, serverWithUsageExt.ID, "d650a0ce-17c3-497d-961a-43c4af80998a")
 	th.AssertEquals(t, serverWithUsageExt.Name, "test_instance")
 	th.AssertEquals(t, serverWithUsageExt.Status, "ACTIVE")

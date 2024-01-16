@@ -122,7 +122,7 @@ func TestUpdateProject(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateProjectSuccessfully(t)
 
-	var description = "The team that is bright red"
+	description := "The team that is bright red"
 	updateOpts := projects.UpdateOpts{
 		Name:        "Bright Red Team",
 		Description: &description,

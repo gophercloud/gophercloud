@@ -53,7 +53,6 @@ func ListBandwidthLimitRules(c *gophercloud.ServiceClient, policyID string, opts
 	}
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return BandwidthLimitRulePage{pagination.LinkedPageBase{PageResult: r}}
-
 	})
 }
 
@@ -191,7 +190,6 @@ func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DS
 	}
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return DSCPMarkingRulePage{pagination.LinkedPageBase{PageResult: r}}
-
 	})
 }
 
@@ -318,7 +316,6 @@ func ListMinimumBandwidthRules(c *gophercloud.ServiceClient, policyID string, op
 	}
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return MinimumBandwidthRulePage{pagination.LinkedPageBase{PageResult: r}}
-
 	})
 }
 

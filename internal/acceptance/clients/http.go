@@ -12,10 +12,12 @@ import (
 )
 
 // List of headers that need to be redacted
-var REDACT_HEADERS = []string{"x-auth-token", "x-auth-key", "x-service-token",
+var REDACT_HEADERS = []string{
+	"x-auth-token", "x-auth-key", "x-service-token",
 	"x-storage-token", "x-account-meta-temp-url-key", "x-account-meta-temp-url-key-2",
 	"x-container-meta-temp-url-key", "x-container-meta-temp-url-key-2", "set-cookie",
-	"x-subject-token"}
+	"x-subject-token",
+}
 
 // LogRoundTripper satisfies the http.RoundTripper interface and is used to
 // customize the default http client RoundTripper to allow logging.

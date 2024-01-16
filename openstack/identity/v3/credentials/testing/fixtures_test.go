@@ -10,9 +10,11 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const userID = "bb5476fd12884539b41d5a88f838d773"
-const credentialID = "3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510"
-const projectID = "731fc6f265cd486d900f16e84c5cb594"
+const (
+	userID       = "bb5476fd12884539b41d5a88f838d773"
+	credentialID = "3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510"
+	projectID    = "731fc6f265cd486d900f16e84c5cb594"
+)
 
 // ListOutput provides a single page of Credential results.
 const ListOutput = `

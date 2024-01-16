@@ -67,5 +67,4 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	th.AssertEquals(t, false, updateClusterTemplate.RegistryEnabled)
 	th.AssertEquals(t, "test", updateClusterTemplate.Labels["test"])
 	tools.PrintResource(t, updateClusterTemplate)
-
 }

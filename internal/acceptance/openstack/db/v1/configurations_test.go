@@ -52,7 +52,7 @@ func TestConfigurationsCRUD(t *testing.T) {
 	th.AssertEquals(t, readCgroup.Name, createOpts.Name)
 	th.AssertEquals(t, readCgroup.Description, createOpts.Description)
 	// TODO: verify datastore
-	//th.AssertDeepEquals(t, readCgroup.Datastore, datastore)
+	// th.AssertDeepEquals(t, readCgroup.Datastore, datastore)
 
 	// Update cgroup
 	newCgroupName := "New configuration name"

@@ -6,8 +6,7 @@ import (
 )
 
 // RESOURCE represents...
-type Resource struct {
-}
+type Resource struct{}
 
 type commonResult struct {
 	gophercloud.Result

@@ -660,7 +660,7 @@ func TestListL3Agents(t *testing.T) {
 				"log_agent_heartbeats":         false,
 				"routers":                      float64(2),
 			},
-			CreatedAt:          time.Date(2017, 1, 22, 14, 00, 50, 0, time.UTC),
+			CreatedAt:          time.Date(2017, 1, 22, 14, 0o0, 50, 0, time.UTC),
 			StartedAt:          time.Date(2018, 11, 6, 12, 9, 17, 0, time.UTC),
 			HeartbeatTimestamp: time.Date(2019, 1, 9, 10, 28, 50, 0, time.UTC),
 			Host:               "os-ctrl-03",

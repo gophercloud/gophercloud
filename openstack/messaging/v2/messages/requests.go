@@ -25,7 +25,7 @@ type ListOpts struct {
 	// Indicate if the messages list should include the claimed messages.
 	IncludeClaimed bool `q:"include_claimed,omitempty"`
 
-	//Indicate if the messages list should include the delayed messages.
+	// Indicate if the messages list should include the delayed messages.
 	IncludeDelayed bool `q:"include_delayed,omitempty"`
 }
 

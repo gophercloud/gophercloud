@@ -162,5 +162,4 @@ func TestShareTypeAccess(t *testing.T) {
 	tools.PrintResource(t, shareType)
 
 	defer DeleteShareType(t, client, shareType)
-
 }

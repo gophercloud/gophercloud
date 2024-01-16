@@ -53,7 +53,7 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 		trusts.TokenExt
 	}{
 		tokens.Token{
-			ExpiresAt: time.Date(2013, 02, 27, 18, 30, 59, 999999000, time.UTC),
+			ExpiresAt: time.Date(2013, 0o2, 27, 18, 30, 59, 999999000, time.UTC),
 		},
 		trusts.TokenExt{
 			Trust: trusts.Trust{

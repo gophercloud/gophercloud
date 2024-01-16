@@ -10,8 +10,10 @@ import (
 type CreateOptsBuilder interface {
 	ToConnectionCreateMap() (map[string]interface{}, error)
 }
-type Action string
-type Initiator string
+type (
+	Action    string
+	Initiator string
+)
 
 const (
 	ActionHold             Action    = "hold"

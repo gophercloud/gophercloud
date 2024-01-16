@@ -111,5 +111,4 @@ func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Por
 	}
 
 	t.Logf("Deleted port: %s", port.UUID)
-
 }

@@ -1083,10 +1083,11 @@ var (
 				"version": "2.2.0",
 			},
 			"systemd": map[string]interface{}{
-				"units": []map[string]interface{}{{
-					"name":    "example.service",
-					"enabled": true,
-				},
+				"units": []map[string]interface{}{
+					{
+						"name":    "example.service",
+						"enabled": true,
+					},
 				},
 			},
 		},

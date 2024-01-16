@@ -43,7 +43,7 @@ func TestTemplateParsing(t *testing.T) {
 }
 
 func TestIgnoreIfTemplate(t *testing.T) {
-	var keyValueTests = []struct {
+	keyValueTests := []struct {
 		key   string
 		value interface{}
 		out   bool

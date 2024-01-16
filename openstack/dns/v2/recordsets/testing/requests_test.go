@@ -109,7 +109,7 @@ func TestUpdate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateSuccessfully(t)
 
-	var description = "Updated description"
+	description := "Updated description"
 	ttl := 0
 	updateOpts := recordsets.UpdateOpts{
 		TTL:         &ttl,
@@ -143,5 +143,5 @@ func TestDelete(t *testing.T) {
 
 	err := recordsets.Delete(client.ServiceClient(), DeletedRecordSet.ZoneID, DeletedRecordSet.ID).ExtractErr()
 	th.AssertNoErr(t, err)
-	//th.CheckDeepEquals(t, &DeletedZone, actual)
+	// th.CheckDeepEquals(t, &DeletedZone, actual)
 }

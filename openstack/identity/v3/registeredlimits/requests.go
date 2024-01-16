@@ -130,7 +130,7 @@ type UpdateOpts struct {
 
 	// ResourceName is the name of the resource that the limit is applied to.
 	ResourceName string `json:"resource_name,omitempty"`
-	//Either service_id, resource_name, or region_id must be different than existing value otherwise it will raise 409.
+	// Either service_id, resource_name, or region_id must be different than existing value otherwise it will raise 409.
 }
 
 // ToRegisteredLimitUpdateMap formats UpdateOpts into an update request.

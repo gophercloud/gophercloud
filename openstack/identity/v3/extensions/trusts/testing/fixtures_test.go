@@ -315,7 +315,7 @@ var FirstTrust = trusts.Trust{
 	TrusteeUserID: "86c0d5",
 	TrustorUserID: "a0fdfd",
 	ProjectID:     "0f1233",
-	ExpiresAt:     time.Date(2019, 12, 01, 14, 00, 00, 0, time.UTC),
+	ExpiresAt:     time.Date(2019, 12, 0o1, 14, 0o0, 0o0, 0, time.UTC),
 	DeletedAt:     time.Time{},
 }
 
@@ -335,7 +335,7 @@ var CreatedTrust = trusts.Trust{
 	TrusteeUserID:     "ecb37e88cc86431c99d0332208cb6fbf",
 	TrustorUserID:     "959ed913a32c4ec88c041c98e61cbbc3",
 	ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
-	ExpiresAt:         time.Date(2019, 12, 01, 14, 00, 00, 0, time.UTC),
+	ExpiresAt:         time.Date(2019, 12, 0o1, 14, 0o0, 0o0, 0, time.UTC),
 	DeletedAt:         time.Time{},
 	RedelegationCount: 10,
 	Roles: []trusts.Role{

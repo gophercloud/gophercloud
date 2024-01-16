@@ -193,14 +193,16 @@ const ListUserAccessTokenRoleResponse = `
 }
 `
 
-var tokenExpiresAt = time.Date(2013, time.September, 11, 06, 07, 51, 501805000, time.UTC)
-var UserAccessToken = oauth1.AccessToken{
-	ID:                "6be26a",
-	ConsumerID:        "7fea2d",
-	ProjectID:         "b9fca3",
-	AuthorizingUserID: "ce9e07",
-	ExpiresAt:         &tokenExpiresAt,
-}
+var (
+	tokenExpiresAt  = time.Date(2013, time.September, 11, 0o6, 0o7, 51, 501805000, time.UTC)
+	UserAccessToken = oauth1.AccessToken{
+		ID:                "6be26a",
+		ConsumerID:        "7fea2d",
+		ProjectID:         "b9fca3",
+		AuthorizingUserID: "ce9e07",
+		ExpiresAt:         &tokenExpiresAt,
+	}
+)
 
 var UserAccessTokenRole = oauth1.AccessTokenRole{
 	ID:       "5ad150",

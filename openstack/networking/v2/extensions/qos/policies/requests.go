@@ -165,7 +165,6 @@ func List(c *gophercloud.ServiceClient, opts PolicyListOptsBuilder) pagination.P
 	}
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return PolicyPage{pagination.LinkedPageBase{PageResult: r}}
-
 	})
 }
 

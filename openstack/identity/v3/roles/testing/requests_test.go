@@ -152,7 +152,7 @@ func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListRoleAssignmentsWithNamesSuccessfully(t)
 
-	var includeNames = true
+	includeNames := true
 	listOpts := roles.ListAssignmentsOpts{
 		IncludeNames: &includeNames,
 	}
@@ -176,7 +176,7 @@ func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListRoleAssignmentsWithSubtreeSuccessfully(t)
 
-	var includeSubtree = true
+	includeSubtree := true
 	listOpts := roles.ListAssignmentsOpts{
 		IncludeSubtree: &includeSubtree,
 	}

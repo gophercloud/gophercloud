@@ -190,7 +190,6 @@ func TestShareNetworkListPagination(t *testing.T) {
 	if count < 2 {
 		t.Fatal("Expected to get at least 2 pages")
 	}
-
 }
 
 func TestShareNetworkAddRemoveSecurityService(t *testing.T) {

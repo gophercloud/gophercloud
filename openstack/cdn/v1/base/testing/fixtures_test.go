@@ -38,7 +38,6 @@ func HandleGetSuccessfully(t *testing.T) {
         }
     }
     `)
-
 	})
 }
 

@@ -52,5 +52,4 @@ func TestDatabases(t *testing.T) {
 	}
 
 	defer DeleteDatabase(t, client, instance.ID, allDatabases[0].Name)
-
 }

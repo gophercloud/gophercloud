@@ -41,12 +41,14 @@ const GetOutput = `
 `
 
 // FirstNetwork is the first result in ListOutput.
-var nilTime time.Time
-var FirstNetwork = tenantnetworks.Network{
-	CIDR: "10.0.0.0/29",
-	ID:   "20c8acc0-f747-4d71-a389-46d078ebf047",
-	Name: "mynet_0",
-}
+var (
+	nilTime      time.Time
+	FirstNetwork = tenantnetworks.Network{
+		CIDR: "10.0.0.0/29",
+		ID:   "20c8acc0-f747-4d71-a389-46d078ebf047",
+		Name: "mynet_0",
+	}
+)
 
 // SecondNetwork is the second result in ListOutput.
 var SecondNetwork = tenantnetworks.Network{

@@ -71,7 +71,6 @@ func TestQoS(t *testing.T) {
 	})
 
 	th.AssertNoErr(t, err)
-
 }
 
 func TestQoSAssociations(t *testing.T) {

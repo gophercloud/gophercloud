@@ -76,7 +76,7 @@ func TestRegionsCRUD(t *testing.T) {
 	tools.PrintResource(t, region)
 	tools.PrintResource(t, region.Extra)
 
-	var description = ""
+	description := ""
 	updateOpts := regions.UpdateOpts{
 		Description: &description,
 		/*

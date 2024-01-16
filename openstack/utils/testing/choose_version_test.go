@@ -195,7 +195,6 @@ func TestChooseVersion(t *testing.T) {
 		IdentityEndpoint: "",
 	}
 	v, endpoint, err := utils.ChooseVersion(c, []*utils.Version{v2, v3})
-
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
 	}

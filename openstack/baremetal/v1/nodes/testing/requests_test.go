@@ -168,7 +168,6 @@ func TestUpdateRequiredOp(t *testing.T) {
 	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
-
 }
 
 func TestUpdateRequiredPath(t *testing.T) {

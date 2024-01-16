@@ -2,8 +2,10 @@ package clusters
 
 import "github.com/gophercloud/gophercloud"
 
-var apiVersion = "v1"
-var apiName = "clusters"
+var (
+	apiVersion = "v1"
+	apiName    = "clusters"
+)
 
 func commonURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(apiVersion, apiName)

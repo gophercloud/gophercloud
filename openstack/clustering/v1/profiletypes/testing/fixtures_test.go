@@ -10,8 +10,9 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const ProfileTypeRequestID = "req-7328d1b0-9945-456f-b2cd-5166b77d14a8"
-const ListResponse = `
+const (
+	ProfileTypeRequestID = "req-7328d1b0-9945-456f-b2cd-5166b77d14a8"
+	ListResponse         = `
 {
 	"profile_types": [
 		{
@@ -75,6 +76,7 @@ const ListResponse = `
 	]
 }
 `
+)
 
 const GetResponse1 = `
 {

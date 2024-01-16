@@ -307,6 +307,7 @@ const SubnetCreateWithDefaultGatewayResponse = `
     }
 }
 `
+
 const SubnetCreateWithIPv6RaAddressModeRequest = `
 {
     "subnet": {
@@ -319,6 +320,7 @@ const SubnetCreateWithIPv6RaAddressModeRequest = `
     }
 }
 `
+
 const SubnetCreateWithIPv6RaAddressModeResponse = `
 {
     "subnet": {

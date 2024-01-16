@@ -27,8 +27,8 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 
 	tools.PrintResource(t, group)
 
-	var name = "Update group"
-	var description = ""
+	name := "Update group"
+	description := ""
 	updateOpts := groups.UpdateOpts{
 		Name:        name,
 		Description: &description,

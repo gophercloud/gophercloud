@@ -161,7 +161,7 @@ func TestListDetail(t *testing.T) {
 			Status:           "available",
 			State:            "out_of_sync",
 			CreatedAt:        time.Date(2023, time.May, 26, 11, 59, 38, 313089000, time.UTC),
-			UpdatedAt:        time.Date(2023, time.May, 26, 12, 00, 04, 321081000, time.UTC),
+			UpdatedAt:        time.Date(2023, time.May, 26, 12, 0o0, 0o4, 321081000, time.UTC),
 		},
 		{
 			AvailabilityZone: "zone-1",
@@ -172,7 +172,7 @@ func TestListDetail(t *testing.T) {
 			Status:           "available",
 			State:            "in_sync",
 			CreatedAt:        time.Date(2023, time.May, 26, 12, 32, 45, 751834000, time.UTC),
-			UpdatedAt:        time.Date(2023, time.May, 26, 12, 36, 04, 110328000, time.UTC),
+			UpdatedAt:        time.Date(2023, time.May, 26, 12, 36, 0o4, 110328000, time.UTC),
 		},
 	}
 

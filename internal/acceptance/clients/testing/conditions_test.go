@@ -32,7 +32,6 @@ func TestIsCurrentAbove(t *testing.T) {
 				t.Errorf("got %v want %v", got, tt.Result)
 			}
 		})
-
 	}
 }
 
@@ -60,6 +59,5 @@ func TestIsCurrentBelow(t *testing.T) {
 				t.Errorf("got %v want %v", got, tt.Result)
 			}
 		})
-
 	}
 }

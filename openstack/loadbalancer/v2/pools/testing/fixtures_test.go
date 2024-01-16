@@ -308,7 +308,7 @@ var (
 		Weight:             10,
 		ProtocolPort:       80,
 		ProvisioningStatus: "ACTIVE",
-		CreatedAt:          time.Date(2018, 8, 23, 20, 05, 21, 0, time.UTC),
+		CreatedAt:          time.Date(2018, 8, 23, 20, 0o5, 21, 0, time.UTC),
 		UpdatedAt:          time.Date(2018, 8, 23, 21, 22, 53, 0, time.UTC),
 		OperatingStatus:    "ONLINE",
 		Backup:             false,

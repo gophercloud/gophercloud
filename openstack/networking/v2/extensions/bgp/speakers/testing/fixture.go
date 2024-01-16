@@ -36,8 +36,10 @@ var BGPSpeaker1 = speakers.BGPSpeaker{
 	IPVersion:                     4,
 	LocalAS:                       56789,
 	Networks:                      []string{"acdc6339-7d2d-411f-82bb-e6cc3ad9eb9f"},
-	Peers: []string{"afacc0e8-6b66-44e4-be53-a1ef16033ceb",
-		"acd7c4a1-e243-4fe5-80f9-eba8f143ac1d"},
+	Peers: []string{
+		"afacc0e8-6b66-44e4-be53-a1ef16033ceb",
+		"acd7c4a1-e243-4fe5-80f9-eba8f143ac1d",
+	},
 }
 
 const GetBGPSpeakerResult = `
@@ -61,6 +63,7 @@ const GetBGPSpeakerResult = `
   }
 }
 `
+
 const CreateRequest = `
 {
   "bgp_speaker": {

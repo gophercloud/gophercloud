@@ -93,8 +93,8 @@ func TestUpdateLimit(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateLimitSuccessfully(t)
 
-	var description = "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
-	var resourceLimit = 5
+	description := "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
+	resourceLimit := 5
 	updateOpts := limits.UpdateOpts{
 		Description:   &description,
 		ResourceLimit: &resourceLimit,

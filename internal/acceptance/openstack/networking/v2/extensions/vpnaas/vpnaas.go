@@ -194,7 +194,6 @@ func DeleteEndpointGroup(t *testing.T, client *gophercloud.ServiceClient, epGrou
 	}
 
 	t.Logf("Deleted endpoint group: %s", epGroupID)
-
 }
 
 // CreateEndpointGroupWithSubnet will create an endpoint group with a random name.

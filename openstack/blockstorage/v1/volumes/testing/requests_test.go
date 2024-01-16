@@ -70,7 +70,6 @@ func TestListAll(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, expected, actual)
-
 }
 
 func TestGet(t *testing.T) {
@@ -97,7 +96,7 @@ func TestGet(t *testing.T) {
 		},
 		AvailabilityZone: "us-east1",
 		Bootable:         "false",
-		CreatedAt:        time.Date(2012, 2, 14, 20, 53, 07, 0, time.UTC),
+		CreatedAt:        time.Date(2012, 2, 14, 20, 53, 0o7, 0, time.UTC),
 		Description:      "Another volume.",
 		VolumeType:       "289da7f8-6440-407c-9fb4-7db01ec49164",
 		SnapshotID:       "",
@@ -145,7 +144,7 @@ func TestUpdate(t *testing.T) {
 
 	MockUpdateResponse(t)
 
-	var name = "vol-002"
+	name := "vol-002"
 	options := volumes.UpdateOpts{Name: &name}
 	v, err := volumes.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)

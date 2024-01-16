@@ -12,8 +12,10 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-var Timestamp1, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
-var Timestamp2, _ = time.Parse(time.RFC3339, "2018-06-26T07:59:17Z")
+var (
+	Timestamp1, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
+	Timestamp2, _ = time.Parse(time.RFC3339, "2018-06-26T07:59:17Z")
+)
 
 // FindExpected represents the expected object from a Find request.
 var FindExpected = []stackevents.Event{

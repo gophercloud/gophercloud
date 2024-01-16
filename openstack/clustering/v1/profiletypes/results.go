@@ -15,8 +15,10 @@ type GetResult struct {
 	commonResult
 }
 
-type Schema map[string]interface{}
-type SupportStatus map[string]interface{}
+type (
+	Schema        map[string]interface{}
+	SupportStatus map[string]interface{}
+)
 
 type ProfileType struct {
 	Name          string                     `json:"name"`

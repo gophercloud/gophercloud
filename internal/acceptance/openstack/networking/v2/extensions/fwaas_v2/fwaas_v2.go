@@ -142,7 +142,6 @@ func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) 
 // CreateGroup will create a Firewall Group. An error will be returned if the
 // firewall group could not be created.
 func CreateGroup(t *testing.T, client *gophercloud.ServiceClient) (*groups.Group, error) {
-
 	groupName := tools.RandomString("TESTACC-", 8)
 	description := tools.RandomString("TESTACC-", 8)
 	adminStateUp := true

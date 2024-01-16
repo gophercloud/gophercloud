@@ -240,7 +240,7 @@ func TestPortsDontAlterSecurityGroups(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Update the port again
-	var name = "some_port"
+	name := "some_port"
 	updateOpts = ports.UpdateOpts{
 		Name: &name,
 	}
@@ -357,7 +357,7 @@ func TestPortsDontUpdateAllowedAddressPairs(t *testing.T) {
 	tools.PrintResource(t, newPort)
 
 	// Remove the address pair
-	var name = "some_port"
+	name := "some_port"
 	updateOpts = ports.UpdateOpts{
 		Name: &name,
 	}

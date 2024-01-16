@@ -246,10 +246,12 @@ const PolicyBadValidateBody = `
 }
 `
 
-const PolicyDeleteRequestID = "req-7328d1b0-9945-456f-b2cd-5166b77d14a8"
-const PolicyIDtoUpdate = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
-const PolicyIDtoGet = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
-const PolicyIDtoDelete = "1"
+const (
+	PolicyDeleteRequestID = "req-7328d1b0-9945-456f-b2cd-5166b77d14a8"
+	PolicyIDtoUpdate      = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+	PolicyIDtoGet         = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+	PolicyIDtoDelete      = "1"
+)
 
 var ExpectedPolicy1 = policies.Policy{
 	CreatedAt: time.Date(2018, 4, 2, 21, 43, 30, 0, time.UTC),

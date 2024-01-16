@@ -5,12 +5,14 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-type TransformProtocol string
-type AuthAlgorithm string
-type EncapsulationMode string
-type EncryptionAlgorithm string
-type PFS string
-type Unit string
+type (
+	TransformProtocol   string
+	AuthAlgorithm       string
+	EncapsulationMode   string
+	EncryptionAlgorithm string
+	PFS                 string
+	Unit                string
+)
 
 const (
 	TransformProtocolESP       TransformProtocol   = "esp"
@@ -78,7 +80,7 @@ type CreateOpts struct {
 	// Default is ESP.
 	TransformProtocol TransformProtocol `json:"transform_protocol,omitempty"`
 
-	//Lifetime is the lifetime of the security association
+	// Lifetime is the lifetime of the security association
 	Lifetime *LifetimeCreateOpts `json:"lifetime,omitempty"`
 }
 

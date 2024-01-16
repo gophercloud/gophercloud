@@ -68,7 +68,6 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 
 	t.Logf("Successfully unassigned inherited role %s to a user %s on a project %s",
 		role.Name, user.Name, project.Name)
-
 }
 
 func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
@@ -129,7 +128,6 @@ func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
 
 	t.Logf("Successfully unassigned inherited role %s to a user %s on a domain %s",
 		role.Name, user.Name, domain.Name)
-
 }
 
 func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
@@ -193,7 +191,6 @@ func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
 
 	t.Logf("Successfully unassigned inherited role %s to a group %s on a domain %s",
 		role.Name, group.Name, domain.Name)
-
 }
 
 func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
@@ -252,5 +249,4 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 
 	t.Logf("Successfully unassigned inherited role %s to a group %s on a project %s",
 		role.Name, group.Name, project.Name)
-
 }

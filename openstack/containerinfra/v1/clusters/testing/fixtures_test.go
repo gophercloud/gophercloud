@@ -12,9 +12,11 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const clusterUUID = "746e779a-751a-456b-a3e9-c883d734946f"
-const clusterUUID2 = "846e779a-751a-456b-a3e9-c883d734946f"
-const requestUUID = "req-781e9bdc-4163-46eb-91c9-786c53188bbb"
+const (
+	clusterUUID  = "746e779a-751a-456b-a3e9-c883d734946f"
+	clusterUUID2 = "846e779a-751a-456b-a3e9-c883d734946f"
+	requestUUID  = "req-781e9bdc-4163-46eb-91c9-786c53188bbb"
+)
 
 var ClusterCreateResponse = fmt.Sprintf(`
 										{

@@ -315,8 +315,8 @@ func TestUpdate(t *testing.T) {
     `)
 	})
 
-	var name = "fw"
-	var description = "updated fw"
+	name := "fw"
+	description := "updated fw"
 	options := firewalls.UpdateOpts{
 		Name:         &name,
 		Description:  &description,

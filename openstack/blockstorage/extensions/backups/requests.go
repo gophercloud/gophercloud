@@ -19,7 +19,7 @@ type CreateOpts struct {
 	VolumeID string `json:"volume_id" required:"true"`
 
 	// Force will force the creation of a backup regardless of the
-	//volume's status.
+	// volume's status.
 	Force bool `json:"force,omitempty"`
 
 	// Name is the name of the backup.

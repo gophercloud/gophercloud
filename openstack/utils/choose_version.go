@@ -67,7 +67,6 @@ func ChooseVersion(client *gophercloud.ProviderClient, recognized []*Version) (*
 		JSONResponse: &resp,
 		OkCodes:      []int{200, 300},
 	})
-
 	if err != nil {
 		return nil, "", err
 	}
@@ -140,7 +139,6 @@ func GetSupportedMicroversions(client *gophercloud.ServiceClient) (SupportedMicr
 	_, err := client.Get(client.Endpoint, &resp, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 300},
 	})
-
 	if err != nil {
 		return supportedMicroversions, err
 	}

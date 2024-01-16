@@ -32,5 +32,4 @@ func TestHttpBasic(t *testing.T) {
 	})
 	_ = errTest2
 	th.AssertEquals(t, "IronicEndpoint is required", err.Error())
-
 }

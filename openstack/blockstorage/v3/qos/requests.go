@@ -109,7 +109,7 @@ func Delete(client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder
 type ListOpts struct {
 	// Sort is Comma-separated list of sort keys and optional sort
 	// directions in the form of < key > [: < direction > ]. A valid
-	//direction is asc (ascending) or desc (descending).
+	// direction is asc (ascending) or desc (descending).
 	Sort string `q:"sort"`
 
 	// Marker and Limit control paging.

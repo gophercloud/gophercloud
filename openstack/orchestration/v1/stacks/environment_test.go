@@ -7,7 +7,6 @@ import (
 )
 
 func TestEnvironmentValidation(t *testing.T) {
-
 	environmentJSON := new(Environment)
 	environmentJSON.Bin = []byte(ValidJSONEnvironment)
 	err := environmentJSON.Validate()
@@ -47,7 +46,7 @@ func TestEnvironmentParsing(t *testing.T) {
 }
 
 func TestIgnoreIfEnvironment(t *testing.T) {
-	var keyValueTests = []struct {
+	keyValueTests := []struct {
 		key   string
 		value interface{}
 		out   bool

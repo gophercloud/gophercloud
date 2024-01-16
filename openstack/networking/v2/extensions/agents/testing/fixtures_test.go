@@ -83,7 +83,7 @@ var Agent = agents.Agent{
 	},
 	CreatedAt:          time.Date(2017, 7, 26, 23, 2, 5, 0, time.UTC),
 	StartedAt:          time.Date(2018, 6, 26, 21, 46, 20, 0, time.UTC),
-	HeartbeatTimestamp: time.Date(2019, 1, 9, 11, 43, 01, 0, time.UTC),
+	HeartbeatTimestamp: time.Date(2019, 1, 9, 11, 43, 0o1, 0, time.UTC),
 	Host:               "compute3",
 	Topic:              "N/A",
 }
@@ -123,7 +123,7 @@ var Agent2 = agents.Agent{
 			"qos",
 		},
 	},
-	CreatedAt:          time.Date(2017, 1, 22, 14, 00, 50, 0, time.UTC),
+	CreatedAt:          time.Date(2017, 1, 22, 14, 0o0, 50, 0, time.UTC),
 	StartedAt:          time.Date(2018, 11, 6, 12, 9, 17, 0, time.UTC),
 	HeartbeatTimestamp: time.Date(2019, 1, 9, 10, 28, 50, 0, time.UTC),
 	Host:               "compute2",
@@ -255,6 +255,7 @@ const ListBGPSpeakersResult = `
   ]
 }
 `
+
 const ScheduleBGPSpeakerRequest = `
 {
     "bgp_speaker_id": "8edb2c68-0654-49a9-b3fe-030f92e3ddf6"

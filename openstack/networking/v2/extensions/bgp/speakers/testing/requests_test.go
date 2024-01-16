@@ -31,7 +31,6 @@ func TestList(t *testing.T) {
 		func(page pagination.Page) (bool, error) {
 			count++
 			actual, err := speakers.ExtractBGPSpeakers(page)
-
 			if err != nil {
 				t.Errorf("Failed to extract BGP speakers: %v", err)
 				return false, nil
@@ -213,16 +212,15 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 		func(page pagination.Page) (bool, error) {
 			count++
 			actual, err := speakers.ExtractAdvertisedRoutes(page)
-
 			if err != nil {
 				t.Errorf("Failed to extract Advertised route: %v", err)
 				return false, nil
 			}
 
 			expected := []speakers.AdvertisedRoute{
-				speakers.AdvertisedRoute{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
-				speakers.AdvertisedRoute{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
-				speakers.AdvertisedRoute{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
+				{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
+				{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
+				{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
 			}
 			th.CheckDeepEquals(t, count, 1)
 			th.CheckDeepEquals(t, expected, actual)

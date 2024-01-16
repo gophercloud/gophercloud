@@ -48,7 +48,7 @@ func TestUserAgent(t *testing.T) {
 }
 
 func TestConcurrentReauth(t *testing.T) {
-	var info = struct {
+	info := struct {
 		numreauths  int
 		failedAuths int
 		mut         *sync.RWMutex
@@ -138,7 +138,7 @@ func TestConcurrentReauth(t *testing.T) {
 }
 
 func TestReauthEndLoop(t *testing.T) {
-	var info = struct {
+	info := struct {
 		reauthAttempts   int
 		maxReauthReached bool
 		mut              *sync.RWMutex
@@ -217,7 +217,7 @@ func TestReauthEndLoop(t *testing.T) {
 }
 
 func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
-	var info = struct {
+	info := struct {
 		numreauths  int
 		failedAuths int
 		reauthCh    chan struct{}
@@ -335,7 +335,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 		reauthCounterMutex.Lock()
 		reauthCounter++
 		reauthCounterMutex.Unlock()
-		//The actual token value does not matter, the endpoint does not check it.
+		// The actual token value does not matter, the endpoint does not check it.
 		return nil
 	}
 
@@ -348,14 +348,14 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		requestCounterMutex.Lock()
 		requestCounter++
-		//avoid infinite loop
+		// avoid infinite loop
 		if requestCounter == 10 {
 			http.Error(w, "too many requests", http.StatusTooManyRequests)
 			return
 		}
 		requestCounterMutex.Unlock()
 
-		//always reply 401, even immediately after reauthenticate
+		// always reply 401, even immediately after reauthenticate
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 	})
 
@@ -400,7 +400,7 @@ func TestRequestConnectionReuse(t *testing.T) {
 	}))
 
 	// an amount of iterations
-	var iter = 10000
+	iter := 10000
 	// connections tracks an amount of connections made
 	var connections int64
 
@@ -428,7 +428,7 @@ func TestRequestConnectionClose(t *testing.T) {
 	}))
 
 	// an amount of iterations
-	var iter = 10
+	iter := 10
 	// connections tracks an amount of connections made
 	var connections int64
 
@@ -505,7 +505,7 @@ func TestRequestRetry(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "1")
 
-		//always reply 429
+		// always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
@@ -532,7 +532,7 @@ func TestRequestRetryHTTPDate(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", time.Now().Add(1*time.Second).UTC().Format(http.TimeFormat))
 
-		//always reply 429
+		// always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
@@ -559,7 +559,7 @@ func TestRequestRetryError(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "foo bar")
 
-		//always reply 429
+		// always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
@@ -584,7 +584,7 @@ func TestRequestRetrySuccess(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
-		//always reply 200
+		// always reply 200
 		http.Error(w, "retry later", http.StatusOK)
 	})
 
@@ -620,7 +620,7 @@ func TestRequestRetryContext(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "1")
 
-		//always reply 429
+		// always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 

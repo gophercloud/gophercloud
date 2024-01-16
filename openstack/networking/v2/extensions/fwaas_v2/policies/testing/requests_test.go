@@ -225,7 +225,7 @@ func TestInsertRuleWithInvalidParameters(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	//invalid opts, its not allowed to specify InsertBefore and InsertAfter together
+	// invalid opts, its not allowed to specify InsertBefore and InsertAfter together
 	options := policies.InsertRuleOpts{
 		ID:           "unknown",
 		InsertBefore: "1",
@@ -394,5 +394,4 @@ func TestRemoveRule(t *testing.T) {
 	policy, err := policies.RemoveRule(fake.ServiceClient(), "9fed8075-06ee-463f-83a6-d4118791b02f", "9fed8075-06ee-463f-83a6-d4118791b02f").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "9fed8075-06ee-463f-83a6-d4118791b02f", policy.ID)
-
 }

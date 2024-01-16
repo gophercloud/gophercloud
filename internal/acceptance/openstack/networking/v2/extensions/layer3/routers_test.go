@@ -124,7 +124,6 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	newRouter, err = routers.Update(client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, newRouter.GatewayInfo, routers.GatewayInfo{})
-
 }
 
 func TestLayer3RouterInterface(t *testing.T) {

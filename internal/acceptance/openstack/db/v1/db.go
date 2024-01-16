@@ -125,7 +125,8 @@ func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, instanceID, nam
 // WaitForInstanceState will poll an instance's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForInstanceStatus(
-	client *gophercloud.ServiceClient, instance *instances.Instance, status string) error {
+	client *gophercloud.ServiceClient, instance *instances.Instance, status string,
+) error {
 	return tools.WaitFor(func() (bool, error) {
 		latest, err := instances.Get(client, instance.ID).Extract()
 		if err != nil {

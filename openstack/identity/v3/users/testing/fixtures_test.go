@@ -242,45 +242,49 @@ const ListProjectsOutput = `
 `
 
 // FirstUser is the first user in the List request.
-var nilTime time.Time
-var FirstUser = users.User{
-	DomainID: "default",
-	Enabled:  true,
-	ID:       "2844b2a08be147a08ef58317d6471f1f",
-	Links: map[string]interface{}{
-		"self": "http://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f",
-	},
-	Name:              "glance",
-	PasswordExpiresAt: nilTime,
-	Description:       "some description",
-	Extra: map[string]interface{}{
-		"email": "glance@localhost",
-	},
-}
+var (
+	nilTime   time.Time
+	FirstUser = users.User{
+		DomainID: "default",
+		Enabled:  true,
+		ID:       "2844b2a08be147a08ef58317d6471f1f",
+		Links: map[string]interface{}{
+			"self": "http://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f",
+		},
+		Name:              "glance",
+		PasswordExpiresAt: nilTime,
+		Description:       "some description",
+		Extra: map[string]interface{}{
+			"email": "glance@localhost",
+		},
+	}
+)
 
 // SecondUser is the second user in the List request.
-var SecondUserPasswordExpiresAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2016-11-06T15:32:17.000000")
-var SecondUser = users.User{
-	DefaultProjectID: "263fd9",
-	DomainID:         "1789d1",
-	Enabled:          true,
-	ID:               "9fe1d3",
-	Links: map[string]interface{}{
-		"self": "https://example.com/identity/v3/users/9fe1d3",
-	},
-	Name:              "jsmith",
-	PasswordExpiresAt: SecondUserPasswordExpiresAt,
-	Extra: map[string]interface{}{
-		"email": "jsmith@example.com",
-	},
-	Options: map[string]interface{}{
-		"ignore_password_expiry": true,
-		"multi_factor_auth_rules": []interface{}{
-			[]string{"password", "totp"},
-			[]string{"password", "custom-auth-method"},
+var (
+	SecondUserPasswordExpiresAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2016-11-06T15:32:17.000000")
+	SecondUser                     = users.User{
+		DefaultProjectID: "263fd9",
+		DomainID:         "1789d1",
+		Enabled:          true,
+		ID:               "9fe1d3",
+		Links: map[string]interface{}{
+			"self": "https://example.com/identity/v3/users/9fe1d3",
 		},
-	},
-}
+		Name:              "jsmith",
+		PasswordExpiresAt: SecondUserPasswordExpiresAt,
+		Extra: map[string]interface{}{
+			"email": "jsmith@example.com",
+		},
+		Options: map[string]interface{}{
+			"ignore_password_expiry": true,
+			"multi_factor_auth_rules": []interface{}{
+				[]string{"password", "totp"},
+				[]string{"password", "custom-auth-method"},
+			},
+		},
+	}
+)
 
 var SecondUserNoOptions = users.User{
 	DefaultProjectID: "263fd9",

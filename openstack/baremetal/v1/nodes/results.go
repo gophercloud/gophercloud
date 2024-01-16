@@ -420,7 +420,6 @@ type NodeValidation struct {
 
 // A particular BIOS setting for a node in the OpenStack Bare Metal API.
 type BIOSSetting struct {
-
 	// Identifier for the BIOS setting.
 	Name string `json:"name"`
 

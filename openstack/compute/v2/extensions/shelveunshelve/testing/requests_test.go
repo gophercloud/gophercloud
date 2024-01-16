@@ -8,8 +8,10 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-const serverID = "{serverId}"
-const availabilityZone = "test-zone"
+const (
+	serverID         = "{serverId}"
+	availabilityZone = "test-zone"
+)
 
 func TestShelve(t *testing.T) {
 	th.SetupHTTP()

@@ -121,8 +121,8 @@ func TestUpdate(t *testing.T) {
 
 	MockUpdateResponse(t)
 
-	var name = "snapshot-002"
-	var description = "Daily backup 002"
+	name := "snapshot-002"
+	description := "Daily backup 002"
 	options := snapshots.UpdateOpts{Name: &name, Description: &description}
 	v, err := snapshots.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)

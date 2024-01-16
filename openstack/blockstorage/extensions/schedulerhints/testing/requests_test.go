@@ -9,7 +9,6 @@ import (
 )
 
 func TestCreateOpts(t *testing.T) {
-
 	base := volumes.CreateOpts{
 		Size: 10,
 		Name: "testvolume",

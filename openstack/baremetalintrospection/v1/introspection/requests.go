@@ -40,7 +40,7 @@ func ListIntrospections(client *gophercloud.ServiceClient, opts ListIntrospectio
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		var rpage = IntrospectionPage{pagination.LinkedPageBase{PageResult: r}}
+		rpage := IntrospectionPage{pagination.LinkedPageBase{PageResult: r}}
 		return rpage
 	})
 }

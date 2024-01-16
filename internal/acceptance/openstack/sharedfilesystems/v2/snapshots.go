@@ -93,7 +93,6 @@ func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, statu
 
 		return false, nil
 	})
-
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {

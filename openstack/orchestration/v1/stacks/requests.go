@@ -119,7 +119,7 @@ type AdoptOpts struct {
 	Timeout int `json:"timeout_mins,omitempty"`
 	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
-	//TemplateOpts *Template `json:"-" required:"true"`
+	// TemplateOpts *Template `json:"-" required:"true"`
 	// Enables or disables deletion of all stack resources when a stack
 	// creation fails. Default is true, meaning all resources are not deleted when
 	// stack creation fails.

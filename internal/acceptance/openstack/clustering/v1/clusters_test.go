@@ -446,7 +446,6 @@ func TestClustersCollectAttributes(t *testing.T) {
 	for _, attr := range attrs {
 		th.AssertEquals(t, attr.Value, "nova")
 	}
-
 }
 
 // Performs an operation on a cluster

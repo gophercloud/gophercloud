@@ -28,6 +28,7 @@ func TestProfileTypesList(t *testing.T) {
 		tools.PrintResource(t, profileType)
 	}
 }
+
 func TestProfileTypesOpsList(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)

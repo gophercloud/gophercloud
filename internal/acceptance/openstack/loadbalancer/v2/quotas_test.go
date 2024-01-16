@@ -37,7 +37,7 @@ func TestQuotasUpdate(t *testing.T) {
 	originalQuotas, err := quotas.Get(client, os.Getenv("OS_PROJECT_NAME")).Extract()
 	th.AssertNoErr(t, err)
 
-	var quotaUpdateOpts = quotas.UpdateOpts{
+	quotaUpdateOpts := quotas.UpdateOpts{
 		Loadbalancer:  gophercloud.IntToPointer(25),
 		Listener:      gophercloud.IntToPointer(45),
 		Member:        gophercloud.IntToPointer(205),
@@ -59,7 +59,7 @@ func TestQuotasUpdate(t *testing.T) {
 		log.Fatal("Original and New Loadbalancer Quotas are the same")
 	}
 
-	var restoredQuotaUpdate = quotas.UpdateOpts{
+	restoredQuotaUpdate := quotas.UpdateOpts{
 		Loadbalancer:  &originalQuotas.Loadbalancer,
 		Listener:      &originalQuotas.Listener,
 		Member:        &originalQuotas.Member,

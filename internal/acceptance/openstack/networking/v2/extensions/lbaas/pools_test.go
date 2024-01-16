@@ -118,5 +118,4 @@ func TestPoolsMonitors(t *testing.T) {
 	if res := pools.DisassociateMonitor(client, pool.ID, monitor.ID); res.Err != nil {
 		t.Fatalf("Unable to disassociate monitor from pool")
 	}
-
 }

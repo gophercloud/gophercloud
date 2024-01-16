@@ -195,35 +195,33 @@ const UpdatePortSecurityResponse = `
     }
 }`
 
-var createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
-var updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
-
 var (
-	Network1 = networks.Network{
-		Status:       "ACTIVE",
-		Subnets:      []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
-		Name:         "public",
-		AdminStateUp: true,
-		TenantID:     "4fd44f30292945e481c7b8a0c8908869",
-		CreatedAt:    createdTime,
-		UpdatedAt:    updatedTime,
-		Shared:       true,
-		ID:           "d32019d3-bc6e-4319-9c1d-6722fc136a22",
-	}
+	createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
+	updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
 )
 
-var (
-	Network2 = networks.Network{
-		Status:       "ACTIVE",
-		Subnets:      []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
-		Name:         "private",
-		AdminStateUp: true,
-		TenantID:     "26a7980765d0414dbc1fc1f88cdb7e6e",
-		CreatedAt:    createdTime,
-		UpdatedAt:    updatedTime,
-		Shared:       false,
-		ID:           "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
-	}
-)
+var Network1 = networks.Network{
+	Status:       "ACTIVE",
+	Subnets:      []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
+	Name:         "public",
+	AdminStateUp: true,
+	TenantID:     "4fd44f30292945e481c7b8a0c8908869",
+	CreatedAt:    createdTime,
+	UpdatedAt:    updatedTime,
+	Shared:       true,
+	ID:           "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+}
+
+var Network2 = networks.Network{
+	Status:       "ACTIVE",
+	Subnets:      []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
+	Name:         "private",
+	AdminStateUp: true,
+	TenantID:     "26a7980765d0414dbc1fc1f88cdb7e6e",
+	CreatedAt:    createdTime,
+	UpdatedAt:    updatedTime,
+	Shared:       false,
+	ID:           "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+}
 
 var ExpectedNetworkSlice = []networks.Network{Network1, Network2}

@@ -105,7 +105,7 @@ func TestCreate(t *testing.T) {
 		fmt.Fprintf(w, SubnetCreateResult)
 	})
 
-	var gatewayIP = "192.168.199.1"
+	gatewayIP := "192.168.199.1"
 	opts := subnets.CreateOpts{
 		NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22",
 		IPVersion: 4,
@@ -164,7 +164,7 @@ func TestCreateNoGateway(t *testing.T) {
 		fmt.Fprintf(w, SubnetCreateWithNoGatewayResponse)
 	})
 
-	var noGateway = ""
+	noGateway := ""
 	opts := subnets.CreateOpts{
 		NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a23",
 		IPVersion: 4,
@@ -264,7 +264,7 @@ func TestCreateIPv6RaAddressMode(t *testing.T) {
 		fmt.Fprintf(w, SubnetCreateWithIPv6RaAddressModeResponse)
 	})
 
-	var gatewayIP = "2001:db8:0:a::1"
+	gatewayIP := "2001:db8:0:a::1"
 	opts := subnets.CreateOpts{
 		NetworkID:       "d32019d3-bc6e-4319-9c1d-6722fc136a22",
 		IPVersion:       6,
@@ -452,7 +452,7 @@ func TestUpdateGateway(t *testing.T) {
 		fmt.Fprintf(w, SubnetUpdateGatewayResponse)
 	})
 
-	var gatewayIP = "10.0.0.1"
+	gatewayIP := "10.0.0.1"
 	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
 		Name:      &name,
@@ -483,7 +483,7 @@ func TestUpdateRemoveGateway(t *testing.T) {
 		fmt.Fprintf(w, SubnetUpdateRemoveGatewayResponse)
 	})
 
-	var noGateway = ""
+	noGateway := ""
 	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
 		Name:      &name,

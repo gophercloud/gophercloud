@@ -90,40 +90,42 @@ var expectedCreatedNodeGroup = nodegroups.NodeGroup{
 	Role:         "worker",
 }
 
-var maxNodesThree = 3
-var expectedUpdatedNodeGroup = nodegroups.NodeGroup{
-	ID:        10,
-	UUID:      nodeGroup2UUID,
-	Name:      "default-worker",
-	ClusterID: clusterUUID,
-	ProjectID: "e91d02d561374de6b49960a27b3f08d0",
-	Labels: map[string]string{
-		"kube_tag": "v1.14.7",
-	},
-	Links: []gophercloud.Link{
-		{
-			Href: "http://123.456.789.0:9511/v1/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/2457febf-520f-4be3-abb9-96b892d7b5a0",
-			Rel:  "self",
+var (
+	maxNodesThree            = 3
+	expectedUpdatedNodeGroup = nodegroups.NodeGroup{
+		ID:        10,
+		UUID:      nodeGroup2UUID,
+		Name:      "default-worker",
+		ClusterID: clusterUUID,
+		ProjectID: "e91d02d561374de6b49960a27b3f08d0",
+		Labels: map[string]string{
+			"kube_tag": "v1.14.7",
 		},
-		{
-			Href: "http://123.456.789.0:9511/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/2457febf-520f-4be3-abb9-96b892d7b5a0",
-			Rel:  "bookmark",
+		Links: []gophercloud.Link{
+			{
+				Href: "http://123.456.789.0:9511/v1/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/2457febf-520f-4be3-abb9-96b892d7b5a0",
+				Rel:  "self",
+			},
+			{
+				Href: "http://123.456.789.0:9511/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/2457febf-520f-4be3-abb9-96b892d7b5a0",
+				Rel:  "bookmark",
+			},
 		},
-	},
-	FlavorID:      "m1.small",
-	ImageID:       "Fedora-AtomicHost-29-20190820.0.x86_64",
-	NodeAddresses: []string{"172.24.4.17"},
-	NodeCount:     1,
-	MinNodeCount:  1,
-	MaxNodeCount:  &maxNodesThree,
-	IsDefault:     true,
-	Role:          "worker",
-	StackID:       "3cd55bb0-1115-4838-8eca-cefc13f7a21b",
-	Status:        "UPDATE_COMPLETE",
-	StatusReason:  "Stack UPDATE completed successfully",
-	CreatedAt:     nodeGroup2Created,
-	UpdatedAt:     nodeGroup2Updated,
-}
+		FlavorID:      "m1.small",
+		ImageID:       "Fedora-AtomicHost-29-20190820.0.x86_64",
+		NodeAddresses: []string{"172.24.4.17"},
+		NodeCount:     1,
+		MinNodeCount:  1,
+		MaxNodeCount:  &maxNodesThree,
+		IsDefault:     true,
+		Role:          "worker",
+		StackID:       "3cd55bb0-1115-4838-8eca-cefc13f7a21b",
+		Status:        "UPDATE_COMPLETE",
+		StatusReason:  "Stack UPDATE completed successfully",
+		CreatedAt:     nodeGroup2Created,
+		UpdatedAt:     nodeGroup2Updated,
+	}
+)
 
 func handleGetNodeGroupSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup1UUID, func(w http.ResponseWriter, r *http.Request) {

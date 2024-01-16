@@ -54,5 +54,4 @@ func HandleListExtensionsSuccessfully(t *testing.T) {
 }
     `)
 	})
-
 }

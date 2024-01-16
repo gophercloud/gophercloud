@@ -111,7 +111,7 @@ func TestUpdateGroup(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateGroupSuccessfully(t)
 
-	var description = "L2 Support Team"
+	description := "L2 Support Team"
 	updateOpts := groups.UpdateOpts{
 		Description: &description,
 		Extra: map[string]interface{}{

@@ -53,7 +53,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	}
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return RBACPolicyPage{pagination.LinkedPageBase{PageResult: r}}
-
 	})
 }
 
