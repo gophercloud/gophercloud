@@ -251,8 +251,10 @@ const GetLoadbalancerStatsBody = `
 }
 `
 
-var createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
-var updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+var (
+	createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
+	updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+)
 
 var (
 	LoadbalancerWeb = loadbalancers.LoadBalancer{
@@ -294,7 +296,8 @@ var (
 				SubnetID:  "0d4f6a08-60b7-44ab-8903-f7d76ec54095",
 				IPAddress: "192.168.10.10",
 			},
-		}}
+		},
+	}
 	LoadbalancerUpdated = loadbalancers.LoadBalancer{
 		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
 		ProjectID:          "54030507-44f7-473c-9342-b4d14a95f692",

@@ -394,7 +394,7 @@ func CreateSubnetWithDefaultGateway(t *testing.T, client *gophercloud.ServiceCli
 // specified Network ID.  An error will be returned if the subnet could not be
 // created.
 func CreateSubnetWithNoGateway(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*subnets.Subnet, error) {
-	var noGateway = ""
+	noGateway := ""
 	subnetName := tools.RandomString("TESTACC-", 8)
 	subnetOctet := tools.RandomInt(1, 250)
 	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
