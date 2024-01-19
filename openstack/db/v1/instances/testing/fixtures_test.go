@@ -104,6 +104,7 @@ var instanceGet = `
 var createReq = `
 {
 	"instance": {
+		"availability_zone": "us-east1",
 		"databases": [
 			{
 				"character_set": "utf8",
