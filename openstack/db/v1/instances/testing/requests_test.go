@@ -36,7 +36,7 @@ func TestCreate(t *testing.T) {
 		Size:       2,
 		VolumeType: "ssd",
 		Access: instances.AccessOpts{
-			IsPublic: true,
+			IsPublic:    true,
 			AllowedCIDR: []string{"202.78.240.0/24"},
 		},
 	}
