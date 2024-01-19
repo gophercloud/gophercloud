@@ -49,11 +49,11 @@ func (opts NetworkOpts) ToMap() (map[string]interface{}, error) {
 type AccessOpts struct {
 	// Whether the database service is exposed to the public.
 	// Optional.
-	IsPublic       bool     `json:"is_public,omitempty"`
+	IsPublic bool `json:"is_public,omitempty"`
 	// A list of IPv4, IPv6 or mix of both CIDRs that restrict access to the database service.
 	// 0.0.0.0/0 is used by default if this parameter is not provided.
 	// Optional.
-	AllowedCIDR    []string `json:"allowed_cidrs,omitempty"`
+	AllowedCIDR []string `json:"allowed_cidrs,omitempty"`
 }
 
 // ToMap converts a AccessOpts to a map[string]string (for a request body).
