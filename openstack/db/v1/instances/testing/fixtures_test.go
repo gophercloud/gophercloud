@@ -49,10 +49,15 @@ var instance = `
   "updated": "` + timestamp + `",
   "volume": {
     "size": 2
+  },
+  "access": {
+	"is_public": true,
+	"allowed_cidrs": ["202.78.240.0/24"]
   }
 }
 `
 
+// Ref: https://github.com/openstack/trove/blob/40fdb7b44fb33e022b77ba8df63fde2565c70dea/api-ref/source/samples/instance-create-response.json
 var instanceGet = `
 {
   "created": "` + timestamp + `",
@@ -88,6 +93,10 @@ var instanceGet = `
     "size": 1,
     "used": 0.12
   },
+  "access": {
+	"is_public": true,
+	"allowed_cidrs": ["202.78.240.0/24"]
+  },
   "addresses": [
     {
       "address": "10.1.0.62",
@@ -101,6 +110,7 @@ var instanceGet = `
 }
 `
 
+// Ref: https://github.com/openstack/trove/blob/40fdb7b44fb33e022b77ba8df63fde2565c70dea/api-ref/source/samples/instance-create-request.json
 var createReq = `
 {
 	"instance": {
@@ -131,6 +141,10 @@ var createReq = `
 		"volume": {
 			"size": 2,
 			"type": "ssd"
+		},
+		"access": {
+			"is_public": true,
+			"allowed_cidrs": ["202.78.240.0/24"]
 		}
 	}
 }
@@ -226,6 +240,10 @@ var expectedInstance = instances.Instance{
 		Type:    "mysql",
 		Version: "5.6",
 	},
+	Access: &instances.AccessOpts{
+		IsPublic:    true,
+		AllowedCIDR: []string{"202.78.240.0/24"},
+	},
 }
 
 var expectedGetInstance = instances.Instance{
@@ -252,6 +270,10 @@ var expectedGetInstance = instances.Instance{
 	Addresses: []instances.Address{
 		{Type: "private", Address: "10.1.0.62"},
 		{Type: "public", Address: "172.24.5.114"},
+	},
+	Access: &instances.AccessOpts{
+		IsPublic:    true,
+		AllowedCIDR: []string{"202.78.240.0/24"},
 	},
 }
 
