@@ -86,7 +86,7 @@ type CreateOpts struct {
 	// Networks dictates how this server will be attached to available networks.
 	Networks []NetworkOpts
 	// A access object defines how the database service is exposed. Optional.
-	Access *AccessOpts `json:"access,omitempty"`
+	Access AccessOpts `json:"access,omitempty"`
 }
 
 // ToInstanceCreateMap will render a JSON map.
@@ -148,7 +148,8 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		instance["nics"] = networks
 	}
 
-	if opts.Access != nil {
+	// Add check for opts.Access
+	if opts.Access.IsPublic || len(opts.Access.AllowedCIDR) > 0 {
 		access, err := opts.Access.ToMap()
 		if err != nil {
 			return nil, err

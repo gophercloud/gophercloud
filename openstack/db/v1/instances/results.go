@@ -114,7 +114,7 @@ type Instance struct {
 	Addresses []Address
 
 	// Controls database service exposing.
-	Access *AccessOpts
+	Access AccessOpts
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {

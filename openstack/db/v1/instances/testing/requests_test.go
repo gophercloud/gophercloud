@@ -35,7 +35,7 @@ func TestCreate(t *testing.T) {
 		},
 		Size:       2,
 		VolumeType: "ssd",
-		Access: &instances.AccessOpts{
+		Access: instances.AccessOpts{
 			IsPublic: true,
 			AllowedCIDR: []string{"202.78.240.0/24"},
 		},
@@ -71,7 +71,7 @@ func TestCreateWithFault(t *testing.T) {
 		},
 		Size:       2,
 		VolumeType: "ssd",
-		Access: &instances.AccessOpts{
+		Access: instances.AccessOpts{
 			IsPublic:    true,
 			AllowedCIDR: []string{"202.78.240.0/24"},
 		},

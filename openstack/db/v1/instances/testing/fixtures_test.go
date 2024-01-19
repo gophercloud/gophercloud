@@ -240,7 +240,7 @@ var expectedInstance = instances.Instance{
 		Type:    "mysql",
 		Version: "5.6",
 	},
-	Access: &instances.AccessOpts{
+	Access: instances.AccessOpts{
 		IsPublic:    true,
 		AllowedCIDR: []string{"202.78.240.0/24"},
 	},
@@ -271,7 +271,7 @@ var expectedGetInstance = instances.Instance{
 		{Type: "private", Address: "10.1.0.62"},
 		{Type: "public", Address: "172.24.5.114"},
 	},
-	Access: &instances.AccessOpts{
+	Access: instances.AccessOpts{
 		IsPublic:    true,
 		AllowedCIDR: []string{"202.78.240.0/24"},
 	},
