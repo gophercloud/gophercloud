@@ -116,6 +116,7 @@ var createReq = `
 			}
 		],
 		"flavorRef": "1",
+		"replica_of": "master-server-to-replicate-of"
 		"name": "json_rack_instance",
 		"users": [
 			{

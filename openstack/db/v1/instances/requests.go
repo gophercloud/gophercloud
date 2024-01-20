@@ -52,6 +52,8 @@ type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
 	// reference as specified in the response from the List() call. Required.
 	FlavorRef string
+	// ID or name of an existing instance to replicate from.
+	ReplicaOf string `json:"replica_of,omitempty"`
 	// Specifies the volume size in gigabytes (GB). The value must be between 1
 	// and 300. Required.
 	Size int
@@ -87,6 +89,10 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	instance := map[string]interface{}{
 		"flavorRef": opts.FlavorRef,
+	}
+
+	if opts.ReplicaOf != "" {
+		instance["replica_of"] = opts.ReplicaOf
 	}
 
 	if opts.AvailabilityZone != "" {

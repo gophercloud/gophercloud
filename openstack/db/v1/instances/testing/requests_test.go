@@ -20,6 +20,7 @@ func TestCreate(t *testing.T) {
 		AvailabilityZone: "us-east1",
 		Name:             "json_rack_instance",
 		FlavorRef:        "1",
+		ReplicaOf:        "master-server-to-replicate-of"
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			{Name: "nextround"},
@@ -52,6 +53,7 @@ func TestCreateWithFault(t *testing.T) {
 		AvailabilityZone: "us-east1",
 		Name:             "json_rack_instance",
 		FlavorRef:        "1",
+		ReplicaOf:        "master-server-to-replicate-of"
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			{Name: "nextround"},
