@@ -20,7 +20,6 @@ func TestCreate(t *testing.T) {
 		AvailabilityZone: "us-east1",
 		Name:             "json_rack_instance",
 		FlavorRef:        "1",
-		ReplicaOf:        "master-server-to-replicate-of",
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			{Name: "nextround"},
@@ -44,6 +43,24 @@ func TestCreate(t *testing.T) {
 	th.AssertDeepEquals(t, &expectedInstance, instance)
 }
 
+func TestCreateWithReplicaOf(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateWithReplicaOf(t)
+
+	// Subtest 1: ReplicaOf Only - No FlavorRef specified
+	t.Run("It creates a replica without specifying FlavorRef", func(t *testing.T) {
+		opts := instances.CreateOpts{
+			AvailabilityZone: "us-east1",
+			Name:             "json_rack_instance",
+			ReplicaOf:        "master-server-to-replicate-of",
+		}
+		instance, err := instances.Create(fake.ServiceClient(), opts).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, &expectedInstance, instance)
+	})
+}
+
 func TestCreateWithFault(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -53,7 +70,6 @@ func TestCreateWithFault(t *testing.T) {
 		AvailabilityZone: "us-east1",
 		Name:             "json_rack_instance",
 		FlavorRef:        "1",
-		ReplicaOf:        "master-server-to-replicate-of",
 		Databases: db.BatchCreateOpts{
 			{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			{Name: "nextround"},
