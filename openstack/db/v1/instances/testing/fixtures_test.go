@@ -53,6 +53,7 @@ var instance = `
 }
 `
 
+// https://github.com/openstack/trove/blob/40fdb7b44fb33e022b77ba8df63fde2565c70dea/api-ref/source/parameters.yaml#L799
 var instanceReplicaOf = `
 {
   "created": "` + timestamp + `",
