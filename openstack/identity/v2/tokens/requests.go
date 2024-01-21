@@ -38,6 +38,7 @@ type AuthOptionsBuilder interface {
 	// ToTokenCreateMap assembles the Create request body, returning an error
 	// if parameters are missing or inconsistent.
 	ToTokenV2CreateMap() (map[string]interface{}, error)
+	CanReauth() bool
 }
 
 // AuthOptions are the valid options for Openstack Identity v2 authentication.
@@ -53,7 +54,7 @@ type AuthOptions struct {
 }
 
 // ToTokenV2CreateMap builds a token request body from the given AuthOptions.
-func (opts AuthOptions) ToTokenV2CreateMap() (map[string]interface{}, error) {
+func (opts *AuthOptions) ToTokenV2CreateMap() (map[string]interface{}, error) {
 	v2Opts := AuthOptionsV2{
 		TenantID:   opts.TenantID,
 		TenantName: opts.TenantName,
@@ -75,6 +76,10 @@ func (opts AuthOptions) ToTokenV2CreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+func (opts *AuthOptions) CanReauth() bool {
+	return opts.AllowReauth
 }
 
 // Create authenticates to the identity service and attempts to acquire a Token.
