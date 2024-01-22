@@ -51,8 +51,8 @@ var instance = `
     "size": 2
   },
   "access": {
-	"is_public": true,
-	"allowed_cidrs": ["202.78.240.0/24"]
+    "is_public": true,
+    "allowed_cidrs": ["202.78.240.0/24"]
   }
 }
 `
@@ -94,8 +94,8 @@ var instanceGet = `
     "used": 0.12
   },
   "access": {
-	"is_public": true,
-	"allowed_cidrs": ["202.78.240.0/24"]
+    "is_public": true,
+    "allowed_cidrs": ["202.78.240.0/24"]
   },
   "addresses": [
     {
