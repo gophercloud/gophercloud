@@ -51,7 +51,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	// Add "test" tag intentionally to test the "not-tags" parameter. Because "test" tag is also used in other test
 	// cases, we use "test" tag to exclude load balancers created by other test case.
 	tags := []string{"tag1", "tag2", "test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "")
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "", nil)
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
 
@@ -111,7 +111,7 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, nil, "")
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, nil, "", nil)
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
 
@@ -245,12 +245,43 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	defer DeleteMonitor(t, lbClient, lb.ID, monitor.ID)
 }
 
+func TestLoadBalancerWithAdditionalVips(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/zed")
+
+	netClient, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	lbClient, err := clients.NewLoadBalancerV2Client()
+	th.AssertNoErr(t, err)
+
+	network, err := networking.CreateNetwork(t, netClient)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, netClient, network.ID)
+
+	subnet, err := networking.CreateSubnetWithCIDR(t, netClient, network.ID, "192.168.1.0/24", "192.168.1.1")
+	th.AssertNoErr(t, err)
+	defer networking.DeleteSubnet(t, netClient, subnet.ID)
+
+	additionalSubnet, err := networking.CreateSubnetWithCIDR(t, netClient, network.ID, "192.168.2.0/24", "192.168.2.1")
+	th.AssertNoErr(t, err)
+	defer networking.DeleteSubnet(t, netClient, additionalSubnet.ID)
+
+	tags := []string{"test"}
+	// Octavia takes care of creating the port for the loadbalancer
+	additionalSubnetIP := "192.168.2.207"
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "", []loadbalancers.AdditionalVip{{SubnetID: additionalSubnet.ID, IPAddress: additionalSubnetIP}})
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(lb.AdditionalVips))
+	th.AssertEquals(t, additionalSubnetIP, lb.AdditionalVips[0].IPAddress)
+	defer DeleteLoadBalancer(t, lbClient, lb.ID)
+}
+
 func TestLoadbalancersCRUD(t *testing.T) {
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
 	// Create QoS policy first as the loadbalancer and its port
-	//needs to be deleted before the QoS policy can be deleted
+	// needs to be deleted before the QoS policy can be deleted
 	policy2, err := policies.CreateQoSPolicy(t, netClient)
 	th.AssertNoErr(t, err)
 	defer policies.DeleteQoSPolicy(t, netClient, policy2.ID)
@@ -262,7 +293,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, netClient, network.ID)
 
-	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
+	subnet, err := networking.CreateSubnetWithCIDR(t, netClient, network.ID, "192.168.1.0/24", "192.168.1.1")
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
@@ -271,7 +302,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	defer policies.DeleteQoSPolicy(t, netClient, policy1.ID)
 
 	tags := []string{"test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, policy1.ID)
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, policy1.ID, nil)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, lb.VipQosPolicyID, policy1.ID)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
@@ -472,7 +503,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
 	tags := []string{"test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "")
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags, "", nil)
 	th.AssertNoErr(t, err)
 	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
 

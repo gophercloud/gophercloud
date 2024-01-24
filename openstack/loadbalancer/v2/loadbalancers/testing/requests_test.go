@@ -72,6 +72,12 @@ func TestCreateLoadbalancer(t *testing.T) {
 		FlavorID:     "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
 		Provider:     "haproxy",
 		Tags:         []string{"test", "stage"},
+		AdditionalVips: []loadbalancers.AdditionalVip{
+			{
+				SubnetID:  "0d4f6a08-60b7-44ab-8903-f7d76ec54095",
+				IPAddress: "192.168.10.10",
+			},
+		},
 	}).Extract()
 	th.AssertNoErr(t, err)
 

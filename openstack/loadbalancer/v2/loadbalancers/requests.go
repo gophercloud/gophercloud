@@ -140,6 +140,10 @@ type CreateOpts struct {
 
 	// Tags is a set of resource tags.
 	Tags []string `json:"tags,omitempty"`
+
+	// The additional ips of the loadbalancer. Subnets must all belong to the same network as the primary VIP.
+	// New in version 2.26
+	AdditionalVips []AdditionalVip `json:"additional_vips,omitempty"`
 }
 
 // ToLoadBalancerCreateMap builds a request body from CreateOpts.
