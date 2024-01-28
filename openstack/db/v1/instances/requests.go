@@ -49,6 +49,8 @@ func (opts NetworkOpts) ToMap() (map[string]interface{}, error) {
 type CreateOpts struct {
 	// The availability zone of the instance.
 	AvailabilityZone string `json:"availability_zone,omitempty"`
+	// ID of the configuration group that you want to attach to the instance.
+	Configuration string `json:"configuration,omitempty"`
 	// Either the integer UUID (in string form) of the flavor, or its URI
 	// reference as specified in the response from the List() call. Required.
 	FlavorRef string
@@ -91,6 +93,10 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	if opts.AvailabilityZone != "" {
 		instance["availability_zone"] = opts.AvailabilityZone
+	}
+
+	if opts.Configuration != "" {
+		instance["configuration"] = opts.Configuration
 	}
 
 	if opts.Name != "" {

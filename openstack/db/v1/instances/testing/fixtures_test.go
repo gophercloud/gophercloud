@@ -105,6 +105,7 @@ var createReq = `
 {
 	"instance": {
 		"availability_zone": "us-east1",
+		"configuration": "4a78b397-c355-4127-be45-56230b2ab74e",
 		"databases": [
 			{
 				"character_set": "utf8",
