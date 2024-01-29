@@ -65,6 +65,14 @@ func (r *Fault) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// Replica instance information
+type Replica struct {
+	// Indicates the unique identifier for the replica instance resource.
+	ID string `json:"id"`
+	// Exposes various links that reference the replica instance resource.
+	Links []gophercloud.Link `json:"links"`
+}
+
 // Instance represents a remote MySQL instance.
 type Instance struct {
 	// Indicates the datetime that the instance was created
@@ -112,6 +120,12 @@ type Instance struct {
 
 	// The instance addresses
 	Addresses []Address `json:"addresses"`
+
+	// The replicas object of an instance.
+	Replicas []Replica `json:"replicas,omitempty"`
+
+	// The primary instance ID of this replica.
+	ReplicaOf *Replica `json:"replica_of,omitempty"`
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {
