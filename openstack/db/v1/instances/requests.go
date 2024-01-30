@@ -180,6 +180,16 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"instance": instance}, nil
 }
 
+// EnableRootOpts is the struct responsible for enabling the root user for a database.
+type EnableRootOpts struct {
+	Password string `json:"password,omitempty"`
+}
+
+// ToMap converts a EnableRootOpts to a map[string]string (for a request body)
+func (opts EnableRootOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
 // Create asynchronously provisions a new database instance. It requires the
 // user to specify a flavor and a volume size. The API service then provisions
 // the instance with the requested flavor and sets up a volume of the specified
@@ -222,8 +232,13 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 
 // EnableRootUser enables the login from any host for the root user and
 // provides the user with a generated root password.
-func EnableRootUser(client *gophercloud.ServiceClient, id string) (r EnableRootUserResult) {
-	resp, err := client.Post(userRootURL(client, id), nil, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+func EnableRootUser(client *gophercloud.ServiceClient, id string, opts EnableRootOpts) (r EnableRootUserResult) {
+	b, err := opts.ToMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(userRootURL(client, id), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
