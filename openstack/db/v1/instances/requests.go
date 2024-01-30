@@ -95,11 +95,11 @@ type CreateOpts struct {
 
 // ToInstanceCreateMap will render a JSON map.
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
-	if opts.Size > 300 || opts.Size < 1 {
+	if opts.Size > 2000 || opts.Size < 1 {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "instances.CreateOpts.Size"
 		err.Value = opts.Size
-		err.Info = "Size (GB) must be between 1-300"
+		err.Info = "Size (GB) must be between 1-2000"
 		return nil, err
 	}
 
