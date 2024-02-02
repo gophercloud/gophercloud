@@ -3,6 +3,7 @@ package ports
 import (
 	"fmt"
 	"net/url"
+	"slices"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -130,7 +131,37 @@ type CreateOpts struct {
 
 // ToPortCreateMap builds a request body from CreateOpts.
 func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "port")
+	body, err := gophercloud.BuildRequestBody(opts, "port")
+	if err != nil {
+		return nil, err
+	}
+
+	return AddValueSpecs(body)
+}
+
+// AddValueSpecs expands the 'value_specs' object and removes 'value_specs'
+// from the request body. It will return error if the value specs would overwrite
+// an existing field or contains forbidden keys.
+func AddValueSpecs(body map[string]interface{}) (map[string]interface{}, error) {
+	// Banned the same as in heat. See https://github.com/openstack/heat/blob/dd7319e373b88812cb18897f742b5196a07227ea/heat/engine/resources/openstack/neutron/neutron.py#L59
+	bannedKeys := []string{"shared", "tenant_id"}
+	port := body["port"].(map[string]interface{})
+
+	if port["value_specs"] != nil {
+		for k, v := range port["value_specs"].(map[string]interface{}) {
+			if slices.Contains(bannedKeys, k) {
+				return nil, fmt.Errorf("forbidden key in value_specs: %s", k)
+			}
+			if _, ok := port[k]; ok {
+				return nil, fmt.Errorf("value_specs would overwrite key: %s", k)
+			}
+			port[k] = v
+		}
+		delete(port, "value_specs")
+	}
+	body["port"] = port
+
+	return body, nil
 }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
@@ -173,7 +204,11 @@ type UpdateOpts struct {
 
 // ToPortUpdateMap builds a request body from UpdateOpts.
 func (opts UpdateOpts) ToPortUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "port")
+	body, err := gophercloud.BuildRequestBody(opts, "port")
+	if err != nil {
+		return nil, err
+	}
+	return AddValueSpecs(body)
 }
 
 // Update accepts a UpdateOpts struct and updates an existing port using the
