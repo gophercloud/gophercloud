@@ -121,7 +121,8 @@ func TestEnableRootUser(t *testing.T) {
 	HandleEnableRoot(t)
 
 	expected := &users.User{Name: "root", Password: "secretsecret"}
-	user, err := instances.EnableRootUser(fake.ServiceClient(), instanceID).Extract()
+	opts := instances.EnableRootOpts{}
+	user, err := instances.EnableRootUser(fake.ServiceClient(), instanceID, opts).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, user)
