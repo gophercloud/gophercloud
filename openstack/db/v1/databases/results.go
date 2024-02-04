@@ -8,14 +8,14 @@ import (
 // Database represents a Database API resource.
 type Database struct {
 	// Specifies the name of the MySQL database.
-	Name string
+	Name string `json:"name"`
 
 	// Set of symbols and encodings. The default character set is utf8.
-	CharSet string
+	CharSet string `json:"charset"`
 
 	// Set of rules for comparing characters in a character set. The default
 	// value for collate is utf8_general_ci.
-	Collate string
+	Collate string `json:"collate"`
 }
 
 // CreateResult represents the result of a Create operation.
@@ -25,6 +25,11 @@ type CreateResult struct {
 
 // DeleteResult represents the result of a Delete operation.
 type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// GrantAccessResult represents the result of a Grant Access operation.
+type GrantAccessResult struct {
 	gophercloud.ErrResult
 }
 

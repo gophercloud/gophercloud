@@ -10,15 +10,15 @@ import (
 
 // Config represents a configuration group API resource.
 type Config struct {
-	Created              time.Time `json:"-"`
-	Updated              time.Time `json:"-"`
-	DatastoreName        string    `json:"datastore_name"`
-	DatastoreVersionID   string    `json:"datastore_version_id"`
-	DatastoreVersionName string    `json:"datastore_version_name"`
-	Description          string
-	ID                   string
-	Name                 string
-	Values               map[string]interface{}
+	Created              time.Time              `json:"created"`
+	Updated              time.Time              `json:"updated"`
+	DatastoreName        string                 `json:"datastore_name"`
+	DatastoreVersionID   string                 `json:"datastore_version_id"`
+	DatastoreVersionName string                 `json:"datastore_version_name"`
+	Description          string                 `json:"description"`
+	ID                   string                 `json:"id"`
+	Name                 string                 `json:"name"`
+	Values               map[string]interface{} `json:"values"`
 }
 
 func (r *Config) UnmarshalJSON(b []byte) error {
@@ -104,11 +104,11 @@ type DeleteResult struct {
 
 // Param represents a configuration parameter API resource.
 type Param struct {
-	Max             float64
-	Min             float64
-	Name            string
-	RestartRequired bool `json:"restart_required"`
-	Type            string
+	Max             float64 `json:"max"`
+	Min             float64 `json:"min"`
+	Name            string  `json:"name"`
+	RestartRequired bool    `json:"restart_required"`
+	Type            string  `json:"type"`
 }
 
 // ParamPage contains a page of Param resources in a paginated collection.

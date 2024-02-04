@@ -106,13 +106,16 @@ func (r SnapshotPage) NextPageURL() (string, error) {
 	return gophercloud.ExtractNextURL(s.Links)
 }
 
+// ExtractSnapshotsInto similar to ExtractInto but operates on a `list` of snapshots
+func ExtractSnapshotsInto(r pagination.Page, v interface{}) error {
+	return r.(SnapshotPage).Result.ExtractIntoSlicePtr(v, "snapshots")
+}
+
 // ExtractSnapshots extracts and returns Snapshots. It is used while iterating over a snapshots.List call.
 func ExtractSnapshots(r pagination.Page) ([]Snapshot, error) {
-	var s struct {
-		Snapshots []Snapshot `json:"snapshots"`
-	}
-	err := (r.(SnapshotPage)).ExtractInto(&s)
-	return s.Snapshots, err
+	var s []Snapshot
+	err := ExtractSnapshotsInto(r, &s)
+	return s, err
 }
 
 // UpdateMetadataResult contains the response body and error from an UpdateMetadata request.
@@ -135,11 +138,14 @@ type commonResult struct {
 
 // Extract will get the Snapshot object out of the commonResult object.
 func (r commonResult) Extract() (*Snapshot, error) {
-	var s struct {
-		Snapshot *Snapshot `json:"snapshot"`
-	}
+	var s Snapshot
 	err := r.ExtractInto(&s)
-	return s.Snapshot, err
+	return &s, err
+}
+
+// ExtractInto converts our response data into a snapshot struct
+func (r commonResult) ExtractInto(s interface{}) error {
+	return r.Result.ExtractIntoStructPtr(s, "snapshot")
 }
 
 // ResetStatusResult contains the response error from a ResetStatus request.

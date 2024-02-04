@@ -8,7 +8,9 @@ import (
 
 var (
 	instanceID = "{instanceID}"
+	userName   = "{userName}"
 	resURL     = "/instances/" + instanceID + "/databases"
+	grantURL   = "/instances/" + instanceID + "/users/" + userName + "/databases"
 )
 
 var createDBsReq = `
@@ -48,6 +50,19 @@ var listDBsResp = `
 }
 `
 
+var GrantAccessReq = `
+{
+	"databases": [
+		{
+			"name": "anotherexampledb"
+		},
+		{
+			"name": "exampledb"
+		}
+	]
+}
+`
+
 func HandleCreate(t *testing.T) {
 	fixture.SetupHandler(t, resURL, "POST", createDBsReq, "", 202)
 }
@@ -58,4 +73,12 @@ func HandleList(t *testing.T) {
 
 func HandleDelete(t *testing.T) {
 	fixture.SetupHandler(t, resURL+"/{dbName}", "DELETE", "", "", 202)
+}
+
+func HandleGrant(t *testing.T) {
+	fixture.SetupHandler(t, grantURL, "PUT", GrantAccessReq, "", 202)
+}
+
+func HandleRevoke(t *testing.T) {
+	fixture.SetupHandler(t, grantURL+"/{dbName}", "DELETE", "", "", 202)
 }

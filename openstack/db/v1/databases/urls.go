@@ -9,3 +9,15 @@ func baseURL(c *gophercloud.ServiceClient, instanceID string) string {
 func dbURL(c *gophercloud.ServiceClient, instanceID, dbName string) string {
 	return c.ServiceURL("instances", instanceID, "databases", dbName)
 }
+
+func dbAccessURL(c *gophercloud.ServiceClient, instanceID, userName string) string {
+	return c.ServiceURL("instances", instanceID, "users", userName, "databases")
+}
+
+func dbGrantAccessURL(c *gophercloud.ServiceClient, instanceID, userName string) string {
+	return c.ServiceURL("instances", instanceID, "users", userName, "databases")
+}
+
+func dbRevokeAccessURL(c *gophercloud.ServiceClient, instanceID, userName, dbName string) string {
+	return c.ServiceURL("instances", instanceID, "users", userName, "databases", dbName)
+}

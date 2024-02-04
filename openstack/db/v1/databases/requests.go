@@ -82,10 +82,83 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 	})
 }
 
+// ListForUser will list all databases that the user has access to for a
+// specified instance.
+func ListForUser(client *gophercloud.ServiceClient, instanceID, userName string) pagination.Pager {
+	return pagination.NewPager(client, dbAccessURL(client, instanceID, userName), func(r pagination.PageResult) pagination.Page {
+		return DBPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
 // Delete will permanently delete the database within a specified instance.
 // All contained data inside the database will also be permanently deleted.
 func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) (r DeleteResult) {
 	resp, err := client.Delete(dbURL(client, instanceID, dbName), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// GrantOptsBuilder builds grant access options
+type GranOptsBuilder interface {
+	ToDBGrantMap() (map[string]interface{}, error)
+}
+
+// GrantOpts is the struct responsible for modifying database accessing
+// configurations for an user
+type GrantOpts struct {
+	// Specifies the name of the database. Valid names can be composed
+	// of the following characters: letters (either case); numbers; these
+	// characters '@', '?', '#', ' ' but NEVER beginning a name string; '_' is
+	// permitted anywhere. Prohibited characters that are forbidden include:
+	// single quotes, double quotes, back quotes, semicolons, commas, backslashes,
+	// and forward slashes.
+	Name string `json:"name" required:"true"`
+}
+
+// ToMap is a helper function to convert individual DB create opt structures
+// into sub-maps.
+func (opts GrantOpts) ToMap() (map[string]interface{}, error) {
+	if len(opts.Name) > 64 {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "databases.GrantOpts.Name"
+		err.Value = opts.Name
+		err.Info = "Must be less than 64 chars long"
+		return nil, err
+	}
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// ToDBGrantMap will cast a GrantOpts struct into a JSON map.
+func (opts BatchGrantOpts) ToDBGrantMap() (map[string]interface{}, error) {
+	dbs := make([]map[string]interface{}, len(opts))
+	for i, db := range opts {
+		dbMap, err := db.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		dbs[i] = dbMap
+	}
+	return map[string]interface{}{"databases": dbs}, nil
+}
+
+// BatchGrantOpts allows for multiple databases to be granted access.
+type BatchGrantOpts []GrantOpts
+
+// GrantUserAccess will grant database access within a specified instance for a user.
+func GrantUserAccess(client *gophercloud.ServiceClient, instanceID, userName string, opts GranOptsBuilder) (r GrantAccessResult) {
+	b, err := opts.ToDBGrantMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(dbGrantAccessURL(client, instanceID, userName), &b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RevokeUserAccess will revoke database access a specified instance for a user.
+func RevokeUserAccess(client *gophercloud.ServiceClient, instanceID, userName, dbName string) (r DeleteResult) {
+	resp, err := client.Delete(dbRevokeAccessURL(client, instanceID, userName, dbName), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
