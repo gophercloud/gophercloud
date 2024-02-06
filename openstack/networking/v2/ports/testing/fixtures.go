@@ -299,9 +299,7 @@ const CreateValueSpecRequest = `
             "mac_address": "fa:16:3e:c9:cb:f0"
           }
         ],
-        "value_specs": {
-            "key": "value"
-        }
+        "test": "value"
     }
 }
 `
@@ -332,9 +330,6 @@ const CreateValueSpecResponse = `
             "mac_address": "fa:16:3e:c9:cb:f0"
           }
         ],
-        "value_specs": {
-            "key": "value"
-        },
         "device_id": ""
     }
 }
@@ -544,9 +539,7 @@ const UpdatePropagateUplinkStatusResponse = `
 const UpdateValueSpecsRequest = `
 {
     "port": {
-        "value_specs": {
-            "key": "value"
-        }
+        "test": "update"
     }
 }
 `
@@ -577,9 +570,6 @@ const UpdateValueSpecsResponse = `
         "security_groups": [
             "f0ac4394-7e4a-4409-9701-ba8be283dbc3"
         ],
-        "value_specs": {
-            "key": "value"
-        },
         "device_id": ""
     }
 }

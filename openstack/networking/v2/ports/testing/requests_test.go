@@ -389,7 +389,7 @@ func TestCreateWithValueSpecs(t *testing.T) {
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
 		ValueSpecs: &map[string]string{
-			"key": "value",
+			"test": "value",
 		},
 	}
 	n, err := ports.Create(fake.ServiceClient(), options).Extract()
@@ -410,7 +410,55 @@ func TestCreateWithValueSpecs(t *testing.T) {
 	th.AssertDeepEquals(t, n.AllowedAddressPairs, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 	})
-	th.AssertDeepEquals(t, n.ValueSpecs, map[string]string{"key": "value"})
+}
+
+func TestCreateWithInvalidValueSpecs(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, CreateValueSpecRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, CreateValueSpecResponse)
+	})
+
+	asu := true
+	options := ports.CreateOpts{
+		Name:         "private-port",
+		AdminStateUp: &asu,
+		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+		},
+		SecurityGroups: &[]string{"foo"},
+		AllowedAddressPairs: []ports.AddressPair{
+			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
+		},
+		ValueSpecs: &map[string]string{
+			// This is a forbidden key
+			"shared": "value",
+		},
+	}
+
+	// We expect an error here since we used a fobidden key in the value specs.
+	_, err := ports.Create(fake.ServiceClient(), options).Extract()
+	th.AssertErr(t, err)
+
+	options.ValueSpecs = &map[string]string{
+		// Try to overwrite an existing field
+		"name": "overwrite",
+	}
+
+	// We expect an error here since the value specs would overwrite an existing field.
+	_, err = ports.Create(fake.ServiceClient(), options).Extract()
+	th.AssertErr(t, err)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
@@ -598,14 +646,12 @@ func TestUpdateValueSpecs(t *testing.T) {
 
 	options := ports.UpdateOpts{
 		ValueSpecs: &map[string]string{
-			"key": "value",
+			"test": "update",
 		},
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	_, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
-
-	th.AssertDeepEquals(t, s.ValueSpecs, map[string]string{"key": "value"})
 }
 
 func TestUpdatePortSecurity(t *testing.T) {

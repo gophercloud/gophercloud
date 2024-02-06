@@ -114,9 +114,6 @@ type Port struct {
 	// PropagateUplinkStatus enables/disables propagate uplink status on the port.
 	PropagateUplinkStatus bool `json:"propagate_uplink_status"`
 
-	// Extra parameters to include in the request.
-	ValueSpecs map[string]string `json:"value_specs"`
-
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber int `json:"revision_number"`
 
