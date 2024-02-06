@@ -1,7 +1,8 @@
-## v2 (unreleased)
+## v2.0.0-beta.1
 
 BREAKING CHANGES:
 
+* **The minimum required Go version is now v1.21.6.**
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Gophercloud now escapes container and object names in all `objects` and `containers` functions. If you were previously escaping names (with, for example: `url.PathEscape` or `url.QueryEscape`), then you should REMOVE that and pass the intended names to Gophercloud directly.
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) The `containers.ListOpts#Full` and `objects.ListOpts#Full` properties are REMOVED from the Gophercloud API. The reason for that is: plaintext listing is unfixably wrong and won't handle special characters reliably (i.e. `\n`).
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Empty container names, container names containing a slash (`/`), and empty object names are now rejected in Gophercloud before any call to Swift.
@@ -10,11 +11,32 @@ BREAKING CHANGES:
   * `v1.ErrEmptyContainerName`
   * `v1.ErrEmptyObjectName`
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) In `objects.Copy`: the `destination` field (e.g. `objects.CopyOpts#Destination`) must be in the form `/container/object`: the function will reject a destination path if it doesn't start with a slash (`/`).
+* [GH-2560](https://github.com/gophercloud/gophercloud/pull/2560) loadbalancer: Use CreateMemberOpts instead of BatchUpdateMemberOpts in PoolCreateOpts
+* [GH-2886](https://github.com/gophercloud/gophercloud/pull/2886) ports: Fix value_specs implementation
 
 New features and improvements:
 
-* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Bugfix: it is now possible to successfuly call `objects.CreateTempURL` with a container name or object name containing the string `/v1/`.
-
+* [GH-2486](https://github.com/gophercloud/gophercloud/pull/2486) Fix BareMetalV1 version
+* [GH-2492](https://github.com/gophercloud/gophercloud/pull/2492) Add tags for loadbalancer l7policy and l7rule
+* [GH-2560](https://github.com/gophercloud/gophercloud/pull/2560) loadbalancer: Use CreateMemberOpts instead of BatchUpdateMemberOpts in PoolCreateOpts
+* [GH-2561](https://github.com/gophercloud/gophercloud/pull/2561) compute: add ext_specs to flavor
+* [GH-2613](https://github.com/gophercloud/gophercloud/pull/2613) Migrate baremetal inventory to a common location
+* [GH-2665](https://github.com/gophercloud/gophercloud/pull/2665) Cinder: Remove multiatttach request parameter
+* [GH-2724](https://github.com/gophercloud/gophercloud/pull/2724) baremetal: introduce Node Inventory API
+* [GH-2725](https://github.com/gophercloud/gophercloud/pull/2725) baremetal: finish moving common inventory bits
+* [GH-2736](https://github.com/gophercloud/gophercloud/pull/2736) Composable templates
+* [GH-2781](https://github.com/gophercloud/gophercloud/pull/2781) baremetal: support ironic native PluginData
+* [GH-2791](https://github.com/gophercloud/gophercloud/pull/2791) Add microversion utilities
+* [GH-2806](https://github.com/gophercloud/gophercloud/pull/2806) Fix list ports with multiple fixedip parameters
+* [GH-2809](https://github.com/gophercloud/gophercloud/pull/2809) Remove code for CDN (poppy)
+* [GH-2812](https://github.com/gophercloud/gophercloud/pull/2812) Revert "Fix baremetal jobs on Ubuntu 20.04"
+* [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) objects: Escape names in Gophercloud
+* [GH-2828](https://github.com/gophercloud/gophercloud/pull/2828) Octavia: Add tags to resources missing them
+* [GH-2834](https://github.com/gophercloud/gophercloud/pull/2834) baremetal: implemented ParsedLLDP in the standard PluginData
+* [GH-2866](https://github.com/gophercloud/gophercloud/pull/2866) loadbalancer additional_vips by snigle
+* [GH-2881](https://github.com/gophercloud/gophercloud/pull/2881) Adding missing QoS field for router
+* [GH-2883](https://github.com/gophercloud/gophercloud/pull/2883) Context-aware methods to ProviderClient and ServiceClient
+* [GH-2892](https://github.com/gophercloud/gophercloud/pull/2892) Authenticate with a clouds.yaml
 
 ## v1.9.0 (2024-02-02)
 
