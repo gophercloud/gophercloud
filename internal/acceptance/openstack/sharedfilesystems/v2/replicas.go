@@ -5,11 +5,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/replicas"
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/replicas"
+	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/shares"
 )
 
 // CreateReplica will create a replica from shareID. An error will be returned

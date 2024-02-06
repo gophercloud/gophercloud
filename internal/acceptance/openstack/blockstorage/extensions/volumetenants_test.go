@@ -6,11 +6,11 @@ package extensions
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	blockstorage "github.com/gophercloud/gophercloud/internal/acceptance/openstack/blockstorage/v3"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumetenants"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	blockstorage "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/blockstorage/v3"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumetenants"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestVolumeTenants(t *testing.T) {

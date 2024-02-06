@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"net/url"
 
-	"github.com/gophercloud/gophercloud"
-	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/v2"
+	v1 "github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the List

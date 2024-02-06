@@ -6,14 +6,14 @@ package trunk_details
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	v2 "github.com/gophercloud/gophercloud/internal/acceptance/openstack/networking/v2"
-	v2Trunks "github.com/gophercloud/gophercloud/internal/acceptance/openstack/networking/v2/extensions/trunks"
-	"github.com/gophercloud/gophercloud/openstack/common/extensions"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunk_details"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	v2 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
+	v2Trunks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions/trunks"
+	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunk_details"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunks"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 type portWithTrunkDetails struct {

@@ -1,7 +1,7 @@
 package resetstate
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // ResetResult is the response of a ResetState operation. Call its ExtractErr

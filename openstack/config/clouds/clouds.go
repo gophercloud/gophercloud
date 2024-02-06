@@ -28,7 +28,7 @@ import (
 	"path"
 	"reflect"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 	"gopkg.in/yaml.v2"
 )
 

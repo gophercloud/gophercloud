@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gophercloud/gophercloud/openstack/config/clouds"
+	"github.com/gophercloud/gophercloud/v2/openstack/config/clouds"
 )
 
 func ExampleWithCloudName() {

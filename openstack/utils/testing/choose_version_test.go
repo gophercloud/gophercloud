@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/utils"
-	"github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
+	"github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func setupVersionHandler() {

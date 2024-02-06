@@ -5,9 +5,9 @@ import (
 	"io"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/imagedata"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/imagedata"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestUpload(t *testing.T) {

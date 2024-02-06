@@ -1,7 +1,7 @@
 package buildinfo
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // Revision represents the API/Engine revision of a Heat deployment.

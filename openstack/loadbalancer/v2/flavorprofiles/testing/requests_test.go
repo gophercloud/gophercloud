@@ -3,11 +3,11 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/flavorprofiles"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavorprofiles"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 
-	fake "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/testhelper"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestListFlavorProfiles(t *testing.T) {

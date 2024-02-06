@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	az "github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/availabilityzones"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	az "github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/availabilityzones"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const GetOutput = `

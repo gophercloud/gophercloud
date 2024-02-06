@@ -7,14 +7,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	idv3 "github.com/gophercloud/gophercloud/internal/acceptance/openstack/identity/v3"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clusters"
-	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
-	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/quotas"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	idv3 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/identity/v3"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clusters"
+	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clustertemplates"
+	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/quotas"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateClusterTemplateCOE will create a random cluster template for the specified orchestration engine.

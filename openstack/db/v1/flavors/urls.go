@@ -1,6 +1,6 @@
 package flavors
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 
 func getURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("flavors", id)

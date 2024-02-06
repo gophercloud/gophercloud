@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/internal/ctxt"
+	"github.com/gophercloud/gophercloud/v2/internal/ctxt"
 )
 
 func TestMerge(t *testing.T) {

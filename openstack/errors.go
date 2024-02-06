@@ -3,7 +3,7 @@ package openstack
 import (
 	"fmt"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // ErrEndpointNotFound is the error when no suitable endpoint can be found

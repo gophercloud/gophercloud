@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gophercloud/gophercloud/internal/ctxt"
+	"github.com/gophercloud/gophercloud/v2/internal/ctxt"
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.

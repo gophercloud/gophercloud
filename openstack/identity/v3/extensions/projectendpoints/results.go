@@ -1,8 +1,8 @@
 package projectendpoints
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // CreateResult is the response from a Create operation. Call its Extract

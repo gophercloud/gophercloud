@@ -3,10 +3,10 @@ package v1
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/placement/v1/resourceproviders"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestResourceProviderList(t *testing.T) {

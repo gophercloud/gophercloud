@@ -1,7 +1,7 @@
 package swauth
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // GetAuthResult contains the response from the Auth request. Call its Extract

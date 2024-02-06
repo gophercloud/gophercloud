@@ -6,11 +6,11 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/identity/v2/extensions/admin/roles"
-	"github.com/gophercloud/gophercloud/openstack/identity/v2/users"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/extensions/admin/roles"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/users"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestRolesAddToUser(t *testing.T) {

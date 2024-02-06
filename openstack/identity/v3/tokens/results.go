@@ -3,7 +3,7 @@ package tokens
 import (
 	"time"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // Endpoint represents a single API endpoint offered by a service.

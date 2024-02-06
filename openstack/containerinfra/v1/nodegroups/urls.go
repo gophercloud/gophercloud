@@ -1,7 +1,7 @@
 package nodegroups
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 func getURL(c *gophercloud.ServiceClient, clusterID, nodeGroupID string) string {

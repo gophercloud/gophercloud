@@ -1,6 +1,6 @@
 package oauth1
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 
 func consumersURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("OS-OAUTH1", "consumers")
