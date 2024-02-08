@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/aggregates"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/hypervisors"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/aggregates"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/hypervisors"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestAggregatesList(t *testing.T) {

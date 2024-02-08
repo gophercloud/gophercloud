@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/messaging/v2/claims"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/claims"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // QueueName is the name of the queue

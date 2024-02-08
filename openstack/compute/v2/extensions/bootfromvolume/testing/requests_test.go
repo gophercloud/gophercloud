@@ -3,7 +3,7 @@ package testing
 import (
 	"testing"
 
-	th "github.com/gophercloud/gophercloud/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestBootFromNewVolume(t *testing.T) {

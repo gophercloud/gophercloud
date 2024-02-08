@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/orchestration/v1/buildinfo"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/buildinfo"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // GetExpected represents the expected object from a Get request.

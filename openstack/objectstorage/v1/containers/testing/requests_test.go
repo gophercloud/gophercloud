@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
-	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	v1 "github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1"
+	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/containers"
+	"github.com/gophercloud/gophercloud/v2/pagination"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 var (

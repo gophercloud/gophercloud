@@ -7,14 +7,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/trusts"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/roles"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/users"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestTrustCRUD(t *testing.T) {

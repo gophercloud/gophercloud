@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
-	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/accounts"
-	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/v2"
+	v1 "github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1"
+	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/accounts"
+	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/containers"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // ErrTempURLKeyNotFound is an error indicating that the Temp URL key was

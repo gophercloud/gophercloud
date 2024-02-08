@@ -1,6 +1,6 @@
 package endpointgroups
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 
 const (
 	rootPath     = "vpn"

@@ -1,6 +1,6 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/addressscopes"
+import "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/addressscopes"
 
 // AddressScopesListResult represents raw response for the List request.
 const AddressScopesListResult = `

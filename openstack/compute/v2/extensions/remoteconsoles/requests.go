@@ -1,7 +1,7 @@
 package remoteconsoles
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // ConsoleProtocol represents valid remote console protocol.

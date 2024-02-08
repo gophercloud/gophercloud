@@ -6,10 +6,10 @@ package v1
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clustertemplates"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestClusterTemplatesCRUD(t *testing.T) {

@@ -6,9 +6,9 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/messaging/v2/claims"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/claims"
 )
 
 func TestCRUDClaim(t *testing.T) {

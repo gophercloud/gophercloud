@@ -8,13 +8,13 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	networking "github.com/gophercloud/gophercloud/internal/acceptance/openstack/networking/v2"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/attributestags"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/attributestags"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func createNetworkWithTags(t *testing.T, client *gophercloud.ServiceClient, tags []string) (network *networks.Network) {

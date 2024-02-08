@@ -3,9 +3,9 @@ package trunks
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunks"
 )
 
 func CreateTrunk(t *testing.T, client *gophercloud.ServiceClient, parentPortID string, subportIDs ...string) (trunk *trunks.Trunk, err error) {

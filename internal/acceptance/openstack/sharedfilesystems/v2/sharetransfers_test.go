@@ -6,11 +6,11 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharetransfers"
+	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/sharetransfers"
 )
 
 // minimal microversion for the share transfers

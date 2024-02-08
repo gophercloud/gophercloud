@@ -1,6 +1,6 @@
 package ec2credentials
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 
 func listURL(client *gophercloud.ServiceClient, userID string) string {
 	return client.ServiceURL("users", userID, "credentials", "OS-EC2")

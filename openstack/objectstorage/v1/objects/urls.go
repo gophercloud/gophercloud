@@ -3,8 +3,8 @@ package objects
 import (
 	"net/url"
 
-	"github.com/gophercloud/gophercloud"
-	v1 "github.com/gophercloud/gophercloud/openstack/objectstorage/v1"
+	"github.com/gophercloud/gophercloud/v2"
+	v1 "github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1"
 )
 
 // tempURL returns an unescaped virtual path to generate the HMAC signature.

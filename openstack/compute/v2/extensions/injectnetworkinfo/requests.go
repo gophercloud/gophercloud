@@ -1,8 +1,8 @@
 package injectnetworkinfo
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions"
 )
 
 // InjectNetworkInfo will inject the network info into a server

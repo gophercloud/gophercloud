@@ -3,12 +3,12 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
-	invtest "github.com/gophercloud/gophercloud/openstack/baremetal/inventory/testing"
-	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/nodes"
-	"github.com/gophercloud/gophercloud/openstack/baremetalintrospection/v1/introspection"
-	insptest "github.com/gophercloud/gophercloud/openstack/baremetalintrospection/v1/introspection/testing"
-	"github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/inventory"
+	invtest "github.com/gophercloud/gophercloud/v2/openstack/baremetal/inventory/testing"
+	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/nodes"
+	"github.com/gophercloud/gophercloud/v2/openstack/baremetalintrospection/v1/introspection"
+	insptest "github.com/gophercloud/gophercloud/v2/openstack/baremetalintrospection/v1/introspection/testing"
+	"github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestStandardPluginData(t *testing.T) {

@@ -3,8 +3,8 @@ package monitors
 import (
 	"fmt"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through

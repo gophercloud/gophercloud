@@ -3,8 +3,8 @@ package tokens
 import (
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tenants"
 )
 
 // Token provides only the most basic information related to an authentication

@@ -4,10 +4,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/orchestration/v1/stackresources"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stackresources"
+	"github.com/gophercloud/gophercloud/v2/pagination"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestFindResources(t *testing.T) {

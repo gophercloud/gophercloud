@@ -3,7 +3,7 @@ package testing
 import (
 	"fmt"
 
-	"github.com/gophercloud/gophercloud/openstack/baremetal/inventory"
+	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/inventory"
 )
 
 const InventorySample = `{

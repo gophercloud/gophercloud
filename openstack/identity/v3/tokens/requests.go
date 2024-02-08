@@ -3,7 +3,7 @@ package tokens
 import (
 	"context"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // Scope allows a created token to be limited to a specific domain or project.

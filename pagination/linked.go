@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 // LinkedPageBase may be embedded to implement a page that provides navigational "Next" and "Previous" links within its result.

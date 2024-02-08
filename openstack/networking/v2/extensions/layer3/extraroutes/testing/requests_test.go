@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/extraroutes"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/extraroutes"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/routers"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestAddExtraRoutes(t *testing.T) {

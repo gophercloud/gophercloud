@@ -1,4 +1,4 @@
-module github.com/gophercloud/gophercloud
+module github.com/gophercloud/gophercloud/v2
 
 go 1.21.6
 

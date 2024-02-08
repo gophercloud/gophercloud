@@ -3,7 +3,7 @@ package openstack
 import (
 	"os"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/v2"
 )
 
 var nilOptions = gophercloud.AuthOptions{}

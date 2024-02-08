@@ -1,6 +1,6 @@
 package members
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 
 func imageMembersURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "members")

@@ -1,8 +1,8 @@
 package shelveunshelve
 
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions"
 )
 
 // Shelve is the operation responsible for shelving a Compute server.

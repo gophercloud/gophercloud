@@ -1,6 +1,6 @@
 package images
 
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 
 func listDetailURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("images", "detail")

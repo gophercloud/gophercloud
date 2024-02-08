@@ -7,11 +7,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/registeredlimits"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/services"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/registeredlimits"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/services"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestRegisteredLimitsCRUD(t *testing.T) {
