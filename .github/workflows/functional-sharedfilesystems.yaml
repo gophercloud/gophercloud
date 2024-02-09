@@ -41,11 +41,11 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.13
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin manila https://github.com/openstack/manila ${{ matrix.openstack_version }}
+            enable_plugin manila https://github.com/openstack/manila
             # LVM Backend config options
             MANILA_SERVICE_IMAGE_ENABLED=False
             SHARE_DRIVER=manila.share.drivers.lvm.LVMShareDriver

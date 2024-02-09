@@ -41,11 +41,11 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.13
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
+            enable_plugin heat https://github.com/openstack/heat
           enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
       - name: Checkout go
         uses: actions/setup-go@v5
