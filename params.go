@@ -85,10 +85,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 					xorFieldIsZero = isZero(xorField)
 				}
 				if !(zero != xorFieldIsZero) {
-					err := ErrMissingInput{}
-					err.Argument = fmt.Sprintf("%s/%s", f.Name, xorTag)
-					err.Info = fmt.Sprintf("Exactly one of %s and %s must be provided", f.Name, xorTag)
-					return nil, err
+					return nil, NewConflictingInputError(f.Name, xorTag)
 				}
 			}
 
@@ -107,10 +104,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 						orFieldIsZero = isZero(orField)
 					}
 					if orFieldIsZero {
-						err := ErrMissingInput{}
-						err.Argument = fmt.Sprintf("%s/%s", f.Name, orTag)
-						err.Info = fmt.Sprintf("At least one of %s and %s must be provided", f.Name, orTag)
-						return nil, err
+						return nil, NewMissingInputError(f.Name)
 					}
 				}
 			}

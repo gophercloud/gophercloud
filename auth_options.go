@@ -117,14 +117,14 @@ func (opts AuthOptions) ToTokenV2CreateMap() (map[string]interface{}, error) {
 				"password": opts.Password,
 			}
 		} else {
-			return nil, ErrMissingInput{Argument: "Password"}
+			return nil, NewMissingInputError("Password")
 		}
 	} else if opts.TokenID != "" {
 		authMap["token"] = map[string]interface{}{
 			"id": opts.TokenID,
 		}
 	} else {
-		return nil, ErrMissingInput{Argument: "Username"}
+		return nil, NewMissingInputError("Username")
 	}
 
 	if opts.TenantID != "" {
@@ -202,24 +202,26 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 		if opts.TokenID != "" {
 			// Because we aren't using password authentication, it's an error to also provide any of the user-based authentication
 			// parameters.
+			redundantFields := make([]string, 0, 4)
 			if opts.Username != "" {
-				return nil, ErrUsernameWithToken{}
+				redundantFields = append(redundantFields, "Username")
 			}
 			if opts.UserID != "" {
-				return nil, ErrUserIDWithToken{}
+				redundantFields = append(redundantFields, "UserID")
 			}
 			if opts.DomainID != "" {
-				return nil, ErrDomainIDWithToken{}
+				redundantFields = append(redundantFields, "DomainID")
 			}
 			if opts.DomainName != "" {
-				return nil, ErrDomainNameWithToken{}
+				redundantFields = append(redundantFields, "DomainName")
+			}
+			if len(redundantFields) > 0 {
+				return nil, NewFieldsIncompatibleWithTokenError(redundantFields...)
 			}
 
 			// Configure the request for Token authentication.
 			req.Auth.Identity.Methods = []string{"token"}
-			req.Auth.Identity.Token = &tokenReq{
-				ID: opts.TokenID,
-			}
+			req.Auth.Identity.Token = &tokenReq{ID: opts.TokenID}
 
 		} else if opts.ApplicationCredentialID != "" {
 			// Configure the request for ApplicationCredentialID authentication.
@@ -229,7 +231,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 			// 2. application_credential name + secret + user_id
 			// 3. application_credential name + secret + username + domain_id / domain_name
 			if opts.ApplicationCredentialSecret == "" {
-				return nil, ErrAppCredMissingSecret{}
+				return nil, NewAppCredMissingSecretError()
 			}
 			req.Auth.Identity.Methods = []string{"application_credential"}
 			req.Auth.Identity.ApplicationCredential = &applicationCredentialReq{
@@ -238,7 +240,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 			}
 		} else if opts.ApplicationCredentialName != "" {
 			if opts.ApplicationCredentialSecret == "" {
-				return nil, ErrAppCredMissingSecret{}
+				return nil, NewAppCredMissingSecretError()
 			}
 
 			var userRequest *userReq
@@ -252,7 +254,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 
 			if userRequest == nil && opts.Username == "" {
 				// Make sure that Username or UserID are provided
-				return nil, ErrUsernameOrUserID{}
+				return nil, NewUsernameOrUserIDError()
 			}
 
 			if userRequest == nil && opts.DomainID != "" {
@@ -271,7 +273,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 
 			// Make sure that DomainID or DomainName are provided among Username
 			if userRequest == nil {
-				return nil, ErrDomainIDOrDomainName{}
+				return nil, NewDomainNameOrDomainIDError()
 			}
 
 			req.Auth.Identity.Methods = []string{"application_credential"}
@@ -282,7 +284,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 			}
 		} else {
 			// If no password or token ID or ApplicationCredential are available, authentication can't continue.
-			return nil, ErrMissingPassword{}
+			return nil, NewMissingPasswordError()
 		}
 	} else {
 		// Password authentication.
@@ -297,23 +299,23 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 
 		// At least one of Username and UserID must be specified.
 		if opts.Username == "" && opts.UserID == "" {
-			return nil, ErrUsernameOrUserID{}
+			return nil, NewUsernameOrUserIDError()
 		}
 
 		if opts.Username != "" {
 			// If Username is provided, UserID may not be provided.
 			if opts.UserID != "" {
-				return nil, ErrUsernameOrUserID{}
+				return nil, NewUsernameOrUserIDError()
 			}
 
 			// Either DomainID or DomainName must also be specified.
 			if opts.DomainID == "" && opts.DomainName == "" {
-				return nil, ErrDomainIDOrDomainName{}
+				return nil, NewDomainNameOrDomainIDError()
 			}
 
 			if opts.DomainID != "" {
 				if opts.DomainName != "" {
-					return nil, ErrDomainIDOrDomainName{}
+					return nil, NewDomainNameOrDomainIDError()
 				}
 
 				// Configure the request for Username and Password authentication with a DomainID.
@@ -362,12 +364,16 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 		}
 
 		if opts.UserID != "" {
+			redundant := make([]string, 0, 2)
 			// If UserID is specified, neither DomainID nor DomainName may be.
 			if opts.DomainID != "" {
-				return nil, ErrDomainIDWithUserID{}
+				redundant = append(redundant, "DomainID")
 			}
 			if opts.DomainName != "" {
-				return nil, ErrDomainNameWithUserID{}
+				redundant = append(redundant, "DomainName")
+			}
+			if len(redundant) > 0 {
+				return nil, NewFieldsIncompatibleWithUserIDError(redundant...)
 			}
 
 			// Configure the request for UserID and Password authentication.
@@ -434,10 +440,10 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 		// ProjectName provided: either DomainID or DomainName must also be supplied.
 		// ProjectID may not be supplied.
 		if opts.Scope.DomainID == "" && opts.Scope.DomainName == "" {
-			return nil, ErrScopeDomainIDOrDomainName{}
+			return nil, NewScopeDomainIDOrDomainNameError()
 		}
 		if opts.Scope.ProjectID != "" {
-			return nil, ErrScopeProjectIDOrProjectName{}
+			return nil, NewScopeProjectIDOrProjectNameError()
 		}
 
 		if opts.Scope.DomainID != "" {
@@ -462,10 +468,10 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 	} else if opts.Scope.ProjectID != "" {
 		// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
 		if opts.Scope.DomainID != "" {
-			return nil, ErrScopeProjectIDAlone{}
+			return nil, NewScopeProjectIDAloneError()
 		}
 		if opts.Scope.DomainName != "" {
-			return nil, ErrScopeProjectIDAlone{}
+			return nil, NewScopeProjectIDAloneError()
 		}
 
 		// ProjectID
@@ -477,7 +483,7 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 	} else if opts.Scope.DomainID != "" {
 		// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
 		if opts.Scope.DomainName != "" {
-			return nil, ErrScopeDomainIDOrDomainName{}
+			return nil, NewScopeDomainIDOrDomainNameError()
 		}
 
 		// DomainID
