@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -43,7 +44,7 @@ func WaitForShareAccessRule(t *testing.T, client *gophercloud.ServiceClient, acc
 	return tools.WaitFor(func(context.Context) (bool, error) {
 		latest, err := ShareAccessRuleGet(t, client, accessRule.ID)
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				return false, nil
 			}
 

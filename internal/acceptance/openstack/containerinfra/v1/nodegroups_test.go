@@ -5,6 +5,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -165,7 +166,7 @@ func testNodeGroupDelete(t *testing.T, client *gophercloud.ServiceClient, cluste
 	// Wait for the node group to be deleted
 	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
 		_, err := nodegroups.Get(ctx, client, clusterID, nodeGroupID).Extract()
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			return true, nil
 		}
 		return false, nil

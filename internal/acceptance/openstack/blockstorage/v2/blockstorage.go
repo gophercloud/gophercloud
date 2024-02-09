@@ -6,6 +6,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -209,7 +210,7 @@ func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID stri
 // could not be deleted. This works best when used as a deferred function.
 func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID string) {
 	if err := backups.Delete(context.TODO(), client, backupID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Logf("Backup %s is already deleted", backupID)
 			return
 		}
@@ -225,7 +226,7 @@ func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) e
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		current, err := backups.Get(ctx, client, id).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "deleted" {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) && status == "deleted" {
 				return true, nil
 			}
 			return false, err

@@ -5,6 +5,7 @@ package v3
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -188,7 +189,7 @@ func TestSnapshotsForceDelete(t *testing.T) {
 	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
 		_, err := snapshots.Get(ctx, client, snapshot.ID).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				return true, nil
 			}
 		}

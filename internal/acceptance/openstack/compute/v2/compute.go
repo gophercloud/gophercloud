@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -813,7 +814,7 @@ func DeleteServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 	}
 
 	if err := WaitForComputeStatus(client, server, "DELETED"); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Logf("Deleted server: %s", server.ID)
 			return
 		}

@@ -6,6 +6,7 @@ package v3
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -274,7 +275,7 @@ func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {
 	err := snapshots.Delete(context.TODO(), client, snapshot.ID).ExtractErr()
 	if err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Logf("Snapshot %s is already deleted", snapshot.ID)
 			return
 		}
@@ -305,7 +306,7 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 
 	err := volumes.Delete(context.TODO(), client, volume.ID, volumes.DeleteOpts{}).ExtractErr()
 	if err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Logf("Volume %s is already deleted", volume.ID)
 			return
 		}
@@ -427,7 +428,7 @@ func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID stri
 // could not be deleted. This works best when used as a deferred function.
 func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID string) {
 	if err := backups.Delete(context.TODO(), client, backupID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Logf("Backup %s is already deleted", backupID)
 			return
 		}
@@ -443,7 +444,7 @@ func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) e
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		current, err := backups.Get(ctx, client, id).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "deleted" {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) && status == "deleted" {
 				return true, nil
 			}
 			return false, err

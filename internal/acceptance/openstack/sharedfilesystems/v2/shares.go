@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -90,7 +91,7 @@ func GetAccessRightsSlice(t *testing.T, client *gophercloud.ServiceClient, share
 func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) {
 	err := shares.Delete(context.TODO(), client, share.ID).ExtractErr()
 	if err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			return
 		}
 		t.Errorf("Unable to delete share %s: %v", share.ID, err)
@@ -142,7 +143,7 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 
 		current, err = shares.Get(ctx, c, id).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				switch status {
 				case "deleted":
 					return true, nil
