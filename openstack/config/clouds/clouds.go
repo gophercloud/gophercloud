@@ -170,22 +170,10 @@ func Parse(opts ...func(*cloudOpts)) (gophercloud.AuthOptions, gophercloud.Endpo
 			ApplicationCredentialSecret: coalesce(options.applicationCredentialSecret, cloud.AuthInfo.ApplicationCredentialSecret),
 		}, gophercloud.EndpointOpts{
 			Region:       coalesce(options.region, cloud.RegionName),
-			Availability: computeAvailability(endpointType),
+			Availability: gophercloud.AvailabilityFromEndpointType(endpointType),
 		},
 		tlsConfig,
 		nil
-}
-
-// computeAvailability is a helper method to determine the endpoint type
-// requested by the user.
-func computeAvailability(endpointType string) gophercloud.Availability {
-	if endpointType == "internal" || endpointType == "internalURL" {
-		return gophercloud.AvailabilityInternal
-	}
-	if endpointType == "admin" || endpointType == "adminURL" {
-		return gophercloud.AvailabilityAdmin
-	}
-	return gophercloud.AvailabilityPublic
 }
 
 // coalesce returns the first argument that is not the empty string, or the

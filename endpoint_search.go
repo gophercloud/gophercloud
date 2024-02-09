@@ -22,6 +22,16 @@ const (
 	AvailabilityInternal Availability = "internal"
 )
 
+func AvailabilityFromEndpointType(endpointType string) Availability {
+	if endpointType == "internal" || endpointType == "internalURL" {
+		return AvailabilityInternal
+	}
+	if endpointType == "admin" || endpointType == "adminURL" {
+		return AvailabilityAdmin
+	}
+	return AvailabilityPublic
+}
+
 // EndpointOpts specifies search criteria used by queries against an
 // OpenStack service catalog. The options must contain enough information to
 // unambiguously identify one, and only one, endpoint within the catalog.
