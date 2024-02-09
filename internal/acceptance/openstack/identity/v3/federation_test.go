@@ -5,6 +5,7 @@ package v3
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -115,8 +116,13 @@ func TestMappingsCRUD(t *testing.T) {
 	err = federation.DeleteMapping(context.TODO(), client, mappingName).ExtractErr()
 	th.AssertNoErr(t, err)
 
+<<<<<<< HEAD
 	resp := federation.GetMapping(context.TODO(), client, mappingName)
 	th.AssertErr(t, resp.Err)
 	_, ok := resp.Err.(gophercloud.ErrDefault404)
 	th.AssertEquals(t, true, ok)
+=======
+	resp := federation.GetMapping(client, mappingName)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(resp.Err, http.StatusNotFound))
+>>>>>>> 3d5f9c1f46 (remove the error types for specific response codes)
 }

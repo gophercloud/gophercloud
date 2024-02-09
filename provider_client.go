@@ -327,9 +327,6 @@ type RequestOpts struct {
 	// OmitHeaders specifies the HTTP headers which should be omitted.
 	// OmitHeaders will override MoreHeaders
 	OmitHeaders []string
-	// ErrorContext specifies the resource error type to return if an error is encountered.
-	// This lets resources override default error messages based on the response status code.
-	ErrorContext error
 	// KeepResponseBody specifies whether to keep the HTTP response body. Usually used, when the HTTP
 	// response body is considered for further use. Valid when JSONResponse is nil.
 	KeepResponseBody bool
@@ -461,13 +458,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 			ResponseHeader: resp.Header,
 		}
 
-		errType := options.ErrorContext
 		switch resp.StatusCode {
-		case http.StatusBadRequest:
-			err = ErrDefault400{respErr}
-			if error400er, ok := errType.(Err400er); ok {
-				err = error400er.Error400(respErr)
-			}
 		case http.StatusUnauthorized:
 			if client.ReauthFunc != nil && !state.hasReauthenticated {
 				err = client.Reauthenticate(ctx, prereqtok)
@@ -498,41 +489,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				}
 				return resp, nil
 			}
-			err = ErrDefault401{respErr}
-			if error401er, ok := errType.(Err401er); ok {
-				err = error401er.Error401(respErr)
-			}
-		case http.StatusForbidden:
-			err = ErrDefault403{respErr}
-			if error403er, ok := errType.(Err403er); ok {
-				err = error403er.Error403(respErr)
-			}
-		case http.StatusNotFound:
-			err = ErrDefault404{respErr}
-			if error404er, ok := errType.(Err404er); ok {
-				err = error404er.Error404(respErr)
-			}
-		case http.StatusMethodNotAllowed:
-			err = ErrDefault405{respErr}
-			if error405er, ok := errType.(Err405er); ok {
-				err = error405er.Error405(respErr)
-			}
-		case http.StatusRequestTimeout:
-			err = ErrDefault408{respErr}
-			if error408er, ok := errType.(Err408er); ok {
-				err = error408er.Error408(respErr)
-			}
-		case http.StatusConflict:
-			err = ErrDefault409{respErr}
-			if error409er, ok := errType.(Err409er); ok {
-				err = error409er.Error409(respErr)
-			}
 		case http.StatusTooManyRequests, 498:
-			err = ErrDefault429{respErr}
-			if error429er, ok := errType.(Err429er); ok {
-				err = error429er.Error429(respErr)
-			}
-
 			maxTries := client.MaxBackoffRetries
 			if maxTries == 0 {
 				maxTries = DefaultMaxBackoffRetries
@@ -549,26 +506,6 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				}
 
 				return client.doRequest(ctx, method, url, options, state)
-			}
-		case http.StatusInternalServerError:
-			err = ErrDefault500{respErr}
-			if error500er, ok := errType.(Err500er); ok {
-				err = error500er.Error500(respErr)
-			}
-		case http.StatusBadGateway:
-			err = ErrDefault502{respErr}
-			if error502er, ok := errType.(Err502er); ok {
-				err = error502er.Error502(respErr)
-			}
-		case http.StatusServiceUnavailable:
-			err = ErrDefault503{respErr}
-			if error503er, ok := errType.(Err503er); ok {
-				err = error503er.Error503(respErr)
-			}
-		case http.StatusGatewayTimeout:
-			err = ErrDefault504{respErr}
-			if error504er, ok := errType.(Err504er); ok {
-				err = error504er.Error504(respErr)
 			}
 		}
 

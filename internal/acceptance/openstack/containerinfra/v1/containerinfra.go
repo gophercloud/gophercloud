@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -188,7 +189,7 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 	return tools.WaitForTimeout(func(ctx context.Context) (bool, error) {
 		cluster, err := clusters.Get(ctx, client, clusterID).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETE_COMPLETE" {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) && status == "DELETE_COMPLETE" {
 				return true, nil
 			}
 

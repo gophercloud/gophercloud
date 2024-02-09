@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -55,7 +56,7 @@ func ListSnapshots(t *testing.T, client *gophercloud.ServiceClient) ([]snapshots
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {
 	err := snapshots.Delete(context.TODO(), client, snapshot.ID).ExtractErr()
 	if err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			return
 		}
 		t.Errorf("Unable to delete snapshot %s: %v", snapshot.ID, err)
@@ -73,7 +74,7 @@ func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, statu
 	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
 		current, err := snapshots.Get(ctx, c, id).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				switch status {
 				case "deleted":
 					return true, nil

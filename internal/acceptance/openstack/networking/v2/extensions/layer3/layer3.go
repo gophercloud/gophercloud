@@ -2,6 +2,7 @@ package layer3
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/addressscopes"
@@ -299,7 +300,7 @@ func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string) e
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		_, err := routers.Get(ctx, client, routerID).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				return true, nil
 			}
 
@@ -329,7 +330,7 @@ func WaitForRouterInterfaceToDetach(client *gophercloud.ServiceClient, routerInt
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		r, err := ports.Get(ctx, client, routerInterfaceID).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				return true, nil
 			}
 

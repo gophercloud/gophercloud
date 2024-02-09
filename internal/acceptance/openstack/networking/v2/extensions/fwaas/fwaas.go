@@ -3,6 +3,7 @@ package fwaas
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strconv"
 	"testing"
 
@@ -209,12 +210,8 @@ func WaitForFirewallState(client *gophercloud.ServiceClient, firewallID, status 
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		current, err := firewalls.Get(ctx, client, firewallID).Extract()
 		if err != nil {
-			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {
-				if httpStatus.Actual == 404 {
-					if status == "DELETED" {
-						return true, nil
-					}
-				}
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) && status == "DELETED" {
+				return true, nil
 			}
 			return false, err
 		}
