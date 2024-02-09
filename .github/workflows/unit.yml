@@ -42,6 +42,7 @@ jobs:
 
       - name: Run unit tests
         run: |
+          goimports
           ./script/coverage
           ./script/format
           ./script/unittest -v
