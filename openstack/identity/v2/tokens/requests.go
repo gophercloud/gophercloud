@@ -100,13 +100,13 @@ func CreateWithContext(ctx context.Context, client *gophercloud.ServiceClient, a
 }
 
 // Create is a compatibility wrapper around CreateWithContext
-func Create(client *gophercloud.ServiceClient, auth AuthOptionsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, auth AuthOptionsBuilder) (r CreateResult) {
 	return CreateWithContext(context.Background(), client, auth)
 }
 
 // GetWithContext validates and retrieves information for user's token.
 func GetWithContext(ctx context.Context, client *gophercloud.ServiceClient, token string) (r GetResult) {
-	resp, err := client.Get(GetURL(client, token), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, GetURL(client, token), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -114,6 +114,6 @@ func GetWithContext(ctx context.Context, client *gophercloud.ServiceClient, toke
 }
 
 // Get is a compatibility wrapper around GetWithContext
-func Get(client *gophercloud.ServiceClient, token string) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient, token string) (r GetResult) {
 	return GetWithContext(context.Background(), client, token)
 }

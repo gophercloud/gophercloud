@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -23,7 +24,7 @@ func TestRescue(t *testing.T) {
 		fmt.Fprintf(w, RescueResult)
 	})
 
-	s, err := rescueunrescue.Rescue(fake.ServiceClient(), "3f54d05f-3430-4d80-aa07-63e6af9e2488", rescueunrescue.RescueOpts{
+	s, err := rescueunrescue.Rescue(context.TODO(), fake.ServiceClient(), "3f54d05f-3430-4d80-aa07-63e6af9e2488", rescueunrescue.RescueOpts{
 		AdminPass:      "aUPtawPzE9NU",
 		RescueImageRef: "115e5c5b-72f0-4a0a-9067-60706545248c",
 	}).Extract()
@@ -44,6 +45,6 @@ func TestUnrescue(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	err := rescueunrescue.Unrescue(fake.ServiceClient(), "3f54d05f-3430-4d80-aa07-63e6af9e2488").ExtractErr()
+	err := rescueunrescue.Unrescue(context.TODO(), fake.ServiceClient(), "3f54d05f-3430-4d80-aa07-63e6af9e2488").ExtractErr()
 	th.AssertNoErr(t, err)
 }

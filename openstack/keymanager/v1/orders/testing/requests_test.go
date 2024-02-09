@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/keymanager/v1/orders"
@@ -46,7 +47,7 @@ func TestGetOrder(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetOrderSuccessfully(t)
 
-	actual, err := orders.Get(client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
+	actual, err := orders.Get(context.TODO(), client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
@@ -66,7 +67,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 	}
 
-	actual, err := orders.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := orders.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
@@ -76,6 +77,6 @@ func TestDeleteOrder(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteOrderSuccessfully(t)
 
-	res := orders.Delete(client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7")
+	res := orders.Delete(context.TODO(), client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7")
 	th.AssertNoErr(t, res.Err)
 }

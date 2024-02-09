@@ -1,6 +1,8 @@
 package siteconnections
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -119,7 +121,7 @@ func (opts CreateOpts) ToConnectionCreateMap() (map[string]interface{}, error) {
 
 // Create accepts a CreateOpts struct and uses the values to create a new
 // IPSec site connection.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToConnectionCreateMap()
 	if err != nil {
 		r.Err = err
@@ -132,14 +134,14 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 
 // Delete will permanently delete a particular IPSec site connection based on its
 // unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	resp, err := c.Delete(resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves a particular IPSec site connection based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -232,7 +234,7 @@ func (opts UpdateOpts) ToConnectionUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update allows IPSec site connections to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToConnectionUpdateMap()
 	if err != nil {
 		r.Err = err

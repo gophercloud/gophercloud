@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -24,7 +25,7 @@ func TestCreate(t *testing.T) {
 		NeutronSubnetID: "53482b62-2c84-4a53-b6ab-30d9d9800d06",
 	}
 
-	n, err := sharenetworks.Create(client.ServiceClient(), options).Extract()
+	n, err := sharenetworks.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "my_network")
@@ -40,7 +41,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	res := sharenetworks.Delete(client.ServiceClient(), "fa158a3d-6d9f-4187-9ca5-abbb82646eb2")
+	res := sharenetworks.Delete(context.TODO(), client.ServiceClient(), "fa158a3d-6d9f-4187-9ca5-abbb82646eb2")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -162,7 +163,7 @@ func TestGet(t *testing.T) {
 		ProjectID:       "16e1ab15c35a457e9c2b2aa189f544e1",
 	}
 
-	n, err := sharenetworks.Get(client.ServiceClient(), "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd").Extract()
+	n, err := sharenetworks.Get(context.TODO(), client.ServiceClient(), "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd").Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, &expected, n)
@@ -200,7 +201,7 @@ func TestUpdateNeutron(t *testing.T) {
 		NeutronSubnetID: "new-neutron-subnet-id",
 	}
 
-	v, err := sharenetworks.Update(client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
+	v, err := sharenetworks.Update(context.TODO(), client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, v)
 }
@@ -236,7 +237,7 @@ func TestUpdateNova(t *testing.T) {
 		NovaNetID:   "new-nova-id",
 	}
 
-	v, err := sharenetworks.Update(client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
+	v, err := sharenetworks.Update(context.TODO(), client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, v)
 }
@@ -266,7 +267,7 @@ func TestAddSecurityService(t *testing.T) {
 	}
 
 	options := sharenetworks.AddSecurityServiceOpts{SecurityServiceID: "securityServiceID"}
-	s, err := sharenetworks.AddSecurityService(client.ServiceClient(), "shareNetworkID", options).Extract()
+	s, err := sharenetworks.AddSecurityService(context.TODO(), client.ServiceClient(), "shareNetworkID", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, s)
 }
@@ -279,6 +280,6 @@ func TestRemoveSecurityService(t *testing.T) {
 	MockRemoveSecurityServiceResponse(t)
 
 	options := sharenetworks.RemoveSecurityServiceOpts{SecurityServiceID: "securityServiceID"}
-	_, err := sharenetworks.RemoveSecurityService(client.ServiceClient(), "shareNetworkID", options).Extract()
+	_, err := sharenetworks.RemoveSecurityService(context.TODO(), client.ServiceClient(), "shareNetworkID", options).Extract()
 	th.AssertNoErr(t, err)
 }

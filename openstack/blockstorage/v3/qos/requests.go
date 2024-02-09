@@ -1,6 +1,8 @@
 package qos
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -58,13 +60,13 @@ func (opts CreateOpts) ToQoSCreateMap() (map[string]interface{}, error) {
 // Create will create a new QoS based on the values in CreateOpts. To extract
 // the QoS object from the response, call the Extract method on the
 // CreateResult.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToQoSCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -91,7 +93,7 @@ func (opts DeleteOpts) ToQoSDeleteQuery() (string, error) {
 }
 
 // Delete will delete the existing QoS with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, id)
 	if opts != nil {
 		query, err := opts.ToQoSDeleteQuery()
@@ -101,7 +103,7 @@ func Delete(client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder
 		}
 		url += query
 	}
-	resp, err := client.Delete(url, nil)
+	resp, err := client.DeleteWithContext(ctx, url, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -146,8 +148,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // Get retrieves details of a single qos. Use Extract to convert its
 // result into a QoS.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -197,13 +199,13 @@ func (opts UpdateOpts) ToQoSUpdateMap() (map[string]interface{}, error) {
 // Update will update an existing QoS based on the values in UpdateOpts.
 // To extract the QoS object from the response, call the Extract method
 // on the UpdateResult.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r updateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r updateResult) {
 	b, err := opts.ToQoSUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -226,13 +228,13 @@ func (opts DeleteKeysOpts) ToDeleteKeysCreateMap() (map[string]interface{}, erro
 }
 
 // DeleteKeys will delete the keys/specs from the specified QoS
-func DeleteKeys(client *gophercloud.ServiceClient, qosID string, opts DeleteKeysOptsBuilder) (r DeleteResult) {
+func DeleteKeys(ctx context.Context, client *gophercloud.ServiceClient, qosID string, opts DeleteKeysOptsBuilder) (r DeleteResult) {
 	b, err := opts.ToDeleteKeysCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(deleteKeysURL(client, qosID), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, deleteKeysURL(client, qosID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -258,7 +260,7 @@ func (opts AssociateOpts) ToQosAssociateQuery() (string, error) {
 }
 
 // Associate will associate a qos with a volute type
-func Associate(client *gophercloud.ServiceClient, qosID string, opts AssociateOptsBuilder) (r AssociateResult) {
+func Associate(ctx context.Context, client *gophercloud.ServiceClient, qosID string, opts AssociateOptsBuilder) (r AssociateResult) {
 	url := associateURL(client, qosID)
 	query, err := opts.ToQosAssociateQuery()
 	if err != nil {
@@ -267,7 +269,7 @@ func Associate(client *gophercloud.ServiceClient, qosID string, opts AssociateOp
 	}
 	url += query
 
-	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -293,7 +295,7 @@ func (opts DisassociateOpts) ToQosDisassociateQuery() (string, error) {
 }
 
 // Disassociate will disassociate a qos from a volute type
-func Disassociate(client *gophercloud.ServiceClient, qosID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
+func Disassociate(ctx context.Context, client *gophercloud.ServiceClient, qosID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
 	url := disassociateURL(client, qosID)
 	query, err := opts.ToQosDisassociateQuery()
 	if err != nil {
@@ -302,7 +304,7 @@ func Disassociate(client *gophercloud.ServiceClient, qosID string, opts Disassoc
 	}
 	url += query
 
-	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -310,8 +312,8 @@ func Disassociate(client *gophercloud.ServiceClient, qosID string, opts Disassoc
 }
 
 // DisassociateAll will disassociate a qos from all volute types
-func DisassociateAll(client *gophercloud.ServiceClient, qosID string) (r DisassociateAllResult) {
-	resp, err := client.Get(disassociateAllURL(client, qosID), nil, &gophercloud.RequestOpts{
+func DisassociateAll(ctx context.Context, client *gophercloud.ServiceClient, qosID string) (r DisassociateAllResult) {
+	resp, err := client.GetWithContext(ctx, disassociateAllURL(client, qosID), nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

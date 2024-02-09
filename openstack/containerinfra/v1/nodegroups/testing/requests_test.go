@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -19,7 +20,7 @@ func TestGetNodeGroupSuccess(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	ng, err := nodegroups.Get(sc, clusterUUID, nodeGroup1UUID).Extract()
+	ng, err := nodegroups.Get(context.TODO(), sc, clusterUUID, nodeGroup1UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, expectedNodeGroup1, *ng)
@@ -35,7 +36,7 @@ func TestGetNodeGroupNotFound(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	_, err := nodegroups.Get(sc, clusterUUID, badNodeGroupUUID).Extract()
+	_, err := nodegroups.Get(context.TODO(), sc, clusterUUID, badNodeGroupUUID).Extract()
 	th.AssertEquals(t, true, err != nil)
 
 	_, isNotFound := err.(gophercloud.ErrDefault404)
@@ -53,7 +54,7 @@ func TestGetNodeGroupClusterNotFound(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	_, err := nodegroups.Get(sc, badClusterUUID, badNodeGroupUUID).Extract()
+	_, err := nodegroups.Get(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).Extract()
 	th.AssertEquals(t, true, err != nil)
 
 	_, isNotFound := err.(gophercloud.ErrDefault404)
@@ -136,7 +137,7 @@ func TestCreateNodeGroupSuccess(t *testing.T) {
 		MergeLabels: gophercloud.Enabled,
 	}
 
-	ng, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	ng, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expectedCreatedNodeGroup, *ng)
 }
@@ -156,7 +157,7 @@ func TestCreateNodeGroupDuplicate(t *testing.T) {
 		Name: "default-worker",
 	}
 
-	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	_, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
 	th.AssertEquals(t, true, err != nil)
 	_, isNotAccepted := err.(gophercloud.ErrDefault409)
 	th.AssertEquals(t, true, isNotAccepted)
@@ -178,7 +179,7 @@ func TestCreateNodeGroupMaster(t *testing.T) {
 		Role: "master",
 	}
 
-	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	_, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
 	th.AssertEquals(t, true, err != nil)
 	_, isBadRequest := err.(gophercloud.ErrDefault400)
 	th.AssertEquals(t, true, isBadRequest)
@@ -202,7 +203,7 @@ func TestCreateNodeGroupBadSizes(t *testing.T) {
 		MaxNodeCount: &maxNodes,
 	}
 
-	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	_, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
 	th.AssertEquals(t, true, err != nil)
 	_, isNotAccepted := err.(gophercloud.ErrDefault409)
 	th.AssertEquals(t, true, isNotAccepted)
@@ -226,7 +227,7 @@ func TestUpdateNodeGroupSuccess(t *testing.T) {
 		},
 	}
 
-	ng, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	ng, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expectedUpdatedNodeGroup, *ng)
 }
@@ -250,7 +251,7 @@ func TestUpdateNodeGroupInternal(t *testing.T) {
 		},
 	}
 
-	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	_, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
 	th.AssertEquals(t, true, err != nil)
 	_, isBadRequest := err.(gophercloud.ErrDefault400)
 	th.AssertEquals(t, true, isBadRequest)
@@ -275,7 +276,7 @@ func TestUpdateNodeGroupBadField(t *testing.T) {
 		},
 	}
 
-	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	_, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
 	th.AssertEquals(t, true, err != nil)
 	_, isBadRequest := err.(gophercloud.ErrDefault400)
 	th.AssertEquals(t, true, isBadRequest)
@@ -300,7 +301,7 @@ func TestUpdateNodeGroupBadMin(t *testing.T) {
 		},
 	}
 
-	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	_, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
 	th.AssertEquals(t, true, err != nil)
 	_, isNotAccepted := err.(gophercloud.ErrDefault409)
 	th.AssertEquals(t, true, isNotAccepted)
@@ -316,7 +317,7 @@ func TestDeleteNodeGroupSuccess(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	err := nodegroups.Delete(sc, clusterUUID, nodeGroup2UUID).ExtractErr()
+	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -330,7 +331,7 @@ func TestDeleteNodeGroupNotFound(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	err := nodegroups.Delete(sc, clusterUUID, badNodeGroupUUID).ExtractErr()
+	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, badNodeGroupUUID).ExtractErr()
 	_, isNotFound := err.(gophercloud.ErrDefault404)
 	th.AssertEquals(t, true, isNotFound)
 }
@@ -345,7 +346,7 @@ func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	err := nodegroups.Delete(sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
+	err := nodegroups.Delete(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
 	_, isNotFound := err.(gophercloud.ErrDefault404)
 	th.AssertEquals(t, true, isNotFound)
 }
@@ -360,7 +361,7 @@ func TestDeleteNodeGroupDefault(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	err := nodegroups.Delete(sc, clusterUUID, nodeGroup2UUID).ExtractErr()
+	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()
 	_, isBadRequest := err.(gophercloud.ErrDefault400)
 	th.AssertEquals(t, true, isBadRequest)
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/attachinterfaces"
@@ -54,7 +55,7 @@ func TestGetInterface(t *testing.T) {
 	serverID := "b07e7a3b-d951-4efc-a4f9-ac9f001afb7f"
 	interfaceID := "0dde1598-b374-474e-986f-5b8dd1df1d4e"
 
-	actual, err := attachinterfaces.Get(client.ServiceClient(), serverID, interfaceID).Extract()
+	actual, err := attachinterfaces.Get(context.TODO(), client.ServiceClient(), serverID, interfaceID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
@@ -69,7 +70,7 @@ func TestCreateInterface(t *testing.T) {
 	serverID := "b07e7a3b-d951-4efc-a4f9-ac9f001afb7f"
 	networkID := "8a5fe506-7e9f-4091-899b-96336909d93c"
 
-	actual, err := attachinterfaces.Create(client.ServiceClient(), serverID, attachinterfaces.CreateOpts{
+	actual, err := attachinterfaces.Create(context.TODO(), client.ServiceClient(), serverID, attachinterfaces.CreateOpts{
 		NetworkID: networkID,
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -84,6 +85,6 @@ func TestDeleteInterface(t *testing.T) {
 	serverID := "b07e7a3b-d951-4efc-a4f9-ac9f001afb7f"
 	portID := "0dde1598-b374-474e-986f-5b8dd1df1d4e"
 
-	err := attachinterfaces.Delete(client.ServiceClient(), serverID, portID).ExtractErr()
+	err := attachinterfaces.Delete(context.TODO(), client.ServiceClient(), serverID, portID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

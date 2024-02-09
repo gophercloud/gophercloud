@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/amphorae"
@@ -56,7 +57,7 @@ func TestGetAmphora(t *testing.T) {
 	HandleAmphoraGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := amphorae.Get(client, "45f40289-0551-483a-b089-47214bc2a8a4").Extract()
+	actual, err := amphorae.Get(context.TODO(), client, "45f40289-0551-483a-b089-47214bc2a8a4").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -69,6 +70,6 @@ func TestFailoverAmphora(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAmphoraFailoverSuccessfully(t)
 
-	res := amphorae.Failover(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	res := amphorae.Failover(context.TODO(), fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
 	th.AssertNoErr(t, res.Err)
 }

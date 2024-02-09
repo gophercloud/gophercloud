@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -65,7 +66,7 @@ func TestCreateImage(t *testing.T) {
 	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
 	name := "Ubuntu 12.10"
 
-	actualImage, err := images.Create(fakeclient.ServiceClient(), images.CreateOpts{
+	actualImage, err := images.Create(context.TODO(), fakeclient.ServiceClient(), images.CreateOpts{
 		ID:   id,
 		Name: name,
 		Properties: map[string]string{
@@ -126,7 +127,7 @@ func TestCreateImageNulls(t *testing.T) {
 	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
 	name := "Ubuntu 12.10"
 
-	actualImage, err := images.Create(fakeclient.ServiceClient(), images.CreateOpts{
+	actualImage, err := images.Create(context.TODO(), fakeclient.ServiceClient(), images.CreateOpts{
 		ID:   id,
 		Name: name,
 		Tags: []string{"ubuntu", "quantal"},
@@ -192,7 +193,7 @@ func TestGetImage(t *testing.T) {
 
 	HandleImageGetSuccessfully(t)
 
-	actualImage, err := images.Get(fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
+	actualImage, err := images.Get(context.TODO(), fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -250,7 +251,7 @@ func TestDeleteImage(t *testing.T) {
 
 	HandleImageDeleteSuccessfully(t)
 
-	result := images.Delete(fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
+	result := images.Delete(context.TODO(), fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
 	th.AssertNoErr(t, result.Err)
 }
 
@@ -260,7 +261,7 @@ func TestUpdateImage(t *testing.T) {
 
 	HandleImageUpdateSuccessfully(t)
 
-	actualImage, err := images.Update(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+	actualImage, err := images.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.ReplaceImageName{NewName: "Fedora 17"},
 		images.ReplaceImageTags{NewTags: []string{"fedora", "beefy"}},
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
@@ -414,7 +415,7 @@ func TestUpdateImageProperties(t *testing.T) {
 
 	HandleImageUpdatePropertiesSuccessfully(t)
 
-	actualImage, err := images.Update(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+	actualImage, err := images.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.UpdateImageProperty{
 			Op:    images.AddOp,
 			Name:  "hw_disk_bus",

@@ -1,6 +1,8 @@
 package backups
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -55,13 +57,13 @@ func (opts CreateOpts) ToBackupCreateMap() (map[string]interface{}, error) {
 // Create will create a new Backup based on the values in CreateOpts. To
 // extract the Backup object from the response, call the Extract method on the
 // CreateResult.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToBackupCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -69,16 +71,16 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Delete will delete the existing Backup with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves the Backup with the provided ID. To extract the Backup
 // object from the response, call the Extract method on the GetResult.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -223,13 +225,13 @@ func (opts UpdateOpts) ToBackupUpdateMap() (map[string]interface{}, error) {
 // the updated Backup from the response, call the Extract method on the
 // UpdateResult.
 // Requires microversion 3.9 or later.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToBackupUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -255,13 +257,13 @@ func (opts RestoreOpts) ToRestoreMap() (map[string]interface{}, error) {
 // RestoreFromBackup will restore a Backup to a volume based on the values in
 // RestoreOpts. To extract the Restore object from the response, call the
 // Extract method on the RestoreResult.
-func RestoreFromBackup(client *gophercloud.ServiceClient, id string, opts RestoreOpts) (r RestoreResult) {
+func RestoreFromBackup(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RestoreOpts) (r RestoreResult) {
 	b, err := opts.ToRestoreMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(restoreURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, restoreURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -270,8 +272,8 @@ func RestoreFromBackup(client *gophercloud.ServiceClient, id string, opts Restor
 
 // Export will export a Backup information. To extract the Backup export record
 // object from the response, call the Extract method on the ExportResult.
-func Export(client *gophercloud.ServiceClient, id string) (r ExportResult) {
-	resp, err := client.Get(exportURL(client, id), &r.Body, nil)
+func Export(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ExportResult) {
+	resp, err := client.GetWithContext(ctx, exportURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -289,13 +291,13 @@ func (opts ImportOpts) ToBackupImportMap() (map[string]interface{}, error) {
 // Import will import a Backup data to a backup based on the values in
 // ImportOpts. To extract the Backup object from the response, call the
 // Extract method on the ImportResult.
-func Import(client *gophercloud.ServiceClient, opts ImportOpts) (r ImportResult) {
+func Import(ctx context.Context, client *gophercloud.ServiceClient, opts ImportOpts) (r ImportResult) {
 	b, err := opts.ToBackupImportMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(importURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, importURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -324,14 +326,14 @@ func (opts ResetStatusOpts) ToBackupResetStatusMap() (map[string]interface{}, er
 
 // ResetStatus will reset the existing backup status. ResetStatusResult contains only the error.
 // To extract it, call the ExtractErr method on the ResetStatusResult.
-func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
 	b, err := opts.ToBackupResetStatusMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -340,11 +342,11 @@ func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusO
 
 // ForceDelete will delete the existing backup in any state. ForceDeleteResult contains only the error.
 // To extract it, call the ExtractErr method on the ForceDeleteResult.
-func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
 	b := map[string]interface{}{
 		"os-force_delete": struct{}{},
 	}
-	resp, err := client.Post(forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

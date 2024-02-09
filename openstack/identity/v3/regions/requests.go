@@ -1,6 +1,8 @@
 package regions
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -39,8 +41,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details on a single region, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -85,13 +87,13 @@ func (opts CreateOpts) ToRegionCreateMap() (map[string]interface{}, error) {
 }
 
 // Create creates a new Region.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRegionCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -147,13 +149,13 @@ func (opts UpdateOpts) ToRegionUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates an existing Region.
-func Update(client *gophercloud.ServiceClient, regionID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, regionID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRegionUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(updateURL(client, regionID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, updateURL(client, regionID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -161,8 +163,8 @@ func Update(client *gophercloud.ServiceClient, regionID string, opts UpdateOptsB
 }
 
 // Delete deletes a region.
-func Delete(client *gophercloud.ServiceClient, regionID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, regionID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, regionID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, regionID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

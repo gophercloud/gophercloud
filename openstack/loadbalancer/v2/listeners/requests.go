@@ -1,6 +1,8 @@
 package listeners
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/pools"
@@ -187,7 +189,7 @@ func (opts CreateOpts) ToListenerCreateMap() (map[string]interface{}, error) {
 //
 // Users with an admin role can create Listeners on behalf of other projects by
 // specifying a ProjectID attribute different than their own.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToListenerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -199,7 +201,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 }
 
 // Get retrieves a particular Listeners based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -276,7 +278,7 @@ func (opts UpdateOpts) ToListenerUpdateMap() (map[string]interface{}, error) {
 
 // Update is an operation which modifies the attributes of the specified
 // Listener.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToListenerUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -290,14 +292,14 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateR
 }
 
 // Delete will permanently delete a particular Listeners based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	resp, err := c.Delete(resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetStats will return the shows the current statistics of a particular Listeners.
-func GetStats(c *gophercloud.ServiceClient, id string) (r StatsResult) {
+func GetStats(ctx context.Context, c *gophercloud.ServiceClient, id string) (r StatsResult) {
 	resp, err := c.Get(statisticsRootURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

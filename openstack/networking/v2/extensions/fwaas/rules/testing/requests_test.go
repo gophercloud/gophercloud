@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -181,7 +182,7 @@ func TestCreate(t *testing.T) {
 		Action:               "allow",
 	}
 
-	_, err := rules.Create(fake.ServiceClient(), options).Extract()
+	_, err := rules.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -242,7 +243,7 @@ func TestCreateAnyProtocol(t *testing.T) {
 		Action:               "allow",
 	}
 
-	_, err := rules.Create(fake.ServiceClient(), options).Extract()
+	_, err := rules.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -280,7 +281,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	rule, err := rules.Get(fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507").Extract()
+	rule, err := rules.Get(context.TODO(), fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "tcp", rule.Protocol)
@@ -362,7 +363,7 @@ func TestUpdate(t *testing.T) {
 		Enabled:              gophercloud.Disabled,
 	}
 
-	_, err := rules.Update(fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507", options).Extract()
+	_, err := rules.Update(context.TODO(), fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -376,6 +377,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := rules.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	res := rules.Delete(context.TODO(), fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

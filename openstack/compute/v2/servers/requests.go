@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -309,35 +310,35 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	reqBody, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(listURL(client), reqBody, &r.Body, nil)
+	resp, err := client.PostWithContext(ctx, listURL(client), reqBody, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests that a server previously provisioned be removed from your
 // account.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ForceDelete forces the deletion of a server.
-func ForceDelete(client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	resp, err := client.Post(actionURL(client, id), map[string]interface{}{"forceDelete": ""}, nil, nil)
+func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), map[string]interface{}{"forceDelete": ""}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get requests details on a single server, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -371,13 +372,13 @@ func (opts UpdateOpts) ToServerUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update requests that various attributes of the indicated server be changed.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToServerUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -386,13 +387,13 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 
 // ChangeAdminPassword alters the administrator or root password for a specified
 // server.
-func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword string) (r ActionResult) {
+func ChangeAdminPassword(ctx context.Context, client *gophercloud.ServiceClient, id, newPassword string) (r ActionResult) {
 	b := map[string]interface{}{
 		"changePassword": map[string]string{
 			"adminPass": newPassword,
 		},
 	}
-	resp, err := client.Post(actionURL(client, id), b, nil, nil)
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -441,13 +442,13 @@ procedure.
 E.g., in Linux, asking it to enter runlevel 6, or executing
 "sudo shutdown -r now", or by asking Windows to rtart the machine.
 */
-func Reboot(client *gophercloud.ServiceClient, id string, opts RebootOptsBuilder) (r ActionResult) {
+func Reboot(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RebootOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerRebootMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(actionURL(client, id), b, nil, nil)
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -497,13 +498,13 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 
 // Rebuild will reprovision the server according to the configuration options
 // provided in the RebuildOpts struct.
-func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuilder) (r RebuildResult) {
+func Rebuild(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RebuildOptsBuilder) (r RebuildResult) {
 	b, err := opts.ToServerRebuildMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(actionURL(client, id), b, &r.Body, nil)
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -536,21 +537,21 @@ func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
 // While in this state, you can explore the use of the new server's
 // configuration. If you like it, call ConfirmResize() to commit the resize
 // permanently. Otherwise, call RevertResize() to restore the old configuration.
-func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ActionResult) {
+func Resize(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerResizeMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(actionURL(client, id), b, nil, nil)
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ConfirmResize confirms a previous resize operation on a server.
 // See Resize() for more details.
-func ConfirmResize(client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	resp, err := client.Post(actionURL(client, id), map[string]interface{}{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
+func ConfirmResize(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), map[string]interface{}{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 202, 204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -559,8 +560,8 @@ func ConfirmResize(client *gophercloud.ServiceClient, id string) (r ActionResult
 
 // RevertResize cancels a previous resize operation on a server.
 // See Resize() for more details.
-func RevertResize(client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	resp, err := client.Post(actionURL(client, id), map[string]interface{}{"revertResize": nil}, nil, nil)
+func RevertResize(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), map[string]interface{}{"revertResize": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -591,13 +592,13 @@ func (opts MetadataOpts) ToMetadataUpdateMap() (map[string]interface{}, error) {
 // Note: Using this operation will erase any already-existing metadata and
 // create the new metadata provided. To keep any already-existing metadata,
 // use the UpdateMetadatas or UpdateMetadata function.
-func ResetMetadata(client *gophercloud.ServiceClient, id string, opts ResetMetadataOptsBuilder) (r ResetMetadataResult) {
+func ResetMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResetMetadataOptsBuilder) (r ResetMetadataResult) {
 	b, err := opts.ToMetadataResetMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(metadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, metadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -605,8 +606,8 @@ func ResetMetadata(client *gophercloud.ServiceClient, id string, opts ResetMetad
 }
 
 // Metadata requests all the metadata for the given server ID.
-func Metadata(client *gophercloud.ServiceClient, id string) (r GetMetadataResult) {
-	resp, err := client.Get(metadataURL(client, id), &r.Body, nil)
+func Metadata(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetMetadataResult) {
+	resp, err := client.GetWithContext(ctx, metadataURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -620,13 +621,13 @@ type UpdateMetadataOptsBuilder interface {
 // UpdateMetadata updates (or creates) all the metadata specified by opts for
 // the given server ID. This operation does not affect already-existing metadata
 // that is not specified by opts.
-func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
+func UpdateMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
 	b, err := opts.ToMetadataUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(metadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, metadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -661,13 +662,13 @@ func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]interface{}, string
 
 // CreateMetadatum will create or update the key-value pair with the given key
 // for the given server ID.
-func CreateMetadatum(client *gophercloud.ServiceClient, id string, opts MetadatumOptsBuilder) (r CreateMetadatumResult) {
+func CreateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id string, opts MetadatumOptsBuilder) (r CreateMetadatumResult) {
 	b, key, err := opts.ToMetadatumCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(metadatumURL(client, id, key), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, metadatumURL(client, id, key), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -676,16 +677,16 @@ func CreateMetadatum(client *gophercloud.ServiceClient, id string, opts Metadatu
 
 // Metadatum requests the key-value pair with the given key for the given
 // server ID.
-func Metadatum(client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
-	resp, err := client.Get(metadatumURL(client, id, key), &r.Body, nil)
+func Metadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
+	resp, err := client.GetWithContext(ctx, metadatumURL(client, id, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // DeleteMetadatum will delete the key-value pair with the given key for the
 // given server ID.
-func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
-	resp, err := client.Delete(metadatumURL(client, id, key), nil)
+func DeleteMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
+	resp, err := client.DeleteWithContext(ctx, metadatumURL(client, id, key), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -730,13 +731,13 @@ func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]interface{}, er
 
 // CreateImage makes a request against the nova API to schedule an image to be
 // created of the server
-func CreateImage(client *gophercloud.ServiceClient, id string, opts CreateImageOptsBuilder) (r CreateImageResult) {
+func CreateImage(ctx context.Context, client *gophercloud.ServiceClient, id string, opts CreateImageOptsBuilder) (r CreateImageResult) {
 	b, err := opts.ToServerCreateImageMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -745,8 +746,8 @@ func CreateImage(client *gophercloud.ServiceClient, id string, opts CreateImageO
 
 // GetPassword makes a request against the nova API to get the encrypted
 // administrative password.
-func GetPassword(client *gophercloud.ServiceClient, serverId string) (r GetPasswordResult) {
-	resp, err := client.Get(passwordURL(client, serverId), &r.Body, nil)
+func GetPassword(ctx context.Context, client *gophercloud.ServiceClient, serverId string) (r GetPasswordResult) {
+	resp, err := client.GetWithContext(ctx, passwordURL(client, serverId), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -770,13 +771,13 @@ func (opts ShowConsoleOutputOpts) ToServerShowConsoleOutputMap() (map[string]int
 }
 
 // ShowConsoleOutput makes a request against the nova API to get console log from the server
-func ShowConsoleOutput(client *gophercloud.ServiceClient, id string, opts ShowConsoleOutputOptsBuilder) (r ShowConsoleOutputResult) {
+func ShowConsoleOutput(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ShowConsoleOutputOptsBuilder) (r ShowConsoleOutputResult) {
 	b, err := opts.ToServerShowConsoleOutputMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

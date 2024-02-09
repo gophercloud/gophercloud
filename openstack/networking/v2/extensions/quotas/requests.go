@@ -1,17 +1,21 @@
 package quotas
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 // Get returns Networking Quotas for a project.
-func Get(client *gophercloud.ServiceClient, projectID string) (r GetResult) {
-	resp, err := client.Get(getURL(client, projectID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, projectID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetDetail returns detailed Networking Quotas for a project.
-func GetDetail(client *gophercloud.ServiceClient, projectID string) (r GetDetailResult) {
-	resp, err := client.Get(getDetailURL(client, projectID), &r.Body, nil)
+func GetDetail(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetDetailResult) {
+	resp, err := client.GetWithContext(ctx, getDetailURL(client, projectID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -62,7 +66,7 @@ func (opts UpdateOpts) ToQuotaUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing Networking Quotas using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToQuotaUpdateMap()
 	if err != nil {
 		r.Err = err

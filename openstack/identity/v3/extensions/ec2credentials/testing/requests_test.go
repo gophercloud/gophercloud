@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/ec2credentials"
@@ -46,7 +47,7 @@ func TestGetEC2Credential(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetEC2CredentialSuccessfully(t)
 
-	actual, err := ec2credentials.Get(client.ServiceClient(), userID, credentialID).Extract()
+	actual, err := ec2credentials.Get(context.TODO(), client.ServiceClient(), userID, credentialID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, EC2Credential, *actual)
 }
@@ -60,7 +61,7 @@ func TestCreateEC2Credential(t *testing.T) {
 		TenantID: "6238dee2fec940a6bf31e49e9faf995a",
 	}
 
-	actual, err := ec2credentials.Create(client.ServiceClient(), userID, createOpts).Extract()
+	actual, err := ec2credentials.Create(context.TODO(), client.ServiceClient(), userID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, EC2Credential, *actual)
 }
@@ -70,6 +71,6 @@ func TestDeleteEC2Credential(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteEC2CredentialSuccessfully(t)
 
-	res := ec2credentials.Delete(client.ServiceClient(), userID, credentialID)
+	res := ec2credentials.Delete(context.TODO(), client.ServiceClient(), userID, credentialID)
 	th.AssertNoErr(t, res.Err)
 }

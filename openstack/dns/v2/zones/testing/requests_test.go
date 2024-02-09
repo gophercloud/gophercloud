@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/zones"
@@ -44,7 +45,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := zones.Get(client.ServiceClient(), "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3").Extract()
+	actual, err := zones.Get(context.TODO(), client.ServiceClient(), "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstZone, actual)
 }
@@ -62,7 +63,7 @@ func TestCreate(t *testing.T) {
 		Description: "This is an example zone.",
 	}
 
-	actual, err := zones.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := zones.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedZone, actual)
 }
@@ -84,7 +85,7 @@ func TestUpdate(t *testing.T) {
 	UpdatedZone.TTL = 600
 	UpdatedZone.Description = "Updated Description"
 
-	actual, err := zones.Update(client.ServiceClient(), UpdatedZone.ID, updateOpts).Extract()
+	actual, err := zones.Update(context.TODO(), client.ServiceClient(), UpdatedZone.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &UpdatedZone, actual)
 }
@@ -100,7 +101,7 @@ func TestDelete(t *testing.T) {
 	DeletedZone.TTL = 600
 	DeletedZone.Description = "Updated Description"
 
-	actual, err := zones.Delete(client.ServiceClient(), DeletedZone.ID).Extract()
+	actual, err := zones.Delete(context.TODO(), client.ServiceClient(), DeletedZone.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &DeletedZone, actual)
 }

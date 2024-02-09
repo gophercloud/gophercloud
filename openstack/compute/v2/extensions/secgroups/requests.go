@@ -1,6 +1,8 @@
 package secgroups
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -43,13 +45,13 @@ func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
 }
 
 // Create will create a new security group.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSecGroupCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(rootURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, rootURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -77,13 +79,13 @@ func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
 
 // Update will modify the mutable properties of a security group, notably its
 // name and description.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSecGroupUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -91,15 +93,15 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 }
 
 // Get will return details for a particular security group.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(resourceURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, resourceURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete will permanently delete a security group from the project.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(resourceURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, resourceURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -149,13 +151,13 @@ func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 // CreateRule will add a new rule to an existing security group (whose ID is
 // specified in CreateRuleOpts). You have the option of controlling inbound
 // traffic from either an IP range (CIDR) or from another security group.
-func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) (r CreateRuleResult) {
+func CreateRule(ctx context.Context, client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) (r CreateRuleResult) {
 	b, err := opts.ToRuleCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(rootRuleURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, rootRuleURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -163,8 +165,8 @@ func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) (
 }
 
 // DeleteRule will permanently delete a rule from a security group.
-func DeleteRule(client *gophercloud.ServiceClient, id string) (r DeleteRuleResult) {
-	resp, err := client.Delete(resourceRuleURL(client, id), nil)
+func DeleteRule(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteRuleResult) {
+	resp, err := client.DeleteWithContext(ctx, resourceRuleURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -177,15 +179,15 @@ func actionMap(prefix, groupName string) map[string]map[string]string {
 
 // AddServer will associate a server and a security group, enforcing the
 // rules of the group on the server.
-func AddServer(client *gophercloud.ServiceClient, serverID, groupName string) (r AddServerResult) {
-	resp, err := client.Post(serverActionURL(client, serverID), actionMap("add", groupName), nil, nil)
+func AddServer(ctx context.Context, client *gophercloud.ServiceClient, serverID, groupName string) (r AddServerResult) {
+	resp, err := client.PostWithContext(ctx, serverActionURL(client, serverID), actionMap("add", groupName), nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // RemoveServer will disassociate a server from a security group.
-func RemoveServer(client *gophercloud.ServiceClient, serverID, groupName string) (r RemoveServerResult) {
-	resp, err := client.Post(serverActionURL(client, serverID), actionMap("remove", groupName), nil, nil)
+func RemoveServer(ctx context.Context, client *gophercloud.ServiceClient, serverID, groupName string) (r RemoveServerResult) {
+	resp, err := client.PostWithContext(ctx, serverActionURL(client, serverID), actionMap("remove", groupName), nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

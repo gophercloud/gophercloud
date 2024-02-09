@@ -1,6 +1,8 @@
 package members
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -23,9 +25,9 @@ pending through API calls.
 More details here:
 http://developer.openstack.org/api-ref-image-v2.html#createImageMember-v2
 */
-func Create(client *gophercloud.ServiceClient, id string, member string) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, id string, member string) (r CreateResult) {
 	b := map[string]interface{}{"member": member}
-	resp, err := client.Post(createMemberURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createMemberURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -40,15 +42,15 @@ func List(client *gophercloud.ServiceClient, id string) pagination.Pager {
 }
 
 // Get image member details.
-func Get(client *gophercloud.ServiceClient, imageID string, memberID string) (r DetailsResult) {
-	resp, err := client.Get(getMemberURL(client, imageID, memberID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+func Get(ctx context.Context, client *gophercloud.ServiceClient, imageID string, memberID string) (r DetailsResult) {
+	resp, err := client.GetWithContext(ctx, getMemberURL(client, imageID, memberID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete membership for given image. Callee should be image owner.
-func Delete(client *gophercloud.ServiceClient, imageID string, memberID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteMemberURL(client, imageID, memberID), &gophercloud.RequestOpts{OkCodes: []int{204}})
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, imageID string, memberID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteMemberURL(client, imageID, memberID), &gophercloud.RequestOpts{OkCodes: []int{204}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -72,13 +74,13 @@ func (opts UpdateOpts) ToImageMemberUpdateMap() (map[string]interface{}, error) 
 }
 
 // Update function updates member.
-func Update(client *gophercloud.ServiceClient, imageID string, memberID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, imageID string, memberID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToImageMemberUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(updateMemberURL(client, imageID, memberID), b, &r.Body,
+	resp, err := client.PutWithContext(ctx, updateMemberURL(client, imageID, memberID), b, &r.Body,
 		&gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

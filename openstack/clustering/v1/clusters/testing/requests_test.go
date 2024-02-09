@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -28,7 +29,7 @@ func TestCreateCluster(t *testing.T) {
 		Config:          map[string]interface{}{},
 	}
 
-	res := clusters.Create(fake.ServiceClient(), opts)
+	res := clusters.Create(context.TODO(), fake.ServiceClient(), opts)
 	th.AssertNoErr(t, res.Err)
 
 	location := res.Header.Get("Location")
@@ -61,7 +62,7 @@ func TestCreateClusterEmptyTime(t *testing.T) {
 		Config:          map[string]interface{}{},
 	}
 
-	actual, err := clusters.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := clusters.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCluster_EmptyTime, *actual)
 }
@@ -92,7 +93,7 @@ func TestCreateClusterMetadata(t *testing.T) {
 		Config: map[string]interface{}{},
 	}
 
-	actual, err := clusters.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := clusters.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCluster_Metadata, *actual)
 }
@@ -103,7 +104,7 @@ func TestGetCluster(t *testing.T) {
 
 	HandleGetClusterSuccessfully(t)
 
-	actual, err := clusters.Get(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
+	actual, err := clusters.Get(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCluster, *actual)
 }
@@ -114,7 +115,7 @@ func TestGetClusterEmptyTime(t *testing.T) {
 
 	HandleGetClusterEmptyTimeSuccessfully(t)
 
-	actual, err := clusters.Get(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
+	actual, err := clusters.Get(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCluster_EmptyTime, *actual)
 }
@@ -152,7 +153,7 @@ func TestUpdateCluster(t *testing.T) {
 		ProfileID: "edc63d0a-2ca4-48fa-9854-27926da76a4a",
 	}
 
-	actual, err := clusters.Update(fake.ServiceClient(), ExpectedCluster.ID, updateOpts).Extract()
+	actual, err := clusters.Update(context.TODO(), fake.ServiceClient(), ExpectedCluster.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCluster, *actual)
 }
@@ -168,7 +169,7 @@ func TestUpdateClusterEmptyTime(t *testing.T) {
 		ProfileID: "edc63d0a-2ca4-48fa-9854-27926da76a4a",
 	}
 
-	actual, err := clusters.Update(fake.ServiceClient(), ExpectedCluster_EmptyTime.ID, updateOpts).Extract()
+	actual, err := clusters.Update(context.TODO(), fake.ServiceClient(), ExpectedCluster_EmptyTime.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCluster_EmptyTime, *actual)
 }
@@ -179,7 +180,7 @@ func TestDeleteCluster(t *testing.T) {
 
 	HandleDeleteClusterSuccessfully(t)
 
-	err := clusters.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee").ExtractErr()
+	err := clusters.Delete(context.TODO(), fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -201,7 +202,7 @@ func TestResizeCluster(t *testing.T) {
 		Strict:         &strict,
 	}
 
-	actionID, err := clusters.Resize(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	actionID, err := clusters.Resize(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -285,7 +286,7 @@ func TestClusterScaleIn(t *testing.T) {
 	scaleOpts := clusters.ScaleInOpts{
 		Count: &count,
 	}
-	actionID, err := clusters.ScaleIn(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOpts).Extract()
+	actionID, err := clusters.ScaleIn(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -316,7 +317,7 @@ func TestGetClusterPolicies(t *testing.T) {
 
 	HandleGetPolicySuccessfully(t)
 
-	actual, err := clusters.GetPolicy(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", "714fe676-a08f-4196-b7af-61d52eeded15").Extract()
+	actual, err := clusters.GetPolicy(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", "714fe676-a08f-4196-b7af-61d52eeded15").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedClusterPolicy, *actual)
 }
@@ -332,7 +333,7 @@ func TestClusterRecover(t *testing.T) {
 		Check:         new(bool),
 		CheckCapacity: new(bool),
 	}
-	actionID, err := clusters.Recover(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", recoverOpts).Extract()
+	actionID, err := clusters.Recover(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", recoverOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -348,7 +349,7 @@ func TestAttachPolicy(t *testing.T) {
 		PolicyID: "policy1",
 		Enabled:  &enabled,
 	}
-	actionID, err := clusters.AttachPolicy(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	actionID, err := clusters.AttachPolicy(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -362,7 +363,7 @@ func TestDetachPolicy(t *testing.T) {
 	opts := clusters.DetachPolicyOpts{
 		PolicyID: "policy1",
 	}
-	actionID, err := clusters.DetachPolicy(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	actionID, err := clusters.DetachPolicy(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -378,7 +379,7 @@ func TestUpdatePolicy(t *testing.T) {
 		PolicyID: "policy1",
 		Enabled:  &enabled,
 	}
-	actionID, err := clusters.UpdatePolicy(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	actionID, err := clusters.UpdatePolicy(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -392,7 +393,7 @@ func TestClusterScaleOut(t *testing.T) {
 	scaleOutOpts := clusters.ScaleOutOpts{
 		Count: 5,
 	}
-	actionID, err := clusters.ScaleOut(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOutOpts).Extract()
+	actionID, err := clusters.ScaleOut(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOutOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -403,7 +404,7 @@ func TestClusterCheck(t *testing.T) {
 
 	HandleCheckSuccessfully(t)
 
-	actionID, err := clusters.Check(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09").Extract()
+	actionID, err := clusters.Check(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -418,7 +419,7 @@ func TestLifecycle(t *testing.T) {
 		LifecycleActionTokenID: "976528c6-dcf6-4d8d-9f4c-588f4e675f29",
 	}
 
-	res := clusters.CompleteLifecycle(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", opts)
+	res := clusters.CompleteLifecycle(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", opts)
 	location := res.Header.Get("Location")
 	th.AssertEquals(t, "http://senlin.cloud.blizzard.net:8778/v1/actions/2a0ff107-e789-4660-a122-3816c43af703", location)
 
@@ -436,7 +437,7 @@ func TestAddNodes(t *testing.T) {
 	opts := clusters.AddNodesOpts{
 		Nodes: []string{"node1", "node2", "node3"},
 	}
-	result, err := clusters.AddNodes(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	result, err := clusters.AddNodes(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
 }
@@ -450,7 +451,7 @@ func TestRemoveNodes(t *testing.T) {
 	opts := clusters.RemoveNodesOpts{
 		Nodes: []string{"node1", "node2", "node3"},
 	}
-	result, err := clusters.RemoveNodes(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	result, err := clusters.RemoveNodes(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
 }
@@ -462,7 +463,7 @@ func TestReplaceNodes(t *testing.T) {
 	opts := clusters.ReplaceNodesOpts{
 		Nodes: map[string]string{"node-1234": "node-5678"},
 	}
-	actionID, err := clusters.ReplaceNodes(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	actionID, err := clusters.ReplaceNodes(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, actionID, "2a0ff107-e789-4660-a122-3816c43af703")
 }
@@ -474,7 +475,7 @@ func TestClusterCollect(t *testing.T) {
 	opts := clusters.CollectOpts{
 		Path: "foo.bar",
 	}
-	attributes, err := clusters.Collect(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	attributes, err := clusters.Collect(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCollectAttributes, attributes)
 }
@@ -490,7 +491,7 @@ func TestOperation(t *testing.T) {
 		Filters:   clusters.OperationFilters{"role": "slave"},
 		Params:    clusters.OperationParams{"type": "soft"},
 	}
-	actual, err := clusters.Ops(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", clusterOpts).Extract()
+	actual, err := clusters.Ops(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", clusterOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, OperationExpectedActionID, actual)
 }

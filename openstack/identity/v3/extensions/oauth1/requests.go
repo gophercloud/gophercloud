@@ -163,7 +163,7 @@ func CreateWithContext(ctx context.Context, client *gophercloud.ServiceClient, o
 }
 
 // Create is a compatibility wrapper around CreateWithContext.
-func Create(client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
 	return CreateWithContext(context.Background(), client, opts)
 }
 
@@ -199,7 +199,7 @@ func CreateConsumerWithContext(ctx context.Context, client *gophercloud.ServiceC
 }
 
 // CreateConsumer is a compatibility wrapper around CreateConsumerWithContext.
-func CreateConsumer(client *gophercloud.ServiceClient, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
+func CreateConsumer(ctx context.Context, client *gophercloud.ServiceClient, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
 	return CreateConsumerWithContext(context.Background(), client, opts)
 }
 
@@ -211,7 +211,7 @@ func DeleteConsumerWithContext(ctx context.Context, client *gophercloud.ServiceC
 }
 
 // DeleteConsumer is a compatibility wrapper around DeleteConsumerWithContext.
-func DeleteConsumer(client *gophercloud.ServiceClient, id string) (r DeleteConsumerResult) {
+func DeleteConsumer(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteConsumerResult) {
 	return DeleteConsumerWithContext(context.Background(), client, id)
 }
 
@@ -230,7 +230,7 @@ func GetConsumerWithContext(ctx context.Context, client *gophercloud.ServiceClie
 }
 
 // GetConsumer is a compatibility wrapper around GetConsumerWithContext.
-func GetConsumer(client *gophercloud.ServiceClient, id string) (r GetConsumerResult) {
+func GetConsumer(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetConsumerResult) {
 	return GetConsumerWithContext(context.Background(), client, id)
 }
 
@@ -261,7 +261,7 @@ func UpdateConsumerWithContext(ctx context.Context, client *gophercloud.ServiceC
 }
 
 // UpdateConsumer is a compatibility wrapper around UpdateConsumerWithContext.
-func UpdateConsumer(client *gophercloud.ServiceClient, id string, opts UpdateConsumerOpts) (r UpdateConsumerResult) {
+func UpdateConsumer(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateConsumerOpts) (r UpdateConsumerResult) {
 	return UpdateConsumerWithContext(context.Background(), client, id, opts)
 }
 
@@ -350,7 +350,7 @@ func RequestTokenWithContext(ctx context.Context, client *gophercloud.ServiceCli
 }
 
 // RequestToken is a compatibility wrapper around RequestTokenWithContext.
-func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOptsBuilder) (r TokenResult) {
+func RequestToken(ctx context.Context, client *gophercloud.ServiceClient, opts RequestTokenOptsBuilder) (r TokenResult) {
 	return RequestTokenWithContext(context.Background(), client, opts)
 }
 
@@ -397,7 +397,7 @@ func AuthorizeTokenWithContext(ctx context.Context, client *gophercloud.ServiceC
 }
 
 // AuthorizeToken is a compatibility wrapper around AuthorizeTokenWithContext.
-func AuthorizeToken(client *gophercloud.ServiceClient, id string, opts AuthorizeTokenOptsBuilder) (r AuthorizeTokenResult) {
+func AuthorizeToken(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AuthorizeTokenOptsBuilder) (r AuthorizeTokenResult) {
 	return AuthorizeTokenWithContext(context.Background(), client, id, opts)
 }
 
@@ -488,7 +488,7 @@ func CreateAccessTokenWithContext(ctx context.Context, client *gophercloud.Servi
 }
 
 // CreateAccessToken is a compatibility wrapper around CreateAccessTokenWithContext.
-func CreateAccessToken(client *gophercloud.ServiceClient, opts CreateAccessTokenOptsBuilder) (r TokenResult) {
+func CreateAccessToken(ctx context.Context, client *gophercloud.ServiceClient, opts CreateAccessTokenOptsBuilder) (r TokenResult) {
 	return CreateAccessTokenWithContext(context.Background(), client, opts)
 }
 
@@ -500,7 +500,7 @@ func GetAccessTokenWithContext(ctx context.Context, client *gophercloud.ServiceC
 }
 
 // GetAccessToken is a compatibility wrapper around GetAccessTokenWithContext.
-func GetAccessToken(client *gophercloud.ServiceClient, userID string, id string) (r GetAccessTokenResult) {
+func GetAccessToken(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetAccessTokenResult) {
 	return GetAccessTokenWithContext(context.Background(), client, userID, id)
 }
 
@@ -512,7 +512,7 @@ func RevokeAccessTokenWithContext(ctx context.Context, client *gophercloud.Servi
 }
 
 // RevokeAccessToken is a compatibility wrapper around RevokeAccessTokenWithContext.
-func RevokeAccessToken(client *gophercloud.ServiceClient, userID string, id string) (r RevokeAccessTokenResult) {
+func RevokeAccessToken(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r RevokeAccessTokenResult) {
 	return RevokeAccessTokenWithContext(context.Background(), client, userID, id)
 }
 
@@ -541,7 +541,7 @@ func GetAccessTokenRoleWithContext(ctx context.Context, client *gophercloud.Serv
 }
 
 // GetAccessTokenRole is a compatibility wrapper around GetAccessTokenRoleWithContext.
-func GetAccessTokenRole(client *gophercloud.ServiceClient, userID string, id string, roleID string) (r GetAccessTokenRoleResult) {
+func GetAccessTokenRole(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string, roleID string) (r GetAccessTokenRoleResult) {
 	return GetAccessTokenRoleWithContext(context.Background(), client, userID, id, roleID)
 }
 

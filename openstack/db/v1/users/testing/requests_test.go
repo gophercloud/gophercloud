@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	db "github.com/gophercloud/gophercloud/v2/openstack/db/v1/databases"
@@ -33,7 +34,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	res := users.Create(fake.ServiceClient(), instanceID, opts)
+	res := users.Create(context.TODO(), fake.ServiceClient(), instanceID, opts)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -80,6 +81,6 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDelete(t)
 
-	res := users.Delete(fake.ServiceClient(), instanceID, "{userName}")
+	res := users.Delete(context.TODO(), fake.ServiceClient(), instanceID, "{userName}")
 	th.AssertNoErr(t, res.Err)
 }

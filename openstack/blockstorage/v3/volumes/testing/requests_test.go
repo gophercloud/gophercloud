@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -197,7 +198,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	v, err := volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "vol-001")
@@ -211,7 +212,7 @@ func TestCreate(t *testing.T) {
 	MockCreateResponse(t)
 
 	options := &volumes.CreateOpts{Size: 75, Name: "vol-001"}
-	n, err := volumes.Create(client.ServiceClient(), options).Extract()
+	n, err := volumes.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Size, 75)
@@ -224,7 +225,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	res := volumes.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", volumes.DeleteOpts{})
+	res := volumes.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", volumes.DeleteOpts{})
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -236,7 +237,7 @@ func TestUpdate(t *testing.T) {
 
 	var name = "vol-002"
 	options := volumes.UpdateOpts{Name: &name}
-	v, err := volumes.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	v, err := volumes.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "vol-002", v.Name)
 }
@@ -251,12 +252,12 @@ func TestGetWithExtensions(t *testing.T) {
 		volumes.Volume
 		volumetenants.VolumeTenantExt
 	}
-	err := volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&s)
+	err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", s.TenantID)
 	th.AssertEquals(t, "centos", s.Volume.VolumeImageMetadata["image_name"])
 
-	err = volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(s)
+	err = volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(s)
 	if err == nil {
 		t.Errorf("Expected error when providing non-pointer struct")
 	}
@@ -273,7 +274,7 @@ func TestCreateFromBackup(t *testing.T) {
 		BackupID: "20c792f0-bb03-434f-b653-06ef238e337e",
 	}
 
-	v, err := volumes.Create(client.ServiceClient(), options).Extract()
+	v, err := volumes.Create(context.TODO(), client.ServiceClient(), options).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, v.Size, 30)

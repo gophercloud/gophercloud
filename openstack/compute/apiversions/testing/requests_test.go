@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/apiversions"
@@ -29,7 +30,7 @@ func TestGetAPIVersion(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := apiversions.Get(client.ServiceClient(), "v2.1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v2.1").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, NovaAPIVersion21Result, *actual)
@@ -41,6 +42,6 @@ func TestGetMultipleAPIVersion(t *testing.T) {
 
 	MockGetMultipleResponses(t)
 
-	_, err := apiversions.Get(client.ServiceClient(), "v3").Extract()
+	_, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v3").Extract()
 	th.AssertEquals(t, err.Error(), "Unable to find requested API version")
 }

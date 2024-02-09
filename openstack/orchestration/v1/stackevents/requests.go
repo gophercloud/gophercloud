@@ -1,12 +1,14 @@
 package stackevents
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // Find retrieves stack events for the given stack name.
-func Find(c *gophercloud.ServiceClient, stackName string) (r FindResult) {
+func Find(ctx context.Context, c *gophercloud.ServiceClient, stackName string) (r FindResult) {
 	resp, err := c.Get(findURL(c, stackName), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -177,7 +179,7 @@ func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, r
 }
 
 // Get retreives data for the given stack resource.
-func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) (r GetResult) {
 	resp, err := c.Get(getURL(c, stackName, stackID, resourceName, eventID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

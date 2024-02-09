@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/networks"
@@ -32,7 +33,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := networks.Get(client.ServiceClient(), "20c8acc0-f747-4d71-a389-46d078ebf000").Extract()
+	actual, err := networks.Get(context.TODO(), client.ServiceClient(), "20c8acc0-f747-4d71-a389-46d078ebf000").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SecondNetwork, actual)
 }

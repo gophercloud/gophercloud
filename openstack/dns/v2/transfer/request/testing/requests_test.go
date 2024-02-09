@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	transferRequests "github.com/gophercloud/gophercloud/v2/openstack/dns/v2/transfer/request"
@@ -61,7 +62,7 @@ func TestGet(t *testing.T) {
 	HandleGetSuccessfully(t)
 
 	actual, err := transferRequests.Get(
-		client.ServiceClient(), "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3").Extract()
+		context.TODO(), client.ServiceClient(), "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstTransferRequest, actual)
 }
@@ -77,7 +78,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	actual, err := transferRequests.Create(
-		client.ServiceClient(), FirstTransferRequest.ZoneID, createOpts).Extract()
+		context.TODO(), client.ServiceClient(), FirstTransferRequest.ZoneID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedTransferRequest, actual)
 }
@@ -96,7 +97,7 @@ func TestUpdate(t *testing.T) {
 	UpdatedTransferRequest.Description = "Updated Description"
 
 	actual, err := transferRequests.Update(
-		client.ServiceClient(), UpdatedTransferRequest.ID, updateOpts).Extract()
+		context.TODO(), client.ServiceClient(), UpdatedTransferRequest.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &UpdatedTransferRequest, actual)
 }
@@ -108,6 +109,6 @@ func TestDelete(t *testing.T) {
 
 	DeletedZone := CreatedTransferRequest
 
-	err := transferRequests.Delete(client.ServiceClient(), DeletedZone.ID).ExtractErr()
+	err := transferRequests.Delete(context.TODO(), client.ServiceClient(), DeletedZone.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

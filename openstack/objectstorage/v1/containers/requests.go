@@ -2,6 +2,7 @@ package containers
 
 import (
 	"bytes"
+	"context"
 	"net/url"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -97,7 +98,7 @@ func (opts CreateOpts) ToContainerCreateMap() (map[string]string, error) {
 }
 
 // Create is a function that creates a new container.
-func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) (r CreateResult) {
 	url, err := createURL(c, containerName)
 	if err != nil {
 		r.Err = err
@@ -123,7 +124,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 }
 
 // BulkDelete is a function that bulk deletes containers.
-func BulkDelete(c *gophercloud.ServiceClient, containers []string) (r BulkDeleteResult) {
+func BulkDelete(ctx context.Context, c *gophercloud.ServiceClient, containers []string) (r BulkDeleteResult) {
 	var body bytes.Buffer
 
 	for i := range containers {
@@ -147,7 +148,7 @@ func BulkDelete(c *gophercloud.ServiceClient, containers []string) (r BulkDelete
 }
 
 // Delete is a function that deletes a container.
-func Delete(c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
 	url, err := deleteURL(c, containerName)
 	if err != nil {
 		r.Err = err
@@ -204,7 +205,7 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes a container's
 // metadata.
-func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) (r UpdateResult) {
 	url, err := updateURL(c, containerName)
 	if err != nil {
 		r.Err = err
@@ -249,7 +250,7 @@ func (opts GetOpts) ToContainerGetMap() (map[string]string, error) {
 // Get is a function that retrieves the metadata of a container. To extract just
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
-func Get(c *gophercloud.ServiceClient, containerName string, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, containerName string, opts GetOptsBuilder) (r GetResult) {
 	url, err := getURL(c, containerName)
 	if err != nil {
 		r.Err = err

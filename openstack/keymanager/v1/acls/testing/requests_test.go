@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/keymanager/v1/acls"
@@ -13,7 +14,7 @@ func TestGetSecretACL(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSecretACLSuccessfully(t)
 
-	actual, err := acls.GetSecretACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	actual, err := acls.GetSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedACL, *actual)
 }
@@ -23,7 +24,7 @@ func TestGetContainerACL(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetContainerACLSuccessfully(t)
 
-	actual, err := acls.GetContainerACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	actual, err := acls.GetContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedACL, *actual)
 }
@@ -43,7 +44,7 @@ func TestSetSecretACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.SetSecretACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
+	actual, err := acls.SetSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedSecretACLRef, *actual)
 }
@@ -63,7 +64,7 @@ func TestSetContainerACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.SetContainerACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
+	actual, err := acls.SetContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedContainerACLRef, *actual)
 }
@@ -73,7 +74,7 @@ func TestDeleteSecretACL(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSecretACLSuccessfully(t)
 
-	res := acls.DeleteSecretACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
+	res := acls.DeleteSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -82,7 +83,7 @@ func TestDeleteContainerACL(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteContainerACLSuccessfully(t)
 
-	res := acls.DeleteContainerACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
+	res := acls.DeleteContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -99,7 +100,7 @@ func TestUpdateSecretACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.UpdateSecretACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
+	actual, err := acls.UpdateSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedSecretACLRef, *actual)
 }
@@ -117,7 +118,7 @@ func TestUpdateContainerACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.UpdateContainerACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
+	actual, err := acls.UpdateContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedContainerACLRef, *actual)
 }

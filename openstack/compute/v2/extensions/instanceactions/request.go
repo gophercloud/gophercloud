@@ -1,6 +1,7 @@
 package instanceactions
 
 import (
+	"context"
 	"net/url"
 	"time"
 
@@ -71,8 +72,8 @@ func List(client *gophercloud.ServiceClient, id string, opts ListOptsBuilder) pa
 }
 
 // Get makes a request against the API to get a server action.
-func Get(client *gophercloud.ServiceClient, serverID, requestID string) (r InstanceActionResult) {
-	resp, err := client.Get(instanceActionsURL(client, serverID, requestID), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, requestID string) (r InstanceActionResult) {
+	resp, err := client.GetWithContext(ctx, instanceActionsURL(client, serverID, requestID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

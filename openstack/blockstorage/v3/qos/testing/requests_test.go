@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
@@ -23,7 +24,7 @@ func TestCreate(t *testing.T) {
 			"read_iops_sec": "20000",
 		},
 	}
-	actual, err := qos.Create(client.ServiceClient(), options).Extract()
+	actual, err := qos.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &createQoSExpected, actual)
 }
@@ -34,7 +35,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	res := qos.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteOpts{})
+	res := qos.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteOpts{})
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -80,7 +81,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := qos.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	actual, err := qos.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &getQoSExpected, actual)
 }
@@ -99,7 +100,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	expected := UpdateQos
-	actual, err := qos.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", updateOpts).Extract()
+	actual, err := qos.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
@@ -110,7 +111,7 @@ func TestDeleteKeys(t *testing.T) {
 
 	MockDeleteKeysResponse(t)
 
-	res := qos.DeleteKeys(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteKeysOpts{"read_iops_sec"})
+	res := qos.DeleteKeys(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteKeysOpts{"read_iops_sec"})
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -124,7 +125,7 @@ func TestAssociate(t *testing.T) {
 		VolumeTypeID: "b596be6a-0ce9-43fa-804a-5c5e181ede76",
 	}
 
-	res := qos.Associate(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", associateOpts)
+	res := qos.Associate(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", associateOpts)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -138,7 +139,7 @@ func TestDisssociate(t *testing.T) {
 		VolumeTypeID: "b596be6a-0ce9-43fa-804a-5c5e181ede76",
 	}
 
-	res := qos.Disassociate(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", disassociateOpts)
+	res := qos.Disassociate(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", disassociateOpts)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -148,7 +149,7 @@ func TestDissasociateAll(t *testing.T) {
 
 	MockDisassociateAllResponse(t)
 
-	res := qos.DisassociateAll(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := qos.DisassociateAll(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 

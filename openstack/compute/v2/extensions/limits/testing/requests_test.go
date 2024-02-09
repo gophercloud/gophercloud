@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/limits"
@@ -17,7 +18,7 @@ func TestGet(t *testing.T) {
 		TenantID: TenantID,
 	}
 
-	actual, err := limits.Get(client.ServiceClient(), getOpts).Extract()
+	actual, err := limits.Get(context.TODO(), client.ServiceClient(), getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &LimitsResult, actual)
 }

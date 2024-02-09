@@ -1,6 +1,7 @@
 package groups
 
 import (
+	"context"
 	"net/url"
 	"strings"
 
@@ -64,8 +65,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details on a single group, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -110,13 +111,13 @@ func (opts CreateOpts) ToGroupCreateMap() (map[string]interface{}, error) {
 }
 
 // Create creates a new Group.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToGroupCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -163,13 +164,13 @@ func (opts UpdateOpts) ToGroupUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates an existing Group.
-func Update(client *gophercloud.ServiceClient, groupID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, groupID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToGroupUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(updateURL(client, groupID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, updateURL(client, groupID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -177,8 +178,8 @@ func Update(client *gophercloud.ServiceClient, groupID string, opts UpdateOptsBu
 }
 
 // Delete deletes a group.
-func Delete(client *gophercloud.ServiceClient, groupID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, groupID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, groupID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, groupID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

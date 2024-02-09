@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/sharetransfers"
@@ -14,7 +15,7 @@ func TestCreateTransfer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateTransfer(t)
 
-	actual, err := sharetransfers.Create(client.ServiceClient(), TransferRequest).Extract()
+	actual, err := sharetransfers.Create(context.TODO(), client.ServiceClient(), TransferRequest).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, TransferResponse, *actual)
 }
@@ -24,7 +25,7 @@ func TestAcceptTransfer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAcceptTransfer(t)
 
-	err := sharetransfers.Accept(client.ServiceClient(), TransferResponse.ID, AcceptRequest).ExtractErr()
+	err := sharetransfers.Accept(context.TODO(), client.ServiceClient(), TransferResponse.ID, AcceptRequest).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -33,7 +34,7 @@ func TestDeleteTransfer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteTransfer(t)
 
-	err := sharetransfers.Delete(client.ServiceClient(), TransferResponse.ID).ExtractErr()
+	err := sharetransfers.Delete(context.TODO(), client.ServiceClient(), TransferResponse.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -106,7 +107,7 @@ func TestGetTransfer(t *testing.T) {
 	expectedResponse := TransferResponse
 	expectedResponse.AuthKey = ""
 
-	actual, err := sharetransfers.Get(client.ServiceClient(), TransferResponse.ID).Extract()
+	actual, err := sharetransfers.Get(context.TODO(), client.ServiceClient(), TransferResponse.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expectedResponse, *actual)
 }

@@ -1,6 +1,7 @@
 package workflows
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/url"
@@ -37,7 +38,7 @@ func (opts CreateOpts) ToWorkflowCreateParams() (io.Reader, string, error) {
 }
 
 // Create requests the creation of a new execution.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	url := createURL(client)
 	var b io.Reader
 	if opts != nil {
@@ -50,7 +51,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		b = tmpB
 	}
 
-	resp, err := client.Post(url, b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, url, b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{
 			"Content-Type": "text/plain",
 			"Accept":       "", // Drop default JSON Accept header
@@ -61,16 +62,16 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Delete deletes the specified execution.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves details of a single execution.
 // Use Extract to convert its result into an Workflow.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

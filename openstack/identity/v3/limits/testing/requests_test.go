@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/limits"
@@ -14,7 +15,7 @@ func TestGetEnforcementModel(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetEnforcementModelSuccessfully(t)
 
-	actual, err := limits.GetEnforcementModel(client.ServiceClient()).Extract()
+	actual, err := limits.GetEnforcementModel(context.TODO(), client.ServiceClient()).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, Model, *actual)
 }
@@ -73,7 +74,7 @@ func TestCreateLimits(t *testing.T) {
 		},
 	}
 
-	actual, err := limits.BatchCreate(client.ServiceClient(), createOpts).Extract()
+	actual, err := limits.BatchCreate(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
 }
@@ -83,7 +84,7 @@ func TestGetLimit(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetLimitSuccessfully(t)
 
-	actual, err := limits.Get(client.ServiceClient(), "25a04c7a065c430590881c646cdcdd58").Extract()
+	actual, err := limits.Get(context.TODO(), client.ServiceClient(), "25a04c7a065c430590881c646cdcdd58").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstLimit, *actual)
 }
@@ -100,7 +101,7 @@ func TestUpdateLimit(t *testing.T) {
 		ResourceLimit: &resourceLimit,
 	}
 
-	actual, err := limits.Update(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
+	actual, err := limits.Update(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondLimitUpdated, *actual)
 }
@@ -110,6 +111,6 @@ func TestDeleteLimit(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteLimitSuccessfully(t)
 
-	err := limits.Delete(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05").ExtractErr()
+	err := limits.Delete(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05").ExtractErr()
 	th.AssertNoErr(t, err)
 }

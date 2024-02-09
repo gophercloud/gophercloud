@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -69,7 +70,7 @@ workflow_echo:
 		Definition: strings.NewReader(definition),
 	}
 
-	actual, err := workflows.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := workflows.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create workflow: %v", err)
 	}
@@ -106,7 +107,7 @@ func TestDeleteWorkflow(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := workflows.Delete(fake.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
+	res := workflows.Delete(context.TODO(), fake.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -132,7 +133,7 @@ func TestGetWorkflow(t *testing.T) {
 			}
 		`)
 	})
-	actual, err := workflows.Get(fake.ServiceClient(), "1").Extract()
+	actual, err := workflows.Get(context.TODO(), fake.ServiceClient(), "1").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get workflow: %v", err)
 	}

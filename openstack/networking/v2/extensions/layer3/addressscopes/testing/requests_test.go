@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -64,7 +65,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, AddressScopesGetResult)
 	})
 
-	s, err := addressscopes.Get(fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
+	s, err := addressscopes.Get(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ID, "9cc35860-522a-4d35-974d-51d4b011801e")
@@ -97,7 +98,7 @@ func TestCreate(t *testing.T) {
 		Shared:    true,
 		Name:      "test0",
 	}
-	s, err := addressscopes.Create(fake.ServiceClient(), opts).Extract()
+	s, err := addressscopes.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "test0")
@@ -131,7 +132,7 @@ func TestUpdate(t *testing.T) {
 		Name:   &newName,
 		Shared: &shared,
 	}
-	s, err := addressscopes.Update(fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e", updateOpts).Extract()
+	s, err := addressscopes.Update(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "test1")
@@ -148,6 +149,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := addressscopes.Delete(fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e")
+	res := addressscopes.Delete(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e")
 	th.AssertNoErr(t, res.Err)
 }

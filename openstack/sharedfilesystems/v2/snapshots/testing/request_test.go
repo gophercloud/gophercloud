@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -16,7 +17,7 @@ func TestCreate(t *testing.T) {
 	MockCreateResponse(t)
 
 	options := &snapshots.CreateOpts{ShareID: shareID, Name: "test snapshot", Description: "test description"}
-	n, err := snapshots.Create(client.ServiceClient(), options).Extract()
+	n, err := snapshots.Create(context.TODO(), client.ServiceClient(), options).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "test snapshot")
@@ -38,7 +39,7 @@ func TestUpdate(t *testing.T) {
 		DisplayName:        &name,
 		DisplayDescription: &description,
 	}
-	n, err := snapshots.Update(client.ServiceClient(), snapshotID, options).Extract()
+	n, err := snapshots.Update(context.TODO(), client.ServiceClient(), snapshotID, options).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "my_new_test_snapshot")
@@ -51,7 +52,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	result := snapshots.Delete(client.ServiceClient(), snapshotID)
+	result := snapshots.Delete(context.TODO(), client.ServiceClient(), snapshotID)
 	th.AssertNoErr(t, result.Err)
 }
 
@@ -61,7 +62,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	s, err := snapshots.Get(client.ServiceClient(), snapshotID).Extract()
+	s, err := snapshots.Get(context.TODO(), client.ServiceClient(), snapshotID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, s, &snapshots.Snapshot{
 		ID:          snapshotID,
@@ -134,7 +135,7 @@ func TestResetStatusSuccess(t *testing.T) {
 
 	c := client.ServiceClient()
 
-	err := snapshots.ResetStatus(c, snapshotID, &snapshots.ResetStatusOpts{Status: "error"}).ExtractErr()
+	err := snapshots.ResetStatus(context.TODO(), c, snapshotID, &snapshots.ResetStatusOpts{Status: "error"}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -146,6 +147,6 @@ func TestForceDeleteSuccess(t *testing.T) {
 
 	c := client.ServiceClient()
 
-	err := snapshots.ForceDelete(c, snapshotID).ExtractErr()
+	err := snapshots.ForceDelete(context.TODO(), c, snapshotID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

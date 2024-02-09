@@ -1,6 +1,8 @@
 package ec2credentials
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -14,8 +16,8 @@ func List(client *gophercloud.ServiceClient, userID string) pagination.Pager {
 }
 
 // Get retrieves details on a single EC2 credential by ID.
-func Get(client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, userID, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, userID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -32,13 +34,13 @@ func (opts CreateOpts) ToCredentialCreateMap() (map[string]interface{}, error) {
 }
 
 // Create creates a new EC2 Credential.
-func Create(client *gophercloud.ServiceClient, userID string, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, userID string, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToCredentialCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -46,8 +48,8 @@ func Create(client *gophercloud.ServiceClient, userID string, opts CreateOpts) (
 }
 
 // Delete deletes an EC2 credential.
-func Delete(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, userID, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, userID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/keymanager/v1/containers"
@@ -46,7 +47,7 @@ func TestGetContainer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetContainerSuccessfully(t)
 
-	actual, err := containers.Get(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0").Extract()
+	actual, err := containers.Get(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstContainer, *actual)
 }
@@ -67,7 +68,7 @@ func TestCreateContainer(t *testing.T) {
 		},
 	}
 
-	actual, err := containers.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := containers.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstContainer, *actual)
 }
@@ -77,7 +78,7 @@ func TestDeleteContainer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteContainerSuccessfully(t)
 
-	res := containers.Delete(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0")
+	res := containers.Delete(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -123,7 +124,7 @@ func TestCreateConsumer(t *testing.T) {
 		URL:  "http://example.com",
 	}
 
-	actual, err := containers.CreateConsumer(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", createOpts).Extract()
+	actual, err := containers.CreateConsumer(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCreatedConsumer, *actual)
 }
@@ -138,7 +139,7 @@ func TestDeleteConsumer(t *testing.T) {
 		URL:  "http://example.com",
 	}
 
-	actual, err := containers.DeleteConsumer(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", deleteOpts).Extract()
+	actual, err := containers.DeleteConsumer(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", deleteOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstContainer, *actual)
 }

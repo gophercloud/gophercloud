@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -58,7 +59,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	vt, err := volumetypes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	vt, err := volumetypes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, vt.ExtraSpecs, map[string]interface{}{"serverNumber": "2"})
@@ -97,7 +98,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	options := &volumetypes.CreateOpts{Name: "vol-type-001"}
-	n, err := volumetypes.Create(client.ServiceClient(), options).Extract()
+	n, err := volumetypes.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "vol-type-001")
@@ -114,6 +115,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	err := volumetypes.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractErr()
+	err := volumetypes.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractErr()
 	th.AssertNoErr(t, err)
 }

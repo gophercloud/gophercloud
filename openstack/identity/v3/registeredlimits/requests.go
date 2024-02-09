@@ -1,6 +1,8 @@
 package registeredlimits
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -88,13 +90,13 @@ func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
 }
 
 // BatchCreate creates new Limits.
-func BatchCreate(client *gophercloud.ServiceClient, opts BatchCreateOptsBuilder) (r CreateResult) {
+func BatchCreate(ctx context.Context, client *gophercloud.ServiceClient, opts BatchCreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRegisteredLimitsCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(rootURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, rootURL(client), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -102,8 +104,8 @@ func BatchCreate(client *gophercloud.ServiceClient, opts BatchCreateOptsBuilder)
 }
 
 // Get retrieves details on a single registered_limit, by ID.
-func Get(client *gophercloud.ServiceClient, registeredLimitID string) (r GetResult) {
-	resp, err := client.Get(resourceURL(client, registeredLimitID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, registeredLimitID string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, resourceURL(client, registeredLimitID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -139,13 +141,13 @@ func (opts UpdateOpts) ToRegisteredLimitUpdateMap() (map[string]interface{}, err
 }
 
 // Update modifies the attributes of a registered limit.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRegisteredLimitUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -153,8 +155,8 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 }
 
 // Delete deletes a registered_limit.
-func Delete(client *gophercloud.ServiceClient, registeredLimitID string) (r DeleteResult) {
-	resp, err := client.Delete(resourceURL(client, registeredLimitID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, registeredLimitID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, resourceURL(client, registeredLimitID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

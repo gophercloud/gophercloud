@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -67,7 +68,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, NetworkIPAvailabilityGetResult)
 	})
 
-	s, err := networkipavailabilities.Get(fake.ServiceClient(), "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
+	s, err := networkipavailabilities.Get(context.TODO(), fake.ServiceClient(), "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.NetworkID, "cf11ab78-2302-49fa-870f-851a08c7afb8")

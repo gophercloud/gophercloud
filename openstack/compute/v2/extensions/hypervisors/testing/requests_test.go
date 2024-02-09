@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/hypervisors"
@@ -118,7 +119,7 @@ func TestHypervisorsStatistics(t *testing.T) {
 
 	expected := HypervisorsStatisticsExpected
 
-	actual, err := hypervisors.GetStatistics(client.ServiceClient()).Extract()
+	actual, err := hypervisors.GetStatistics(context.TODO(), client.ServiceClient()).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
@@ -130,7 +131,7 @@ func TestGetHypervisor(t *testing.T) {
 
 	expected := HypervisorFake
 
-	actual, err := hypervisors.Get(client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
@@ -142,7 +143,7 @@ func TestGetHypervisorEmptyCPUInfo(t *testing.T) {
 
 	expected := HypervisorEmptyCPUInfo
 
-	actual, err := hypervisors.Get(client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
@@ -154,7 +155,7 @@ func TestHypervisorsUptime(t *testing.T) {
 
 	expected := HypervisorUptimeExpected
 
-	actual, err := hypervisors.GetUptime(client.ServiceClient(), HypervisorFake.ID).Extract()
+	actual, err := hypervisors.GetUptime(context.TODO(), client.ServiceClient(), HypervisorFake.ID).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }

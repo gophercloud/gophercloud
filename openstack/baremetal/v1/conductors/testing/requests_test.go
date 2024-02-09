@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/conductors"
@@ -97,7 +98,7 @@ func TestGetConductor(t *testing.T) {
 	HandleConductorGetSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := conductors.Get(c, "1234asdf").Extract()
+	actual, err := conductors.Get(context.TODO(), c, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}

@@ -1,6 +1,8 @@
 package claims
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
@@ -38,7 +40,7 @@ func (opts CreateOpts) ToClaimCreateRequest() (map[string]interface{}, string, e
 }
 
 // Create creates a Claim that claims messages on a specified queue.
-func Create(client *gophercloud.ServiceClient, queueName string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, queueName string, opts CreateOptsBuilder) (r CreateResult) {
 	b, q, err := opts.ToClaimCreateRequest()
 	if err != nil {
 		r.Err = err
@@ -50,7 +52,7 @@ func Create(client *gophercloud.ServiceClient, queueName string, opts CreateOpts
 		url += q
 	}
 
-	resp, err := client.Post(url, b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, url, b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -58,8 +60,8 @@ func Create(client *gophercloud.ServiceClient, queueName string, opts CreateOpts
 }
 
 // Get queries the specified claim for the specified queue.
-func Get(client *gophercloud.ServiceClient, queueName string, claimID string) (r GetResult) {
-	resp, err := client.Get(getURL(client, queueName, claimID), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, queueName string, claimID string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, queueName, claimID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -92,13 +94,13 @@ func (opts UpdateOpts) ToClaimUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update will update the options for a specified claim.
-func Update(client *gophercloud.ServiceClient, queueName string, claimID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, queueName string, claimID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToClaimUpdateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-	resp, err := client.Patch(updateURL(client, queueName, claimID), &b, nil, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, updateURL(client, queueName, claimID), &b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -106,8 +108,8 @@ func Update(client *gophercloud.ServiceClient, queueName string, claimID string,
 }
 
 // Delete will delete a Claim for a specified Queue.
-func Delete(client *gophercloud.ServiceClient, queueName string, claimID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, queueName, claimID), &gophercloud.RequestOpts{
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, queueName string, claimID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, queueName, claimID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

@@ -1,6 +1,8 @@
 package limits
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
@@ -23,7 +25,7 @@ func (opts GetOpts) ToLimitsQuery() (string, error) {
 }
 
 // Get returns the limits about the currently scoped tenant.
-func Get(client *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(client)
 	if opts != nil {
 		query, err := opts.ToLimitsQuery()
@@ -34,7 +36,7 @@ func Get(client *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
 		url += query
 	}
 
-	resp, err := client.Get(url, &r.Body, nil)
+	resp, err := client.GetWithContext(ctx, url, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

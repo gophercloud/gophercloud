@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -194,7 +195,7 @@ func TestChooseVersion(t *testing.T) {
 		IdentityBase:     testhelper.Endpoint(),
 		IdentityEndpoint: "",
 	}
-	v, endpoint, err := utils.ChooseVersion(c, []*utils.Version{v2, v3})
+	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
 
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
@@ -222,7 +223,7 @@ func TestChooseVersionOpinionatedLink(t *testing.T) {
 		IdentityBase:     testhelper.Endpoint(),
 		IdentityEndpoint: testhelper.Endpoint() + "v2.0/",
 	}
-	v, endpoint, err := utils.ChooseVersion(c, []*utils.Version{v2, v3})
+	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
 	}
@@ -248,7 +249,7 @@ func TestChooseVersionFromSuffix(t *testing.T) {
 		IdentityBase:     testhelper.Endpoint(),
 		IdentityEndpoint: testhelper.Endpoint() + "v2.0/",
 	}
-	v, endpoint, err := utils.ChooseVersion(c, []*utils.Version{v2, v3})
+	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
 	}
@@ -315,7 +316,7 @@ func TestGetSupportedVersions(t *testing.T) {
 			Endpoint:       test.Endpoint,
 		}
 
-		supported, err := utils.GetSupportedMicroversions(client)
+		supported, err := utils.GetSupportedMicroversions(context.TODO(), client)
 
 		if test.ExpectedErr {
 			if err == nil {

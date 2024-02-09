@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -162,7 +163,7 @@ func TestGetImage(t *testing.T) {
 		`)
 	})
 
-	actual, err := images.Get(fake.ServiceClient(), "12345678").Extract()
+	actual, err := images.Get(context.TODO(), fake.ServiceClient(), "12345678").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Get: %v", err)
 	}
@@ -220,6 +221,6 @@ func TestDeleteImage(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := images.Delete(fake.ServiceClient(), "12345678")
+	res := images.Delete(context.TODO(), fake.ServiceClient(), "12345678")
 	th.AssertNoErr(t, res.Err)
 }

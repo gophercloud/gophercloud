@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -55,7 +56,7 @@ func TestGetRuleType(t *testing.T) {
 		th.AssertNoErr(t, err)
 	})
 
-	r, err := ruletypes.GetRuleType(fake.ServiceClient(), "bandwidth_limit").Extract()
+	r, err := ruletypes.GetRuleType(context.TODO(), fake.ServiceClient(), "bandwidth_limit").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "bandwidth_limit", r.Type)

@@ -1,6 +1,8 @@
 package evacuate
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions"
 )
@@ -29,13 +31,13 @@ func (opts EvacuateOpts) ToEvacuateMap() (map[string]interface{}, error) {
 }
 
 // Evacuate will Evacuate a failed instance to another host.
-func Evacuate(client *gophercloud.ServiceClient, id string, opts EvacuateOptsBuilder) (r EvacuateResult) {
+func Evacuate(ctx context.Context, client *gophercloud.ServiceClient, id string, opts EvacuateOptsBuilder) (r EvacuateResult) {
 	b, err := opts.ToEvacuateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(extensions.ActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, extensions.ActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

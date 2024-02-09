@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/credentials"
@@ -48,7 +49,7 @@ func TestGetCredential(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetCredentialSuccessfully(t)
 
-	actual, err := credentials.Get(client.ServiceClient(), credentialID).Extract()
+	actual, err := credentials.Get(context.TODO(), client.ServiceClient(), credentialID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, Credential, *actual)
 }
@@ -67,7 +68,7 @@ func TestCreateCredential(t *testing.T) {
 
 	CredentialResponse := Credential
 
-	actual, err := credentials.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := credentials.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, CredentialResponse, *actual)
 }
@@ -77,7 +78,7 @@ func TestDeleteCredential(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteCredentialSuccessfully(t)
 
-	res := credentials.Delete(client.ServiceClient(), credentialID)
+	res := credentials.Delete(context.TODO(), client.ServiceClient(), credentialID)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -93,7 +94,7 @@ func TestUpdateCredential(t *testing.T) {
 		Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
 	}
 
-	actual, err := credentials.Update(client.ServiceClient(), "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", updateOpts).Extract()
+	actual, err := credentials.Update(context.TODO(), client.ServiceClient(), "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondCredentialUpdated, *actual)
 }

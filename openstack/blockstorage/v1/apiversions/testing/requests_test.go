@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v1/apiversions"
@@ -49,7 +50,7 @@ func TestAPIInfo(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := apiversions.Get(client.ServiceClient(), "v1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v1").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := apiversions.APIVersion{

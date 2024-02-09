@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -58,7 +59,7 @@ func TestCreateLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerCreationSuccessfully(t, SingleLoadbalancerBody)
 
-	actual, err := loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{
+	actual, err := loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{
 		Name:         "db_lb",
 		AdminStateUp: gophercloud.Enabled,
 		VipSubnetID:  "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
@@ -72,19 +73,19 @@ func TestCreateLoadbalancer(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{})
+	res := loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{Name: "foo"})
+	res = loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{Name: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{Name: "foo", Description: "bar"})
+	res = loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{Name: "foo", Description: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{Name: "foo", Description: "bar", VipAddress: "bar"})
+	res = loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{Name: "foo", Description: "bar", VipAddress: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -96,7 +97,7 @@ func TestGetLoadbalancer(t *testing.T) {
 	HandleLoadbalancerGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := loadbalancers.Get(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	actual, err := loadbalancers.Get(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -110,7 +111,7 @@ func TestGetLoadbalancerStatusesTree(t *testing.T) {
 	HandleLoadbalancerGetStatusesTree(t)
 
 	client := fake.ServiceClient()
-	actual, err := loadbalancers.GetStatuses(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	actual, err := loadbalancers.GetStatuses(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -123,7 +124,7 @@ func TestDeleteLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerDeletionSuccessfully(t)
 
-	res := loadbalancers.Delete(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	res := loadbalancers.Delete(context.TODO(), fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -134,7 +135,7 @@ func TestUpdateLoadbalancer(t *testing.T) {
 
 	client := fake.ServiceClient()
 	name := "NewLoadbalancerName"
-	actual, err := loadbalancers.Update(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
+	actual, err := loadbalancers.Update(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
 		Name: &name,
 	}).Extract()
 	if err != nil {
@@ -151,13 +152,13 @@ func TestCascadingDeleteLoadbalancer(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Type = "network"
-	err := loadbalancers.CascadingDelete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").ExtractErr()
+	err := loadbalancers.CascadingDelete(context.TODO(), sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").ExtractErr()
 	if err == nil {
 		t.Fatalf("expected error running CascadingDelete with Neutron service client but didn't get one")
 	}
 
 	sc.Type = "load-balancer"
-	err = loadbalancers.CascadingDelete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").ExtractErr()
+	err = loadbalancers.CascadingDelete(context.TODO(), sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -167,7 +168,7 @@ func TestGetLoadbalancerStatsTree(t *testing.T) {
 	HandleLoadbalancerGetStatsTree(t)
 
 	client := fake.ServiceClient()
-	actual, err := loadbalancers.GetStats(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	actual, err := loadbalancers.GetStats(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}

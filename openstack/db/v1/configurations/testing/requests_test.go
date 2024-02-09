@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/configurations"
@@ -51,7 +52,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, resURL, "GET", "", GetConfigJSON, 200)
 
-	config, err := configurations.Get(fake.ServiceClient(), configID).Extract()
+	config, err := configurations.Get(context.TODO(), fake.ServiceClient(), configID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleConfig, config)
 }
@@ -74,7 +75,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	config, err := configurations.Create(fake.ServiceClient(), opts).Extract()
+	config, err := configurations.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleConfigWithValues, config)
 }
@@ -90,7 +91,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	err := configurations.Update(fake.ServiceClient(), configID, opts).ExtractErr()
+	err := configurations.Update(context.TODO(), fake.ServiceClient(), configID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -105,7 +106,7 @@ func TestReplace(t *testing.T) {
 		},
 	}
 
-	err := configurations.Replace(fake.ServiceClient(), configID, opts).ExtractErr()
+	err := configurations.Replace(context.TODO(), fake.ServiceClient(), configID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -114,7 +115,7 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, resURL, "DELETE", "", "", 202)
 
-	err := configurations.Delete(fake.ServiceClient(), configID).ExtractErr()
+	err := configurations.Delete(context.TODO(), fake.ServiceClient(), configID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -181,7 +182,7 @@ func TestGetDSParam(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, dsParamGetURL, "GET", "", GetParamJSON, 200)
 
-	param, err := configurations.GetDatastoreParam(fake.ServiceClient(), dsID, versionID, paramID).Extract()
+	param, err := configurations.GetDatastoreParam(context.TODO(), fake.ServiceClient(), dsID, versionID, paramID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &configurations.Param{
@@ -226,7 +227,7 @@ func TestGetGlobalParam(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, globalParamGetURL, "GET", "", GetParamJSON, 200)
 
-	param, err := configurations.GetGlobalParam(fake.ServiceClient(), versionID, paramID).Extract()
+	param, err := configurations.GetGlobalParam(context.TODO(), fake.ServiceClient(), versionID, paramID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &configurations.Param{

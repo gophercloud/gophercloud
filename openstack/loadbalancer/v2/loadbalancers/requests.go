@@ -1,6 +1,8 @@
 package loadbalancers
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/listeners"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/pools"
@@ -155,7 +157,7 @@ func (opts CreateOpts) ToLoadBalancerCreateMap() (map[string]interface{}, error)
 // configuration defined in the CreateOpts struct. Once the request is
 // validated and progress has started on the provisioning process, a
 // CreateResult will be returned.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToLoadBalancerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -167,7 +169,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 }
 
 // Get retrieves a particular Loadbalancer based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -206,7 +208,7 @@ func (opts UpdateOpts) ToLoadBalancerUpdateMap() (map[string]interface{}, error)
 
 // Update is an operation which modifies the attributes of the specified
 // LoadBalancer.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToLoadBalancerUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -240,7 +242,7 @@ func (opts DeleteOpts) ToLoadBalancerDeleteQuery() (string, error) {
 
 // Delete will permanently delete a particular LoadBalancer based on its
 // unique ID.
-func Delete(c *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := resourceURL(c, id)
 	if opts != nil {
 		query, err := opts.ToLoadBalancerDeleteQuery()
@@ -256,21 +258,21 @@ func Delete(c *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r 
 }
 
 // GetStatuses will return the status of a particular LoadBalancer.
-func GetStatuses(c *gophercloud.ServiceClient, id string) (r GetStatusesResult) {
+func GetStatuses(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetStatusesResult) {
 	resp, err := c.Get(statusRootURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetStats will return the shows the current statistics of a particular LoadBalancer.
-func GetStats(c *gophercloud.ServiceClient, id string) (r StatsResult) {
+func GetStats(ctx context.Context, c *gophercloud.ServiceClient, id string) (r StatsResult) {
 	resp, err := c.Get(statisticsRootURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Failover performs a failover of a load balancer.
-func Failover(c *gophercloud.ServiceClient, id string) (r FailoverResult) {
+func Failover(ctx context.Context, c *gophercloud.ServiceClient, id string) (r FailoverResult) {
 	resp, err := c.Put(failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})

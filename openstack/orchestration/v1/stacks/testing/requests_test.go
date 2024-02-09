@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -32,7 +33,7 @@ func TestCreateStack(t *testing.T) {
 		TemplateOpts:    template,
 		DisableRollback: gophercloud.Disabled,
 	}
-	actual, err := stacks.Create(fake.ServiceClient(), createOpts).Extract()
+	actual, err := stacks.Create(context.TODO(), fake.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := CreateExpected
@@ -58,7 +59,7 @@ func TestCreateStackMissingRequiredInOpts(t *testing.T) {
 	createOpts := stacks.CreateOpts{
 		DisableRollback: gophercloud.Disabled,
 	}
-	r := stacks.Create(fake.ServiceClient(), createOpts)
+	r := stacks.Create(context.TODO(), fake.ServiceClient(), createOpts)
 	th.AssertEquals(t, "error creating the options map: Missing input for argument [Name]", r.Err.Error())
 }
 
@@ -101,7 +102,7 @@ func TestAdoptStack(t *testing.T) {
 		TemplateOpts:    template,
 		DisableRollback: gophercloud.Disabled,
 	}
-	actual, err := stacks.Adopt(fake.ServiceClient(), adoptOpts).Extract()
+	actual, err := stacks.Adopt(context.TODO(), fake.ServiceClient(), adoptOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := CreateExpected
@@ -132,7 +133,7 @@ func TestGetStack(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t, GetOutput)
 
-	actual, err := stacks.Get(fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
+	actual, err := stacks.Get(context.TODO(), fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -144,7 +145,7 @@ func TestFindStack(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFindSuccessfully(t, GetOutput)
 
-	actual, err := stacks.Find(fake.ServiceClient(), "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
+	actual, err := stacks.Find(context.TODO(), fake.ServiceClient(), "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -171,7 +172,7 @@ func TestUpdateStack(t *testing.T) {
 	updateOpts := &stacks.UpdateOpts{
 		TemplateOpts: template,
 	}
-	err := stacks.Update(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
+	err := stacks.Update(context.TODO(), fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -188,7 +189,7 @@ func TestUpdateStackNoTemplate(t *testing.T) {
 	}
 	expected := stacks.ErrTemplateRequired{}
 
-	err := stacks.Update(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
+	err := stacks.Update(context.TODO(), fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
 	th.AssertEquals(t, expected, err)
 }
 
@@ -203,7 +204,7 @@ func TestUpdatePatchStack(t *testing.T) {
 	updateOpts := &stacks.UpdateOpts{
 		Parameters: parameters,
 	}
-	err := stacks.UpdatePatch(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
+	err := stacks.UpdatePatch(context.TODO(), fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -212,7 +213,7 @@ func TestDeleteStack(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := stacks.Delete(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada").ExtractErr()
+	err := stacks.Delete(context.TODO(), fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -239,7 +240,7 @@ func TestPreviewStack(t *testing.T) {
 		TemplateOpts:    template,
 		DisableRollback: gophercloud.Disabled,
 	}
-	actual, err := stacks.Preview(fake.ServiceClient(), previewOpts).Extract()
+	actual, err := stacks.Preview(context.TODO(), fake.ServiceClient(), previewOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := PreviewExpected
@@ -251,7 +252,7 @@ func TestAbandonStack(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAbandonSuccessfully(t, AbandonOutput)
 
-	actual, err := stacks.Abandon(fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c8").Extract()
+	actual, err := stacks.Abandon(context.TODO(), fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c8").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := AbandonExpected

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -27,7 +28,7 @@ func TestCreate(t *testing.T) {
 		ShareID:          "65a34695-f9e5-4eea-b48d-a0b261d82943",
 		AvailabilityZone: "zone-1",
 	}
-	actual, err := replicas.Create(getClient("2.11"), options).Extract()
+	actual, err := replicas.Create(context.TODO(), getClient("2.11"), options).Extract()
 
 	expected := &replicas.Replica{
 		ID:               "3b9c33e8-b136-45c6-84a6-019c8db1d550",
@@ -48,7 +49,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	result := replicas.Delete(getClient("2.11"), replicaID)
+	result := replicas.Delete(context.TODO(), getClient("2.11"), replicaID)
 	th.AssertNoErr(t, result.Err)
 }
 
@@ -58,7 +59,7 @@ func TestForceDeleteSuccess(t *testing.T) {
 
 	MockForceDeleteResponse(t)
 
-	err := replicas.ForceDelete(getClient("2.11"), replicaID).ExtractErr()
+	err := replicas.ForceDelete(context.TODO(), getClient("2.11"), replicaID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -68,7 +69,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := replicas.Get(getClient("2.11"), replicaID).Extract()
+	actual, err := replicas.Get(context.TODO(), getClient("2.11"), replicaID).Extract()
 
 	expected := &replicas.Replica{
 		AvailabilityZone: "zone-1",
@@ -185,7 +186,7 @@ func TestListExportLocationsSuccess(t *testing.T) {
 
 	MockListExportLocationsResponse(t)
 
-	actual, err := replicas.ListExportLocations(getClient("2.47"), replicaID).Extract()
+	actual, err := replicas.ListExportLocations(context.TODO(), getClient("2.47"), replicaID).Extract()
 
 	expected := []replicas.ExportLocation{
 		{
@@ -214,7 +215,7 @@ func TestGetExportLocationSuccess(t *testing.T) {
 
 	MockGetExportLocationResponse(t)
 
-	s, err := replicas.GetExportLocation(getClient("2.47"), replicaID, "ae73e762-e8b9-4aad-aad3-23afb7cd6825").Extract()
+	s, err := replicas.GetExportLocation(context.TODO(), getClient("2.47"), replicaID, "ae73e762-e8b9-4aad-aad3-23afb7cd6825").Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, s, &replicas.ExportLocation{
@@ -234,7 +235,7 @@ func TestResetStatusSuccess(t *testing.T) {
 
 	MockResetStatusResponse(t)
 
-	err := replicas.ResetStatus(getClient("2.11"), replicaID, &replicas.ResetStatusOpts{Status: "available"}).ExtractErr()
+	err := replicas.ResetStatus(context.TODO(), getClient("2.11"), replicaID, &replicas.ResetStatusOpts{Status: "available"}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -244,7 +245,7 @@ func TestResetStateSuccess(t *testing.T) {
 
 	MockResetStateResponse(t)
 
-	err := replicas.ResetState(getClient("2.11"), replicaID, &replicas.ResetStateOpts{State: "active"}).ExtractErr()
+	err := replicas.ResetState(context.TODO(), getClient("2.11"), replicaID, &replicas.ResetStateOpts{State: "active"}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -254,7 +255,7 @@ func TestResyncSuccess(t *testing.T) {
 
 	MockResyncResponse(t)
 
-	err := replicas.Resync(getClient("2.11"), replicaID).ExtractErr()
+	err := replicas.Resync(context.TODO(), getClient("2.11"), replicaID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -264,6 +265,6 @@ func TestPromoteSuccess(t *testing.T) {
 
 	MockPromoteResponse(t)
 
-	err := replicas.Promote(getClient("2.11"), replicaID, &replicas.PromoteOpts{QuiesceWaitTime: 30}).ExtractErr()
+	err := replicas.Promote(context.TODO(), getClient("2.11"), replicaID, &replicas.PromoteOpts{QuiesceWaitTime: 30}).ExtractErr()
 	th.AssertNoErr(t, err)
 }

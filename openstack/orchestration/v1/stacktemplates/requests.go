@@ -1,9 +1,13 @@
 package stacktemplates
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 // Get retreives data for the given stack template.
-func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
 	resp, err := c.Get(getURL(c, stackName, stackID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -27,7 +31,7 @@ func (opts ValidateOpts) ToStackTemplateValidateMap() (map[string]interface{}, e
 }
 
 // Validate validates the given stack template.
-func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r ValidateResult) {
+func Validate(ctx context.Context, c *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r ValidateResult) {
 	b, err := opts.ToStackTemplateValidateMap()
 	if err != nil {
 		r.Err = err

@@ -308,7 +308,7 @@ func CreateWithContext(ctx context.Context, c *gophercloud.ServiceClient, opts t
 }
 
 // Create is a compatibility wrapper around CreateWithContext
-func Create(c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
 	return CreateWithContext(context.Background(), c, opts)
 }
 
@@ -334,7 +334,7 @@ func ValidateS3TokenWithContext(ctx context.Context, c *gophercloud.ServiceClien
 }
 
 // ValidateS3Token is a compatibility wrapper around ValidateS3TokenWithContext
-func ValidateS3Token(c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+func ValidateS3Token(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
 	return ValidateS3TokenWithContext(context.Background(), c, opts)
 }
 

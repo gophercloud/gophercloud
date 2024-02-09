@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/regions"
@@ -47,7 +48,7 @@ func TestGetRegion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetRegionSuccessfully(t)
 
-	actual, err := regions.Get(client.ServiceClient(), "RegionOne-West").Extract()
+	actual, err := regions.Get(context.TODO(), client.ServiceClient(), "RegionOne-West").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegion, *actual)
@@ -67,7 +68,7 @@ func TestCreateRegion(t *testing.T) {
 		ParentRegionID: "RegionOne",
 	}
 
-	actual, err := regions.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := regions.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegion, *actual)
 }
@@ -91,7 +92,7 @@ func TestUpdateRegion(t *testing.T) {
 		*/
 	}
 
-	actual, err := regions.Update(client.ServiceClient(), "RegionOne-West", updateOpts).Extract()
+	actual, err := regions.Update(context.TODO(), client.ServiceClient(), "RegionOne-West", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegionUpdated, *actual)
 }
@@ -101,6 +102,6 @@ func TestDeleteRegion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteRegionSuccessfully(t)
 
-	res := regions.Delete(client.ServiceClient(), "RegionOne-West")
+	res := regions.Delete(context.TODO(), client.ServiceClient(), "RegionOne-West")
 	th.AssertNoErr(t, res.Err)
 }

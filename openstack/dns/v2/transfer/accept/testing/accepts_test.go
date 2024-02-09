@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	transferAccepts "github.com/gophercloud/gophercloud/v2/openstack/dns/v2/transfer/accept"
@@ -61,7 +62,7 @@ func TestGet(t *testing.T) {
 	HandleGetSuccessfully(t)
 
 	actual, err := transferAccepts.Get(
-		client.ServiceClient(), "92236f39-0fad-4f8f-bf25-fbdf027de34d").Extract()
+		context.TODO(), client.ServiceClient(), "92236f39-0fad-4f8f-bf25-fbdf027de34d").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstTransferAccept, actual)
 }
@@ -77,7 +78,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	actual, err := transferAccepts.Create(
-		client.ServiceClient(), createOpts).Extract()
+		context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedTransferAccept, actual)
 }

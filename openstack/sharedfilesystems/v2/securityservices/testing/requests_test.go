@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -26,7 +27,7 @@ func TestCreate(t *testing.T) {
 		Type:        "kerberos",
 	}
 
-	s, err := securityservices.Create(client.ServiceClient(), options).Extract()
+	s, err := securityservices.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "SecServ1")
@@ -47,7 +48,7 @@ func TestCreateFails(t *testing.T) {
 		Password:    "***",
 	}
 
-	_, err := securityservices.Create(client.ServiceClient(), options).Extract()
+	_, err := securityservices.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
@@ -60,7 +61,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	res := securityservices.Delete(client.ServiceClient(), "securityServiceID")
+	res := securityservices.Delete(context.TODO(), client.ServiceClient(), "securityServiceID")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -173,7 +174,7 @@ func TestGet(t *testing.T) {
 		Password:    "supersecret",
 	}
 
-	n, err := securityservices.Get(client.ServiceClient(), "3c829734-0679-4c17-9637-801da48c0d5f").Extract()
+	n, err := securityservices.Get(context.TODO(), client.ServiceClient(), "3c829734-0679-4c17-9637-801da48c0d5f").Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, &expected, n)
@@ -203,7 +204,7 @@ func TestUpdate(t *testing.T) {
 
 	name := "SecServ2"
 	options := securityservices.UpdateOpts{Name: &name}
-	s, err := securityservices.Update(client.ServiceClient(), "securityServiceID", options).Extract()
+	s, err := securityservices.Update(context.TODO(), client.ServiceClient(), "securityServiceID", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, s)
 }

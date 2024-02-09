@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -164,7 +165,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	_, err := policies.Create(fake.ServiceClient(), options).Extract()
+	_, err := policies.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -209,7 +210,7 @@ func TestInsertRule(t *testing.T) {
 		InsertBefore: "3062ed90-1fb0-4c25-af3d-318dff2143ae",
 	}
 
-	policy, err := policies.InsertRule(fake.ServiceClient(), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
+	policy, err := policies.InsertRule(context.TODO(), fake.ServiceClient(), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "TESTACC-2LnMayeG", policy.Name)
 	th.AssertEquals(t, 2, len(policy.Rules))
@@ -232,7 +233,7 @@ func TestInsertRuleWithInvalidParameters(t *testing.T) {
 		InsertAfter:  "2",
 	}
 
-	_, err := policies.InsertRule(fake.ServiceClient(), "0", options).Extract()
+	_, err := policies.InsertRule(context.TODO(), fake.ServiceClient(), "0", options).Extract()
 
 	// expect to fail with an gophercloud error
 	th.AssertErr(t, err)
@@ -269,7 +270,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	policy, err := policies.Get(fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+	policy, err := policies.Get(context.TODO(), fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "www", policy.Name)
@@ -339,7 +340,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	_, err := policies.Update(fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c", options).Extract()
+	_, err := policies.Update(context.TODO(), fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -353,7 +354,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := policies.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	res := policies.Delete(context.TODO(), fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -391,7 +392,7 @@ func TestRemoveRule(t *testing.T) {
     `)
 	})
 
-	policy, err := policies.RemoveRule(fake.ServiceClient(), "9fed8075-06ee-463f-83a6-d4118791b02f", "9fed8075-06ee-463f-83a6-d4118791b02f").Extract()
+	policy, err := policies.RemoveRule(context.TODO(), fake.ServiceClient(), "9fed8075-06ee-463f-83a6-d4118791b02f", "9fed8075-06ee-463f-83a6-d4118791b02f").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "9fed8075-06ee-463f-83a6-d4118791b02f", policy.ID)
 

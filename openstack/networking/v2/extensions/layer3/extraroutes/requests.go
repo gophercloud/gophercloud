@@ -1,6 +1,8 @@
 package extraroutes
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/routers"
 )
@@ -23,7 +25,7 @@ func (opts Opts) ToExtraRoutesUpdateMap() (map[string]interface{}, error) {
 }
 
 // Add allows routers to be updated with a list of routes to be added.
-func Add(c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r AddResult) {
+func Add(ctx context.Context, c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r AddResult) {
 	b, err := opts.ToExtraRoutesUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -37,7 +39,7 @@ func Add(c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r AddResult
 }
 
 // Remove allows routers to be updated with a list of routes to be removed.
-func Remove(c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r RemoveResult) {
+func Remove(ctx context.Context, c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r RemoveResult) {
 	b, err := opts.ToExtraRoutesUpdateMap()
 	if err != nil {
 		r.Err = err

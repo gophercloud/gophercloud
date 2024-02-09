@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -190,7 +191,7 @@ func TestCreate(t *testing.T) {
 		AdminStateUp: gophercloud.Enabled,
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
-	_, err := firewalls.Create(fake.ServiceClient(), options).Extract()
+	_, err := firewalls.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -220,7 +221,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	fw, err := firewalls.Get(fake.ServiceClient(), "fb5b5315-64f6-4ea3-8e58-981cc37c6f61").Extract()
+	fw, err := firewalls.Get(context.TODO(), fake.ServiceClient(), "fb5b5315-64f6-4ea3-8e58-981cc37c6f61").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", fw.Status)
@@ -264,7 +265,7 @@ func TestGetWithExtensions(t *testing.T) {
 		routerinsertion.FirewallExt
 	}
 
-	err := firewalls.Get(fake.ServiceClient(), "fb5b5315-64f6-4ea3-8e58-981cc37c6f61").ExtractInto(&fw)
+	err := firewalls.Get(context.TODO(), fake.ServiceClient(), "fb5b5315-64f6-4ea3-8e58-981cc37c6f61").ExtractInto(&fw)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", fw.Status)
@@ -324,7 +325,7 @@ func TestUpdate(t *testing.T) {
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 
-	_, err := firewalls.Update(fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", options).Extract()
+	_, err := firewalls.Update(context.TODO(), fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -338,6 +339,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := firewalls.Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := firewalls.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

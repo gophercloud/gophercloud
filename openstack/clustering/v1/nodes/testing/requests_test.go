@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -32,7 +33,7 @@ func TestCreateNode(t *testing.T) {
 		Role:      "",
 	}
 
-	res := nodes.Create(fake.ServiceClient(), createOpts)
+	res := nodes.Create(context.TODO(), fake.ServiceClient(), createOpts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-Openstack-Request-Id")
@@ -75,7 +76,7 @@ func TestDeleteNode(t *testing.T) {
 
 	HandleDeleteSuccessfully(t)
 
-	deleteResult := nodes.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
+	deleteResult := nodes.Delete(context.TODO(), fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
 	th.AssertNoErr(t, deleteResult.ExtractErr())
 }
 
@@ -85,7 +86,7 @@ func TestGetNode(t *testing.T) {
 
 	HandleGetSuccessfully(t)
 
-	actual, err := nodes.Get(fake.ServiceClient(), "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3").Extract()
+	actual, err := nodes.Get(context.TODO(), fake.ServiceClient(), "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedGet, *actual)
 }
@@ -99,7 +100,7 @@ func TestUpdateNode(t *testing.T) {
 	nodeOpts := nodes.UpdateOpts{
 		Name: "node-e395be1e-002",
 	}
-	actual, err := nodes.Update(fake.ServiceClient(), ExpectedUpdate.ID, nodeOpts).Extract()
+	actual, err := nodes.Update(context.TODO(), fake.ServiceClient(), ExpectedUpdate.ID, nodeOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUpdate, *actual)
 }
@@ -113,7 +114,7 @@ func TestOpsNode(t *testing.T) {
 	nodeOpts := nodes.OperationOpts{
 		Operation: nodes.PauseOperation,
 	}
-	actual, err := nodes.Ops(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", nodeOpts).Extract()
+	actual, err := nodes.Ops(context.TODO(), fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", nodeOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, OperationExpectedActionID, actual)
 }
@@ -127,7 +128,7 @@ func TestNodeRecover(t *testing.T) {
 		Operation: nodes.RebuildRecovery,
 		Check:     new(bool),
 	}
-	actionID, err := nodes.Recover(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", recoverOpts).Extract()
+	actionID, err := nodes.Recover(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", recoverOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
@@ -138,7 +139,7 @@ func TestNodeCheck(t *testing.T) {
 
 	HandleCheckSuccessfully(t)
 
-	actionID, err := nodes.Check(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09").Extract()
+	actionID, err := nodes.Check(context.TODO(), fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }

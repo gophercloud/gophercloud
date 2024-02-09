@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stackevents"
@@ -14,7 +15,7 @@ func TestFindEvents(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFindSuccessfully(t, FindOutput)
 
-	actual, err := stackevents.Find(fake.ServiceClient(), "postman_stack").Extract()
+	actual, err := stackevents.Find(context.TODO(), fake.ServiceClient(), "postman_stack").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := FindExpected
@@ -64,7 +65,7 @@ func TestGetEvent(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t, GetOutput)
 
-	actual, err := stackevents.Get(fake.ServiceClient(), "hello_world", "49181cd6-169a-4130-9455-31185bbfc5bf", "my_resource", "93940999-7d40-44ae-8de4-19624e7b8d18").Extract()
+	actual, err := stackevents.Get(context.TODO(), fake.ServiceClient(), "hello_world", "49181cd6-169a-4130-9455-31185bbfc5bf", "my_resource", "93940999-7d40-44ae-8de4-19624e7b8d18").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected

@@ -1,6 +1,7 @@
 package request
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -42,8 +43,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns information about a transfer request, given its ID.
-func Get(client *gophercloud.ServiceClient, transferRequestID string) (r GetResult) {
-	resp, err := client.Get(resourceURL(client, transferRequestID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, transferRequestID string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, resourceURL(client, transferRequestID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -74,13 +75,13 @@ func (opts CreateOpts) ToTransferRequestCreateMap() (map[string]interface{}, err
 }
 
 // Create implements a transfer request create request.
-func Create(client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTransferRequestCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client, zoneID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client, zoneID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{http.StatusCreated, http.StatusAccepted},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -113,13 +114,13 @@ func (opts UpdateOpts) ToTransferRequestUpdateMap() (map[string]interface{}, err
 }
 
 // Update implements a transfer request update request.
-func Update(client *gophercloud.ServiceClient, transferID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, transferID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToTransferRequestUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(resourceURL(client, transferID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, resourceURL(client, transferID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{http.StatusOK, http.StatusAccepted},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -127,8 +128,8 @@ func Update(client *gophercloud.ServiceClient, transferID string, opts UpdateOpt
 }
 
 // Delete implements a transfer request delete request.
-func Delete(client *gophercloud.ServiceClient, transferID string) (r DeleteResult) {
-	resp, err := client.Delete(resourceURL(client, transferID), &gophercloud.RequestOpts{
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, transferID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, resourceURL(client, transferID), &gophercloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

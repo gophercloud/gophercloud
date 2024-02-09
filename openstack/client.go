@@ -97,7 +97,7 @@ func AuthenticateWithContext(ctx context.Context, client *gophercloud.ProviderCl
 		{ID: v3, Priority: 30, Suffix: "/v3/"},
 	}
 
-	chosen, endpoint, err := utils.ChooseVersion(client, versions)
+	chosen, endpoint, err := utils.ChooseVersion(ctx, client, versions)
 	if err != nil {
 		return err
 	}
@@ -228,7 +228,7 @@ func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		}
 
 		v3Client.SetToken(tokenID)
-		result := tokens3.Get(v3Client, tokenID)
+		result := tokens3.Get(ctx, v3Client, tokenID)
 		if result.Err != nil {
 			return result.Err
 		}

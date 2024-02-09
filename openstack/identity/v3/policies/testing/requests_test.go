@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -102,7 +103,7 @@ func TestCreatePolicy(t *testing.T) {
 		},
 	}
 
-	actual, err := policies.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := policies.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondPolicy, *actual)
 }
@@ -156,7 +157,7 @@ func TestGetPolicy(t *testing.T) {
 	HandleGetPolicySuccessfully(t)
 
 	id := "b49884da9d31494ea02aff38d4b4e701"
-	actual, err := policies.Get(client.ServiceClient(), id).Extract()
+	actual, err := policies.Get(context.TODO(), client.ServiceClient(), id).Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondPolicy, *actual)
@@ -174,7 +175,7 @@ func TestUpdatePolicy(t *testing.T) {
 	}
 
 	id := "b49884da9d31494ea02aff38d4b4e701"
-	actual, err := policies.Update(client.ServiceClient(), id, updateOpts).Extract()
+	actual, err := policies.Update(context.TODO(), client.ServiceClient(), id, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondPolicyUpdated, *actual)
 }
@@ -224,6 +225,6 @@ func TestDeletePolicy(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeletePolicySuccessfully(t)
 
-	res := policies.Delete(client.ServiceClient(), "9fe1d3")
+	res := policies.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }

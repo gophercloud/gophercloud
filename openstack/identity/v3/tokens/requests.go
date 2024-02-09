@@ -146,7 +146,7 @@ func CreateWithContext(ctx context.Context, c *gophercloud.ServiceClient, opts A
 }
 
 // Create is a compatibility wrapper around CreateWithContext
-func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts AuthOptionsBuilder) (r CreateResult) {
 	return CreateWithContext(context.Background(), c, opts)
 }
 
@@ -161,7 +161,7 @@ func GetWithContext(ctx context.Context, c *gophercloud.ServiceClient, token str
 }
 
 // Get is a compatibility wrapper around GetWithContext
-func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, token string) (r GetResult) {
 	return GetWithContext(context.Background(), c, token)
 }
 
@@ -179,7 +179,7 @@ func ValidateWithContext(ctx context.Context, c *gophercloud.ServiceClient, toke
 }
 
 // Validate is a compatibility wrapper around ValidateWithContext
-func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
+func Validate(ctx context.Context, c *gophercloud.ServiceClient, token string) (bool, error) {
 	return ValidateWithContext(context.Background(), c, token)
 }
 
@@ -193,6 +193,6 @@ func RevokeWithContext(ctx context.Context, c *gophercloud.ServiceClient, token 
 }
 
 // Revoke is a compatibility wrapper around RevokeWithContext
-func Revoke(c *gophercloud.ServiceClient, token string) (r RevokeResult) {
+func Revoke(ctx context.Context, c *gophercloud.ServiceClient, token string) (r RevokeResult) {
 	return RevokeWithContext(context.Background(), c, token)
 }

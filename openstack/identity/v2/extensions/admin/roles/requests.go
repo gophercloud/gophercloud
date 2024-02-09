@@ -1,6 +1,8 @@
 package roles
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -16,8 +18,8 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // AddUser is the operation responsible for assigning a particular role to
 // a user. This is confined to the scope of the user's tenant - so the tenant
 // ID is a required argument.
-func AddUser(client *gophercloud.ServiceClient, tenantID, userID, roleID string) (r UserRoleResult) {
-	resp, err := client.Put(userRoleURL(client, tenantID, userID, roleID), nil, nil, &gophercloud.RequestOpts{
+func AddUser(ctx context.Context, client *gophercloud.ServiceClient, tenantID, userID, roleID string) (r UserRoleResult) {
+	resp, err := client.PutWithContext(ctx, userRoleURL(client, tenantID, userID, roleID), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -27,8 +29,8 @@ func AddUser(client *gophercloud.ServiceClient, tenantID, userID, roleID string)
 // DeleteUser is the operation responsible for deleting a particular role
 // from a user. This is confined to the scope of the user's tenant - so the
 // tenant ID is a required argument.
-func DeleteUser(client *gophercloud.ServiceClient, tenantID, userID, roleID string) (r UserRoleResult) {
-	resp, err := client.Delete(userRoleURL(client, tenantID, userID, roleID), nil)
+func DeleteUser(ctx context.Context, client *gophercloud.ServiceClient, tenantID, userID, roleID string) (r UserRoleResult) {
+	resp, err := client.DeleteWithContext(ctx, userRoleURL(client, tenantID, userID, roleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

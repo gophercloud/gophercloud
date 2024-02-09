@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"sort"
 	"testing"
 
@@ -15,7 +16,7 @@ func TestFindResources(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFindSuccessfully(t, FindOutput)
 
-	actual, err := stackresources.Find(fake.ServiceClient(), "hello_world").Extract()
+	actual, err := stackresources.Find(context.TODO(), fake.ServiceClient(), "hello_world").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := FindExpected
@@ -46,7 +47,7 @@ func TestGetResource(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t, GetOutput)
 
-	actual, err := stackresources.Get(fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
+	actual, err := stackresources.Get(context.TODO(), fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -58,7 +59,7 @@ func TestResourceMetadata(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleMetadataSuccessfully(t, MetadataOutput)
 
-	actual, err := stackresources.Metadata(fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
+	actual, err := stackresources.Metadata(context.TODO(), fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := MetadataExpected
@@ -92,7 +93,7 @@ func TestGetResourceSchema(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSchemaSuccessfully(t, GetSchemaOutput)
 
-	actual, err := stackresources.Schema(fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	actual, err := stackresources.Schema(context.TODO(), fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetSchemaExpected
@@ -104,7 +105,7 @@ func TestGetResourceTemplate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetTemplateSuccessfully(t, GetTemplateOutput)
 
-	actual, err := stackresources.Template(fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	actual, err := stackresources.Template(context.TODO(), fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetTemplateExpected
@@ -120,6 +121,6 @@ func TestMarkUnhealthyResource(t *testing.T) {
 		MarkUnhealthy:        true,
 		ResourceStatusReason: "Kubelet.Ready is Unknown more than 10 mins.",
 	}
-	err := stackresources.MarkUnhealthy(fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance", markUnhealthyOpts).ExtractErr()
+	err := stackresources.MarkUnhealthy(context.TODO(), fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance", markUnhealthyOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,7 @@
 package applicationcredentials
 
 import (
+	"context"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -41,8 +42,8 @@ func List(client *gophercloud.ServiceClient, userID string, opts ListOptsBuilder
 }
 
 // Get retrieves details on a single user, by ID.
-func Get(client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, userID, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, userID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -93,13 +94,13 @@ func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]interface{
 }
 
 // Create creates a new ApplicationCredential.
-func Create(client *gophercloud.ServiceClient, userID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, userID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToApplicationCredentialCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -107,8 +108,8 @@ func Create(client *gophercloud.ServiceClient, userID string, opts CreateOptsBui
 }
 
 // Delete deletes an application credential.
-func Delete(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, userID, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, userID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -122,15 +123,15 @@ func ListAccessRules(client *gophercloud.ServiceClient, userID string) paginatio
 }
 
 // GetAccessRule retrieves details on a single access rule by ID.
-func GetAccessRule(client *gophercloud.ServiceClient, userID string, id string) (r GetAccessRuleResult) {
-	resp, err := client.Get(getAccessRuleURL(client, userID, id), &r.Body, nil)
+func GetAccessRule(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetAccessRuleResult) {
+	resp, err := client.GetWithContext(ctx, getAccessRuleURL(client, userID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // DeleteAccessRule deletes an access rule.
-func DeleteAccessRule(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteAccessRuleURL(client, userID, id), nil)
+func DeleteAccessRule(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteAccessRuleURL(client, userID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

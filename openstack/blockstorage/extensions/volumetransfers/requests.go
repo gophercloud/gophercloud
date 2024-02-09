@@ -1,6 +1,8 @@
 package volumetransfers
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -21,13 +23,13 @@ func (opts CreateOpts) ToCreateMap() (map[string]interface{}, error) {
 }
 
 // Create will create a volume tranfer request based on the values in CreateOpts.
-func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(transferURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, transferURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -47,13 +49,13 @@ func (opts AcceptOpts) ToAcceptMap() (map[string]interface{}, error) {
 }
 
 // Accept will accept a volume tranfer request based on the values in AcceptOpts.
-func Accept(client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r CreateResult) {
+func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r CreateResult) {
 	b, err := opts.ToAcceptMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(acceptURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, acceptURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -61,8 +63,8 @@ func Accept(client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r Cr
 }
 
 // Delete deletes a volume transfer.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -117,8 +119,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // Get retrieves the Transfer with the provided ID. To extract the Transfer object
 // from the response, call the Extract method on the GetResult.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

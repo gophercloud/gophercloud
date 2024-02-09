@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/floatingips"
@@ -32,7 +33,7 @@ func TestCreate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateSuccessfully(t)
 
-	actual, err := floatingips.Create(client.ServiceClient(), floatingips.CreateOpts{
+	actual, err := floatingips.Create(context.TODO(), client.ServiceClient(), floatingips.CreateOpts{
 		Pool: "nova",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -44,7 +45,7 @@ func TestCreateWithNumericID(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateWithNumericIDSuccessfully(t)
 
-	actual, err := floatingips.Create(client.ServiceClient(), floatingips.CreateOpts{
+	actual, err := floatingips.Create(context.TODO(), client.ServiceClient(), floatingips.CreateOpts{
 		Pool: "nova",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -56,7 +57,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := floatingips.Get(client.ServiceClient(), "2").Extract()
+	actual, err := floatingips.Get(context.TODO(), client.ServiceClient(), "2").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SecondFloatingIP, actual)
 }
@@ -66,7 +67,7 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := floatingips.Delete(client.ServiceClient(), "1").ExtractErr()
+	err := floatingips.Delete(context.TODO(), client.ServiceClient(), "1").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -79,7 +80,7 @@ func TestAssociate(t *testing.T) {
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := floatingips.AssociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
+	err := floatingips.AssociateInstance(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -93,7 +94,7 @@ func TestAssociateFixed(t *testing.T) {
 		FixedIP:    "166.78.185.201",
 	}
 
-	err := floatingips.AssociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
+	err := floatingips.AssociateInstance(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -106,6 +107,6 @@ func TestDisassociateInstance(t *testing.T) {
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := floatingips.DisassociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", disassociateOpts).ExtractErr()
+	err := floatingips.DisassociateInstance(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", disassociateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

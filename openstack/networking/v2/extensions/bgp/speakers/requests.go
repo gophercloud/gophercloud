@@ -1,6 +1,8 @@
 package speakers
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -14,7 +16,7 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieve the specific bgp speaker by its uuid
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := c.Get(getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -41,7 +43,7 @@ func (opts CreateOpts) ToSpeakerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create accepts a CreateOpts and create a BGP Speaker.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToSpeakerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -53,7 +55,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 }
 
 // Delete accepts a unique ID and deletes the bgp speaker associated with it.
-func Delete(c *gophercloud.ServiceClient, speakerID string) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, speakerID string) (r DeleteResult) {
 	resp, err := c.Delete(deleteURL(c, speakerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -78,7 +80,7 @@ type UpdateOptsBuilder interface {
 }
 
 // Update accepts a UpdateOpts and update the BGP Speaker.
-func Update(c *gophercloud.ServiceClient, speakerID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, speakerID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSpeakerUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -107,7 +109,7 @@ func (opts AddBGPPeerOpts) ToBGPSpeakerAddBGPPeerMap() (map[string]interface{}, 
 }
 
 // AddBGPPeer add the BGP peer to the speaker a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_bgp_peer
-func AddBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddBGPPeerOptsBuilder) (r AddBGPPeerResult) {
+func AddBGPPeer(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddBGPPeerOptsBuilder) (r AddBGPPeerResult) {
 	b, err := opts.ToBGPSpeakerAddBGPPeerMap()
 	if err != nil {
 		r.Err = err
@@ -134,7 +136,7 @@ func (opts RemoveBGPPeerOpts) ToBGPSpeakerRemoveBGPPeerMap() (map[string]interfa
 }
 
 // RemoveBGPPeer remove the BGP peer from the speaker, a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_bgp_peer
-func RemoveBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveBGPPeerOptsBuilder) (r RemoveBGPPeerResult) {
+func RemoveBGPPeer(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveBGPPeerOptsBuilder) (r RemoveBGPPeerResult) {
 	b, err := opts.ToBGPSpeakerRemoveBGPPeerMap()
 	if err != nil {
 		r.Err = err
@@ -172,7 +174,7 @@ func (opts AddGatewayNetworkOpts) ToBGPSpeakerAddGatewayNetworkMap() (map[string
 }
 
 // AddGatewayNetwork a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_gateway_network
-func AddGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddGatewayNetworkOptsBuilder) (r AddGatewayNetworkResult) {
+func AddGatewayNetwork(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddGatewayNetworkOptsBuilder) (r AddGatewayNetworkResult) {
 	b, err := opts.ToBGPSpeakerAddGatewayNetworkMap()
 	if err != nil {
 		r.Err = err
@@ -199,7 +201,7 @@ func (opts RemoveGatewayNetworkOpts) ToBGPSpeakerRemoveGatewayNetworkMap() (map[
 }
 
 // RemoveGatewayNetwork a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove_gateway_network
-func RemoveGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveGatewayNetworkOptsBuilder) (r RemoveGatewayNetworkResult) {
+func RemoveGatewayNetwork(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveGatewayNetworkOptsBuilder) (r RemoveGatewayNetworkResult) {
 	b, err := opts.ToBGPSpeakerRemoveGatewayNetworkMap()
 	if err != nil {
 		r.Err = err

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -95,7 +96,7 @@ func TestGet(t *testing.T) {
     `)
 	})
 
-	ext, err := extensions.Get(fake.ServiceClient(), "agent").Extract()
+	ext, err := extensions.Get(context.TODO(), fake.ServiceClient(), "agent").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")

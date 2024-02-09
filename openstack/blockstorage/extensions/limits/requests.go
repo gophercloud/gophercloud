@@ -1,13 +1,15 @@
 package limits
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
 // Get returns the limits about the currently scoped tenant.
-func Get(client *gophercloud.ServiceClient) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient) (r GetResult) {
 	url := getURL(client)
-	resp, err := client.Get(url, &r.Body, nil)
+	resp, err := client.GetWithContext(ctx, url, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

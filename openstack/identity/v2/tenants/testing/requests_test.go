@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -42,7 +43,7 @@ func TestCreateTenant(t *testing.T) {
 		Enabled:     gophercloud.Enabled,
 	}
 
-	tenant, err := tenants.Create(client.ServiceClient(), opts).Extract()
+	tenant, err := tenants.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -62,7 +63,7 @@ func TestDeleteTenant(t *testing.T) {
 
 	mockDeleteTenantResponse(t)
 
-	err := tenants.Delete(client.ServiceClient(), "2466f69cd4714d89a548a68ed97ffcd4").ExtractErr()
+	err := tenants.Delete(context.TODO(), client.ServiceClient(), "2466f69cd4714d89a548a68ed97ffcd4").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -80,7 +81,7 @@ func TestUpdateTenant(t *testing.T) {
 		Enabled:     gophercloud.Enabled,
 	}
 
-	tenant, err := tenants.Update(client.ServiceClient(), id, opts).Extract()
+	tenant, err := tenants.Update(context.TODO(), client.ServiceClient(), id, opts).Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -100,7 +101,7 @@ func TestGetTenant(t *testing.T) {
 
 	mockGetTenantResponse(t)
 
-	tenant, err := tenants.Get(client.ServiceClient(), "5c62ef576dc7444cbb73b1fe84b97648").Extract()
+	tenant, err := tenants.Get(context.TODO(), client.ServiceClient(), "5c62ef576dc7444cbb73b1fe84b97648").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &tenants.Tenant{

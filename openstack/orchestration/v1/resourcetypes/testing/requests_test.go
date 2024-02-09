@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/resourcetypes"
@@ -13,7 +14,7 @@ func TestBasicListResourceTypes(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	result := resourcetypes.List(fake.ServiceClient(), nil)
+	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), nil)
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()
@@ -27,7 +28,7 @@ func TestFullListResourceTypes(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	result := resourcetypes.List(fake.ServiceClient(), resourcetypes.ListOpts{
+	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), resourcetypes.ListOpts{
 		WithDescription: true,
 	})
 	th.AssertNoErr(t, result.Err)
@@ -43,7 +44,7 @@ func TestFilteredListResourceTypes(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	result := resourcetypes.List(fake.ServiceClient(), resourcetypes.ListOpts{
+	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), resourcetypes.ListOpts{
 		NameRegex:       listFilterRegex,
 		WithDescription: true,
 	})
@@ -60,7 +61,7 @@ func TestGetSchema(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSchemaSuccessfully(t)
 
-	result := resourcetypes.GetSchema(fake.ServiceClient(), "OS::Test::TestServer")
+	result := resourcetypes.GetSchema(context.TODO(), fake.ServiceClient(), "OS::Test::TestServer")
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()
@@ -74,7 +75,7 @@ func TestGenerateTemplate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGenerateTemplateSuccessfully(t)
 
-	result := resourcetypes.GenerateTemplate(fake.ServiceClient(), "OS::Heat::None", nil)
+	result := resourcetypes.GenerateTemplate(context.TODO(), fake.ServiceClient(), "OS::Heat::None", nil)
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()

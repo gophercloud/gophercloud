@@ -1,6 +1,8 @@
 package policies
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -82,13 +84,13 @@ func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
 }
 
 // Create makes a request against the API to create a policy
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToPolicyCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -96,8 +98,8 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Delete makes a request against the API to delete a policy.
-func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
-	resp, err := client.Delete(policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -121,13 +123,13 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates a specified policy.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToPolicyUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -151,13 +153,13 @@ func (opts ValidateOpts) ToPolicyValidateMap() (map[string]interface{}, error) {
 }
 
 // Validate policy will validate a specified policy.
-func Validate(client *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r ValidateResult) {
+func Validate(ctx context.Context, client *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r ValidateResult) {
 	b, err := opts.ToPolicyValidateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(validateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, validateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -165,9 +167,9 @@ func Validate(client *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r Va
 }
 
 // Get makes a request against the API to get details for a policy.
-func Get(client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
 	url := policyGetURL(client, policyTypeName)
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

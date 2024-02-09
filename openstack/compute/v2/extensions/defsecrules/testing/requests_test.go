@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/defsecrules"
@@ -57,7 +58,7 @@ func TestCreate(t *testing.T) {
 		CIDR:       "10.10.12.0/24",
 	}
 
-	group, err := defsecrules.Create(client.ServiceClient(), opts).Extract()
+	group, err := defsecrules.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &defsecrules.DefaultRule{
@@ -83,7 +84,7 @@ func TestCreateICMPZero(t *testing.T) {
 		CIDR:       "10.10.12.0/24",
 	}
 
-	group, err := defsecrules.Create(client.ServiceClient(), opts).Extract()
+	group, err := defsecrules.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &defsecrules.DefaultRule{
@@ -102,7 +103,7 @@ func TestGet(t *testing.T) {
 
 	mockGetRuleResponse(t, ruleID)
 
-	group, err := defsecrules.Get(client.ServiceClient(), ruleID).Extract()
+	group, err := defsecrules.Get(context.TODO(), client.ServiceClient(), ruleID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &defsecrules.DefaultRule{
@@ -122,6 +123,6 @@ func TestDelete(t *testing.T) {
 
 	mockDeleteRuleResponse(t, ruleID)
 
-	err := defsecrules.Delete(client.ServiceClient(), ruleID).ExtractErr()
+	err := defsecrules.Delete(context.TODO(), client.ServiceClient(), ruleID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

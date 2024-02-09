@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -39,7 +40,7 @@ func TestGetProfileType10(t *testing.T) {
 
 	HandleGet1Successfully(t, ExpectedProfileType1.Name)
 
-	actual, err := profiletypes.Get(fake.ServiceClient(), ExpectedProfileType1.Name).Extract()
+	actual, err := profiletypes.Get(context.TODO(), fake.ServiceClient(), ExpectedProfileType1.Name).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedProfileType1, *actual)
 }
@@ -50,7 +51,7 @@ func TestGetProfileType15(t *testing.T) {
 
 	HandleGet15Successfully(t, ExpectedProfileType15.Name)
 
-	actual, err := profiletypes.Get(fake.ServiceClient(), ExpectedProfileType15.Name).Extract()
+	actual, err := profiletypes.Get(context.TODO(), fake.ServiceClient(), ExpectedProfileType15.Name).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedProfileType15, *actual)
 }

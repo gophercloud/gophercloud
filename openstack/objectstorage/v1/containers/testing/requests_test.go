@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -38,7 +39,7 @@ func TestContainerNames(t *testing.T) {
 				defer th.TeardownHTTP()
 				HandleCreateContainerSuccessfully(t)
 
-				_, err := containers.Create(fake.ServiceClient(), tc.containerName, nil).Extract()
+				_, err := containers.Create(context.TODO(), fake.ServiceClient(), tc.containerName, nil).Extract()
 				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("delete", func(t *testing.T) {
@@ -46,7 +47,7 @@ func TestContainerNames(t *testing.T) {
 				defer th.TeardownHTTP()
 				HandleDeleteContainerSuccessfully(t, WithPath("/"))
 
-				res := containers.Delete(fake.ServiceClient(), tc.containerName)
+				res := containers.Delete(context.TODO(), fake.ServiceClient(), tc.containerName)
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("update", func(t *testing.T) {
@@ -63,7 +64,7 @@ func TestContainerNames(t *testing.T) {
 					ContainerSyncKey: new(string),
 					ContentType:      &contentType,
 				}
-				res := containers.Update(fake.ServiceClient(), tc.containerName, options)
+				res := containers.Update(context.TODO(), fake.ServiceClient(), tc.containerName, options)
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("get", func(t *testing.T) {
@@ -71,7 +72,7 @@ func TestContainerNames(t *testing.T) {
 				defer th.TeardownHTTP()
 				HandleGetContainerSuccessfully(t, WithPath("/"))
 
-				res := containers.Get(fake.ServiceClient(), tc.containerName, nil)
+				res := containers.Get(context.TODO(), fake.ServiceClient(), tc.containerName, nil)
 				_, err := res.ExtractMetadata()
 				th.CheckErr(t, err, &tc.expectedError)
 
@@ -165,7 +166,7 @@ func TestCreateContainer(t *testing.T) {
 	HandleCreateContainerSuccessfully(t)
 
 	options := containers.CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
-	res := containers.Create(fake.ServiceClient(), "testContainer", options)
+	res := containers.Create(context.TODO(), fake.ServiceClient(), "testContainer", options)
 	th.CheckEquals(t, "bar", res.Header["X-Container-Meta-Foo"][0])
 
 	expected := &containers.CreateHeader{
@@ -184,7 +185,7 @@ func TestDeleteContainer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteContainerSuccessfully(t)
 
-	res := containers.Delete(fake.ServiceClient(), "testContainer")
+	res := containers.Delete(context.TODO(), fake.ServiceClient(), "testContainer")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -200,7 +201,7 @@ func TestBulkDelete(t *testing.T) {
 		Errors:         [][]string{},
 	}
 
-	resp, err := containers.BulkDelete(fake.ServiceClient(), []string{"testContainer1", "testContainer2"}).Extract()
+	resp, err := containers.BulkDelete(context.TODO(), fake.ServiceClient(), []string{"testContainer1", "testContainer2"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, *resp)
 }
@@ -219,7 +220,7 @@ func TestUpdateContainer(t *testing.T) {
 		ContainerSyncKey: new(string),
 		ContentType:      &contentType,
 	}
-	res := containers.Update(fake.ServiceClient(), "testContainer", options)
+	res := containers.Update(context.TODO(), fake.ServiceClient(), "testContainer", options)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -231,7 +232,7 @@ func TestGetContainer(t *testing.T) {
 	getOpts := containers.GetOpts{
 		Newest: true,
 	}
-	res := containers.Get(fake.ServiceClient(), "testContainer", getOpts)
+	res := containers.Get(context.TODO(), fake.ServiceClient(), "testContainer", getOpts)
 	_, err := res.ExtractMetadata()
 	th.AssertNoErr(t, err)
 
@@ -268,7 +269,7 @@ func TestUpdateContainerVersioningOff(t *testing.T) {
 		ContentType:      &contentType,
 		VersionsEnabled:  new(bool),
 	}
-	_, err := containers.Update(fake.ServiceClient(), "testVersioning", options).Extract()
+	_, err := containers.Update(context.TODO(), fake.ServiceClient(), "testVersioning", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -288,6 +289,6 @@ func TestUpdateContainerVersioningOn(t *testing.T) {
 		ContentType:      &contentType,
 		VersionsEnabled:  &iTrue,
 	}
-	_, err := containers.Update(fake.ServiceClient(), "testVersioning", options).Extract()
+	_, err := containers.Update(context.TODO(), fake.ServiceClient(), "testVersioning", options).Extract()
 	th.AssertNoErr(t, err)
 }

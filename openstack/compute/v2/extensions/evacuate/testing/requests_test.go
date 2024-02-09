@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/evacuate"
@@ -15,7 +16,7 @@ func TestEvacuate(t *testing.T) {
 
 	mockEvacuateResponse(t, serverID)
 
-	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
+	_, err := evacuate.Evacuate(context.TODO(), client.ServiceClient(), serverID, evacuate.EvacuateOpts{
 		Host:            "derp",
 		AdminPass:       "MySecretPass",
 		OnSharedStorage: false,
@@ -30,7 +31,7 @@ func TestEvacuateWithHost(t *testing.T) {
 
 	mockEvacuateResponseWithHost(t, serverID)
 
-	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
+	_, err := evacuate.Evacuate(context.TODO(), client.ServiceClient(), serverID, evacuate.EvacuateOpts{
 		Host: "derp",
 	}).ExtractAdminPass()
 	th.AssertNoErr(t, err)
@@ -43,7 +44,7 @@ func TestEvacuateWithNoOpts(t *testing.T) {
 
 	mockEvacuateResponseWithNoOpts(t, serverID)
 
-	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
+	_, err := evacuate.Evacuate(context.TODO(), client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
 	th.AssertNoErr(t, err)
 }
 
@@ -54,7 +55,7 @@ func TestEvacuateAdminpassResponse(t *testing.T) {
 
 	mockEvacuateAdminpassResponse(t, serverID)
 
-	actual, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
+	actual, err := evacuate.Evacuate(context.TODO(), client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
 	th.CheckEquals(t, "MySecretPass", actual)
 	th.AssertNoErr(t, err)
 }

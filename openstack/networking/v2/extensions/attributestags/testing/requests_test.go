@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -30,7 +31,7 @@ func TestReplaceAll(t *testing.T) {
 	opts := attributestags.ReplaceAllOpts{
 		Tags: []string{"abc", "xyz"},
 	}
-	res, err := attributestags.ReplaceAll(fake.ServiceClient(), "networks", "fakeid", opts).Extract()
+	res, err := attributestags.ReplaceAll(context.TODO(), fake.ServiceClient(), "networks", "fakeid", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
@@ -50,7 +51,7 @@ func TestList(t *testing.T) {
 		fmt.Fprintf(w, attributestagsListResult)
 	})
 
-	res, err := attributestags.List(fake.ServiceClient(), "networks", "fakeid").Extract()
+	res, err := attributestags.List(context.TODO(), fake.ServiceClient(), "networks", "fakeid").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
@@ -68,7 +69,7 @@ func TestDeleteAll(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := attributestags.DeleteAll(fake.ServiceClient(), "networks", "fakeid").ExtractErr()
+	err := attributestags.DeleteAll(context.TODO(), fake.ServiceClient(), "networks", "fakeid").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -84,7 +85,7 @@ func TestAdd(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	err := attributestags.Add(fake.ServiceClient(), "networks", "fakeid", "atag").ExtractErr()
+	err := attributestags.Add(context.TODO(), fake.ServiceClient(), "networks", "fakeid", "atag").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -100,7 +101,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := attributestags.Delete(fake.ServiceClient(), "networks", "fakeid", "atag").ExtractErr()
+	err := attributestags.Delete(context.TODO(), fake.ServiceClient(), "networks", "fakeid", "atag").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -116,7 +117,7 @@ func TestConfirmTrue(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	exists, err := attributestags.Confirm(fake.ServiceClient(), "networks", "fakeid", "atag").Extract()
+	exists, err := attributestags.Confirm(context.TODO(), fake.ServiceClient(), "networks", "fakeid", "atag").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, exists)
 }
@@ -133,6 +134,6 @@ func TestConfirmFalse(t *testing.T) {
 		w.WriteHeader(http.StatusNotFound)
 	})
 
-	exists, _ := attributestags.Confirm(fake.ServiceClient(), "networks", "fakeid", "atag").Extract()
+	exists, _ := attributestags.Confirm(context.TODO(), fake.ServiceClient(), "networks", "fakeid", "atag").Extract()
 	th.AssertEquals(t, false, exists)
 }

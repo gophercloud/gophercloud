@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -90,7 +91,7 @@ func TestGetFlavor(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGet(t)
 
-	actual, err := flavors.Get(fake.ServiceClient(), flavorID).Extract()
+	actual, err := flavors.Get(context.TODO(), fake.ServiceClient(), flavorID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &flavors.Flavor{

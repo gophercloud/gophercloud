@@ -1,6 +1,8 @@
 package federation
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -30,13 +32,13 @@ func (opts CreateMappingOpts) ToMappingCreateMap() (map[string]interface{}, erro
 }
 
 // CreateMapping creates a new Mapping.
-func CreateMapping(client *gophercloud.ServiceClient, mappingID string, opts CreateMappingOptsBuilder) (r CreateMappingResult) {
+func CreateMapping(ctx context.Context, client *gophercloud.ServiceClient, mappingID string, opts CreateMappingOptsBuilder) (r CreateMappingResult) {
 	b, err := opts.ToMappingCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(mappingsResourceURL(client, mappingID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, mappingsResourceURL(client, mappingID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -44,8 +46,8 @@ func CreateMapping(client *gophercloud.ServiceClient, mappingID string, opts Cre
 }
 
 // GetMapping retrieves details on a single mapping, by ID.
-func GetMapping(client *gophercloud.ServiceClient, mappingID string) (r GetMappingResult) {
-	resp, err := client.Get(mappingsResourceURL(client, mappingID), &r.Body, nil)
+func GetMapping(ctx context.Context, client *gophercloud.ServiceClient, mappingID string) (r GetMappingResult) {
+	resp, err := client.GetWithContext(ctx, mappingsResourceURL(client, mappingID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -68,13 +70,13 @@ func (opts UpdateMappingOpts) ToMappingUpdateMap() (map[string]interface{}, erro
 }
 
 // UpdateMapping updates an existing mapping.
-func UpdateMapping(client *gophercloud.ServiceClient, mappingID string, opts UpdateMappingOptsBuilder) (r UpdateMappingResult) {
+func UpdateMapping(ctx context.Context, client *gophercloud.ServiceClient, mappingID string, opts UpdateMappingOptsBuilder) (r UpdateMappingResult) {
 	b, err := opts.ToMappingUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(mappingsResourceURL(client, mappingID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, mappingsResourceURL(client, mappingID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -82,8 +84,8 @@ func UpdateMapping(client *gophercloud.ServiceClient, mappingID string, opts Upd
 }
 
 // DeleteMapping deletes a mapping.
-func DeleteMapping(client *gophercloud.ServiceClient, mappingID string) (r DeleteMappingResult) {
-	resp, err := client.Delete(mappingsResourceURL(client, mappingID), nil)
+func DeleteMapping(ctx context.Context, client *gophercloud.ServiceClient, mappingID string) (r DeleteMappingResult) {
+	resp, err := client.DeleteWithContext(ctx, mappingsResourceURL(client, mappingID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

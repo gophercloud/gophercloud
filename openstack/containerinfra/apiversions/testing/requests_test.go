@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -30,7 +31,7 @@ func TestGetAPIVersion(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := apiversions.Get(client.ServiceClient(), "v1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v1").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, MagnumAPIVersion1Result, *actual)

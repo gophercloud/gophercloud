@@ -1,6 +1,7 @@
 package roles
 
 import (
+	"context"
 	"net/url"
 	"strings"
 
@@ -65,8 +66,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details on a single role, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -108,13 +109,13 @@ func (opts CreateOpts) ToRoleCreateMap() (map[string]interface{}, error) {
 }
 
 // Create creates a new Role.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRoleCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -155,13 +156,13 @@ func (opts UpdateOpts) ToRoleUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates an existing Role.
-func Update(client *gophercloud.ServiceClient, roleID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRoleUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(updateURL(client, roleID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, updateURL(client, roleID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -169,8 +170,8 @@ func Update(client *gophercloud.ServiceClient, roleID string, opts UpdateOptsBui
 }
 
 // Delete deletes a role.
-func Delete(client *gophercloud.ServiceClient, roleID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, roleID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, roleID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, roleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -332,7 +333,7 @@ func ListAssignmentsOnResource(client *gophercloud.ServiceClient, opts ListAssig
 
 // Assign is the operation responsible for assigning a role
 // to a user/group on a project/domain.
-func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
+func Assign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -361,7 +362,7 @@ func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (
 		actorType = "groups"
 	}
 
-	resp, err := client.Put(assignURL(client, targetType, targetID, actorType, actorID, roleID), nil, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -370,7 +371,7 @@ func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (
 
 // Unassign is the operation responsible for unassigning a role
 // from a user/group on a project/domain.
-func Unassign(client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
+func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -399,7 +400,7 @@ func Unassign(client *gophercloud.ServiceClient, roleID string, opts UnassignOpt
 		actorType = "groups"
 	}
 
-	resp, err := client.Delete(assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
+	resp, err := client.DeleteWithContext(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

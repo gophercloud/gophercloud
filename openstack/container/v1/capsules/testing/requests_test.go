@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -27,7 +28,7 @@ func TestGetCapsule_OldTime(t *testing.T) {
 	ExpectedCapsule.Containers[0].UpdatedAt = updatedAt
 	ExpectedCapsule.Containers[0].StartedAt = startedAt
 
-	actualCapsule, err := capsules.Get(fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
+	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
@@ -49,7 +50,7 @@ func TestGetCapsule_NewTime(t *testing.T) {
 	ExpectedCapsule.Containers[0].UpdatedAt = updatedAt
 	ExpectedCapsule.Containers[0].StartedAt = startedAt
 
-	actualCapsule, err := capsules.Get(fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
+	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
@@ -66,7 +67,7 @@ func TestCreateCapsule(t *testing.T) {
 	createOpts := capsules.CreateOpts{
 		TemplateOpts: template,
 	}
-	actualCapsule, err := capsules.Create(fakeclient.ServiceClient(), createOpts).Extract()
+	actualCapsule, err := capsules.Create(context.TODO(), fakeclient.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
@@ -154,6 +155,6 @@ func TestDelete(t *testing.T) {
 
 	HandleCapsuleDeleteSuccessfully(t)
 
-	res := capsules.Delete(fakeclient.ServiceClient(), "963a239d-3946-452b-be5a-055eab65a421")
+	res := capsules.Delete(context.TODO(), fakeclient.ServiceClient(), "963a239d-3946-452b-be5a-055eab65a421")
 	th.AssertNoErr(t, res.Err)
 }

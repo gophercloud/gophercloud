@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -79,7 +80,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	actual, err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &volumes.Volume{
@@ -122,7 +123,7 @@ func TestCreate(t *testing.T) {
 		Size:             75,
 		AvailabilityZone: "us-east1",
 	}
-	n, err := volumes.Create(client.ServiceClient(), options).Extract()
+	n, err := volumes.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Size, 4)
@@ -135,7 +136,7 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	res := volumes.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := volumes.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -147,7 +148,7 @@ func TestUpdate(t *testing.T) {
 
 	var name = "vol-002"
 	options := volumes.UpdateOpts{Name: &name}
-	v, err := volumes.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	v, err := volumes.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "vol-002", v.Name)
 }

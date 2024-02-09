@@ -1,6 +1,8 @@
 package attributestags
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
@@ -22,14 +24,14 @@ func (opts ReplaceAllOpts) ToAttributeTagsReplaceAllMap() (map[string]interface{
 }
 
 // ReplaceAll updates all tags on a resource, replacing any existing tags
-func ReplaceAll(client *gophercloud.ServiceClient, resourceType string, resourceID string, opts ReplaceAllOptsBuilder) (r ReplaceAllResult) {
+func ReplaceAll(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, resourceID string, opts ReplaceAllOptsBuilder) (r ReplaceAllResult) {
 	b, err := opts.ToAttributeTagsReplaceAllMap()
 	url := replaceURL(client, resourceType, resourceID)
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(url, &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, url, &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -37,9 +39,9 @@ func ReplaceAll(client *gophercloud.ServiceClient, resourceType string, resource
 }
 
 // List all tags on a resource
-func List(client *gophercloud.ServiceClient, resourceType string, resourceID string) (r ListResult) {
+func List(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, resourceID string) (r ListResult) {
 	url := listURL(client, resourceType, resourceID)
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -47,9 +49,9 @@ func List(client *gophercloud.ServiceClient, resourceType string, resourceID str
 }
 
 // DeleteAll deletes all tags on a resource
-func DeleteAll(client *gophercloud.ServiceClient, resourceType string, resourceID string) (r DeleteResult) {
+func DeleteAll(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, resourceID string) (r DeleteResult) {
 	url := deleteAllURL(client, resourceType, resourceID)
-	resp, err := client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.DeleteWithContext(ctx, url, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -57,9 +59,9 @@ func DeleteAll(client *gophercloud.ServiceClient, resourceType string, resourceI
 }
 
 // Add a tag on a resource
-func Add(client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r AddResult) {
+func Add(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r AddResult) {
 	url := addURL(client, resourceType, resourceID, tag)
-	resp, err := client.Put(url, nil, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, url, nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -67,9 +69,9 @@ func Add(client *gophercloud.ServiceClient, resourceType string, resourceID stri
 }
 
 // Delete a tag on a resource
-func Delete(client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r DeleteResult) {
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r DeleteResult) {
 	url := deleteURL(client, resourceType, resourceID, tag)
-	resp, err := client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.DeleteWithContext(ctx, url, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -77,9 +79,9 @@ func Delete(client *gophercloud.ServiceClient, resourceType string, resourceID s
 }
 
 // Confirm if a tag exists on a resource
-func Confirm(client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r ConfirmResult) {
+func Confirm(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r ConfirmResult) {
 	url := confirmURL(client, resourceType, resourceID, tag)
-	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

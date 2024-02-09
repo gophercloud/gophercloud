@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	common "github.com/gophercloud/gophercloud/v2/openstack/common/extensions/testing"
@@ -33,7 +34,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	common.HandleGetExtensionSuccessfully(t)
 
-	actual, err := extensions.Get(client.ServiceClient(), "agent").Extract()
+	actual, err := extensions.Get(context.TODO(), client.ServiceClient(), "agent").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, common.SingleExtension, actual)
 }

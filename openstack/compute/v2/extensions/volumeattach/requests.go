@@ -1,6 +1,8 @@
 package volumeattach
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -42,13 +44,13 @@ func (opts CreateOpts) ToVolumeAttachmentCreateMap() (map[string]interface{}, er
 }
 
 // Create requests the creation of a new volume attachment on the server.
-func Create(client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeAttachmentCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client, serverID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, createURL(client, serverID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -56,16 +58,16 @@ func Create(client *gophercloud.ServiceClient, serverID string, opts CreateOptsB
 }
 
 // Get returns public data about a previously created VolumeAttachment.
-func Get(client *gophercloud.ServiceClient, serverID, attachmentID string) (r GetResult) {
-	resp, err := client.Get(getURL(client, serverID, attachmentID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, attachmentID string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, serverID, attachmentID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests the deletion of a previous stored VolumeAttachment from
 // the server.
-func Delete(client *gophercloud.ServiceClient, serverID, attachmentID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, serverID, attachmentID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, serverID, attachmentID string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, serverID, attachmentID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

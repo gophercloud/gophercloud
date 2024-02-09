@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -18,7 +19,7 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	HandleCreateImageMemberSuccessfully(t)
-	im, err := members.Create(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	im, err := members.Create(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7").Extract()
 	th.AssertNoErr(t, err)
 
@@ -104,7 +105,7 @@ func TestShowMemberDetails(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	HandleImageMemberDetails(t)
-	md, err := members.Get(fakeclient.ServiceClient(),
+	md, err := members.Get(context.TODO(), fakeclient.ServiceClient(),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7").Extract()
 
@@ -135,7 +136,7 @@ func TestDeleteMember(t *testing.T) {
 
 	counter := HandleImageMemberDeleteSuccessfully(t)
 
-	result := members.Delete(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	result := members.Delete(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7")
 	th.AssertEquals(t, 1, counter.Counter)
 	th.AssertNoErr(t, result.Err)
@@ -146,7 +147,7 @@ func TestMemberUpdateSuccessfully(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	counter := HandleImageMemberUpdate(t)
-	im, err := members.Update(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	im, err := members.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7",
 		members.UpdateOpts{
 			Status: "accepted",

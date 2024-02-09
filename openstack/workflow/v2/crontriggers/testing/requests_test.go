@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -57,7 +58,7 @@ func TestCreateCronTrigger(t *testing.T) {
 		},
 	}
 
-	actual, err := crontriggers.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := crontriggers.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create cron trigger: %v", err)
 	}
@@ -98,7 +99,7 @@ func TestDeleteCronTrigger(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := crontriggers.Delete(fake.ServiceClient(), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46")
+	res := crontriggers.Delete(context.TODO(), fake.ServiceClient(), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -128,7 +129,7 @@ func TestGetCronTrigger(t *testing.T) {
 			}
 		`)
 	})
-	actual, err := crontriggers.Get(fake.ServiceClient(), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46").Extract()
+	actual, err := crontriggers.Get(context.TODO(), fake.ServiceClient(), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get cron trigger: %v", err)
 	}

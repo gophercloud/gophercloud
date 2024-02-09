@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/servergroups"
@@ -32,7 +33,7 @@ func TestCreate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateSuccessfully(t)
 
-	actual, err := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
+	actual, err := servergroups.Create(context.TODO(), client.ServiceClient(), servergroups.CreateOpts{
 		Name:     "test",
 		Policies: []string{"anti-affinity"},
 	}).Extract()
@@ -52,7 +53,7 @@ func TestCreateMicroversion(t *testing.T) {
 	CreatedServerGroup.Policy = &policy
 	CreatedServerGroup.Rules = &rules
 
-	result := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
+	result := servergroups.Create(context.TODO(), client.ServiceClient(), servergroups.CreateOpts{
 		Name:     "test",
 		Policies: []string{"anti-affinity"},
 		Policy:   policy,
@@ -69,7 +70,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
+	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstServerGroup, actual)
 }
@@ -86,7 +87,7 @@ func TestGetMicroversion(t *testing.T) {
 	FirstServerGroup.Policy = &policy
 	FirstServerGroup.Rules = &rules
 
-	result := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0")
+	result := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0")
 
 	// Extract basic fields.
 	actual, err := result.Extract()
@@ -99,6 +100,6 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := servergroups.Delete(client.ServiceClient(), "616fb98f-46ca-475e-917e-2563e5a8cd19").ExtractErr()
+	err := servergroups.Delete(context.TODO(), client.ServiceClient(), "616fb98f-46ca-475e-917e-2563e5a8cd19").ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -67,7 +68,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, AgentsGetResult)
 	})
 
-	s, err := agents.Get(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	s, err := agents.Get(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ID, "43583cf5-472e-4dc8-af5b-6aed4c94ee3a")
@@ -113,7 +114,7 @@ func TestUpdate(t *testing.T) {
 		Description:  &description,
 		AdminStateUp: &iTrue,
 	}
-	s, err := agents.Update(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", updateOpts).Extract()
+	s, err := agents.Update(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, *s, Agent)
@@ -132,7 +133,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := agents.Delete(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").ExtractErr()
+	err := agents.Delete(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -150,7 +151,7 @@ func TestListDHCPNetworks(t *testing.T) {
 		fmt.Fprintf(w, AgentDHCPNetworksListResult)
 	})
 
-	s, err := agents.ListDHCPNetworks(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	s, err := agents.ListDHCPNetworks(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
 	var nilSlice []string
@@ -186,7 +187,7 @@ func TestScheduleDHCPNetwork(t *testing.T) {
 	opts := &agents.ScheduleDHCPNetworkOpts{
 		NetworkID: "1ae075ca-708b-4e66-b4a7-b7698632f05f",
 	}
-	err := agents.ScheduleDHCPNetwork(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
+	err := agents.ScheduleDHCPNetwork(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -203,7 +204,7 @@ func TestRemoveDHCPNetwork(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := agents.RemoveDHCPNetwork(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
+	err := agents.RemoveDHCPNetwork(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -264,7 +265,7 @@ func TestScheduleBGPSpeaker(t *testing.T) {
 
 	var opts agents.ScheduleBGPSpeakerOpts
 	opts.SpeakerID = speakerID
-	err := agents.ScheduleBGPSpeaker(fake.ServiceClient(), agentID, opts).ExtractErr()
+	err := agents.ScheduleBGPSpeaker(context.TODO(), fake.ServiceClient(), agentID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -285,7 +286,7 @@ func TestRemoveBGPSpeaker(t *testing.T) {
 			w.WriteHeader(http.StatusNoContent)
 		})
 
-	err := agents.RemoveBGPSpeaker(fake.ServiceClient(), agentID, speakerID).ExtractErr()
+	err := agents.RemoveBGPSpeaker(context.TODO(), fake.ServiceClient(), agentID, speakerID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -339,7 +340,7 @@ func TestListL3Routers(t *testing.T) {
 		fmt.Fprintf(w, AgentL3RoutersListResult)
 	})
 
-	s, err := agents.ListL3Routers(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	s, err := agents.ListL3Routers(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
 	routes := []routers.Route{
@@ -401,7 +402,7 @@ func TestScheduleL3Router(t *testing.T) {
 	opts := &agents.ScheduleL3RouterOpts{
 		RouterID: "43e66290-79a4-415d-9eb9-7ff7919839e1",
 	}
-	err := agents.ScheduleL3Router(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
+	err := agents.ScheduleL3Router(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -418,6 +419,6 @@ func TestRemoveL3Router(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := agents.RemoveL3Router(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "43e66290-79a4-415d-9eb9-7ff7919839e1").ExtractErr()
+	err := agents.RemoveL3Router(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "43e66290-79a4-415d-9eb9-7ff7919839e1").ExtractErr()
 	th.AssertNoErr(t, err)
 }

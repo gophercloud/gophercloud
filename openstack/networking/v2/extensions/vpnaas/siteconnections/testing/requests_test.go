@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -91,7 +92,7 @@ func TestCreate(t *testing.T) {
 		PeerAddress:    "172.24.4.233",
 		PeerID:         "172.24.4.233",
 	}
-	actual, err := siteconnections.Create(fake.ServiceClient(), options).Extract()
+	actual, err := siteconnections.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 	expectedDPD := siteconnections.DPD{
 		Action:   "hold",
@@ -134,7 +135,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := siteconnections.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
+	res := siteconnections.Delete(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -182,7 +183,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	actual, err := siteconnections.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	actual, err := siteconnections.Get(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
 	th.AssertNoErr(t, err)
 	expectedDPD := siteconnections.DPD{
 		Action:   "hold",
@@ -377,7 +378,7 @@ func TestUpdate(t *testing.T) {
 		PSK:         "updatedsecret",
 	}
 
-	actual, err := siteconnections.Update(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	actual, err := siteconnections.Update(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
 	th.AssertNoErr(t, err)
 
 	expectedDPD := siteconnections.DPD{

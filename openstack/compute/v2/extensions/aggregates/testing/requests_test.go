@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/aggregates"
@@ -51,7 +52,7 @@ func TestCreateAggregates(t *testing.T) {
 		AvailabilityZone: "london",
 	}
 
-	actual, err := aggregates.Create(client.ServiceClient(), opts).Extract()
+	actual, err := aggregates.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -62,7 +63,7 @@ func TestDeleteAggregates(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := aggregates.Delete(client.ServiceClient(), AggregateIDtoDelete).ExtractErr()
+	err := aggregates.Delete(context.TODO(), client.ServiceClient(), AggregateIDtoDelete).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -73,7 +74,7 @@ func TestGetAggregates(t *testing.T) {
 
 	expected := SecondFakeAggregate
 
-	actual, err := aggregates.Get(client.ServiceClient(), AggregateIDtoGet).Extract()
+	actual, err := aggregates.Get(context.TODO(), client.ServiceClient(), AggregateIDtoGet).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -91,7 +92,7 @@ func TestUpdateAggregate(t *testing.T) {
 		AvailabilityZone: "nova2",
 	}
 
-	actual, err := aggregates.Update(client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.Update(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -108,7 +109,7 @@ func TestAddHostAggregate(t *testing.T) {
 		Host: "cmp1",
 	}
 
-	actual, err := aggregates.AddHost(client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.AddHost(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -125,7 +126,7 @@ func TestRemoveHostAggregate(t *testing.T) {
 		Host: "cmp1",
 	}
 
-	actual, err := aggregates.RemoveHost(client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.RemoveHost(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -142,7 +143,7 @@ func TestSetMetadataAggregate(t *testing.T) {
 		Metadata: map[string]interface{}{"key": "value"},
 	}
 
-	actual, err := aggregates.SetMetadata(client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.SetMetadata(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)

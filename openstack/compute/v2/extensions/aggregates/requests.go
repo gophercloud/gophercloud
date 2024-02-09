@@ -1,6 +1,7 @@
 package aggregates
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -30,13 +31,13 @@ func (opts CreateOpts) ToAggregatesCreateMap() (map[string]interface{}, error) {
 }
 
 // Create makes a request against the API to create an aggregate.
-func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToAggregatesCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(aggregatesCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, aggregatesCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -44,9 +45,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 }
 
 // Delete makes a request against the API to delete an aggregate.
-func Delete(client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult) {
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult) {
 	v := strconv.Itoa(aggregateID)
-	resp, err := client.Delete(aggregatesDeleteURL(client, v), &gophercloud.RequestOpts{
+	resp, err := client.DeleteWithContext(ctx, aggregatesDeleteURL(client, v), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -54,9 +55,9 @@ func Delete(client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult)
 }
 
 // Get makes a request against the API to get details for a specific aggregate.
-func Get(client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
 	v := strconv.Itoa(aggregateID)
-	resp, err := client.Get(aggregatesGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, aggregatesGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -79,7 +80,7 @@ func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update makes a request against the API to update a specific aggregate.
-func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts) (r UpdateResult) {
 	v := strconv.Itoa(aggregateID)
 
 	b, err := opts.ToAggregatesUpdateMap()
@@ -87,7 +88,7 @@ func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts)
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(aggregatesUpdateURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, aggregatesUpdateURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -104,7 +105,7 @@ func (opts AddHostOpts) ToAggregatesAddHostMap() (map[string]interface{}, error)
 }
 
 // AddHost makes a request against the API to add host to a specific aggregate.
-func AddHost(client *gophercloud.ServiceClient, aggregateID int, opts AddHostOpts) (r ActionResult) {
+func AddHost(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int, opts AddHostOpts) (r ActionResult) {
 	v := strconv.Itoa(aggregateID)
 
 	b, err := opts.ToAggregatesAddHostMap()
@@ -112,7 +113,7 @@ func AddHost(client *gophercloud.ServiceClient, aggregateID int, opts AddHostOpt
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(aggregatesAddHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, aggregatesAddHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -129,7 +130,7 @@ func (opts RemoveHostOpts) ToAggregatesRemoveHostMap() (map[string]interface{}, 
 }
 
 // RemoveHost makes a request against the API to remove host from a specific aggregate.
-func RemoveHost(client *gophercloud.ServiceClient, aggregateID int, opts RemoveHostOpts) (r ActionResult) {
+func RemoveHost(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int, opts RemoveHostOpts) (r ActionResult) {
 	v := strconv.Itoa(aggregateID)
 
 	b, err := opts.ToAggregatesRemoveHostMap()
@@ -137,7 +138,7 @@ func RemoveHost(client *gophercloud.ServiceClient, aggregateID int, opts RemoveH
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(aggregatesRemoveHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, aggregatesRemoveHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -153,7 +154,7 @@ func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]interface{}, error) {
 }
 
 // SetMetadata makes a request against the API to set metadata to a specific aggregate.
-func SetMetadata(client *gophercloud.ServiceClient, aggregateID int, opts SetMetadataOpts) (r ActionResult) {
+func SetMetadata(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int, opts SetMetadataOpts) (r ActionResult) {
 	v := strconv.Itoa(aggregateID)
 
 	b, err := opts.ToSetMetadataMap()
@@ -161,7 +162,7 @@ func SetMetadata(client *gophercloud.ServiceClient, aggregateID int, opts SetMet
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(aggregatesSetMetadataURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, aggregatesSetMetadataURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

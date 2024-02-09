@@ -1,6 +1,7 @@
 package nodes
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -166,8 +167,8 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 // Get requests details on a single node, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.GetWithContext(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -270,14 +271,14 @@ func (opts CreateOpts) ToNodeCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests a node to be created
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	reqBody, err := opts.ToNodeCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(createURL(client), reqBody, &r.Body, nil)
+	resp, err := client.PostWithContext(ctx, createURL(client), reqBody, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -308,7 +309,7 @@ func (opts UpdateOperation) ToNodeUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update requests that a node be updated
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
 	body := make([]map[string]interface{}, len(opts))
 	for i, patch := range opts {
 		result, err := patch.ToNodeUpdateMap()
@@ -319,7 +320,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r Up
 
 		body[i] = result
 	}
-	resp, err := client.Patch(updateURL(client, id), body, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PatchWithContext(ctx, updateURL(client, id), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -327,16 +328,16 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r Up
 }
 
 // Delete requests that a node be removed
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.DeleteWithContext(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Request that Ironic validate whether the Node’s driver has enough information to manage the Node. This polls each
 // interface on the driver, and returns the status of that interface.
-func Validate(client *gophercloud.ServiceClient, id string) (r ValidateResult) {
-	resp, err := client.Get(validateURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Validate(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ValidateResult) {
+	resp, err := client.GetWithContext(ctx, validateURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -345,8 +346,8 @@ func Validate(client *gophercloud.ServiceClient, id string) (r ValidateResult) {
 
 // Inject NMI (Non-Masking Interrupts) for the given Node. This feature can be used for hardware diagnostics, and
 // actual support depends on a driver.
-func InjectNMI(client *gophercloud.ServiceClient, id string) (r InjectNMIResult) {
-	resp, err := client.Put(injectNMIURL(client, id), map[string]string{}, nil, &gophercloud.RequestOpts{
+func InjectNMI(ctx context.Context, client *gophercloud.ServiceClient, id string) (r InjectNMIResult) {
+	resp, err := client.PutWithContext(ctx, injectNMIURL(client, id), map[string]string{}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -376,14 +377,14 @@ func (opts BootDeviceOpts) ToBootDeviceMap() (map[string]interface{}, error) {
 
 // Set the boot device for the given Node, and set it persistently or for one-time boot. The exact behaviour
 // of this depends on the hardware driver.
-func SetBootDevice(client *gophercloud.ServiceClient, id string, bootDevice BootDeviceOptsBuilder) (r SetBootDeviceResult) {
+func SetBootDevice(ctx context.Context, client *gophercloud.ServiceClient, id string, bootDevice BootDeviceOptsBuilder) (r SetBootDeviceResult) {
 	reqBody, err := bootDevice.ToBootDeviceMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Put(bootDeviceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, bootDeviceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -391,8 +392,8 @@ func SetBootDevice(client *gophercloud.ServiceClient, id string, bootDevice Boot
 }
 
 // Get the current boot device for the given Node.
-func GetBootDevice(client *gophercloud.ServiceClient, id string) (r BootDeviceResult) {
-	resp, err := client.Get(bootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func GetBootDevice(ctx context.Context, client *gophercloud.ServiceClient, id string) (r BootDeviceResult) {
+	resp, err := client.GetWithContext(ctx, bootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -400,8 +401,8 @@ func GetBootDevice(client *gophercloud.ServiceClient, id string) (r BootDeviceRe
 }
 
 // Retrieve the acceptable set of supported boot devices for a specific Node.
-func GetSupportedBootDevices(client *gophercloud.ServiceClient, id string) (r SupportedBootDeviceResult) {
-	resp, err := client.Get(supportedBootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func GetSupportedBootDevices(ctx context.Context, client *gophercloud.ServiceClient, id string) (r SupportedBootDeviceResult) {
+	resp, err := client.GetWithContext(ctx, supportedBootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -475,14 +476,14 @@ func (opts ProvisionStateOpts) ToProvisionStateMap() (map[string]interface{}, er
 
 // Request a change to the Node’s provision state. Acceptable target states depend on the Node’s current provision
 // state. More detailed documentation of the Ironic State Machine is available in the developer docs.
-func ChangeProvisionState(client *gophercloud.ServiceClient, id string, opts ProvisionStateOptsBuilder) (r ChangeStateResult) {
+func ChangeProvisionState(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ProvisionStateOptsBuilder) (r ChangeStateResult) {
 	reqBody, err := opts.ToProvisionStateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Put(provisionStateURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, provisionStateURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -522,14 +523,14 @@ func (opts PowerStateOpts) ToPowerStateMap() (map[string]interface{}, error) {
 }
 
 // Request to change a Node's power state.
-func ChangePowerState(client *gophercloud.ServiceClient, id string, opts PowerStateOptsBuilder) (r ChangePowerStateResult) {
+func ChangePowerState(ctx context.Context, client *gophercloud.ServiceClient, id string, opts PowerStateOptsBuilder) (r ChangePowerStateResult) {
 	reqBody, err := opts.ToPowerStateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Put(powerStateURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, powerStateURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -631,14 +632,14 @@ func (opts RAIDConfigOpts) ToRAIDConfigMap() (map[string]interface{}, error) {
 }
 
 // Request to change a Node's RAID config.
-func SetRAIDConfig(client *gophercloud.ServiceClient, id string, raidConfigOptsBuilder RAIDConfigOptsBuilder) (r ChangeStateResult) {
+func SetRAIDConfig(ctx context.Context, client *gophercloud.ServiceClient, id string, raidConfigOptsBuilder RAIDConfigOptsBuilder) (r ChangeStateResult) {
 	reqBody, err := raidConfigOptsBuilder.ToRAIDConfigMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Put(raidConfigURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, raidConfigURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -672,7 +673,7 @@ func (opts ListBIOSSettingsOpts) ToListBIOSSettingsOptsQuery() (string, error) {
 
 // Get the current BIOS Settings for the given Node.
 // To use the opts requires microversion 1.74.
-func ListBIOSSettings(client *gophercloud.ServiceClient, id string, opts ListBIOSSettingsOptsBuilder) (r ListBIOSSettingsResult) {
+func ListBIOSSettings(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ListBIOSSettingsOptsBuilder) (r ListBIOSSettingsResult) {
 	url := biosListSettingsURL(client, id)
 	if opts != nil {
 
@@ -684,7 +685,7 @@ func ListBIOSSettings(client *gophercloud.ServiceClient, id string, opts ListBIO
 		url += query
 	}
 
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -692,8 +693,8 @@ func ListBIOSSettings(client *gophercloud.ServiceClient, id string, opts ListBIO
 }
 
 // Get one BIOS Setting for the given Node.
-func GetBIOSSetting(client *gophercloud.ServiceClient, id string, setting string) (r GetBIOSSettingResult) {
-	resp, err := client.Get(biosGetSettingURL(client, id, setting), &r.Body, &gophercloud.RequestOpts{
+func GetBIOSSetting(ctx context.Context, client *gophercloud.ServiceClient, id string, setting string) (r GetBIOSSettingResult) {
+	resp, err := client.GetWithContext(ctx, biosGetSettingURL(client, id, setting), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -712,8 +713,8 @@ func ToGetAllSubscriptionMap(opts CallVendorPassthruOpts) (string, error) {
 }
 
 // Get all vendor_passthru methods available for the given Node.
-func GetVendorPassthruMethods(client *gophercloud.ServiceClient, id string) (r VendorPassthruMethodsResult) {
-	resp, err := client.Get(vendorPassthruMethodsURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func GetVendorPassthruMethods(ctx context.Context, client *gophercloud.ServiceClient, id string) (r VendorPassthruMethodsResult) {
+	resp, err := client.GetWithContext(ctx, vendorPassthruMethodsURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -721,14 +722,14 @@ func GetVendorPassthruMethods(client *gophercloud.ServiceClient, id string) (r V
 }
 
 // Get all subscriptions available for the given Node.
-func GetAllSubscriptions(client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts) (r GetAllSubscriptionsVendorPassthruResult) {
+func GetAllSubscriptions(ctx context.Context, client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts) (r GetAllSubscriptionsVendorPassthruResult) {
 	query, err := ToGetAllSubscriptionMap(method)
 	if err != nil {
 		r.Err = err
 		return
 	}
 	url := vendorPassthruCallURL(client, id) + query
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -755,14 +756,14 @@ func ToGetSubscriptionMap(method CallVendorPassthruOpts, opts GetSubscriptionOpt
 }
 
 // Get a subscription on the given Node.
-func GetSubscription(client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts, subscriptionOpts GetSubscriptionOpts) (r SubscriptionVendorPassthruResult) {
+func GetSubscription(ctx context.Context, client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts, subscriptionOpts GetSubscriptionOpts) (r SubscriptionVendorPassthruResult) {
 	query, reqBody, err := ToGetSubscriptionMap(method, subscriptionOpts)
 	if err != nil {
 		r.Err = err
 		return
 	}
 	url := vendorPassthruCallURL(client, id) + query
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.GetWithContext(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		JSONBody: reqBody,
 		OkCodes:  []int{200},
 	})
@@ -789,14 +790,14 @@ func ToDeleteSubscriptionMap(method CallVendorPassthruOpts, opts DeleteSubscript
 }
 
 // Delete a subscription on the given node.
-func DeleteSubscription(client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts, subscriptionOpts DeleteSubscriptionOpts) (r DeleteSubscriptionVendorPassthruResult) {
+func DeleteSubscription(ctx context.Context, client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts, subscriptionOpts DeleteSubscriptionOpts) (r DeleteSubscriptionVendorPassthruResult) {
 	query, reqBody, err := ToDeleteSubscriptionMap(method, subscriptionOpts)
 	if err != nil {
 		r.Err = err
 		return
 	}
 	url := vendorPassthruCallURL(client, id) + query
-	resp, err := client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.DeleteWithContext(ctx, url, &gophercloud.RequestOpts{
 		JSONBody: reqBody,
 		OkCodes:  []int{200, 202, 204},
 	})
@@ -827,14 +828,14 @@ func ToCreateSubscriptionMap(method CallVendorPassthruOpts, opts CreateSubscript
 }
 
 // Creates a subscription on the given node.
-func CreateSubscription(client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts, subscriptionOpts CreateSubscriptionOpts) (r SubscriptionVendorPassthruResult) {
+func CreateSubscription(ctx context.Context, client *gophercloud.ServiceClient, id string, method CallVendorPassthruOpts, subscriptionOpts CreateSubscriptionOpts) (r SubscriptionVendorPassthruResult) {
 	query, reqBody, err := ToCreateSubscriptionMap(method, subscriptionOpts)
 	if err != nil {
 		r.Err = err
 		return
 	}
 	url := vendorPassthruCallURL(client, id) + query
-	resp, err := client.Post(url, reqBody, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.PostWithContext(ctx, url, reqBody, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -862,14 +863,14 @@ func (opts MaintenanceOpts) ToMaintenanceMap() (map[string]interface{}, error) {
 }
 
 // Request to set the Node's maintenance mode.
-func SetMaintenance(client *gophercloud.ServiceClient, id string, opts MaintenanceOptsBuilder) (r SetMaintenanceResult) {
+func SetMaintenance(ctx context.Context, client *gophercloud.ServiceClient, id string, opts MaintenanceOptsBuilder) (r SetMaintenanceResult) {
 	reqBody, err := opts.ToMaintenanceMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Put(maintenanceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, maintenanceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -877,8 +878,8 @@ func SetMaintenance(client *gophercloud.ServiceClient, id string, opts Maintenan
 }
 
 // Request to unset the Node's maintenance mode.
-func UnsetMaintenance(client *gophercloud.ServiceClient, id string) (r SetMaintenanceResult) {
-	resp, err := client.Delete(maintenanceURL(client, id), &gophercloud.RequestOpts{
+func UnsetMaintenance(ctx context.Context, client *gophercloud.ServiceClient, id string) (r SetMaintenanceResult) {
+	resp, err := client.DeleteWithContext(ctx, maintenanceURL(client, id), &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -886,8 +887,8 @@ func UnsetMaintenance(client *gophercloud.ServiceClient, id string) (r SetMainte
 }
 
 // GetInventory return stored data from successful inspection.
-func GetInventory(client *gophercloud.ServiceClient, id string) (r InventoryResult) {
-	resp, err := client.Get(inventoryURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func GetInventory(ctx context.Context, client *gophercloud.ServiceClient, id string) (r InventoryResult) {
+	resp, err := client.GetWithContext(ctx, inventoryURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -895,8 +896,8 @@ func GetInventory(client *gophercloud.ServiceClient, id string) (r InventoryResu
 }
 
 // ListFirmware return the list of Firmware components for the given Node.
-func ListFirmware(client *gophercloud.ServiceClient, id string) (r ListFirmwareResult) {
-	resp, err := client.Get(firmwareListURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func ListFirmware(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ListFirmwareResult) {
+	resp, err := client.GetWithContext(ctx, firmwareListURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

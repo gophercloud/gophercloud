@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/clustering/v1/policytypes"
@@ -42,7 +43,7 @@ func TestGetPolicyType(t *testing.T) {
 
 	HandlePolicyTypeGet(t)
 
-	actual, err := policytypes.Get(fake.ServiceClient(), FakePolicyTypetoGet).Extract()
+	actual, err := policytypes.Get(context.TODO(), fake.ServiceClient(), FakePolicyTypetoGet).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, ExpectedPolicyTypeDetail, actual)

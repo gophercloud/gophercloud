@@ -1,6 +1,7 @@
 package networks
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -61,7 +62,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific network based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := c.Get(getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -96,7 +97,7 @@ func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToNetworkCreateMap()
 	if err != nil {
 		r.Err = err
@@ -133,7 +134,7 @@ func (opts UpdateOpts) ToNetworkUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
-func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToNetworkUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -158,7 +159,7 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuild
 }
 
 // Delete accepts a unique ID and deletes the network associated with it.
-func Delete(c *gophercloud.ServiceClient, networkID string) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, networkID string) (r DeleteResult) {
 	resp, err := c.Delete(deleteURL(c, networkID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

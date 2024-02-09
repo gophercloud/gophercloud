@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -71,7 +72,7 @@ func TestGet(t *testing.T) {
 		portsbinding.PortsBindingExt
 	}
 
-	err := ports.Get(fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
+	err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "ACTIVE")
@@ -122,7 +123,7 @@ func TestCreate(t *testing.T) {
 		VNICType:          "normal",
 	}
 
-	err := ports.Create(fake.ServiceClient(), createOpts).ExtractInto(&s)
+	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "DOWN")
@@ -142,7 +143,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := ports.Create(fake.ServiceClient(), portsbinding.CreateOptsExt{CreateOptsBuilder: ports.CreateOpts{}})
+	res := ports.Create(context.TODO(), fake.ServiceClient(), portsbinding.CreateOptsExt{CreateOptsBuilder: ports.CreateOpts{}})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -175,7 +176,7 @@ func TestUpdate(t *testing.T) {
 		VNICType:          "normal",
 	}
 
-	err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
+	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")

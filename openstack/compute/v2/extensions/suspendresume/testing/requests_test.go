@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/suspendresume"
@@ -16,7 +17,7 @@ func TestSuspend(t *testing.T) {
 
 	mockSuspendServerResponse(t, serverID)
 
-	err := suspendresume.Suspend(client.ServiceClient(), serverID).ExtractErr()
+	err := suspendresume.Suspend(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -26,6 +27,6 @@ func TestResume(t *testing.T) {
 
 	mockResumeServerResponse(t, serverID)
 
-	err := suspendresume.Resume(client.ServiceClient(), serverID).ExtractErr()
+	err := suspendresume.Resume(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,8 @@
 package floatingips
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -110,7 +112,7 @@ func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]interface{}, error) {
 // operation will fail and return a 400 error code. If the PortID and FixedIP
 // are already associated with another resource, the operation will fail and
 // returns a 409 error code.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFloatingIPCreateMap()
 	if err != nil {
 		r.Err = err
@@ -122,7 +124,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 }
 
 // Get retrieves a particular floating IP resource based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -163,7 +165,7 @@ func (opts UpdateOpts) ToFloatingIPUpdateMap() (map[string]interface{}, error) {
 // "update" a floating IP is to associate it with a new internal port, or
 // disassociated it from all ports. See UpdateOpts for instructions of how to
 // do this.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFloatingIPUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -179,7 +181,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 // Delete will permanently delete a particular floating IP resource. Please
 // ensure this is what you want - you can also disassociate the IP from existing
 // internal ports.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	resp, err := c.Delete(resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

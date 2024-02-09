@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -50,7 +51,7 @@ func TestCreateSuccessful(t *testing.T) {
     `)
 	})
 
-	actual, err := endpoints.Create(client.ServiceClient(), endpoints.CreateOpts{
+	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(), endpoints.CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
 		Name:         "the-endiest-of-points",
 		Region:       "underground",
@@ -186,7 +187,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	`)
 	})
 
-	actual, err := endpoints.Update(client.ServiceClient(), "12", endpoints.UpdateOpts{
+	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(), "12", endpoints.UpdateOpts{
 		Name:   "renamed",
 		Region: "somewhere-else",
 	}).Extract()
@@ -217,6 +218,6 @@ func TestDeleteEndpoint(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := endpoints.Delete(client.ServiceClient(), "34")
+	res := endpoints.Delete(context.TODO(), client.ServiceClient(), "34")
 	th.AssertNoErr(t, res.Err)
 }

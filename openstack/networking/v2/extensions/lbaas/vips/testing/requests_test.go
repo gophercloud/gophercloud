@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -173,7 +174,7 @@ func TestCreate(t *testing.T) {
 		Persistence:  &vips.SessionPersistence{Type: "SOURCE_IP"},
 	}
 
-	r, err := vips.Create(fake.ServiceClient(), opts).Extract()
+	r, err := vips.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_CREATE", r.Status)
@@ -192,23 +193,23 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := vips.Create(fake.ServiceClient(), vips.CreateOpts{})
+	res := vips.Create(context.TODO(), fake.ServiceClient(), vips.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = vips.Create(fake.ServiceClient(), vips.CreateOpts{Name: "foo"})
+	res = vips.Create(context.TODO(), fake.ServiceClient(), vips.CreateOpts{Name: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = vips.Create(fake.ServiceClient(), vips.CreateOpts{Name: "foo", SubnetID: "bar"})
+	res = vips.Create(context.TODO(), fake.ServiceClient(), vips.CreateOpts{Name: "foo", SubnetID: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = vips.Create(fake.ServiceClient(), vips.CreateOpts{Name: "foo", SubnetID: "bar", Protocol: "bar"})
+	res = vips.Create(context.TODO(), fake.ServiceClient(), vips.CreateOpts{Name: "foo", SubnetID: "bar", Protocol: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = vips.Create(fake.ServiceClient(), vips.CreateOpts{Name: "foo", SubnetID: "bar", Protocol: "bar", ProtocolPort: 80})
+	res = vips.Create(context.TODO(), fake.ServiceClient(), vips.CreateOpts{Name: "foo", SubnetID: "bar", Protocol: "bar", ProtocolPort: 80})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -250,7 +251,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	vip, err := vips.Get(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	vip, err := vips.Get(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", vip.Status)
@@ -308,7 +309,7 @@ func TestUpdate(t *testing.T) {
 		ConnLimit:   &i1000,
 		Persistence: &vips.SessionPersistence{Type: "SOURCE_IP"},
 	}
-	vip, err := vips.Update(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
+	vip, err := vips.Update(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_UPDATE", vip.Status)
@@ -325,6 +326,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := vips.Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := vips.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

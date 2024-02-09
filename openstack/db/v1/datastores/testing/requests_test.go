@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/datastores"
@@ -39,7 +40,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, "/datastores/{dsID}", "GET", "", GetDSResp, 200)
 
-	ds, err := datastores.Get(fake.ServiceClient(), "{dsID}").Extract()
+	ds, err := datastores.Get(context.TODO(), fake.ServiceClient(), "{dsID}").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleDatastore, ds)
 }
@@ -73,7 +74,7 @@ func TestGetVersion(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, "/datastores/{dsID}/versions/{versionID}", "GET", "", GetVersionResp, 200)
 
-	ds, err := datastores.GetVersion(fake.ServiceClient(), "{dsID}", "{versionID}").Extract()
+	ds, err := datastores.GetVersion(context.TODO(), fake.ServiceClient(), "{dsID}", "{versionID}").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleVersion1, ds)
 }

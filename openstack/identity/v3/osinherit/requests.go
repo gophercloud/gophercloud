@@ -1,6 +1,10 @@
 package osinherit
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 // AssignOpts provides options to assign an inherited role
 type AssignOpts struct {
@@ -61,7 +65,7 @@ type UnassignOpts struct {
 
 // Assign is the operation responsible for assigning an inherited role
 // to a user/group on a project/domain.
-func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
+func Assign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -90,7 +94,7 @@ func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (
 		actorType = "groups"
 	}
 
-	resp, err := client.Put(assignURL(client, targetType, targetID, actorType, actorID, roleID), nil, nil, &gophercloud.RequestOpts{
+	resp, err := client.PutWithContext(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -99,7 +103,7 @@ func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (
 
 // Validate is the operation responsible for validating an inherited role
 // of a user/group on a project/domain.
-func Validate(client *gophercloud.ServiceClient, roleID string, opts ValidateOpts) (r ValidateResult) {
+func Validate(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts ValidateOpts) (r ValidateResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -128,7 +132,7 @@ func Validate(client *gophercloud.ServiceClient, roleID string, opts ValidateOpt
 		actorType = "groups"
 	}
 
-	resp, err := client.Head(assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
+	resp, err := client.HeadWithContext(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -137,7 +141,7 @@ func Validate(client *gophercloud.ServiceClient, roleID string, opts ValidateOpt
 
 // Unassign is the operation responsible for unassigning an inherited
 // role to a user/group on a project/domain.
-func Unassign(client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
+func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -166,7 +170,7 @@ func Unassign(client *gophercloud.ServiceClient, roleID string, opts UnassignOpt
 		actorType = "groups"
 	}
 
-	resp, err := client.Delete(assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
+	resp, err := client.DeleteWithContext(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
