@@ -1,6 +1,7 @@
 package gophercloud
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net/http"
@@ -89,8 +90,8 @@ type ErrUnexpectedResponseCode struct {
 
 func (e ErrUnexpectedResponseCode) Error() string {
 	e.DefaultErrString = fmt.Sprintf(
-		"Expected HTTP response code %v when accessing [%s %s], but got %d instead\n%s",
-		e.Expected, e.Method, e.URL, e.Actual, e.Body,
+		"Expected HTTP response code %v when accessing [%s %s], but got %d instead: %s",
+		e.Expected, e.Method, e.URL, e.Actual, bytes.TrimSpace(e.Body),
 	)
 	return e.choseErrString()
 }
