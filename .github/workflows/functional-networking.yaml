@@ -41,12 +41,12 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.13
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing ${{ matrix.openstack_version }}
-            enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas ${{ matrix.openstack_version }}
+            enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing
+            enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas
             Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
           enabled_services: 'neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding'
       - name: Checkout go
