@@ -49,7 +49,7 @@ jobs:
         shell: bash
         if: matrix.ubuntu_version == '20.04'
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@v0.14
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
