@@ -65,7 +65,7 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@v0.11
+        uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
