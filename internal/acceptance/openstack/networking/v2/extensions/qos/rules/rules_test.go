@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "qos").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
 	if err != nil {
 		t.Skip("This test requires qos Neutron extension")
 	}
@@ -25,21 +26,21 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
 	th.AssertNoErr(t, err)
-	defer policies.Delete(client, policy.ID)
+	defer policies.Delete(context.TODO(), client, policy.ID)
 
 	tools.PrintResource(t, policy)
 
 	// Create a QoS policy rule.
 	rule, err := CreateBandwidthLimitRule(t, client, policy.ID)
 	th.AssertNoErr(t, err)
-	defer rules.DeleteBandwidthLimitRule(client, policy.ID, rule.ID)
+	defer rules.DeleteBandwidthLimitRule(context.TODO(), client, policy.ID, rule.ID)
 
 	// Update the QoS policy rule.
 	newMaxBurstKBps := 0
 	updateOpts := rules.UpdateBandwidthLimitRuleOpts{
 		MaxBurstKBps: &newMaxBurstKBps,
 	}
-	newRule, err := rules.UpdateBandwidthLimitRule(client, policy.ID, rule.ID, updateOpts).ExtractBandwidthLimitRule()
+	newRule, err := rules.UpdateBandwidthLimitRule(context.TODO(), client, policy.ID, rule.ID, updateOpts).ExtractBandwidthLimitRule()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
@@ -65,7 +66,7 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "qos").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
 	if err != nil {
 		t.Skip("This test requires qos Neutron extension")
 	}
@@ -74,21 +75,21 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
 	th.AssertNoErr(t, err)
-	defer policies.Delete(client, policy.ID)
+	defer policies.Delete(context.TODO(), client, policy.ID)
 
 	tools.PrintResource(t, policy)
 
 	// Create a QoS policy rule.
 	rule, err := CreateDSCPMarkingRule(t, client, policy.ID)
 	th.AssertNoErr(t, err)
-	defer rules.DeleteDSCPMarkingRule(client, policy.ID, rule.ID)
+	defer rules.DeleteDSCPMarkingRule(context.TODO(), client, policy.ID, rule.ID)
 
 	// Update the QoS policy rule.
 	dscpMark := 20
 	updateOpts := rules.UpdateDSCPMarkingRuleOpts{
 		DSCPMark: &dscpMark,
 	}
-	newRule, err := rules.UpdateDSCPMarkingRule(client, policy.ID, rule.ID, updateOpts).ExtractDSCPMarkingRule()
+	newRule, err := rules.UpdateDSCPMarkingRule(context.TODO(), client, policy.ID, rule.ID, updateOpts).ExtractDSCPMarkingRule()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
@@ -114,7 +115,7 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "qos").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
 	if err != nil {
 		t.Skip("This test requires qos Neutron extension")
 	}
@@ -123,21 +124,21 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
 	th.AssertNoErr(t, err)
-	defer policies.Delete(client, policy.ID)
+	defer policies.Delete(context.TODO(), client, policy.ID)
 
 	tools.PrintResource(t, policy)
 
 	// Create a QoS policy rule.
 	rule, err := CreateMinimumBandwidthRule(t, client, policy.ID)
 	th.AssertNoErr(t, err)
-	defer rules.DeleteMinimumBandwidthRule(client, policy.ID, rule.ID)
+	defer rules.DeleteMinimumBandwidthRule(context.TODO(), client, policy.ID, rule.ID)
 
 	// Update the QoS policy rule.
 	minKBps := 500
 	updateOpts := rules.UpdateMinimumBandwidthRuleOpts{
 		MinKBps: &minKBps,
 	}
-	newRule, err := rules.UpdateMinimumBandwidthRule(client, policy.ID, rule.ID, updateOpts).ExtractMinimumBandwidthRule()
+	newRule, err := rules.UpdateMinimumBandwidthRule(context.TODO(), client, policy.ID, rule.ID, updateOpts).ExtractMinimumBandwidthRule()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)

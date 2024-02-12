@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -63,7 +64,7 @@ func CreateVLANTransparentNetwork(t *testing.T, client *gophercloud.ServiceClien
 	t.Logf("Attempting to create a VLAN-transparent network: %s", networkName)
 
 	var network VLANTransparentNetwork
-	err := networks.Create(client, createOpts).ExtractInto(&network)
+	err := networks.Create(context.TODO(), client, createOpts).ExtractInto(&network)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func UpdateVLANTransparentNetwork(t *testing.T, client *gophercloud.ServiceClien
 	t.Logf("Attempting to update a VLAN-transparent network: %s", networkID)
 
 	var network VLANTransparentNetwork
-	err := networks.Update(client, networkID, updateOpts).ExtractInto(&network)
+	err := networks.Update(context.TODO(), client, networkID, updateOpts).ExtractInto(&network)
 	if err != nil {
 		return nil, err
 	}

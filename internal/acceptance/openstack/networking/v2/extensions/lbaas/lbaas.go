@@ -1,6 +1,7 @@
 package lbaas
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -25,7 +26,7 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, poolID string
 		Address:      fmt.Sprintf("192.168.1.%d", address),
 	}
 
-	member, err := members.Create(client, createOpts).Extract()
+	member, err := members.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return member, err
 	}
@@ -48,7 +49,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient) (*monitors.M
 		AdminStateUp: gophercloud.Enabled,
 	}
 
-	monitor, err := monitors.Create(client, createOpts).Extract()
+	monitor, err := monitors.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return monitor, err
 	}
@@ -72,7 +73,7 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, subnetID string
 		LBMethod: pools.LBMethodRoundRobin,
 	}
 
-	pool, err := pools.Create(client, createOpts).Extract()
+	pool, err := pools.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return pool, err
 	}
@@ -99,7 +100,7 @@ func CreateVIP(t *testing.T, client *gophercloud.ServiceClient, subnetID, poolID
 		ProtocolPort: vipPort,
 	}
 
-	vip, err := vips.Create(client, createOpts).Extract()
+	vip, err := vips.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return vip, err
 	}
@@ -115,7 +116,7 @@ func CreateVIP(t *testing.T, client *gophercloud.ServiceClient, subnetID, poolID
 func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, memberID string) {
 	t.Logf("Attempting to delete member %s", memberID)
 
-	if err := members.Delete(client, memberID).ExtractErr(); err != nil {
+	if err := members.Delete(context.TODO(), client, memberID).ExtractErr(); err != nil {
 		t.Fatalf("Unable to delete member: %v", err)
 	}
 
@@ -128,7 +129,7 @@ func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, memberID stri
 func DeleteMonitor(t *testing.T, client *gophercloud.ServiceClient, monitorID string) {
 	t.Logf("Attempting to delete monitor %s", monitorID)
 
-	if err := monitors.Delete(client, monitorID).ExtractErr(); err != nil {
+	if err := monitors.Delete(context.TODO(), client, monitorID).ExtractErr(); err != nil {
 		t.Fatalf("Unable to delete monitor: %v", err)
 	}
 
@@ -140,7 +141,7 @@ func DeleteMonitor(t *testing.T, client *gophercloud.ServiceClient, monitorID st
 func DeletePool(t *testing.T, client *gophercloud.ServiceClient, poolID string) {
 	t.Logf("Attempting to delete pool %s", poolID)
 
-	if err := pools.Delete(client, poolID).ExtractErr(); err != nil {
+	if err := pools.Delete(context.TODO(), client, poolID).ExtractErr(); err != nil {
 		t.Fatalf("Unable to delete pool: %v", err)
 	}
 
@@ -152,7 +153,7 @@ func DeletePool(t *testing.T, client *gophercloud.ServiceClient, poolID string) 
 func DeleteVIP(t *testing.T, client *gophercloud.ServiceClient, vipID string) {
 	t.Logf("Attempting to delete vip %s", vipID)
 
-	if err := vips.Delete(client, vipID).ExtractErr(); err != nil {
+	if err := vips.Delete(context.TODO(), client, vipID).ExtractErr(); err != nil {
 		t.Fatalf("Unable to delete vip: %v", err)
 	}
 

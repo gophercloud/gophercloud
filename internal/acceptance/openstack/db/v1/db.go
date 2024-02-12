@@ -3,6 +3,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -26,7 +27,7 @@ func CreateDatabase(t *testing.T, client *gophercloud.ServiceClient, instanceID 
 		},
 	}
 
-	return databases.Create(client, instanceID, createOpts).ExtractErr()
+	return databases.Create(context.TODO(), client, instanceID, createOpts).ExtractErr()
 }
 
 // CreateInstance will create an instance with a randomly generated name.
@@ -57,7 +58,7 @@ func CreateInstance(t *testing.T, client *gophercloud.ServiceClient) (*instances
 		},
 	}
 
-	instance, err := instances.Create(client, createOpts).Extract()
+	instance, err := instances.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return instance, err
 	}
@@ -66,7 +67,7 @@ func CreateInstance(t *testing.T, client *gophercloud.ServiceClient) (*instances
 		return instance, err
 	}
 
-	return instances.Get(client, instance.ID).Extract()
+	return instances.Get(context.TODO(), client, instance.ID).Extract()
 }
 
 // CreateUser will create a user with a randomly generated name.
@@ -83,14 +84,14 @@ func CreateUser(t *testing.T, client *gophercloud.ServiceClient, instanceID stri
 		},
 	}
 
-	return users.Create(client, instanceID, createOpts).ExtractErr()
+	return users.Create(context.TODO(), client, instanceID, createOpts).ExtractErr()
 }
 
 // DeleteDatabase deletes a database. A fatal error will occur if the database
 // failed to delete. This works best when used as a deferred function.
 func DeleteDatabase(t *testing.T, client *gophercloud.ServiceClient, instanceID, name string) {
 	t.Logf("Attempting to delete database: %s", name)
-	err := databases.Delete(client, instanceID, name).ExtractErr()
+	err := databases.Delete(context.TODO(), client, instanceID, name).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete database %s: %s", name, err)
 	}
@@ -102,7 +103,7 @@ func DeleteDatabase(t *testing.T, client *gophercloud.ServiceClient, instanceID,
 // failed to delete. This works best when used as a deferred function.
 func DeleteInstance(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete instance: %s", id)
-	err := instances.Delete(client, id).ExtractErr()
+	err := instances.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete instance %s: %s", id, err)
 	}
@@ -114,7 +115,7 @@ func DeleteInstance(t *testing.T, client *gophercloud.ServiceClient, id string) 
 // failed to delete. This works best when used as a deferred function.
 func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, instanceID, name string) {
 	t.Logf("Attempting to delete user: %s", name)
-	err := users.Delete(client, instanceID, name).ExtractErr()
+	err := users.Delete(context.TODO(), client, instanceID, name).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete users %s: %s", name, err)
 	}
@@ -127,7 +128,7 @@ func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, instanceID, nam
 func WaitForInstanceStatus(
 	client *gophercloud.ServiceClient, instance *instances.Instance, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		latest, err := instances.Get(client, instance.ID).Extract()
+		latest, err := instances.Get(context.TODO(), client, instance.ID).Extract()
 		if err != nil {
 			return false, err
 		}

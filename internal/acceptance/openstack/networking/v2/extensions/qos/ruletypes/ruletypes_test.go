@@ -1,6 +1,7 @@
 package ruletypes
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestRuleTypes(t *testing.T) {
 		return
 	}
 
-	extension, err := extensions.Get(client, "qos").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
 	if err != nil {
 		t.Skip("This test requires qos Neutron extension")
 	}
@@ -39,7 +40,7 @@ func TestRuleTypes(t *testing.T) {
 	if len(ruleTypes) > 0 {
 		t.Logf("Trying to get rule type: %s", ruleTypes[0].Type)
 
-		ruleType, err := ruletypes.GetRuleType(client, ruleTypes[0].Type).Extract()
+		ruleType, err := ruletypes.GetRuleType(context.TODO(), client, ruleTypes[0].Type).Extract()
 		if err != nil {
 			t.Fatalf("Failed to get rule type %s: %s", ruleTypes[0].Type, err)
 		}

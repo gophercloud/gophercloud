@@ -1,6 +1,7 @@
 package noauth
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -54,7 +55,7 @@ func TestNodesUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer v1.DeleteNode(t, client, node)
 
-	updated, err := nodes.Update(client, node.UUID, nodes.UpdateOpts{
+	updated, err := nodes.Update(context.TODO(), client, node.UUID, nodes.UpdateOpts{
 		nodes.UpdateOperation{
 			Op:    nodes.ReplaceOp,
 			Path:  "/maintenance",
@@ -81,7 +82,7 @@ func TestNodesRAIDConfig(t *testing.T) {
 	sizeGB := 100
 	isTrue := true
 
-	err = nodes.SetRAIDConfig(client, node.UUID, nodes.RAIDConfigOpts{
+	err = nodes.SetRAIDConfig(context.TODO(), client, node.UUID, nodes.RAIDConfigOpts{
 		LogicalDisks: []nodes.LogicalDisk{
 			{
 				SizeGB:                &sizeGB,

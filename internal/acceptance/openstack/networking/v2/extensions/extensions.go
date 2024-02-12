@@ -1,6 +1,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -35,7 +36,7 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 		External:          &isExternal,
 	}
 
-	network, err := networks.Create(client, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return network, err
 	}
@@ -66,7 +67,7 @@ func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient
 		SecurityGroups: &[]string{secGroupID},
 	}
 
-	port, err := ports.Create(client, createOpts).Extract()
+	port, err := ports.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return port, err
 	}
@@ -93,7 +94,7 @@ func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*grou
 		Description: secGroupDescription,
 	}
 
-	secGroup, err := groups.Create(client, createOpts).Extract()
+	secGroup, err := groups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return secGroup, err
 	}
@@ -126,7 +127,7 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 		Protocol:     rules.ProtocolTCP,
 	}
 
-	rule, err := rules.Create(client, createOpts).Extract()
+	rule, err := rules.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return rule, err
 	}
@@ -145,7 +146,7 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 func DeleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, secGroupID string) {
 	t.Logf("Attempting to delete security group: %s", secGroupID)
 
-	err := groups.Delete(client, secGroupID).ExtractErr()
+	err := groups.Delete(context.TODO(), client, secGroupID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete security group: %v", err)
 	}
@@ -157,7 +158,7 @@ func DeleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, secGro
 func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) {
 	t.Logf("Attempting to delete security group rule: %s", ruleID)
 
-	err := rules.Delete(client, ruleID).ExtractErr()
+	err := rules.Delete(context.TODO(), client, ruleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete security group rule: %v", err)
 	}

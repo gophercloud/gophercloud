@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -100,7 +101,7 @@ func TestMessageDelete(t *testing.T) {
 		messageID = listedMessage.ID
 	}
 
-	message, err := messages.Get(client, messageID).Extract()
+	message, err := messages.Get(context.TODO(), client, messageID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve the message: %v", err)
 	}

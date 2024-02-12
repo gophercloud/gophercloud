@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -49,11 +50,11 @@ func TestResourceProvider(t *testing.T) {
 	updateOpts := resourceproviders.UpdateOpts{
 		Name: &newName,
 	}
-	resourceProviderUpdate, err := resourceproviders.Update(client, resourceProvider2.UUID, updateOpts).Extract()
+	resourceProviderUpdate, err := resourceproviders.Update(context.TODO(), client, resourceProvider2.UUID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newName, resourceProviderUpdate.Name)
 
-	resourceProviderGet, err := resourceproviders.Get(client, resourceProvider2.UUID).Extract()
+	resourceProviderGet, err := resourceproviders.Get(context.TODO(), client, resourceProvider2.UUID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newName, resourceProviderGet.Name)
 
@@ -73,7 +74,7 @@ func TestResourceProviderUsages(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the usages for the newly created resource provider
-	usage, err := resourceproviders.GetUsages(client, resourceProvider.UUID).Extract()
+	usage, err := resourceproviders.GetUsages(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)
@@ -91,7 +92,7 @@ func TestResourceProviderInventories(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the inventories for the newly created resource provider
-	usage, err := resourceproviders.GetInventories(client, resourceProvider.UUID).Extract()
+	usage, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)
@@ -109,7 +110,7 @@ func TestResourceProviderTraits(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the traits for the newly created resource provider
-	usage, err := resourceproviders.GetTraits(client, resourceProvider.UUID).Extract()
+	usage, err := resourceproviders.GetTraits(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)
@@ -127,7 +128,7 @@ func TestResourceProviderAllocations(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	// now get the allocations for the newly created resource provider
-	usage, err := resourceproviders.GetAllocations(client, resourceProvider.UUID).Extract()
+	usage, err := resourceproviders.GetAllocations(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)

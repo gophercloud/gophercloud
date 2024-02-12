@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -33,7 +34,7 @@ func CreateNetwork(t *testing.T, client *gophercloud.ServiceClient) (*networks.N
 
 	t.Logf("Attempting to create network: %s", networkName)
 
-	network, err := networks.Create(client, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return network, err
 	}
@@ -63,7 +64,7 @@ func CreateNetworkWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceC
 
 	t.Logf("Attempting to create network: %s", networkName)
 
-	network, err := networks.Create(client, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return network, err
 	}
@@ -91,7 +92,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 		FixedIPs:     []ports.IP{{SubnetID: subnetID}},
 	}
 
-	port, err := ports.Create(client, createOpts).Extract()
+	port, err := ports.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return port, err
 	}
@@ -100,7 +101,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 		return port, err
 	}
 
-	newPort, err := ports.Get(client, port.ID).Extract()
+	newPort, err := ports.Get(context.TODO(), client, port.ID).Extract()
 	if err != nil {
 		return newPort, err
 	}
@@ -129,7 +130,7 @@ func CreatePortWithNoSecurityGroup(t *testing.T, client *gophercloud.ServiceClie
 		SecurityGroups: &[]string{},
 	}
 
-	port, err := ports.Create(client, createOpts).Extract()
+	port, err := ports.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return port, err
 	}
@@ -138,7 +139,7 @@ func CreatePortWithNoSecurityGroup(t *testing.T, client *gophercloud.ServiceClie
 		return port, err
 	}
 
-	newPort, err := ports.Get(client, port.ID).Extract()
+	newPort, err := ports.Get(context.TODO(), client, port.ID).Extract()
 	if err != nil {
 		return newPort, err
 	}
@@ -170,7 +171,7 @@ func CreatePortWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClie
 		PortSecurityEnabled: &iFalse,
 	}
 
-	port, err := ports.Create(client, createOpts).Extract()
+	port, err := ports.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return port, err
 	}
@@ -179,7 +180,7 @@ func CreatePortWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClie
 		return port, err
 	}
 
-	newPort, err := ports.Get(client, port.ID).Extract()
+	newPort, err := ports.Get(context.TODO(), client, port.ID).Extract()
 	if err != nil {
 		return newPort, err
 	}
@@ -216,7 +217,7 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 	}
 	port := &PortWithExtraDHCPOpts{}
 
-	err := ports.Create(client, createOpts).ExtractInto(port)
+	err := ports.Create(context.TODO(), client, createOpts).ExtractInto(port)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +226,7 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 		return nil, err
 	}
 
-	err = ports.Get(client, port.ID).ExtractInto(port)
+	err = ports.Get(context.TODO(), client, port.ID).ExtractInto(port)
 	if err != nil {
 		return port, err
 	}
@@ -251,7 +252,7 @@ func CreatePortWithMultipleFixedIPs(t *testing.T, client *gophercloud.ServiceCli
 		FixedIPs:     []ports.IP{{SubnetID: subnetID}, {SubnetID: subnetID}},
 	}
 
-	port, err := ports.Create(client, createOpts).Extract()
+	port, err := ports.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return port, err
 	}
@@ -260,7 +261,7 @@ func CreatePortWithMultipleFixedIPs(t *testing.T, client *gophercloud.ServiceCli
 		return port, err
 	}
 
-	newPort, err := ports.Get(client, port.ID).Extract()
+	newPort, err := ports.Get(context.TODO(), client, port.ID).Extract()
 	if err != nil {
 		return newPort, err
 	}
@@ -303,7 +304,7 @@ func CreateSubnetWithCIDR(t *testing.T, client *gophercloud.ServiceClient, netwo
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -341,7 +342,7 @@ func CreateSubnetWithServiceTypes(t *testing.T, client *gophercloud.ServiceClien
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -376,7 +377,7 @@ func CreateSubnetWithDefaultGateway(t *testing.T, client *gophercloud.ServiceCli
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -417,7 +418,7 @@ func CreateSubnetWithNoGateway(t *testing.T, client *gophercloud.ServiceClient, 
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -448,7 +449,7 @@ func CreateSubnetWithSubnetPool(t *testing.T, client *gophercloud.ServiceClient,
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -476,7 +477,7 @@ func CreateSubnetWithSubnetPoolNoCIDR(t *testing.T, client *gophercloud.ServiceC
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -505,7 +506,7 @@ func CreateSubnetWithSubnetPoolPrefixlen(t *testing.T, client *gophercloud.Servi
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
 
-	subnet, err := subnets.Create(client, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return subnet, err
 	}
@@ -523,7 +524,7 @@ func CreateSubnetWithSubnetPoolPrefixlen(t *testing.T, client *gophercloud.Servi
 func DeleteNetwork(t *testing.T, client *gophercloud.ServiceClient, networkID string) {
 	t.Logf("Attempting to delete network: %s", networkID)
 
-	err := networks.Delete(client, networkID).ExtractErr()
+	err := networks.Delete(context.TODO(), client, networkID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete network %s: %v", networkID, err)
 	}
@@ -537,7 +538,7 @@ func DeleteNetwork(t *testing.T, client *gophercloud.ServiceClient, networkID st
 func DeletePort(t *testing.T, client *gophercloud.ServiceClient, portID string) {
 	t.Logf("Attempting to delete port: %s", portID)
 
-	err := ports.Delete(client, portID).ExtractErr()
+	err := ports.Delete(context.TODO(), client, portID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete port %s: %v", portID, err)
 	}
@@ -551,7 +552,7 @@ func DeletePort(t *testing.T, client *gophercloud.ServiceClient, portID string) 
 func DeleteSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID string) {
 	t.Logf("Attempting to delete subnet: %s", subnetID)
 
-	err := subnets.Delete(client, subnetID).ExtractErr()
+	err := subnets.Delete(context.TODO(), client, subnetID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete subnet %s: %v", subnetID, err)
 	}
@@ -561,7 +562,7 @@ func DeleteSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID stri
 
 func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		p, err := ports.Get(client, portID).Extract()
+		p, err := ports.Get(context.TODO(), client, portID).Extract()
 		if err != nil {
 			return false, err
 		}

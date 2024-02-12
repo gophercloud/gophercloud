@@ -1,6 +1,7 @@
 package peers
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -20,7 +21,7 @@ func TestBGPPeerCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Get a BGP Peer
-	bgpPeerGot, err := peers.Get(client, bgpPeerCreated.ID).Extract()
+	bgpPeerGot, err := peers.Get(context.TODO(), client, bgpPeerCreated.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpPeerCreated.ID, bgpPeerGot.ID)
 	th.AssertEquals(t, bgpPeerCreated.Name, bgpPeerGot.Name)
@@ -31,7 +32,7 @@ func TestBGPPeerCRUD(t *testing.T) {
 		Name:     newBGPPeerName,
 		Password: tools.MakeNewPassword(""),
 	}
-	bgpPeerUpdated, err := peers.Update(client, bgpPeerGot.ID, updateBGPOpts).Extract()
+	bgpPeerUpdated, err := peers.Update(context.TODO(), client, bgpPeerGot.ID, updateBGPOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpPeerUpdated.Name, newBGPPeerName)
 	t.Logf("Update BGP Peer, renamed from %s to %s", bgpPeerGot.Name, bgpPeerUpdated.Name)
@@ -48,10 +49,10 @@ func TestBGPPeerCRUD(t *testing.T) {
 
 	// Delete a BGP Peer
 	t.Logf("Attempting to delete BGP Peer: %s", bgpPeerUpdated.Name)
-	err = peers.Delete(client, bgpPeerGot.ID).ExtractErr()
+	err = peers.Delete(context.TODO(), client, bgpPeerGot.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	bgpPeerGot, err = peers.Get(client, bgpPeerGot.ID).Extract()
+	bgpPeerGot, err = peers.Get(context.TODO(), client, bgpPeerGot.ID).Extract()
 	th.AssertErr(t, err)
 	t.Logf("BGP Peer %s deleted", bgpPeerUpdated.Name)
 }

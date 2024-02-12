@@ -1,6 +1,7 @@
 package portsbinding
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -41,7 +42,7 @@ func CreatePortsbinding(t *testing.T, client *gophercloud.ServiceClient, network
 
 	var s PortWithBindingExt
 
-	err := ports.Create(client, createOpts).ExtractInto(&s)
+	err := ports.Create(context.TODO(), client, createOpts).ExtractInto(&s)
 	if err != nil {
 		return s, err
 	}

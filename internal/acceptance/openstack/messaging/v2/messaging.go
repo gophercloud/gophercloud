@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -26,7 +27,7 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 		Extra:                      map[string]interface{}{"description": "Test Queue for Gophercloud acceptance tests."},
 	}
 
-	createErr := queues.Create(client, createOpts).ExtractErr()
+	createErr := queues.Create(context.TODO(), client, createOpts).ExtractErr()
 	if createErr != nil {
 		t.Fatalf("Unable to create Queue: %v", createErr)
 	}
@@ -39,7 +40,7 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 
 func DeleteQueue(t *testing.T, client *gophercloud.ServiceClient, queueName string) {
 	t.Logf("Attempting to delete Queue: %s", queueName)
-	err := queues.Delete(client, queueName).ExtractErr()
+	err := queues.Delete(context.TODO(), client, queueName).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete Queue %s: %v", queueName, err)
 	}
@@ -49,7 +50,7 @@ func DeleteQueue(t *testing.T, client *gophercloud.ServiceClient, queueName stri
 
 func GetQueue(t *testing.T, client *gophercloud.ServiceClient, queueName string) (queues.QueueDetails, error) {
 	t.Logf("Attempting to get Queue: %s", queueName)
-	queue, err := queues.Get(client, queueName).Extract()
+	queue, err := queues.Get(context.TODO(), client, queueName).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get Queue %s: %v", queueName, err)
 	}
@@ -64,7 +65,7 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient, queueName stri
 		Methods: []queues.ShareMethod{queues.MethodPost},
 	}
 
-	share, err := queues.Share(client, queueName, shareOpts).Extract()
+	share, err := queues.Share(context.TODO(), client, queueName, shareOpts).Extract()
 
 	return share, err
 }
@@ -78,7 +79,7 @@ func CreateMessage(t *testing.T, client *gophercloud.ServiceClient, queueName st
 		},
 	}
 
-	resource, err := messages.Create(client, queueName, createOpts).Extract()
+	resource, err := messages.Create(context.TODO(), client, queueName, createOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to add message to queue %s: %v", queueName, err)
 	} else {
@@ -114,7 +115,7 @@ func CreateClaim(t *testing.T, client *gophercloud.ServiceClient, queueName stri
 	createOpts := claims.CreateOpts{}
 
 	t.Logf("Attempting to create claim on queue: %s", queueName)
-	claimedMessages, err := claims.Create(client, queueName, createOpts).Extract()
+	claimedMessages, err := claims.Create(context.TODO(), client, queueName, createOpts).Extract()
 	tools.PrintResource(t, claimedMessages)
 	if err != nil {
 		t.Fatalf("Unable to create claim: %v", err)
@@ -125,7 +126,7 @@ func CreateClaim(t *testing.T, client *gophercloud.ServiceClient, queueName stri
 
 func GetClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string, claimID string) (*claims.Claim, error) {
 	t.Logf("Attempting to get claim: %s", claimID)
-	claim, err := claims.Get(client, queueName, claimID).Extract()
+	claim, err := claims.Get(context.TODO(), client, queueName, claimID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get claim: %s", claimID)
 	}
@@ -135,7 +136,7 @@ func GetClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string,
 
 func DeleteClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string, claimID string) error {
 	t.Logf("Attempting to delete claim: %s", claimID)
-	err := claims.Delete(client, queueName, claimID).ExtractErr()
+	err := claims.Delete(context.TODO(), client, queueName, claimID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete claim: %s", claimID)
 	}

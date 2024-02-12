@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -25,7 +26,7 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 			"msg": "Hello World!",
 		},
 	}
-	execution, err := executions.Create(client, createOpts).Extract()
+	execution, err := executions.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return execution, err
 	}
@@ -36,7 +37,7 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 
 	t.Logf("Wait for execution status SUCCESS: %s", executionDescription)
 	th.AssertNoErr(t, tools.WaitFor(func() (bool, error) {
-		latest, err := executions.Get(client, execution.ID).Extract()
+		latest, err := executions.Get(context.TODO(), client, execution.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -59,7 +60,7 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 
 // DeleteExecution deletes an execution.
 func DeleteExecution(t *testing.T, client *gophercloud.ServiceClient, execution *executions.Execution) {
-	err := executions.Delete(client, execution.ID).ExtractErr()
+	err := executions.Delete(context.TODO(), client, execution.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete executions %s: %v", execution.Description, err)
 	}

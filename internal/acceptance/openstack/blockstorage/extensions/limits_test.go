@@ -1,6 +1,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -13,7 +14,7 @@ func TestLimits(t *testing.T) {
 	client, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
-	limits, err := limits.Get(client).Extract()
+	limits, err := limits.Get(context.TODO(), client).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, limits)

@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -45,7 +46,7 @@ func CreateWorkflow(t *testing.T, client *gophercloud.ServiceClient) (*workflows
 		Scope:      "private",
 		Definition: strings.NewReader(definition),
 	}
-	workflowList, err := workflows.Create(client, opts).Extract()
+	workflowList, err := workflows.Create(context.TODO(), client, opts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +63,7 @@ func CreateWorkflow(t *testing.T, client *gophercloud.ServiceClient) (*workflows
 
 // DeleteWorkflow deletes the given workflow.
 func DeleteWorkflow(t *testing.T, client *gophercloud.ServiceClient, workflow *workflows.Workflow) {
-	err := workflows.Delete(client, workflow.ID).ExtractErr()
+	err := workflows.Delete(context.TODO(), client, workflow.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete workflows %s: %v", workflow.Name, err)
 	}
@@ -72,7 +73,7 @@ func DeleteWorkflow(t *testing.T, client *gophercloud.ServiceClient, workflow *w
 
 // GetWorkflow gets a workflow.
 func GetWorkflow(t *testing.T, client *gophercloud.ServiceClient, id string) (*workflows.Workflow, error) {
-	workflow, err := workflows.Get(client, id).Extract()
+	workflow, err := workflows.Get(context.TODO(), client, id).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get workflow %s: %v", id, err)
 	}

@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -21,7 +22,7 @@ func CreateBandwidthLimitRule(t *testing.T, client *gophercloud.ServiceClient, p
 
 	t.Logf("Attempting to create a QoS bandwidth limit rule with max_kbps: %d, max_burst_kbps: %d", maxKBps, maxBurstKBps)
 
-	rule, err := rules.CreateBandwidthLimitRule(client, policyID, createOpts).ExtractBandwidthLimitRule()
+	rule, err := rules.CreateBandwidthLimitRule(context.TODO(), client, policyID, createOpts).ExtractBandwidthLimitRule()
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +46,7 @@ func CreateDSCPMarkingRule(t *testing.T, client *gophercloud.ServiceClient, poli
 
 	t.Logf("Attempting to create a QoS DSCP marking rule with dscp_mark: %d", dscpMark)
 
-	rule, err := rules.CreateDSCPMarkingRule(client, policyID, createOpts).ExtractDSCPMarkingRule()
+	rule, err := rules.CreateDSCPMarkingRule(context.TODO(), client, policyID, createOpts).ExtractDSCPMarkingRule()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,7 @@ func CreateMinimumBandwidthRule(t *testing.T, client *gophercloud.ServiceClient,
 
 	t.Logf("Attempting to create a QoS minimum bandwidth rule with min_kbps: %d", minKBps)
 
-	rule, err := rules.CreateMinimumBandwidthRule(client, policyID, createOpts).ExtractMinimumBandwidthRule()
+	rule, err := rules.CreateMinimumBandwidthRule(context.TODO(), client, policyID, createOpts).ExtractMinimumBandwidthRule()
 	if err != nil {
 		return nil, err
 	}

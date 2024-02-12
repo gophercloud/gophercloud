@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -12,7 +13,7 @@ import (
 // the specified status or the status becomes Failed.
 func WaitForCapsuleStatus(client *gophercloud.ServiceClient, uuid, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		v, err := capsules.Get(client, uuid).Extract()
+		v, err := capsules.Get(context.TODO(), client, uuid).Extract()
 		if err != nil {
 			return false, err
 		}

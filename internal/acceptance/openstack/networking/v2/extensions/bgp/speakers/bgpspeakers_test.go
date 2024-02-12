@@ -1,6 +1,7 @@
 package speakers
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -46,31 +47,31 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 		AdvertiseTenantNetworks:       false,
 		AdvertiseFloatingIPHostRoutes: true,
 	}
-	speakerUpdated, err := speakers.Update(client, bgpSpeaker.ID, opts).Extract()
+	speakerUpdated, err := speakers.Update(context.TODO(), client, bgpSpeaker.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, speakerUpdated.Name, opts.Name)
 	t.Logf("Updated the BGP Speaker, name set from %s to %s", bgpSpeaker.Name, speakerUpdated.Name)
 
 	// Get a BGP Speaker
-	bgpSpeakerGot, err := speakers.Get(client, bgpSpeaker.ID).Extract()
+	bgpSpeakerGot, err := speakers.Get(context.TODO(), client, bgpSpeaker.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpSpeaker.ID, bgpSpeakerGot.ID)
 	th.AssertEquals(t, opts.Name, bgpSpeakerGot.Name)
 
 	// AddBGPPeer
 	addBGPPeerOpts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeer.ID}
-	_, err = speakers.AddBGPPeer(client, bgpSpeaker.ID, addBGPPeerOpts).Extract()
+	_, err = speakers.AddBGPPeer(context.TODO(), client, bgpSpeaker.ID, addBGPPeerOpts).Extract()
 	th.AssertNoErr(t, err)
-	speakerGot, err := speakers.Get(client, bgpSpeaker.ID).Extract()
+	speakerGot, err := speakers.Get(context.TODO(), client, bgpSpeaker.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpPeer.ID, speakerGot.Peers[0])
 	t.Logf("Successfully added BGP Peer %s to BGP Speaker %s", bgpPeer.Name, speakerUpdated.Name)
 
 	// RemoveBGPPeer
 	removeBGPPeerOpts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeer.ID}
-	err = speakers.RemoveBGPPeer(client, bgpSpeaker.ID, removeBGPPeerOpts).ExtractErr()
+	err = speakers.RemoveBGPPeer(context.TODO(), client, bgpSpeaker.ID, removeBGPPeerOpts).ExtractErr()
 	th.AssertNoErr(t, err)
-	speakerGot, err = speakers.Get(client, bgpSpeaker.ID).Extract()
+	speakerGot, err = speakers.Get(context.TODO(), client, bgpSpeaker.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(speakerGot.Networks), 0)
 	t.Logf("Successfully removed BGP Peer %s to BGP Speaker %s", bgpPeer.Name, speakerUpdated.Name)
@@ -85,24 +86,24 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 
 	// AddGatewayNetwork
 	optsAddGatewayNetwork := speakers.AddGatewayNetworkOpts{NetworkID: network.ID}
-	r, err := speakers.AddGatewayNetwork(client, bgpSpeaker.ID, optsAddGatewayNetwork).Extract()
+	r, err := speakers.AddGatewayNetwork(context.TODO(), client, bgpSpeaker.ID, optsAddGatewayNetwork).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.NetworkID, network.ID)
 	t.Logf("Successfully added gateway network %s to BGP Speaker", network.ID)
 
 	// RemoveGatewayNetwork
 	optsRemoveGatewayNetwork := speakers.RemoveGatewayNetworkOpts{NetworkID: network.ID}
-	err = speakers.RemoveGatewayNetwork(client, bgpSpeaker.ID, optsRemoveGatewayNetwork).ExtractErr()
+	err = speakers.RemoveGatewayNetwork(context.TODO(), client, bgpSpeaker.ID, optsRemoveGatewayNetwork).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully removed gateway network %s to BGP Speaker", network.ID)
 
 	// Delete a BGP Peer
 	t.Logf("Delete the BGP Peer %s", bgpPeer.Name)
-	err = peers.Delete(client, bgpPeer.ID).ExtractErr()
+	err = peers.Delete(context.TODO(), client, bgpPeer.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Delete a BGP Speaker
 	t.Logf("Delete the BGP Speaker %s", speakerUpdated.Name)
-	err = speakers.Delete(client, bgpSpeaker.ID).ExtractErr()
+	err = speakers.Delete(context.TODO(), client, bgpSpeaker.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
