@@ -18,6 +18,7 @@ func TestCreate(t *testing.T) {
 
 	opts := instances.CreateOpts{
 		AvailabilityZone: "us-east1",
+		Configuration:    "4a78b397-c355-4127-be45-56230b2ab74e",
 		Name:             "json_rack_instance",
 		FlavorRef:        "1",
 		Databases: db.BatchCreateOpts{
@@ -50,6 +51,7 @@ func TestCreateWithFault(t *testing.T) {
 
 	opts := instances.CreateOpts{
 		AvailabilityZone: "us-east1",
+		Configuration:    "4a78b397-c355-4127-be45-56230b2ab74e",
 		Name:             "json_rack_instance",
 		FlavorRef:        "1",
 		Databases: db.BatchCreateOpts{
