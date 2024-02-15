@@ -662,7 +662,7 @@ type ListBIOSSettingsOpts struct {
 
 // ToListBIOSSettingsOptsQuery formats a ListBIOSSettingsOpts into a query string
 func (opts ListBIOSSettingsOpts) ToListBIOSSettingsOptsQuery() (string, error) {
-	if opts.Detail == true && len(opts.Fields) > 0 {
+	if opts.Detail && len(opts.Fields) > 0 {
 		return "", fmt.Errorf("cannot have both fields and detail options for BIOS settings")
 	}
 
