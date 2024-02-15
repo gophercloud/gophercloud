@@ -13,6 +13,7 @@ BREAKING CHANGES:
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) In `objects.Copy`: the `destination` field (e.g. `objects.CopyOpts#Destination`) must be in the form `/container/object`: the function will reject a destination path if it doesn't start with a slash (`/`).
 * [GH-2560](https://github.com/gophercloud/gophercloud/pull/2560) loadbalancer: Use CreateMemberOpts instead of BatchUpdateMemberOpts in PoolCreateOpts
 * [GH-2886](https://github.com/gophercloud/gophercloud/pull/2886) ports: Fix value_specs implementation
+* [GH-2665](https://github.com/gophercloud/gophercloud/pull/2665) Cinder: Remove multiatttach request parameter
 
 New features and improvements:
 
@@ -21,7 +22,6 @@ New features and improvements:
 * [GH-2560](https://github.com/gophercloud/gophercloud/pull/2560) loadbalancer: Use CreateMemberOpts instead of BatchUpdateMemberOpts in PoolCreateOpts
 * [GH-2561](https://github.com/gophercloud/gophercloud/pull/2561) compute: add ext_specs to flavor
 * [GH-2613](https://github.com/gophercloud/gophercloud/pull/2613) Migrate baremetal inventory to a common location
-* [GH-2665](https://github.com/gophercloud/gophercloud/pull/2665) Cinder: Remove multiatttach request parameter
 * [GH-2724](https://github.com/gophercloud/gophercloud/pull/2724) baremetal: introduce Node Inventory API
 * [GH-2725](https://github.com/gophercloud/gophercloud/pull/2725) baremetal: finish moving common inventory bits
 * [GH-2736](https://github.com/gophercloud/gophercloud/pull/2736) Composable templates
