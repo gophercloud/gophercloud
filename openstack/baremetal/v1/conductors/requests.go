@@ -39,7 +39,7 @@ type ListOpts struct {
 
 // ToConductorListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToConductorListQuery() (string, error) {
-	if opts.Detail == true && len(opts.Fields) > 0 {
+	if opts.Detail && len(opts.Fields) > 0 {
 		return "", fmt.Errorf("cannot have both fields and detail options for conductors")
 	}
 
