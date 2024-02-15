@@ -3,11 +3,11 @@ package ec2tokens
 import (
 	"context"
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"math/rand"
 	"net/url"
 	"sort"
 	"strings"
