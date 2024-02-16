@@ -251,7 +251,7 @@ func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interfa
 		if !ok {
 			return overriding
 		}
-		
+
 		return append(overriding, list...)
 	case nil:
 		// mergeClouds(nil, map[string]interface{...}) -> map[string]interface{...}
