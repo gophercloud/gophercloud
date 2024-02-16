@@ -282,10 +282,7 @@ func isZero(v reflect.Value) bool {
 		return z
 	case reflect.Struct:
 		if v.Type() == reflect.TypeOf(t) {
-			if v.Interface().(time.Time).IsZero() {
-				return true
-			}
-			return false
+			return v.Interface().(time.Time).IsZero()
 		}
 		z := true
 		for i := 0; i < v.NumField(); i++ {
