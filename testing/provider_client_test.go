@@ -66,7 +66,7 @@ func TestConcurrentReauth(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
-	p.ReauthFunc = func() error {
+	p.ReauthFunc = func(_ context.Context) error {
 		p.SetThrowaway(true)
 		time.Sleep(1 * time.Second)
 		p.AuthenticatedHeaders()
@@ -154,7 +154,7 @@ func TestReauthEndLoop(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(client.TokenID)
-	p.ReauthFunc = func() error {
+	p.ReauthFunc = func(_ context.Context) error {
 		info.mut.Lock()
 		defer info.mut.Unlock()
 
@@ -237,7 +237,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
-	p.ReauthFunc = func() error {
+	p.ReauthFunc = func(_ context.Context) error {
 		info.mut.RLock()
 		if info.numreauths == 0 {
 			info.mut.RUnlock()
@@ -331,7 +331,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(client.TokenID)
-	p.ReauthFunc = func() error {
+	p.ReauthFunc = func(_ context.Context) error {
 		reauthCounterMutex.Lock()
 		reauthCounter++
 		reauthCounterMutex.Unlock()
