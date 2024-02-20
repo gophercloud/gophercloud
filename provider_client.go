@@ -83,7 +83,7 @@ type ProviderClient struct {
 	// ReauthFunc is the function used to re-authenticate the user if the request
 	// fails with a 401 HTTP response code. This a needed because there may be multiple
 	// authentication functions for different Identity service versions.
-	ReauthFunc func() error
+	ReauthFunc func(context.Context) error
 
 	// Throwaway determines whether if this client is a throw-away client. It's a copy of user's provider client
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
@@ -273,12 +273,14 @@ func (client *ProviderClient) SetThrowaway(v bool) {
 // reauthenticated in the meantime. If no previous token is known, an empty
 // string should be passed instead to force unconditional reauthentication.
 func (client *ProviderClient) Reauthenticate(previousToken string) error {
+	ctx := context.TODO()
+
 	if client.ReauthFunc == nil {
 		return nil
 	}
 
 	if client.reauthmut == nil {
-		return client.ReauthFunc()
+		return client.ReauthFunc(ctx)
 	}
 
 	future := newReauthFuture()
@@ -299,7 +301,7 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 	// Perform the actual reauthentication.
 	var err error
 	if previousToken == "" || client.TokenID == previousToken {
-		err = client.ReauthFunc()
+		err = client.ReauthFunc(ctx)
 	} else {
 		err = nil
 	}
