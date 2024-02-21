@@ -14,8 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/backups"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumeactions"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
-	v3 "github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumetypes"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
@@ -284,7 +283,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 		return err
 	}
 
-	vol, err := v3.Get(context.TODO(), client, volume.ID).Extract()
+	vol, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 	if err != nil {
 		return err
 	}
@@ -302,7 +301,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 		return err
 	}
 
-	vol, err = v3.Get(context.TODO(), client, volume.ID).Extract()
+	vol, err = volumes.Get(context.TODO(), client, volume.ID).Extract()
 	if err != nil {
 		return err
 	}
@@ -315,7 +314,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 }
 
 // ChangeVolumeType will extend the size of a volume.
-func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *v3.Volume, vt *volumetypes.VolumeType) error {
+func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume, vt *volumetypes.VolumeType) error {
 	t.Logf("Attempting to change the type of volume %s from %s to %s", volume.ID, volume.VolumeType, vt.Name)
 
 	changeOpts := volumeactions.ChangeTypeOpts{
@@ -339,7 +338,7 @@ func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *v
 }
 
 // ResetVolumeStatus will reset the status of a volume.
-func ResetVolumeStatus(t *testing.T, client *gophercloud.ServiceClient, volume *v3.Volume, status string) error {
+func ResetVolumeStatus(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume, status string) error {
 	t.Logf("Attempting to reset the status of volume %s from %s to %s", volume.ID, volume.Status, status)
 
 	resetOpts := volumeactions.ResetStatusOpts{
@@ -397,7 +396,7 @@ func ReImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Vo
 		return err
 	}
 
-	vol, err := v3.Get(context.TODO(), client, volume.ID).Extract()
+	vol, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 	if err != nil {
 		return err
 	}

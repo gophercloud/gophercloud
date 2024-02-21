@@ -12,7 +12,7 @@ import (
 	blockstorageV3 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/blockstorage/v3"
 	compute "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/compute/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
