@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumehost"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -49,6 +48,7 @@ func TestListWithExtensions(t *testing.T) {
 				CreatedAt:          time.Date(2015, 9, 17, 3, 35, 3, 0, time.UTC),
 				Description:        "",
 				Encrypted:          false,
+				Host:               "host-001",
 				Metadata:           map[string]string{"foo": "bar"},
 				Multiattach:        false,
 				//TenantID:                  "304dc00909ac4d0da6c62d816bcb3459",
@@ -106,7 +106,6 @@ func TestListAllWithExtensions(t *testing.T) {
 	type VolumeWithExt struct {
 		volumes.Volume
 		volumetenants.VolumeTenantExt
-		volumehost.VolumeHostExt
 	}
 
 	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages(context.TODO())
@@ -151,6 +150,7 @@ func TestListAll(t *testing.T) {
 			CreatedAt:          time.Date(2015, 9, 17, 3, 35, 3, 0, time.UTC),
 			Description:        "",
 			Encrypted:          false,
+			Host:               "host-001",
 			Metadata:           map[string]string{"foo": "bar"},
 			Multiattach:        false,
 			//TenantID:                  "304dc00909ac4d0da6c62d816bcb3459",
