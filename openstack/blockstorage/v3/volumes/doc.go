@@ -4,7 +4,45 @@ OpenStack Block Storage service. A volume is a detachable block storage
 device, akin to a USB hard drive. It can only be attached to one instance at
 a time.
 
-Example to create a Volume from a Backup
+Example of creating Volume B on a Different Host than Volume A
+
+	schedulerHints := volumes.SchedulerHints{
+		DifferentHost: []string{
+			"volume-a-uuid",
+		}
+	}
+
+	createOpts := volumes.CreateOpts{
+		Name:           "volume_b",
+		Size:           10,
+		SchedulerHints: schedulerHints,
+	}
+
+	volume, err := volumes.Create(context.TODO(), computeClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example of creating Volume B on the Same Host as Volume A
+
+	schedulerHints := volumes.SchedulerHints{
+		SameHost: []string{
+			"volume-a-uuid",
+		}
+	}
+
+	createOpts := volumes.CreateOpts{
+		Name:              "volume_b",
+		Size:              10
+		SchedulerHints:    schedulerHints,
+	}
+
+	volume, err := volumes.Create(context.TODO(), computeClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example of creating a Volume from a Backup
 
 	backupID := "20c792f0-bb03-434f-b653-06ef238e337e"
 	options := volumes.CreateOpts{
