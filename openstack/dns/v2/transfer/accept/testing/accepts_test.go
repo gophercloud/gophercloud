@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	transferAccepts "github.com/gophercloud/gophercloud/v2/openstack/dns/v2/transfer/accept"
@@ -16,7 +17,8 @@ func TestList(t *testing.T) {
 
 	count := 0
 	err := transferAccepts.List(client.ServiceClient(), nil).EachPage(
-		func(page pagination.Page) (bool, error) {
+		context.TODO(),
+		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
 			actual, err := transferAccepts.ExtractTransferAccepts(page)
 			th.AssertNoErr(t, err)
@@ -36,7 +38,7 @@ func TestListWithOpts(t *testing.T) {
 		Status: "ACTIVE",
 	}
 
-	allPages, err := transferAccepts.List(client.ServiceClient(), listOpts).AllPages()
+	allPages, err := transferAccepts.List(client.ServiceClient(), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTransferAccepts, err := transferAccepts.ExtractTransferAccepts(allPages)
 	th.AssertNoErr(t, err)
@@ -48,7 +50,7 @@ func TestListAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	allPages, err := transferAccepts.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := transferAccepts.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTransferAccepts, err := transferAccepts.ExtractTransferAccepts(allPages)
 	th.AssertNoErr(t, err)
@@ -61,7 +63,7 @@ func TestGet(t *testing.T) {
 	HandleGetSuccessfully(t)
 
 	actual, err := transferAccepts.Get(
-		client.ServiceClient(), "92236f39-0fad-4f8f-bf25-fbdf027de34d").Extract()
+		context.TODO(), client.ServiceClient(), "92236f39-0fad-4f8f-bf25-fbdf027de34d").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstTransferAccept, actual)
 }
@@ -77,7 +79,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	actual, err := transferAccepts.Create(
-		client.ServiceClient(), createOpts).Extract()
+		context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedTransferAccept, actual)
 }

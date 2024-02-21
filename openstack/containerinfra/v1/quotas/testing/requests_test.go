@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/quotas"
@@ -23,7 +24,7 @@ func TestCreateQuota(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	res := quotas.Create(sc, opts)
+	res := quotas.Create(context.TODO(), sc, opts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")

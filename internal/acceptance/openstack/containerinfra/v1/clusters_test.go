@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -27,7 +28,7 @@ func TestClustersCRUD(t *testing.T) {
 	tools.PrintResource(t, clusterID)
 	defer DeleteCluster(t, client, clusterID)
 
-	allPages, err := clusters.List(client, nil).AllPages()
+	allPages, err := clusters.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allClusters, err := clusters.ExtractClusters(allPages)
@@ -47,7 +48,7 @@ func TestClustersCRUD(t *testing.T) {
 			Value: 2,
 		},
 	}
-	updateResult := clusters.Update(client, clusterID, updateOpts)
+	updateResult := clusters.Update(context.TODO(), client, clusterID, updateOpts)
 	th.AssertNoErr(t, updateResult.Err)
 
 	if len(updateResult.Header["X-Openstack-Request-Id"]) > 0 {
@@ -60,11 +61,11 @@ func TestClustersCRUD(t *testing.T) {
 	err = WaitForCluster(client, clusterID, "UPDATE_COMPLETE", time.Second*300)
 	th.AssertNoErr(t, err)
 
-	newCluster, err := clusters.Get(client, clusterID).Extract()
+	newCluster, err := clusters.Get(context.TODO(), client, clusterID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.UUID, clusterID)
 
-	allPagesDetail, err := clusters.ListDetail(client, nil).AllPages()
+	allPagesDetail, err := clusters.ListDetail(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allClustersDetail, err := clusters.ExtractClusters(allPagesDetail)

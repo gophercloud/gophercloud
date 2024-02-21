@@ -1,6 +1,8 @@
 package remoteconsoles
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
@@ -69,14 +71,14 @@ func (opts CreateOpts) ToRemoteConsoleCreateMap() (map[string]interface{}, error
 }
 
 // Create requests the creation of a new remote console on the specified server.
-func Create(client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
 	reqBody, err := opts.ToRemoteConsoleCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(createURL(client, serverID), reqBody, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client, serverID), reqBody, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

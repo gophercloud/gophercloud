@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -40,7 +41,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	extensions.List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	extensions.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := extensions.ExtractExtensions(page)
 		if err != nil {
@@ -95,7 +96,7 @@ func TestGet(t *testing.T) {
     `)
 	})
 
-	ext, err := extensions.Get(fake.ServiceClient(), "agent").Extract()
+	ext, err := extensions.Get(context.TODO(), fake.ServiceClient(), "agent").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")

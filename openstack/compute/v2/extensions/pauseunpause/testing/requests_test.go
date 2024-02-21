@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
@@ -16,7 +17,7 @@ func TestPause(t *testing.T) {
 
 	mockPauseServerResponse(t, serverID)
 
-	err := pauseunpause.Pause(client.ServiceClient(), serverID).ExtractErr()
+	err := pauseunpause.Pause(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -26,6 +27,6 @@ func TestUnpause(t *testing.T) {
 
 	mockUnpauseServerResponse(t, serverID)
 
-	err := pauseunpause.Unpause(client.ServiceClient(), serverID).ExtractErr()
+	err := pauseunpause.Unpause(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

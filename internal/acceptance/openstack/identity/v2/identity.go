@@ -3,6 +3,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -18,7 +19,7 @@ import (
 func AddUserRole(t *testing.T, client *gophercloud.ServiceClient, tenant *tenants.Tenant, user *users.User, role *roles.Role) error {
 	t.Logf("Attempting to grant user %s role %s in tenant %s", user.ID, role.ID, tenant.ID)
 
-	err := roles.AddUser(client, tenant.ID, user.ID, role.ID).ExtractErr()
+	err := roles.AddUser(context.TODO(), client, tenant.ID, user.ID, role.ID).ExtractErr()
 	if err != nil {
 		return err
 	}
@@ -47,7 +48,7 @@ func CreateTenant(t *testing.T, client *gophercloud.ServiceClient, c *tenants.Cr
 	createOpts.Name = name
 	createOpts.Description = description
 
-	tenant, err := tenants.Create(client, createOpts).Extract()
+	tenant, err := tenants.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return tenant, err
 	}
@@ -74,7 +75,7 @@ func CreateUser(t *testing.T, client *gophercloud.ServiceClient, tenant *tenants
 		Email:    userEmail,
 	}
 
-	user, err := users.Create(client, createOpts).Extract()
+	user, err := users.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return user, err
 	}
@@ -88,7 +89,7 @@ func CreateUser(t *testing.T, client *gophercloud.ServiceClient, tenant *tenants
 // the tenant ID failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteTenant(t *testing.T, client *gophercloud.ServiceClient, tenantID string) {
-	err := tenants.Delete(client, tenantID).ExtractErr()
+	err := tenants.Delete(context.TODO(), client, tenantID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete tenant %s: %v", tenantID, err)
 	}
@@ -101,7 +102,7 @@ func DeleteTenant(t *testing.T, client *gophercloud.ServiceClient, tenantID stri
 func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, user *users.User) {
 	t.Logf("Attempting to delete user: %s", user.Name)
 
-	result := users.Delete(client, user.ID)
+	result := users.Delete(context.TODO(), client, user.ID)
 	if result.Err != nil {
 		t.Fatalf("Unable to delete user")
 	}
@@ -115,7 +116,7 @@ func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, user *users.Use
 func DeleteUserRole(t *testing.T, client *gophercloud.ServiceClient, tenant *tenants.Tenant, user *users.User, role *roles.Role) {
 	t.Logf("Attempting to remove role %s from user %s in tenant %s", role.ID, user.ID, tenant.ID)
 
-	err := roles.DeleteUser(client, tenant.ID, user.ID, role.ID).ExtractErr()
+	err := roles.DeleteUser(context.TODO(), client, tenant.ID, user.ID, role.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to remove role")
 	}
@@ -129,7 +130,7 @@ func DeleteUserRole(t *testing.T, client *gophercloud.ServiceClient, tenant *ten
 func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, error) {
 	var role *roles.Role
 
-	allPages, err := roles.List(client).AllPages()
+	allPages, err := roles.List(client).AllPages(context.TODO())
 	if err != nil {
 		return role, err
 	}
@@ -153,7 +154,7 @@ func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, err
 func FindTenant(t *testing.T, client *gophercloud.ServiceClient) (*tenants.Tenant, error) {
 	var tenant *tenants.Tenant
 
-	allPages, err := tenants.List(client, nil).AllPages()
+	allPages, err := tenants.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		return tenant, err
 	}
@@ -184,7 +185,7 @@ func UpdateUser(t *testing.T, client *gophercloud.ServiceClient, user *users.Use
 		Email: userEmail,
 	}
 
-	newUser, err := users.Update(client, user.ID, updateOpts).Extract()
+	newUser, err := users.Update(context.TODO(), client, user.ID, updateOpts).Extract()
 	if err != nil {
 		return newUser, err
 	}

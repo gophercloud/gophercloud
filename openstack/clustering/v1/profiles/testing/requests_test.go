@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/clustering/v1/profiles"
@@ -36,7 +37,7 @@ func TestCreateProfile(t *testing.T) {
 		},
 	}
 
-	profile, err := profiles.Create(fake.ServiceClient(), createOpts).Extract()
+	profile, err := profiles.Create(context.TODO(), fake.ServiceClient(), createOpts).Extract()
 	if err != nil {
 		t.Errorf("Failed to extract profile: %v", err)
 	}
@@ -50,7 +51,7 @@ func TestGetProfile(t *testing.T) {
 
 	HandleGetSuccessfully(t)
 
-	actual, err := profiles.Get(fake.ServiceClient(), ExpectedGet.ID).Extract()
+	actual, err := profiles.Get(context.TODO(), fake.ServiceClient(), ExpectedGet.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedGet, *actual)
 }
@@ -67,7 +68,7 @@ func TestListProfiles(t *testing.T) {
 	}
 
 	count := 0
-	err := profiles.List(fake.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := profiles.List(fake.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := profiles.ExtractProfiles(page)
 		th.AssertNoErr(t, err)
@@ -93,7 +94,7 @@ func TestUpdateProfile(t *testing.T) {
 		Name: "pserver",
 	}
 
-	actual, err := profiles.Update(fake.ServiceClient(), ExpectedUpdate.ID, updateOpts).Extract()
+	actual, err := profiles.Update(context.TODO(), fake.ServiceClient(), ExpectedUpdate.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUpdate, *actual)
 }
@@ -104,7 +105,7 @@ func TestDeleteProfile(t *testing.T) {
 
 	HandleDeleteSuccessfully(t)
 
-	deleteResult := profiles.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
+	deleteResult := profiles.Delete(context.TODO(), fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
 	th.AssertNoErr(t, deleteResult.ExtractErr())
 }
 
@@ -134,7 +135,7 @@ func TestValidateProfile(t *testing.T) {
 	client.Microversion = "1.2"
 	client.Type = "clustering"
 
-	profile, err := profiles.Validate(client, validateOpts).Extract()
+	profile, err := profiles.Validate(context.TODO(), client, validateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedValidate, *profile)
 }

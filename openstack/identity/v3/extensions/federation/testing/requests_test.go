@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/federation"
@@ -15,7 +16,7 @@ func TestListMappings(t *testing.T) {
 	HandleListMappingsSuccessfully(t)
 
 	count := 0
-	err := federation.ListMappings(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := federation.ListMappings(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := federation.ExtractMappings(page)
@@ -34,7 +35,7 @@ func TestListMappingsAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListMappingsSuccessfully(t)
 
-	allPages, err := federation.ListMappings(client.ServiceClient()).AllPages()
+	allPages, err := federation.ListMappings(client.ServiceClient()).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := federation.ExtractMappings(allPages)
 	th.AssertNoErr(t, err)
@@ -77,7 +78,7 @@ func TestCreateMappings(t *testing.T) {
 		},
 	}
 
-	actual, err := federation.CreateMapping(client.ServiceClient(), "ACME", createOpts).Extract()
+	actual, err := federation.CreateMapping(context.TODO(), client.ServiceClient(), "ACME", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingACME, *actual)
 }
@@ -87,7 +88,7 @@ func TestGetMapping(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetMappingSuccessfully(t)
 
-	actual, err := federation.GetMapping(client.ServiceClient(), "ACME").Extract()
+	actual, err := federation.GetMapping(context.TODO(), client.ServiceClient(), "ACME").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingACME, *actual)
 }
@@ -128,7 +129,7 @@ func TestUpdateMapping(t *testing.T) {
 		},
 	}
 
-	actual, err := federation.UpdateMapping(client.ServiceClient(), "ACME", updateOpts).Extract()
+	actual, err := federation.UpdateMapping(context.TODO(), client.ServiceClient(), "ACME", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingUpdated, *actual)
 }
@@ -138,6 +139,6 @@ func TestDeleteMapping(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteMappingSuccessfully(t)
 
-	res := federation.DeleteMapping(client.ServiceClient(), "ACME")
+	res := federation.DeleteMapping(context.TODO(), client.ServiceClient(), "ACME")
 	th.AssertNoErr(t, res.Err)
 }

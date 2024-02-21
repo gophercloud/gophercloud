@@ -1,6 +1,7 @@
 package layer3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/addressscopes"
@@ -28,7 +29,7 @@ func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, networkID
 		PortID:            portID,
 	}
 
-	floatingIP, err := floatingips.Create(client, createOpts).Extract()
+	floatingIP, err := floatingips.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return floatingIP, err
 	}
@@ -53,7 +54,7 @@ func CreateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceClient
 		FixedIP:           fixedIP,
 	}
 
-	floatingIP, err := floatingips.Create(client, createOpts).Extract()
+	floatingIP, err := floatingips.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return floatingIP, err
 	}
@@ -81,7 +82,7 @@ func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 		InternalPortID:    portID,
 	}
 
-	pf, err := portforwarding.Create(client, fipID, createOpts).Extract()
+	pf, err := portforwarding.Create(context.TODO(), client, fipID, createOpts).Extract()
 	if err != nil {
 		return pf, err
 	}
@@ -98,7 +99,7 @@ func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 func DeletePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, pfID string) {
 	t.Logf("Attempting to delete the port forwarding with ID %s for floating IP with ID %s", pfID, fipID)
 
-	err := portforwarding.Delete(client, fipID, pfID).ExtractErr()
+	err := portforwarding.Delete(context.TODO(), client, fipID, pfID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Failed to delete Port forwarding with ID %s for floating IP with ID %s", pfID, fipID)
 	}
@@ -133,7 +134,7 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 		GatewayInfo:  &gatewayInfo,
 	}
 
-	router, err = routers.Create(client, createOpts).Extract()
+	router, err = routers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return router, err
 	}
@@ -165,7 +166,7 @@ func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID str
 		AdminStateUp: &adminStateUp,
 	}
 
-	router, err := routers.Create(client, createOpts).Extract()
+	router, err := routers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return router, err
 	}
@@ -191,7 +192,7 @@ func CreateRouterInterface(t *testing.T, client *gophercloud.ServiceClient, port
 		PortID: portID,
 	}
 
-	iface, err := routers.AddInterface(client, routerID, aiOpts).Extract()
+	iface, err := routers.AddInterface(context.TODO(), client, routerID, aiOpts).Extract()
 	if err != nil {
 		return iface, err
 	}
@@ -213,7 +214,7 @@ func CreateRouterInterfaceOnSubnet(t *testing.T, client *gophercloud.ServiceClie
 		SubnetID: subnetID,
 	}
 
-	iface, err := routers.AddInterface(client, routerID, aiOpts).Extract()
+	iface, err := routers.AddInterface(context.TODO(), client, routerID, aiOpts).Extract()
 	if err != nil {
 		return iface, err
 	}
@@ -231,7 +232,7 @@ func CreateRouterInterfaceOnSubnet(t *testing.T, client *gophercloud.ServiceClie
 func DeleteRouter(t *testing.T, client *gophercloud.ServiceClient, routerID string) {
 	t.Logf("Attempting to delete router: %s", routerID)
 
-	err := routers.Delete(client, routerID).ExtractErr()
+	err := routers.Delete(context.TODO(), client, routerID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Error deleting router: %v", err)
 	}
@@ -253,7 +254,7 @@ func DeleteRouterInterface(t *testing.T, client *gophercloud.ServiceClient, port
 		PortID: portID,
 	}
 
-	_, err := routers.RemoveInterface(client, routerID, riOpts).Extract()
+	_, err := routers.RemoveInterface(context.TODO(), client, routerID, riOpts).Extract()
 	if err != nil {
 		t.Fatalf("Failed to detach port %s from router %s", portID, routerID)
 	}
@@ -271,7 +272,7 @@ func DeleteRouterInterface(t *testing.T, client *gophercloud.ServiceClient, port
 func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIPID string) {
 	t.Logf("Attempting to delete floating IP: %s", floatingIPID)
 
-	err := floatingips.Delete(client, floatingIPID).ExtractErr()
+	err := floatingips.Delete(context.TODO(), client, floatingIPID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Failed to delete floating IP: %v", err)
 	}
@@ -281,7 +282,7 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 
 func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		r, err := routers.Get(client, routerID).Extract()
+		r, err := routers.Get(context.TODO(), client, routerID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -296,7 +297,7 @@ func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string) e
 
 func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		_, err := routers.Get(client, routerID).Extract()
+		_, err := routers.Get(context.TODO(), client, routerID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				return true, nil
@@ -311,7 +312,7 @@ func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string) e
 
 func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInterfaceID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		r, err := ports.Get(client, routerInterfaceID).Extract()
+		r, err := ports.Get(context.TODO(), client, routerInterfaceID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -326,7 +327,7 @@ func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInt
 
 func WaitForRouterInterfaceToDetach(client *gophercloud.ServiceClient, routerInterfaceID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		r, err := ports.Get(client, routerInterfaceID).Extract()
+		r, err := ports.Get(context.TODO(), client, routerInterfaceID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				return true, nil
@@ -360,7 +361,7 @@ func CreateAddressScope(t *testing.T, client *gophercloud.ServiceClient) (*addre
 
 	t.Logf("Attempting to create an address-scope: %s", addressScopeName)
 
-	addressScope, err := addressscopes.Create(client, createOpts).Extract()
+	addressScope, err := addressscopes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -378,7 +379,7 @@ func CreateAddressScope(t *testing.T, client *gophercloud.ServiceClient) (*addre
 func DeleteAddressScope(t *testing.T, client *gophercloud.ServiceClient, addressScopeID string) {
 	t.Logf("Attempting to delete the address-scope: %s", addressScopeID)
 
-	err := addressscopes.Delete(client, addressScopeID).ExtractErr()
+	err := addressscopes.Delete(context.TODO(), client, addressScopeID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete address-scope %s: %v", addressScopeID, err)
 	}

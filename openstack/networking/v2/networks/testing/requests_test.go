@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -30,7 +31,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceClient()
 	count := 0
 
-	err := networks.List(client, networks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := networks.List(client, networks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := networks.ExtractNetworks(page)
 		if err != nil {
@@ -73,7 +74,7 @@ func TestListWithExtensions(t *testing.T) {
 
 	var allNetworks []networkWithExt
 
-	allPages, err := networks.List(client, networks.ListOpts{}).AllPages()
+	allPages, err := networks.List(client, networks.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = networks.ExtractNetworksInto(allPages, &allNetworks)
@@ -103,7 +104,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, GetResponse)
 	})
 
-	n, err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	n, err := networks.Get(context.TODO(), fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &Network1, n)
 	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
@@ -129,7 +130,7 @@ func TestGetWithExtensions(t *testing.T) {
 		portsecurity.PortSecurityExt
 	}
 
-	err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&networkWithExtensions)
+	err := networks.Get(context.TODO(), fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, networkWithExtensions.Status, "ACTIVE")
@@ -154,7 +155,7 @@ func TestCreate(t *testing.T) {
 
 	iTrue := true
 	options := networks.CreateOpts{Name: "private", AdminStateUp: &iTrue}
-	n, err := networks.Create(fake.ServiceClient(), options).Extract()
+	n, err := networks.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -186,7 +187,7 @@ func TestCreateWithOptionalFields(t *testing.T) {
 		TenantID:              "12345",
 		AvailabilityZoneHints: []string{"zone1", "zone2"},
 	}
-	_, err := networks.Create(fake.ServiceClient(), options).Extract()
+	_, err := networks.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -210,7 +211,7 @@ func TestUpdate(t *testing.T) {
 	iTrue, iFalse := true, false
 	name := "new_network_name"
 	options := networks.UpdateOpts{Name: &name, AdminStateUp: &iFalse, Shared: &iTrue}
-	n, err := networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := networks.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_network_name")
@@ -256,12 +257,12 @@ func TestUpdateRevision(t *testing.T) {
 	iTrue, iFalse := true, false
 	name := "new_network_name"
 	options := networks.UpdateOpts{Name: &name, AdminStateUp: &iFalse, Shared: &iTrue}
-	_, err := networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	_, err := networks.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	revisionNumber := 42
 	options.RevisionNumber = &revisionNumber
-	_, err = networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03d", options).Extract()
+	_, err = networks.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03d", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -275,7 +276,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := networks.Delete(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	res := networks.Delete(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -308,7 +309,7 @@ func TestCreatePortSecurity(t *testing.T) {
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := networks.Create(fake.ServiceClient(), createOpts).ExtractInto(&networkWithExtensions)
+	err := networks.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, networkWithExtensions.Status, "ACTIVE")
@@ -344,7 +345,7 @@ func TestUpdatePortSecurity(t *testing.T) {
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", updateOpts).ExtractInto(&networkWithExtensions)
+	err := networks.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", updateOpts).ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, networkWithExtensions.Name, "private")

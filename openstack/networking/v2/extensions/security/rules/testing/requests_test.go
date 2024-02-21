@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -56,7 +57,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	rules.List(fake.ServiceClient(), rules.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	rules.List(fake.ServiceClient(), rules.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := rules.ExtractRules(page)
 		if err != nil {
@@ -158,24 +159,24 @@ func TestCreate(t *testing.T) {
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}
-	_, err := rules.Create(fake.ServiceClient(), opts).Extract()
+	_, err := rules.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := rules.Create(fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress})
+	res := rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = rules.Create(fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
+	res = rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = rules.Create(fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
+	res = rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = rules.Create(fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4, SecGroupID: "something", Protocol: "foo"})
+	res = rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4, SecGroupID: "something", Protocol: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -210,7 +211,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	sr, err := rules.Get(fake.ServiceClient(), "3c0e45ff-adaf-4124-b083-bf390e5482ff").Extract()
+	sr, err := rules.Get(context.TODO(), fake.ServiceClient(), "3c0e45ff-adaf-4124-b083-bf390e5482ff").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "egress", sr.Direction)
@@ -235,6 +236,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := rules.Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := rules.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

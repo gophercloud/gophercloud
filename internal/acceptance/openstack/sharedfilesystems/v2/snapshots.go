@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -23,7 +24,7 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, shareID str
 		Description: "My Test Description",
 	}
 
-	snapshot, err := snapshots.Create(client, createOpts).Extract()
+	snapshot, err := snapshots.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		t.Logf("Failed to create snapshot")
 		return nil, err
@@ -41,7 +42,7 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, shareID str
 // ListSnapshots lists all snapshots that belong to this tenant's project.
 // An error will be returned if the snapshots could not be listed..
 func ListSnapshots(t *testing.T, client *gophercloud.ServiceClient) ([]snapshots.Snapshot, error) {
-	r, err := snapshots.ListDetail(client, &snapshots.ListOpts{}).AllPages()
+	r, err := snapshots.ListDetail(client, &snapshots.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +53,7 @@ func ListSnapshots(t *testing.T, client *gophercloud.ServiceClient) ([]snapshots
 // DeleteSnapshot will delete a snapshot. A fatal error will occur if the snapshot
 // failed to be deleted. This works best when used as a deferred function.
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {
-	err := snapshots.Delete(client, snapshot.ID).ExtractErr()
+	err := snapshots.Delete(context.TODO(), client, snapshot.ID).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			return
@@ -70,7 +71,7 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 
 func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) error {
 	err := tools.WaitFor(func() (bool, error) {
-		current, err := snapshots.Get(c, id).Extract()
+		current, err := snapshots.Get(context.TODO(), c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {

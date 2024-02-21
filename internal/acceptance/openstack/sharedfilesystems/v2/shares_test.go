@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,7 +26,7 @@ func TestShareCreate(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	created, err := shares.Get(client, share.ID).Extract()
+	created, err := shares.Get(context.TODO(), client, share.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve share: %v", err)
 	}
@@ -52,13 +53,13 @@ func TestShareExportLocations(t *testing.T) {
 
 	client.Microversion = "2.9"
 
-	exportLocations, err := shares.ListExportLocations(client, share.ID).Extract()
+	exportLocations, err := shares.ListExportLocations(context.TODO(), client, share.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to list share export locations: %v", err)
 	}
 	tools.PrintResource(t, exportLocations)
 
-	exportLocation, err := shares.GetExportLocation(client, share.ID, exportLocations[0].ID).Extract()
+	exportLocation, err := shares.GetExportLocation(context.TODO(), client, share.ID, exportLocations[0].ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to get share export location: %v", err)
 	}
@@ -79,7 +80,7 @@ func TestShareUpdate(t *testing.T) {
 
 	defer DeleteShare(t, client, share)
 
-	expectedShare, err := shares.Get(client, share.ID).Extract()
+	expectedShare, err := shares.Get(context.TODO(), client, share.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve share: %v", err)
 	}
@@ -97,12 +98,12 @@ func TestShareUpdate(t *testing.T) {
 	expectedShare.Description = description
 	expectedShare.IsPublic = iFalse
 
-	_, err = shares.Update(client, share.ID, options).Extract()
+	_, err = shares.Update(context.TODO(), client, share.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to update share: %v", err)
 	}
 
-	updatedShare, err := shares.Get(client, share.ID).Extract()
+	updatedShare, err := shares.Get(context.TODO(), client, share.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve share: %v", err)
 	}
@@ -268,30 +269,30 @@ func TestShareMetadata(t *testing.T) {
 		}
 	}
 
-	metadata, err := shares.SetMetadata(client, share.ID, shares.SetMetadataOpts{Metadata: map[string]string{k: v1}}).Extract()
+	metadata, err := shares.SetMetadata(context.TODO(), client, share.ID, shares.SetMetadataOpts{Metadata: map[string]string{k: v1}}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to set share metadata: %v", err)
 	}
 	checkMetadataEq(metadata, v1)
 
-	metadata, err = shares.UpdateMetadata(client, share.ID, shares.UpdateMetadataOpts{Metadata: map[string]string{k: v2}}).Extract()
+	metadata, err = shares.UpdateMetadata(context.TODO(), client, share.ID, shares.UpdateMetadataOpts{Metadata: map[string]string{k: v2}}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update share metadata: %v", err)
 	}
 	checkMetadataEq(metadata, v2)
 
-	metadata, err = shares.GetMetadatum(client, share.ID, k).Extract()
+	metadata, err = shares.GetMetadatum(context.TODO(), client, share.ID, k).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get share metadatum: %v", err)
 	}
 	checkMetadataEq(metadata, v2)
 
-	err = shares.DeleteMetadatum(client, share.ID, k).ExtractErr()
+	err = shares.DeleteMetadatum(context.TODO(), client, share.ID, k).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete share metadatum: %v", err)
 	}
 
-	metadata, err = shares.GetMetadata(client, share.ID).Extract()
+	metadata, err = shares.GetMetadata(context.TODO(), client, share.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get share metadata: %v", err)
 	}
@@ -334,7 +335,7 @@ func TestRevert(t *testing.T) {
 	revertOpts := &shares.RevertOpts{
 		SnapshotID: snapshot.ID,
 	}
-	err = shares.Revert(client, share.ID, revertOpts).ExtractErr()
+	err = shares.Revert(context.TODO(), client, share.ID, revertOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to revert a snapshot: %v", err)
 	}
@@ -396,7 +397,7 @@ func TestShareRestoreFromSnapshot(t *testing.T) {
 		SnapshotID:  snapshot.ID,
 		IsPublic:    &iTrue,
 	}
-	restored, err := shares.Create(client, createOpts).Extract()
+	restored, err := shares.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create a share from a snapshot: %v", err)
 	}
@@ -442,7 +443,7 @@ func TestResetStatus(t *testing.T) {
 	resetStatusOpts := &shares.ResetStatusOpts{
 		Status: "error",
 	}
-	err = shares.ResetStatus(client, share.ID, resetStatusOpts).ExtractErr()
+	err = shares.ResetStatus(context.TODO(), client, share.ID, resetStatusOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to reset a share status: %v", err)
 	}
@@ -475,7 +476,7 @@ func TestForceDelete(t *testing.T) {
 		t.Fatalf("Share status error: %v", err)
 	}
 
-	err = shares.ForceDelete(client, share.ID).ExtractErr()
+	err = shares.ForceDelete(context.TODO(), client, share.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to force delete a share: %v", err)
 	}
@@ -509,7 +510,7 @@ func TestUnmanage(t *testing.T) {
 		t.Fatalf("Share status error: %v", err)
 	}
 
-	err = shares.Unmanage(client, share.ID).ExtractErr()
+	err = shares.Unmanage(context.TODO(), client, share.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to unmanage a share: %v", err)
 	}

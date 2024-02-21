@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -85,13 +86,13 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 
 // Create accepts a CreateOpts struct and creates a new stack using the values
 // provided.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToStackCreateMap()
 	if err != nil {
 		r.Err = fmt.Errorf("error creating the options map: %w", err)
 		return
 	}
-	resp, err := c.Post(createURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, createURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -173,13 +174,13 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 
 // Adopt accepts an AdoptOpts struct and creates a new stack using the resources
 // from another stack.
-func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) (r AdoptResult) {
+func Adopt(ctx context.Context, c *gophercloud.ServiceClient, opts AdoptOptsBuilder) (r AdoptResult) {
 	b, err := opts.ToStackAdoptMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(adoptURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, adoptURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -294,15 +295,15 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retreives a stack based on the stack name and stack ID.
-func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
-	resp, err := c.Get(getURL(c, stackName, stackID), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, stackName, stackID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Find retrieves a stack based on the stack name or stack ID.
-func Find(c *gophercloud.ServiceClient, stackIdentity string) (r GetResult) {
-	resp, err := c.Get(findURL(c, stackIdentity), &r.Body, nil)
+func Find(ctx context.Context, c *gophercloud.ServiceClient, stackIdentity string) (r GetResult) {
+	resp, err := c.Get(ctx, findURL(c, stackIdentity), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -401,13 +402,13 @@ func toStackUpdateMap(opts UpdateOpts) (map[string]interface{}, error) {
 // Update accepts an UpdateOpts struct and updates an existing stack using the
 //
 //	http PUT verb with the values provided. opts.TemplateOpts is required.
-func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToStackUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, stackName, stackID), b, nil, nil)
+	resp, err := c.Put(ctx, updateURL(c, stackName, stackID), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -415,20 +416,20 @@ func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts Update
 // Update accepts an UpdateOpts struct and updates an existing stack using the
 //
 //	http PATCH verb with the values provided. opts.TemplateOpts is not required.
-func UpdatePatch(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdatePatchOptsBuilder) (r UpdateResult) {
+func UpdatePatch(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID string, opts UpdatePatchOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToStackUpdatePatchMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Patch(updateURL(c, stackName, stackID), b, nil, nil)
+	resp, err := c.Patch(ctx, updateURL(c, stackName, stackID), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes a stack based on the stack name and stack ID.
-func Delete(c *gophercloud.ServiceClient, stackName, stackID string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, stackName, stackID), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, deleteURL(c, stackName, stackID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -502,13 +503,13 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 
 // Preview accepts a PreviewOptsBuilder interface and creates a preview of a stack using the values
 // provided.
-func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) (r PreviewResult) {
+func Preview(ctx context.Context, c *gophercloud.ServiceClient, opts PreviewOptsBuilder) (r PreviewResult) {
 	b, err := opts.ToStackPreviewMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(previewURL(c), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Post(ctx, previewURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -517,8 +518,8 @@ func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) (r PreviewRe
 
 // Abandon deletes the stack with the provided stackName and stackID, but leaves its
 // resources intact, and returns data describing the stack and its resources.
-func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) (r AbandonResult) {
-	resp, err := c.Delete(abandonURL(c, stackName, stackID), &gophercloud.RequestOpts{
+func Abandon(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID string) (r AbandonResult) {
+	resp, err := c.Delete(ctx, abandonURL(c, stackName, stackID), &gophercloud.RequestOpts{
 		JSONResponse: &r.Body,
 		OkCodes:      []int{200},
 	})

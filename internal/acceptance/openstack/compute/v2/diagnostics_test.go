@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestDiagnostics(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	diag, err := diagnostics.Get(client, server.ID).Extract()
+	diag, err := diagnostics.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, diag)

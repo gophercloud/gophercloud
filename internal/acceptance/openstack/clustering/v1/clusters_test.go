@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"sort"
 	"strings"
 	"testing"
@@ -28,7 +29,7 @@ func TestClustersCRUD(t *testing.T) {
 	defer DeleteCluster(t, client, cluster.ID)
 
 	// Test clusters list
-	allPages, err := clusters.List(client, nil).AllPages()
+	allPages, err := clusters.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allClusters, err := clusters.ExtractClusters(allPages)
@@ -48,7 +49,7 @@ func TestClustersCRUD(t *testing.T) {
 		Name: cluster.Name + "-UPDATED",
 	}
 
-	res := clusters.Update(client, cluster.ID, updateOpts)
+	res := clusters.Update(context.TODO(), client, cluster.ID, updateOpts)
 	th.AssertNoErr(t, res.Err)
 
 	actionID, err := GetActionID(res.Header)
@@ -57,14 +58,14 @@ func TestClustersCRUD(t *testing.T) {
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	newCluster, err := clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.Name, cluster.Name+"-UPDATED")
 
 	tools.PrintResource(t, newCluster)
 
 	// Test cluster health
-	actionID, err = clusters.Check(client, cluster.ID).Extract()
+	actionID, err = clusters.Check(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
@@ -90,13 +91,13 @@ func TestClustersResize(t *testing.T) {
 		Strict:         &iTrue,
 	}
 
-	actionID, err := clusters.Resize(client, cluster.ID, resizeOpts).Extract()
+	actionID, err := clusters.Resize(context.TODO(), client, cluster.ID, resizeOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	newCluster, err := clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.DesiredCapacity, 2)
 
@@ -119,13 +120,13 @@ func TestClustersScale(t *testing.T) {
 	scaleOutOpts := clusters.ScaleOutOpts{
 		Count: 1,
 	}
-	actionID, err := clusters.ScaleOut(client, cluster.ID, scaleOutOpts).Extract()
+	actionID, err := clusters.ScaleOut(context.TODO(), client, cluster.ID, scaleOutOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	newCluster, err := clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.DesiredCapacity, 2)
 
@@ -135,13 +136,13 @@ func TestClustersScale(t *testing.T) {
 		Count: &count,
 	}
 
-	actionID, err = clusters.ScaleIn(client, cluster.ID, scaleInOpts).Extract()
+	actionID, err = clusters.ScaleIn(context.TODO(), client, cluster.ID, scaleInOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	newCluster, err = clusters.Get(client, cluster.ID).Extract()
+	newCluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.DesiredCapacity, 0)
 
@@ -171,7 +172,7 @@ func TestClustersPolicies(t *testing.T) {
 		Enabled:  &iTrue,
 	}
 
-	actionID, err := clusters.AttachPolicy(client, cluster.ID, attachPolicyOpts).Extract()
+	actionID, err := clusters.AttachPolicy(context.TODO(), client, cluster.ID, attachPolicyOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
@@ -179,7 +180,7 @@ func TestClustersPolicies(t *testing.T) {
 
 	// List all policies in the cluster to see if the policy was
 	// successfully attached.
-	allPages, err := clusters.ListPolicies(client, cluster.ID, nil).AllPages()
+	allPages, err := clusters.ListPolicies(client, cluster.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := clusters.ExtractClusterPolicies(allPages)
@@ -202,13 +203,13 @@ func TestClustersPolicies(t *testing.T) {
 		Enabled:  &iFalse,
 	}
 
-	actionID, err = clusters.UpdatePolicy(client, cluster.ID, updatePolicyOpts).Extract()
+	actionID, err = clusters.UpdatePolicy(context.TODO(), client, cluster.ID, updatePolicyOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	clusterPolicy, err := clusters.GetPolicy(client, cluster.ID, policy.ID).Extract()
+	clusterPolicy, err := clusters.GetPolicy(context.TODO(), client, cluster.ID, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, clusterPolicy.Enabled, false)
 
@@ -217,7 +218,7 @@ func TestClustersPolicies(t *testing.T) {
 		PolicyID: policy.ID,
 	}
 
-	actionID, err = clusters.DetachPolicy(client, cluster.ID, detachPolicyOpts).Extract()
+	actionID, err = clusters.DetachPolicy(context.TODO(), client, cluster.ID, detachPolicyOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
@@ -225,7 +226,7 @@ func TestClustersPolicies(t *testing.T) {
 
 	// List all policies in the cluster to see if the policy was
 	// successfully detached.
-	allPages, err = clusters.ListPolicies(client, cluster.ID, nil).AllPages()
+	allPages, err = clusters.ListPolicies(client, cluster.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err = clusters.ExtractClusterPolicies(allPages)
@@ -258,13 +259,13 @@ func TestClustersRecovery(t *testing.T) {
 		Operation: clusters.RebuildRecovery,
 	}
 
-	actionID, err := clusters.Recover(client, cluster.ID, recoverOpts).Extract()
+	actionID, err := clusters.Recover(context.TODO(), client, cluster.ID, recoverOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	newCluster, err := clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newCluster)
@@ -292,7 +293,7 @@ func TestClustersAddNode(t *testing.T) {
 	// Even tho deleting the cluster will delete the nodes but only if added into cluster successfully.
 	defer DeleteNode(t, client, node2.ID)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	nodeIDs := []string{node1.ID, node2.ID}
@@ -302,7 +303,7 @@ func TestClustersAddNode(t *testing.T) {
 	addNodesOpts := clusters.AddNodesOpts{
 		Nodes: nodeNames,
 	}
-	actionID, err := clusters.AddNodes(client, cluster.ID, addNodesOpts).Extract()
+	actionID, err := clusters.AddNodes(context.TODO(), client, cluster.ID, addNodesOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to add nodes to cluster: %v", err)
 	}
@@ -310,7 +311,7 @@ func TestClustersAddNode(t *testing.T) {
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	sort.Strings(nodeIDs)
@@ -336,12 +337,12 @@ func TestClustersRemoveNodeFromCluster(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteCluster(t, client, cluster.ID)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, cluster)
 
 	opt := clusters.RemoveNodesOpts{Nodes: cluster.Nodes}
-	actionID, err := clusters.RemoveNodes(client, cluster.ID, opt).Extract()
+	actionID, err := clusters.RemoveNodes(context.TODO(), client, cluster.ID, opt).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove nodes to cluster: %v", err)
 	}
@@ -353,7 +354,7 @@ func TestClustersRemoveNodeFromCluster(t *testing.T) {
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, 0, len(cluster.Nodes))
@@ -378,7 +379,7 @@ func TestClustersReplaceNode(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node1.ID)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, len(cluster.Nodes) > 0)
 	for _, n := range cluster.Nodes {
@@ -387,12 +388,12 @@ func TestClustersReplaceNode(t *testing.T) {
 
 	nodeIDToBeReplaced := cluster.Nodes[0]
 	opts := clusters.ReplaceNodesOpts{Nodes: map[string]string{nodeIDToBeReplaced: node1.ID}}
-	actionID, err := clusters.ReplaceNodes(client, cluster.ID, opts).Extract()
+	actionID, err := clusters.ReplaceNodes(context.TODO(), client, cluster.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	clusterNodes := strings.Join(cluster.Nodes, ",")
@@ -414,14 +415,14 @@ func TestClustersCollectAttributes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteCluster(t, client, cluster.ID)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, len(cluster.Nodes) > 0)
 
 	_, err = CreateNode(t, client, cluster.ID, profile.ID)
 	th.AssertNoErr(t, err)
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, len(cluster.Nodes) > 0)
 
@@ -432,7 +433,7 @@ func TestClustersCollectAttributes(t *testing.T) {
 	opts := clusters.CollectOpts{
 		Path: "status",
 	}
-	attrs, err := clusters.Collect(client, cluster.ID, opts).Extract()
+	attrs, err := clusters.Collect(context.TODO(), client, cluster.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	for _, attr := range attrs {
 		th.AssertEquals(t, attr.Value, "ACTIVE")
@@ -441,7 +442,7 @@ func TestClustersCollectAttributes(t *testing.T) {
 	opts = clusters.CollectOpts{
 		Path: "data.placement.zone",
 	}
-	attrs, err = clusters.Collect(client, cluster.ID, opts).Extract()
+	attrs, err = clusters.Collect(context.TODO(), client, cluster.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	for _, attr := range attrs {
 		th.AssertEquals(t, attr.Value, "nova")
@@ -490,20 +491,20 @@ func TestClustersOps(t *testing.T) {
 	for _, op := range ops {
 		opName := string(op.Operation)
 		t.Logf("Attempting to perform '%s' on cluster: %s", opName, cluster.ID)
-		actionID, res := clusters.Ops(client, cluster.ID, op).Extract()
+		actionID, res := clusters.Ops(context.TODO(), client, cluster.ID, op).Extract()
 		th.AssertNoErr(t, res)
 
 		err = WaitForAction(client, actionID)
 		th.AssertNoErr(t, err)
 
-		action, err := actions.Get(client, actionID).Extract()
+		action, err := actions.Get(context.TODO(), client, actionID).Extract()
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, "SUCCEEDED", action.Status)
 
 		t.Logf("Successfully performed '%s' on cluster: %s", opName, cluster.ID)
 	}
 
-	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	cluster, err = clusters.Get(context.TODO(), client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, cluster)
 }

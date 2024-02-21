@@ -1,13 +1,15 @@
 package stackresources
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // Find retrieves stack resources for the given stack name.
-func Find(c *gophercloud.ServiceClient, stackName string) (r FindResult) {
-	resp, err := c.Get(findURL(c, stackName), &r.Body, nil)
+func Find(ctx context.Context, c *gophercloud.ServiceClient, stackName string) (r FindResult) {
+	resp, err := c.Get(ctx, findURL(c, stackName), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -47,15 +49,15 @@ func List(client *gophercloud.ServiceClient, stackName, stackID string, opts Lis
 }
 
 // Get retreives data for the given stack resource.
-func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) (r GetResult) {
-	resp, err := c.Get(getURL(c, stackName, stackID, resourceName), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID, resourceName string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, stackName, stackID, resourceName), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Metadata retreives the metadata for the given stack resource.
-func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) (r MetadataResult) {
-	resp, err := c.Get(metadataURL(c, stackName, stackID, resourceName), &r.Body, nil)
+func Metadata(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID, resourceName string) (r MetadataResult) {
+	resp, err := c.Get(ctx, metadataURL(c, stackName, stackID, resourceName), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -68,15 +70,15 @@ func ListTypes(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Schema retreives the schema for the given resource type.
-func Schema(c *gophercloud.ServiceClient, resourceType string) (r SchemaResult) {
-	resp, err := c.Get(schemaURL(c, resourceType), &r.Body, nil)
+func Schema(ctx context.Context, c *gophercloud.ServiceClient, resourceType string) (r SchemaResult) {
+	resp, err := c.Get(ctx, schemaURL(c, resourceType), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Template retreives the template representation for the given resource type.
-func Template(c *gophercloud.ServiceClient, resourceType string) (r TemplateResult) {
-	resp, err := c.Get(templateURL(c, resourceType), &r.Body, nil)
+func Template(ctx context.Context, c *gophercloud.ServiceClient, resourceType string) (r TemplateResult) {
+	resp, err := c.Get(ctx, templateURL(c, resourceType), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -107,13 +109,13 @@ func (opts MarkUnhealthyOpts) ToMarkUnhealthyMap() (map[string]interface{}, erro
 }
 
 // MarkUnhealthy marks the specified resource in the stack as unhealthy.
-func MarkUnhealthy(c *gophercloud.ServiceClient, stackName, stackID, resourceName string, opts MarkUnhealthyOptsBuilder) (r MarkUnhealthyResult) {
+func MarkUnhealthy(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID, resourceName string, opts MarkUnhealthyOptsBuilder) (r MarkUnhealthyResult) {
 	b, err := opts.ToMarkUnhealthyMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Patch(markUnhealthyURL(c, stackName, stackID, resourceName), b, nil, nil)
+	resp, err := c.Patch(ctx, markUnhealthyURL(c, stackName, stackID, resourceName), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

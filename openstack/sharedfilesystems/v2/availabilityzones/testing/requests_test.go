@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -16,7 +17,7 @@ func TestList(t *testing.T) {
 
 	MockListResponse(t)
 
-	allPages, err := availabilityzones.List(client.ServiceClient()).AllPages()
+	allPages, err := availabilityzones.List(client.ServiceClient()).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := availabilityzones.ExtractAvailabilityZones(allPages)
 	th.AssertNoErr(t, err)

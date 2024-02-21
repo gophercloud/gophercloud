@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -54,7 +55,7 @@ func CreatePortDNS(t *testing.T, client *gophercloud.ServiceClient, networkID, s
 
 	var port PortWithDNSExt
 
-	err := ports.Create(client, createOpts).ExtractInto(&port)
+	err := ports.Create(context.TODO(), client, createOpts).ExtractInto(&port)
 	if err != nil {
 		return &port, err
 	}
@@ -87,7 +88,7 @@ func CreateFloatingIPDNS(t *testing.T, client *gophercloud.ServiceClient, networ
 	}
 
 	var floatingIP FloatingIPWithDNSExt
-	err := floatingips.Create(client, createOpts).ExtractInto(&floatingIP)
+	err := floatingips.Create(context.TODO(), client, createOpts).ExtractInto(&floatingIP)
 	if err != nil {
 		return &floatingIP, err
 	}
@@ -121,7 +122,7 @@ func CreateNetworkDNS(t *testing.T, client *gophercloud.ServiceClient, dnsDomain
 
 	var network NetworkWithDNSExt
 
-	err := networks.Create(client, createOpts).ExtractInto(&network)
+	err := networks.Create(context.TODO(), client, createOpts).ExtractInto(&network)
 	if err != nil {
 		return &network, err
 	}

@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,13 +23,13 @@ func TestReauthAuthResultDeadlock(t *testing.T) {
 
 	ao.AllowReauth = true
 
-	provider, err := openstack.AuthenticatedClient(ao)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), ao)
 	th.AssertNoErr(t, err)
 
 	provider.SetToken("this is not a valid token")
 
 	client, err := openstack.NewIdentityV3(provider, gophercloud.EndpointOpts{})
-	pages, err := projects.List(client, nil).AllPages()
+	pages, err := projects.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	_, err = projects.ExtractProjects(pages)
 	th.AssertNoErr(t, err)

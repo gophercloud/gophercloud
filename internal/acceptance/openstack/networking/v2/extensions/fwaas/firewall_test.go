@@ -4,6 +4,7 @@
 package fwaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -49,10 +50,10 @@ func TestFirewallCRUD(t *testing.T) {
 		PolicyID:    policy.ID,
 	}
 
-	_, err = firewalls.Update(client, firewall.ID, fwUpdateOpts).Extract()
+	_, err = firewalls.Update(context.TODO(), client, firewall.ID, fwUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newFirewall, err := firewalls.Get(client, firewall.ID).Extract()
+	newFirewall, err := firewalls.Get(context.TODO(), client, firewall.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFirewall)
@@ -60,7 +61,7 @@ func TestFirewallCRUD(t *testing.T) {
 	th.AssertEquals(t, newFirewall.Description, fwDescription)
 	th.AssertEquals(t, newFirewall.PolicyID, policy.ID)
 
-	allPages, err := firewalls.List(client, nil).AllPages()
+	allPages, err := firewalls.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allFirewalls, err := firewalls.ExtractFirewalls(allPages)
@@ -118,10 +119,10 @@ func TestFirewallCRUDRouter(t *testing.T) {
 		[]string{router2.ID},
 	}
 
-	_, err = firewalls.Update(client, firewall.ID, updateOpts).Extract()
+	_, err = firewalls.Update(context.TODO(), client, firewall.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newFirewall, err := firewalls.Get(client, firewall.ID).Extract()
+	newFirewall, err := firewalls.Get(context.TODO(), client, firewall.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFirewall)
@@ -165,10 +166,10 @@ func TestFirewallCRUDRemoveRouter(t *testing.T) {
 		[]string{},
 	}
 
-	_, err = firewalls.Update(client, firewall.ID, updateOpts).Extract()
+	_, err = firewalls.Update(context.TODO(), client, firewall.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newFirewall, err := firewalls.Get(client, firewall.ID).Extract()
+	newFirewall, err := firewalls.Get(context.TODO(), client, firewall.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFirewall)

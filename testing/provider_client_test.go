@@ -112,7 +112,7 @@ func TestConcurrentReauth(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			resp, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			resp, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
 			th.CheckNoErr(t, err)
 			if resp == nil {
 				t.Errorf("got a nil response")
@@ -190,7 +190,7 @@ func TestReauthEndLoop(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			_, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
 
 			mut.Lock()
 			defer mut.Unlock()
@@ -293,7 +293,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 			if i != 0 {
 				<-info.reauthCh
 			}
-			resp, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			resp, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
 			th.CheckNoErr(t, err)
 			if resp == nil {
 				t.Errorf("got a nil response")
@@ -363,7 +363,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	// the part before the colon), but when encountering another 401 response, we
 	// did not attempt reauthentication again and just passed that 401 response to
 	// the caller as ErrDefault401.
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
 	th.AssertEquals(t, expectedErrorMessage, err.Error())
 }
@@ -377,7 +377,7 @@ func TestRequestWithContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	p := &gophercloud.ProviderClient{Context: ctx}
 
-	res, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
+	res, err := p.Request(context.TODO(), "GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
 	th.AssertNoErr(t, err)
 	_, err = io.ReadAll(res.Body)
 	th.AssertNoErr(t, err)
@@ -385,7 +385,7 @@ func TestRequestWithContext(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	cancel()
-	res, err = p.Request("GET", ts.URL, &gophercloud.RequestOpts{})
+	res, err = p.Request(context.TODO(), "GET", ts.URL, &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -415,7 +415,7 @@ func TestRequestConnectionReuse(t *testing.T) {
 
 	p := &gophercloud.ProviderClient{}
 	for i := 0; i < iter; i++ {
-		_, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: false})
+		_, err := p.Request(context.TODO(), "GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: false})
 		th.AssertNoErr(t, err)
 	}
 
@@ -443,7 +443,7 @@ func TestRequestConnectionClose(t *testing.T) {
 
 	p := &gophercloud.ProviderClient{}
 	for i := 0; i < iter; i++ {
-		_, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
+		_, err := p.Request(context.TODO(), "GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
 		th.AssertNoErr(t, err)
 	}
 
@@ -509,7 +509,7 @@ func TestRequestRetry(t *testing.T) {
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -536,7 +536,7 @@ func TestRequestRetryHTTPDate(t *testing.T) {
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -563,7 +563,7 @@ func TestRequestRetryError(t *testing.T) {
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -588,7 +588,7 @@ func TestRequestRetrySuccess(t *testing.T) {
 		http.Error(w, "retry later", http.StatusOK)
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -624,7 +624,7 @@ func TestRequestRetryContext(t *testing.T) {
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -656,7 +656,7 @@ func TestRequestGeneralRetry(t *testing.T) {
 		}
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err != nil {
 		t.Fatal("expecting nil, got err")
 	}
@@ -684,7 +684,7 @@ func TestRequestGeneralRetryAbort(t *testing.T) {
 		}
 	})
 
-	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting err, got nil")
 	}
@@ -700,7 +700,7 @@ func TestRequestWrongOkCode(t *testing.T) {
 
 	p := &gophercloud.ProviderClient{}
 
-	_, err := p.Request("DELETE", ts.URL, &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "DELETE", ts.URL, &gophercloud.RequestOpts{})
 	th.AssertErr(t, err)
 	if urErr, ok := err.(gophercloud.ErrUnexpectedResponseCode); ok {
 		// DELETE expects a 202 or 204 by default

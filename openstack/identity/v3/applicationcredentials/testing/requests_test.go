@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/applicationcredentials"
@@ -15,7 +16,7 @@ func TestListApplicationCredentials(t *testing.T) {
 	HandleListApplicationCredentialsSuccessfully(t)
 
 	count := 0
-	err := applicationcredentials.List(client.ServiceClient(), userID, nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := applicationcredentials.List(client.ServiceClient(), userID, nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := applicationcredentials.ExtractApplicationCredentials(page)
@@ -34,7 +35,7 @@ func TestListApplicationCredentialsAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListApplicationCredentialsSuccessfully(t)
 
-	allPages, err := applicationcredentials.List(client.ServiceClient(), userID, nil).AllPages()
+	allPages, err := applicationcredentials.List(client.ServiceClient(), userID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := applicationcredentials.ExtractApplicationCredentials(allPages)
 	th.AssertNoErr(t, err)
@@ -48,7 +49,7 @@ func TestGetApplicationCredential(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetApplicationCredentialSuccessfully(t)
 
-	actual, err := applicationcredentials.Get(client.ServiceClient(), userID, applicationCredentialID).Extract()
+	actual, err := applicationcredentials.Get(context.TODO(), client.ServiceClient(), userID, applicationCredentialID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ApplicationCredential, *actual)
 }
@@ -76,7 +77,7 @@ func TestCreateApplicationCredential(t *testing.T) {
 	ApplicationCredentialResponse := ApplicationCredential
 	ApplicationCredentialResponse.Secret = "mysecret"
 
-	actual, err := applicationcredentials.Create(client.ServiceClient(), userID, createOpts).Extract()
+	actual, err := applicationcredentials.Create(context.TODO(), client.ServiceClient(), userID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ApplicationCredentialResponse, *actual)
 }
@@ -93,7 +94,7 @@ func TestCreateNoSecretApplicationCredential(t *testing.T) {
 		},
 	}
 
-	actual, err := applicationcredentials.Create(client.ServiceClient(), userID, createOpts).Extract()
+	actual, err := applicationcredentials.Create(context.TODO(), client.ServiceClient(), userID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ApplicationCredentialNoSecretResponse, *actual)
 }
@@ -116,7 +117,7 @@ func TestCreateUnrestrictedApplicationCredential(t *testing.T) {
 	UnrestrictedApplicationCredentialResponse := UnrestrictedApplicationCredential
 	UnrestrictedApplicationCredentialResponse.Secret = "generated_secret"
 
-	actual, err := applicationcredentials.Create(client.ServiceClient(), userID, createOpts).Extract()
+	actual, err := applicationcredentials.Create(context.TODO(), client.ServiceClient(), userID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, UnrestrictedApplicationCredentialResponse, *actual)
 }
@@ -126,7 +127,7 @@ func TestDeleteApplicationCredential(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteApplicationCredentialSuccessfully(t)
 
-	res := applicationcredentials.Delete(client.ServiceClient(), userID, applicationCredentialID)
+	res := applicationcredentials.Delete(context.TODO(), client.ServiceClient(), userID, applicationCredentialID)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -136,7 +137,7 @@ func TestListAccessRules(t *testing.T) {
 	HandleListAccessRulesSuccessfully(t)
 
 	count := 0
-	err := applicationcredentials.ListAccessRules(client.ServiceClient(), userID).EachPage(func(page pagination.Page) (bool, error) {
+	err := applicationcredentials.ListAccessRules(client.ServiceClient(), userID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := applicationcredentials.ExtractAccessRules(page)
@@ -155,7 +156,7 @@ func TestGetAccessRule(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetAccessRuleSuccessfully(t)
 
-	actual, err := applicationcredentials.GetAccessRule(client.ServiceClient(), userID, accessRuleID).Extract()
+	actual, err := applicationcredentials.GetAccessRule(context.TODO(), client.ServiceClient(), userID, accessRuleID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, AccessRule, *actual)
 }
@@ -165,6 +166,6 @@ func TestDeleteAccessRule(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteAccessRuleSuccessfully(t)
 
-	res := applicationcredentials.DeleteAccessRule(client.ServiceClient(), userID, accessRuleID)
+	res := applicationcredentials.DeleteAccessRule(context.TODO(), client.ServiceClient(), userID, accessRuleID)
 	th.AssertNoErr(t, res.Err)
 }

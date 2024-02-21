@@ -1,6 +1,7 @@
 package trunks
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -28,7 +29,7 @@ func CreateTrunk(t *testing.T, client *gophercloud.ServiceClient, parentPortID s
 	}
 
 	t.Logf("Attempting to create trunk: %s", opts.Name)
-	trunk, err = trunks.Create(client, opts).Extract()
+	trunk, err = trunks.Create(context.TODO(), client, opts).Extract()
 	if err == nil {
 		t.Logf("Successfully created trunk")
 	}
@@ -37,7 +38,7 @@ func CreateTrunk(t *testing.T, client *gophercloud.ServiceClient, parentPortID s
 
 func DeleteTrunk(t *testing.T, client *gophercloud.ServiceClient, trunkID string) {
 	t.Logf("Attempting to delete trunk: %s", trunkID)
-	err := trunks.Delete(client, trunkID).ExtractErr()
+	err := trunks.Delete(context.TODO(), client, trunkID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete trunk %s: %v", trunkID, err)
 	}

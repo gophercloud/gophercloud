@@ -53,7 +53,7 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	return p, nil
 }
 
-// AuthenticatedClientWithContext logs in to an OpenStack cloud found at the identity endpoint
+// AuthenticatedClient logs in to an OpenStack cloud found at the identity endpoint
 // specified by the options, acquires a token, and returns a Provider Client
 // instance that's ready to operate.
 //
@@ -67,37 +67,32 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 // Example:
 //
 //	ao, err := openstack.AuthOptionsFromEnv()
-//	provider, err := openstack.AuthenticatedClientWithContext(ctx, ao)
+//	provider, err := openstack.AuthenticatedClient(ctx, ao)
 //	client, err := openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{
 //		Region: os.Getenv("OS_REGION_NAME"),
 //	})
-func AuthenticatedClientWithContext(ctx context.Context, options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
+func AuthenticatedClient(ctx context.Context, options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
 	client, err := NewClient(options.IdentityEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	err = AuthenticateWithContext(ctx, client, options)
+	err = Authenticate(ctx, client, options)
 	if err != nil {
 		return nil, err
 	}
 	return client, nil
 }
 
-// AuthenticatedClient is a compatibility wrapper around AuthenticatedClientWithContext
-func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	return AuthenticatedClientWithContext(context.Background(), options)
-}
-
-// AuthenticateWithContext authenticates or re-authenticates against the most
+// Authenticate authenticates or re-authenticates against the most
 // recent identity service supported at the provided endpoint.
-func AuthenticateWithContext(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
+func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
 	versions := []*utils.Version{
 		{ID: v2, Priority: 20, Suffix: "/v2.0/"},
 		{ID: v3, Priority: 30, Suffix: "/v3/"},
 	}
 
-	chosen, endpoint, err := utils.ChooseVersion(client, versions)
+	chosen, endpoint, err := utils.ChooseVersion(ctx, client, versions)
 	if err != nil {
 		return err
 	}
@@ -113,19 +108,9 @@ func AuthenticateWithContext(ctx context.Context, client *gophercloud.ProviderCl
 	}
 }
 
-// Authenticate is a compatibility wrapper around AuthenticateWithContext.
-func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
-	return AuthenticateWithContext(context.Background(), client, options)
-}
-
-// AuthenticateV2WithContext explicitly authenticates against the identity v2 endpoint.
-func AuthenticateV2WithContext(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
+// AuthenticateV2 explicitly authenticates against the identity v2 endpoint.
+func AuthenticateV2(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
 	return v2auth(ctx, client, "", options, eo)
-}
-
-// AuthenticateV2 is a compatibility wrapper around AuthenticateV2WithContext.
-func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
-	return AuthenticateV2WithContext(context.Background(), client, options, eo)
 }
 
 func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
@@ -148,7 +133,7 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		TokenID:          options.TokenID,
 	}
 
-	result := tokens2.CreateWithContext(ctx, v2Client, v2Opts)
+	result := tokens2.Create(ctx, v2Client, v2Opts)
 
 	err = client.SetTokenAndAuthResult(result)
 	if err != nil {
@@ -186,14 +171,9 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 	return nil
 }
 
-// AuthenticateV3WithContext explicitly authenticates against the identity v3 service.
-func AuthenticateV3WithContext(ctx context.Context, client *gophercloud.ProviderClient, options tokens3.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
+// AuthenticateV3 explicitly authenticates against the identity v3 service.
+func AuthenticateV3(ctx context.Context, client *gophercloud.ProviderClient, options tokens3.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
 	return v3auth(ctx, client, "", options, eo)
-}
-
-// AuthenticateV3 is a compatibility wrapper around AuthenticateV3WithContext
-func AuthenticateV3(client *gophercloud.ProviderClient, options tokens3.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
-	return AuthenticateV3WithContext(context.Background(), client, options, eo)
 }
 
 func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, opts tokens3.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
@@ -228,7 +208,7 @@ func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		}
 
 		v3Client.SetToken(tokenID)
-		result := tokens3.Get(v3Client, tokenID)
+		result := tokens3.Get(ctx, v3Client, tokenID)
 		if result.Err != nil {
 			return result.Err
 		}
@@ -246,11 +226,11 @@ func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		var result tokens3.CreateResult
 		switch opts.(type) {
 		case *ec2tokens.AuthOptions:
-			result = ec2tokens.CreateWithContext(ctx, v3Client, opts)
+			result = ec2tokens.Create(ctx, v3Client, opts)
 		case *oauth1.AuthOptions:
-			result = oauth1.CreateWithContext(ctx, v3Client, opts)
+			result = oauth1.Create(ctx, v3Client, opts)
 		default:
-			result = tokens3.CreateWithContext(ctx, v3Client, opts)
+			result = tokens3.Create(ctx, v3Client, opts)
 		}
 
 		err = client.SetTokenAndAuthResult(result)

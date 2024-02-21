@@ -1,6 +1,8 @@
 package nodegroups
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -9,8 +11,8 @@ import (
 // with the given ID/name belonging to the given cluster.
 // Use the Extract method of the returned GetResult to extract the
 // node group from the result.
-func Get(client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r GetResult) {
-	resp, err := client.Get(getURL(client, clusterID, nodeGroupID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+func Get(ctx context.Context, client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, clusterID, nodeGroupID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -99,13 +101,13 @@ func (opts CreateOpts) ToNodeGroupCreateMap() (map[string]interface{}, error) {
 // for the the given cluster.
 // Use the Extract method of the returned CreateResult to extract the
 // returned node group.
-func Create(client *gophercloud.ServiceClient, clusterID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, clusterID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToNodeGroupCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	resp, err := client.Post(ctx, createURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -141,7 +143,7 @@ func (opts UpdateOpts) ToResourceUpdateMap() (map[string]interface{}, error) {
 // one UpdateOpts can be passed at a time.
 // Use the Extract method of the returned UpdateResult to extract the
 // updated node group from the result.
-func Update(client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []UpdateOptsBuilder) (r UpdateResult) {
 	var o []map[string]interface{}
 	for _, opt := range opts {
 		b, err := opt.ToResourceUpdateMap()
@@ -151,14 +153,14 @@ func Update(client *gophercloud.ServiceClient, clusterID string, nodeGroupID str
 		}
 		o = append(o, b)
 	}
-	resp, err := client.Patch(updateURL(client, clusterID, nodeGroupID), o, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	resp, err := client.Patch(ctx, updateURL(client, clusterID, nodeGroupID), o, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete makes a request to the Magnum API to delete a node group.
-func Delete(client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, clusterID, nodeGroupID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, clusterID, nodeGroupID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

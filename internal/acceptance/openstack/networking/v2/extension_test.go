@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestExtensionsList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := extensions.List(client).AllPages()
+	allPages, err := extensions.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list extensions: %v", err)
 	}
@@ -38,7 +39,7 @@ func TestExtensionGet(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(client, "router").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "router").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get extension port-security: %v", err)
 	}

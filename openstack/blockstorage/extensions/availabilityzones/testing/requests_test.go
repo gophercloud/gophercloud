@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	az "github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/availabilityzones"
@@ -15,7 +16,7 @@ func TestList(t *testing.T) {
 
 	HandleGetSuccessfully(t)
 
-	allPages, err := az.List(client.ServiceClient()).AllPages()
+	allPages, err := az.List(client.ServiceClient()).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := az.ExtractAvailabilityZones(allPages)

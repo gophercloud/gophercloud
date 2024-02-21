@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/l7policies"
@@ -21,7 +22,7 @@ func TestListLoadbalancers(t *testing.T) {
 	HandleLoadbalancerListSuccessfully(t)
 
 	pages := 0
-	err := loadbalancers.List(fake.ServiceClient(), loadbalancers.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := loadbalancers.List(fake.ServiceClient(), loadbalancers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := loadbalancers.ExtractLoadBalancers(page)
@@ -50,7 +51,7 @@ func TestListAllLoadbalancers(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerListSuccessfully(t)
 
-	allPages, err := loadbalancers.List(fake.ServiceClient(), loadbalancers.ListOpts{}).AllPages()
+	allPages, err := loadbalancers.List(fake.ServiceClient(), loadbalancers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := loadbalancers.ExtractLoadBalancers(allPages)
 	th.AssertNoErr(t, err)
@@ -63,7 +64,7 @@ func TestCreateLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerCreationSuccessfully(t, SingleLoadbalancerBody)
 
-	actual, err := loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{
+	actual, err := loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{
 		Name:         "db_lb",
 		AdminStateUp: gophercloud.Enabled,
 		VipPortID:    "2bf413c8-41a9-4477-b505-333d5cbe8b55",
@@ -89,7 +90,7 @@ func TestCreateFullyPopulatedLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFullyPopulatedLoadbalancerCreationSuccessfully(t, PostFullyPopulatedLoadbalancerBody)
 
-	actual, err := loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{
+	actual, err := loadbalancers.Create(context.TODO(), fake.ServiceClient(), loadbalancers.CreateOpts{
 		Name:         "db_lb",
 		AdminStateUp: gophercloud.Enabled,
 		VipPortID:    "2bf413c8-41a9-4477-b505-333d5cbe8b55",
@@ -148,7 +149,7 @@ func TestGetLoadbalancer(t *testing.T) {
 	HandleLoadbalancerGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := loadbalancers.Get(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	actual, err := loadbalancers.Get(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -162,7 +163,7 @@ func TestGetLoadbalancerStatusesTree(t *testing.T) {
 	HandleLoadbalancerGetStatusesTree(t)
 
 	client := fake.ServiceClient()
-	actual, err := loadbalancers.GetStatuses(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	actual, err := loadbalancers.GetStatuses(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -175,7 +176,7 @@ func TestDeleteLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerDeletionSuccessfully(t)
 
-	res := loadbalancers.Delete(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", nil)
+	res := loadbalancers.Delete(context.TODO(), fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", nil)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -187,7 +188,7 @@ func TestUpdateLoadbalancer(t *testing.T) {
 	client := fake.ServiceClient()
 	name := "NewLoadbalancerName"
 	tags := []string{"test"}
-	actual, err := loadbalancers.Update(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
+	actual, err := loadbalancers.Update(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
 		Name: &name,
 		Tags: &tags,
 	}).Extract()
@@ -212,7 +213,7 @@ func TestCascadingDeleteLoadbalancer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, query, "?cascade=true")
 
-	err = loadbalancers.Delete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", deleteOpts).ExtractErr()
+	err = loadbalancers.Delete(context.TODO(), sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -222,7 +223,7 @@ func TestGetLoadbalancerStatsTree(t *testing.T) {
 	HandleLoadbalancerGetStatsTree(t)
 
 	client := fake.ServiceClient()
-	actual, err := loadbalancers.GetStats(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	actual, err := loadbalancers.GetStats(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -235,6 +236,6 @@ func TestFailoverLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerFailoverSuccessfully(t)
 
-	res := loadbalancers.Failover(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	res := loadbalancers.Failover(context.TODO(), fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
 	th.AssertNoErr(t, res.Err)
 }

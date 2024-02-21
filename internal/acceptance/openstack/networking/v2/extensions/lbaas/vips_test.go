@@ -4,6 +4,7 @@
 package lbaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestVIPsList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := vips.List(client, vips.ListOpts{}).AllPages()
+	allPages, err := vips.List(client, vips.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list vips: %v", err)
 	}
@@ -72,12 +73,12 @@ func TestVIPsCRUD(t *testing.T) {
 		ConnLimit: &connLimit,
 	}
 
-	_, err = vips.Update(client, vip.ID, updateOpts).Extract()
+	_, err = vips.Update(context.TODO(), client, vip.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update vip: %v", err)
 	}
 
-	newVIP, err := vips.Get(client, vip.ID).Extract()
+	newVIP, err := vips.Get(context.TODO(), client, vip.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get vip: %v", err)
 	}

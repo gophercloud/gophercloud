@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestStackEvents(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteStack(t, client, stack.Name, stack.ID)
 
-	allPages, err := stackevents.List(client, stack.Name, stack.ID, nil).AllPages()
+	allPages, err := stackevents.List(client, stack.Name, stack.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allEvents, err := stackevents.ExtractEvents(allPages)
 	th.AssertNoErr(t, err)
@@ -28,7 +29,7 @@ func TestStackEvents(t *testing.T) {
 
 	/*
 			allPages is currently broke
-		allPages, err = stackevents.ListResourceEvents(client, stack.Name, stack.ID, basicTemplateResourceName, nil).AllPages()
+		allPages, err = stackevents.ListResourceEvents(client, stack.Name, stack.ID, basicTemplateResourceName, nil).AllPages(context.TODO())
 		th.AssertNoErr(t, err)
 		allEvents, err = stackevents.ExtractEvents(allPages)
 		th.AssertNoErr(t, err)

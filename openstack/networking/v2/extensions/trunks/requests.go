@@ -1,6 +1,8 @@
 package trunks
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -30,21 +32,21 @@ func (opts CreateOpts) ToTrunkCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "trunk")
 }
 
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	body, err := opts.ToTrunkCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := c.Post(createURL(c), body, &r.Body, nil)
+	resp, err := c.Post(ctx, createURL(c), body, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete accepts a unique ID and deletes the trunk associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, id), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -106,8 +108,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific trunk based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -126,21 +128,21 @@ func (opts UpdateOpts) ToTrunkUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "trunk")
 }
 
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	body, err := opts.ToTrunkUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, updateURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func GetSubports(c *gophercloud.ServiceClient, id string) (r GetSubportsResult) {
-	resp, err := c.Get(getSubportsURL(c, id), &r.Body, &gophercloud.RequestOpts{
+func GetSubports(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetSubportsResult) {
+	resp, err := c.Get(ctx, getSubportsURL(c, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -159,13 +161,13 @@ func (opts AddSubportsOpts) ToTrunkAddSubportsMap() (map[string]interface{}, err
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func AddSubports(c *gophercloud.ServiceClient, id string, opts AddSubportsOptsBuilder) (r UpdateSubportsResult) {
+func AddSubports(ctx context.Context, c *gophercloud.ServiceClient, id string, opts AddSubportsOptsBuilder) (r UpdateSubportsResult) {
 	body, err := opts.ToTrunkAddSubportsMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(addSubportsURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, addSubportsURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -188,13 +190,13 @@ func (opts RemoveSubportsOpts) ToTrunkRemoveSubportsMap() (map[string]interface{
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func RemoveSubports(c *gophercloud.ServiceClient, id string, opts RemoveSubportsOptsBuilder) (r UpdateSubportsResult) {
+func RemoveSubports(ctx context.Context, c *gophercloud.ServiceClient, id string, opts RemoveSubportsOptsBuilder) (r UpdateSubportsResult) {
 	body, err := opts.ToTrunkRemoveSubportsMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(removeSubportsURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, removeSubportsURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

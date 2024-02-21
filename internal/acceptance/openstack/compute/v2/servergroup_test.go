@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -21,12 +22,12 @@ func TestServergroupsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServerGroup(t, client, serverGroup)
 
-	serverGroup, err = servergroups.Get(client, serverGroup.ID).Extract()
+	serverGroup, err = servergroups.Get(context.TODO(), client, serverGroup.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, serverGroup)
 
-	allPages, err := servergroups.List(client, &servergroups.ListOpts{}).AllPages()
+	allPages, err := servergroups.List(client, &servergroups.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServerGroups, err := servergroups.ExtractServerGroups(allPages)
@@ -58,14 +59,14 @@ func TestServergroupsAffinityPolicy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, firstServer)
 
-	firstServer, err = servers.Get(client, firstServer.ID).Extract()
+	firstServer, err = servers.Get(context.TODO(), client, firstServer.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	secondServer, err := CreateServerInServerGroup(t, client, serverGroup)
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, secondServer)
 
-	secondServer, err = servers.Get(client, secondServer.ID).Extract()
+	secondServer, err = servers.Get(context.TODO(), client, secondServer.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, firstServer.HostID, secondServer.HostID)
@@ -80,12 +81,12 @@ func TestServergroupsMicroversionCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServerGroup(t, client, serverGroup)
 
-	serverGroup, err = servergroups.Get(client, serverGroup.ID).Extract()
+	serverGroup, err = servergroups.Get(context.TODO(), client, serverGroup.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, serverGroup)
 
-	allPages, err := servergroups.List(client, &servergroups.ListOpts{}).AllPages()
+	allPages, err := servergroups.List(client, &servergroups.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServerGroups, err := servergroups.ExtractServerGroups(allPages)

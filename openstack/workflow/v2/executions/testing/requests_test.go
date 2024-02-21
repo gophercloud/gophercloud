@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -53,7 +54,7 @@ func TestCreateExecution(t *testing.T) {
 		Description: "description",
 	}
 
-	actual, err := executions.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := executions.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create execution: %v", err)
 	}
@@ -112,7 +113,7 @@ func TestGetExecution(t *testing.T) {
 		`)
 	})
 
-	actual, err := executions.Get(fake.ServiceClient(), "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
+	actual, err := executions.Get(context.TODO(), fake.ServiceClient(), "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get execution: %v", err)
 	}
@@ -149,7 +150,7 @@ func TestDeleteExecution(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
-	res := executions.Delete(fake.ServiceClient(), "1")
+	res := executions.Delete(context.TODO(), fake.ServiceClient(), "1")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -193,7 +194,7 @@ func TestListExecutions(t *testing.T) {
 	})
 	pages := 0
 	// Get all executions
-	err := executions.List(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := executions.List(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := executions.ExtractExecutions(page)
 		if err != nil {

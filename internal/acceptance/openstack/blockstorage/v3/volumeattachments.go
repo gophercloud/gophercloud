@@ -1,6 +1,7 @@
 package v3
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -26,7 +27,7 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 
 	var err error
 	var attachment *attachments.Attachment
-	if attachment, err = attachments.Create(client, attachOpts).Extract(); err != nil {
+	if attachment, err = attachments.Create(context.TODO(), client, attachOpts).Extract(); err != nil {
 		return err
 	}
 
@@ -35,19 +36,19 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 	defer func() {
 		client.Microversion = mv
 	}()
-	if err = attachments.Complete(client, attachment.ID).ExtractErr(); err != nil {
+	if err = attachments.Complete(context.TODO(), client, attachment.ID).ExtractErr(); err != nil {
 		return err
 	}
 
-	if err = attachments.WaitForStatus(client, attachment.ID, "attached", 60); err != nil {
-		e := attachments.Delete(client, attachment.ID).ExtractErr()
+	if err = attachments.WaitForStatus(context.TODO(), client, attachment.ID, "attached", 60); err != nil {
+		e := attachments.Delete(context.TODO(), client, attachment.ID).ExtractErr()
 		if e != nil {
 			t.Logf("Failed to delete %q attachment: %s", attachment.ID, err)
 		}
 		return err
 	}
 
-	attachment, err = attachments.Get(client, attachment.ID).Extract()
+	attachment, err = attachments.Get(context.TODO(), client, attachment.ID).Extract()
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 		VolumeID:   volume.ID,
 		InstanceID: server.ID,
 	}
-	allPages, err := attachments.List(client, listOpts).AllPages()
+	allPages, err := attachments.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		return err
 	}
@@ -80,11 +81,11 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, volume *v3.Volume) {
 	t.Logf("Attepting to detach volume volume: %s", volume.ID)
 
-	if err := attachments.Delete(client, volume.Attachments[0].AttachmentID).ExtractErr(); err != nil {
+	if err := attachments.Delete(context.TODO(), client, volume.Attachments[0].AttachmentID).ExtractErr(); err != nil {
 		t.Fatalf("Unable to detach volume %s: %v", volume.ID, err)
 	}
 
-	if err := v3.WaitForStatus(client, volume.ID, "available", 60); err != nil {
+	if err := v3.WaitForStatus(context.TODO(), client, volume.ID, "available", 60); err != nil {
 		t.Fatalf("Volume %s failed to become unavailable in 60 seconds: %v", volume.ID, err)
 	}
 

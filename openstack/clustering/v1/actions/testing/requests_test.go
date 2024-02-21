@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/clustering/v1/actions"
@@ -16,7 +17,7 @@ func TestListActions(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	pageCount := 0
-	err := actions.List(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := actions.List(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pageCount++
 		actual, err := actions.ExtractActions(page)
 		th.AssertNoErr(t, err)
@@ -38,7 +39,7 @@ func TestGetAction(t *testing.T) {
 
 	HandleGetSuccessfully(t, ExpectedAction1.ID)
 
-	actual, err := actions.Get(fake.ServiceClient(), ExpectedAction1.ID).Extract()
+	actual, err := actions.Get(context.TODO(), fake.ServiceClient(), ExpectedAction1.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedAction1, *actual)
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/keymanager/v1/orders"
@@ -15,7 +16,7 @@ func TestListOrders(t *testing.T) {
 	HandleListOrdersSuccessfully(t)
 
 	count := 0
-	err := orders.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := orders.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := orders.ExtractOrders(page)
@@ -34,7 +35,7 @@ func TestListOrdersAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListOrdersSuccessfully(t)
 
-	allPages, err := orders.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := orders.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := orders.ExtractOrders(allPages)
 	th.AssertNoErr(t, err)
@@ -46,7 +47,7 @@ func TestGetOrder(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetOrderSuccessfully(t)
 
-	actual, err := orders.Get(client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
+	actual, err := orders.Get(context.TODO(), client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
@@ -66,7 +67,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 	}
 
-	actual, err := orders.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := orders.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
@@ -76,6 +77,6 @@ func TestDeleteOrder(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteOrderSuccessfully(t)
 
-	res := orders.Delete(client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7")
+	res := orders.Delete(context.TODO(), client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7")
 	th.AssertNoErr(t, res.Err)
 }

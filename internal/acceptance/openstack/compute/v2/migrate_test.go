@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -24,7 +25,7 @@ func TestMigrate(t *testing.T) {
 
 	t.Logf("Attempting to migrate server %s", server.ID)
 
-	err = migrate.Migrate(client, server.ID).ExtractErr()
+	err = migrate.Migrate(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -50,6 +51,6 @@ func TestLiveMigrate(t *testing.T) {
 		DiskOverCommit: &diskOverCommit,
 	}
 
-	err = migrate.LiveMigrate(client, server.ID, liveMigrateOpts).ExtractErr()
+	err = migrate.LiveMigrate(context.TODO(), client, server.ID, liveMigrateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

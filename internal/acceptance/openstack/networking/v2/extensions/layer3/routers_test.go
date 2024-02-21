@@ -4,6 +4,7 @@
 package layer3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -34,10 +35,10 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 		Description: &newDescription,
 	}
 
-	_, err = routers.Update(client, router.ID, updateOpts).Extract()
+	_, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newRouter, err := routers.Get(client, router.ID).Extract()
+	newRouter, err := routers.Get(context.TODO(), client, router.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRouter)
@@ -45,7 +46,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	th.AssertEquals(t, newRouter.Description, newDescription)
 
 	listOpts := routers.ListOpts{}
-	allPages, err := routers.List(client, listOpts).AllPages()
+	allPages, err := routers.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRouters, err := routers.ExtractRouters(allPages)
@@ -104,10 +105,10 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 		GatewayInfo: &gatewayInfo,
 	}
 
-	_, err = routers.Update(client, router.ID, updateOpts).Extract()
+	_, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newRouter, err := routers.Get(client, router.ID).Extract()
+	newRouter, err := routers.Get(context.TODO(), client, router.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRouter)
@@ -121,7 +122,7 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 		GatewayInfo: &routers.GatewayInfo{},
 	}
 
-	newRouter, err = routers.Update(client, router.ID, updateOpts).Extract()
+	newRouter, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, newRouter.GatewayInfo, routers.GatewayInfo{})
 
@@ -152,7 +153,7 @@ func TestLayer3RouterInterface(t *testing.T) {
 		SubnetID: subnet.ID,
 	}
 
-	iface, err := routers.AddInterface(client, router.ID, aiOpts).Extract()
+	iface, err := routers.AddInterface(context.TODO(), client, router.ID, aiOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, router)
@@ -162,7 +163,7 @@ func TestLayer3RouterInterface(t *testing.T) {
 		SubnetID: subnet.ID,
 	}
 
-	_, err = routers.RemoveInterface(client, router.ID, riOpts).Extract()
+	_, err = routers.RemoveInterface(context.TODO(), client, router.ID, riOpts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -190,14 +191,14 @@ func TestLayer3RouterAgents(t *testing.T) {
 		Description: &newDescription,
 	}
 
-	_, err = routers.Update(client, router.ID, updateOpts).Extract()
+	_, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	_, err = routers.Get(client, router.ID).Extract()
+	_, err = routers.Get(context.TODO(), client, router.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	// Test ListL3Agents for HA or not HA router
-	l3AgentsPages, err := routers.ListL3Agents(client, router.ID).AllPages()
+	l3AgentsPages, err := routers.ListL3Agents(client, router.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	l3Agents, err := routers.ExtractL3Agents(l3AgentsPages)
 	th.AssertNoErr(t, err)

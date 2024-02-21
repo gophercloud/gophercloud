@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stacktemplates"
@@ -13,7 +14,7 @@ func TestGetTemplate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t, GetOutput)
 
-	actual, err := stacktemplates.Get(fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
+	actual, err := stacktemplates.Get(context.TODO(), fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -50,7 +51,7 @@ func TestValidateTemplate(t *testing.T) {
 		  }
 		}`,
 	}
-	actual, err := stacktemplates.Validate(fake.ServiceClient(), opts).Extract()
+	actual, err := stacktemplates.Validate(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := ValidateExpected

@@ -1,6 +1,8 @@
 package peers
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -14,8 +16,8 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieve the specific bgp peer by its uuid
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -41,20 +43,20 @@ func (opts CreateOpts) ToPeerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create a BGP Peer
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToPeerCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(createURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, createURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete accepts a unique ID and deletes the bgp Peer associated with it.
-func Delete(c *gophercloud.ServiceClient, bgpPeerID string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, bgpPeerID), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, bgpPeerID string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, deleteURL(c, bgpPeerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -77,13 +79,13 @@ func (opts UpdateOpts) ToPeerUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update accept a BGP Peer ID and an UpdateOpts and update the BGP Peer
-func Update(c *gophercloud.ServiceClient, bgpPeerID string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, bgpPeerID string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToPeerUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, bgpPeerID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, updateURL(c, bgpPeerID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

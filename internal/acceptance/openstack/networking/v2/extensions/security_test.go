@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -34,7 +35,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 		Description: &description,
 	}
 
-	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()
+	newGroup, err := groups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newGroup)
@@ -42,7 +43,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	th.AssertEquals(t, newGroup.Description, description)
 
 	listOpts := groups.ListOpts{}
-	allPages, err := groups.List(client, listOpts).AllPages()
+	allPages, err := groups.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allPages)

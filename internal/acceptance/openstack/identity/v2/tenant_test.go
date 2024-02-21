@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestTenantsList(t *testing.T) {
 	client, err := clients.NewIdentityV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := tenants.List(client, nil).AllPages()
+	allPages, err := tenants.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allTenants, err := tenants.ExtractTenants(allPages)
@@ -48,7 +49,7 @@ func TestTenantsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteTenant(t, client, tenant.ID)
 
-	tenant, err = tenants.Get(client, tenant.ID).Extract()
+	tenant, err = tenants.Get(context.TODO(), client, tenant.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, tenant)
@@ -58,7 +59,7 @@ func TestTenantsCRUD(t *testing.T) {
 		Description: &description,
 	}
 
-	newTenant, err := tenants.Update(client, tenant.ID, updateOpts).Extract()
+	newTenant, err := tenants.Update(context.TODO(), client, tenant.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newTenant)

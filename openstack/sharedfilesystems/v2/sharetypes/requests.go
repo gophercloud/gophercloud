@@ -1,6 +1,8 @@
 package sharetypes
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -40,13 +42,13 @@ func (opts CreateOpts) ToShareTypeCreateMap() (map[string]interface{}, error) {
 // Create will create a new ShareType based on the values in CreateOpts. To
 // extract the ShareType object from the response, call the Extract method
 // on the CreateResult.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToShareTypeCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -54,8 +56,8 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Delete will delete the existing ShareType with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -96,15 +98,15 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // GetDefault will retrieve the default ShareType.
-func GetDefault(client *gophercloud.ServiceClient) (r GetDefaultResult) {
-	resp, err := client.Get(getDefaultURL(client), &r.Body, nil)
+func GetDefault(ctx context.Context, client *gophercloud.ServiceClient) (r GetDefaultResult) {
+	resp, err := client.Get(ctx, getDefaultURL(client), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetExtraSpecs will retrieve the extra specifications for a given ShareType.
-func GetExtraSpecs(client *gophercloud.ServiceClient, id string) (r GetExtraSpecsResult) {
-	resp, err := client.Get(getExtraSpecsURL(client, id), &r.Body, nil)
+func GetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetExtraSpecsResult) {
+	resp, err := client.Get(ctx, getExtraSpecsURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -129,14 +131,14 @@ func (opts SetExtraSpecsOpts) ToShareTypeSetExtraSpecsMap() (map[string]interfac
 // SetExtraSpecs will set new specifications for a ShareType based on the values
 // in SetExtraSpecsOpts. To extract the extra specifications object from the response,
 // call the Extract method on the SetExtraSpecsResult.
-func SetExtraSpecs(client *gophercloud.ServiceClient, id string, opts SetExtraSpecsOptsBuilder) (r SetExtraSpecsResult) {
+func SetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id string, opts SetExtraSpecsOptsBuilder) (r SetExtraSpecsResult) {
 	b, err := opts.ToShareTypeSetExtraSpecsMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(setExtraSpecsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, setExtraSpecsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -144,15 +146,15 @@ func SetExtraSpecs(client *gophercloud.ServiceClient, id string, opts SetExtraSp
 }
 
 // UnsetExtraSpecs will unset an extra specification for an existing ShareType.
-func UnsetExtraSpecs(client *gophercloud.ServiceClient, id string, key string) (r UnsetExtraSpecsResult) {
-	resp, err := client.Delete(unsetExtraSpecsURL(client, id, key), nil)
+func UnsetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id string, key string) (r UnsetExtraSpecsResult) {
+	resp, err := client.Delete(ctx, unsetExtraSpecsURL(client, id, key), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ShowAccess will show access details for an existing ShareType.
-func ShowAccess(client *gophercloud.ServiceClient, id string) (r ShowAccessResult) {
-	resp, err := client.Get(showAccessURL(client, id), &r.Body, nil)
+func ShowAccess(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShowAccessResult) {
+	resp, err := client.Get(ctx, showAccessURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -176,14 +178,14 @@ func (opts AccessOpts) ToAddAccessMap() (map[string]interface{}, error) {
 
 // AddAccess will add access to a ShareType based on the values
 // in AccessOpts.
-func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
 	b, err := opts.ToAddAccessMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(addAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, addAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -204,14 +206,14 @@ func (opts AccessOpts) ToRemoveAccessMap() (map[string]interface{}, error) {
 
 // RemoveAccess will remove access to a ShareType based on the values
 // in AccessOpts.
-func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
 	b, err := opts.ToRemoveAccessMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(removeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, removeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

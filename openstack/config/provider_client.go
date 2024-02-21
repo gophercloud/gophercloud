@@ -62,7 +62,7 @@ func NewProviderClient(ctx context.Context, authOptions gophercloud.AuthOptions,
 	}
 	client.HTTPClient = options.httpClient
 
-	err = openstack.AuthenticateWithContext(ctx, client, authOptions)
+	err = openstack.Authenticate(ctx, client, authOptions)
 	if err != nil {
 		return nil, err
 	}

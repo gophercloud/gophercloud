@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -44,7 +45,7 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 		tokens.Token
 		trusts.TokenExt
 	}
-	err := tokens.Create(client.ServiceClient(), ao).ExtractInto(&actual)
+	err := tokens.Create(context.TODO(), client.ServiceClient(), ao).ExtractInto(&actual)
 	if err != nil {
 		t.Errorf("Create returned an error: %v", err)
 	}
@@ -74,7 +75,7 @@ func TestCreateTrust(t *testing.T) {
 	HandleCreateTrust(t)
 
 	expiresAt := time.Date(2019, 12, 1, 14, 0, 0, 0, time.UTC)
-	result, err := trusts.Create(client.ServiceClient(), trusts.CreateOpts{
+	result, err := trusts.Create(context.TODO(), client.ServiceClient(), trusts.CreateOpts{
 		ExpiresAt:         &expiresAt,
 		AllowRedelegation: true,
 		ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
@@ -96,7 +97,7 @@ func TestCreateTrustNoExpire(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateTrustNoExpire(t)
 
-	result, err := trusts.Create(client.ServiceClient(), trusts.CreateOpts{
+	result, err := trusts.Create(context.TODO(), client.ServiceClient(), trusts.CreateOpts{
 		AllowRedelegation: true,
 		ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
 		Roles: []trusts.Role{
@@ -117,7 +118,7 @@ func TestDeleteTrust(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteTrust(t)
 
-	res := trusts.Delete(client.ServiceClient(), "3422b7c113894f5d90665e1a79655e23")
+	res := trusts.Delete(context.TODO(), client.ServiceClient(), "3422b7c113894f5d90665e1a79655e23")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -126,7 +127,7 @@ func TestGetTrust(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetTrustSuccessfully(t)
 
-	res := trusts.Get(client.ServiceClient(), "987fe8")
+	res := trusts.Get(context.TODO(), client.ServiceClient(), "987fe8")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -136,7 +137,7 @@ func TestListTrusts(t *testing.T) {
 	HandleListTrustsSuccessfully(t)
 
 	count := 0
-	err := trusts.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := trusts.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := trusts.ExtractTrusts(page)
@@ -155,7 +156,7 @@ func TestListTrustsAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListTrustsSuccessfully(t)
 
-	allPages, err := trusts.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := trusts.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := trusts.ExtractTrusts(allPages)
 	th.AssertNoErr(t, err)
@@ -169,7 +170,7 @@ func TestListTrustsFiltered(t *testing.T) {
 	trustsListOpts := trusts.ListOpts{
 		TrustorUserID: "86c0d5",
 	}
-	allPages, err := trusts.List(client.ServiceClient(), trustsListOpts).AllPages()
+	allPages, err := trusts.List(client.ServiceClient(), trustsListOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := trusts.ExtractTrusts(allPages)
 	th.AssertNoErr(t, err)
@@ -182,7 +183,7 @@ func TestListTrustRoles(t *testing.T) {
 	HandleListTrustRolesSuccessfully(t)
 
 	count := 0
-	err := trusts.ListRoles(client.ServiceClient(), "987fe8").EachPage(func(page pagination.Page) (bool, error) {
+	err := trusts.ListRoles(client.ServiceClient(), "987fe8").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := trusts.ExtractRoles(page)
@@ -201,7 +202,7 @@ func TestListTrustRolesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListTrustRolesSuccessfully(t)
 
-	allPages, err := trusts.ListRoles(client.ServiceClient(), "987fe8").AllPages()
+	allPages, err := trusts.ListRoles(client.ServiceClient(), "987fe8").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := trusts.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -213,7 +214,7 @@ func TestGetTrustRole(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetTrustRoleSuccessfully(t)
 
-	role, err := trusts.GetRole(client.ServiceClient(), "987fe8", "c1648e").Extract()
+	role, err := trusts.GetRole(context.TODO(), client.ServiceClient(), "987fe8", "c1648e").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, FirstRole, *role)
@@ -224,6 +225,6 @@ func TestCheckTrustRole(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCheckTrustRoleSuccessfully(t)
 
-	err := trusts.CheckRole(client.ServiceClient(), "987fe8", "c1648e").ExtractErr()
+	err := trusts.CheckRole(context.TODO(), client.ServiceClient(), "987fe8", "c1648e").ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -54,7 +55,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	monitors.List(fake.ServiceClient(), monitors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	monitors.List(fake.ServiceClient(), monitors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := monitors.ExtractMonitors(page)
 		if err != nil {
@@ -97,7 +98,7 @@ func TestList(t *testing.T) {
 }
 
 func TestDelayMustBeGreaterOrEqualThanTimeout(t *testing.T) {
-	_, err := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{
+	_, err := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{
 		Type:          "HTTP",
 		Delay:         1,
 		Timeout:       10,
@@ -110,7 +111,7 @@ func TestDelayMustBeGreaterOrEqualThanTimeout(t *testing.T) {
 		t.Fatalf("Expected error, got none")
 	}
 
-	_, err = monitors.Update(fake.ServiceClient(), "453105b9-1754-413f-aab1-55f1af620750", monitors.UpdateOpts{
+	_, err = monitors.Update(context.TODO(), fake.ServiceClient(), "453105b9-1754-413f-aab1-55f1af620750", monitors.UpdateOpts{
 		Delay:   1,
 		Timeout: 10,
 	}).Extract()
@@ -165,7 +166,7 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	_, err := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{
+	_, err := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{
 		Type:          "HTTP",
 		TenantID:      "453105b9-1754-413f-aab1-55f1af620750",
 		Delay:         20,
@@ -179,11 +180,11 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{})
+	res := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = monitors.Create(fake.ServiceClient(), monitors.CreateOpts{Type: monitors.TypeHTTP})
+	res = monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{Type: monitors.TypeHTTP})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -219,7 +220,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	hm, err := monitors.Get(fake.ServiceClient(), "f3eeab00-8367-4524-b662-55e64d4cacb5").Extract()
+	hm, err := monitors.Get(context.TODO(), fake.ServiceClient(), "f3eeab00-8367-4524-b662-55e64d4cacb5").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "f3eeab00-8367-4524-b662-55e64d4cacb5", hm.ID)
@@ -283,7 +284,7 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	_, err := monitors.Update(fake.ServiceClient(), "b05e44b5-81f9-4551-b474-711a722698f7", monitors.UpdateOpts{
+	_, err := monitors.Update(context.TODO(), fake.ServiceClient(), "b05e44b5-81f9-4551-b474-711a722698f7", monitors.UpdateOpts{
 		Delay:         30,
 		Timeout:       20,
 		MaxRetries:    10,
@@ -305,6 +306,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := monitors.Delete(fake.ServiceClient(), "b05e44b5-81f9-4551-b474-711a722698f7")
+	res := monitors.Delete(context.TODO(), fake.ServiceClient(), "b05e44b5-81f9-4551-b474-711a722698f7")
 	th.AssertNoErr(t, res.Err)
 }

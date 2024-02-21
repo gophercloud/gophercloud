@@ -4,6 +4,7 @@
 package lbaas_v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestPoolsList(t *testing.T) {
 		t.Fatalf("Unable to create a loadbalancer client: %v", err)
 	}
 
-	allPages, err := pools.List(client, nil).AllPages()
+	allPages, err := pools.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list pools: %v", err)
 	}

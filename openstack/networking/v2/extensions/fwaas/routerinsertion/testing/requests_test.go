@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -65,7 +66,7 @@ func TestCreate(t *testing.T) {
 		RouterIDs:         []string{"8a3a0d6a-34b5-4a92-b65d-6375a4c1e9e8"},
 	}
 
-	_, err := firewalls.Create(fake.ServiceClient(), createOpts).Extract()
+	_, err := firewalls.Create(context.TODO(), fake.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -120,7 +121,7 @@ func TestCreateWithNoRouters(t *testing.T) {
 		RouterIDs:         []string{},
 	}
 
-	_, err := firewalls.Create(fake.ServiceClient(), createOpts).Extract()
+	_, err := firewalls.Create(context.TODO(), fake.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -178,7 +179,7 @@ func TestUpdate(t *testing.T) {
 		RouterIDs:         []string{"8a3a0d6a-34b5-4a92-b65d-6375a4c1e9e8"},
 	}
 
-	_, err := firewalls.Update(fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", updateOpts).Extract()
+	_, err := firewalls.Update(context.TODO(), fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -234,6 +235,6 @@ func TestUpdateWithNoRouters(t *testing.T) {
 		RouterIDs:         []string{},
 	}
 
-	_, err := firewalls.Update(fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", updateOpts).Extract()
+	_, err := firewalls.Update(context.TODO(), fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 }

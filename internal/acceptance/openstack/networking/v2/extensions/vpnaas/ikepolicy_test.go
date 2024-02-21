@@ -4,6 +4,7 @@
 package vpnaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestIKEPolicyList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := ikepolicies.List(client, nil).AllPages()
+	allPages, err := ikepolicies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := ikepolicies.ExtractPolicies(allPages)
@@ -37,7 +38,7 @@ func TestIKEPolicyCRUD(t *testing.T) {
 
 	tools.PrintResource(t, policy)
 
-	newPolicy, err := ikepolicies.Get(client, policy.ID).Extract()
+	newPolicy, err := ikepolicies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, newPolicy)
 
@@ -50,7 +51,7 @@ func TestIKEPolicyCRUD(t *testing.T) {
 			Value: 7000,
 		},
 	}
-	updatedPolicy, err := ikepolicies.Update(client, policy.ID, updateOpts).Extract()
+	updatedPolicy, err := ikepolicies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updatedPolicy)
 }

@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestPoliciesList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := policies.List(client, policies.ListOpts{}).AllPages()
+	allPages, err := policies.List(client, policies.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)
@@ -43,7 +44,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		},
 	}
 
-	policy, err := policies.Create(client, &createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), client, &createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, policy)
@@ -55,7 +56,7 @@ func TestPoliciesCRUD(t *testing.T) {
 
 	var listOpts policies.ListOpts
 
-	allPages, err := policies.List(client, listOpts).AllPages()
+	allPages, err := policies.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)
@@ -77,7 +78,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		"type__contains": "json",
 	}
 
-	allPages, err = policies.List(client, listOpts).AllPages()
+	allPages, err = policies.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err = policies.ExtractPolicies(allPages)
@@ -99,7 +100,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		"type__contains": "foobar",
 	}
 
-	allPages, err = policies.List(client, listOpts).AllPages()
+	allPages, err = policies.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err = policies.ExtractPolicies(allPages)
@@ -117,7 +118,7 @@ func TestPoliciesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, false, found)
 
-	gotPolicy, err := policies.Get(client, policy.ID).Extract()
+	gotPolicy, err := policies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, policy, gotPolicy)
 
@@ -129,7 +130,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		},
 	}
 
-	updatedPolicy, err := policies.Update(client, policy.ID, updateOpts).Extract()
+	updatedPolicy, err := policies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedPolicy)
@@ -139,6 +140,6 @@ func TestPoliciesCRUD(t *testing.T) {
 	th.AssertEquals(t, updatedPolicy.Blob, string(updateOpts.Blob))
 	th.AssertEquals(t, updatedPolicy.Extra["description"], updateOpts.Extra["description"])
 
-	err = policies.Delete(client, policy.ID).ExtractErr()
+	err = policies.Delete(context.TODO(), client, policy.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

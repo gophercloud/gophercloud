@@ -1,6 +1,7 @@
 package vpnaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -26,7 +27,7 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, routerID str
 		AdminStateUp: &iTrue,
 		RouterID:     routerID,
 	}
-	service, err := services.Create(client, createOpts).Extract()
+	service, err := services.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return service, err
 	}
@@ -44,7 +45,7 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, routerID str
 func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID string) {
 	t.Logf("Attempting to delete service: %s", serviceID)
 
-	err := services.Delete(client, serviceID).ExtractErr()
+	err := services.Delete(context.TODO(), client, serviceID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete service %s: %v", serviceID, err)
 	}
@@ -63,7 +64,7 @@ func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecp
 		Name: policyName,
 	}
 
-	policy, err := ipsecpolicies.Create(client, createOpts).Extract()
+	policy, err := ipsecpolicies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return policy, err
 	}
@@ -88,7 +89,7 @@ func CreateIKEPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ikepolic
 		PFS:                 ikepolicies.PFSGroup5,
 	}
 
-	policy, err := ikepolicies.Create(client, createOpts).Extract()
+	policy, err := ikepolicies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return policy, err
 	}
@@ -106,7 +107,7 @@ func CreateIKEPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ikepolic
 func DeleteIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
 	t.Logf("Attempting to delete IPSec policy: %s", policyID)
 
-	err := ipsecpolicies.Delete(client, policyID).ExtractErr()
+	err := ipsecpolicies.Delete(context.TODO(), client, policyID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete IPSec policy %s: %v", policyID, err)
 	}
@@ -120,7 +121,7 @@ func DeleteIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID
 func DeleteIKEPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
 	t.Logf("Attempting to delete policy: %s", policyID)
 
-	err := ikepolicies.Delete(client, policyID).ExtractErr()
+	err := ikepolicies.Delete(context.TODO(), client, policyID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete IKE policy %s: %v", policyID, err)
 	}
@@ -143,7 +144,7 @@ func CreateEndpointGroup(t *testing.T, client *gophercloud.ServiceClient) (*endp
 			"10.3.0.0/24",
 		},
 	}
-	group, err := endpointgroups.Create(client, createOpts).Extract()
+	group, err := endpointgroups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return group, err
 	}
@@ -169,7 +170,7 @@ func CreateEndpointGroupWithCIDR(t *testing.T, client *gophercloud.ServiceClient
 			cidr,
 		},
 	}
-	group, err := endpointgroups.Create(client, createOpts).Extract()
+	group, err := endpointgroups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return group, err
 	}
@@ -188,7 +189,7 @@ func CreateEndpointGroupWithCIDR(t *testing.T, client *gophercloud.ServiceClient
 func DeleteEndpointGroup(t *testing.T, client *gophercloud.ServiceClient, epGroupID string) {
 	t.Logf("Attempting to delete endpoint group: %s", epGroupID)
 
-	err := endpointgroups.Delete(client, epGroupID).ExtractErr()
+	err := endpointgroups.Delete(context.TODO(), client, epGroupID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete endpoint group %s: %v", epGroupID, err)
 	}
@@ -211,7 +212,7 @@ func CreateEndpointGroupWithSubnet(t *testing.T, client *gophercloud.ServiceClie
 			subnetID,
 		},
 	}
-	group, err := endpointgroups.Create(client, createOpts).Extract()
+	group, err := endpointgroups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return group, err
 	}
@@ -245,7 +246,7 @@ func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepo
 		PeerID:         "172.24.4.233",
 		MTU:            1500,
 	}
-	connection, err := siteconnections.Create(client, createOpts).Extract()
+	connection, err := siteconnections.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return connection, err
 	}
@@ -263,7 +264,7 @@ func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepo
 func DeleteSiteConnection(t *testing.T, client *gophercloud.ServiceClient, siteConnectionID string) {
 	t.Logf("Attempting to delete site connection: %s", siteConnectionID)
 
-	err := siteconnections.Delete(client, siteConnectionID).ExtractErr()
+	err := siteconnections.Delete(context.TODO(), client, siteConnectionID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete site connection %s: %v", siteConnectionID, err)
 	}

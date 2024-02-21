@@ -1,6 +1,7 @@
 package monitors
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -167,20 +168,20 @@ Here is an example config struct to use when creating a HTTP(S) Monitor:
 CreateOpts{Type: TypeHTTP, Delay: 20, Timeout: 10, MaxRetries: 3,
 HttpMethod: "HEAD", ExpectedCodes: "200", PoolID: "2c946bfc-1804-43ab-a2ff-58f6a762b505"}
 */
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToMonitorCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(rootURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, rootURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves a particular Health Monitor based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -240,14 +241,14 @@ func (opts UpdateOpts) ToMonitorUpdateMap() (map[string]interface{}, error) {
 
 // Update is an operation which modifies the attributes of the specified
 // Monitor.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToMonitorUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -255,8 +256,8 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 }
 
 // Delete will permanently delete a particular Monitor based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := c.Delete(resourceURL(c, id), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

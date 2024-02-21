@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -40,7 +41,7 @@ func TestGenericContainersCRUD(t *testing.T) {
 	err = ReplaceGenericContainerSecretRef(t, client, container, secret, secret1)
 	th.AssertNoErr(t, err)
 
-	allPages, err := containers.List(client, nil).AllPages()
+	allPages, err := containers.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allContainers, err := containers.ExtractContainers(allPages)
@@ -70,7 +71,7 @@ func TestCertificateContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Private Payload: %s", string(payload))
 
@@ -80,7 +81,7 @@ func TestCertificateContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err = secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Certificate Payload: %s", string(payload))
 
@@ -90,7 +91,7 @@ func TestCertificateContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err = secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Passphrase Payload: %s", string(payload))
 
@@ -114,7 +115,7 @@ func TestRSAContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Private Payload: %s", string(payload))
 
@@ -124,7 +125,7 @@ func TestRSAContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err = secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Public Payload: %s", string(payload))
 
@@ -134,7 +135,7 @@ func TestRSAContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err = secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Passphrase Payload: %s", string(payload))
 
@@ -167,7 +168,7 @@ func TestContainerConsumersCRUD(t *testing.T) {
 		URL:  "http://example.com",
 	}
 
-	container, err = containers.CreateConsumer(client, containerID, consumerCreateOpts).Extract()
+	container, err = containers.CreateConsumer(context.TODO(), client, containerID, consumerCreateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, container.Consumers)
 	th.AssertEquals(t, len(container.Consumers), 1)
@@ -177,12 +178,12 @@ func TestContainerConsumersCRUD(t *testing.T) {
 			URL:  "http://example.com",
 		}
 
-		container, err := containers.DeleteConsumer(client, containerID, deleteOpts).Extract()
+		container, err := containers.DeleteConsumer(context.TODO(), client, containerID, deleteOpts).Extract()
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, len(container.Consumers), 0)
 	}()
 
-	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages()
+	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allConsumers, err := containers.ExtractConsumers(allPages)

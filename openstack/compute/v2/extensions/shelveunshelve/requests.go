@@ -1,20 +1,22 @@
 package shelveunshelve
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions"
 )
 
 // Shelve is the operation responsible for shelving a Compute server.
-func Shelve(client *gophercloud.ServiceClient, id string) (r ShelveResult) {
-	resp, err := client.Post(extensions.ActionURL(client, id), map[string]interface{}{"shelve": nil}, nil, nil)
+func Shelve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveResult) {
+	resp, err := client.Post(ctx, extensions.ActionURL(client, id), map[string]interface{}{"shelve": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ShelveOffload is the operation responsible for Shelve-Offload a Compute server.
-func ShelveOffload(client *gophercloud.ServiceClient, id string) (r ShelveOffloadResult) {
-	resp, err := client.Post(extensions.ActionURL(client, id), map[string]interface{}{"shelveOffload": nil}, nil, nil)
+func ShelveOffload(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveOffloadResult) {
+	resp, err := client.Post(ctx, extensions.ActionURL(client, id), map[string]interface{}{"shelveOffload": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -48,13 +50,13 @@ func (opts UnshelveOpts) ToUnshelveMap() (map[string]interface{}, error) {
 }
 
 // Unshelve is the operation responsible for unshelve a Compute server.
-func Unshelve(client *gophercloud.ServiceClient, id string, opts UnshelveOptsBuilder) (r UnshelveResult) {
+func Unshelve(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UnshelveOptsBuilder) (r UnshelveResult) {
 	b, err := opts.ToUnshelveMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(extensions.ActionURL(client, id), b, nil, nil)
+	resp, err := client.Post(ctx, extensions.ActionURL(client, id), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

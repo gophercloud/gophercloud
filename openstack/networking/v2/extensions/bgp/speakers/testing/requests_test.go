@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,7 +29,8 @@ func TestList(t *testing.T) {
 	count := 0
 
 	speakers.List(fake.ServiceClient()).EachPage(
-		func(page pagination.Page) (bool, error) {
+		context.TODO(),
+		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
 			actual, err := speakers.ExtractBGPSpeakers(page)
 
@@ -55,7 +57,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, GetBGPSpeakerResult)
 	})
 
-	s, err := speakers.Get(fake.ServiceClient(), bgpSpeakerID).Extract()
+	s, err := speakers.Get(context.TODO(), fake.ServiceClient(), bgpSpeakerID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, *s, BGPSpeaker1)
 }
@@ -83,7 +85,7 @@ func TestCreate(t *testing.T) {
 		LocalAS:                       "2000",
 		Networks:                      []string{},
 	}
-	r, err := speakers.Create(fake.ServiceClient(), opts).Extract()
+	r, err := speakers.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.Name, opts.Name)
 	th.AssertEquals(t, r.LocalAS, 2000)
@@ -107,7 +109,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := speakers.Delete(fake.ServiceClient(), bgpSpeakerID).ExtractErr()
+	err := speakers.Delete(context.TODO(), fake.ServiceClient(), bgpSpeakerID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -144,7 +146,7 @@ func TestUpdate(t *testing.T) {
 		AdvertiseFloatingIPHostRoutes: true,
 	}
 
-	r, err := speakers.Update(fake.ServiceClient(), bgpSpeakerID, opts).Extract()
+	r, err := speakers.Update(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.Name, opts.Name)
 	th.AssertEquals(t, r.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
@@ -170,7 +172,7 @@ func TestAddBGPPeer(t *testing.T) {
 	})
 
 	opts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeerID}
-	r, err := speakers.AddBGPPeer(fake.ServiceClient(), bgpSpeakerID, opts).Extract()
+	r, err := speakers.AddBGPPeer(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpPeerID, r.BGPPeerID)
 }
@@ -191,7 +193,7 @@ func TestRemoveBGPPeer(t *testing.T) {
 	})
 
 	opts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeerID}
-	err := speakers.RemoveBGPPeer(fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
+	err := speakers.RemoveBGPPeer(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
 	th.AssertEquals(t, err, io.EOF)
 }
 
@@ -210,7 +212,8 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 
 	count := 0
 	speakers.GetAdvertisedRoutes(fake.ServiceClient(), bgpSpeakerID).EachPage(
-		func(page pagination.Page) (bool, error) {
+		context.TODO(),
+		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
 			actual, err := speakers.ExtractAdvertisedRoutes(page)
 
@@ -249,7 +252,7 @@ func TestAddGatewayNetwork(t *testing.T) {
 	})
 
 	opts := speakers.AddGatewayNetworkOpts{NetworkID: networkID}
-	r, err := speakers.AddGatewayNetwork(fake.ServiceClient(), bgpSpeakerID, opts).Extract()
+	r, err := speakers.AddGatewayNetwork(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.NetworkID, networkID)
 }
@@ -273,6 +276,6 @@ func TestRemoveGatewayNetwork(t *testing.T) {
 	})
 
 	opts := speakers.RemoveGatewayNetworkOpts{NetworkID: networkID}
-	err := speakers.RemoveGatewayNetwork(fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
+	err := speakers.RemoveGatewayNetwork(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
 	th.AssertEquals(t, err, io.EOF)
 }

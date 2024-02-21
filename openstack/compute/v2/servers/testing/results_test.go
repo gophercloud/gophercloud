@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"crypto/rsa"
 	"encoding/json"
 	"fmt"
@@ -105,7 +106,7 @@ func TestListAddressesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAddressListSuccessfully(t)
 
-	allPages, err := servers.ListAddresses(client.ServiceClient(), "asdfasdfasdf").AllPages()
+	allPages, err := servers.ListAddresses(client.ServiceClient(), "asdfasdfasdf").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	_, err = servers.ExtractAddresses(allPages)
 	th.AssertNoErr(t, err)

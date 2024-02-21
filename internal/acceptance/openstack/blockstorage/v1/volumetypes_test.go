@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestVolumeTypesList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := volumetypes.List(client).AllPages()
+	allPages, err := volumetypes.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve volume types: %v", err)
 	}

@@ -1,6 +1,8 @@
 package users
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	db "github.com/gophercloud/gophercloud/v2/openstack/db/v1/databases"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -65,13 +67,13 @@ func (opts BatchCreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
 // instance based on the configuration defined in CreateOpts. If databases are
 // assigned for a particular user, the user will be granted all privileges
 // for those specified databases. "root" is a reserved name and cannot be used.
-func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, instanceID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToUserCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(baseURL(client, instanceID), &b, nil, nil)
+	resp, err := client.Post(ctx, baseURL(client, instanceID), &b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -86,8 +88,8 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 }
 
 // Delete will permanently delete a user from a specified database instance.
-func Delete(client *gophercloud.ServiceClient, instanceID, userName string) (r DeleteResult) {
-	resp, err := client.Delete(userURL(client, instanceID, userName), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, instanceID, userName string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, userURL(client, instanceID, userName), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

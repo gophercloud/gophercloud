@@ -1,11 +1,15 @@
 package tags
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 // List all tags on a server.
-func List(client *gophercloud.ServiceClient, serverID string) (r ListResult) {
+func List(ctx context.Context, client *gophercloud.ServiceClient, serverID string) (r ListResult) {
 	url := listURL(client, serverID)
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -13,9 +17,9 @@ func List(client *gophercloud.ServiceClient, serverID string) (r ListResult) {
 }
 
 // Check if a tag exists on a server.
-func Check(client *gophercloud.ServiceClient, serverID, tag string) (r CheckResult) {
+func Check(ctx context.Context, client *gophercloud.ServiceClient, serverID, tag string) (r CheckResult) {
 	url := checkURL(client, serverID, tag)
-	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
+	resp, err := client.Get(ctx, url, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -38,14 +42,14 @@ func (opts ReplaceAllOpts) ToTagsReplaceAllMap() (map[string]interface{}, error)
 }
 
 // ReplaceAll replaces all Tags on a server.
-func ReplaceAll(client *gophercloud.ServiceClient, serverID string, opts ReplaceAllOptsBuilder) (r ReplaceAllResult) {
+func ReplaceAll(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts ReplaceAllOptsBuilder) (r ReplaceAllResult) {
 	b, err := opts.ToTagsReplaceAllMap()
 	url := replaceAllURL(client, serverID)
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(url, &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(ctx, url, &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -53,9 +57,9 @@ func ReplaceAll(client *gophercloud.ServiceClient, serverID string, opts Replace
 }
 
 // Add adds a new Tag on a server.
-func Add(client *gophercloud.ServiceClient, serverID, tag string) (r AddResult) {
+func Add(ctx context.Context, client *gophercloud.ServiceClient, serverID, tag string) (r AddResult) {
 	url := addURL(client, serverID, tag)
-	resp, err := client.Put(url, nil, nil, &gophercloud.RequestOpts{
+	resp, err := client.Put(ctx, url, nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -63,9 +67,9 @@ func Add(client *gophercloud.ServiceClient, serverID, tag string) (r AddResult) 
 }
 
 // Delete removes a tag from a server.
-func Delete(client *gophercloud.ServiceClient, serverID, tag string) (r DeleteResult) {
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, serverID, tag string) (r DeleteResult) {
 	url := deleteURL(client, serverID, tag)
-	resp, err := client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.Delete(ctx, url, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -73,9 +77,9 @@ func Delete(client *gophercloud.ServiceClient, serverID, tag string) (r DeleteRe
 }
 
 // DeleteAll removes all tag from a server.
-func DeleteAll(client *gophercloud.ServiceClient, serverID string) (r DeleteResult) {
+func DeleteAll(ctx context.Context, client *gophercloud.ServiceClient, serverID string) (r DeleteResult) {
 	url := deleteAllURL(client, serverID)
-	resp, err := client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.Delete(ctx, url, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

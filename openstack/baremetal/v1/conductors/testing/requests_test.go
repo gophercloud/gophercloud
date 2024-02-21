@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/conductors"
@@ -15,7 +16,7 @@ func TestListConductors(t *testing.T) {
 	HandleConductorListSuccessfully(t)
 
 	pages := 0
-	err := conductors.List(client.ServiceClient(), conductors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := conductors.List(client.ServiceClient(), conductors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := conductors.ExtractConductors(page)
@@ -45,7 +46,7 @@ func TestListDetailConductors(t *testing.T) {
 	HandleConductorListDetailSuccessfully(t)
 
 	pages := 0
-	err := conductors.List(client.ServiceClient(), conductors.ListOpts{Detail: true}).EachPage(func(page pagination.Page) (bool, error) {
+	err := conductors.List(client.ServiceClient(), conductors.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := conductors.ExtractConductors(page)
@@ -97,7 +98,7 @@ func TestGetConductor(t *testing.T) {
 	HandleConductorGetSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := conductors.Get(c, "1234asdf").Extract()
+	actual, err := conductors.Get(context.TODO(), c, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}

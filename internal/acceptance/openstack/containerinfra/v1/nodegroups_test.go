@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -49,7 +50,7 @@ func TestNodeGroupsCRUD(t *testing.T) {
 
 	// Wait for the node group to finish creating
 	err = tools.WaitForTimeout(func() (bool, error) {
-		ng, err := nodegroups.Get(client, clusterID, nodeGroupID).Extract()
+		ng, err := nodegroups.Get(context.TODO(), client, clusterID, nodeGroupID).Extract()
 		if err != nil {
 			return false, fmt.Errorf("error waiting for node group to create: %v", err)
 		}
@@ -62,7 +63,7 @@ func TestNodeGroupsCRUD(t *testing.T) {
 }
 
 func testNodeGroupsList(t *testing.T, client *gophercloud.ServiceClient, clusterID string) {
-	allPages, err := nodegroups.List(client, clusterID, nil).AllPages()
+	allPages, err := nodegroups.List(client, clusterID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNodeGroups, err := nodegroups.ExtractNodeGroups(allPages)
@@ -76,7 +77,7 @@ func testNodeGroupGet(t *testing.T, client *gophercloud.ServiceClient, clusterID
 	listOpts := nodegroups.ListOpts{
 		Role: "worker",
 	}
-	allPages, err := nodegroups.List(client, clusterID, listOpts).AllPages()
+	allPages, err := nodegroups.List(client, clusterID, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNodeGroups, err := nodegroups.ExtractNodeGroups(allPages)
@@ -87,7 +88,7 @@ func testNodeGroupGet(t *testing.T, client *gophercloud.ServiceClient, clusterID
 
 	ngID := allNodeGroups[0].UUID
 
-	ng, err := nodegroups.Get(client, clusterID, ngID).Extract()
+	ng, err := nodegroups.Get(context.TODO(), client, clusterID, ngID).Extract()
 	th.AssertNoErr(t, err)
 
 	// Should have got the same node group as from the list
@@ -105,7 +106,7 @@ func testNodeGroupCreate(t *testing.T, client *gophercloud.ServiceClient, cluste
 		NodeCount: &two,
 	}
 
-	ng, err := nodegroups.Create(client, clusterID, createOpts).Extract()
+	ng, err := nodegroups.Create(context.TODO(), client, clusterID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, name, ng.Name)
 
@@ -123,7 +124,7 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 			Value: 2,
 		},
 	}
-	ng, err := nodegroups.Update(client, clusterID, nodeGroupID, updateOpts).Extract()
+	ng, err := nodegroups.Update(context.TODO(), client, clusterID, nodeGroupID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, ng.MinNodeCount)
 
@@ -134,7 +135,7 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 			Value: 5,
 		},
 	}
-	ng, err = nodegroups.Update(client, clusterID, nodeGroupID, updateOpts).Extract()
+	ng, err = nodegroups.Update(context.TODO(), client, clusterID, nodeGroupID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
 	th.AssertEquals(t, 5, *ng.MaxNodeCount)
@@ -151,7 +152,7 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 			Value: 3,
 		},
 	}
-	ng, err = nodegroups.Update(client, clusterID, nodeGroupID, updateOpts).Extract()
+	ng, err = nodegroups.Update(context.TODO(), client, clusterID, nodeGroupID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
 	th.AssertEquals(t, 1, ng.MinNodeCount)
@@ -159,12 +160,12 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 }
 
 func testNodeGroupDelete(t *testing.T, client *gophercloud.ServiceClient, clusterID, nodeGroupID string) {
-	err := nodegroups.Delete(client, clusterID, nodeGroupID).ExtractErr()
+	err := nodegroups.Delete(context.TODO(), client, clusterID, nodeGroupID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Wait for the node group to be deleted
 	err = tools.WaitFor(func() (bool, error) {
-		_, err := nodegroups.Get(client, clusterID, nodeGroupID).Extract()
+		_, err := nodegroups.Get(context.TODO(), client, clusterID, nodeGroupID).Extract()
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			return true, nil
 		}

@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -31,20 +32,20 @@ func TestContainers(t *testing.T) {
 
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
-		res := containers.Create(client, cNames[i], nil)
+		res := containers.Create(context.TODO(), client, cNames[i], nil)
 		th.AssertNoErr(t, res.Err)
 	}
 	// Delete the numContainers containers after function completion.
 	defer func() {
 		for i := 0; i < len(cNames); i++ {
-			res := containers.Delete(client, cNames[i])
+			res := containers.Delete(context.TODO(), client, cNames[i])
 			th.AssertNoErr(t, res.Err)
 		}
 	}()
 
 	// List the numContainer names that were just created. To just list those,
 	// the 'prefix' parameter is used.
-	err = containers.List(client, &containers.ListOpts{Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
+	err = containers.List(client, &containers.ListOpts{Prefix: "gophercloud-test-container-"}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractInfo(page)
 		th.AssertNoErr(t, err)
 
@@ -58,7 +59,7 @@ func TestContainers(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// List the info for the numContainer containers that were created.
-	err = containers.List(client, &containers.ListOpts{Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
+	err = containers.List(client, &containers.ListOpts{Prefix: "gophercloud-test-container-"}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractNames(page)
 		th.AssertNoErr(t, err)
 		for _, n := range containerList {
@@ -86,7 +87,7 @@ func TestContainers(t *testing.T) {
 		ContainerSyncKey:  &empty,
 	}
 
-	updateres := containers.Update(client, cNames[0], opts)
+	updateres := containers.Update(context.TODO(), client, cNames[0], opts)
 	th.AssertNoErr(t, updateres.Err)
 	// After the tests are done, delete the metadata that was set.
 	defer func() {
@@ -101,7 +102,7 @@ func TestContainers(t *testing.T) {
 			ContainerWrite:    &empty,
 			DetectContentType: &iTrue,
 		}
-		res := containers.Update(client, cNames[0], opts)
+		res := containers.Update(context.TODO(), client, cNames[0], opts)
 		th.AssertNoErr(t, res.Err)
 
 		// confirm the metadata was removed
@@ -109,7 +110,7 @@ func TestContainers(t *testing.T) {
 			Newest: true,
 		}
 
-		resp := containers.Get(client, cNames[0], getOpts)
+		resp := containers.Get(context.TODO(), client, cNames[0], getOpts)
 		cm, err := resp.ExtractMetadata()
 		th.AssertNoErr(t, err)
 		for k := range metadata {
@@ -128,7 +129,7 @@ func TestContainers(t *testing.T) {
 		Newest: true,
 	}
 
-	resp := containers.Get(client, cNames[0], getOpts)
+	resp := containers.Get(context.TODO(), client, cNames[0], getOpts)
 	cm, err := resp.ExtractMetadata()
 	th.AssertNoErr(t, err)
 	for k := range metadata {
@@ -142,7 +143,7 @@ func TestContainers(t *testing.T) {
 	th.AssertEquals(t, write, strings.Join(container.Write, ","))
 
 	// Retrieve a container's timestamp
-	cHeaders, err := containers.Get(client, cNames[0], getOpts).Extract()
+	cHeaders, err := containers.Get(context.TODO(), client, cNames[0], getOpts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Container: Name [%s] Timestamp: [%f]\n", cNames[0], cHeaders.Timestamp)
 }
@@ -163,20 +164,20 @@ func TestListAllContainers(t *testing.T) {
 
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
-		res := containers.Create(client, cNames[i], nil)
+		res := containers.Create(context.TODO(), client, cNames[i], nil)
 		th.AssertNoErr(t, res.Err)
 	}
 	// Delete the numContainers containers after function completion.
 	defer func() {
 		for i := 0; i < len(cNames); i++ {
-			res := containers.Delete(client, cNames[i])
+			res := containers.Delete(context.TODO(), client, cNames[i])
 			th.AssertNoErr(t, res.Err)
 		}
 	}()
 
 	// List all the numContainer names that were just created. To just list those,
 	// the 'prefix' parameter is used.
-	allPages, err := containers.List(client, &containers.ListOpts{Limit: 5, Prefix: "gophercloud-test-container-"}).AllPages()
+	allPages, err := containers.List(client, &containers.ListOpts{Limit: 5, Prefix: "gophercloud-test-container-"}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	containerInfoList, err := containers.ExtractInfo(allPages)
 	th.AssertNoErr(t, err)
@@ -187,7 +188,7 @@ func TestListAllContainers(t *testing.T) {
 	th.AssertEquals(t, numContainers, len(containerInfoList))
 
 	// List the info for all the numContainer containers that were created.
-	allPages, err = containers.List(client, &containers.ListOpts{Limit: 2, Prefix: "gophercloud-test-container-"}).AllPages()
+	allPages, err = containers.List(client, &containers.ListOpts{Limit: 2, Prefix: "gophercloud-test-container-"}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	containerNamesList, err := containers.ExtractNames(allPages)
 	th.AssertNoErr(t, err)
@@ -213,7 +214,7 @@ func TestBulkDeleteContainers(t *testing.T) {
 
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
-		res := containers.Create(client, cNames[i], nil)
+		res := containers.Create(context.TODO(), client, cNames[i], nil)
 		th.AssertNoErr(t, res.Err)
 	}
 
@@ -223,13 +224,13 @@ func TestBulkDeleteContainers(t *testing.T) {
 		NumberDeleted:  numContainers,
 	}
 
-	resp, err := containers.BulkDelete(client, cNames).Extract()
+	resp, err := containers.BulkDelete(context.TODO(), client, cNames).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, *resp)
 	th.AssertDeepEquals(t, *resp, expectedResp)
 
 	for _, c := range cNames {
-		_, err = containers.Get(client, c, nil).Extract()
+		_, err = containers.Get(context.TODO(), client, c, nil).Extract()
 		th.AssertErr(t, err)
 	}
 }

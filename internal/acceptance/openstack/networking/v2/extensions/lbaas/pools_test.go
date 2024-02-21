@@ -4,6 +4,7 @@
 package lbaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestPoolsList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := pools.List(client, pools.ListOpts{}).AllPages()
+	allPages, err := pools.List(client, pools.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list pools: %v", err)
 	}
@@ -65,12 +66,12 @@ func TestPoolsCRUD(t *testing.T) {
 		LBMethod: pools.LBMethodLeastConnections,
 	}
 
-	_, err = pools.Update(client, pool.ID, updateOpts).Extract()
+	_, err = pools.Update(context.TODO(), client, pool.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update pool: %v", err)
 	}
 
-	newPool, err := pools.Get(client, pool.ID).Extract()
+	newPool, err := pools.Get(context.TODO(), client, pool.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get pool: %v", err)
 	}
@@ -110,12 +111,12 @@ func TestPoolsMonitors(t *testing.T) {
 	defer DeleteMonitor(t, client, monitor.ID)
 
 	t.Logf("Associating monitor %s with pool %s", monitor.ID, pool.ID)
-	if res := pools.AssociateMonitor(client, pool.ID, monitor.ID); res.Err != nil {
+	if res := pools.AssociateMonitor(context.TODO(), client, pool.ID, monitor.ID); res.Err != nil {
 		t.Fatalf("Unable to associate monitor to pool")
 	}
 
 	t.Logf("Disassociating monitor %s with pool %s", monitor.ID, pool.ID)
-	if res := pools.DisassociateMonitor(client, pool.ID, monitor.ID); res.Err != nil {
+	if res := pools.DisassociateMonitor(context.TODO(), client, pool.ID, monitor.ID); res.Err != nil {
 		t.Fatalf("Unable to disassociate monitor from pool")
 	}
 

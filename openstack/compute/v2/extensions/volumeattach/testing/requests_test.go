@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/volumeattach"
@@ -51,7 +52,7 @@ func TestList(t *testing.T) {
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
 	count := 0
-	err := volumeattach.List(client.ServiceClient(), serverID).EachPage(func(page pagination.Page) (bool, error) {
+	err := volumeattach.List(client.ServiceClient(), serverID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := volumeattach.ExtractVolumeAttachments(page)
 		th.AssertNoErr(t, err)
@@ -71,7 +72,7 @@ func TestCreate(t *testing.T) {
 
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	actual, err := volumeattach.Create(client.ServiceClient(), serverID, volumeattach.CreateOpts{
+	actual, err := volumeattach.Create(context.TODO(), client.ServiceClient(), serverID, volumeattach.CreateOpts{
 		Device:              "/dev/vdc",
 		VolumeID:            "a26887c6-c47b-4654-abb5-dfadf7d3f804",
 		Tag:                 iTag,
@@ -90,7 +91,7 @@ func TestGet(t *testing.T) {
 	aID := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	actual, err := volumeattach.Get(client.ServiceClient(), serverID, aID).Extract()
+	actual, err := volumeattach.Get(context.TODO(), client.ServiceClient(), serverID, aID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SecondVolumeAttachment, actual)
 }
@@ -104,6 +105,6 @@ func TestDelete(t *testing.T) {
 	aID := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	err := volumeattach.Delete(client.ServiceClient(), serverID, aID).ExtractErr()
+	err := volumeattach.Delete(context.TODO(), client.ServiceClient(), serverID, aID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

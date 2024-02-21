@@ -1,6 +1,10 @@
 package swauth
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 // AuthOptsBuilder describes struct types that can be accepted by the Auth call.
 type AuthOptsBuilder interface {
@@ -22,7 +26,7 @@ func (opts AuthOpts) ToAuthOptsMap() (map[string]string, error) {
 }
 
 // Auth performs an authentication request for a Swauth-based user.
-func Auth(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult) {
+func Auth(ctx context.Context, c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult) {
 	h := make(map[string]string)
 
 	if opts != nil {
@@ -37,7 +41,7 @@ func Auth(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult)
 		}
 	}
 
-	resp, err := c.Request("GET", getURL(c), &gophercloud.RequestOpts{
+	resp, err := c.Request(ctx, "GET", getURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})
@@ -47,8 +51,8 @@ func Auth(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult)
 
 // NewObjectStorageV1 creates a Swauth-authenticated *gophercloud.ServiceClient
 // client that can issue ObjectStorage-based API calls.
-func NewObjectStorageV1(pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gophercloud.ServiceClient, error) {
-	auth, err := Auth(pc, authOpts).Extract()
+func NewObjectStorageV1(ctx context.Context, pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gophercloud.ServiceClient, error) {
+	auth, err := Auth(ctx, pc, authOpts).Extract()
 	if err != nil {
 		return nil, err
 	}

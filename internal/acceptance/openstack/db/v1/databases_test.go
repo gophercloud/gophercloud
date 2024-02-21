@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -37,7 +38,7 @@ func TestDatabases(t *testing.T) {
 	}
 
 	// List all databases.
-	allPages, err := databases.List(client, instance.ID).AllPages()
+	allPages, err := databases.List(client, instance.ID).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list databases: %v", err)
 	}

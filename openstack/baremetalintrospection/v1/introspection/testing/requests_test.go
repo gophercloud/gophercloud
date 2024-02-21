@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetalintrospection/v1/introspection"
@@ -15,7 +16,7 @@ func TestListIntrospections(t *testing.T) {
 	HandleListIntrospectionsSuccessfully(t)
 
 	pages := 0
-	err := introspection.ListIntrospections(client.ServiceClient(), introspection.ListIntrospectionsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := introspection.ListIntrospections(client.ServiceClient(), introspection.ListIntrospectionsOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := introspection.ExtractIntrospections(page)
@@ -45,7 +46,7 @@ func TestGetIntrospectionStatus(t *testing.T) {
 	HandleGetIntrospectionStatusSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := introspection.GetIntrospectionStatus(c, "c244557e-899f-46fa-a1ff-5b2c6718616b").Extract()
+	actual, err := introspection.GetIntrospectionStatus(context.TODO(), c, "c244557e-899f-46fa-a1ff-5b2c6718616b").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -59,7 +60,7 @@ func TestStartIntrospection(t *testing.T) {
 	HandleStartIntrospectionSuccessfully(t)
 
 	c := client.ServiceClient()
-	err := introspection.StartIntrospection(c, "c244557e-899f-46fa-a1ff-5b2c6718616b", introspection.StartOpts{}).ExtractErr()
+	err := introspection.StartIntrospection(context.TODO(), c, "c244557e-899f-46fa-a1ff-5b2c6718616b", introspection.StartOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -69,7 +70,7 @@ func TestAbortIntrospection(t *testing.T) {
 	HandleAbortIntrospectionSuccessfully(t)
 
 	c := client.ServiceClient()
-	err := introspection.AbortIntrospection(c, "c244557e-899f-46fa-a1ff-5b2c6718616b").ExtractErr()
+	err := introspection.AbortIntrospection(context.TODO(), c, "c244557e-899f-46fa-a1ff-5b2c6718616b").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -79,7 +80,7 @@ func TestGetIntrospectionData(t *testing.T) {
 	HandleGetIntrospectionDataSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := introspection.GetIntrospectionData(c, "c244557e-899f-46fa-a1ff-5b2c6718616b").Extract()
+	actual, err := introspection.GetIntrospectionData(context.TODO(), c, "c244557e-899f-46fa-a1ff-5b2c6718616b").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -93,6 +94,6 @@ func TestReApplyIntrospection(t *testing.T) {
 	HandleReApplyIntrospectionSuccessfully(t)
 
 	c := client.ServiceClient()
-	err := introspection.ReApplyIntrospection(c, "c244557e-899f-46fa-a1ff-5b2c6718616b").ExtractErr()
+	err := introspection.ReApplyIntrospection(context.TODO(), c, "c244557e-899f-46fa-a1ff-5b2c6718616b").ExtractErr()
 	th.AssertNoErr(t, err)
 }

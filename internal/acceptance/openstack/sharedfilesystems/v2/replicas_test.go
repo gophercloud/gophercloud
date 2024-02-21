@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -40,7 +41,7 @@ func TestReplicaCreate(t *testing.T) {
 
 	defer DeleteReplica(t, client, replica)
 
-	created, err := replicas.Get(client, replica.ID).Extract()
+	created, err := replicas.Get(context.TODO(), client, replica.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve replica: %v", err)
 	}
@@ -77,14 +78,14 @@ func TestReplicaPromote(t *testing.T) {
 
 	defer DeleteReplica(t, client, replica)
 
-	created, err := replicas.Get(client, replica.ID).Extract()
+	created, err := replicas.Get(context.TODO(), client, replica.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve replica: %v", err)
 	}
 	tools.PrintResource(t, created)
 
 	// sync new replica
-	err = replicas.Resync(client, created.ID).ExtractErr()
+	err = replicas.Resync(context.TODO(), client, created.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	_, err = waitForReplicaState(t, client, created.ID, "in_sync")
 	if err != nil {
@@ -92,7 +93,7 @@ func TestReplicaPromote(t *testing.T) {
 	}
 
 	// promote new replica
-	err = replicas.Promote(client, created.ID, &replicas.PromoteOpts{}).ExtractErr()
+	err = replicas.Promote(context.TODO(), client, created.ID, &replicas.PromoteOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	_, err = waitForReplicaState(t, client, created.ID, "active")
@@ -115,13 +116,13 @@ func TestReplicaPromote(t *testing.T) {
 		t.Errorf("Unable to get old replica")
 	}
 	// sync old replica
-	err = replicas.Resync(client, oldReplicaID).ExtractErr()
+	err = replicas.Resync(context.TODO(), client, oldReplicaID).ExtractErr()
 	th.AssertNoErr(t, err)
 	_, err = waitForReplicaState(t, client, oldReplicaID, "in_sync")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}
-	err = replicas.Promote(client, oldReplicaID, &replicas.PromoteOpts{}).ExtractErr()
+	err = replicas.Promote(context.TODO(), client, oldReplicaID, &replicas.PromoteOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	_, err = waitForReplicaState(t, client, oldReplicaID, "active")
@@ -154,7 +155,7 @@ func TestReplicaExportLocations(t *testing.T) {
 	defer DeleteReplica(t, client, replica)
 
 	// this call should return empty list, since replica is not yet active
-	exportLocations, err := replicas.ListExportLocations(client, replica.ID).Extract()
+	exportLocations, err := replicas.ListExportLocations(context.TODO(), client, replica.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to list replica export locations: %v", err)
 	}
@@ -163,7 +164,7 @@ func TestReplicaExportLocations(t *testing.T) {
 	opts := replicas.ListOpts{
 		ShareID: share.ID,
 	}
-	pages, err := replicas.List(client, opts).AllPages()
+	pages, err := replicas.List(client, opts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allReplicas, err := replicas.ExtractReplicas(pages)
@@ -180,13 +181,13 @@ func TestReplicaExportLocations(t *testing.T) {
 		t.Errorf("Unable to get active replica")
 	}
 
-	exportLocations, err = replicas.ListExportLocations(client, activeReplicaID).Extract()
+	exportLocations, err = replicas.ListExportLocations(context.TODO(), client, activeReplicaID).Extract()
 	if err != nil {
 		t.Errorf("Unable to list replica export locations: %v", err)
 	}
 	tools.PrintResource(t, exportLocations)
 
-	exportLocation, err := replicas.GetExportLocation(client, activeReplicaID, exportLocations[0].ID).Extract()
+	exportLocation, err := replicas.GetExportLocation(context.TODO(), client, activeReplicaID, exportLocations[0].ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to get replica export location: %v", err)
 	}
@@ -256,7 +257,7 @@ func TestReplicaResetStatus(t *testing.T) {
 	resetStatusOpts := &replicas.ResetStatusOpts{
 		Status: "error",
 	}
-	err = replicas.ResetStatus(client, replica.ID, resetStatusOpts).ExtractErr()
+	err = replicas.ResetStatus(context.TODO(), client, replica.ID, resetStatusOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to reset a replica status: %v", err)
 	}
@@ -295,7 +296,7 @@ func TestReplicaForceDelete(t *testing.T) {
 
 	defer DeleteReplica(t, client, replica)
 
-	err = replicas.ForceDelete(client, replica.ID).ExtractErr()
+	err = replicas.ForceDelete(context.TODO(), client, replica.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to force delete a replica: %v", err)
 	}

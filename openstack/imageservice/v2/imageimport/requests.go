@@ -1,6 +1,10 @@
 package imageimport
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 // ImportMethod represents valid Import API method.
 type ImportMethod string
@@ -14,8 +18,8 @@ const (
 )
 
 // Get retrieves Import API information data.
-func Get(c *gophercloud.ServiceClient) (r GetResult) {
-	resp, err := c.Get(infoURL(c), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient) (r GetResult) {
+	resp, err := c.Get(ctx, infoURL(c), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -41,13 +45,13 @@ func (opts CreateOpts) ToImportCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new image import on the server.
-func Create(client *gophercloud.ServiceClient, imageID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, imageID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToImportCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(importURL(client, imageID), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, importURL(client, imageID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

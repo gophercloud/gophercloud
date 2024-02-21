@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -15,7 +16,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bare metal node: %s", name)
 
-	node, err := nodes.Create(client, nodes.CreateOpts{
+	node, err := nodes.Create(context.TODO(), client, nodes.CreateOpts{
 		Name:          name,
 		Driver:        "ipmi",
 		BootInterface: "ipxe",
@@ -35,7 +36,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 
 // DeleteNode deletes a bare metal node via its UUID.
 func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node) {
-	err := nodes.Delete(client, node.UUID).ExtractErr()
+	err := nodes.Delete(context.TODO(), client, node.UUID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete node %s: %s", node.UUID, err)
 	}
@@ -48,7 +49,7 @@ func CreateAllocation(t *testing.T, client *gophercloud.ServiceClient) (*allocat
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bare metal allocation: %s", name)
 
-	allocation, err := allocations.Create(client, allocations.CreateOpts{
+	allocation, err := allocations.Create(context.TODO(), client, allocations.CreateOpts{
 		Name:          name,
 		ResourceClass: "baremetal",
 	}).Extract()
@@ -58,7 +59,7 @@ func CreateAllocation(t *testing.T, client *gophercloud.ServiceClient) (*allocat
 
 // DeleteAllocation deletes a bare metal allocation via its UUID.
 func DeleteAllocation(t *testing.T, client *gophercloud.ServiceClient, allocation *allocations.Allocation) {
-	err := allocations.Delete(client, allocation.UUID).ExtractErr()
+	err := allocations.Delete(context.TODO(), client, allocation.UUID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete allocation %s: %s", allocation.UUID, err)
 	}
@@ -71,7 +72,7 @@ func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Nod
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bare metal node: %s", name)
 
-	node, err := nodes.Create(client, nodes.CreateOpts{
+	node, err := nodes.Create(context.TODO(), client, nodes.CreateOpts{
 		Name:          name,
 		Driver:        "fake-hardware",
 		BootInterface: "fake",
@@ -94,7 +95,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 	t.Logf("Attempting to create Port for Node: %s with Address: %s", node.UUID, mac)
 
 	iTrue := true
-	port, err := ports.Create(client, ports.CreateOpts{
+	port, err := ports.Create(context.TODO(), client, ports.CreateOpts{
 		NodeUUID:   node.UUID,
 		Address:    mac,
 		PXEEnabled: &iTrue,
@@ -105,7 +106,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 
 // DeletePort - deletes a port via its UUID
 func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Port) {
-	err := ports.Delete(client, port.UUID).ExtractErr()
+	err := ports.Delete(context.TODO(), client, port.UUID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete port %s: %s", port.UUID, err)
 	}

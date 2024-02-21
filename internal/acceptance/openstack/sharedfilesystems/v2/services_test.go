@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestServicesList(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	client.Microversion = "2.7"
-	allPages, err := services.List(client, nil).AllPages()
+	allPages, err := services.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)

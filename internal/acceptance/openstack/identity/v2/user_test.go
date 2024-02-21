@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestUsersList(t *testing.T) {
 	client, err := clients.NewIdentityV2AdminClient()
 	th.AssertNoErr(t, err)
 
-	allPages, err := users.List(client).AllPages()
+	allPages, err := users.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allPages)

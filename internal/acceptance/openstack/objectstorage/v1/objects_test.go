@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -40,13 +41,13 @@ func TestObjects(t *testing.T) {
 	opts := containers.CreateOpts{
 		TempURLKey: "super-secret",
 	}
-	header, err := containers.Create(client, cName, opts).Extract()
+	header, err := containers.Create(context.TODO(), client, cName, opts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Create object headers: %+v\n", header)
 
 	// Defer deletion of the container until after testing.
 	defer func() {
-		res := containers.Delete(client, cName)
+		res := containers.Delete(context.TODO(), client, cName)
 		th.AssertNoErr(t, res.Err)
 	}()
 
@@ -57,13 +58,13 @@ func TestObjects(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents[i]),
 		}
-		res := objects.Create(client, cName, oNames[i], createOpts)
+		res := objects.Create(context.TODO(), client, cName, oNames[i], createOpts)
 		th.AssertNoErr(t, res.Err)
 	}
 	// Delete the objects after testing.
 	defer func() {
 		for i := 0; i < numObjects; i++ {
-			res := objects.Delete(client, cName, oNames[i], nil)
+			res := objects.Delete(context.TODO(), client, cName, oNames[i], nil)
 			th.AssertNoErr(t, res.Err)
 		}
 	}()
@@ -73,7 +74,7 @@ func TestObjects(t *testing.T) {
 		Prefix: "test-object-",
 	}
 
-	allPages, err := objects.List(client, cName, listOpts).AllPages()
+	allPages, err := objects.List(client, cName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list objects: %v", err)
 	}
@@ -94,7 +95,7 @@ func TestObjects(t *testing.T) {
 	// Downloading the URL validates it (this cannot be done in unit tests).
 	objURLs := make([]string, numObjects)
 	for i := 0; i < numObjects; i++ {
-		objURLs[i], err = objects.CreateTempURL(client, cName, oNames[i], objects.CreateTempURLOpts{
+		objURLs[i], err = objects.CreateTempURL(context.TODO(), client, cName, oNames[i], objects.CreateTempURLOpts{
 			Method: http.MethodGet,
 			TTL:    180,
 		})
@@ -113,7 +114,7 @@ func TestObjects(t *testing.T) {
 		resp.Body.Close()
 
 		// custom Temp URL key with a sha256 digest and exact timestamp
-		objURLs[i], err = objects.CreateTempURL(client, cName, oNames[i], objects.CreateTempURLOpts{
+		objURLs[i], err = objects.CreateTempURL(context.TODO(), client, cName, oNames[i], objects.CreateTempURLOpts{
 			Method:     http.MethodGet,
 			Timestamp:  time.Now().UTC().Add(180 * time.Second),
 			Digest:     "sha256",
@@ -138,11 +139,11 @@ func TestObjects(t *testing.T) {
 	copyOpts := objects.CopyOpts{
 		Destination: "/" + cName + "/" + oNames[1],
 	}
-	copyres := objects.Copy(client, cName, oNames[0], copyOpts)
+	copyres := objects.Copy(context.TODO(), client, cName, oNames[0], copyOpts)
 	th.AssertNoErr(t, copyres.Err)
 
 	// Download one of the objects that was created above.
-	downloadres := objects.Download(client, cName, oNames[0], nil)
+	downloadres := objects.Download(context.TODO(), client, cName, oNames[0], nil)
 	th.AssertNoErr(t, downloadres.Err)
 
 	o1Content, err := downloadres.ExtractContent()
@@ -152,7 +153,7 @@ func TestObjects(t *testing.T) {
 	downloadOpts := objects.DownloadOpts{
 		Newest: true,
 	}
-	downloadres = objects.Download(client, cName, oNames[1], downloadOpts)
+	downloadres = objects.Download(context.TODO(), client, cName, oNames[1], downloadOpts)
 	th.AssertNoErr(t, downloadres.Err)
 	o2Content, err := downloadres.ExtractContent()
 	th.AssertNoErr(t, err)
@@ -172,7 +173,7 @@ func TestObjects(t *testing.T) {
 		ContentDisposition: &disposition,
 		ContentType:        &cType,
 	}
-	updateres := objects.Update(client, cName, oNames[0], updateOpts)
+	updateres := objects.Update(context.TODO(), client, cName, oNames[0], updateOpts)
 	th.AssertNoErr(t, updateres.Err)
 
 	// Delete the object's metadata after testing.
@@ -192,14 +193,14 @@ func TestObjects(t *testing.T) {
 			ContentType:        &cType,
 			DetectContentType:  &iTrue,
 		}
-		res := objects.Update(client, cName, oNames[0], updateOpts)
+		res := objects.Update(context.TODO(), client, cName, oNames[0], updateOpts)
 		th.AssertNoErr(t, res.Err)
 
 		// Retrieve an object's metadata.
 		getOpts := objects.GetOpts{
 			Newest: true,
 		}
-		resp := objects.Get(client, cName, oNames[0], getOpts)
+		resp := objects.Get(context.TODO(), client, cName, oNames[0], getOpts)
 		om, err := resp.ExtractMetadata()
 		th.AssertNoErr(t, err)
 		if len(om) > 0 {
@@ -215,7 +216,7 @@ func TestObjects(t *testing.T) {
 	getOpts := objects.GetOpts{
 		Newest: true,
 	}
-	resp := objects.Get(client, cName, oNames[0], getOpts)
+	resp := objects.Get(context.TODO(), client, cName, oNames[0], getOpts)
 	om, err := resp.ExtractMetadata()
 	th.AssertNoErr(t, err)
 	for k := range metadata {
@@ -254,13 +255,13 @@ func TestObjectsListSubdir(t *testing.T) {
 
 	// Create a container to hold the test objects.
 	cName := "test-container-" + tools.RandomFunnyStringNoSlash(8)
-	_, err = containers.Create(client, cName, nil).Extract()
+	_, err = containers.Create(context.TODO(), client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	// Defer deletion of the container until after testing.
 	defer func() {
 		t.Logf("Deleting container %s", cName)
-		res := containers.Delete(client, cName)
+		res := containers.Delete(context.TODO(), client, cName)
 		th.AssertNoErr(t, res.Err)
 	}()
 
@@ -271,14 +272,14 @@ func TestObjectsListSubdir(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents1[i]),
 		}
-		res := objects.Create(client, cName, oNames1[i], createOpts)
+		res := objects.Create(context.TODO(), client, cName, oNames1[i], createOpts)
 		th.AssertNoErr(t, res.Err)
 	}
 	// Delete the objects after testing.
 	defer func() {
 		for i := 0; i < numObjects; i++ {
 			t.Logf("Deleting object %s", oNames1[i])
-			res := objects.Delete(client, cName, oNames1[i], nil)
+			res := objects.Delete(context.TODO(), client, cName, oNames1[i], nil)
 			th.AssertNoErr(t, res.Err)
 		}
 	}()
@@ -289,14 +290,14 @@ func TestObjectsListSubdir(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents2[i]),
 		}
-		res := objects.Create(client, cName, oNames2[i], createOpts)
+		res := objects.Create(context.TODO(), client, cName, oNames2[i], createOpts)
 		th.AssertNoErr(t, res.Err)
 	}
 	// Delete the objects after testing.
 	defer func() {
 		for i := 0; i < numObjects; i++ {
 			t.Logf("Deleting object %s", oNames2[i])
-			res := objects.Delete(client, cName, oNames2[i], nil)
+			res := objects.Delete(context.TODO(), client, cName, oNames2[i], nil)
 			th.AssertNoErr(t, res.Err)
 		}
 	}()
@@ -305,7 +306,7 @@ func TestObjectsListSubdir(t *testing.T) {
 		Delimiter: "/",
 	}
 
-	allPages, err := objects.List(client, cName, listOpts).AllPages()
+	allPages, err := objects.List(client, cName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -334,7 +335,7 @@ func TestObjectsListSubdir(t *testing.T) {
 		Prefix:    cSubdir2,
 	}
 
-	allPages, err = objects.List(client, cName, listOpts).AllPages()
+	allPages, err = objects.List(client, cName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -371,13 +372,13 @@ func TestObjectsBulkDelete(t *testing.T) {
 
 	// Create a container to hold the test objects.
 	cName := "test-container-" + tools.RandomFunnyStringNoSlash(8)
-	_, err = containers.Create(client, cName, nil).Extract()
+	_, err = containers.Create(context.TODO(), client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	// Defer deletion of the container until after testing.
 	defer func() {
 		t.Logf("Deleting container %s", cName)
-		res := containers.Delete(client, cName)
+		res := containers.Delete(context.TODO(), client, cName)
 		th.AssertNoErr(t, res.Err)
 	}()
 
@@ -388,7 +389,7 @@ func TestObjectsBulkDelete(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents1[i]),
 		}
-		res := objects.Create(client, cName, oNames1[i], createOpts)
+		res := objects.Create(context.TODO(), client, cName, oNames1[i], createOpts)
 		th.AssertNoErr(t, res.Err)
 	}
 
@@ -398,7 +399,7 @@ func TestObjectsBulkDelete(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents2[i]),
 		}
-		res := objects.Create(client, cName, oNames2[i], createOpts)
+		res := objects.Create(context.TODO(), client, cName, oNames2[i], createOpts)
 		th.AssertNoErr(t, res.Err)
 	}
 
@@ -409,7 +410,7 @@ func TestObjectsBulkDelete(t *testing.T) {
 		NumberDeleted:  numObjects * 2,
 	}
 
-	resp, err := objects.BulkDelete(client, cName, append(oNames1, oNames2...)).Extract()
+	resp, err := objects.BulkDelete(context.TODO(), client, cName, append(oNames1, oNames2...)).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, *resp, expectedResp)
 
@@ -418,7 +419,7 @@ func TestObjectsBulkDelete(t *testing.T) {
 		Delimiter: "/",
 	}
 
-	allPages, err := objects.List(client, cName, listOpts).AllPages()
+	allPages, err := objects.List(client, cName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatal(err)
 	}

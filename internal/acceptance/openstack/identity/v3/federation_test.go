@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -17,7 +18,7 @@ func TestListMappings(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := federation.ListMappings(client).AllPages()
+	allPages, err := federation.ListMappings(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	mappings, err := federation.ExtractMappings(allPages)
@@ -65,12 +66,12 @@ func TestMappingsCRUD(t *testing.T) {
 		},
 	}
 
-	createdMapping, err := federation.CreateMapping(client, mappingName, createOpts).Extract()
+	createdMapping, err := federation.CreateMapping(context.TODO(), client, mappingName, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(createOpts.Rules), len(createdMapping.Rules))
 	th.CheckDeepEquals(t, createOpts.Rules[0], createdMapping.Rules[0])
 
-	mapping, err := federation.GetMapping(client, mappingName).Extract()
+	mapping, err := federation.GetMapping(context.TODO(), client, mappingName).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(createOpts.Rules), len(mapping.Rules))
 	th.CheckDeepEquals(t, createOpts.Rules[0], mapping.Rules[0])
@@ -106,15 +107,15 @@ func TestMappingsCRUD(t *testing.T) {
 		},
 	}
 
-	updatedMapping, err := federation.UpdateMapping(client, mappingName, updateOpts).Extract()
+	updatedMapping, err := federation.UpdateMapping(context.TODO(), client, mappingName, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(updateOpts.Rules), len(updatedMapping.Rules))
 	th.CheckDeepEquals(t, updateOpts.Rules[0], updatedMapping.Rules[0])
 
-	err = federation.DeleteMapping(client, mappingName).ExtractErr()
+	err = federation.DeleteMapping(context.TODO(), client, mappingName).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	resp := federation.GetMapping(client, mappingName)
+	resp := federation.GetMapping(context.TODO(), client, mappingName)
 	th.AssertErr(t, resp.Err)
 	_, ok := resp.Err.(gophercloud.ErrDefault404)
 	th.AssertEquals(t, true, ok)

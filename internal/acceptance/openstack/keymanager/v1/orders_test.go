@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -32,11 +33,11 @@ func TestOrdersCRUD(t *testing.T) {
 	payloadOpts := secrets.GetPayloadOpts{
 		PayloadContentType: "application/octet-stream",
 	}
-	payload, err := secrets.GetPayload(client, secretID, payloadOpts).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, payloadOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, payload)
 
-	allPages, err := orders.List(client, nil).AllPages()
+	allPages, err := orders.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allOrders, err := orders.ExtractOrders(allPages)
@@ -67,7 +68,7 @@ func TestOrdersAsymmetric(t *testing.T) {
 	containerID, err := ParseID(order.ContainerRef)
 	th.AssertNoErr(t, err)
 
-	container, err := containers.Get(client, containerID).Extract()
+	container, err := containers.Get(context.TODO(), client, containerID).Extract()
 	th.AssertNoErr(t, err)
 
 	for _, v := range container.SecretRefs {
@@ -78,7 +79,7 @@ func TestOrdersAsymmetric(t *testing.T) {
 			PayloadContentType: "application/octet-stream",
 		}
 
-		payload, err := secrets.GetPayload(client, secretID, payloadOpts).Extract()
+		payload, err := secrets.GetPayload(context.TODO(), client, secretID, payloadOpts).Extract()
 		th.AssertNoErr(t, err)
 		tools.PrintResource(t, string(payload))
 	}

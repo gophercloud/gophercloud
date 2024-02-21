@@ -1,13 +1,15 @@
 package migrate
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions"
 )
 
 // Migrate will initiate a migration of the instance to another host.
-func Migrate(client *gophercloud.ServiceClient, id string) (r MigrateResult) {
-	resp, err := client.Post(extensions.ActionURL(client, id), map[string]interface{}{"migrate": nil}, nil, nil)
+func Migrate(ctx context.Context, client *gophercloud.ServiceClient, id string) (r MigrateResult) {
+	resp, err := client.Post(ctx, extensions.ActionURL(client, id), map[string]interface{}{"migrate": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -41,13 +43,13 @@ func (opts LiveMigrateOpts) ToLiveMigrateMap() (map[string]interface{}, error) {
 }
 
 // LiveMigrate will initiate a live-migration (without rebooting) of the instance to another host.
-func LiveMigrate(client *gophercloud.ServiceClient, id string, opts LiveMigrateOptsBuilder) (r MigrateResult) {
+func LiveMigrate(ctx context.Context, client *gophercloud.ServiceClient, id string, opts LiveMigrateOptsBuilder) (r MigrateResult) {
 	b, err := opts.ToLiveMigrateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(extensions.ActionURL(client, id), b, nil, nil)
+	resp, err := client.Post(ctx, extensions.ActionURL(client, id), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

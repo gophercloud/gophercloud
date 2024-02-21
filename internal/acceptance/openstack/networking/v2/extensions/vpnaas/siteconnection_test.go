@@ -4,6 +4,7 @@
 package vpnaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestConnectionList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := siteconnections.List(client, nil).AllPages()
+	allPages, err := siteconnections.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allConnections, err := siteconnections.ExtractConnections(allPages)
@@ -54,13 +55,13 @@ func TestConnectionCRUD(t *testing.T) {
 		SubnetID: subnet.ID,
 	}
 
-	_, err = routers.AddInterface(client, router.ID, aiOpts).Extract()
+	_, err = routers.AddInterface(context.TODO(), client, router.ID, aiOpts).Extract()
 	th.AssertNoErr(t, err)
 	defer func() {
 		riOpts := routers.RemoveInterfaceOpts{
 			SubnetID: subnet.ID,
 		}
-		routers.RemoveInterface(client, router.ID, riOpts)
+		routers.RemoveInterface(context.TODO(), client, router.ID, riOpts)
 	}()
 
 	// Create all needed resources for the connection
@@ -88,7 +89,7 @@ func TestConnectionCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSiteConnection(t, client, conn.ID)
 
-	newConnection, err := siteconnections.Get(client, conn.ID).Extract()
+	newConnection, err := siteconnections.Get(context.TODO(), client, conn.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, conn)

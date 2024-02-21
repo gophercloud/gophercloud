@@ -4,6 +4,7 @@
 package portsbinding
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -64,11 +65,11 @@ func TestPortsbindingCRUD(t *testing.T) {
 
 	var newPort PortWithBindingExt
 
-	_, err = ports.Update(client, port.ID, finalUpdateOpts).Extract()
+	_, err = ports.Update(context.TODO(), client, port.ID, finalUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Read the updated port
-	err = ports.Get(client, port.ID).ExtractInto(&newPort)
+	err = ports.Get(context.TODO(), client, port.ID).ExtractInto(&newPort)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)

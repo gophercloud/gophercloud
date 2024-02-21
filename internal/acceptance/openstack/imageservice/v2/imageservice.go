@@ -3,6 +3,7 @@
 package v2
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"os"
@@ -41,12 +42,12 @@ func CreateEmptyImage(t *testing.T, client *gophercloud.ServiceClient) (*images.
 		Tags: []string{"foo", "bar", "baz"},
 	}
 
-	image, err := images.Create(client, createOpts).Extract()
+	image, err := images.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return image, err
 	}
 
-	newImage, err := images.Get(client, image.ID).Extract()
+	newImage, err := images.Get(context.TODO(), client, image.ID).Extract()
 	if err != nil {
 		return image, err
 	}
@@ -62,7 +63,7 @@ func CreateEmptyImage(t *testing.T, client *gophercloud.ServiceClient) (*images.
 // A fatal error will occur if the image failed to delete. This works best when
 // used as a deferred function.
 func DeleteImage(t *testing.T, client *gophercloud.ServiceClient, image *images.Image) {
-	err := images.Delete(client, image.ID).ExtractErr()
+	err := images.Delete(context.TODO(), client, image.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete image %s: %v", image.ID, err)
 	}
@@ -88,12 +89,12 @@ func CreateTask(t *testing.T, client *gophercloud.ServiceClient, imageURL string
 			"import_from":        imageURL,
 		},
 	}
-	task, err := tasks.Create(client, opts).Extract()
+	task, err := tasks.Create(context.TODO(), client, opts).Extract()
 	if err != nil {
 		return nil, err
 	}
 
-	newTask, err := tasks.Get(client, task.ID).Extract()
+	newTask, err := tasks.Get(context.TODO(), client, task.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +105,7 @@ func CreateTask(t *testing.T, client *gophercloud.ServiceClient, imageURL string
 // GetImportInfo will retrieve Import API information.
 func GetImportInfo(t *testing.T, client *gophercloud.ServiceClient) (*imageimport.ImportInfo, error) {
 	t.Log("Attempting to get the Imageservice Import API information")
-	importInfo, err := imageimport.Get(client).Extract()
+	importInfo, err := imageimport.Get(context.TODO(), client).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +121,7 @@ func StageImage(t *testing.T, client *gophercloud.ServiceClient, filepath, image
 	}
 	defer imageData.Close()
 
-	return imagedata.Stage(client, imageID, imageData).ExtractErr()
+	return imagedata.Stage(context.TODO(), client, imageID, imageData).ExtractErr()
 }
 
 // DownloadImageFileFromURL will download an image from the specified URL and
@@ -166,5 +167,5 @@ func ImportImage(t *testing.T, client *gophercloud.ServiceClient, imageID string
 	}
 
 	t.Logf("Attempting to import image data for %s from %s", imageID, importOpts.URI)
-	return imageimport.Create(client, imageID, importOpts).ExtractErr()
+	return imageimport.Create(context.TODO(), client, imageID, importOpts).ExtractErr()
 }

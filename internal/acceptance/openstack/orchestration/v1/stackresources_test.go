@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -20,11 +21,11 @@ func TestStackResources(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteStack(t, client, stack.Name, stack.ID)
 
-	resource, err := stackresources.Get(client, stack.Name, stack.ID, basicTemplateResourceName).Extract()
+	resource, err := stackresources.Get(context.TODO(), client, stack.Name, stack.ID, basicTemplateResourceName).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, resource)
 
-	metadata, err := stackresources.Metadata(client, stack.Name, stack.ID, basicTemplateResourceName).Extract()
+	metadata, err := stackresources.Metadata(context.TODO(), client, stack.Name, stack.ID, basicTemplateResourceName).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
 
@@ -33,15 +34,15 @@ func TestStackResources(t *testing.T) {
 		ResourceStatusReason: "Wrong security policy is detected.",
 	}
 
-	err = stackresources.MarkUnhealthy(client, stack.Name, stack.ID, basicTemplateResourceName, markUnhealthyOpts).ExtractErr()
+	err = stackresources.MarkUnhealthy(context.TODO(), client, stack.Name, stack.ID, basicTemplateResourceName, markUnhealthyOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	unhealthyResource, err := stackresources.Get(client, stack.Name, stack.ID, basicTemplateResourceName).Extract()
+	unhealthyResource, err := stackresources.Get(context.TODO(), client, stack.Name, stack.ID, basicTemplateResourceName).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "CHECK_FAILED", unhealthyResource.Status)
 	tools.PrintResource(t, unhealthyResource)
 
-	allPages, err := stackresources.List(client, stack.Name, stack.ID, nil).AllPages()
+	allPages, err := stackresources.List(client, stack.Name, stack.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allResources, err := stackresources.ExtractResources(allPages)
 	th.AssertNoErr(t, err)

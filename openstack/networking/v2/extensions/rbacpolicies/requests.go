@@ -1,6 +1,8 @@
 package rbacpolicies
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -58,8 +60,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific rbac policy based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -100,20 +102,20 @@ func (opts CreateOpts) ToRBACPolicyCreateMap() (map[string]interface{}, error) {
 //
 // The tenant ID that is contained in the URI is the tenant that creates the
 // rbac-policy.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRBACPolicyCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(createURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, createURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete accepts a unique ID and deletes the rbac-policy associated with it.
-func Delete(c *gophercloud.ServiceClient, rbacPolicyID string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, rbacPolicyID), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, rbacPolicyID string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, deleteURL(c, rbacPolicyID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -136,13 +138,13 @@ func (opts UpdateOpts) ToRBACPolicyUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing rbac-policy using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, rbacPolicyID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, rbacPolicyID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRBACPolicyUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, rbacPolicyID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, updateURL(c, rbacPolicyID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

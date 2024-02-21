@@ -4,6 +4,7 @@
 package rbacpolicies
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -56,12 +57,12 @@ func TestRBACPolicyCRUD(t *testing.T) {
 		TargetTenant: project2.ID,
 	}
 
-	_, err = rbacpolicies.Update(client, rbacPolicy.ID, updateOpts).Extract()
+	_, err = rbacpolicies.Update(context.TODO(), client, rbacPolicy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Get the rbac-policy by ID
 	t.Logf("Get rbac_policy by ID")
-	newrbacPolicy, err := rbacpolicies.Get(client, rbacPolicy.ID).Extract()
+	newrbacPolicy, err := rbacpolicies.Get(context.TODO(), client, rbacPolicy.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newrbacPolicy)
@@ -79,7 +80,7 @@ func TestRBACPolicyList(t *testing.T) {
 
 	var allRBACPolicies []rbacPolicy
 
-	allPages, err := rbacpolicies.List(client, nil).AllPages()
+	allPages, err := rbacpolicies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = rbacpolicies.ExtractRBACPolicesInto(allPages, &allRBACPolicies)

@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	defer DeletePolicy(t, client, policy.ID)
 
 	// Test listing policies
-	allPages, err := policies.List(client, nil).AllPages()
+	allPages, err := policies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)
@@ -38,7 +39,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	// Test Get policy
-	getPolicy, err := policies.Get(client, policy.ID).Extract()
+	getPolicy, err := policies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getPolicy)
 
@@ -48,7 +49,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	}
 
 	t.Logf("Attempting to update policy: %s", policy.ID)
-	updatePolicy, err := policies.Update(client, policy.ID, updateOpts).Extract()
+	updatePolicy, err := policies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatePolicy)
@@ -60,7 +61,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		Spec: TestPolicySpec,
 	}
 
-	validatePolicy, err := policies.Validate(client, validateOpts).Extract()
+	validatePolicy, err := policies.Validate(context.TODO(), client, validateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, validatePolicy)

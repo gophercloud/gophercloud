@@ -1,6 +1,8 @@
 package apiversions
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -13,8 +15,8 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get will get a specific API version, specified by major ID.
-func Get(client *gophercloud.ServiceClient, v string) (r GetResult) {
-	resp, err := client.Get(getURL(client, v), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, v string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, v), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

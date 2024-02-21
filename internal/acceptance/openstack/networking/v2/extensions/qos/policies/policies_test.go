@@ -4,6 +4,7 @@
 package policies
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "qos").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
 	if err != nil {
 		t.Skip("This test requires qos Neutron extension")
 	}
@@ -37,17 +38,17 @@ func TestPoliciesCRUD(t *testing.T) {
 		Description: &newDescription,
 	}
 
-	_, err = policies.Update(client, policy.ID, updateOpts).Extract()
+	_, err = policies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newPolicy, err := policies.Get(client, policy.ID).Extract()
+	newPolicy, err := policies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPolicy)
 	th.AssertEquals(t, newPolicy.Name, newName)
 	th.AssertEquals(t, newPolicy.Description, newDescription)
 
-	allPages, err := policies.List(client, nil).AllPages()
+	allPages, err := policies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)

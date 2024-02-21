@@ -4,6 +4,7 @@
 package fwaas_v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -83,7 +84,7 @@ func TestGroupCRUD(t *testing.T) {
 
 	t.Logf("Egress policy removed from firewall group %s", updatedGroup.ID)
 
-	allPages, err := groups.List(client, nil).AllPages()
+	allPages, err := groups.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allPages)

@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -46,19 +47,19 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 		},
 	}
 
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	roles, err := tokens.Get(client, token.ID).ExtractRoles()
+	roles, err := tokens.Get(context.TODO(), client, token.ID).ExtractRoles()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, roles)
 
-	project, err := tokens.Get(client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -85,9 +86,9 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 		ExpiresAt:   &expiresAt,
 	}
 
-	applicationCredential, err := applicationcredentials.Create(client, user.ID, createOpts).Extract()
+	applicationCredential, err := applicationcredentials.Create(context.TODO(), client, user.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
-	defer applicationcredentials.Delete(client, user.ID, applicationCredential.ID)
+	defer applicationcredentials.Delete(context.TODO(), client, user.ID, applicationCredential.ID)
 	tools.PrintResource(t, applicationCredential)
 
 	if applicationCredential.Secret == "" {
@@ -113,7 +114,7 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	}
 
 	// Get an application credential
-	getApplicationCredential, err := applicationcredentials.Get(client, user.ID, applicationCredential.ID).Extract()
+	getApplicationCredential, err := applicationcredentials.Get(context.TODO(), client, user.ID, applicationCredential.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getApplicationCredential)
 
@@ -147,9 +148,9 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 		Secret:       "myprecious",
 	}
 
-	newApplicationCredential, err := applicationcredentials.Create(client, user.ID, createOpts).Extract()
+	newApplicationCredential, err := applicationcredentials.Create(context.TODO(), client, user.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
-	defer applicationcredentials.Delete(client, user.ID, newApplicationCredential.ID)
+	defer applicationcredentials.Delete(context.TODO(), client, user.ID, newApplicationCredential.ID)
 	tools.PrintResource(t, newApplicationCredential)
 
 	th.AssertEquals(t, newApplicationCredential.ExpiresAt, time.Time{})
@@ -190,11 +191,11 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 		},
 	}
 
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
@@ -223,9 +224,9 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 		ExpiresAt:   &expiresAt,
 	}
 
-	applicationCredential, err := applicationcredentials.Create(client, user.ID, createOpts).Extract()
+	applicationCredential, err := applicationcredentials.Create(context.TODO(), client, user.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
-	defer applicationcredentials.Delete(client, user.ID, applicationCredential.ID)
+	defer applicationcredentials.Delete(context.TODO(), client, user.ID, applicationCredential.ID)
 	tools.PrintResource(t, applicationCredential)
 
 	if applicationCredential.Secret == "" {
@@ -244,7 +245,7 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 	}
 
 	// Get an application credential
-	getApplicationCredential, err := applicationcredentials.Get(client, user.ID, applicationCredential.ID).Extract()
+	getApplicationCredential, err := applicationcredentials.Get(context.TODO(), client, user.ID, applicationCredential.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getApplicationCredential)
 
@@ -264,7 +265,7 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 	}
 
 	// test list
-	allPages, err := applicationcredentials.ListAccessRules(client, user.ID).AllPages()
+	allPages, err := applicationcredentials.ListAccessRules(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := applicationcredentials.ExtractAccessRules(allPages)
 	th.AssertNoErr(t, err)
@@ -272,21 +273,21 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 
 	// test individual get
 	for i, rule := range actual {
-		getRule, err := applicationcredentials.GetAccessRule(client, user.ID, rule.ID).Extract()
+		getRule, err := applicationcredentials.GetAccessRule(context.TODO(), client, user.ID, rule.ID).Extract()
 		th.AssertNoErr(t, err)
 		th.CheckDeepEquals(t, actual[i], *getRule)
 	}
 
-	res := applicationcredentials.Delete(client, user.ID, applicationCredential.ID)
+	res := applicationcredentials.Delete(context.TODO(), client, user.ID, applicationCredential.ID)
 	th.AssertNoErr(t, res.Err)
 
 	// test delete
 	for _, rule := range actual {
-		res := applicationcredentials.DeleteAccessRule(client, user.ID, rule.ID)
+		res := applicationcredentials.DeleteAccessRule(context.TODO(), client, user.ID, rule.ID)
 		th.AssertNoErr(t, res.Err)
 	}
 
-	allPages, err = applicationcredentials.ListAccessRules(client, user.ID).AllPages()
+	allPages, err = applicationcredentials.ListAccessRules(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err = applicationcredentials.ExtractAccessRules(allPages)
 	th.AssertNoErr(t, err)

@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"testing"
@@ -26,13 +27,13 @@ func createNetworkWithTags(t *testing.T, client *gophercloud.ServiceClient, tags
 		// docs say list of tags, but it's a set e.g no duplicates
 		Tags: tags,
 	}
-	rtags, err := attributestags.ReplaceAll(client, "networks", network.ID, tagReplaceAllOpts).Extract()
+	rtags, err := attributestags.ReplaceAll(context.TODO(), client, "networks", network.ID, tagReplaceAllOpts).Extract()
 	th.AssertNoErr(t, err)
 	sort.Strings(rtags) // Ensure ordering, older OpenStack versions aren't sorted...
 	th.AssertDeepEquals(t, rtags, tags)
 
 	// Verify the tags are also set in the object Get response
-	gnetwork, err := networks.Get(client, network.ID).Extract()
+	gnetwork, err := networks.Get(context.TODO(), client, network.ID).Extract()
 	th.AssertNoErr(t, err)
 	rtags = gnetwork.Tags
 	sort.Strings(rtags)
@@ -49,36 +50,36 @@ func TestTags(t *testing.T) {
 	defer networking.DeleteNetwork(t, client, network.ID)
 
 	// Add a tag
-	err = attributestags.Add(client, "networks", network.ID, "d").ExtractErr()
+	err = attributestags.Add(context.TODO(), client, "networks", network.ID, "d").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Delete a tag
-	err = attributestags.Delete(client, "networks", network.ID, "a").ExtractErr()
+	err = attributestags.Delete(context.TODO(), client, "networks", network.ID, "a").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Verify expected tags are set in the List response
-	tags, err := attributestags.List(client, "networks", network.ID).Extract()
+	tags, err := attributestags.List(context.TODO(), client, "networks", network.ID).Extract()
 	th.AssertNoErr(t, err)
 	sort.Strings(tags)
 	th.AssertDeepEquals(t, []string{"b", "c", "d"}, tags)
 
 	// Confirm tags exist/don't exist
-	exists, err := attributestags.Confirm(client, "networks", network.ID, "d").Extract()
+	exists, err := attributestags.Confirm(context.TODO(), client, "networks", network.ID, "d").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, exists)
-	noexists, err := attributestags.Confirm(client, "networks", network.ID, "a").Extract()
+	noexists, err := attributestags.Confirm(context.TODO(), client, "networks", network.ID, "a").Extract()
 	th.AssertEquals(t, false, noexists)
 
 	// Delete all tags
-	err = attributestags.DeleteAll(client, "networks", network.ID).ExtractErr()
+	err = attributestags.DeleteAll(context.TODO(), client, "networks", network.ID).ExtractErr()
 	th.AssertNoErr(t, err)
-	tags, err = attributestags.List(client, "networks", network.ID).Extract()
+	tags, err = attributestags.List(context.TODO(), client, "networks", network.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(tags))
 }
 
 func listNetworkWithTagOpts(t *testing.T, client *gophercloud.ServiceClient, listOpts networks.ListOpts) (ids []string) {
-	allPages, err := networks.List(client, listOpts).AllPages()
+	allPages, err := networks.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allNetworks, err := networks.ExtractNetworks(allPages)
 	th.AssertNoErr(t, err)

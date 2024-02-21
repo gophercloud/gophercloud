@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -24,7 +25,7 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
 
-	newShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	newShareNetwork, err := sharenetworks.Get(context.TODO(), client, shareNetwork.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve shareNetwork: %v", err)
 	}
@@ -55,7 +56,7 @@ func TestShareNetworkUpdate(t *testing.T) {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
 
-	expectedShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	expectedShareNetwork, err := sharenetworks.Get(context.TODO(), client, shareNetwork.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve shareNetwork: %v", err)
 	}
@@ -70,12 +71,12 @@ func TestShareNetworkUpdate(t *testing.T) {
 	expectedShareNetwork.Name = name
 	expectedShareNetwork.Description = description
 
-	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
+	_, err = sharenetworks.Update(context.TODO(), client, shareNetwork.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to update shareNetwork: %v", err)
 	}
 
-	updatedShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	updatedShareNetwork, err := sharenetworks.Get(context.TODO(), client, shareNetwork.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve shareNetwork: %v", err)
 	}
@@ -96,7 +97,7 @@ func TestShareNetworkListDetail(t *testing.T) {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
-	allPages, err := sharenetworks.ListDetail(client, sharenetworks.ListOpts{}).AllPages()
+	allPages, err := sharenetworks.ListDetail(client, sharenetworks.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve share networks: %v", err)
 	}
@@ -135,7 +136,7 @@ func TestShareNetworkListFiltering(t *testing.T) {
 		Name: shareNetwork.Name,
 	}
 
-	allPages, err := sharenetworks.ListDetail(client, options).AllPages()
+	allPages, err := sharenetworks.ListDetail(client, options).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve share networks: %v", err)
 	}
@@ -173,7 +174,7 @@ func TestShareNetworkListPagination(t *testing.T) {
 
 	count := 0
 
-	err = sharenetworks.ListDetail(client, sharenetworks.ListOpts{Offset: 0, Limit: 1}).EachPage(func(page pagination.Page) (bool, error) {
+	err = sharenetworks.ListDetail(client, sharenetworks.ListOpts{Offset: 0, Limit: 1}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		_, err := sharenetworks.ExtractShareNetworks(page)
 		if err != nil {
@@ -215,7 +216,7 @@ func TestShareNetworkAddRemoveSecurityService(t *testing.T) {
 		SecurityServiceID: securityService.ID,
 	}
 
-	_, err = sharenetworks.AddSecurityService(client, shareNetwork.ID, options).Extract()
+	_, err = sharenetworks.AddSecurityService(context.TODO(), client, shareNetwork.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to add security service: %v", err)
 	}
@@ -224,7 +225,7 @@ func TestShareNetworkAddRemoveSecurityService(t *testing.T) {
 		SecurityServiceID: securityService.ID,
 	}
 
-	_, err = sharenetworks.RemoveSecurityService(client, shareNetwork.ID, removeOptions).Extract()
+	_, err = sharenetworks.RemoveSecurityService(context.TODO(), client, shareNetwork.ID, removeOptions).Extract()
 	if err != nil {
 		t.Errorf("Unable to remove security service: %v", err)
 	}

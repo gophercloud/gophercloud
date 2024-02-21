@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/databases"
@@ -19,7 +20,7 @@ func TestCreate(t *testing.T) {
 		databases.CreateOpts{Name: "sampledb"},
 	}
 
-	res := databases.Create(fake.ServiceClient(), instanceID, opts)
+	res := databases.Create(context.TODO(), fake.ServiceClient(), instanceID, opts)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -37,7 +38,7 @@ func TestList(t *testing.T) {
 	}
 
 	pages := 0
-	err := databases.List(fake.ServiceClient(), instanceID).EachPage(func(page pagination.Page) (bool, error) {
+	err := databases.List(fake.ServiceClient(), instanceID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := databases.ExtractDBs(page)
@@ -62,6 +63,6 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDelete(t)
 
-	err := databases.Delete(fake.ServiceClient(), instanceID, "{dbName}").ExtractErr()
+	err := databases.Delete(context.TODO(), fake.ServiceClient(), instanceID, "{dbName}").ExtractErr()
 	th.AssertNoErr(t, err)
 }
