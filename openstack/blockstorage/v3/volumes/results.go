@@ -84,6 +84,8 @@ type Volume struct {
 	VolumeImageMetadata map[string]string `json:"volume_image_metadata"`
 	// Host is the identifier of the host holding the volume.
 	Host string `json:"os-vol-host-attr:host"`
+	// TenantID is the id of the project that owns the volume.
+	TenantID string `json:"os-vol-tenant-attr:tenant_id"`
 }
 
 // UnmarshalJSON another unmarshalling function

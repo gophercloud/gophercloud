@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -50,7 +49,7 @@ func TestListWithExtensions(t *testing.T) {
 				Encrypted:          false,
 				Metadata:           map[string]string{"foo": "bar"},
 				Multiattach:        false,
-				//TenantID:                  "304dc00909ac4d0da6c62d816bcb3459",
+				TenantID:           "304dc00909ac4d0da6c62d816bcb3459",
 				//ReplicationDriverData:     "",
 				//ReplicationExtendedStatus: "",
 				ReplicationStatus: "disabled",
@@ -73,7 +72,7 @@ func TestListWithExtensions(t *testing.T) {
 				Encrypted:          false,
 				Metadata:           map[string]string{},
 				Multiattach:        false,
-				//TenantID:                  "304dc00909ac4d0da6c62d816bcb3459",
+				TenantID:           "304dc00909ac4d0da6c62d816bcb3459",
 				//ReplicationDriverData:     "",
 				//ReplicationExtendedStatus: "",
 				ReplicationStatus: "disabled",
@@ -102,15 +101,10 @@ func TestListAllWithExtensions(t *testing.T) {
 
 	MockListResponse(t)
 
-	type VolumeWithExt struct {
-		volumes.Volume
-		volumetenants.VolumeTenantExt
-	}
-
 	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
-	var actual []VolumeWithExt
+	var actual []volumes.Volume
 	err = volumes.ExtractVolumesInto(allPages, &actual)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, len(actual))
@@ -149,7 +143,7 @@ func TestListAll(t *testing.T) {
 			Encrypted:          false,
 			Metadata:           map[string]string{"foo": "bar"},
 			Multiattach:        false,
-			//TenantID:                  "304dc00909ac4d0da6c62d816bcb3459",
+			TenantID:           "304dc00909ac4d0da6c62d816bcb3459",
 			//ReplicationDriverData:     "",
 			//ReplicationExtendedStatus: "",
 			ReplicationStatus: "disabled",
@@ -172,7 +166,7 @@ func TestListAll(t *testing.T) {
 			Encrypted:          false,
 			Metadata:           map[string]string{},
 			Multiattach:        false,
-			//TenantID:                  "304dc00909ac4d0da6c62d816bcb3459",
+			TenantID:           "304dc00909ac4d0da6c62d816bcb3459",
 			//ReplicationDriverData:     "",
 			//ReplicationExtendedStatus: "",
 			ReplicationStatus: "disabled",
@@ -245,15 +239,12 @@ func TestGetWithExtensions(t *testing.T) {
 
 	MockGetResponse(t)
 
-	var s struct {
-		volumes.Volume
-		volumetenants.VolumeTenantExt
-	}
-	err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&s)
+	var v volumes.Volume
+	err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&v)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", s.TenantID)
+	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", v.TenantID)
 
-	err = volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(s)
+	err = volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(v)
 	if err == nil {
 		t.Errorf("Expected error when providing non-pointer struct")
 	}

@@ -1,28 +1,23 @@
 //go:build acceptance || blockstorage
 // +build acceptance blockstorage
 
-package extensions
+package v2
 
 import (
 	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
-	blockstorage "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/blockstorage/v3"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumetenants"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestVolumeTenants(t *testing.T) {
-	type volumeWithTenant struct {
-		volumes.Volume
-		volumetenants.VolumeTenantExt
-	}
+	var allVolumes []volumes.Volume
 
-	var allVolumes []volumeWithTenant
+	clients.SkipReleasesAbove(t, "stable/ocata")
 
-	client, err := clients.NewBlockStorageV3Client()
+	client, err := clients.NewBlockStorageV2Client()
 	th.AssertNoErr(t, err)
 
 	listOpts := volumes.ListOpts{
@@ -35,9 +30,9 @@ func TestVolumeTenants(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(allVolumes))
 
-	volume1, err := blockstorage.CreateVolume(t, client)
+	volume1, err := CreateVolume(t, client)
 	th.AssertNoErr(t, err)
-	defer blockstorage.DeleteVolume(t, client, volume1)
+	defer DeleteVolume(t, client, volume1)
 
 	allPages, err = volumes.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
