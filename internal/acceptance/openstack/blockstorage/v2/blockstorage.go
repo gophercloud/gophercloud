@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/backups"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/snapshots"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -164,4 +165,87 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 	}
 
 	t.Logf("Successfully deleted snapshot: %s", snapshot.ID)
+}
+
+// CreateBackup will create a backup based on a volume. An error will be
+// will be returned if the backup could not be created.
+func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID string) (*backups.Backup, error) {
+	t.Logf("Attempting to create a backup of volume %s", volumeID)
+
+	backupName := tools.RandomString("ACPTTEST", 16)
+	createOpts := backups.CreateOpts{
+		VolumeID: volumeID,
+		Name:     backupName,
+	}
+
+	backup, err := backups.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	err = WaitForBackupStatus(client, backup.ID, "available")
+	if err != nil {
+		return nil, err
+	}
+
+	backup, err = backups.Get(context.TODO(), client, backup.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created backup %s", backup.ID)
+	tools.PrintResource(t, backup)
+
+	th.AssertEquals(t, backup.Name, backupName)
+
+	return backup, nil
+}
+
+// DeleteBackup will delete a backup. A fatal error will occur if the backup
+// could not be deleted. This works best when used as a deferred function.
+func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID string) {
+	if err := backups.Delete(context.TODO(), client, backupID).ExtractErr(); err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			t.Logf("Backup %s is already deleted", backupID)
+			return
+		}
+		t.Fatalf("Unable to delete backup %s: %s", backupID, err)
+	}
+
+	t.Logf("Deleted backup %s", backupID)
+}
+
+// WaitForBackupStatus will continually poll a backup, checking for a particular
+// status. It will do this for the amount of seconds defined.
+func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) error {
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := backups.Get(ctx, client, id).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "deleted" {
+				return true, nil
+			}
+			return false, err
+		}
+
+		if current.Status == status {
+			return true, nil
+		}
+
+		return false, nil
+	})
+}
+
+// ResetBackupStatus will reset the status of a backup.
+func ResetBackupStatus(t *testing.T, client *gophercloud.ServiceClient, backup *backups.Backup, status string) error {
+	t.Logf("Attempting to reset the status of backup %s from %s to %s", backup.ID, backup.Status, status)
+
+	resetOpts := backups.ResetStatusOpts{
+		Status: status,
+	}
+	err := backups.ResetStatus(context.TODO(), client, backup.ID, resetOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	return WaitForBackupStatus(client, backup.ID, status)
 }
