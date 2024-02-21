@@ -171,7 +171,7 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		tao := options
 		tao.AllowReauth = false
 		client.ReauthFunc = func() error {
-			err := v2auth(ctx, &tac, endpoint, tao, eo)
+			err := v2auth(context.Background(), &tac, endpoint, tao, eo)
 			if err != nil {
 				return err
 			}
@@ -294,7 +294,7 @@ func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 			tao = opts
 		}
 		client.ReauthFunc = func() error {
-			err := v3auth(ctx, &tac, endpoint, tao, eo)
+			err := v3auth(context.Background(), &tac, endpoint, tao, eo)
 			if err != nil {
 				return err
 			}
