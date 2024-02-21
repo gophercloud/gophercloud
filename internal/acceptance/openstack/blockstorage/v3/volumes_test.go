@@ -88,7 +88,7 @@ func TestVolumesMultiAttach(t *testing.T) {
 		VolumeType:  vt.ID,
 	}
 
-	vol, err := volumes.Create(context.TODO(), client, volOpts).Extract()
+	vol, err := volumes.Create(context.TODO(), client, volOpts, nil).Extract()
 	th.AssertNoErr(t, err)
 	defer DeleteVolume(t, client, vol)
 
@@ -332,7 +332,7 @@ func TestVolumeConns(t *testing.T) {
     cv, err := volumes.Create(context.TODO(), client, &volumes.CreateOpts{
         Size: 1,
         Name: "blockv2-volume",
-    }).Extract()
+    }, nil).Extract()
     th.AssertNoErr(t, err)
 
     defer func() {

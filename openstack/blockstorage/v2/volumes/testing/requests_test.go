@@ -203,16 +203,15 @@ func TestCreate(t *testing.T) {
 	MockCreateResponse(t)
 
 	options := &volumes.CreateOpts{Size: 75, Name: "vol-001"}
-	n, err := volumes.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := volumes.Create(context.TODO(), client.ServiceClient(), options, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Size, 75)
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
-func TestCreateWithSchedulerHints(t *testing.T) {
-
-	schedulerHints := volumes.SchedulerHints{
+func TestCreateSchedulerHints(t *testing.T) {
+	base := volumes.SchedulerHintOpts{
 		DifferentHost: []string{
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
 			"8c19174f-4220-44f0-824a-cd1eeef10287",
@@ -224,18 +223,8 @@ func TestCreateWithSchedulerHints(t *testing.T) {
 		LocalToInstance:      "0ffb2c1b-d621-4fc1-9ae4-88d99c088ff6",
 		AdditionalProperties: map[string]interface{}{"mark": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
 	}
-	base := volumes.CreateOpts{
-		Size:           10,
-		Name:           "testvolume",
-		SchedulerHints: schedulerHints,
-	}
-
 	expected := `
 		{
-			"volume": {
-				"size": 10,
-				"name": "testvolume"
-			},
 			"OS-SCH-HNT:scheduler_hints": {
 				"different_host": [
 					"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
@@ -250,7 +239,7 @@ func TestCreateWithSchedulerHints(t *testing.T) {
 			}
 		}
 	`
-	actual, err := base.ToVolumeCreateMap()
+	actual, err := base.ToSchedulerHintsMap()
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, expected, actual)
 }
