@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/volumetransfers"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/transfers"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
@@ -114,12 +114,12 @@ const AcceptTransferResponse = `
 }
 `
 
-var TransferRequest = volumetransfers.CreateOpts{
+var TransferRequest = transfers.CreateOpts{
 	VolumeID: "2f6f1684-1ded-40db-8a49-7c87dedbc758",
 }
 
 var createdAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2020-02-28T12:44:28.051989")
-var TransferResponse = volumetransfers.Transfer{
+var TransferResponse = transfers.Transfer{
 	ID:        "b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
 	AuthKey:   "cb67e0e7387d9eac",
 	Name:      "",
@@ -137,13 +137,13 @@ var TransferResponse = volumetransfers.Transfer{
 	},
 }
 
-var TransferListResponse = []volumetransfers.Transfer{TransferResponse}
+var TransferListResponse = []transfers.Transfer{TransferResponse}
 
-var AcceptRequest = volumetransfers.AcceptOpts{
+var AcceptRequest = transfers.AcceptOpts{
 	AuthKey: "9266c59563c84664",
 }
 
-var AcceptResponse = volumetransfers.Transfer{
+var AcceptResponse = transfers.Transfer{
 	ID:       "b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f",
 	Name:     "",
 	VolumeID: "2f6f1684-1ded-40db-8a49-7c87dedbc758",

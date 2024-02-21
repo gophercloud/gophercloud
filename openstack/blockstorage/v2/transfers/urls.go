@@ -1,4 +1,4 @@
-package volumetransfers
+package transfers
 
 import "github.com/gophercloud/gophercloud/v2"
 

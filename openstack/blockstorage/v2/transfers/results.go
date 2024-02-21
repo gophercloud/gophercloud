@@ -1,4 +1,4 @@
-package volumetransfers
+package transfers
 
 import (
 	"encoding/json"

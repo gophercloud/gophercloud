@@ -1,21 +1,21 @@
 /*
-Package volumetransfers provides an interaction with volume transfers in the
+Package transfers provides an interaction with volume transfers in the
 OpenStack Block Storage service. A volume transfer allows to transfer volumes
 between projects withing the same OpenStack region.
 
 Example to List all Volume Transfer requests being an OpenStack admin
 
-	listOpts := &volumetransfers.ListOpts{
+	listOpts := &transfers.ListOpts{
 		// this option is available only for OpenStack cloud admin
 		AllTenants: true,
 	}
 
-	allPages, err := volumetransfers.List(client, listOpts).AllPages(context.TODO())
+	allPages, err := transfers.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
 
-	allTransfers, err := volumetransfers.ExtractTransfers(allPages)
+	allTransfers, err := transfers.ExtractTransfers(allPages)
 	if err != nil {
 		panic(err)
 	}
@@ -26,12 +26,12 @@ Example to List all Volume Transfer requests being an OpenStack admin
 
 Example to Create a Volume Transfer request
 
-	createOpts := volumetransfers.CreateOpts{
+	createOpts := transfers.CreateOpts{
 		VolumeID: "uuid",
 		Name:	  "my-volume-transfer",
 	}
 
-	transfer, err := volumetransfers.Create(context.TODO(), client, createOpts).Extract()
+	transfer, err := transfers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -42,13 +42,13 @@ Example to Create a Volume Transfer request
 
 Example to Accept a Volume Transfer request from the target project
 
-	acceptOpts := volumetransfers.AcceptOpts{
+	acceptOpts := transfers.AcceptOpts{
 		// see the create response above
 		AuthKey: "volume-transfer-secret-auth-key",
 	}
 
 	// see the transfer ID from the create response above
-	transfer, err := volumetransfers.Accept(context.TODO(), client, "transfer-uuid", acceptOpts).Extract()
+	transfer, err := transfers.Accept(context.TODO(), client, "transfer-uuid", acceptOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -57,9 +57,9 @@ Example to Accept a Volume Transfer request from the target project
 
 Example to Delete a Volume Transfer request from the source project
 
-	err := volumetransfers.Delete(context.TODO(), client, "transfer-uuid").ExtractErr()
+	err := transfers.Delete(context.TODO(), client, "transfer-uuid").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 */
-package volumetransfers
+package transfers
