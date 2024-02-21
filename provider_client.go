@@ -272,9 +272,7 @@ func (client *ProviderClient) SetThrowaway(v bool) {
 // this case, the reauthentication can be skipped if another thread has already
 // reauthenticated in the meantime. If no previous token is known, an empty
 // string should be passed instead to force unconditional reauthentication.
-func (client *ProviderClient) Reauthenticate(previousToken string) error {
-	ctx := context.TODO()
-
+func (client *ProviderClient) Reauthenticate(ctx context.Context, previousToken string) error {
 	if client.ReauthFunc == nil {
 		return nil
 	}
@@ -490,7 +488,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 			}
 		case http.StatusUnauthorized:
 			if client.ReauthFunc != nil && !state.hasReauthenticated {
-				err = client.Reauthenticate(prereqtok)
+				err = client.Reauthenticate(ctx, prereqtok)
 				if err != nil {
 					e := &ErrUnableToReauthenticate{}
 					e.ErrOriginal = respErr
