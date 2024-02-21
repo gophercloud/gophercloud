@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestMonitorsList(t *testing.T) {
 		t.Fatalf("Unable to create a loadbalancer client: %v", err)
 	}
 
-	allPages, err := monitors.List(client, nil).AllPages()
+	allPages, err := monitors.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list monitors: %v", err)
 	}

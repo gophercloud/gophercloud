@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/secgroups"
@@ -23,7 +24,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := secgroups.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := secgroups.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := secgroups.ExtractSecurityGroups(page)
 		if err != nil {
@@ -58,7 +59,7 @@ func TestListByServer(t *testing.T) {
 
 	count := 0
 
-	err := secgroups.ListByServer(client.ServiceClient(), serverID).EachPage(func(page pagination.Page) (bool, error) {
+	err := secgroups.ListByServer(client.ServiceClient(), serverID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := secgroups.ExtractSecurityGroups(page)
 		if err != nil {
@@ -96,7 +97,7 @@ func TestCreate(t *testing.T) {
 		Description: "something",
 	}
 
-	group, err := secgroups.Create(client.ServiceClient(), opts).Extract()
+	group, err := secgroups.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -121,7 +122,7 @@ func TestUpdate(t *testing.T) {
 		Description: &description,
 	}
 
-	group, err := secgroups.Update(client.ServiceClient(), groupID, opts).Extract()
+	group, err := secgroups.Update(context.TODO(), client.ServiceClient(), groupID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -140,7 +141,7 @@ func TestGet(t *testing.T) {
 
 	mockGetGroupsResponse(t, groupID)
 
-	group, err := secgroups.Get(client.ServiceClient(), groupID).Extract()
+	group, err := secgroups.Get(context.TODO(), client.ServiceClient(), groupID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -172,7 +173,7 @@ func TestGetNumericID(t *testing.T) {
 
 	mockGetNumericIDGroupResponse(t, numericGroupID)
 
-	group, err := secgroups.Get(client.ServiceClient(), "12345").Extract()
+	group, err := secgroups.Get(context.TODO(), client.ServiceClient(), "12345").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{ID: "12345"}
@@ -187,7 +188,7 @@ func TestGetNumericRuleID(t *testing.T) {
 
 	mockGetNumericIDGroupRuleResponse(t, numericGroupID)
 
-	group, err := secgroups.Get(client.ServiceClient(), "12345").Extract()
+	group, err := secgroups.Get(context.TODO(), client.ServiceClient(), "12345").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -208,7 +209,7 @@ func TestDelete(t *testing.T) {
 
 	mockDeleteGroupResponse(t, groupID)
 
-	err := secgroups.Delete(client.ServiceClient(), groupID).ExtractErr()
+	err := secgroups.Delete(context.TODO(), client.ServiceClient(), groupID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -226,7 +227,7 @@ func TestAddRule(t *testing.T) {
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(client.ServiceClient(), opts).Extract()
+	rule, err := secgroups.CreateRule(context.TODO(), client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.Rule{
@@ -256,7 +257,7 @@ func TestAddRuleICMPZero(t *testing.T) {
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(client.ServiceClient(), opts).Extract()
+	rule, err := secgroups.CreateRule(context.TODO(), client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.Rule{
@@ -278,7 +279,7 @@ func TestDeleteRule(t *testing.T) {
 
 	mockDeleteRuleResponse(t, ruleID)
 
-	err := secgroups.DeleteRule(client.ServiceClient(), ruleID).ExtractErr()
+	err := secgroups.DeleteRule(context.TODO(), client.ServiceClient(), ruleID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -288,7 +289,7 @@ func TestAddServer(t *testing.T) {
 
 	mockAddServerToGroupResponse(t, serverID)
 
-	err := secgroups.AddServer(client.ServiceClient(), serverID, "test").ExtractErr()
+	err := secgroups.AddServer(context.TODO(), client.ServiceClient(), serverID, "test").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -298,6 +299,6 @@ func TestRemoveServer(t *testing.T) {
 
 	mockRemoveServerFromGroupResponse(t, serverID)
 
-	err := secgroups.RemoveServer(client.ServiceClient(), serverID, "test").ExtractErr()
+	err := secgroups.RemoveServer(context.TODO(), client.ServiceClient(), serverID, "test").ExtractErr()
 	th.AssertNoErr(t, err)
 }

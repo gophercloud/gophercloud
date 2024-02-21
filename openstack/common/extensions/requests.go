@@ -1,13 +1,15 @@
 package extensions
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // Get retrieves information for a specific extension using its alias.
-func Get(c *gophercloud.ServiceClient, alias string) (r GetResult) {
-	resp, err := c.Get(ExtensionURL(c, alias), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, alias string) (r GetResult) {
+	resp, err := c.Get(ctx, ExtensionURL(c, alias), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

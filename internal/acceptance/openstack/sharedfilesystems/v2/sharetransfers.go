@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -14,7 +15,7 @@ func CreateTransferRequest(t *testing.T, client *gophercloud.ServiceClient, shar
 		ShareID: share.ID,
 		Name:    name,
 	}
-	transfer, err := sharetransfers.Create(client, opts).Extract()
+	transfer, err := sharetransfers.Create(context.TODO(), client, opts).Extract()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a share transfer request: %s", err)
 	}
@@ -27,7 +28,7 @@ func AcceptTransfer(t *testing.T, client *gophercloud.ServiceClient, transferReq
 		AuthKey:          transferRequest.AuthKey,
 		ClearAccessRules: true,
 	}
-	err := sharetransfers.Accept(client, transferRequest.ID, opts).ExtractErr()
+	err := sharetransfers.Accept(context.TODO(), client, transferRequest.ID, opts).ExtractErr()
 	if err != nil {
 		return fmt.Errorf("failed to accept a share transfer request: %s", err)
 	}
@@ -36,7 +37,7 @@ func AcceptTransfer(t *testing.T, client *gophercloud.ServiceClient, transferReq
 }
 
 func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, transfer *sharetransfers.Transfer) {
-	err := sharetransfers.Delete(client, transfer.ID).ExtractErr()
+	err := sharetransfers.Delete(context.TODO(), client, transfer.ID).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			return

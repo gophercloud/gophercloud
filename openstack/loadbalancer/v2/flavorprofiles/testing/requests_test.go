@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavorprofiles"
@@ -16,7 +17,7 @@ func TestListFlavorProfiles(t *testing.T) {
 	HandleFlavorProfileListSuccessfully(t)
 
 	pages := 0
-	err := flavorprofiles.List(fake.ServiceClient(), flavorprofiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := flavorprofiles.List(fake.ServiceClient(), flavorprofiles.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavorprofiles.ExtractFlavorProfiles(page)
@@ -45,7 +46,7 @@ func TestListAllFlavorProfiles(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFlavorProfileListSuccessfully(t)
 
-	allPages, err := flavorprofiles.List(fake.ServiceClient(), flavorprofiles.ListOpts{}).AllPages()
+	allPages, err := flavorprofiles.List(fake.ServiceClient(), flavorprofiles.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := flavorprofiles.ExtractFlavorProfiles(allPages)
 	th.AssertNoErr(t, err)
@@ -58,7 +59,7 @@ func TestCreateFlavorProfile(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFlavorProfileCreationSuccessfully(t, SingleFlavorProfileBody)
 
-	actual, err := flavorprofiles.Create(fake.ServiceClient(), flavorprofiles.CreateOpts{
+	actual, err := flavorprofiles.Create(context.TODO(), fake.ServiceClient(), flavorprofiles.CreateOpts{
 		Name:         "amphora-test",
 		ProviderName: "amphora",
 		FlavorData:   "{\"loadbalancer_topology\": \"ACTIVE_STANDBY\"}",
@@ -69,7 +70,7 @@ func TestCreateFlavorProfile(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := flavorprofiles.Create(fake.ServiceClient(), flavorprofiles.CreateOpts{})
+	res := flavorprofiles.Create(context.TODO(), fake.ServiceClient(), flavorprofiles.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -81,7 +82,7 @@ func TestGetFlavorProfiles(t *testing.T) {
 	HandleFlavorProfileGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := flavorprofiles.Get(client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272").Extract()
+	actual, err := flavorprofiles.Get(context.TODO(), client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -94,7 +95,7 @@ func TestDeleteFlavorProfile(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFlavorProfileDeletionSuccessfully(t)
 
-	res := flavorprofiles.Delete(fake.ServiceClient(), "dcd65be5-f117-4260-ab3d-b32cc5bd1272")
+	res := flavorprofiles.Delete(context.TODO(), fake.ServiceClient(), "dcd65be5-f117-4260-ab3d-b32cc5bd1272")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -104,7 +105,7 @@ func TestUpdateFlavorProfile(t *testing.T) {
 	HandleFlavorProfileUpdateSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := flavorprofiles.Update(client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272", flavorprofiles.UpdateOpts{
+	actual, err := flavorprofiles.Update(context.TODO(), client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272", flavorprofiles.UpdateOpts{
 		Name:         "amphora-test-updated",
 		ProviderName: "amphora",
 		FlavorData:   "{\"loadbalancer_topology\": \"SINGLE\"}",

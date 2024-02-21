@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/groups"
@@ -17,7 +18,7 @@ func TestListUsers(t *testing.T) {
 	HandleListUsersSuccessfully(t)
 
 	count := 0
-	err := users.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := users.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := users.ExtractUsers(page)
@@ -36,7 +37,7 @@ func TestListUsersAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListUsersSuccessfully(t)
 
-	allPages, err := users.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := users.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := users.ExtractUsers(allPages)
 	th.AssertNoErr(t, err)
@@ -82,7 +83,7 @@ func TestGetUser(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetUserSuccessfully(t)
 
-	actual, err := users.Get(client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := users.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
 	th.AssertEquals(t, SecondUser.Extra["email"], "jsmith@example.com")
@@ -112,7 +113,7 @@ func TestCreateUser(t *testing.T) {
 		},
 	}
 
-	actual, err := users.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := users.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
 }
@@ -134,7 +135,7 @@ func TestCreateNoOptionsUser(t *testing.T) {
 		},
 	}
 
-	actual, err := users.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := users.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUserNoOptions, *actual)
 }
@@ -155,7 +156,7 @@ func TestUpdateUser(t *testing.T) {
 		},
 	}
 
-	actual, err := users.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := users.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUserUpdated, *actual)
 }
@@ -170,7 +171,7 @@ func TestChangeUserPassword(t *testing.T) {
 		Password:         "new_secretsecret",
 	}
 
-	res := users.ChangePassword(client.ServiceClient(), "9fe1d3", changePasswordOpts)
+	res := users.ChangePassword(context.TODO(), client.ServiceClient(), "9fe1d3", changePasswordOpts)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -179,7 +180,7 @@ func TestDeleteUser(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteUserSuccessfully(t)
 
-	res := users.Delete(client.ServiceClient(), "9fe1d3")
+	res := users.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -187,7 +188,7 @@ func TestListUserGroups(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleListUserGroupsSuccessfully(t)
-	allPages, err := users.ListGroups(client.ServiceClient(), "9fe1d3").AllPages()
+	allPages, err := users.ListGroups(client.ServiceClient(), "9fe1d3").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := groups.ExtractGroups(allPages)
 	th.AssertNoErr(t, err)
@@ -198,7 +199,7 @@ func TestAddToGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleAddToGroupSuccessfully(t)
-	res := users.AddToGroup(client.ServiceClient(), "ea167b", "9fe1d3")
+	res := users.AddToGroup(context.TODO(), client.ServiceClient(), "ea167b", "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -206,7 +207,7 @@ func TestIsMemberOfGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleIsMemberOfGroupSuccessfully(t)
-	ok, err := users.IsMemberOfGroup(client.ServiceClient(), "ea167b", "9fe1d3").Extract()
+	ok, err := users.IsMemberOfGroup(context.TODO(), client.ServiceClient(), "ea167b", "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, ok)
 }
@@ -215,7 +216,7 @@ func TestRemoveFromGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleRemoveFromGroupSuccessfully(t)
-	res := users.RemoveFromGroup(client.ServiceClient(), "ea167b", "9fe1d3")
+	res := users.RemoveFromGroup(context.TODO(), client.ServiceClient(), "ea167b", "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -223,7 +224,7 @@ func TestListUserProjects(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleListUserProjectsSuccessfully(t)
-	allPages, err := users.ListProjects(client.ServiceClient(), "9fe1d3").AllPages()
+	allPages, err := users.ListProjects(client.ServiceClient(), "9fe1d3").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := projects.ExtractProjects(allPages)
 	th.AssertNoErr(t, err)
@@ -240,7 +241,7 @@ func TestListInGroup(t *testing.T) {
 		Enabled: &iTrue,
 	}
 
-	allPages, err := users.ListInGroup(client.ServiceClient(), "ea167b", listOpts).AllPages()
+	allPages, err := users.ListInGroup(client.ServiceClient(), "ea167b", listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := users.ExtractUsers(allPages)
 	th.AssertNoErr(t, err)

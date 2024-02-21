@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestZonesCRUD(t *testing.T) {
 
 	tools.PrintResource(t, &zone)
 
-	allPages, err := zones.List(client, nil).AllPages()
+	allPages, err := zones.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allZones, err := zones.ExtractZones(allPages)

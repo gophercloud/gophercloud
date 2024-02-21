@@ -1,6 +1,7 @@
 package rbacpolicies
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -20,7 +21,7 @@ func CreateRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, tenantID,
 
 	t.Logf("Trying to create rbac_policy")
 
-	rbacPolicy, err := rbacpolicies.Create(client, createOpts).Extract()
+	rbacPolicy, err := rbacpolicies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return rbacPolicy, err
 	}
@@ -38,7 +39,7 @@ func CreateRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, tenantID,
 func DeleteRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, rbacPolicyID string) {
 	t.Logf("Trying to delete rbac_policy: %s", rbacPolicyID)
 
-	err := rbacpolicies.Delete(client, rbacPolicyID).ExtractErr()
+	err := rbacpolicies.Delete(context.TODO(), client, rbacPolicyID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete rbac_policy %s: %v", rbacPolicyID, err)
 	}

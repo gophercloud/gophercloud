@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -22,7 +23,7 @@ func TestAggregatesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := aggregates.List(client).AllPages()
+	allPages, err := aggregates.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allAggregates, err := aggregates.ExtractAggregates(allPages)
@@ -51,7 +52,7 @@ func TestAggregatesCRUD(t *testing.T) {
 		AvailabilityZone: "new_azone",
 	}
 
-	updatedAggregate, err := aggregates.Update(client, aggregate.ID, updateOpts).Extract()
+	updatedAggregate, err := aggregates.Update(context.TODO(), client, aggregate.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregate)
@@ -77,7 +78,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 		Host: hostToAdd,
 	}
 
-	aggregateWithNewHost, err := aggregates.AddHost(client, aggregate.ID, addHostOpts).Extract()
+	aggregateWithNewHost, err := aggregates.AddHost(context.TODO(), client, aggregate.ID, addHostOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithNewHost)
@@ -88,7 +89,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 		Host: hostToAdd,
 	}
 
-	aggregateWithRemovedHost, err := aggregates.RemoveHost(client, aggregate.ID, removeHostOpts).Extract()
+	aggregateWithRemovedHost, err := aggregates.RemoveHost(context.TODO(), client, aggregate.ID, removeHostOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithRemovedHost)
@@ -110,7 +111,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 		Metadata: map[string]interface{}{"key": "value"},
 	}
 
-	aggregateWithMetadata, err := aggregates.SetMetadata(client, aggregate.ID, opts).Extract()
+	aggregateWithMetadata, err := aggregates.SetMetadata(context.TODO(), client, aggregate.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithMetadata)
@@ -123,7 +124,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 		Metadata: map[string]interface{}{"key": nil},
 	}
 
-	aggregateWithRemovedKey, err := aggregates.SetMetadata(client, aggregate.ID, optsToRemove).Extract()
+	aggregateWithRemovedKey, err := aggregates.SetMetadata(context.TODO(), client, aggregate.ID, optsToRemove).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithRemovedKey)
@@ -134,7 +135,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 }
 
 func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
-	allPages, err := hypervisors.List(client, nil).AllPages()
+	allPages, err := hypervisors.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)

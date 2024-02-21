@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -23,7 +24,7 @@ func TestCRUDQueues(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	createdQueue, err := queues.Get(client, createdQueueName).Extract()
+	createdQueue, err := queues.Get(context.TODO(), client, createdQueueName).Extract()
 
 	tools.PrintResource(t, createdQueue)
 	tools.PrintResource(t, createdQueue.Extra)
@@ -42,7 +43,7 @@ func TestCRUDQueues(t *testing.T) {
 	}
 
 	t.Logf("Attempting to update Queue: %s", createdQueueName)
-	updateResult, updateErr := queues.Update(client, createdQueueName, updateOpts).Extract()
+	updateResult, updateErr := queues.Update(context.TODO(), client, createdQueueName, updateOpts).Extract()
 	if updateErr != nil {
 		t.Fatalf("Unable to update Queue %s: %v", createdQueueName, updateErr)
 	}
@@ -74,7 +75,7 @@ func TestListQueues(t *testing.T) {
 	}
 
 	pager := queues.List(client, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allQueues, err := queues.ExtractQueues(page)
 		if err != nil {
 			t.Fatalf("Unable to extract Queues: %v", err)
@@ -99,7 +100,7 @@ func TestStatQueue(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	queueStats, err := queues.GetStats(client, createdQueueName).Extract()
+	queueStats, err := queues.GetStats(context.TODO(), client, createdQueueName).Extract()
 	if err != nil {
 		t.Fatalf("Unable to stat queue: %v", err)
 	}
@@ -148,7 +149,7 @@ func TestPurge(t *testing.T) {
 	}
 
 	t.Logf("Attempting to purge queue: %s", queueName)
-	purgeErr := queues.Purge(client, queueName, purgeOpts).ExtractErr()
+	purgeErr := queues.Purge(context.TODO(), client, queueName, purgeOpts).ExtractErr()
 	if purgeErr != nil {
 		t.Fatalf("Unable to purge queue %s: %v", queueName, purgeErr)
 	}

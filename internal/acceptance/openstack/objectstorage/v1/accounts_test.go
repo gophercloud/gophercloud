@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestAccounts(t *testing.T) {
 	metadata := map[string]string{
 		"Gophercloud-Test": "accounts",
 	}
-	updateres := accounts.Update(client, accounts.UpdateOpts{Metadata: metadata})
+	updateres := accounts.Update(context.TODO(), client, accounts.UpdateOpts{Metadata: metadata})
 	t.Logf("Update Account Response: %+v\n", updateres)
 	updateHeaders, err := updateres.Extract()
 	th.AssertNoErr(t, err)
@@ -34,12 +35,12 @@ func TestAccounts(t *testing.T) {
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		updateres = accounts.Update(client, accounts.UpdateOpts{Metadata: tempMap})
+		updateres = accounts.Update(context.TODO(), client, accounts.UpdateOpts{Metadata: tempMap})
 		th.AssertNoErr(t, updateres.Err)
 	}()
 
 	// Extract the custom metadata from the 'Get' response.
-	res := accounts.Get(client, nil)
+	res := accounts.Get(context.TODO(), client, nil)
 
 	h, err := res.Extract()
 	th.AssertNoErr(t, err)

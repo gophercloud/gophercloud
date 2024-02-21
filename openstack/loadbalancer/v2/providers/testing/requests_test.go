@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/providers"
@@ -15,7 +16,7 @@ func TestListProviders(t *testing.T) {
 	HandleProviderListSuccessfully(t)
 
 	pages := 0
-	err := providers.List(fake.ServiceClient(), providers.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := providers.List(fake.ServiceClient(), providers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := providers.ExtractProviders(page)
@@ -44,7 +45,7 @@ func TestListAllProviders(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleProviderListSuccessfully(t)
 
-	allPages, err := providers.List(fake.ServiceClient(), providers.ListOpts{}).AllPages()
+	allPages, err := providers.List(fake.ServiceClient(), providers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := providers.ExtractProviders(allPages)
 	th.AssertNoErr(t, err)

@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestImagesList(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	allPages, err := images.ListDetail(client, nil).AllPages()
+	allPages, err := images.ListDetail(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allImages, err := images.ExtractImages(allPages)
@@ -44,7 +45,7 @@ func TestImagesGet(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	image, err := images.Get(client, choices.ImageID).Extract()
+	image, err := images.Get(context.TODO(), client, choices.ImageID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, image)

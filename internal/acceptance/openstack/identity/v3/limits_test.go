@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestGetEnforcementModel(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	model, err := limits.GetEnforcementModel(client).Extract()
+	model, err := limits.GetEnforcementModel(context.TODO(), client).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, model)
@@ -35,7 +36,7 @@ func TestLimitsList(t *testing.T) {
 
 	listOpts := limits.ListOpts{}
 
-	allPages, err := limits.List(client, listOpts).AllPages()
+	allPages, err := limits.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	_, err = limits.ExtractLimits(allPages)
@@ -56,7 +57,7 @@ func TestLimitsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Get the service to register the limit against.
-	allPages, err := services.List(client, nil).AllPages()
+	allPages, err := services.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	svList, err := services.ExtractServices(allPages)
@@ -82,7 +83,7 @@ func TestLimitsCRUD(t *testing.T) {
 		},
 	}
 
-	createdRegisteredLimits, err := registeredlimits.BatchCreate(client, createRegisteredLimitsOpts).Extract()
+	createdRegisteredLimits, err := registeredlimits.BatchCreate(context.TODO(), client, createRegisteredLimitsOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, createdRegisteredLimits[0])
 	th.AssertIntGreaterOrEqual(t, 1, len(createdRegisteredLimits))
@@ -102,7 +103,7 @@ func TestLimitsCRUD(t *testing.T) {
 		},
 	}
 
-	createdLimits, err := limits.BatchCreate(client, createOpts).Extract()
+	createdLimits, err := limits.BatchCreate(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertIntGreaterOrEqual(t, 1, len(createdLimits))
 	th.AssertEquals(t, limitDescription, createdLimits[0].Description)
@@ -113,7 +114,7 @@ func TestLimitsCRUD(t *testing.T) {
 
 	limitID := createdLimits[0].ID
 
-	limit, err := limits.Get(client, limitID).Extract()
+	limit, err := limits.Get(context.TODO(), client, limitID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, createdLimits[0], *limit)
 
@@ -124,23 +125,23 @@ func TestLimitsCRUD(t *testing.T) {
 		ResourceLimit: &newResourceLimit,
 	}
 
-	updatedLimit, err := limits.Update(client, limitID, updateOpts).Extract()
+	updatedLimit, err := limits.Update(context.TODO(), client, limitID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newLimitDescription, updatedLimit.Description)
 	th.AssertEquals(t, newResourceLimit, updatedLimit.ResourceLimit)
 
 	// Verify Deleting registered limit fails as it has project specific limit associated with it
-	del_err := registeredlimits.Delete(client, createdRegisteredLimits[0].ID).ExtractErr()
+	del_err := registeredlimits.Delete(context.TODO(), client, createdRegisteredLimits[0].ID).ExtractErr()
 	th.AssertErr(t, del_err)
 
 	// Delete project specific limit
-	err = limits.Delete(client, limitID).ExtractErr()
+	err = limits.Delete(context.TODO(), client, limitID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	_, err = limits.Get(client, limitID).Extract()
+	_, err = limits.Get(context.TODO(), client, limitID).Extract()
 	th.AssertErr(t, err)
 
 	// Delete registered limit
-	err = registeredlimits.Delete(client, createdRegisteredLimits[0].ID).ExtractErr()
+	err = registeredlimits.Delete(context.TODO(), client, createdRegisteredLimits[0].ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

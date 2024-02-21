@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -36,7 +37,7 @@ func TestSnapshotCreate(t *testing.T) {
 
 	defer DeleteSnapshot(t, client, snapshot)
 
-	created, err := snapshots.Get(client, snapshot.ID).Extract()
+	created, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve a snapshot: %v", err)
 	}
@@ -64,7 +65,7 @@ func TestSnapshotUpdate(t *testing.T) {
 
 	defer DeleteSnapshot(t, client, snapshot)
 
-	expectedSnapshot, err := snapshots.Get(client, snapshot.ID).Extract()
+	expectedSnapshot, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve snapshot: %v", err)
 	}
@@ -79,12 +80,12 @@ func TestSnapshotUpdate(t *testing.T) {
 	expectedSnapshot.Name = name
 	expectedSnapshot.Description = description
 
-	_, err = snapshots.Update(client, snapshot.ID, options).Extract()
+	_, err = snapshots.Update(context.TODO(), client, snapshot.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to update snapshot: %v", err)
 	}
 
-	updatedSnapshot, err := snapshots.Get(client, snapshot.ID).Extract()
+	updatedSnapshot, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve snapshot: %v", err)
 	}
@@ -148,7 +149,7 @@ func TestSnapshotResetStatus(t *testing.T) {
 	resetStatusOpts := &snapshots.ResetStatusOpts{
 		Status: "error",
 	}
-	err = snapshots.ResetStatus(client, snapshot.ID, resetStatusOpts).ExtractErr()
+	err = snapshots.ResetStatus(context.TODO(), client, snapshot.ID, resetStatusOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to reset a snapshot status: %v", err)
 	}
@@ -182,7 +183,7 @@ func TestSnapshotForceDelete(t *testing.T) {
 
 	defer DeleteSnapshot(t, client, snapshot)
 
-	err = snapshots.ForceDelete(client, snapshot.ID).ExtractErr()
+	err = snapshots.ForceDelete(context.TODO(), client, snapshot.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to force delete a snapshot: %v", err)
 	}

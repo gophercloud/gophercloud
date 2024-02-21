@@ -4,6 +4,7 @@
 package fwaas_v2
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"testing"
@@ -38,18 +39,18 @@ func TestRuleCRUD(t *testing.T) {
 		SourcePort:  &ruleSourcePort,
 	}
 
-	ruleUpdated, err := rules.Update(client, rule.ID, updateOpts).Extract()
+	ruleUpdated, err := rules.Update(context.TODO(), client, rule.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ruleUpdated.Description, ruleDescription)
 	th.AssertEquals(t, ruleUpdated.SourcePort, ruleSourcePortInt)
 	th.AssertEquals(t, ruleUpdated.Protocol, string(ruleProtocol))
 
-	newRule, err := rules.Get(client, rule.ID).Extract()
+	newRule, err := rules.Get(context.TODO(), client, rule.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
 
-	allPages, err := rules.List(client, nil).AllPages()
+	allPages, err := rules.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRules, err := rules.ExtractRules(allPages)

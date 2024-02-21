@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -35,14 +36,14 @@ func TestCertificatesCRUD(t *testing.T) {
 			"-----END CERTIFICATE REQUEST-----",
 	}
 
-	createResponse, err := certificates.Create(client, opts).Extract()
+	createResponse, err := certificates.Create(context.TODO(), client, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, opts.CSR, createResponse.CSR)
 
-	certificate, err := certificates.Get(client, clusterUUID).Extract()
+	certificate, err := certificates.Get(context.TODO(), client, clusterUUID).Extract()
 	th.AssertNoErr(t, err)
 	t.Log(certificate.PEM)
 
-	err = certificates.Update(client, clusterUUID).ExtractErr()
+	err = certificates.Update(context.TODO(), client, clusterUUID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

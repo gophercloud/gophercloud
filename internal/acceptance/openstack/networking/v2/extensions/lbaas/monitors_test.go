@@ -4,6 +4,7 @@
 package lbaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestMonitorsList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := monitors.List(client, monitors.ListOpts{}).AllPages()
+	allPages, err := monitors.List(client, monitors.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list monitors: %v", err)
 	}
@@ -52,12 +53,12 @@ func TestMonitorsCRUD(t *testing.T) {
 		Delay: 999,
 	}
 
-	_, err = monitors.Update(client, monitor.ID, updateOpts).Extract()
+	_, err = monitors.Update(context.TODO(), client, monitor.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update monitor: %v", err)
 	}
 
-	newMonitor, err := monitors.Get(client, monitor.ID).Extract()
+	newMonitor, err := monitors.Get(context.TODO(), client, monitor.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get monitor: %v", err)
 	}

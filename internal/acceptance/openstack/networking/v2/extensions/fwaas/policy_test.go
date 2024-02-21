@@ -4,6 +4,7 @@
 package fwaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -36,17 +37,17 @@ func TestPolicyCRUD(t *testing.T) {
 		Description: &description,
 	}
 
-	_, err = policies.Update(client, policy.ID, updateOpts).Extract()
+	_, err = policies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newPolicy, err := policies.Get(client, policy.ID).Extract()
+	newPolicy, err := policies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPolicy)
 	th.AssertEquals(t, newPolicy.Name, name)
 	th.AssertEquals(t, newPolicy.Description, description)
 
-	allPages, err := policies.List(client, nil).AllPages()
+	allPages, err := policies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)

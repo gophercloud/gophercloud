@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 	"net/http"
@@ -38,7 +39,7 @@ func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON stri
 		ExpiresAt: time.Date(2017, 6, 3, 2, 19, 49, 0, time.UTC),
 	}
 
-	actual, err := ec2tokens.Create(&client, &options).Extract()
+	actual, err := ec2tokens.Create(context.TODO(), &client, &options).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, expected, actual)
 }

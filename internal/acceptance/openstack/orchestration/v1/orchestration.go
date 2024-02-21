@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -69,14 +70,14 @@ func CreateStack(t *testing.T, client *gophercloud.ServiceClient) (*stacks.Retri
 		DisableRollback: gophercloud.Disabled,
 	}
 
-	stack, err := stacks.Create(client, createOpts).Extract()
+	stack, err := stacks.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForStackStatus(client, stackName, stack.ID, "CREATE_COMPLETE"); err != nil {
 		return nil, err
 	}
 
-	newStack, err := stacks.Get(client, stackName, stack.ID).Extract()
+	newStack, err := stacks.Get(context.TODO(), client, stackName, stack.ID).Extract()
 	return newStack, err
 }
 
@@ -86,7 +87,7 @@ func CreateStack(t *testing.T, client *gophercloud.ServiceClient) (*stacks.Retri
 func DeleteStack(t *testing.T, client *gophercloud.ServiceClient, stackName, stackID string) {
 	t.Logf("Attempting to delete stack %s (%s)", stackName, stackID)
 
-	err := stacks.Delete(client, stackName, stackID).ExtractErr()
+	err := stacks.Delete(context.TODO(), client, stackName, stackID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Failed to delete stack %s: %s", stackID, err)
 	}
@@ -97,7 +98,7 @@ func DeleteStack(t *testing.T, client *gophercloud.ServiceClient, stackName, sta
 // WaitForStackStatus will wait until a stack has reached a certain status.
 func WaitForStackStatus(client *gophercloud.ServiceClient, stackName, stackID, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		latest, err := stacks.Get(client, stackName, stackID).Extract()
+		latest, err := stacks.Get(context.TODO(), client, stackName, stackID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -135,13 +136,13 @@ resources:
 		DisableRollback: gophercloud.Disabled,
 	}
 
-	stack, err := stacks.Create(client, createOpts).Extract()
+	stack, err := stacks.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForStackStatus(client, stackName, stack.ID, "CREATE_COMPLETE"); err != nil {
 		return nil, err
 	}
 
-	newStack, err := stacks.Get(client, stackName, stack.ID).Extract()
+	newStack, err := stacks.Get(context.TODO(), client, stackName, stack.ID).Extract()
 	return newStack, err
 }

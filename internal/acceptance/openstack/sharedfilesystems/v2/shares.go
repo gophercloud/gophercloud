@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -33,7 +34,7 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient, optShareType .
 		IsPublic:    &iTrue,
 	}
 
-	share, err := shares.Create(client, createOpts).Extract()
+	share, err := shares.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		t.Logf("Failed to create share")
 		return nil, err
@@ -52,7 +53,7 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient, optShareType .
 // ListShares lists all shares that belong to this tenant's project.
 // An error will be returned if the shares could not be listed..
 func ListShares(t *testing.T, client *gophercloud.ServiceClient) ([]shares.Share, error) {
-	r, err := shares.ListDetail(client, &shares.ListOpts{}).AllPages()
+	r, err := shares.ListDetail(client, &shares.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +64,7 @@ func ListShares(t *testing.T, client *gophercloud.ServiceClient) ([]shares.Share
 // GrantAccess will grant access to an existing share. A fatal error will occur if
 // this operation fails.
 func GrantAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) (*shares.AccessRight, error) {
-	return shares.GrantAccess(client, share.ID, shares.GrantAccessOpts{
+	return shares.GrantAccess(context.TODO(), client, share.ID, shares.GrantAccessOpts{
 		AccessType:  "ip",
 		AccessTo:    "0.0.0.0/32",
 		AccessLevel: "ro",
@@ -73,7 +74,7 @@ func GrantAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 // RevokeAccess will revoke an exisiting access of a share. A fatal error will occur
 // if this operation fails.
 func RevokeAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, accessRight *shares.AccessRight) error {
-	return shares.RevokeAccess(client, share.ID, shares.RevokeAccessOpts{
+	return shares.RevokeAccess(context.TODO(), client, share.ID, shares.RevokeAccessOpts{
 		AccessID: accessRight.ID,
 	}).ExtractErr()
 }
@@ -81,13 +82,13 @@ func RevokeAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares
 // GetAccessRightsSlice will retrieve all access rules assigned to a share.
 // A fatal error will occur if this operation fails.
 func GetAccessRightsSlice(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) ([]shares.AccessRight, error) {
-	return shares.ListAccessRights(client, share.ID).Extract()
+	return shares.ListAccessRights(context.TODO(), client, share.ID).Extract()
 }
 
 // DeleteShare will delete a share. A fatal error will occur if the share
 // failed to be deleted. This works best when used as a deferred function.
 func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) {
-	err := shares.Delete(client, share.ID).ExtractErr()
+	err := shares.Delete(context.TODO(), client, share.ID).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			return
@@ -105,18 +106,18 @@ func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 
 // ExtendShare extends the capacity of an existing share
 func ExtendShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, newSize int) error {
-	return shares.Extend(client, share.ID, &shares.ExtendOpts{NewSize: newSize}).ExtractErr()
+	return shares.Extend(context.TODO(), client, share.ID, &shares.ExtendOpts{NewSize: newSize}).ExtractErr()
 }
 
 // ShrinkShare shrinks the capacity of an existing share
 func ShrinkShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, newSize int) error {
-	return shares.Shrink(client, share.ID, &shares.ShrinkOpts{NewSize: newSize}).ExtractErr()
+	return shares.Shrink(context.TODO(), client, share.ID, &shares.ShrinkOpts{NewSize: newSize}).ExtractErr()
 }
 
 func PrintMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error {
 	c.Microversion = "2.37"
 
-	allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages()
+	allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages(context.TODO())
 	if err != nil {
 		return fmt.Errorf("Unable to retrieve messages: %v", err)
 	}
@@ -139,7 +140,7 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 	err := tools.WaitFor(func() (bool, error) {
 		var err error
 
-		current, err = shares.Get(c, id).Extract()
+		current, err = shares.Get(context.TODO(), c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {

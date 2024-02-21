@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -26,7 +27,7 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 		},
 		FirstExecutionTime: &firstExecution,
 	}
-	crontrigger, err := crontriggers.Create(client, createOpts).Extract()
+	crontrigger, err := crontriggers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return crontrigger, err
 	}
@@ -37,7 +38,7 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 
 // DeleteCronTrigger deletes a cron trigger.
 func DeleteCronTrigger(t *testing.T, client *gophercloud.ServiceClient, crontrigger *crontriggers.CronTrigger) {
-	err := crontriggers.Delete(client, crontrigger.ID).ExtractErr()
+	err := crontriggers.Delete(context.TODO(), client, crontrigger.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete cron trigger %s: %v", crontrigger.Name, err)
 	}
@@ -47,7 +48,7 @@ func DeleteCronTrigger(t *testing.T, client *gophercloud.ServiceClient, crontrig
 
 // GetCronTrigger gets a cron trigger.
 func GetCronTrigger(t *testing.T, client *gophercloud.ServiceClient, id string) (*crontriggers.CronTrigger, error) {
-	crontrigger, err := crontriggers.Get(client, id).Extract()
+	crontrigger, err := crontriggers.Get(context.TODO(), client, id).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get cron trigger %s: %v", id, err)
 	}
@@ -57,7 +58,7 @@ func GetCronTrigger(t *testing.T, client *gophercloud.ServiceClient, id string) 
 
 // ListCronTriggers lists cron triggers.
 func ListCronTriggers(t *testing.T, client *gophercloud.ServiceClient, opts crontriggers.ListOptsBuilder) ([]crontriggers.CronTrigger, error) {
-	allPages, err := crontriggers.List(client, opts).AllPages()
+	allPages, err := crontriggers.List(client, opts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list cron triggers: %v", err)
 	}

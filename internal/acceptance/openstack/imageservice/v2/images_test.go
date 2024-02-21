@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"sort"
 	"testing"
 	"time"
@@ -24,7 +25,7 @@ func TestImagesListEachPage(t *testing.T) {
 	}
 
 	pager := images.List(client, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		images, err := images.ExtractImages(page)
 		if err != nil {
 			t.Fatalf("Unable to extract images: %v", err)
@@ -49,7 +50,7 @@ func TestImagesListAllPages(t *testing.T) {
 
 	listOpts := images.ListOpts{}
 
-	allPages, err := images.List(client, listOpts).AllPages()
+	allPages, err := images.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allImages, err := images.ExtractImages(allPages)
@@ -81,7 +82,7 @@ func TestImagesListByDate(t *testing.T) {
 		},
 	}
 
-	allPages, err := images.List(client, listOpts).AllPages()
+	allPages, err := images.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allImages, err := images.ExtractImages(allPages)
@@ -105,7 +106,7 @@ func TestImagesListByDate(t *testing.T) {
 		},
 	}
 
-	allPages, err = images.List(client, listOpts).AllPages()
+	allPages, err = images.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allImages, err = images.ExtractImages(allPages)
@@ -130,7 +131,7 @@ func TestImagesFilter(t *testing.T) {
 		DiskFormat:      "qcow2",
 	}
 
-	allPages, err := images.List(client, listOpts).AllPages()
+	allPages, err := images.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allImages, err := images.ExtractImages(allPages)
@@ -167,7 +168,7 @@ func TestImagesUpdate(t *testing.T) {
 		},
 	}
 
-	newImage, err := images.Update(client, image.ID, updateOpts).Extract()
+	newImage, err := images.Update(context.TODO(), client, image.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newImage)
@@ -192,6 +193,6 @@ func TestImagesUpdate(t *testing.T) {
 	updateOpts = images.UpdateOpts{
 		images.ReplaceImageProtected{NewProtected: false},
 	}
-	_, err = images.Update(client, image.ID, updateOpts).Extract()
+	_, err = images.Update(context.TODO(), client, image.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 }

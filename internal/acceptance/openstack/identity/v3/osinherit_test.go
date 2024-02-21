@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -43,7 +44,7 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = osinherit.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
@@ -53,7 +54,7 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	err = osinherit.Validate(context.TODO(), client, role.ID, validateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully validated inherited role %s to a user %s on a project %s",
@@ -63,7 +64,7 @@ func TestInheritRolesAssignToUserOnProject(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	err = osinherit.Unassign(context.TODO(), client, role.ID, unassignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully unassigned inherited role %s to a user %s on a project %s",
@@ -102,7 +103,7 @@ func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = osinherit.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a domain %s",
@@ -113,7 +114,7 @@ func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	err = osinherit.Validate(context.TODO(), client, role.ID, validateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully validated inherited role %s to a user %s on a domain %s",
@@ -124,7 +125,7 @@ func TestInheritRolesAssignToUserOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	err = osinherit.Unassign(context.TODO(), client, role.ID, unassignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully unassigned inherited role %s to a user %s on a domain %s",
@@ -166,7 +167,7 @@ func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = osinherit.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a domain %s",
@@ -177,7 +178,7 @@ func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	err = osinherit.Validate(context.TODO(), client, role.ID, validateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully validated inherited role %s to a group %s on a domain %s",
@@ -188,7 +189,7 @@ func TestInheritRolesAssignToGroupOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	err = osinherit.Unassign(context.TODO(), client, role.ID, unassignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully unassigned inherited role %s to a group %s on a domain %s",
@@ -227,7 +228,7 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	}
-	err = osinherit.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = osinherit.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a project %s",
@@ -237,7 +238,7 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	}
-	err = osinherit.Validate(client, role.ID, validateOpts).ExtractErr()
+	err = osinherit.Validate(context.TODO(), client, role.ID, validateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully validated inherited role %s to a group %s on a project %s",
@@ -247,7 +248,7 @@ func TestInheritRolesAssignToGroupOnProject(t *testing.T) {
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	}
-	err = osinherit.Unassign(client, role.ID, unassignOpts).ExtractErr()
+	err = osinherit.Unassign(context.TODO(), client, role.ID, unassignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully unassigned inherited role %s to a group %s on a project %s",

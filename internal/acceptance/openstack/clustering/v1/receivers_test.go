@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -29,7 +30,7 @@ func TestReceiversCRUD(t *testing.T) {
 	defer DeleteReceiver(t, client, receiver.ID)
 
 	// Test listing receivers
-	allPages, err := receivers.List(client, nil).AllPages()
+	allPages, err := receivers.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allReceivers, err := receivers.ExtractReceivers(allPages)
@@ -50,7 +51,7 @@ func TestReceiversCRUD(t *testing.T) {
 		Name: newName,
 	}
 
-	receiver, err = receivers.Update(client, receiver.ID, updateOpts).Extract()
+	receiver, err = receivers.Update(context.TODO(), client, receiver.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, receiver)
@@ -77,7 +78,7 @@ func TestReceiversNotify(t *testing.T) {
 	defer DeleteReceiver(t, client, receiver.ID)
 	t.Logf("Created Mesage Receiver Name:[%s] Message Receiver ID:[%s]", receiver.Name, receiver.ID)
 
-	requestID, err := receivers.Notify(client, receiver.ID).Extract()
+	requestID, err := receivers.Notify(context.TODO(), client, receiver.ID).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Receiver Notify Service Request ID: %s", requestID)
 }

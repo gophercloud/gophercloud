@@ -4,6 +4,7 @@
 package vpnaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestGroupList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := endpointgroups.List(client, nil).AllPages()
+	allPages, err := endpointgroups.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err := endpointgroups.ExtractEndpointGroups(allPages)
@@ -36,7 +37,7 @@ func TestGroupCRUD(t *testing.T) {
 	defer DeleteEndpointGroup(t, client, group.ID)
 	tools.PrintResource(t, group)
 
-	newGroup, err := endpointgroups.Get(client, group.ID).Extract()
+	newGroup, err := endpointgroups.Get(context.TODO(), client, group.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, newGroup)
 
@@ -46,7 +47,7 @@ func TestGroupCRUD(t *testing.T) {
 		Name:        &updatedName,
 		Description: &updatedDescription,
 	}
-	updatedGroup, err := endpointgroups.Update(client, group.ID, updateOpts).Extract()
+	updatedGroup, err := endpointgroups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updatedGroup)
 }

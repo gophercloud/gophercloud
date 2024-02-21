@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -48,7 +49,7 @@ func TestGroupCRUD(t *testing.T) {
 		},
 	}
 
-	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()
+	newGroup, err := groups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newGroup)
@@ -62,7 +63,7 @@ func TestGroupCRUD(t *testing.T) {
 	}
 
 	// List all Groups in default domain
-	allPages, err := groups.List(client, listOpts).AllPages()
+	allPages, err := groups.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allPages)
@@ -89,7 +90,7 @@ func TestGroupCRUD(t *testing.T) {
 		"name__contains": "TEST",
 	}
 
-	allPages, err = groups.List(client, listOpts).AllPages()
+	allPages, err = groups.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err = groups.ExtractGroups(allPages)
@@ -111,7 +112,7 @@ func TestGroupCRUD(t *testing.T) {
 		"name__contains": "foo",
 	}
 
-	allPages, err = groups.List(client, listOpts).AllPages()
+	allPages, err = groups.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err = groups.ExtractGroups(allPages)
@@ -130,7 +131,7 @@ func TestGroupCRUD(t *testing.T) {
 	th.AssertEquals(t, found, false)
 
 	// Get the recently created group by ID
-	p, err := groups.Get(client, group.ID).Extract()
+	p, err := groups.Get(context.TODO(), client, group.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)

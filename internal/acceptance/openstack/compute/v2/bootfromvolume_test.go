@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -71,7 +72,7 @@ func TestBootFromNewVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	attachPages, err := volumeattach.List(client, server.ID).AllPages()
+	attachPages, err := volumeattach.List(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
@@ -118,7 +119,7 @@ func TestBootFromExistingVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, computeClient, server)
 
-	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages()
+	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
@@ -209,7 +210,7 @@ func TestAttachNewVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	attachPages, err := volumeattach.List(client, server.ID).AllPages()
+	attachPages, err := volumeattach.List(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
@@ -260,7 +261,7 @@ func TestAttachExistingVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, computeClient, server)
 
-	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages()
+	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)

@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -23,7 +24,7 @@ func TestVolumeTypes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteVolumeType(t, client, vt)
 
-	allPages, err := volumetypes.List(client, nil).AllPages()
+	allPages, err := volumetypes.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allVolumeTypes, err := volumetypes.ExtractVolumeTypes(allPages)
@@ -48,7 +49,7 @@ func TestVolumeTypes(t *testing.T) {
 		IsPublic:    &isPublic,
 	}
 
-	newVT, err := volumetypes.Update(client, vt.ID, updateOpts).Extract()
+	newVT, err := volumetypes.Update(context.TODO(), client, vt.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newVT)
@@ -72,7 +73,7 @@ func TestVolumeTypesExtraSpecs(t *testing.T) {
 		"volume_backend_name": "ssd",
 	}
 
-	createdExtraSpecs, err := volumetypes.CreateExtraSpecs(client, vt.ID, createOpts).Extract()
+	createdExtraSpecs, err := volumetypes.CreateExtraSpecs(context.TODO(), client, vt.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, createdExtraSpecs)
@@ -81,20 +82,20 @@ func TestVolumeTypesExtraSpecs(t *testing.T) {
 	th.AssertEquals(t, createdExtraSpecs["capabilities"], "gpu")
 	th.AssertEquals(t, createdExtraSpecs["volume_backend_name"], "ssd")
 
-	err = volumetypes.DeleteExtraSpec(client, vt.ID, "volume_backend_name").ExtractErr()
+	err = volumetypes.DeleteExtraSpec(context.TODO(), client, vt.ID, "volume_backend_name").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	updateOpts := volumetypes.ExtraSpecsOpts{
 		"capabilities": "gpu-2",
 	}
-	updatedExtraSpec, err := volumetypes.UpdateExtraSpec(client, vt.ID, updateOpts).Extract()
+	updatedExtraSpec, err := volumetypes.UpdateExtraSpec(context.TODO(), client, vt.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedExtraSpec)
 
 	th.AssertEquals(t, updatedExtraSpec["capabilities"], "gpu-2")
 
-	allExtraSpecs, err := volumetypes.ListExtraSpecs(client, vt.ID).Extract()
+	allExtraSpecs, err := volumetypes.ListExtraSpecs(context.TODO(), client, vt.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, allExtraSpecs)
@@ -102,7 +103,7 @@ func TestVolumeTypesExtraSpecs(t *testing.T) {
 	th.AssertEquals(t, len(allExtraSpecs), 1)
 	th.AssertEquals(t, allExtraSpecs["capabilities"], "gpu-2")
 
-	singleSpec, err := volumetypes.GetExtraSpec(client, vt.ID, "capabilities").Extract()
+	singleSpec, err := volumetypes.GetExtraSpec(context.TODO(), client, vt.ID, "capabilities").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, singleSpec)
@@ -131,10 +132,10 @@ func TestVolumeTypesAccess(t *testing.T) {
 		Project: project.ID,
 	}
 
-	err = volumetypes.AddAccess(client, vt.ID, addAccessOpts).ExtractErr()
+	err = volumetypes.AddAccess(context.TODO(), client, vt.ID, addAccessOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	allPages, err := volumetypes.ListAccesses(client, vt.ID).AllPages()
+	allPages, err := volumetypes.ListAccesses(client, vt.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	accessList, err := volumetypes.ExtractAccesses(allPages)
@@ -150,10 +151,10 @@ func TestVolumeTypesAccess(t *testing.T) {
 		Project: project.ID,
 	}
 
-	err = volumetypes.RemoveAccess(client, vt.ID, removeAccessOpts).ExtractErr()
+	err = volumetypes.RemoveAccess(context.TODO(), client, vt.ID, removeAccessOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	allPages, err = volumetypes.ListAccesses(client, vt.ID).AllPages()
+	allPages, err = volumetypes.ListAccesses(client, vt.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	accessList, err = volumetypes.ExtractAccesses(allPages)
@@ -181,16 +182,16 @@ func TestEncryptionVolumeTypes(t *testing.T) {
 		Cipher:          "aes-xts-plain64",
 	}
 
-	eVT, err := volumetypes.CreateEncryption(client, vt.ID, createEncryptionOpts).Extract()
+	eVT, err := volumetypes.CreateEncryption(context.TODO(), client, vt.ID, createEncryptionOpts).Extract()
 	th.AssertNoErr(t, err)
-	defer volumetypes.DeleteEncryption(client, eVT.VolumeTypeID, eVT.EncryptionID)
+	defer volumetypes.DeleteEncryption(context.TODO(), client, eVT.VolumeTypeID, eVT.EncryptionID)
 
-	geVT, err := volumetypes.GetEncryption(client, vt.ID).Extract()
+	geVT, err := volumetypes.GetEncryption(context.TODO(), client, vt.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, geVT)
 
 	key := "cipher"
-	gesVT, err := volumetypes.GetEncryptionSpec(client, vt.ID, key).Extract()
+	gesVT, err := volumetypes.GetEncryptionSpec(context.TODO(), client, vt.ID, key).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, gesVT)
 
@@ -198,7 +199,7 @@ func TestEncryptionVolumeTypes(t *testing.T) {
 		ControlLocation: "back-end",
 	}
 
-	newEVT, err := volumetypes.UpdateEncryption(client, vt.ID, eVT.EncryptionID, updateEncryptionOpts).Extract()
+	newEVT, err := volumetypes.UpdateEncryption(context.TODO(), client, vt.ID, eVT.EncryptionID, updateEncryptionOpts).Extract()
 	tools.PrintResource(t, newEVT)
 	th.AssertNoErr(t, err)
 

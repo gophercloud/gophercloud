@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestServicesList(t *testing.T) {
 		ServiceType: "identity",
 	}
 
-	allPages, err := services.List(client, listOpts).AllPages()
+	allPages, err := services.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)
@@ -69,7 +70,7 @@ func TestServicesCRUD(t *testing.T) {
 		},
 	}
 
-	newService, err := services.Update(client, service.ID, updateOpts).Extract()
+	newService, err := services.Update(context.TODO(), client, service.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newService)

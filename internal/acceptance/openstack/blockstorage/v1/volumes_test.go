@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestVolumesList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := volumes.List(client, volumes.ListOpts{}).AllPages()
+	allPages, err := volumes.List(client, volumes.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve volumes: %v", err)
 	}
@@ -47,7 +48,7 @@ func TestVolumesCreateDestroy(t *testing.T) {
 	}
 	defer DeleteVolume(t, client, volume)
 
-	newVolume, err := volumes.Get(client, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve volume: %v", err)
 	}
@@ -63,7 +64,7 @@ func TestVolumesCreateDestroy(t *testing.T) {
 		Name:        &updatedVolumeName,
 		Description: &updatedVolumeDescription,
 	}
-	updatedVolume, err := volumes.Update(client, volume.ID, updateOpts).Extract()
+	updatedVolume, err := volumes.Update(context.TODO(), client, volume.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedVolume)

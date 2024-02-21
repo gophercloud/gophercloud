@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -25,7 +26,7 @@ func TestRolesList(t *testing.T) {
 		DomainID: "default",
 	}
 
-	allPages, err := roles.List(client, listOpts).AllPages()
+	allPages, err := roles.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -45,7 +46,7 @@ func TestRolesGet(t *testing.T) {
 	role, err := FindRole(t, client)
 	th.AssertNoErr(t, err)
 
-	p, err := roles.Get(client, role.ID).Extract()
+	p, err := roles.Get(context.TODO(), client, role.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)
@@ -73,7 +74,7 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, role.Extra)
 
 	listOpts := roles.ListOpts{}
-	allPages, err := roles.List(client, listOpts).AllPages()
+	allPages, err := roles.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -97,7 +98,7 @@ func TestRolesCRUD(t *testing.T) {
 		},
 	}
 
-	newRole, err := roles.Update(client, role.ID, updateOpts).Extract()
+	newRole, err := roles.Update(context.TODO(), client, role.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRole)
@@ -129,7 +130,7 @@ func TestRolesFilterList(t *testing.T) {
 		"name__contains": "test",
 	}
 
-	allPages, err := roles.List(client, listOpts).AllPages()
+	allPages, err := roles.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -151,7 +152,7 @@ func TestRolesFilterList(t *testing.T) {
 		"name__contains": "reader",
 	}
 
-	allPages, err = roles.List(client, listOpts).AllPages()
+	allPages, err = roles.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err = roles.ExtractRoles(allPages)
@@ -199,7 +200,7 @@ func TestRoleListAssignmentIncludeNamesAndSubtree(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
@@ -217,7 +218,7 @@ func TestRoleListAssignmentIncludeNamesAndSubtree(t *testing.T) {
 		IncludeSubtree: &iTrue,
 		IncludeNames:   &iTrue,
 	}
-	allPages, err := roles.ListAssignments(client, listAssignmentsOpts).AllPages()
+	allPages, err := roles.ListAssignments(client, listAssignmentsOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoleAssignments(allPages)
@@ -266,7 +267,7 @@ func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
@@ -281,7 +282,7 @@ func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -331,7 +332,7 @@ func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a domain %s",
@@ -346,7 +347,7 @@ func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
 		UserID:   user.ID,
 		DomainID: domain.ID,
 	}
-	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -396,7 +397,7 @@ func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	}
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a project %s",
@@ -411,7 +412,7 @@ func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	}
-	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -464,7 +465,7 @@ func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a domain %s",
@@ -479,7 +480,7 @@ func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
 		GroupID:  group.ID,
 		DomainID: domain.ID,
 	}
-	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(client, listAssignmentsOnResourceOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -526,7 +527,7 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	}
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
@@ -545,7 +546,7 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 		IncludeNames:   &iTrue,
 	}
 
-	allPages, err := roles.ListAssignments(client, lao).AllPages()
+	allPages, err := roles.ListAssignments(client, lao).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoleAssignments, err := roles.ExtractRoleAssignments(allPages)
@@ -599,7 +600,7 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a user %s on a domain %s",
@@ -618,7 +619,7 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 		IncludeNames:  &iTrue,
 	}
 
-	allPages, err := roles.ListAssignments(client, lao).AllPages()
+	allPages, err := roles.ListAssignments(client, lao).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoleAssignments, err := roles.ExtractRoleAssignments(allPages)
@@ -675,7 +676,7 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	}
 
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a domain %s",
@@ -694,7 +695,7 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 		IncludeNames:  &iTrue,
 	}
 
-	allPages, err := roles.ListAssignments(client, lao).AllPages()
+	allPages, err := roles.ListAssignments(client, lao).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoleAssignments, err := roles.ExtractRoleAssignments(allPages)
@@ -748,7 +749,7 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	}
-	err = roles.Assign(client, role.ID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully assigned a role %s to a group %s on a project %s",
@@ -767,7 +768,7 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 		IncludeNames:   &iTrue,
 	}
 
-	allPages, err := roles.ListAssignments(client, lao).AllPages()
+	allPages, err := roles.ListAssignments(client, lao).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRoleAssignments, err := roles.ExtractRoleAssignments(allPages)

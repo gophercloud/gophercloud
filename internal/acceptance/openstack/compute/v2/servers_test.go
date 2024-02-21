@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestServersCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	allPages, err := servers.List(client, servers.ListOpts{}).AllPages()
+	allPages, err := servers.List(client, servers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServers, err := servers.ExtractServers(allPages)
@@ -54,7 +55,7 @@ func TestServersCreateDestroy(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages()
+	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allAddresses, err := servers.ExtractAddresses(allAddressPages)
@@ -64,7 +65,7 @@ func TestServersCreateDestroy(t *testing.T) {
 		t.Logf("Addresses on %s: %+v", network, address)
 	}
 
-	allInterfacePages, err := attachinterfaces.List(client, server.ID).AllPages()
+	allInterfacePages, err := attachinterfaces.List(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allInterfaces, err := attachinterfaces.ExtractInterfaces(allInterfacePages)
@@ -74,7 +75,7 @@ func TestServersCreateDestroy(t *testing.T) {
 		t.Logf("Interfaces: %+v", iface)
 	}
 
-	allNetworkAddressPages, err := servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName).AllPages()
+	allNetworkAddressPages, err := servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNetworkAddresses, err := servers.ExtractNetworkAddresses(allNetworkAddressPages)
@@ -103,7 +104,7 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	err = servers.Get(client, server.ID).ExtractInto(&extendedServer)
+	err = servers.Get(context.TODO(), client, server.ID).ExtractInto(&extendedServer)
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, extendedServer)
 
@@ -150,13 +151,13 @@ func TestServersUpdate(t *testing.T) {
 		Name: alternateName,
 	}
 
-	updated, err := servers.Update(client, server.ID, updateOpts).Extract()
+	updated, err := servers.Update(context.TODO(), client, server.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, updated.ID, server.ID)
 
 	err = tools.WaitFor(func() (bool, error) {
-		latest, err := servers.Get(client, updated.ID).Extract()
+		latest, err := servers.Get(context.TODO(), client, updated.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -177,14 +178,14 @@ func TestServersMetadata(t *testing.T) {
 
 	tools.PrintResource(t, server)
 
-	metadata, err := servers.UpdateMetadata(client, server.ID, servers.MetadataOpts{
+	metadata, err := servers.UpdateMetadata(context.TODO(), client, server.ID, servers.MetadataOpts{
 		"foo":  "bar",
 		"this": "that",
 	}).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("UpdateMetadata result: %+v\n", metadata)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
@@ -196,10 +197,10 @@ func TestServersMetadata(t *testing.T) {
 	}
 	th.AssertDeepEquals(t, expectedMetadata, server.Metadata)
 
-	err = servers.DeleteMetadatum(client, server.ID, "foo").ExtractErr()
+	err = servers.DeleteMetadatum(context.TODO(), client, server.ID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
@@ -210,13 +211,13 @@ func TestServersMetadata(t *testing.T) {
 	}
 	th.AssertDeepEquals(t, expectedMetadata, server.Metadata)
 
-	metadata, err = servers.CreateMetadatum(client, server.ID, servers.MetadatumOpts{
+	metadata, err = servers.CreateMetadatum(context.TODO(), client, server.ID, servers.MetadatumOpts{
 		"foo": "baz",
 	}).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("CreateMetadatum result: %+v\n", metadata)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
@@ -228,18 +229,18 @@ func TestServersMetadata(t *testing.T) {
 	}
 	th.AssertDeepEquals(t, expectedMetadata, server.Metadata)
 
-	metadata, err = servers.Metadatum(client, server.ID, "foo").Extract()
+	metadata, err = servers.Metadatum(context.TODO(), client, server.ID, "foo").Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Metadatum result: %+v\n", metadata)
 	th.AssertEquals(t, "baz", metadata["foo"])
 
-	metadata, err = servers.Metadata(client, server.ID).Extract()
+	metadata, err = servers.Metadata(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Metadata result: %+v\n", metadata)
 
 	th.AssertDeepEquals(t, expectedMetadata, metadata)
 
-	metadata, err = servers.ResetMetadata(client, server.ID, servers.MetadataOpts{}).Extract()
+	metadata, err = servers.ResetMetadata(context.TODO(), client, server.ID, servers.MetadataOpts{}).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("ResetMetadata result: %+v\n", metadata)
 	th.AssertDeepEquals(t, map[string]string{}, metadata)
@@ -257,7 +258,7 @@ func TestServersActionChangeAdminPassword(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	randomPassword := tools.MakeNewPassword(server.AdminPass)
-	res := servers.ChangeAdminPassword(client, server.ID, randomPassword)
+	res := servers.ChangeAdminPassword(context.TODO(), client, server.ID, randomPassword)
 	th.AssertNoErr(t, res.Err)
 
 	if err = WaitForComputeStatus(client, server, "PASSWORD"); err != nil {
@@ -284,7 +285,7 @@ func TestServersActionReboot(t *testing.T) {
 	}
 
 	t.Logf("Attempting reboot of server %s", server.ID)
-	res := servers.Reboot(client, server.ID, rebootOpts)
+	res := servers.Reboot(context.TODO(), client, server.ID, rebootOpts)
 	th.AssertNoErr(t, res.Err)
 
 	if err = WaitForComputeStatus(client, server, "REBOOT"); err != nil {
@@ -317,7 +318,7 @@ func TestServersActionRebuild(t *testing.T) {
 		ImageRef:  choices.ImageID,
 	}
 
-	rebuilt, err := servers.Rebuild(client, server.ID, rebuildOpts).Extract()
+	rebuilt, err := servers.Rebuild(context.TODO(), client, server.ID, rebuildOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, rebuilt.ID, server.ID)
@@ -348,7 +349,7 @@ func TestServersActionResizeConfirm(t *testing.T) {
 	ResizeServer(t, client, server)
 
 	t.Logf("Attempting to confirm resize for server %s", server.ID)
-	if res := servers.ConfirmResize(client, server.ID); res.Err != nil {
+	if res := servers.ConfirmResize(context.TODO(), client, server.ID); res.Err != nil {
 		t.Fatal(res.Err)
 	}
 
@@ -356,7 +357,7 @@ func TestServersActionResizeConfirm(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, server.Flavor["id"], choices.FlavorIDResize)
@@ -379,7 +380,7 @@ func TestServersActionResizeRevert(t *testing.T) {
 	ResizeServer(t, client, server)
 
 	t.Logf("Attempting to revert resize for server %s", server.ID)
-	if res := servers.RevertResize(client, server.ID); res.Err != nil {
+	if res := servers.RevertResize(context.TODO(), client, server.ID); res.Err != nil {
 		t.Fatal(res.Err)
 	}
 
@@ -387,7 +388,7 @@ func TestServersActionResizeRevert(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, server.Flavor["id"], choices.FlavorID)
@@ -404,13 +405,13 @@ func TestServersActionPause(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to pause server %s", server.ID)
-	err = pauseunpause.Pause(client, server.ID).ExtractErr()
+	err = pauseunpause.Pause(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "PAUSED")
 	th.AssertNoErr(t, err)
 
-	err = pauseunpause.Unpause(client, server.ID).ExtractErr()
+	err = pauseunpause.Unpause(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -428,13 +429,13 @@ func TestServersActionSuspend(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to suspend server %s", server.ID)
-	err = suspendresume.Suspend(client, server.ID).ExtractErr()
+	err = suspendresume.Suspend(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "SUSPENDED")
 	th.AssertNoErr(t, err)
 
-	err = suspendresume.Resume(client, server.ID).ExtractErr()
+	err = suspendresume.Resume(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -453,15 +454,15 @@ func TestServersActionLock(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to Lock server %s", server.ID)
-	err = lockunlock.Lock(client, server.ID).ExtractErr()
+	err = lockunlock.Lock(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to delete locked server %s", server.ID)
-	err = servers.Delete(client, server.ID).ExtractErr()
+	err = servers.Delete(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertEquals(t, err != nil, true)
 
 	t.Logf("Attempting to unlock server %s", server.ID)
-	err = lockunlock.Unlock(client, server.ID).ExtractErr()
+	err = lockunlock.Unlock(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -481,7 +482,7 @@ func TestServersConsoleOutput(t *testing.T) {
 	outputOpts := &servers.ShowConsoleOutputOpts{
 		Length: 4,
 	}
-	output, err := servers.ShowConsoleOutput(client, server.ID, outputOpts).Extract()
+	output, err := servers.ShowConsoleOutput(context.TODO(), client, server.ID, outputOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, output)
@@ -512,49 +513,49 @@ func TestServersTags(t *testing.T) {
 	client.Microversion = "2.26"
 
 	// Check server tags in body.
-	serverWithTags, err := servers.Get(client, server.ID).Extract()
+	serverWithTags, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, []string{"tag1", "tag2"}, *serverWithTags.Tags)
 
 	// Check all tags.
-	allTags, err := tags.List(client, server.ID).Extract()
+	allTags, err := tags.List(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, []string{"tag1", "tag2"}, allTags)
 
 	// Check single tag.
-	exists, err := tags.Check(client, server.ID, "tag2").Extract()
+	exists, err := tags.Check(context.TODO(), client, server.ID, "tag2").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, exists)
 
 	// Add new tag.
-	newTags, err := tags.ReplaceAll(client, server.ID, tags.ReplaceAllOpts{Tags: []string{"tag3", "tag4"}}).Extract()
+	newTags, err := tags.ReplaceAll(context.TODO(), client, server.ID, tags.ReplaceAllOpts{Tags: []string{"tag3", "tag4"}}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, []string{"tag3", "tag4"}, newTags)
 
 	// Add new single tag.
-	err = tags.Add(client, server.ID, "tag5").ExtractErr()
+	err = tags.Add(context.TODO(), client, server.ID, "tag5").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Check current tags.
-	newAllTags, err := tags.List(client, server.ID).Extract()
+	newAllTags, err := tags.List(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, []string{"tag3", "tag4", "tag5"}, newAllTags)
 
 	// Remove single tag.
-	err = tags.Delete(client, server.ID, "tag4").ExtractErr()
+	err = tags.Delete(context.TODO(), client, server.ID, "tag4").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Check that tag doesn't exist anymore.
-	exists, err = tags.Check(client, server.ID, "tag4").Extract()
+	exists, err = tags.Check(context.TODO(), client, server.ID, "tag4").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, exists)
 
 	// Remove all tags.
-	err = tags.DeleteAll(client, server.ID).ExtractErr()
+	err = tags.DeleteAll(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Check that there are no more tags.
-	currentTags, err := tags.List(client, server.ID).Extract()
+	currentTags, err := tags.List(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(currentTags))
 }
@@ -577,7 +578,7 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	}
 	var serverWithAttributesExt serverAttributesExt
 
-	err = servers.Get(client, server.ID).ExtractInto(&serverWithAttributesExt)
+	err = servers.Get(context.TODO(), client, server.ID).ExtractInto(&serverWithAttributesExt)
 	th.AssertNoErr(t, err)
 
 	t.Logf("Server With Extended Attributes: %#v", serverWithAttributesExt)
@@ -606,7 +607,7 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	allPages, err := servers.List(client, servers.ListOpts{}).AllPages()
+	allPages, err := servers.List(client, servers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServers, err := servers.ExtractServers(allPages)
@@ -623,7 +624,7 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages()
+	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allAddresses, err := servers.ExtractAddresses(allAddressPages)
@@ -633,7 +634,7 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 		t.Logf("Addresses on %s: %+v", network, address)
 	}
 
-	allInterfacePages, err := attachinterfaces.List(client, server.ID).AllPages()
+	allInterfacePages, err := attachinterfaces.List(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allInterfaces, err := attachinterfaces.ExtractInterfaces(allInterfacePages)
@@ -643,7 +644,7 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 		t.Logf("Interfaces: %+v", iface)
 	}
 
-	_, err = servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName).AllPages()
+	_, err = servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName).AllPages(context.TODO())
 	if err == nil {
 		t.Fatalf("Instance must not be a member of specified network")
 	}

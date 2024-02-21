@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/injectnetworkinfo"
@@ -16,6 +17,6 @@ func TestInjectNetworkInfo(t *testing.T) {
 
 	mockInjectNetworkInfoResponse(t, serverID)
 
-	err := injectnetworkinfo.InjectNetworkInfo(client.ServiceClient(), serverID).ExtractErr()
+	err := injectnetworkinfo.InjectNetworkInfo(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,8 @@
 package keypairs
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -97,13 +99,13 @@ func (opts CreateOpts) ToKeyPairCreateMap() (map[string]interface{}, error) {
 
 // Create requests the creation of a new KeyPair on the server, or to import a
 // pre-existing keypair.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToKeyPairCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -130,7 +132,7 @@ func (opts GetOpts) ToKeyPairGetQuery() (string, error) {
 }
 
 // Get returns public data about a previously uploaded KeyPair.
-func Get(client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(client, name)
 	if opts != nil {
 		query, err := opts.ToKeyPairGetQuery()
@@ -141,7 +143,7 @@ func Get(client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r
 		url += query
 	}
 
-	resp, err := client.Get(url, &r.Body, nil)
+	resp, err := client.Get(ctx, url, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -166,7 +168,7 @@ func (opts DeleteOpts) ToKeyPairDeleteQuery() (string, error) {
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
-func Delete(client *gophercloud.ServiceClient, name string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, name string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, name)
 	if opts != nil {
 		query, err := opts.ToKeyPairDeleteQuery()
@@ -177,7 +179,7 @@ func Delete(client *gophercloud.ServiceClient, name string, opts DeleteOptsBuild
 		url += query
 	}
 
-	resp, err := client.Delete(url, nil)
+	resp, err := client.Delete(ctx, url, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

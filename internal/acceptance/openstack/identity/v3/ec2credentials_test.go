@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -35,7 +36,7 @@ func TestEC2CredentialsCRD(t *testing.T) {
 		},
 	}
 
-	res := tokens.Create(client, &authOptions)
+	res := tokens.Create(context.TODO(), client, &authOptions)
 	th.AssertNoErr(t, res.Err)
 	token, err := res.Extract()
 	th.AssertNoErr(t, err)
@@ -53,9 +54,9 @@ func TestEC2CredentialsCRD(t *testing.T) {
 		TenantID: project.ID,
 	}
 
-	ec2credential, err := ec2credentials.Create(client, user.ID, createOpts).Extract()
+	ec2credential, err := ec2credentials.Create(context.TODO(), client, user.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
-	defer ec2credentials.Delete(client, user.ID, ec2credential.Access)
+	defer ec2credentials.Delete(context.TODO(), client, user.ID, ec2credential.Access)
 	tools.PrintResource(t, ec2credential)
 
 	access := ec2credential.Access
@@ -72,7 +73,7 @@ func TestEC2CredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, ec2credential.TenantID, project.ID)
 
 	// Get an ec2 credential
-	getEC2Credential, err := ec2credentials.Get(client, user.ID, ec2credential.Access).Extract()
+	getEC2Credential, err := ec2credentials.Get(context.TODO(), client, user.ID, ec2credential.Access).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getEC2Credential)
 
@@ -81,7 +82,7 @@ func TestEC2CredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, getEC2Credential.Access, access)
 	th.AssertEquals(t, getEC2Credential.Secret, secret)
 
-	allPages, err := ec2credentials.List(client, user.ID).AllPages()
+	allPages, err := ec2credentials.List(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	credentials, err := ec2credentials.ExtractCredentials(allPages)
 	th.AssertNoErr(t, err)

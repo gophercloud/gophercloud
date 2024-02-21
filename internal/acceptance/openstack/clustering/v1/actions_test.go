@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -20,7 +21,7 @@ func TestActionsList(t *testing.T) {
 		Limit: 200,
 	}
 
-	allPages, err := actions.List(client, opts).AllPages()
+	allPages, err := actions.List(client, opts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allActions, err := actions.ExtractActions(allPages)

@@ -1,6 +1,8 @@
 package profiles
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -24,13 +26,13 @@ func (opts CreateOpts) ToProfileCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new profile on the server.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToProfileCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -38,8 +40,8 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Get retrieves detail of a single profile.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -102,13 +104,13 @@ func (opts UpdateOpts) ToProfileUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates a profile.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToProfileUpdateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-	resp, err := client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -116,8 +118,8 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 }
 
 // Delete deletes the specified profile via profile id.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -139,13 +141,13 @@ func (opts ValidateOpts) ToProfileValidateMap() (map[string]interface{}, error) 
 }
 
 // Validate profile.
-func Validate(client *gophercloud.ServiceClient, opts ValidateOpts) (r ValidateResult) {
+func Validate(ctx context.Context, client *gophercloud.ServiceClient, opts ValidateOpts) (r ValidateResult) {
 	b, err := opts.ToProfileValidateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(validateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, validateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

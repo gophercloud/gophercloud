@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestFlavorsList(t *testing.T) {
 		t.Fatalf("Unable to create a loadbalancer client: %v", err)
 	}
 
-	allPages, err := flavors.List(client, nil).AllPages()
+	allPages, err := flavors.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list flavors: %v", err)
 	}
@@ -57,7 +58,7 @@ func TestFlavorsCRUD(t *testing.T) {
 		Name: tools.RandomString("TESTACCTUP-", 8),
 	}
 
-	flavorUpdated, err := flavors.Update(lbClient, flavor.ID, flavorUpdateOpts).Extract()
+	flavorUpdated, err := flavors.Update(context.TODO(), lbClient, flavor.ID, flavorUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, flavorUpdateOpts.Name, flavorUpdated.Name)

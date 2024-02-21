@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestRegionsList(t *testing.T) {
 		ParentRegionID: "RegionOne",
 	}
 
-	allPages, err := regions.List(client, listOpts).AllPages()
+	allPages, err := regions.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRegions, err := regions.ExtractRegions(allPages)
@@ -39,14 +40,14 @@ func TestRegionsGet(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := regions.List(client, nil).AllPages()
+	allPages, err := regions.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRegions, err := regions.ExtractRegions(allPages)
 	th.AssertNoErr(t, err)
 
 	region := allRegions[0]
-	p, err := regions.Get(client, region.ID).Extract()
+	p, err := regions.Get(context.TODO(), client, region.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)
@@ -90,7 +91,7 @@ func TestRegionsCRUD(t *testing.T) {
 		*/
 	}
 
-	newRegion, err := regions.Update(client, region.ID, updateOpts).Extract()
+	newRegion, err := regions.Update(context.TODO(), client, region.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRegion)

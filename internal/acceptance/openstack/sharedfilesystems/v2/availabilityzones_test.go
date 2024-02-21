@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestAvailabilityZonesList(t *testing.T) {
 		t.Fatalf("Unable to create shared file system client: %v", err)
 	}
 
-	allPages, err := availabilityzones.List(client).AllPages()
+	allPages, err := availabilityzones.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list availability zones: %v", err)
 	}

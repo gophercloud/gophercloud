@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -21,7 +22,7 @@ func TestProfilesCRUD(t *testing.T) {
 	defer DeleteProfile(t, client, profile.ID)
 
 	// Test listing profiles
-	allPages, err := profiles.List(client, nil).AllPages()
+	allPages, err := profiles.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProfiles, err := profiles.ExtractProfiles(allPages)
@@ -41,7 +42,7 @@ func TestProfilesCRUD(t *testing.T) {
 		Name: profile.Name + "-UPDATED",
 	}
 
-	newProfile, err := profiles.Update(client, profile.ID, updateOpts).Extract()
+	newProfile, err := profiles.Update(context.TODO(), client, profile.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newProfile.Name, profile.Name+"-UPDATED")
 
@@ -61,7 +62,7 @@ func TestProfileValidate(t *testing.T) {
 	opts := profiles.ValidateOpts{
 		Spec: profile.Spec,
 	}
-	validatedProfile, err := profiles.Validate(client, opts).Extract()
+	validatedProfile, err := profiles.Validate(context.TODO(), client, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Do not validate the following fields for AssertDeepEquals() because the actual fields are either missing or hardcoded.

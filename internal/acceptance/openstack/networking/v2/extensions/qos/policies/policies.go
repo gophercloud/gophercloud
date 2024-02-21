@@ -1,6 +1,7 @@
 package policies
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -22,7 +23,7 @@ func CreateQoSPolicy(t *testing.T, client *gophercloud.ServiceClient) (*policies
 
 	t.Logf("Attempting to create a QoS policy: %s", policyName)
 
-	policy, err := policies.Create(client, createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +41,7 @@ func CreateQoSPolicy(t *testing.T, client *gophercloud.ServiceClient) (*policies
 func DeleteQoSPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
 	t.Logf("Attempting to delete the QoS policy: %s", policyID)
 
-	err := policies.Delete(client, policyID).ExtractErr()
+	err := policies.Delete(context.TODO(), client, policyID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete QoS policy %s: %v", policyID, err)
 	}

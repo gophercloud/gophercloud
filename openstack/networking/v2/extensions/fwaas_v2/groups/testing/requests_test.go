@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -67,7 +68,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	groups.List(fake.ServiceClient(), groups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	groups.List(fake.ServiceClient(), groups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := groups.ExtractGroups(page)
 		if err != nil {
@@ -155,7 +156,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	group, err := groups.Get(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
+	group, err := groups.Get(context.TODO(), fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "6bfb0f10-07f7-4a40-b534-bad4b4ca3428", group.ID)
@@ -228,7 +229,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	_, err := groups.Create(fake.ServiceClient(), options).Extract()
+	_, err := groups.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -293,7 +294,7 @@ func TestUpdate(t *testing.T) {
 		AdminStateUp: &adminStateUp,
 	}
 
-	_, err := groups.Update(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428", options).Extract()
+	_, err := groups.Update(context.TODO(), fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -339,7 +340,7 @@ func TestRemoveIngressPolicy(t *testing.T) {
     `)
 	})
 
-	removeIngressPolicy, err := groups.RemoveIngressPolicy(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
+	removeIngressPolicy, err := groups.RemoveIngressPolicy(context.TODO(), fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, removeIngressPolicy.IngressFirewallPolicyID, "")
 	th.AssertEquals(t, removeIngressPolicy.EgressFirewallPolicyID, "43a11f3a-ddac-4129-9469-02b9df26548e")
@@ -387,7 +388,7 @@ func TestRemoveEgressPolicy(t *testing.T) {
     `)
 	})
 
-	removeEgressPolicy, err := groups.RemoveEgressPolicy(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
+	removeEgressPolicy, err := groups.RemoveEgressPolicy(context.TODO(), fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, removeEgressPolicy.IngressFirewallPolicyID, "e3f11142-3792-454b-8d3e-91ac1bf127b4")
 	th.AssertEquals(t, removeEgressPolicy.EgressFirewallPolicyID, "")
@@ -403,6 +404,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := groups.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	res := groups.Delete(context.TODO(), fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

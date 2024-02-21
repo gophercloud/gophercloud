@@ -1,6 +1,8 @@
 package quotas
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
@@ -22,13 +24,13 @@ func (opts CreateOpts) ToQuotaCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new quota.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToQuotaCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

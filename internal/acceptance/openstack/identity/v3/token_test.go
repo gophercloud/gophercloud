@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -28,23 +29,23 @@ func TestTokensGet(t *testing.T) {
 		DomainName: "default",
 	}
 
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	catalog, err := tokens.Get(client, token.ID).ExtractServiceCatalog()
+	catalog, err := tokens.Get(context.TODO(), client, token.ID).ExtractServiceCatalog()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, catalog)
 
-	user, err := tokens.Get(client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	roles, err := tokens.Get(client, token.ID).ExtractRoles()
+	roles, err := tokens.Get(context.TODO(), client, token.ID).ExtractRoles()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, roles)
 
-	project, err := tokens.Get(client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 }

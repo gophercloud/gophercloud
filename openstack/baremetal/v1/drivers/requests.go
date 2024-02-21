@@ -1,6 +1,8 @@
 package drivers
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -42,8 +44,8 @@ func ListDrivers(client *gophercloud.ServiceClient, opts ListDriversOptsBuilder)
 }
 
 // GetDriverDetails Shows details for a driver
-func GetDriverDetails(client *gophercloud.ServiceClient, driverName string) (r GetDriverResult) {
-	resp, err := client.Get(driverDetailsURL(client, driverName), &r.Body, &gophercloud.RequestOpts{
+func GetDriverDetails(ctx context.Context, client *gophercloud.ServiceClient, driverName string) (r GetDriverResult) {
+	resp, err := client.Get(ctx, driverDetailsURL(client, driverName), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -53,8 +55,8 @@ func GetDriverDetails(client *gophercloud.ServiceClient, driverName string) (r G
 // GetDriverProperties Shows the required and optional parameters that
 // driverName expects to be supplied in the driver_info field for every
 // Node it manages
-func GetDriverProperties(client *gophercloud.ServiceClient, driverName string) (r GetPropertiesResult) {
-	resp, err := client.Get(driverPropertiesURL(client, driverName), &r.Body, &gophercloud.RequestOpts{
+func GetDriverProperties(ctx context.Context, client *gophercloud.ServiceClient, driverName string) (r GetPropertiesResult) {
+	resp, err := client.Get(ctx, driverPropertiesURL(client, driverName), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -64,8 +66,8 @@ func GetDriverProperties(client *gophercloud.ServiceClient, driverName string) (
 // GetDriverDiskProperties Show the required and optional parameters that
 // driverName expects to be supplied in the node’s raid_config field, if a
 // RAID configuration change is requested.
-func GetDriverDiskProperties(client *gophercloud.ServiceClient, driverName string) (r GetDiskPropertiesResult) {
-	resp, err := client.Get(driverDiskPropertiesURL(client, driverName), &r.Body, &gophercloud.RequestOpts{
+func GetDriverDiskProperties(ctx context.Context, client *gophercloud.ServiceClient, driverName string) (r GetDiskPropertiesResult) {
+	resp, err := client.Get(ctx, driverDiskPropertiesURL(client, driverName), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

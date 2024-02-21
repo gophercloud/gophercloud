@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"testing"
@@ -17,6 +18,7 @@ func TestUpload(t *testing.T) {
 	HandlePutImageDataSuccessfully(t)
 
 	err := imagedata.Upload(
+		context.TODO(),
 		fakeclient.ServiceClient(),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24})).ExtractErr()
@@ -31,6 +33,7 @@ func TestStage(t *testing.T) {
 	HandleStageImageDataSuccessfully(t)
 
 	err := imagedata.Stage(
+		context.TODO(),
 		fakeclient.ServiceClient(),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24})).ExtractErr()
@@ -90,7 +93,7 @@ func TestDownload(t *testing.T) {
 
 	HandleGetImageDataSuccessfully(t)
 
-	rdr, err := imagedata.Download(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
+	rdr, err := imagedata.Download(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
 	th.AssertNoErr(t, err)
 
 	defer rdr.Close()

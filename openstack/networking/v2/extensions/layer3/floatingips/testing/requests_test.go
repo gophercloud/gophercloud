@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -28,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := floatingips.ExtractFloatingIPs(page)
 		if err != nil {
@@ -90,19 +91,19 @@ func TestInvalidNextPageURLs(t *testing.T) {
 		fmt.Fprintf(w, `{"floatingips": [{}], "floatingips_links": {}}`)
 	})
 
-	floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		floatingips.ExtractFloatingIPs(page)
 		return true, nil
 	})
 }
 
 func TestRequiredFieldsForCreate(t *testing.T) {
-	res1 := floatingips.Create(fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: ""})
+	res1 := floatingips.Create(context.TODO(), fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: ""})
 	if res1.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 
-	res2 := floatingips.Create(fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: "foo", PortID: ""})
+	res2 := floatingips.Create(context.TODO(), fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: "foo", PortID: ""})
 	if res2.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -151,7 +152,7 @@ func TestCreate(t *testing.T) {
 		PortID:            "ce705c24-c1ef-408a-bda3-7bbd946164ab",
 	}
 
-	ip, err := floatingips.Create(fake.ServiceClient(), options).Extract()
+	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -204,7 +205,7 @@ func TestCreateEmptyPort(t *testing.T) {
 		FloatingNetworkID: "376da547-b977-4cfe-9cba-275c80debf57",
 	}
 
-	ip, err := floatingips.Create(fake.ServiceClient(), options).Extract()
+	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -260,7 +261,7 @@ func TestCreateWithSubnetID(t *testing.T) {
 		SubnetID:          "37adf01c-24db-467a-b845-7ab1e8216c01",
 	}
 
-	ip, err := floatingips.Create(fake.ServiceClient(), options).Extract()
+	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -302,7 +303,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	ip, err := floatingips.Get(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7").Extract()
+	ip, err := floatingips.Get(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "90f742b1-6d17-487b-ba95-71881dbc0b64", ip.FloatingNetworkID)
@@ -353,7 +354,7 @@ func TestAssociate(t *testing.T) {
 	})
 
 	portID := "423abc8d-2991-4a55-ba98-2aaea84cc72e"
-	ip, err := floatingips.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: &portID}).Extract()
+	ip, err := floatingips.Update(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: &portID}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, portID, ip.PortID)
@@ -394,7 +395,7 @@ func TestDisassociate(t *testing.T) {
     `)
 	})
 
-	ip, err := floatingips.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: new(string)}).Extract()
+	ip, err := floatingips.Update(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: new(string)}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, "", ip.FixedIP)
@@ -411,6 +412,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := floatingips.Delete(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7")
+	res := floatingips.Delete(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7")
 	th.AssertNoErr(t, res.Err)
 }

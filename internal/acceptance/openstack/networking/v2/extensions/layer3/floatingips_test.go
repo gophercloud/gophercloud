@@ -4,6 +4,7 @@
 package layer3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,12 +26,12 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, fip.ID)
 
-	newFip, err := floatingips.Get(client, fip.ID).Extract()
+	newFip, err := floatingips.Get(context.TODO(), client, fip.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
 
-	allPages, err := floatingips.List(client, floatingips.ListOpts{}).AllPages()
+	allPages, err := floatingips.List(client, floatingips.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allFIPs, err := floatingips.ExtractFloatingIPs(allPages)
@@ -81,7 +82,7 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, fip.ID)
 
-	newFip, err := floatingips.Get(client, fip.ID).Extract()
+	newFip, err := floatingips.Get(context.TODO(), client, fip.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
@@ -91,10 +92,10 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 		PortID: new(string),
 	}
 
-	_, err = floatingips.Update(client, fip.ID, updateOpts).Extract()
+	_, err = floatingips.Update(context.TODO(), client, fip.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newFip, err = floatingips.Get(client, fip.ID).Extract()
+	newFip, err = floatingips.Get(context.TODO(), client, fip.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
@@ -141,7 +142,7 @@ func TestLayer3FloatingIPsWithFixedIPsExternalCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, fip.ID)
 
-	newFip, err := floatingips.Get(client, fip.ID).Extract()
+	newFip, err := floatingips.Get(context.TODO(), client, fip.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
@@ -152,10 +153,10 @@ func TestLayer3FloatingIPsWithFixedIPsExternalCreateDelete(t *testing.T) {
 		FixedIP: fixedIPs[1],
 	}
 
-	_, err = floatingips.Update(client, fip.ID, updateOpts).Extract()
+	_, err = floatingips.Update(context.TODO(), client, fip.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newFip, err = floatingips.Get(client, fip.ID).Extract()
+	newFip, err = floatingips.Get(context.TODO(), client, fip.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
@@ -167,7 +168,7 @@ func TestLayer3FloatingIPsWithFixedIPsExternalCreateDelete(t *testing.T) {
 		PortID: new(string),
 	}
 
-	_, err = floatingips.Update(client, fip.ID, updateOpts).Extract()
+	_, err = floatingips.Update(context.TODO(), client, fip.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -185,7 +186,7 @@ func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 		IPVersion: 4,
 	}
 
-	subnetPages, err := subnets.List(client, listOpts).AllPages()
+	subnetPages, err := subnets.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allSubnets, err := subnets.ExtractSubnets(subnetPages)
@@ -196,7 +197,7 @@ func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 		SubnetID:          allSubnets[0].ID,
 	}
 
-	fip, err := floatingips.Create(client, createOpts).Extract()
+	fip, err := floatingips.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, fip)

@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
@@ -38,7 +39,7 @@ func TestUsageSingleTenant(t *testing.T) {
 		End:   &end,
 	}
 
-	err = usage.SingleTenant(client, tenantID, opts).EachPage(func(page pagination.Page) (bool, error) {
+	err = usage.SingleTenant(client, tenantID, opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		tenantUsage, err := usage.ExtractSingleTenant(page)
 		th.AssertNoErr(t, err)
 
@@ -73,7 +74,7 @@ func TestUsageAllTenants(t *testing.T) {
 		End:      &end,
 	}
 
-	err = usage.AllTenants(client, opts).EachPage(func(page pagination.Page) (bool, error) {
+	err = usage.AllTenants(client, opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allUsage, err := usage.ExtractAllTenants(page)
 		th.AssertNoErr(t, err)
 

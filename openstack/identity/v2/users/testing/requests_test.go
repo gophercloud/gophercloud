@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -18,7 +19,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := users.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := users.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := users.ExtractUsers(page)
 		th.AssertNoErr(t, err)
@@ -61,7 +62,7 @@ func TestCreateUser(t *testing.T) {
 		Email:    "new_user@foo.com",
 	}
 
-	user, err := users.Create(client.ServiceClient(), opts).Extract()
+	user, err := users.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -82,7 +83,7 @@ func TestGetUser(t *testing.T) {
 
 	mockGetUserResponse(t)
 
-	user, err := users.Get(client.ServiceClient(), "new_user").Extract()
+	user, err := users.Get(context.TODO(), client.ServiceClient(), "new_user").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &users.User{
@@ -109,7 +110,7 @@ func TestUpdateUser(t *testing.T) {
 		Email:   "new_email@foo.com",
 	}
 
-	user, err := users.Update(client.ServiceClient(), id, opts).Extract()
+	user, err := users.Update(context.TODO(), client.ServiceClient(), id, opts).Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -130,7 +131,7 @@ func TestDeleteUser(t *testing.T) {
 
 	mockDeleteUserResponse(t)
 
-	res := users.Delete(client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
+	res := users.Delete(context.TODO(), client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -143,7 +144,7 @@ func TestListingUserRoles(t *testing.T) {
 	tenantID := "1d8b6120dcc640fda4fc9194ffc80273"
 	userID := "c39e3de9be2d4c779f1dfd6abacc176d"
 
-	err := users.ListRoles(client.ServiceClient(), tenantID, userID).EachPage(func(page pagination.Page) (bool, error) {
+	err := users.ListRoles(client.ServiceClient(), tenantID, userID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := users.ExtractRoles(page)
 		th.AssertNoErr(t, err)
 

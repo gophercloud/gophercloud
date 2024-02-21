@@ -4,6 +4,7 @@
 package dns
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -26,7 +27,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "dns-integration").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "dns-integration").Extract()
 	if err != nil {
 		t.Skip("This test requires dns-integration Neutron extension")
 	}
@@ -60,7 +61,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 		}
 		var listedPorts []PortWithDNSExt
 		i := 0
-		err = ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+		err = ports.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 			i++
 			err := ports.ExtractPortsInto(page, &listedPorts)
 			if err != nil {
@@ -84,7 +85,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 			DNSName:         "foo",
 		}
 		i = 0
-		err = ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+		err = ports.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 			i++
 			err := ports.ExtractPortsInto(page, &listedPorts)
 			if err != nil {
@@ -105,7 +106,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 
 	// Get port
 	var getPort PortWithDNSExt
-	err = ports.Get(client, port.ID).ExtractInto(&getPort)
+	err = ports.Get(context.TODO(), client, port.ID).ExtractInto(&getPort)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getPort)
@@ -126,7 +127,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 	}
 
 	var newPort PortWithDNSExt
-	err = ports.Update(client, port.ID, updateOpts).ExtractInto(&newPort)
+	err = ports.Update(context.TODO(), client, port.ID, updateOpts).ExtractInto(&newPort)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -136,7 +137,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 
 	// Get updated port
 	var getNewPort PortWithDNSExt
-	err = ports.Get(client, port.ID).ExtractInto(&getNewPort)
+	err = ports.Get(context.TODO(), client, port.ID).ExtractInto(&getNewPort)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getNewPort)
@@ -153,7 +154,7 @@ func TestDNSFloatingIPCRDL(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "dns-integration").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "dns-integration").Extract()
 	if err != nil {
 		t.Skip("This test requires dns-integration Neutron extension")
 	}
@@ -202,7 +203,7 @@ func TestDNSFloatingIPCRDL(t *testing.T) {
 
 	// Get floating IP
 	var getFip FloatingIPWithDNSExt
-	err = floatingips.Get(client, fip.ID).ExtractInto(&getFip)
+	err = floatingips.Get(context.TODO(), client, fip.ID).ExtractInto(&getFip)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getFip)
@@ -215,7 +216,7 @@ func TestDNSNetwork(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "dns-integration").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "dns-integration").Extract()
 	if err != nil {
 		t.Skip("This test requires dns-integration Neutron extension")
 	}
@@ -229,7 +230,7 @@ func TestDNSNetwork(t *testing.T) {
 
 	// Get network
 	var getNetwork NetworkWithDNSExt
-	err = networks.Get(client, network.ID).ExtractInto(&getNetwork)
+	err = networks.Get(context.TODO(), client, network.ID).ExtractInto(&getNetwork)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getNetwork)
@@ -250,7 +251,7 @@ func TestDNSNetwork(t *testing.T) {
 	}
 
 	var newNetwork NetworkWithDNSExt
-	err = networks.Update(client, network.ID, updateOpts).ExtractInto(&newNetwork)
+	err = networks.Update(context.TODO(), client, network.ID, updateOpts).ExtractInto(&newNetwork)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newNetwork)
@@ -260,7 +261,7 @@ func TestDNSNetwork(t *testing.T) {
 
 	// Get updated network
 	var getNewNetwork NetworkWithDNSExt
-	err = networks.Get(client, network.ID).ExtractInto(&getNewNetwork)
+	err = networks.Get(context.TODO(), client, network.ID).ExtractInto(&getNewNetwork)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getNewNetwork)

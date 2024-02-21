@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -33,7 +34,7 @@ func TestVolumeAttachments(t *testing.T) {
 	err = CreateVolumeAttachment(t, blockClient, volume, server)
 	th.AssertNoErr(t, err)
 
-	newVolume, err := volumes.Get(blockClient, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), blockClient, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	DeleteVolumeAttachment(t, blockClient, newVolume)

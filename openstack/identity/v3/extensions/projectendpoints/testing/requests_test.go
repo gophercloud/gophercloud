@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -23,7 +24,7 @@ func TestCreateSuccessful(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := projectendpoints.Create(client.ServiceClient(), "project-id", "endpoint-id").Err
+	err := projectendpoints.Create(context.TODO(), client.ServiceClient(), "project-id", "endpoint-id").Err
 	th.AssertNoErr(t, err)
 }
 
@@ -70,7 +71,7 @@ func TestListEndpoints(t *testing.T) {
 	})
 
 	count := 0
-	projectendpoints.List(client.ServiceClient(), "project-id").EachPage(func(page pagination.Page) (bool, error) {
+	projectendpoints.List(client.ServiceClient(), "project-id").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := projectendpoints.ExtractEndpoints(page)
 		if err != nil {
@@ -111,6 +112,6 @@ func TestDeleteEndpoint(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := projectendpoints.Delete(client.ServiceClient(), "project-id", "endpoint-id")
+	res := projectendpoints.Delete(context.TODO(), client.ServiceClient(), "project-id", "endpoint-id")
 	th.AssertNoErr(t, res.Err)
 }

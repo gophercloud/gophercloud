@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/migrate"
@@ -16,7 +17,7 @@ func TestMigrate(t *testing.T) {
 
 	mockMigrateResponse(t, serverID)
 
-	err := migrate.Migrate(client.ServiceClient(), serverID).ExtractErr()
+	err := migrate.Migrate(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -36,6 +37,6 @@ func TestLiveMigrate(t *testing.T) {
 		DiskOverCommit: &diskOverCommit,
 	}
 
-	err := migrate.LiveMigrate(client.ServiceClient(), serverID, migrationOpts).ExtractErr()
+	err := migrate.LiveMigrate(context.TODO(), client.ServiceClient(), serverID, migrationOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

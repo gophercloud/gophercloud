@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -31,7 +32,7 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 		Description:     "This is a shared network",
 	}
 
-	shareNetwork, err := sharenetworks.Create(client, createOpts).Extract()
+	shareNetwork, err := sharenetworks.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return shareNetwork, err
 	}
@@ -42,7 +43,7 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 // DeleteShareNetwork will delete a share network. An error will occur if
 // the share network was unable to be deleted.
 func DeleteShareNetwork(t *testing.T, client *gophercloud.ServiceClient, shareNetworkID string) {
-	err := sharenetworks.Delete(client, shareNetworkID).ExtractErr()
+	err := sharenetworks.Delete(context.TODO(), client, shareNetworkID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Failed to delete share network %s: %v", shareNetworkID, err)
 	}

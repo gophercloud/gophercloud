@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/certificates"
@@ -17,7 +18,7 @@ func TestGetCertificates(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	actual, err := certificates.Get(sc, "d564b18a-2890-4152-be3d-e05d784ff72").Extract()
+	actual, err := certificates.Get(context.TODO(), sc, "d564b18a-2890-4152-be3d-e05d784ff72").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCertificate, *actual)
 }
@@ -36,7 +37,7 @@ func TestCreateCertificates(t *testing.T) {
 		CSR:     "FAKE_CERTIFICATE_CSR",
 	}
 
-	actual, err := certificates.Create(sc, opts).Extract()
+	actual, err := certificates.Create(context.TODO(), sc, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCreateCertificateResponse, *actual)
 }
@@ -50,6 +51,6 @@ func TestUpdateCertificates(t *testing.T) {
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
-	err := certificates.Update(sc, "d564b18a-2890-4152-be3d-e05d784ff72").ExtractErr()
+	err := certificates.Update(context.TODO(), sc, "d564b18a-2890-4152-be3d-e05d784ff72").ExtractErr()
 	th.AssertNoErr(t, err)
 }

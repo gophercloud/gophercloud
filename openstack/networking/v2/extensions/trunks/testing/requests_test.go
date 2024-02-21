@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -45,12 +46,12 @@ func TestCreate(t *testing.T) {
 			},
 		},
 	}
-	_, err := trunks.Create(fake.ServiceClient(), options).Extract()
+	_, err := trunks.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	if err == nil {
 		t.Fatalf("Failed to detect missing parent PortID field")
 	}
 	options.PortID = "c373d2fa-3d3b-4492-924c-aff54dea19b6"
-	n, err := trunks.Create(fake.ServiceClient(), options).Extract()
+	n, err := trunks.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -82,7 +83,7 @@ func TestCreateNoSubports(t *testing.T) {
 		AdminStateUp: &iTrue,
 		PortID:       "c373d2fa-3d3b-4492-924c-aff54dea19b6",
 	}
-	n, err := trunks.Create(fake.ServiceClient(), options).Extract()
+	n, err := trunks.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -99,7 +100,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := trunks.Delete(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c")
+	res := trunks.Delete(context.TODO(), fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -120,7 +121,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceClient()
 	count := 0
 
-	trunks.List(client, trunks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	trunks.List(client, trunks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := trunks.ExtractTrunks(page)
 		if err != nil {
@@ -154,7 +155,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, GetResponse)
 	})
 
-	n, err := trunks.Get(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c").Extract()
+	n, err := trunks.Get(context.TODO(), fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c").Extract()
 	th.AssertNoErr(t, err)
 	expectedTrunks, err := ExpectedTrunkSlice()
 	th.AssertNoErr(t, err)
@@ -186,7 +187,7 @@ func TestUpdate(t *testing.T) {
 		AdminStateUp: &iFalse,
 		Description:  &description,
 	}
-	n, err := trunks.Update(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c", options).Extract()
+	n, err := trunks.Update(context.TODO(), fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, name)
@@ -210,7 +211,7 @@ func TestGetSubports(t *testing.T) {
 
 	client := fake.ServiceClient()
 
-	subports, err := trunks.GetSubports(client, "f6a9718c-5a64-43e3-944f-4deccad8e78c").Extract()
+	subports, err := trunks.GetSubports(context.TODO(), client, "f6a9718c-5a64-43e3-944f-4deccad8e78c").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedSubports, subports)
 }
@@ -266,7 +267,7 @@ func TestAddSubports(t *testing.T) {
 		Subports: ExpectedSubports,
 	}
 
-	trunk, err := trunks.AddSubports(client, "f6a9718c-5a64-43e3-944f-4deccad8e78c", opts).Extract()
+	trunk, err := trunks.AddSubports(context.TODO(), client, "f6a9718c-5a64-43e3-944f-4deccad8e78c", opts).Extract()
 	th.AssertNoErr(t, err)
 	expectedTrunk, err := ExpectedSubportsAddedTrunk()
 	th.AssertNoErr(t, err)
@@ -296,7 +297,7 @@ func TestRemoveSubports(t *testing.T) {
 			{PortID: "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab"},
 		},
 	}
-	trunk, err := trunks.RemoveSubports(client, "f6a9718c-5a64-43e3-944f-4deccad8e78c", opts).Extract()
+	trunk, err := trunks.RemoveSubports(context.TODO(), client, "f6a9718c-5a64-43e3-944f-4deccad8e78c", opts).Extract()
 
 	th.AssertNoErr(t, err)
 	expectedTrunk, err := ExpectedSubportsRemovedTrunk()

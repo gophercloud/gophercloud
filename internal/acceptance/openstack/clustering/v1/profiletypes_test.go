@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestProfileTypesList(t *testing.T) {
 
 	client.Microversion = "1.5"
 
-	allPages, err := profiletypes.List(client).AllPages()
+	allPages, err := profiletypes.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProfileTypes, err := profiletypes.ExtractProfileTypes(allPages)
@@ -35,7 +36,7 @@ func TestProfileTypesOpsList(t *testing.T) {
 	client.Microversion = "1.5"
 
 	profileTypeName := "os.nova.server-1.0"
-	allPages, err := profiletypes.ListOps(client, profileTypeName).AllPages()
+	allPages, err := profiletypes.ListOps(client, profileTypeName).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	ops, err := profiletypes.ExtractOps(allPages)

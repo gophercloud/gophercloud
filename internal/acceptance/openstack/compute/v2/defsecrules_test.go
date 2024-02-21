@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestDefSecRulesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := dsr.List(client).AllPages()
+	allPages, err := dsr.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allDefaultRules, err := dsr.ExtractDefaultRules(allPages)
@@ -55,7 +56,7 @@ func TestDefSecRulesGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteDefaultRule(t, client, defaultRule)
 
-	newDefaultRule, err := dsr.Get(client, defaultRule.ID).Extract()
+	newDefaultRule, err := dsr.Get(context.TODO(), client, defaultRule.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newDefaultRule)

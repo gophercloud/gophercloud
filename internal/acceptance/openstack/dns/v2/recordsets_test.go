@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -21,7 +22,7 @@ func TestRecordSetsListByZone(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteZone(t, client, zone)
 
-	allPages, err := recordsets.ListByZone(client, zone.ID, nil).AllPages()
+	allPages, err := recordsets.ListByZone(client, zone.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRecordSets, err := recordsets.ExtractRecordSets(allPages)

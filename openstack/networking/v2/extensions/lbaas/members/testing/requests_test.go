@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -53,7 +54,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	members.List(fake.ServiceClient(), members.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	members.List(fake.ServiceClient(), members.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := members.ExtractMembers(page)
 		if err != nil {
@@ -138,7 +139,7 @@ func TestCreate(t *testing.T) {
 		ProtocolPort: 8080,
 		PoolID:       "foo",
 	}
-	_, err := members.Create(fake.ServiceClient(), options).Extract()
+	_, err := members.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -168,7 +169,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	m, err := members.Get(fake.ServiceClient(), "975592ca-e308-48ad-8298-731935ee9f45").Extract()
+	m, err := members.Get(context.TODO(), fake.ServiceClient(), "975592ca-e308-48ad-8298-731935ee9f45").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "975592ca-e308-48ad-8298-731935ee9f45", m.ID)
@@ -219,7 +220,7 @@ func TestUpdate(t *testing.T) {
 
 	options := members.UpdateOpts{AdminStateUp: gophercloud.Disabled}
 
-	_, err := members.Update(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
+	_, err := members.Update(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -233,6 +234,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := members.Delete(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
+	res := members.Delete(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
 	th.AssertNoErr(t, res.Err)
 }

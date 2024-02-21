@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestAvailabilityZonesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := availabilityzones.List(client).AllPages()
+	allPages, err := availabilityzones.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	availabilityZoneInfo, err := availabilityzones.ExtractAvailabilityZones(allPages)
@@ -40,7 +41,7 @@ func TestAvailabilityZonesListDetail(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := availabilityzones.ListDetail(client).AllPages()
+	allPages, err := availabilityzones.ListDetail(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	availabilityZoneInfo, err := availabilityzones.ExtractAvailabilityZones(allPages)

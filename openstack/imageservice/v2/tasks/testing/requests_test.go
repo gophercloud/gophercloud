@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -28,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	tasks.List(fakeclient.ServiceClient(), tasks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	tasks.List(fakeclient.ServiceClient(), tasks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := tasks.ExtractTasks(page)
 		if err != nil {
@@ -65,7 +66,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, TasksGetResult)
 	})
 
-	s, err := tasks.Get(fakeclient.ServiceClient(), "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
+	s, err := tasks.Get(context.TODO(), fakeclient.ServiceClient(), "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))
@@ -114,7 +115,7 @@ func TestCreate(t *testing.T) {
 			"import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
 		},
 	}
-	s, err := tasks.Create(fakeclient.ServiceClient(), opts).Extract()
+	s, err := tasks.Create(context.TODO(), fakeclient.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))

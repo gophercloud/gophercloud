@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v1/apiversions"
@@ -17,7 +18,7 @@ func TestListVersions(t *testing.T) {
 
 	count := 0
 
-	apiversions.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	apiversions.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := apiversions.ExtractAPIVersions(page)
 		th.AssertNoErr(t, err)
@@ -49,7 +50,7 @@ func TestAPIInfo(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := apiversions.Get(client.ServiceClient(), "v1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v1").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := apiversions.APIVersion{

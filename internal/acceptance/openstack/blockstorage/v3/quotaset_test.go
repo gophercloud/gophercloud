@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestQuotasetGet(t *testing.T) {
 
 	client, projectID := getClientAndProject(t)
 
-	quotaSet, err := quotasets.Get(client, projectID).Extract()
+	quotaSet, err := quotasets.Get(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSet)
@@ -31,7 +32,7 @@ func TestQuotasetGetDefaults(t *testing.T) {
 
 	client, projectID := getClientAndProject(t)
 
-	quotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
+	quotaSet, err := quotasets.GetDefaults(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSet)
@@ -42,7 +43,7 @@ func TestQuotasetGetUsage(t *testing.T) {
 
 	client, projectID := getClientAndProject(t)
 
-	quotaSetUsage, err := quotasets.GetUsage(client, projectID).Extract()
+	quotaSetUsage, err := quotasets.GetUsage(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSetUsage)
@@ -85,32 +86,32 @@ func TestQuotasetUpdate(t *testing.T) {
 	client, projectID := getClientAndProject(t)
 
 	// save original quotas
-	orig, err := quotasets.Get(client, projectID).Extract()
+	orig, err := quotasets.Get(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	// create volumeType to test volume type quota
-	volumeType, err := volumetypes.Create(client, VolumeTypeCreateOpts).Extract()
+	volumeType, err := volumetypes.Create(context.TODO(), client, VolumeTypeCreateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	defer func() {
 		restore := quotasets.UpdateOpts{}
 		FillUpdateOptsFromQuotaSet(*orig, &restore)
 
-		err := volumetypes.Delete(client, volumeType.ID).ExtractErr()
+		err := volumetypes.Delete(context.TODO(), client, volumeType.ID).ExtractErr()
 		th.AssertNoErr(t, err)
 
-		_, err = quotasets.Update(client, projectID, restore).Extract()
+		_, err = quotasets.Update(context.TODO(), client, projectID, restore).Extract()
 		th.AssertNoErr(t, err)
 
 	}()
 
 	// test Update
-	resultQuotas, err := quotasets.Update(client, projectID, UpdateQuotaOpts).Extract()
+	resultQuotas, err := quotasets.Update(context.TODO(), client, projectID, UpdateQuotaOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// We dont know the default quotas, so just check if the quotas are not the
 	// same as before
-	newQuotas, err := quotasets.Get(client, projectID).Extract()
+	newQuotas, err := quotasets.Get(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, resultQuotas.Volumes, newQuotas.Volumes)
 	th.AssertEquals(t, resultQuotas.Extra["volumes_foo"], newQuotas.Extra["volumes_foo"])
@@ -143,26 +144,26 @@ func TestQuotasetDelete(t *testing.T) {
 	client, projectID := getClientAndProject(t)
 
 	// save original quotas
-	orig, err := quotasets.Get(client, projectID).Extract()
+	orig, err := quotasets.Get(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	defer func() {
 		restore := quotasets.UpdateOpts{}
 		FillUpdateOptsFromQuotaSet(*orig, &restore)
 
-		_, err = quotasets.Update(client, projectID, restore).Extract()
+		_, err = quotasets.Update(context.TODO(), client, projectID, restore).Extract()
 		th.AssertNoErr(t, err)
 	}()
 
 	// Obtain environment default quotaset values to validate deletion.
-	defaultQuotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
+	defaultQuotaSet, err := quotasets.GetDefaults(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	// Test Delete
-	err = quotasets.Delete(client, projectID).ExtractErr()
+	err = quotasets.Delete(context.TODO(), client, projectID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	newQuotas, err := quotasets.Get(client, projectID).Extract()
+	newQuotas, err := quotasets.Get(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, newQuotas.Volumes, defaultQuotaSet.Volumes)

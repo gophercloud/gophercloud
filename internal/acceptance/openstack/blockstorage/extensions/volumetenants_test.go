@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -27,7 +28,7 @@ func TestVolumeTenants(t *testing.T) {
 	listOpts := volumes.ListOpts{
 		Name: "I SHOULD NOT EXIST",
 	}
-	allPages, err := volumes.List(client, listOpts).AllPages()
+	allPages, err := volumes.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = volumes.ExtractVolumesInto(allPages, &allVolumes)
@@ -38,7 +39,7 @@ func TestVolumeTenants(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer blockstorage.DeleteVolume(t, client, volume1)
 
-	allPages, err = volumes.List(client, nil).AllPages()
+	allPages, err = volumes.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = volumes.ExtractVolumesInto(allPages, &allVolumes)

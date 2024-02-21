@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -25,7 +26,7 @@ func CreateSecurityService(t *testing.T, client *gophercloud.ServiceClient) (*se
 		Type:        "kerberos",
 	}
 
-	securityService, err := securityservices.Create(client, createOpts).Extract()
+	securityService, err := securityservices.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return securityService, err
 	}
@@ -36,7 +37,7 @@ func CreateSecurityService(t *testing.T, client *gophercloud.ServiceClient) (*se
 // DeleteSecurityService will delete a security service. An error will occur if
 // the security service was unable to be deleted.
 func DeleteSecurityService(t *testing.T, client *gophercloud.ServiceClient, securityService *securityservices.SecurityService) {
-	err := securityservices.Delete(client, securityService.ID).ExtractErr()
+	err := securityservices.Delete(context.TODO(), client, securityService.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Failed to delete security service %s: %v", securityService.ID, err)
 	}

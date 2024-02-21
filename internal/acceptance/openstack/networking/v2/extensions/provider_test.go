@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestNetworksProviderCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, client, network.ID)
 
-	getResult := networks.Get(client, network.ID)
+	getResult := networks.Get(context.TODO(), client, network.ID)
 	newNetwork, err := getResult.Extract()
 	th.AssertNoErr(t, err)
 

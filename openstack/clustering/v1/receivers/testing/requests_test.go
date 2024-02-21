@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/clustering/v1/receivers"
@@ -24,7 +25,7 @@ func TestCreateReceiver(t *testing.T) {
 		Params:    map[string]interface{}{},
 	}
 
-	actual, err := receivers.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := receivers.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedReceiver, *actual)
 }
@@ -35,7 +36,7 @@ func TestGetReceivers(t *testing.T) {
 
 	HandleGetSuccessfully(t)
 
-	actual, err := receivers.Get(fake.ServiceClient(), "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3").Extract()
+	actual, err := receivers.Get(context.TODO(), fake.ServiceClient(), "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedReceiver, *actual)
 }
@@ -53,7 +54,7 @@ func TestUpdateReceiver(t *testing.T) {
 			"count": "2",
 		},
 	}
-	actual, err := receivers.Update(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee", opts).Extract()
+	actual, err := receivers.Update(context.TODO(), fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUpdateReceiver, *actual)
 }
@@ -70,7 +71,7 @@ func TestListReceivers(t *testing.T) {
 	}
 
 	count := 0
-	receivers.List(fake.ServiceClient(), opts).EachPage(func(page pagination.Page) (bool, error) {
+	receivers.List(fake.ServiceClient(), opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := receivers.ExtractReceivers(page)
 		th.AssertNoErr(t, err)
@@ -89,7 +90,7 @@ func TestDeleteReceiver(t *testing.T) {
 
 	HandleDeleteSuccessfully(t)
 
-	deleteResult := receivers.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
+	deleteResult := receivers.Delete(context.TODO(), fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
 	th.AssertNoErr(t, deleteResult.ExtractErr())
 }
 
@@ -99,7 +100,7 @@ func TestNotifyReceivers(t *testing.T) {
 
 	HandleNotifySuccessfully(t)
 
-	requestID, err := receivers.Notify(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee").Extract()
+	requestID, err := receivers.Notify(context.TODO(), fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedNotifyRequestID, requestID)
 }

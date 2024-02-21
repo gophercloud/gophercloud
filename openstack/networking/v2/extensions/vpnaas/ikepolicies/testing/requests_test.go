@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -63,7 +64,7 @@ func TestCreate(t *testing.T) {
 		IKEVersion:  ikepolicies.IKEVersionv2,
 	}
 
-	actual, err := ikepolicies.Create(fake.ServiceClient(), options).Extract()
+	actual, err := ikepolicies.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 	expectedLifetime := ikepolicies.Lifetime{
 		Units: "seconds",
@@ -118,7 +119,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	actual, err := ikepolicies.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	actual, err := ikepolicies.Get(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
 	th.AssertNoErr(t, err)
 	expectedLifetime := ikepolicies.Lifetime{
 		Units: "seconds",
@@ -150,7 +151,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := ikepolicies.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
+	res := ikepolicies.Delete(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -190,7 +191,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	ikepolicies.List(fake.ServiceClient(), ikepolicies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	ikepolicies.List(fake.ServiceClient(), ikepolicies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := ikepolicies.ExtractPolicies(page)
 		if err != nil {
@@ -283,7 +284,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	actual, err := ikepolicies.Update(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	actual, err := ikepolicies.Update(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
 	th.AssertNoErr(t, err)
 	expectedLifetime := ikepolicies.Lifetime{
 		Units: "seconds",
