@@ -4,6 +4,7 @@
 package openstack
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -140,7 +141,7 @@ func TestReauth(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	t.Logf("Attempting to reauthenticate")
 
-	err = provider.ReauthFunc()
+	err = provider.ReauthFunc(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to reauthenticate: %v", err)
 	}
