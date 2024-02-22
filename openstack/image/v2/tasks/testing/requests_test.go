@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/tasks"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/tasks"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"

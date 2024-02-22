@@ -1,4 +1,4 @@
-// Package v2 contains common functions for creating imageservice resources
+// Package v2 contains common functions for creating image resources
 // for use in acceptance tests. See the `*_test.go` files for example usages.
 package v2
 
@@ -11,10 +11,10 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/imagedata"
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/imageimport"
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/images"
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/tasks"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/imagedata"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/imageimport"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/images"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/tasks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -77,7 +77,7 @@ const ImportImageURL = "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_
 // CreateTask will create a task to import the CirrOS image.
 // An error will be returned if a task couldn't be created.
 func CreateTask(t *testing.T, client *gophercloud.ServiceClient, imageURL string) (*tasks.Task, error) {
-	t.Logf("Attempting to create an Imageservice import task with image: %s", imageURL)
+	t.Logf("Attempting to create an Image service import task with image: %s", imageURL)
 	opts := tasks.CreateOpts{
 		Type: "import",
 		Input: map[string]interface{}{
@@ -104,7 +104,7 @@ func CreateTask(t *testing.T, client *gophercloud.ServiceClient, imageURL string
 
 // GetImportInfo will retrieve Import API information.
 func GetImportInfo(t *testing.T, client *gophercloud.ServiceClient) (*imageimport.ImportInfo, error) {
-	t.Log("Attempting to get the Imageservice Import API information")
+	t.Log("Attempting to get the Image service Import API information")
 	importInfo, err := imageimport.Get(context.TODO(), client).Extract()
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func DeleteImageFile(t *testing.T, filepath string) {
 	t.Logf("Successfully deleted image file %s", filepath)
 }
 
-// ImportImage will import image data from the remote source to the Imageservice.
+// ImportImage will import image data from the remote source to the Image service.
 func ImportImage(t *testing.T, client *gophercloud.ServiceClient, imageID string) error {
 	importOpts := imageimport.CreateOpts{
 		Name: imageimport.WebDownloadMethod,

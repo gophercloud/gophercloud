@@ -33,7 +33,7 @@ type ListOptsBuilder interface {
 }
 
 // ListOpts allows the filtering and sorting of paginated collections through
-// the OpenStack Imageservice tasks API.
+// the OpenStack Image service tasks API.
 type ListOpts struct {
 	// Integer value for the limit of values to return.
 	Limit int `q:"limit"`
@@ -90,7 +90,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	})
 }
 
-// Get retrieves a specific Imageservice task based on its ID.
+// Get retrieves a specific Image service task based on its ID.
 func Get(ctx context.Context, c *gophercloud.ServiceClient, taskID string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, taskID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -102,7 +102,7 @@ type CreateOptsBuilder interface {
 	ToTaskCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts specifies parameters of a new Imageservice task.
+// CreateOpts specifies parameters of a new Image service task.
 type CreateOpts struct {
 	Type  string                 `json:"type" required:"true"`
 	Input map[string]interface{} `json:"input"`
@@ -117,7 +117,7 @@ func (opts CreateOpts) ToTaskCreateMap() (map[string]interface{}, error) {
 	return b, nil
 }
 
-// Create requests the creation of a new Imageservice task on the server.
+// Create requests the creation of a new Image service task on the server.
 func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTaskCreateMap()
 	if err != nil {

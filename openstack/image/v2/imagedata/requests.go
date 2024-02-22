@@ -17,7 +17,7 @@ func Upload(ctx context.Context, client *gophercloud.ServiceClient, id string, d
 	return
 }
 
-// Stage performs PUT call on the existing image object in the Imageservice with
+// Stage performs PUT call on the existing image object in the Image service with
 // the provided file.
 // Existing image object must be in the "queued" status.
 func Stage(ctx context.Context, client *gophercloud.ServiceClient, id string, data io.Reader) (r StageResult) {

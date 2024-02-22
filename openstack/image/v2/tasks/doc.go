@@ -1,6 +1,6 @@
 /*
 Package tasks enables management and retrieval of tasks from the OpenStack
-Imageservice.
+Image service.
 
 Example to List Tasks
 
