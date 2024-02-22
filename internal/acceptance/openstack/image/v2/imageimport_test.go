@@ -1,5 +1,5 @@
-//go:build acceptance || imageservice || imageimport
-// +build acceptance imageservice imageimport
+//go:build acceptance || image || imageimport
+// +build acceptance image imageimport
 
 package v2
 
@@ -12,7 +12,7 @@ import (
 )
 
 func TestGetImportInfo(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	importInfo, err := GetImportInfo(t, client)
@@ -22,7 +22,7 @@ func TestGetImportInfo(t *testing.T) {
 }
 
 func TestCreateImport(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	image, err := CreateEmptyImage(t, client)

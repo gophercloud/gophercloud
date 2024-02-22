@@ -434,9 +434,9 @@ func NewDNSV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (
 	return sc, err
 }
 
-// NewImageServiceV2 creates a ServiceClient that may be used to access the v2
-// image service.
-func NewImageServiceV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+// NewImageV2 creates a ServiceClient that may be used to access the v2 image
+// service.
+func NewImageV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "image")
 	sc.ResourceBase = sc.Endpoint + "v2/"
 	return sc, err
