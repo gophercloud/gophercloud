@@ -11,7 +11,7 @@ import (
 	blockstorage "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/blockstorage/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/bootfromvolume"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/volumeattach"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/volumeattach"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 

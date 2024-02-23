@@ -17,7 +17,7 @@ find_files() {
 }
 
 ignore_files=(
-  "./openstack/compute/v2/extensions/quotasets/testing/fixtures.go"
+  "./openstack/compute/v2/quotasets/testing/fixtures.go"
   "./openstack/networking/v2/extensions/vpnaas/ikepolicies/testing/requests_test.go"
 )
 

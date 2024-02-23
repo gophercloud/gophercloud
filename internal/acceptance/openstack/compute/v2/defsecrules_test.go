@@ -9,7 +9,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/defsecrules"
+	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 

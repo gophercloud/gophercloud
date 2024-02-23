@@ -12,7 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	networks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/attachinterfaces"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedserverattributes"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedstatus"
@@ -20,8 +20,8 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/serverusage"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/suspendresume"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/tags"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tags"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
