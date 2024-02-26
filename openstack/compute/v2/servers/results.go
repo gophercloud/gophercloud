@@ -538,3 +538,135 @@ func ExtractNetworkAddresses(r pagination.Page) ([]Address, error) {
 
 	return s[key], err
 }
+
+// EvacuateResult is the response from an Evacuate operation.
+// Call its ExtractAdminPass method to retrieve the admin password of the instance.
+// The admin password will be an empty string if the cloud is not configured to inject admin passwords..
+type EvacuateResult struct {
+	gophercloud.Result
+}
+
+func (r EvacuateResult) ExtractAdminPass() (string, error) {
+	var s struct {
+		AdminPass string `json:"adminPass"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil && err.Error() == "EOF" {
+		return "", nil
+	}
+	return s.AdminPass, err
+}
+
+// InjectNetworkResult is the response of a InjectNetworkInfo operation. Call
+// its ExtractErr method to determine if the request suceeded or failed.
+type InjectNetworkResult struct {
+	gophercloud.ErrResult
+}
+
+// LockResult and UnlockResult are the responses from a Lock and Unlock
+// operations respectively. Call their ExtractErr methods to determine if the
+// requests suceeded or failed.
+type LockResult struct {
+	gophercloud.ErrResult
+}
+
+type UnlockResult struct {
+	gophercloud.ErrResult
+}
+
+// MigrateResult is the response from a Migrate operation. Call its ExtractErr
+// method to determine if the request suceeded or failed.
+type MigrateResult struct {
+	gophercloud.ErrResult
+}
+
+// PauseResult is the response from a Pause operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type PauseResult struct {
+	gophercloud.ErrResult
+}
+
+// UnpauseResult is the response from an Unpause operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type UnpauseResult struct {
+	gophercloud.ErrResult
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// RescueResult is the response from a Rescue operation. Call its Extract
+// method to retrieve adminPass for a rescued server.
+type RescueResult struct {
+	commonResult
+}
+
+// UnrescueResult is the response from an UnRescue operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type UnrescueResult struct {
+	gophercloud.ErrResult
+}
+
+// Extract interprets any RescueResult as an AdminPass, if possible.
+func (r RescueResult) Extract() (string, error) {
+	var s struct {
+		AdminPass string `json:"adminPass"`
+	}
+	err := r.ExtractInto(&s)
+	return s.AdminPass, err
+}
+
+// ResetResult is the response of a ResetNetwork operation. Call its ExtractErr
+// method to determine if the request suceeded or failed.
+type ResetNetworkResult struct {
+	gophercloud.ErrResult
+}
+
+// ResetResult is the response of a ResetState operation. Call its ExtractErr
+// method to determine if the request suceeded or failed.
+type ResetStateResult struct {
+	gophercloud.ErrResult
+}
+
+// ShelveResult is the response from a Shelve operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type ShelveResult struct {
+	gophercloud.ErrResult
+}
+
+// ShelveOffloadResult is the response from a Shelve operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type ShelveOffloadResult struct {
+	gophercloud.ErrResult
+}
+
+// UnshelveResult is the response from Stop operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type UnshelveResult struct {
+	gophercloud.ErrResult
+}
+
+// StartResult is the response from a Start operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type StartResult struct {
+	gophercloud.ErrResult
+}
+
+// StopResult is the response from Stop operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type StopResult struct {
+	gophercloud.ErrResult
+}
+
+// SuspendResult is the response from a Suspend operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type SuspendResult struct {
+	gophercloud.ErrResult
+}
+
+// ResumeResult is the response from an Unsuspend operation. Call
+// its ExtractErr method to determine if the request succeeded or failed.
+type ResumeResult struct {
+	gophercloud.ErrResult
+}

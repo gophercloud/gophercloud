@@ -921,3 +921,283 @@ func ShowConsoleOutput(ctx context.Context, client *gophercloud.ServiceClient, i
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// EvacuateOptsBuilder allows extensions to add additional parameters to the
+// the Evacuate request.
+type EvacuateOptsBuilder interface {
+	ToEvacuateMap() (map[string]interface{}, error)
+}
+
+// EvacuateOpts specifies Evacuate action parameters.
+type EvacuateOpts struct {
+	// The name of the host to which the server is evacuated
+	Host string `json:"host,omitempty"`
+
+	// Indicates whether server is on shared storage
+	OnSharedStorage bool `json:"onSharedStorage"`
+
+	// An administrative password to access the evacuated server
+	AdminPass string `json:"adminPass,omitempty"`
+}
+
+// ToServerGroupCreateMap constructs a request body from CreateOpts.
+func (opts EvacuateOpts) ToEvacuateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "evacuate")
+}
+
+// Evacuate will Evacuate a failed instance to another host.
+func Evacuate(ctx context.Context, client *gophercloud.ServiceClient, id string, opts EvacuateOptsBuilder) (r EvacuateResult) {
+	b, err := opts.ToEvacuateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// InjectNetworkInfo will inject the network info into a server
+func InjectNetworkInfo(ctx context.Context, client *gophercloud.ServiceClient, id string) (r InjectNetworkResult) {
+	b := map[string]interface{}{
+		"injectNetworkInfo": nil,
+	}
+	resp, err := client.Post(ctx, actionURL(client, id), b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Lock is the operation responsible for locking a Compute server.
+func Lock(ctx context.Context, client *gophercloud.ServiceClient, id string) (r LockResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"lock": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Unlock is the operation responsible for unlocking a Compute server.
+func Unlock(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnlockResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"unlock": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Migrate will initiate a migration of the instance to another host.
+func Migrate(ctx context.Context, client *gophercloud.ServiceClient, id string) (r MigrateResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"migrate": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// LiveMigrateOptsBuilder allows extensions to add additional parameters to the
+// LiveMigrate request.
+type LiveMigrateOptsBuilder interface {
+	ToLiveMigrateMap() (map[string]interface{}, error)
+}
+
+// LiveMigrateOpts specifies parameters of live migrate action.
+type LiveMigrateOpts struct {
+	// The host to which to migrate the server.
+	// If this parameter is None, the scheduler chooses a host.
+	Host *string `json:"host"`
+
+	// Set to True to migrate local disks by using block migration.
+	// If the source or destination host uses shared storage and you set
+	// this value to True, the live migration fails.
+	BlockMigration *bool `json:"block_migration,omitempty"`
+
+	// Set to True to enable over commit when the destination host is checked
+	// for available disk space. Set to False to disable over commit. This setting
+	// affects only the libvirt virt driver.
+	DiskOverCommit *bool `json:"disk_over_commit,omitempty"`
+}
+
+// ToLiveMigrateMap constructs a request body from LiveMigrateOpts.
+func (opts LiveMigrateOpts) ToLiveMigrateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "os-migrateLive")
+}
+
+// LiveMigrate will initiate a live-migration (without rebooting) of the instance to another host.
+func LiveMigrate(ctx context.Context, client *gophercloud.ServiceClient, id string, opts LiveMigrateOptsBuilder) (r MigrateResult) {
+	b, err := opts.ToLiveMigrateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, actionURL(client, id), b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Pause is the operation responsible for pausing a Compute server.
+func Pause(ctx context.Context, client *gophercloud.ServiceClient, id string) (r PauseResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"pause": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Unpause is the operation responsible for unpausing a Compute server.
+func Unpause(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnpauseResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"unpause": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RescueOptsBuilder is an interface that allows extensions to override the
+// default structure of a Rescue request.
+type RescueOptsBuilder interface {
+	ToServerRescueMap() (map[string]interface{}, error)
+}
+
+// RescueOpts represents the configuration options used to control a Rescue
+// option.
+type RescueOpts struct {
+	// AdminPass is the desired administrative password for the instance in
+	// RESCUE mode.
+	// If it's left blank, the server will generate a password.
+	AdminPass string `json:"adminPass,omitempty"`
+
+	// RescueImageRef contains reference on an image that needs to be used as
+	// rescue image.
+	// If it's left blank, the server will be rescued with the default image.
+	RescueImageRef string `json:"rescue_image_ref,omitempty"`
+}
+
+// ToServerRescueMap formats a RescueOpts as a map that can be used as a JSON
+// request body for the Rescue request.
+func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "rescue")
+}
+
+// Rescue instructs the provider to place the server into RESCUE mode.
+func Rescue(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) (r RescueResult) {
+	b, err := opts.ToServerRescueMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Unrescue instructs the provider to return the server from RESCUE mode.
+func Unrescue(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnrescueResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ResetNetwork will reset the network of a server
+func ResetNetwork(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResetNetworkResult) {
+	b := map[string]interface{}{
+		"resetNetwork": nil,
+	}
+	resp, err := client.Post(ctx, actionURL(client, id), b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ServerState refers to the states usable in ResetState Action
+type ServerState string
+
+const (
+	// StateActive returns the state of the server as active
+	StateActive ServerState = "active"
+
+	// StateError returns the state of the server as error
+	StateError ServerState = "error"
+)
+
+// ResetState will reset the state of a server
+func ResetState(ctx context.Context, client *gophercloud.ServiceClient, id string, state ServerState) (r ResetStateResult) {
+	stateMap := map[string]interface{}{"state": state}
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-resetState": stateMap}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Shelve is the operation responsible for shelving a Compute server.
+func Shelve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"shelve": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ShelveOffload is the operation responsible for Shelve-Offload a Compute server.
+func ShelveOffload(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveOffloadResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"shelveOffload": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UnshelveOptsBuilder allows extensions to add additional parameters to the
+// Unshelve request.
+type UnshelveOptsBuilder interface {
+	ToUnshelveMap() (map[string]interface{}, error)
+}
+
+// UnshelveOpts specifies parameters of shelve-offload action.
+type UnshelveOpts struct {
+	// Sets the availability zone to unshelve a server
+	// Available only after nova 2.77
+	AvailabilityZone string `json:"availability_zone,omitempty"`
+}
+
+func (opts UnshelveOpts) ToUnshelveMap() (map[string]interface{}, error) {
+	// Key 'availabilty_zone' is required if the unshelve action is an object
+	// i.e {"unshelve": {}} will be rejected
+	b, err := gophercloud.BuildRequestBody(opts, "unshelve")
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := b["unshelve"].(map[string]interface{})["availability_zone"]; !ok {
+		b["unshelve"] = nil
+	}
+
+	return b, err
+}
+
+// Unshelve is the operation responsible for unshelve a Compute server.
+func Unshelve(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UnshelveOptsBuilder) (r UnshelveResult) {
+	b, err := opts.ToUnshelveMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, actionURL(client, id), b, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Start is the operation responsible for starting a Compute server.
+func Start(ctx context.Context, client *gophercloud.ServiceClient, id string) (r StartResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-start": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Stop is the operation responsible for stopping a Compute server.
+func Stop(ctx context.Context, client *gophercloud.ServiceClient, id string) (r StopResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-stop": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Suspend is the operation responsible for suspending a Compute server.
+func Suspend(ctx context.Context, client *gophercloud.ServiceClient, id string) (r SuspendResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"suspend": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Resume is the operation responsible for resuming a Compute server.
+func Resume(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResumeResult) {
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"resume": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

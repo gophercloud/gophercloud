@@ -17,7 +17,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/rescueunrescue"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/schedulerhints"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/floatingips"
@@ -1169,7 +1168,7 @@ func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOp
 // RescueServer will place the specified server into rescue mode.
 func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to put server %s into rescue mode", server.ID)
-	_, err := rescueunrescue.Rescue(context.TODO(), client, server.ID, rescueunrescue.RescueOpts{}).Extract()
+	_, err := servers.Rescue(context.TODO(), client, server.ID, servers.RescueOpts{}).Extract()
 	if err != nil {
 		return err
 	}
@@ -1184,7 +1183,7 @@ func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 // UnrescueServer will return server from rescue mode.
 func UnrescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to return server %s from rescue mode", server.ID)
-	if err := rescueunrescue.Unrescue(context.TODO(), client, server.ID).ExtractErr(); err != nil {
+	if err := servers.Unrescue(context.TODO(), client, server.ID).ExtractErr(); err != nil {
 		return err
 	}
 

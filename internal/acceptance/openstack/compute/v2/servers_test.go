@@ -13,9 +13,6 @@ import (
 	networks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tags"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -394,13 +391,13 @@ func TestServersActionPause(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to pause server %s", server.ID)
-	err = pauseunpause.Pause(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Pause(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "PAUSED")
 	th.AssertNoErr(t, err)
 
-	err = pauseunpause.Unpause(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Unpause(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -418,13 +415,13 @@ func TestServersActionSuspend(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to suspend server %s", server.ID)
-	err = suspendresume.Suspend(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Suspend(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "SUSPENDED")
 	th.AssertNoErr(t, err)
 
-	err = suspendresume.Resume(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Resume(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -443,7 +440,7 @@ func TestServersActionLock(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to Lock server %s", server.ID)
-	err = lockunlock.Lock(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Lock(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to delete locked server %s", server.ID)
@@ -451,7 +448,7 @@ func TestServersActionLock(t *testing.T) {
 	th.AssertEquals(t, err != nil, true)
 
 	t.Logf("Attempting to unlock server %s", server.ID)
-	err = lockunlock.Unlock(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Unlock(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
