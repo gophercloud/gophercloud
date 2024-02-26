@@ -31,7 +31,7 @@ jobs:
           private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
 
       - name: Backporting
-        uses: kiegroup/git-backporting@204ebd4376d7501696d52aec8fea2a2f6e09328f
+        uses: kiegroup/git-backporting@bce5dd4f9969d47da9cbb6ed06abbf87216afc98
         with:
           target-branch: v2
           pull-request: ${{ github.event.pull_request.url }}
