@@ -58,16 +58,16 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID str
 }
 
 // Get returns public data about a previously created VolumeAttachment.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, attachmentID string) (r GetResult) {
-	resp, err := client.Get(ctx, getURL(client, serverID, attachmentID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, volumeID string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, serverID, volumeID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests the deletion of a previous stored VolumeAttachment from
 // the server.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, serverID, attachmentID string) (r DeleteResult) {
-	resp, err := client.Delete(ctx, deleteURL(client, serverID, attachmentID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, serverID, volumeID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, serverID, volumeID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
