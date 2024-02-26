@@ -9,7 +9,6 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/diskconfig"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedstatus"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -68,7 +67,6 @@ func TestListAllServersWithExtensions(t *testing.T) {
 	type ServerWithExt struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
-		extendedstatus.ServerExtendedStatusExt
 		diskconfig.ServerDiskConfigExt
 	}
 
@@ -672,7 +670,6 @@ func TestGetServerWithExtensions(t *testing.T) {
 	var s struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
-		extendedstatus.ServerExtendedStatusExt
 		diskconfig.ServerDiskConfigExt
 	}
 

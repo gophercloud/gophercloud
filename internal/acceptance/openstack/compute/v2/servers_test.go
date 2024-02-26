@@ -14,7 +14,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedstatus"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/serverusage"
@@ -92,7 +91,6 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	var extendedServer struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
-		extendedstatus.ServerExtendedStatusExt
 		serverusage.UsageExt
 	}
 
@@ -108,7 +106,7 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	tools.PrintResource(t, extendedServer)
 
 	th.AssertEquals(t, extendedServer.AvailabilityZone, "nova")
-	th.AssertEquals(t, int(extendedServer.PowerState), extendedstatus.RUNNING)
+	th.AssertEquals(t, int(extendedServer.PowerState), servers.RUNNING)
 	th.AssertEquals(t, extendedServer.TaskState, "")
 	th.AssertEquals(t, extendedServer.VmState, "active")
 	th.AssertEquals(t, extendedServer.LaunchedAt.IsZero(), false)

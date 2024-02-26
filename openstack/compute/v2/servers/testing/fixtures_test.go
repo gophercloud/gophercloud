@@ -552,6 +552,8 @@ var (
 		ReservationID:      nil,
 		RootDeviceName:     nil,
 		Userdata:           nil,
+		VmState:            "active",
+		PowerState:         servers.RUNNING,
 	}
 
 	derpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:41Z")
@@ -619,6 +621,8 @@ var (
 		ReservationID:      nil,
 		RootDeviceName:     nil,
 		Userdata:           nil,
+		VmState:            "active",
+		PowerState:         servers.RUNNING,
 	}
 
 	ConsoleOutput = "abc"
@@ -680,6 +684,8 @@ var (
 		ReservationID:      nil,
 		RootDeviceName:     nil,
 		Userdata:           nil,
+		VmState:            "active",
+		PowerState:         servers.RUNNING,
 	}
 
 	faultTimeCreated, _ = time.Parse(time.RFC3339, "2017-11-11T07:58:39Z")
