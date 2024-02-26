@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/diagnostics"
@@ -16,7 +17,7 @@ func TestGetDiagnostics(t *testing.T) {
 
 	expected := map[string]interface{}{"cpu0_time": float64(173), "memory": float64(524288)}
 
-	res, err := diagnostics.Get(client.ServiceClient(), "1234asdf").Extract()
+	res, err := diagnostics.Get(context.TODO(), client.ServiceClient(), "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, expected, res)

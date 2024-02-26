@@ -4,6 +4,7 @@
 package networkipavailabilities
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestNetworkIPAvailabilityList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := networkipavailabilities.List(client, nil).AllPages()
+	allPages, err := networkipavailabilities.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allAvailabilities, err := networkipavailabilities.ExtractNetworkIPAvailabilities(allPages)

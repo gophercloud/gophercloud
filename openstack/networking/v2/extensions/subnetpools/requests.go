@@ -1,6 +1,8 @@
 package subnetpools
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -69,8 +71,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific subnetpool based on its ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -136,13 +138,13 @@ func (opts CreateOpts) ToSubnetPoolCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new subnetpool on the server.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSubnetPoolCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -208,13 +210,13 @@ func (opts UpdateOpts) ToSubnetPoolUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing subnetpool using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSubnetPoolUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, updateURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -222,8 +224,8 @@ func Update(c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBu
 }
 
 // Delete accepts a unique ID and deletes the subnetpool associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, id), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

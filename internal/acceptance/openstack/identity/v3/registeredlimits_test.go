@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -25,7 +26,7 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Get glance service to register the limit
-	allServicePages, err := services.List(client, nil).AllPages()
+	allServicePages, err := services.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	svList, err := services.ExtractServices(allServicePages)
@@ -51,7 +52,7 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 		},
 	}
 
-	createdRegisteredLimits, err := registeredlimits.BatchCreate(client, createOpts).Extract()
+	createdRegisteredLimits, err := registeredlimits.BatchCreate(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, createdRegisteredLimits[0])
 	th.AssertIntGreaterOrEqual(t, 1, len(createdRegisteredLimits))
@@ -63,14 +64,14 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 
 	// List the registered limits
 	listOpts := registeredlimits.ListOpts{}
-	allPages, err := registeredlimits.List(client, listOpts).AllPages()
+	allPages, err := registeredlimits.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	_, err = registeredlimits.ExtractRegisteredLimits(allPages)
 	th.AssertNoErr(t, err)
 
 	// Get RegisteredLimit by ID
-	registered_limit, err := registeredlimits.Get(client, createdRegisteredLimits[0].ID).Extract()
+	registered_limit, err := registeredlimits.Get(context.TODO(), client, createdRegisteredLimits[0].ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, registered_limit)
 
@@ -85,7 +86,7 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 		ResourceName: updatedResourceName,
 	}
 
-	updated_registered_limit, err := registeredlimits.Update(client, createdRegisteredLimits[0].ID, updatedOpts).Extract()
+	updated_registered_limit, err := registeredlimits.Update(context.TODO(), client, createdRegisteredLimits[0].ID, updatedOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updated_registered_limit)
@@ -94,9 +95,9 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 	th.AssertEquals(t, updated_registered_limit.ResourceName, updatedResourceName)
 
 	// Delete the registered limit
-	del_err := registeredlimits.Delete(client, createdRegisteredLimits[0].ID).ExtractErr()
+	del_err := registeredlimits.Delete(context.TODO(), client, createdRegisteredLimits[0].ID).ExtractErr()
 	th.AssertNoErr(t, del_err)
 
-	_, err = registeredlimits.Get(client, createdRegisteredLimits[0].ID).Extract()
+	_, err = registeredlimits.Get(context.TODO(), client, createdRegisteredLimits[0].ID).Extract()
 	th.AssertErr(t, err)
 }

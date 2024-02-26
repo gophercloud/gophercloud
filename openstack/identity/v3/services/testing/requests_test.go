@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -24,7 +25,7 @@ func TestCreateSuccessful(t *testing.T) {
 		},
 	}
 
-	actual, err := services.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := services.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondService, *actual)
 }
@@ -35,7 +36,7 @@ func TestListServices(t *testing.T) {
 	HandleListServicesSuccessfully(t)
 
 	count := 0
-	err := services.List(client.ServiceClient(), services.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(), services.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := services.ExtractServices(page)
@@ -54,7 +55,7 @@ func TestListServicesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListServicesSuccessfully(t)
 
-	allPages, err := services.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := services.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := services.ExtractServices(allPages)
 	th.AssertNoErr(t, err)
@@ -68,7 +69,7 @@ func TestGetSuccessful(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetServiceSuccessfully(t)
 
-	actual, err := services.Get(client.ServiceClient(), "9876").Extract()
+	actual, err := services.Get(context.TODO(), client.ServiceClient(), "9876").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondService, *actual)
@@ -86,7 +87,7 @@ func TestUpdateSuccessful(t *testing.T) {
 			"description": "Service Two Updated",
 		},
 	}
-	actual, err := services.Update(client.ServiceClient(), "9876", updateOpts).Extract()
+	actual, err := services.Update(context.TODO(), client.ServiceClient(), "9876", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondServiceUpdated, *actual)
 	th.AssertEquals(t, SecondServiceUpdated.Extra["description"], "Service Two Updated")
@@ -102,6 +103,6 @@ func TestDeleteSuccessful(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := services.Delete(client.ServiceClient(), "12345")
+	res := services.Delete(context.TODO(), client.ServiceClient(), "12345")
 	th.AssertNoErr(t, res.Err)
 }

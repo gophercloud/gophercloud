@@ -1,6 +1,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -13,7 +14,7 @@ func TestCatalogList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := catalog.List(client).AllPages()
+	allPages, err := catalog.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allEntities, err := catalog.ExtractServiceCatalog(allPages)

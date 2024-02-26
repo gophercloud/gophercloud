@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -42,7 +43,7 @@ func TestListVersions(t *testing.T) {
 
 	count := 0
 
-	apiversions.ListVersions(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	apiversions.ListVersions(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := apiversions.ExtractAPIVersions(page)
 		if err != nil {
@@ -81,7 +82,7 @@ func TestNonJSONCannotBeExtractedIntoAPIVersions(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	apiversions.ListVersions(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	apiversions.ListVersions(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		if _, err := apiversions.ExtractAPIVersions(page); err == nil {
 			t.Fatalf("Expected error, got nil")
 		}

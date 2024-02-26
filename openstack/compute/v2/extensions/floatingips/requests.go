@@ -1,6 +1,8 @@
 package floatingips
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -30,13 +32,13 @@ func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new Floating IP.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFloatingIPCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -44,15 +46,15 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Get returns data about a previously created Floating IP.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests the deletion of a previous allocated Floating IP.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -78,13 +80,13 @@ func (opts AssociateOpts) ToFloatingIPAssociateMap() (map[string]interface{}, er
 }
 
 // AssociateInstance pairs an allocated Floating IP with a server.
-func AssociateInstance(client *gophercloud.ServiceClient, serverID string, opts AssociateOptsBuilder) (r AssociateResult) {
+func AssociateInstance(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts AssociateOptsBuilder) (r AssociateResult) {
 	b, err := opts.ToFloatingIPAssociateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(associateURL(client, serverID), b, nil, nil)
+	resp, err := client.Post(ctx, associateURL(client, serverID), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -107,13 +109,13 @@ func (opts DisassociateOpts) ToFloatingIPDisassociateMap() (map[string]interface
 }
 
 // DisassociateInstance decouples an allocated Floating IP from an instance
-func DisassociateInstance(client *gophercloud.ServiceClient, serverID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
+func DisassociateInstance(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
 	b, err := opts.ToFloatingIPDisassociateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(disassociateURL(client, serverID), b, nil, nil)
+	resp, err := client.Post(ctx, disassociateURL(client, serverID), b, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

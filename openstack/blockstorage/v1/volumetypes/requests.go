@@ -1,6 +1,8 @@
 package volumetypes
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -26,13 +28,13 @@ func (opts CreateOpts) ToVolumeTypeCreateMap() (map[string]interface{}, error) {
 
 // Create will create a new volume. To extract the created volume type object,
 // call the Extract method on the CreateResult.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeTypeCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -40,16 +42,16 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Delete will delete the volume type with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get will retrieve the volume type with the provided ID. To extract the volume
 // type from the result, call the Extract method on the GetResult.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/hypervisors"
@@ -16,7 +17,7 @@ func TestListHypervisorsPre253(t *testing.T) {
 
 	pages := 0
 	err := hypervisors.List(client.ServiceClient(),
-		hypervisors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		hypervisors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := hypervisors.ExtractHypervisors(page)
@@ -45,7 +46,7 @@ func TestListAllHypervisorsPre253(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	HandleHypervisorListPre253Successfully(t)
 
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages()
+	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages(context.TODO())
 	testhelper.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	testhelper.AssertNoErr(t, err)
@@ -60,7 +61,7 @@ func TestListHypervisors(t *testing.T) {
 
 	pages := 0
 	err := hypervisors.List(client.ServiceClient(),
-		hypervisors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		hypervisors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := hypervisors.ExtractHypervisors(page)
@@ -89,7 +90,7 @@ func TestListAllHypervisors(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	HandleHypervisorListSuccessfully(t)
 
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages()
+	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages(context.TODO())
 	testhelper.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	testhelper.AssertNoErr(t, err)
@@ -103,7 +104,7 @@ func TestListAllHypervisorsWithParameters(t *testing.T) {
 	HandleHypervisorListWithParametersSuccessfully(t)
 
 	with_servers := true
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{WithServers: &with_servers}).AllPages()
+	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{WithServers: &with_servers}).AllPages(context.TODO())
 	testhelper.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	testhelper.AssertNoErr(t, err)
@@ -118,7 +119,7 @@ func TestHypervisorsStatistics(t *testing.T) {
 
 	expected := HypervisorsStatisticsExpected
 
-	actual, err := hypervisors.GetStatistics(client.ServiceClient()).Extract()
+	actual, err := hypervisors.GetStatistics(context.TODO(), client.ServiceClient()).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
@@ -130,7 +131,7 @@ func TestGetHypervisor(t *testing.T) {
 
 	expected := HypervisorFake
 
-	actual, err := hypervisors.Get(client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
@@ -142,7 +143,7 @@ func TestGetHypervisorEmptyCPUInfo(t *testing.T) {
 
 	expected := HypervisorEmptyCPUInfo
 
-	actual, err := hypervisors.Get(client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
@@ -154,7 +155,7 @@ func TestHypervisorsUptime(t *testing.T) {
 
 	expected := HypervisorUptimeExpected
 
-	actual, err := hypervisors.GetUptime(client.ServiceClient(), HypervisorFake.ID).Extract()
+	actual, err := hypervisors.GetUptime(context.TODO(), client.ServiceClient(), HypervisorFake.ID).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }

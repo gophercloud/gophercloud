@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,7 +26,7 @@ func TestUsersList(t *testing.T) {
 		Enabled: &iTrue,
 	}
 
-	allPages, err := users.List(client, listOpts).AllPages()
+	allPages, err := users.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allPages)
@@ -47,7 +48,7 @@ func TestUsersList(t *testing.T) {
 		"name__contains": "dmi",
 	}
 
-	allPages, err = users.List(client, listOpts).AllPages()
+	allPages, err = users.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err = users.ExtractUsers(allPages)
@@ -69,7 +70,7 @@ func TestUsersList(t *testing.T) {
 		"name__contains": "foo",
 	}
 
-	allPages, err = users.List(client, listOpts).AllPages()
+	allPages, err = users.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err = users.ExtractUsers(allPages)
@@ -94,14 +95,14 @@ func TestUsersGet(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := users.List(client, nil).AllPages()
+	allPages, err := users.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allPages)
 	th.AssertNoErr(t, err)
 
 	user := allUsers[0]
-	p, err := users.Get(client, user.ID).Extract()
+	p, err := users.Get(context.TODO(), client, user.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)
@@ -163,7 +164,7 @@ func TestUserCRUD(t *testing.T) {
 		},
 	}
 
-	newUser, err := users.Update(client, user.ID, updateOpts).Extract()
+	newUser, err := users.Update(context.TODO(), client, user.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newUser)
@@ -197,7 +198,7 @@ func TestUserChangePassword(t *testing.T) {
 		OriginalPassword: "secretsecret",
 		Password:         "new_secretsecret",
 	}
-	err = users.ChangePassword(client, user.ID, changePasswordOpts).ExtractErr()
+	err = users.ChangePassword(context.TODO(), client, user.ID, changePasswordOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -232,10 +233,10 @@ func TestUsersGroups(t *testing.T) {
 	tools.PrintResource(t, group)
 	tools.PrintResource(t, group.Extra)
 
-	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
+	err = users.AddToGroup(context.TODO(), client, group.ID, user.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	allGroupPages, err := users.ListGroups(client, user.ID).AllPages()
+	allGroupPages, err := users.ListGroups(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allGroupPages)
@@ -254,7 +255,7 @@ func TestUsersGroups(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	found = false
-	allUserPages, err := users.ListInGroup(client, group.ID, nil).AllPages()
+	allUserPages, err := users.ListInGroup(client, group.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allUserPages)
@@ -271,7 +272,7 @@ func TestUsersGroups(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	ok, err := users.IsMemberOfGroup(client, group.ID, user.ID).Extract()
+	ok, err := users.IsMemberOfGroup(context.TODO(), client, group.ID, user.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to check whether user belongs to group: %v", err)
 	}
@@ -279,10 +280,10 @@ func TestUsersGroups(t *testing.T) {
 		t.Fatalf("User %s is expected to be a member of group %s", user.ID, group.ID)
 	}
 
-	err = users.RemoveFromGroup(client, group.ID, user.ID).ExtractErr()
+	err = users.RemoveFromGroup(context.TODO(), client, group.ID, user.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	allGroupPages, err = users.ListGroups(client, user.ID).AllPages()
+	allGroupPages, err = users.ListGroups(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allGroups, err = groups.ExtractGroups(allGroupPages)
@@ -301,7 +302,7 @@ func TestUsersGroups(t *testing.T) {
 	th.AssertEquals(t, found, false)
 
 	found = false
-	allUserPages, err = users.ListInGroup(client, group.ID, nil).AllPages()
+	allUserPages, err = users.ListInGroup(client, group.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err = users.ExtractUsers(allUserPages)
@@ -326,7 +327,7 @@ func TestUsersListProjects(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allUserPages, err := users.List(client, nil).AllPages()
+	allUserPages, err := users.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allUserPages)
@@ -334,7 +335,7 @@ func TestUsersListProjects(t *testing.T) {
 
 	user := allUsers[0]
 
-	allProjectPages, err := users.ListProjects(client, user.ID).AllPages()
+	allProjectPages, err := users.ListProjects(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allProjectPages)

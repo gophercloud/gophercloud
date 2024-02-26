@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -17,7 +18,7 @@ func TestLimits(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	limits, err := limits.Get(client, nil).Extract()
+	limits, err := limits.Get(context.TODO(), client, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, limits)
@@ -42,7 +43,7 @@ func TestLimitsForTenant(t *testing.T) {
 		TenantID: tenantID,
 	}
 
-	limits, err := limits.Get(client, getOpts).Extract()
+	limits, err := limits.Get(context.TODO(), client, getOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, limits)

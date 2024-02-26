@@ -1,6 +1,7 @@
 package ports
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -98,8 +99,8 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 // Get - requests the details off a port, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -155,14 +156,14 @@ func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
 }
 
 // Create - requests the creation of a port
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	reqBody, err := opts.ToPortCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(createURL(client), reqBody, &r.Body, nil)
+	resp, err := client.Post(ctx, createURL(client), reqBody, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -198,13 +199,13 @@ func (opts UpdateOperation) ToPortUpdateMap() map[string]interface{} {
 }
 
 // Update - requests the update of a port
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
 	body := make([]map[string]interface{}, len(opts))
 	for i, patch := range opts {
 		body[i] = patch.ToPortUpdateMap()
 	}
 
-	resp, err := client.Patch(updateURL(client, id), body, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(ctx, updateURL(client, id), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -212,8 +213,8 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r Up
 }
 
 // Delete - requests the deletion of a port
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

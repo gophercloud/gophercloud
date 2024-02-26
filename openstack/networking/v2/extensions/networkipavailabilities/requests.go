@@ -1,6 +1,8 @@
 package networkipavailabilities
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -55,8 +57,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific NetworkIPAvailability based on its ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

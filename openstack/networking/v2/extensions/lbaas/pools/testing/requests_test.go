@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -55,7 +56,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	pools.List(fake.ServiceClient(), pools.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	pools.List(fake.ServiceClient(), pools.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := pools.ExtractPools(page)
 		if err != nil {
@@ -153,7 +154,7 @@ func TestCreate(t *testing.T) {
 		TenantID: "2ffc6e22aae24e4795f87155d24c896f",
 		Provider: "haproxy",
 	}
-	p, err := pools.Create(fake.ServiceClient(), options).Extract()
+	p, err := pools.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_CREATE", p.Status)
@@ -201,7 +202,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	n, err := pools.Get(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853").Extract()
+	n, err := pools.Get(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.ID, "332abe93-f488-41ba-870b-2ac66be7f853")
@@ -255,7 +256,7 @@ func TestUpdate(t *testing.T) {
 	var name = "SuperPool"
 	options := pools.UpdateOpts{Name: &name, LBMethod: pools.LBMethodLeastConnections}
 
-	n, err := pools.Update(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
+	n, err := pools.Update(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "SuperPool", n.Name)
@@ -272,7 +273,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := pools.Delete(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
+	res := pools.Delete(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -298,7 +299,7 @@ func TestAssociateHealthMonitor(t *testing.T) {
 		fmt.Fprintf(w, `{}`)
 	})
 
-	_, err := pools.AssociateMonitor(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181").Extract()
+	_, err := pools.AssociateMonitor(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181").Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -312,6 +313,6 @@ func TestDisassociateHealthMonitor(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := pools.DisassociateMonitor(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181")
+	res := pools.DisassociateMonitor(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181")
 	th.AssertNoErr(t, res.Err)
 }

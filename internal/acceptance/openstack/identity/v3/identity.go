@@ -1,6 +1,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -35,7 +36,7 @@ func CreateProject(t *testing.T, client *gophercloud.ServiceClient, c *projects.
 	createOpts.Name = name
 	createOpts.Description = description
 
-	project, err := projects.Create(client, createOpts).Extract()
+	project, err := projects.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return project, err
 	}
@@ -65,7 +66,7 @@ func CreateUser(t *testing.T, client *gophercloud.ServiceClient, c *users.Create
 
 	createOpts.Name = name
 
-	user, err := users.Create(client, createOpts).Extract()
+	user, err := users.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return user, err
 	}
@@ -94,7 +95,7 @@ func CreateGroup(t *testing.T, client *gophercloud.ServiceClient, c *groups.Crea
 
 	createOpts.Name = name
 
-	group, err := groups.Create(client, createOpts).Extract()
+	group, err := groups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return group, err
 	}
@@ -123,7 +124,7 @@ func CreateDomain(t *testing.T, client *gophercloud.ServiceClient, c *domains.Cr
 
 	createOpts.Name = name
 
-	domain, err := domains.Create(client, createOpts).Extract()
+	domain, err := domains.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return domain, err
 	}
@@ -157,7 +158,7 @@ func CreateRole(t *testing.T, client *gophercloud.ServiceClient, c *roles.Create
 	}
 	createOpts.Name = name
 
-	role, err := roles.Create(client, createOpts).Extract()
+	role, err := roles.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return role, err
 	}
@@ -186,7 +187,7 @@ func CreateRegion(t *testing.T, client *gophercloud.ServiceClient, c *regions.Cr
 
 	createOpts.ID = id
 
-	region, err := regions.Create(client, createOpts).Extract()
+	region, err := regions.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return region, err
 	}
@@ -215,7 +216,7 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, c *services.
 
 	createOpts.Extra["name"] = name
 
-	service, err := services.Create(client, createOpts).Extract()
+	service, err := services.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return service, err
 	}
@@ -231,7 +232,7 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, c *services.
 // the project ID failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteProject(t *testing.T, client *gophercloud.ServiceClient, projectID string) {
-	err := projects.Delete(client, projectID).ExtractErr()
+	err := projects.Delete(context.TODO(), client, projectID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete project %s: %v", projectID, err)
 	}
@@ -243,7 +244,7 @@ func DeleteProject(t *testing.T, client *gophercloud.ServiceClient, projectID st
 // the user failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, userID string) {
-	err := users.Delete(client, userID).ExtractErr()
+	err := users.Delete(context.TODO(), client, userID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete user with ID %s: %v", userID, err)
 	}
@@ -255,7 +256,7 @@ func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, userID string) 
 // the group failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteGroup(t *testing.T, client *gophercloud.ServiceClient, groupID string) {
-	err := groups.Delete(client, groupID).ExtractErr()
+	err := groups.Delete(context.TODO(), client, groupID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete group %s: %v", groupID, err)
 	}
@@ -267,7 +268,7 @@ func DeleteGroup(t *testing.T, client *gophercloud.ServiceClient, groupID string
 // the project ID failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID string) {
-	err := domains.Delete(client, domainID).ExtractErr()
+	err := domains.Delete(context.TODO(), client, domainID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete domain %s: %v", domainID, err)
 	}
@@ -279,7 +280,7 @@ func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID stri
 // the role failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteRole(t *testing.T, client *gophercloud.ServiceClient, roleID string) {
-	err := roles.Delete(client, roleID).ExtractErr()
+	err := roles.Delete(context.TODO(), client, roleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete role %s: %v", roleID, err)
 	}
@@ -291,7 +292,7 @@ func DeleteRole(t *testing.T, client *gophercloud.ServiceClient, roleID string) 
 // the region failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteRegion(t *testing.T, client *gophercloud.ServiceClient, regionID string) {
-	err := regions.Delete(client, regionID).ExtractErr()
+	err := regions.Delete(context.TODO(), client, regionID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete region %s: %v", regionID, err)
 	}
@@ -303,7 +304,7 @@ func DeleteRegion(t *testing.T, client *gophercloud.ServiceClient, regionID stri
 // the service failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID string) {
-	err := services.Delete(client, serviceID).ExtractErr()
+	err := services.Delete(context.TODO(), client, serviceID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete service %s: %v", serviceID, err)
 	}
@@ -315,7 +316,7 @@ func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID st
 // A fatal error will occur if it fails to delete the assignment.
 // This works best when using it as a deferred function.
 func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.UnassignOpts) {
-	err := roles.Unassign(client, roleID, *opts).ExtractErr()
+	err := roles.Unassign(context.TODO(), client, roleID, *opts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to unassign a role %v on context %+v: %v", roleID, *opts, err)
 	}
@@ -329,7 +330,7 @@ func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, err
 	t.Log("Attempting to find a role")
 	var role *roles.Role
 
-	allPages, err := roles.List(client, nil).AllPages()
+	allPages, err := roles.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +353,7 @@ func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, err
 // CreateTrust will create a trust with the provided options.
 // An error will be returned if the trust was unable to be created.
 func CreateTrust(t *testing.T, client *gophercloud.ServiceClient, createOpts trusts.CreateOpts) (*trusts.Trust, error) {
-	trust, err := trusts.Create(client, createOpts).Extract()
+	trust, err := trusts.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +367,7 @@ func CreateTrust(t *testing.T, client *gophercloud.ServiceClient, createOpts tru
 // the trust failed to be deleted. This works best when using it as
 // a deferred function.
 func DeleteTrust(t *testing.T, client *gophercloud.ServiceClient, trustID string) {
-	err := trusts.Delete(client, trustID).ExtractErr()
+	err := trusts.Delete(context.TODO(), client, trustID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete trust %s: %v", trustID, err)
 	}
@@ -381,7 +382,7 @@ func FindTrust(t *testing.T, client *gophercloud.ServiceClient) (*trusts.Trust, 
 	t.Log("Attempting to find a trust")
 	var trust *trusts.Trust
 
-	allPages, err := trusts.List(client, nil).AllPages()
+	allPages, err := trusts.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		return nil, err
 	}

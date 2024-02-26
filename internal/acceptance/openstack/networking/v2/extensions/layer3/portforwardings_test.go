@@ -1,6 +1,7 @@
 package layer3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -46,7 +47,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, fip.ID)
 
-	newFip, err := floatingips.Get(client, fip.ID).Extract()
+	newFip, err := floatingips.Get(context.TODO(), client, fip.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
@@ -56,7 +57,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
 
-	newPf, err := portforwarding.Get(client, fip.ID, pf.ID).Extract()
+	newPf, err := portforwarding.Get(context.TODO(), client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	updateOpts := portforwarding.UpdateOpts{
@@ -65,13 +66,13 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 		ExternalPort: 678,
 	}
 
-	_, err = portforwarding.Update(client, fip.ID, newPf.ID, updateOpts).Extract()
+	_, err = portforwarding.Update(context.TODO(), client, fip.ID, newPf.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newPf, err = portforwarding.Get(client, fip.ID, pf.ID).Extract()
+	newPf, err = portforwarding.Get(context.TODO(), client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages()
+	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPFs, err := portforwarding.ExtractPortForwardings(allPages)

@@ -1,6 +1,7 @@
 package executions
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -49,29 +50,29 @@ func (opts CreateOpts) ToExecutionCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new execution.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToExecutionCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	resp, err := client.Post(createURL(client), b, &r.Body, nil)
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves details of a single execution.
 // Use ExtractExecution to convert its result into an Execution.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified execution.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

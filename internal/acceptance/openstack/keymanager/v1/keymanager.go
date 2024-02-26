@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -40,7 +41,7 @@ func CreateAsymmetricOrder(t *testing.T, client *gophercloud.ServiceClient) (*or
 		},
 	}
 
-	order, err := orders.Create(client, createOpts).Extract()
+	order, err := orders.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +54,7 @@ func CreateAsymmetricOrder(t *testing.T, client *gophercloud.ServiceClient) (*or
 	err = WaitForOrder(client, orderID)
 	th.AssertNoErr(t, err)
 
-	order, err = orders.Get(client, orderID).Extract()
+	order, err = orders.Get(context.TODO(), client, orderID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func CreateCertificateContainer(t *testing.T, client *gophercloud.ServiceClient,
 		},
 	}
 
-	container, err := containers.Create(client, createOpts).Extract()
+	container, err := containers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +106,7 @@ func CreateCertificateContainer(t *testing.T, client *gophercloud.ServiceClient,
 		return nil, err
 	}
 
-	container, err = containers.Get(client, containerID).Extract()
+	container, err = containers.Get(context.TODO(), client, containerID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +137,7 @@ func CreateKeyOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Or
 		},
 	}
 
-	order, err := orders.Create(client, createOpts).Extract()
+	order, err := orders.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +147,7 @@ func CreateKeyOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Or
 		return nil, err
 	}
 
-	order, err = orders.Get(client, orderID).Extract()
+	order, err = orders.Get(context.TODO(), client, orderID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +187,7 @@ func CreateRSAContainer(t *testing.T, client *gophercloud.ServiceClient, passphr
 		},
 	}
 
-	container, err := containers.Create(client, createOpts).Extract()
+	container, err := containers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +199,7 @@ func CreateRSAContainer(t *testing.T, client *gophercloud.ServiceClient, passphr
 		return nil, err
 	}
 
-	container, err = containers.Get(client, containerID).Extract()
+	container, err = containers.Get(context.TODO(), client, containerID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +229,7 @@ func CreateCertificateSecret(t *testing.T, client *gophercloud.ServiceClient, ce
 		Algorithm:              "rsa",
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +241,7 @@ func CreateCertificateSecret(t *testing.T, client *gophercloud.ServiceClient, ce
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +269,7 @@ func CreateEmptySecret(t *testing.T, client *gophercloud.ServiceClient) (*secret
 		SecretType: secrets.OpaqueSecret,
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +281,7 @@ func CreateEmptySecret(t *testing.T, client *gophercloud.ServiceClient) (*secret
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -312,7 +313,7 @@ func CreateGenericContainer(t *testing.T, client *gophercloud.ServiceClient, sec
 		},
 	}
 
-	container, err := containers.Create(client, createOpts).Extract()
+	container, err := containers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +325,7 @@ func CreateGenericContainer(t *testing.T, client *gophercloud.ServiceClient, sec
 		return nil, err
 	}
 
-	container, err = containers.Get(client, containerID).Extract()
+	container, err = containers.Get(context.TODO(), client, containerID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -348,7 +349,7 @@ func ReplaceGenericContainerSecretRef(t *testing.T, client *gophercloud.ServiceC
 
 	t.Logf("Attempting to remove an old secret reference %s", secretOld.SecretRef)
 
-	res1 := containers.DeleteSecretRef(client, containerID, containers.SecretRef{Name: secretOld.Name, SecretRef: secretOld.SecretRef})
+	res1 := containers.DeleteSecretRef(context.TODO(), client, containerID, containers.SecretRef{Name: secretOld.Name, SecretRef: secretOld.SecretRef})
 	if res1.Err != nil {
 		return res1.Err
 	}
@@ -358,7 +359,7 @@ func ReplaceGenericContainerSecretRef(t *testing.T, client *gophercloud.ServiceC
 	t.Logf("Attempting to remove a new secret reference %s", secretNew.SecretRef)
 
 	newRef := containers.SecretRef{Name: secretNew.Name, SecretRef: secretNew.SecretRef}
-	res2 := containers.CreateSecretRef(client, containerID, newRef)
+	res2 := containers.CreateSecretRef(context.TODO(), client, containerID, newRef)
 	if res2.Err != nil {
 		return res2.Err
 	}
@@ -371,7 +372,7 @@ func ReplaceGenericContainerSecretRef(t *testing.T, client *gophercloud.ServiceC
 
 	t.Logf("Successfully created new secret reference: %s", secretNew.SecretRef)
 
-	updatedContainer, err := containers.Get(client, containerID).Extract()
+	updatedContainer, err := containers.Get(context.TODO(), client, containerID).Extract()
 	if err != nil {
 		return err
 	}
@@ -402,7 +403,7 @@ func CreatePassphraseSecret(t *testing.T, client *gophercloud.ServiceClient, pas
 		SecretType:         secrets.PassphraseSecret,
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -414,7 +415,7 @@ func CreatePassphraseSecret(t *testing.T, client *gophercloud.ServiceClient, pas
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -444,7 +445,7 @@ func CreatePublicSecret(t *testing.T, client *gophercloud.ServiceClient, pub []b
 		Algorithm:              "rsa",
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -456,7 +457,7 @@ func CreatePublicSecret(t *testing.T, client *gophercloud.ServiceClient, pub []b
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -486,7 +487,7 @@ func CreatePrivateSecret(t *testing.T, client *gophercloud.ServiceClient, priv [
 		Algorithm:              "rsa",
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -498,7 +499,7 @@ func CreatePrivateSecret(t *testing.T, client *gophercloud.ServiceClient, priv [
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -530,7 +531,7 @@ func CreateSecretWithPayload(t *testing.T, client *gophercloud.ServiceClient, pa
 		Expiration:         &expiration,
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -542,7 +543,7 @@ func CreateSecretWithPayload(t *testing.T, client *gophercloud.ServiceClient, pa
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -576,7 +577,7 @@ func CreateSymmetricSecret(t *testing.T, client *gophercloud.ServiceClient) (*se
 		Mode:                   "cbc",
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -588,7 +589,7 @@ func CreateSymmetricSecret(t *testing.T, client *gophercloud.ServiceClient) (*se
 		return nil, err
 	}
 
-	secret, err = secrets.Get(client, secretID).Extract()
+	secret, err = secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -607,7 +608,7 @@ func CreateSymmetricSecret(t *testing.T, client *gophercloud.ServiceClient) (*se
 func DeleteContainer(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete container %s", id)
 
-	err := containers.Delete(client, id).ExtractErr()
+	err := containers.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Could not delete container: %s", err)
 	}
@@ -621,7 +622,7 @@ func DeleteContainer(t *testing.T, client *gophercloud.ServiceClient, id string)
 func DeleteOrder(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete order %s", id)
 
-	err := orders.Delete(client, id).ExtractErr()
+	err := orders.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Could not delete order: %s", err)
 	}
@@ -634,7 +635,7 @@ func DeleteOrder(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func DeleteSecret(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete secret %s", id)
 
-	err := secrets.Delete(client, id).ExtractErr()
+	err := secrets.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Could not delete secret: %s", err)
 	}
@@ -742,7 +743,7 @@ func CreateRSAKeyPair(t *testing.T, passphrase string) ([]byte, []byte, error) {
 
 func WaitForOrder(client *gophercloud.ServiceClient, orderID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		order, err := orders.Get(client, orderID).Extract()
+		order, err := orders.Get(context.TODO(), client, orderID).Extract()
 		if err != nil {
 			return false, err
 		}

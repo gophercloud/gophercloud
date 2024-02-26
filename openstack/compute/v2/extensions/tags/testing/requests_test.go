@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -26,7 +27,7 @@ func TestList(t *testing.T) {
 	})
 
 	expected := []string{"foo", "bar", "baz"}
-	actual, err := tags.List(client.ServiceClient(), "uuid1").Extract()
+	actual, err := tags.List(context.TODO(), client.ServiceClient(), "uuid1").Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
@@ -44,7 +45,7 @@ func TestCheckOk(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	exists, err := tags.Check(client.ServiceClient(), "uuid1", "foo").Extract()
+	exists, err := tags.Check(context.TODO(), client.ServiceClient(), "uuid1", "foo").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, exists)
 }
@@ -61,7 +62,7 @@ func TestCheckFail(t *testing.T) {
 		w.WriteHeader(http.StatusNotFound)
 	})
 
-	exists, err := tags.Check(client.ServiceClient(), "uuid1", "bar").Extract()
+	exists, err := tags.Check(context.TODO(), client.ServiceClient(), "uuid1", "bar").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, exists)
 }
@@ -82,7 +83,7 @@ func TestReplaceAll(t *testing.T) {
 	})
 
 	expected := []string{"tag1", "tag2", "tag3"}
-	actual, err := tags.ReplaceAll(client.ServiceClient(), "uuid1", tags.ReplaceAllOpts{Tags: []string{"tag1", "tag2", "tag3"}}).Extract()
+	actual, err := tags.ReplaceAll(context.TODO(), client.ServiceClient(), "uuid1", tags.ReplaceAllOpts{Tags: []string{"tag1", "tag2", "tag3"}}).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
@@ -100,7 +101,7 @@ func TestAddCreated(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	err := tags.Add(client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	err := tags.Add(context.TODO(), client.ServiceClient(), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -116,7 +117,7 @@ func TestAddExists(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := tags.Add(client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	err := tags.Add(context.TODO(), client.ServiceClient(), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -132,7 +133,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := tags.Delete(client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	err := tags.Delete(context.TODO(), client.ServiceClient(), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -148,6 +149,6 @@ func TestDeleteAll(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := tags.DeleteAll(client.ServiceClient(), "uuid1").ExtractErr()
+	err := tags.DeleteAll(context.TODO(), client.ServiceClient(), "uuid1").ExtractErr()
 	th.AssertNoErr(t, err)
 }

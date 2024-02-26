@@ -1,6 +1,8 @@
 package volumes
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -49,13 +51,13 @@ func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
 // Create will create a new Volume based on the values in CreateOpts. To extract
 // the Volume object from the response, call the Extract method on the
 // CreateResult.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -82,7 +84,7 @@ func (opts DeleteOpts) ToVolumeDeleteQuery() (string, error) {
 }
 
 // Delete will delete the existing Volume with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, id)
 	if opts != nil {
 		query, err := opts.ToVolumeDeleteQuery()
@@ -92,15 +94,15 @@ func Delete(client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder
 		}
 		url += query
 	}
-	resp, err := client.Delete(url, nil)
+	resp, err := client.Delete(ctx, url, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves the Volume with the provided ID. To extract the Volume object
 // from the response, call the Extract method on the GetResult.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -189,13 +191,13 @@ func (opts UpdateOpts) ToVolumeUpdateMap() (map[string]interface{}, error) {
 
 // Update will update the Volume with provided information. To extract the updated
 // Volume from the response, call the Extract method on the UpdateResult.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToVolumeUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

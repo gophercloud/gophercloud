@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/services"
@@ -15,7 +16,7 @@ func TestListServices(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	pages := 0
-	err := services.List(client.ServiceClient(), services.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(), services.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)

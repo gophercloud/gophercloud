@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/groups"
@@ -15,7 +16,7 @@ func TestListGroups(t *testing.T) {
 	HandleListGroupsSuccessfully(t)
 
 	count := 0
-	err := groups.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := groups.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := groups.ExtractGroups(page)
@@ -34,7 +35,7 @@ func TestListGroupsAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListGroupsSuccessfully(t)
 
-	allPages, err := groups.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := groups.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := groups.ExtractGroups(allPages)
 	th.AssertNoErr(t, err)
@@ -80,7 +81,7 @@ func TestGetGroup(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetGroupSuccessfully(t)
 
-	actual, err := groups.Get(client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := groups.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroup, *actual)
@@ -101,7 +102,7 @@ func TestCreateGroup(t *testing.T) {
 		},
 	}
 
-	actual, err := groups.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := groups.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroup, *actual)
 }
@@ -119,7 +120,7 @@ func TestUpdateGroup(t *testing.T) {
 		},
 	}
 
-	actual, err := groups.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := groups.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroupUpdated, *actual)
 }
@@ -129,6 +130,6 @@ func TestDeleteGroup(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteGroupSuccessfully(t)
 
-	res := groups.Delete(client.ServiceClient(), "9fe1d3")
+	res := groups.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }

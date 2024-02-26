@@ -4,6 +4,7 @@
 package trunks
 
 import (
+	"context"
 	"sort"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestTrunkCRUD(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(client, "trunk").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
 	if err != nil {
 		t.Skip("This test requires trunk Neutron extension")
 	}
@@ -67,7 +68,7 @@ func TestTrunkCRUD(t *testing.T) {
 	}
 	defer DeleteTrunk(t, client, trunk.ID)
 
-	_, err = trunks.Get(client, trunk.ID).Extract()
+	_, err = trunks.Get(context.TODO(), client, trunk.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get trunk: %v", err)
 	}
@@ -79,7 +80,7 @@ func TestTrunkCRUD(t *testing.T) {
 		Name:        &name,
 		Description: &description,
 	}
-	updatedTrunk, err := trunks.Update(client, trunk.ID, updateOpts).Extract()
+	updatedTrunk, err := trunks.Update(context.TODO(), client, trunk.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update trunk: %v", err)
 	}
@@ -96,7 +97,7 @@ func TestTrunkCRUD(t *testing.T) {
 	th.AssertDeepEquals(t, updatedTrunk.Description, description)
 
 	// Get subports
-	subports, err := trunks.GetSubports(client, trunk.ID).Extract()
+	subports, err := trunks.GetSubports(context.TODO(), client, trunk.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get subports from the Trunk: %v", err)
 	}
@@ -112,13 +113,13 @@ func TestTrunkList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(client, "trunk").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
 	if err != nil {
 		t.Skip("This test requires trunk Neutron extension")
 	}
 	tools.PrintResource(t, extension)
 
-	allPages, err := trunks.List(client, nil).AllPages()
+	allPages, err := trunks.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list trunks: %v", err)
 	}
@@ -139,7 +140,7 @@ func TestTrunkSubportOperation(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(client, "trunk").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
 	if err != nil {
 		t.Skip("This test requires trunk Neutron extension")
 	}
@@ -199,7 +200,7 @@ func TestTrunkSubportOperation(t *testing.T) {
 			},
 		},
 	}
-	updatedTrunk, err := trunks.AddSubports(client, trunk.ID, addSubportsOpts).Extract()
+	updatedTrunk, err := trunks.AddSubports(context.TODO(), client, trunk.ID, addSubportsOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to add subports to the Trunk: %v", err)
 	}
@@ -214,7 +215,7 @@ func TestTrunkSubportOperation(t *testing.T) {
 			{PortID: subport2.ID},
 		},
 	}
-	updatedAgainTrunk, err := trunks.RemoveSubports(client, trunk.ID, subRemoveOpts).Extract()
+	updatedAgainTrunk, err := trunks.RemoveSubports(context.TODO(), client, trunk.ID, subRemoveOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove subports from the Trunk: %v", err)
 	}
@@ -227,7 +228,7 @@ func TestTrunkTags(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(client, "trunk").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
 	if err != nil {
 		t.Skip("This test requires trunk Neutron extension")
 	}
@@ -276,12 +277,12 @@ func TestTrunkTags(t *testing.T) {
 		// docs say list of tags, but it's a set e.g no duplicates
 		Tags: []string{"a", "b", "c"},
 	}
-	tags, err := attributestags.ReplaceAll(client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
+	tags, err := attributestags.ReplaceAll(context.TODO(), client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to set trunk tags: %v", err)
 	}
 
-	gtrunk, err := trunks.Get(client, trunk.ID).Extract()
+	gtrunk, err := trunks.Get(context.TODO(), client, trunk.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get trunk: %v", err)
 	}
@@ -290,23 +291,23 @@ func TestTrunkTags(t *testing.T) {
 	th.AssertDeepEquals(t, []string{"a", "b", "c"}, tags)
 
 	// Add a tag
-	err = attributestags.Add(client, "trunks", trunk.ID, "d").ExtractErr()
+	err = attributestags.Add(context.TODO(), client, "trunks", trunk.ID, "d").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Delete a tag
-	err = attributestags.Delete(client, "trunks", trunk.ID, "a").ExtractErr()
+	err = attributestags.Delete(context.TODO(), client, "trunks", trunk.ID, "a").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Verify expected tags are set in the List response
-	tags, err = attributestags.List(client, "trunks", trunk.ID).Extract()
+	tags, err = attributestags.List(context.TODO(), client, "trunks", trunk.ID).Extract()
 	th.AssertNoErr(t, err)
 	sort.Strings(tags)
 	th.AssertDeepEquals(t, []string{"b", "c", "d"}, tags)
 
 	// Delete all tags
-	err = attributestags.DeleteAll(client, "trunks", trunk.ID).ExtractErr()
+	err = attributestags.DeleteAll(context.TODO(), client, "trunks", trunk.ID).ExtractErr()
 	th.AssertNoErr(t, err)
-	tags, err = attributestags.List(client, "trunks", trunk.ID).Extract()
+	tags, err = attributestags.List(context.TODO(), client, "trunks", trunk.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(tags))
 }

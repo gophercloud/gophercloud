@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/projects"
@@ -15,7 +16,7 @@ func TestListAvailableProjects(t *testing.T) {
 	HandleListAvailableProjectsSuccessfully(t)
 
 	count := 0
-	err := projects.ListAvailable(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := projects.ListAvailable(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := projects.ExtractProjects(page)
@@ -35,7 +36,7 @@ func TestListProjects(t *testing.T) {
 	HandleListProjectsSuccessfully(t)
 
 	count := 0
-	err := projects.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := projects.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := projects.ExtractProjects(page)
@@ -86,7 +87,7 @@ func TestGetProject(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetProjectSuccessfully(t)
 
-	actual, err := projects.Get(client.ServiceClient(), "1234").Extract()
+	actual, err := projects.Get(context.TODO(), client.ServiceClient(), "1234").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, RedTeam, *actual)
 }
@@ -103,7 +104,7 @@ func TestCreateProject(t *testing.T) {
 		Extra:       map[string]interface{}{"test": "old"},
 	}
 
-	actual, err := projects.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := projects.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, RedTeam, *actual)
 }
@@ -113,7 +114,7 @@ func TestDeleteProject(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteProjectSuccessfully(t)
 
-	res := projects.Delete(client.ServiceClient(), "1234")
+	res := projects.Delete(context.TODO(), client.ServiceClient(), "1234")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -130,7 +131,7 @@ func TestUpdateProject(t *testing.T) {
 		Extra:       map[string]interface{}{"test": "new"},
 	}
 
-	actual, err := projects.Update(client.ServiceClient(), "1234", updateOpts).Extract()
+	actual, err := projects.Update(context.TODO(), client.ServiceClient(), "1234", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, UpdatedRedTeam, *actual)
 }

@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestFlavorsList(t *testing.T) {
 		t.Fatalf("Unable to create a DB client: %v", err)
 	}
 
-	allPages, err := flavors.List(client).AllPages()
+	allPages, err := flavors.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve flavors: %v", err)
 	}
@@ -38,7 +39,7 @@ func TestFlavorsGet(t *testing.T) {
 		t.Fatalf("Unable to create a DB client: %v", err)
 	}
 
-	allPages, err := flavors.List(client).AllPages()
+	allPages, err := flavors.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve flavors: %v", err)
 	}

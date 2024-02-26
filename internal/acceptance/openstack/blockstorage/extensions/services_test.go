@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestServicesList(t *testing.T) {
 	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := services.List(blockClient, services.ListOpts{}).AllPages()
+	allPages, err := services.List(blockClient, services.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)

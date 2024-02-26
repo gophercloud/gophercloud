@@ -1,6 +1,8 @@
 package services
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -42,13 +44,13 @@ func (opts CreateOpts) ToServiceCreateMap() (map[string]interface{}, error) {
 }
 
 // Create adds a new service of the requested type to the catalog.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToServiceCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -92,8 +94,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns additional information about a service, given its ID.
-func Get(client *gophercloud.ServiceClient, serviceID string) (r GetResult) {
-	resp, err := client.Get(serviceURL(client, serviceID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, serviceID string) (r GetResult) {
+	resp, err := client.Get(ctx, serviceURL(client, serviceID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -135,13 +137,13 @@ func (opts UpdateOpts) ToServiceUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates an existing Service.
-func Update(client *gophercloud.ServiceClient, serviceID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, serviceID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToServiceUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(updateURL(client, serviceID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(ctx, updateURL(client, serviceID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -151,8 +153,8 @@ func Update(client *gophercloud.ServiceClient, serviceID string, opts UpdateOpts
 // Delete removes an existing service.
 // It either deletes all associated endpoints, or fails until all endpoints
 // are deleted.
-func Delete(client *gophercloud.ServiceClient, serviceID string) (r DeleteResult) {
-	resp, err := client.Delete(serviceURL(client, serviceID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, serviceID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, serviceURL(client, serviceID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

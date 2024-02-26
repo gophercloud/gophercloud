@@ -1,6 +1,8 @@
 package capsules
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -20,8 +22,8 @@ type ListOptsBuilder interface {
 }
 
 // Get requests details on a single capsule, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -53,13 +55,13 @@ func (opts CreateOpts) ToCapsuleCreateMap() (map[string]interface{}, error) {
 }
 
 // Create implements create capsule request.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToCapsuleCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -98,8 +100,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Delete implements Capsule delete request.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

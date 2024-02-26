@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -33,7 +34,7 @@ func TestShareTypeList(t *testing.T) {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
-	allPages, err := sharetypes.List(client, sharetypes.ListOpts{}).AllPages()
+	allPages, err := sharetypes.List(client, sharetypes.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve share types: %v", err)
 	}
@@ -54,7 +55,7 @@ func TestShareTypeGetDefault(t *testing.T) {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
-	shareType, err := sharetypes.GetDefault(client).Extract()
+	shareType, err := sharetypes.GetDefault(context.TODO(), client).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve the default share type: %v", err)
 	}
@@ -77,12 +78,12 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		ExtraSpecs: map[string]interface{}{"my_new_key": "my_value"},
 	}
 
-	_, err = sharetypes.SetExtraSpecs(client, shareType.ID, options).Extract()
+	_, err = sharetypes.SetExtraSpecs(context.TODO(), client, shareType.ID, options).Extract()
 	if err != nil {
 		t.Fatalf("Unable to set extra specs for Share type: %s", shareType.Name)
 	}
 
-	extraSpecs, err := sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
+	extraSpecs, err := sharetypes.GetExtraSpecs(context.TODO(), client, shareType.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
 	}
@@ -95,12 +96,12 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatal("my_new_key was expected to be equal to my_value")
 	}
 
-	err = sharetypes.UnsetExtraSpecs(client, shareType.ID, "my_new_key").ExtractErr()
+	err = sharetypes.UnsetExtraSpecs(context.TODO(), client, shareType.ID, "my_new_key").ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to unset extra specs for Share type: %s", shareType.Name)
 	}
 
-	extraSpecs, err = sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
+	extraSpecs, err = sharetypes.GetExtraSpecs(context.TODO(), client, shareType.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
 	}
@@ -129,12 +130,12 @@ func TestShareTypeAccess(t *testing.T) {
 		Project: "9e3a5a44e0134445867776ef53a37605",
 	}
 
-	err = sharetypes.AddAccess(client, shareType.ID, options).ExtractErr()
+	err = sharetypes.AddAccess(context.TODO(), client, shareType.ID, options).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to add a new access to a share type: %v", err)
 	}
 
-	access, err := sharetypes.ShowAccess(client, shareType.ID).Extract()
+	access, err := sharetypes.ShowAccess(context.TODO(), client, shareType.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve the access details for a share type: %v", err)
 	}
@@ -145,12 +146,12 @@ func TestShareTypeAccess(t *testing.T) {
 		t.Fatal("Share type access is not the same than expected")
 	}
 
-	err = sharetypes.RemoveAccess(client, shareType.ID, options).ExtractErr()
+	err = sharetypes.RemoveAccess(context.TODO(), client, shareType.ID, options).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to remove an access from a share type: %v", err)
 	}
 
-	access, err = sharetypes.ShowAccess(client, shareType.ID).Extract()
+	access, err = sharetypes.ShowAccess(context.TODO(), client, shareType.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve the access details for a share type: %v", err)
 	}

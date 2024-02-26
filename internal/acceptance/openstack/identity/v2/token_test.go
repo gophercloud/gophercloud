@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -23,7 +24,7 @@ func TestTokenAuthenticate(t *testing.T) {
 	authOptions, err := openstack.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
 
-	result := tokens.Create(client, authOptions)
+	result := tokens.Create(context.TODO(), client, authOptions)
 	token, err := result.ExtractToken()
 	th.AssertNoErr(t, err)
 
@@ -47,13 +48,13 @@ func TestTokenValidate(t *testing.T) {
 	authOptions, err := openstack.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
 
-	result := tokens.Create(client, authOptions)
+	result := tokens.Create(context.TODO(), client, authOptions)
 	token, err := result.ExtractToken()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, token)
 
-	getResult := tokens.Get(client, token.ID)
+	getResult := tokens.Get(context.TODO(), client, token.ID)
 	user, err := getResult.ExtractUser()
 	th.AssertNoErr(t, err)
 

@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -45,7 +46,7 @@ func TestCRUDClaim(t *testing.T) {
 
 	for _, claimID := range claimIDs {
 		t.Logf("Attempting to update claim: %s", claimID)
-		updateErr := claims.Update(client, createdQueueName, claimID, updateOpts).ExtractErr()
+		updateErr := claims.Update(context.TODO(), client, createdQueueName, claimID, updateOpts).ExtractErr()
 
 		if updateErr != nil {
 			t.Fatalf("Unable to update claim %s: %v", claimID, err)

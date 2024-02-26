@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -28,7 +29,7 @@ func TestPortsCreateDestroy(t *testing.T) {
 	defer DeletePort(t, client, port)
 
 	found := false
-	err = ports.List(client, ports.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err = ports.List(client, ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		portList, err := ports.ExtractPorts(page)
 		if err != nil {
 			return false, err
@@ -62,7 +63,7 @@ func TestPortsUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeletePort(t, client, port)
 
-	updated, err := ports.Update(client, port.UUID, ports.UpdateOpts{
+	updated, err := ports.Update(context.TODO(), client, port.UUID, ports.UpdateOpts{
 		ports.UpdateOperation{
 			Op:    ports.ReplaceOp,
 			Path:  "/address",

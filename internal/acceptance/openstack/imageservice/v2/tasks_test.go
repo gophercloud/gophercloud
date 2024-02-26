@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestTasksListEachPage(t *testing.T) {
 	}
 
 	pager := tasks.List(client, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		tasks, err := tasks.ExtractTasks(page)
 		th.AssertNoErr(t, err)
 
@@ -40,7 +41,7 @@ func TestTasksListAllPages(t *testing.T) {
 
 	listOpts := tasks.ListOpts{}
 
-	allPages, err := tasks.List(client, listOpts).AllPages()
+	allPages, err := tasks.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allTasks, err := tasks.ExtractTasks(allPages)

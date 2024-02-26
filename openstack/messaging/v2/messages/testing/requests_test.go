@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/messages"
@@ -19,7 +20,7 @@ func TestList(t *testing.T) {
 	}
 
 	count := 0
-	err := messages.List(fake.ServiceClient(), QueueName, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := messages.List(fake.ServiceClient(), QueueName, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := messages.ExtractMessages(page)
 		th.AssertNoErr(t, err)
 
@@ -56,7 +57,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	actual, err := messages.Create(fake.ServiceClient(), QueueName, createOpts).Extract()
+	actual, err := messages.Create(context.TODO(), fake.ServiceClient(), QueueName, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedResources, actual)
 }
@@ -70,7 +71,7 @@ func TestGetMessages(t *testing.T) {
 		IDs: []string{"9988776655"},
 	}
 
-	actual, err := messages.GetMessages(fake.ServiceClient(), QueueName, getMessagesOpts).Extract()
+	actual, err := messages.GetMessages(context.TODO(), fake.ServiceClient(), QueueName, getMessagesOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedMessagesSet, actual)
 }
@@ -80,7 +81,7 @@ func TestGetMessage(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := messages.Get(fake.ServiceClient(), QueueName, MessageID).Extract()
+	actual, err := messages.Get(context.TODO(), fake.ServiceClient(), QueueName, MessageID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstMessage, actual)
 }
@@ -94,7 +95,7 @@ func TestDeleteMessages(t *testing.T) {
 		IDs: []string{"9988776655"},
 	}
 
-	err := messages.DeleteMessages(fake.ServiceClient(), QueueName, deleteMessagesOpts).ExtractErr()
+	err := messages.DeleteMessages(context.TODO(), fake.ServiceClient(), QueueName, deleteMessagesOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -107,7 +108,7 @@ func TestPopMessages(t *testing.T) {
 		Pop: 1,
 	}
 
-	actual, err := messages.PopMessages(fake.ServiceClient(), QueueName, popMessagesOpts).Extract()
+	actual, err := messages.PopMessages(context.TODO(), fake.ServiceClient(), QueueName, popMessagesOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedPopMessage, actual)
 }
@@ -121,6 +122,6 @@ func TestDeleteMessage(t *testing.T) {
 		ClaimID: "12345",
 	}
 
-	err := messages.Delete(fake.ServiceClient(), QueueName, MessageID, deleteOpts).ExtractErr()
+	err := messages.Delete(context.TODO(), fake.ServiceClient(), QueueName, MessageID, deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

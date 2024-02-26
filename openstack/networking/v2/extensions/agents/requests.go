@@ -1,6 +1,8 @@
 package agents
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -60,8 +62,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific agent based on its ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -84,13 +86,13 @@ func (opts UpdateOpts) ToAgentUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates a specific agent based on its ID.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToAgentUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -98,16 +100,16 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 }
 
 // Delete deletes a specific agent based on its ID.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := c.Delete(getURL(c, id), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, getURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListDHCPNetworks returns a list of networks scheduled to a specific
 // dhcp agent.
-func ListDHCPNetworks(c *gophercloud.ServiceClient, id string) (r ListDHCPNetworksResult) {
-	resp, err := c.Get(listDHCPNetworksURL(c, id), &r.Body, nil)
+func ListDHCPNetworks(ctx context.Context, c *gophercloud.ServiceClient, id string) (r ListDHCPNetworksResult) {
+	resp, err := c.Get(ctx, listDHCPNetworksURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -130,13 +132,13 @@ func (opts ScheduleDHCPNetworkOpts) ToAgentScheduleDHCPNetworkMap() (map[string]
 }
 
 // ScheduleDHCPNetwork schedule a network to a DHCP agent.
-func ScheduleDHCPNetwork(c *gophercloud.ServiceClient, id string, opts ScheduleDHCPNetworkOptsBuilder) (r ScheduleDHCPNetworkResult) {
+func ScheduleDHCPNetwork(ctx context.Context, c *gophercloud.ServiceClient, id string, opts ScheduleDHCPNetworkOptsBuilder) (r ScheduleDHCPNetworkResult) {
 	b, err := opts.ToAgentScheduleDHCPNetworkMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(scheduleDHCPNetworkURL(c, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := c.Post(ctx, scheduleDHCPNetworkURL(c, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -144,8 +146,8 @@ func ScheduleDHCPNetwork(c *gophercloud.ServiceClient, id string, opts ScheduleD
 }
 
 // RemoveDHCPNetwork removes a network from a DHCP agent.
-func RemoveDHCPNetwork(c *gophercloud.ServiceClient, id string, networkID string) (r RemoveDHCPNetworkResult) {
-	resp, err := c.Delete(removeDHCPNetworkURL(c, id, networkID), nil)
+func RemoveDHCPNetwork(ctx context.Context, c *gophercloud.ServiceClient, id string, networkID string) (r RemoveDHCPNetworkResult) {
+	resp, err := c.Delete(ctx, removeDHCPNetworkURL(c, id, networkID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -176,13 +178,13 @@ func (opts ScheduleBGPSpeakerOpts) ToAgentScheduleBGPSpeakerMap() (map[string]in
 
 // ScheduleBGPSpeaker schedule a BGP speaker to a BGP agent
 // POST /v2.0/agents/{agent-id}/bgp-drinstances
-func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, agentID string, opts ScheduleBGPSpeakerOptsBuilder) (r ScheduleBGPSpeakerResult) {
+func ScheduleBGPSpeaker(ctx context.Context, c *gophercloud.ServiceClient, agentID string, opts ScheduleBGPSpeakerOptsBuilder) (r ScheduleBGPSpeakerResult) {
 	b, err := opts.ToAgentScheduleBGPSpeakerMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(scheduleBGPSpeakersURL(c, agentID), b, nil, &gophercloud.RequestOpts{
+	resp, err := c.Post(ctx, scheduleBGPSpeakersURL(c, agentID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -191,8 +193,8 @@ func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, agentID string, opts Sched
 
 // RemoveBGPSpeaker removes a BGP speaker from a BGP agent
 // DELETE /v2.0/agents/{agent-id}/bgp-drinstances
-func RemoveBGPSpeaker(c *gophercloud.ServiceClient, agentID string, speakerID string) (r RemoveBGPSpeakerResult) {
-	resp, err := c.Delete(removeBGPSpeakersURL(c, agentID, speakerID), nil)
+func RemoveBGPSpeaker(ctx context.Context, c *gophercloud.ServiceClient, agentID string, speakerID string) (r RemoveBGPSpeakerResult) {
+	resp, err := c.Delete(ctx, removeBGPSpeakersURL(c, agentID, speakerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -208,8 +210,8 @@ func ListDRAgentHostingBGPSpeakers(c *gophercloud.ServiceClient, bgpSpeakerID st
 
 // ListL3Routers returns a list of routers scheduled to a specific
 // L3 agent.
-func ListL3Routers(c *gophercloud.ServiceClient, id string) (r ListL3RoutersResult) {
-	resp, err := c.Get(listL3RoutersURL(c, id), &r.Body, nil)
+func ListL3Routers(ctx context.Context, c *gophercloud.ServiceClient, id string) (r ListL3RoutersResult) {
+	resp, err := c.Get(ctx, listL3RoutersURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -232,13 +234,13 @@ func (opts ScheduleL3RouterOpts) ToAgentScheduleL3RouterMap() (map[string]interf
 }
 
 // ScheduleL3Router schedule a router to a L3 agent.
-func ScheduleL3Router(c *gophercloud.ServiceClient, id string, opts ScheduleL3RouterOptsBuilder) (r ScheduleL3RouterResult) {
+func ScheduleL3Router(ctx context.Context, c *gophercloud.ServiceClient, id string, opts ScheduleL3RouterOptsBuilder) (r ScheduleL3RouterResult) {
 	b, err := opts.ToAgentScheduleL3RouterMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(scheduleL3RouterURL(c, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := c.Post(ctx, scheduleL3RouterURL(c, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -246,8 +248,8 @@ func ScheduleL3Router(c *gophercloud.ServiceClient, id string, opts ScheduleL3Ro
 }
 
 // RemoveL3Router removes a router from a L3 agent.
-func RemoveL3Router(c *gophercloud.ServiceClient, id string, routerID string) (r RemoveL3RouterResult) {
-	resp, err := c.Delete(removeL3RouterURL(c, id, routerID), nil)
+func RemoveL3Router(ctx context.Context, c *gophercloud.ServiceClient, id string, routerID string) (r RemoveL3RouterResult) {
+	resp, err := c.Delete(ctx, removeL3RouterURL(c, id, routerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

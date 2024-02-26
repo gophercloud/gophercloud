@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -53,7 +54,7 @@ func TestVolumeActionsAttachCreateDestroy(t *testing.T) {
 	err = CreateVolumeAttach(t, blockClient, volume, server)
 	th.AssertNoErr(t, err)
 
-	newVolume, err := volumes.Get(blockClient, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), blockClient, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	DeleteVolumeAttach(t, blockClient, newVolume)
@@ -85,7 +86,7 @@ func TestVolumeActionsExtendSize(t *testing.T) {
 	err = ExtendVolumeSize(t, blockClient, volume)
 	th.AssertNoErr(t, err)
 
-	newVolume, err := volumes.Get(blockClient, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), blockClient, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newVolume)
@@ -138,7 +139,7 @@ func TestVolumeActionsChangeType(t *testing.T) {
 	err = ChangeVolumeType(t, client, volume, volumeType2)
 	th.AssertNoErr(t, err)
 
-	newVolume, err := volumes.Get(client, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newVolume.VolumeType, volumeType2.Name)
 
@@ -190,22 +191,22 @@ func TestVolumeConns(t *testing.T) {
     th.AssertNoErr(t, err)
 
     t.Logf("Creating volume")
-    cv, err := volumes.Create(client, &volumes.CreateOpts{
+    cv, err := volumes.Create(context.TODO(), client, &volumes.CreateOpts{
         Size: 1,
         Name: "blockv2-volume",
     }).Extract()
     th.AssertNoErr(t, err)
 
     defer func() {
-        err = volumes.WaitForStatus(client, cv.ID, "available", 60)
+        err = volumes.WaitForStatus(context.TODO(), client, cv.ID, "available", 60)
         th.AssertNoErr(t, err)
 
         t.Logf("Deleting volume")
-        err = volumes.Delete(client, cv.ID, volumes.DeleteOpts{}).ExtractErr()
+        err = volumes.Delete(context.TODO(), client, cv.ID, volumes.DeleteOpts{}).ExtractErr()
         th.AssertNoErr(t, err)
     }()
 
-    err = volumes.WaitForStatus(client, cv.ID, "available", 60)
+    err = volumes.WaitForStatus(context.TODO(), client, cv.ID, "available", 60)
     th.AssertNoErr(t, err)
 
     connOpts := &volumeactions.ConnectorOpts{

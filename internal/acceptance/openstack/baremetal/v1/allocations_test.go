@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,7 +26,7 @@ func TestAllocationsCreateDestroy(t *testing.T) {
 	defer DeleteAllocation(t, client, allocation)
 
 	found := false
-	err = allocations.List(client, allocations.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err = allocations.List(client, allocations.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allocationList, err := allocations.ExtractAllocations(page)
 		if err != nil {
 			return false, err

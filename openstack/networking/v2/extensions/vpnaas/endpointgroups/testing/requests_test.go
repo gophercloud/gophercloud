@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -61,7 +62,7 @@ func TestCreate(t *testing.T) {
 			"10.3.0.0/24",
 		},
 	}
-	actual, err := endpointgroups.Create(fake.ServiceClient(), options).Extract()
+	actual, err := endpointgroups.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 	expected := endpointgroups.EndpointGroup{
 		Name:        "peers",
@@ -107,7 +108,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	actual, err := endpointgroups.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	actual, err := endpointgroups.Get(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
 	th.AssertNoErr(t, err)
 	expected := endpointgroups.EndpointGroup{
 		Name:        "peers",
@@ -156,7 +157,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	endpointgroups.List(fake.ServiceClient(), endpointgroups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	endpointgroups.List(fake.ServiceClient(), endpointgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := endpointgroups.ExtractEndpointGroups(page)
 		if err != nil {
@@ -197,7 +198,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := endpointgroups.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
+	res := endpointgroups.Delete(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -247,7 +248,7 @@ func TestUpdate(t *testing.T) {
 		Description: &updatedDescription,
 	}
 
-	actual, err := endpointgroups.Update(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	actual, err := endpointgroups.Update(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
 	th.AssertNoErr(t, err)
 	expected := endpointgroups.EndpointGroup{
 		Name:        "updatedname",

@@ -1,6 +1,7 @@
 package fwaas_v2
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"testing"
@@ -17,7 +18,7 @@ import (
 func RemoveRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, ruleID string) {
 	t.Logf("Attempting to remove rule %s from policy %s", ruleID, policyID)
 
-	_, err := policies.RemoveRule(client, policyID, ruleID).Extract()
+	_, err := policies.RemoveRule(context.TODO(), client, policyID, ruleID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove rule %s from policy %s: %v", ruleID, policyID, err)
 	}
@@ -32,7 +33,7 @@ func AddRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, r
 		InsertBefore: beforeRuleID,
 	}
 
-	_, err := policies.InsertRule(client, policyID, addOpts).Extract()
+	_, err := policies.InsertRule(context.TODO(), client, policyID, addOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to insert rule %s before rule %s in policy %s: %v", ruleID, beforeRuleID, policyID, err)
 	}
@@ -54,7 +55,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 		},
 	}
 
-	policy, err := policies.Create(client, createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return policy, err
 	}
@@ -93,7 +94,7 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 		DestinationPort:      destinationPort,
 	}
 
-	rule, err := rules.Create(client, createOpts).Extract()
+	rule, err := rules.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return rule, err
 	}
@@ -117,7 +118,7 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
 	t.Logf("Attempting to delete policy: %s", policyID)
 
-	err := policies.Delete(client, policyID).ExtractErr()
+	err := policies.Delete(context.TODO(), client, policyID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete policy %s: %v", policyID, err)
 	}
@@ -131,7 +132,7 @@ func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) {
 	t.Logf("Attempting to delete rule: %s", ruleID)
 
-	err := rules.Delete(client, ruleID).ExtractErr()
+	err := rules.Delete(context.TODO(), client, ruleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete rule %s: %v", ruleID, err)
 	}
@@ -158,7 +159,7 @@ func CreateGroup(t *testing.T, client *gophercloud.ServiceClient) (*groups.Group
 	t.Logf("Attempting to create firewall group %s",
 		groupName)
 
-	group, err := groups.Create(client, createOpts).Extract()
+	group, err := groups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return group, err
 	}
@@ -175,7 +176,7 @@ func CreateGroup(t *testing.T, client *gophercloud.ServiceClient) (*groups.Group
 func DeleteGroup(t *testing.T, client *gophercloud.ServiceClient, groupId string) {
 	t.Logf("Attempting to delete firewall group %s", groupId)
 
-	err := groups.Delete(client, groupId).ExtractErr()
+	err := groups.Delete(context.TODO(), client, groupId).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete firewall group %s: %v", groupId, err)
 	}

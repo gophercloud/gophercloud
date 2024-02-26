@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -28,7 +29,7 @@ func TestTransferRequestCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteTransferRequest(t, client, transferRequest)
 
-	allTransferRequestsPages, err := transferRequests.List(client, nil).AllPages()
+	allTransferRequestsPages, err := transferRequests.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allTransferRequests, err := transferRequests.ExtractTransferRequests(allTransferRequestsPages)
@@ -78,7 +79,7 @@ func TestTransferRequestAccept(t *testing.T) {
 	// Accept Zone Transfer Request
 	transferAccept, err := CreateTransferAccept(t, client, transferRequest.ID, transferRequest.Key)
 
-	allTransferAcceptsPages, err := transferAccepts.List(client, nil).AllPages()
+	allTransferAcceptsPages, err := transferAccepts.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allTransferAccepts, err := transferAccepts.ExtractTransferAccepts(allTransferAcceptsPages)

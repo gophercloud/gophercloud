@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -61,7 +62,7 @@ func TestCreate(t *testing.T) {
 		AdminStateUp: gophercloud.Enabled,
 		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
 	}
-	actual, err := services.Create(fake.ServiceClient(), options).Extract()
+	actual, err := services.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 	expected := services.Service{
 		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
@@ -110,7 +111,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	services.List(fake.ServiceClient(), services.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	services.List(fake.ServiceClient(), services.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := services.ExtractServices(page)
 		if err != nil {
@@ -169,7 +170,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	actual, err := services.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	actual, err := services.Get(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
 	th.AssertNoErr(t, err)
 	expected := services.Service{
 		Status:       "PENDING_CREATE",
@@ -194,7 +195,7 @@ func TestDelete(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
-	res := services.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
+	res := services.Delete(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -247,7 +248,7 @@ func TestUpdate(t *testing.T) {
 		AdminStateUp: gophercloud.Disabled,
 	}
 
-	actual, err := services.Update(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	actual, err := services.Update(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
 	th.AssertNoErr(t, err)
 	expected := services.Service{
 		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",

@@ -1,6 +1,8 @@
 package amphorae
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -53,15 +55,15 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a particular amphora based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Failover performs a failover of an amphora.
-func Failover(c *gophercloud.ServiceClient, id string) (r FailoverResult) {
-	resp, err := c.Put(failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
+func Failover(ctx context.Context, c *gophercloud.ServiceClient, id string) (r FailoverResult) {
+	resp, err := c.Put(ctx, failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

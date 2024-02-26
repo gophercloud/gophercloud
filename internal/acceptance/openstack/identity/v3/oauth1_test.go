@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -35,7 +36,7 @@ func TestOAuth1CRUD(t *testing.T) {
 			DomainName:  ao.DomainName,
 		},
 	}
-	tokenRes := tokens.Create(client, &authOptions)
+	tokenRes := tokens.Create(context.TODO(), client, &authOptions)
 	token, err := tokenRes.Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
@@ -57,11 +58,11 @@ func TestOAuth1CRUD(t *testing.T) {
 		Description: "My test consumer",
 	}
 	// NOTE: secret is available only in create response
-	consumer, err := oauth1.CreateConsumer(client, createConsumerOpts).Extract()
+	consumer, err := oauth1.CreateConsumer(context.TODO(), client, createConsumerOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Delete a consumer
-	defer oauth1.DeleteConsumer(client, consumer.ID)
+	defer oauth1.DeleteConsumer(context.TODO(), client, consumer.ID)
 	tools.PrintResource(t, consumer)
 
 	th.AssertEquals(t, consumer.Description, createConsumerOpts.Description)
@@ -70,21 +71,21 @@ func TestOAuth1CRUD(t *testing.T) {
 	updateConsumerOpts := oauth1.UpdateConsumerOpts{
 		Description: "",
 	}
-	updatedConsumer, err := oauth1.UpdateConsumer(client, consumer.ID, updateConsumerOpts).Extract()
+	updatedConsumer, err := oauth1.UpdateConsumer(context.TODO(), client, consumer.ID, updateConsumerOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updatedConsumer)
 	th.AssertEquals(t, updatedConsumer.ID, consumer.ID)
 	th.AssertEquals(t, updatedConsumer.Description, updateConsumerOpts.Description)
 
 	// Get a consumer
-	getConsumer, err := oauth1.GetConsumer(client, consumer.ID).Extract()
+	getConsumer, err := oauth1.GetConsumer(context.TODO(), client, consumer.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getConsumer)
 	th.AssertEquals(t, getConsumer.ID, consumer.ID)
 	th.AssertEquals(t, getConsumer.Description, updateConsumerOpts.Description)
 
 	// List consumers
-	consumersPages, err := oauth1.ListConsumers(client).AllPages()
+	consumersPages, err := oauth1.ListConsumers(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	consumers, err := oauth1.ExtractConsumers(consumersPages)
 	th.AssertNoErr(t, err)
@@ -105,7 +106,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		OAuthSignatureMethod: method,
 		RequestedProjectID:   project.ID,
 	}
-	requestToken, err := oauth1.RequestToken(client, requestTokenOpts).Extract()
+	requestToken, err := oauth1.RequestToken(context.TODO(), client, requestTokenOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, requestToken)
 
@@ -120,7 +121,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		// test role by name
 		authorizeTokenOpts.Roles = append(authorizeTokenOpts.Roles, oauth1.Role{Name: roles[1].Name})
 	}
-	authToken, err := oauth1.AuthorizeToken(client, requestToken.OAuthToken, authorizeTokenOpts).Extract()
+	authToken, err := oauth1.AuthorizeToken(context.TODO(), client, requestToken.OAuthToken, authorizeTokenOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, authToken)
 
@@ -134,14 +135,14 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		OAuthSignatureMethod: method,
 	}
 
-	accessToken, err := oauth1.CreateAccessToken(client, accessTokenOpts).Extract()
+	accessToken, err := oauth1.CreateAccessToken(context.TODO(), client, accessTokenOpts).Extract()
 	th.AssertNoErr(t, err)
-	defer oauth1.RevokeAccessToken(client, user.ID, accessToken.OAuthToken)
+	defer oauth1.RevokeAccessToken(context.TODO(), client, user.ID, accessToken.OAuthToken)
 
 	tools.PrintResource(t, accessToken)
 
 	// Get access token
-	getAccessToken, err := oauth1.GetAccessToken(client, user.ID, accessToken.OAuthToken).Extract()
+	getAccessToken, err := oauth1.GetAccessToken(context.TODO(), client, user.ID, accessToken.OAuthToken).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getAccessToken)
@@ -152,7 +153,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 	th.AssertEquals(t, getAccessToken.ProjectID, project.ID)
 
 	// List access tokens
-	accessTokensPages, err := oauth1.ListAccessTokens(client, user.ID).AllPages()
+	accessTokensPages, err := oauth1.ListAccessTokens(client, user.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	accessTokens, err := oauth1.ExtractAccessTokens(accessTokensPages)
@@ -162,7 +163,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 	th.AssertDeepEquals(t, accessTokens[0], *getAccessToken)
 
 	// List access token roles
-	accessTokenRolesPages, err := oauth1.ListAccessTokenRoles(client, user.ID, accessToken.OAuthToken).AllPages()
+	accessTokenRolesPages, err := oauth1.ListAccessTokenRoles(client, user.ID, accessToken.OAuthToken).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	accessTokenRoles, err := oauth1.ExtractAccessTokenRoles(accessTokenRolesPages)
@@ -181,7 +182,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 	}
 
 	// Get access token role
-	getAccessTokenRole, err := oauth1.GetAccessTokenRole(client, user.ID, accessToken.OAuthToken, roles[0].ID).Extract()
+	getAccessTokenRole, err := oauth1.GetAccessTokenRole(context.TODO(), client, user.ID, accessToken.OAuthToken, roles[0].ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getAccessTokenRole)
 
@@ -205,7 +206,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
 		OAuthSignatureMethod: method,
 	}
-	err = openstack.AuthenticateV3(newClient.ProviderClient, authOptions, gophercloud.EndpointOpts{})
+	err = openstack.AuthenticateV3(context.TODO(), newClient.ProviderClient, authOptions, gophercloud.EndpointOpts{})
 	th.AssertNoErr(t, err)
 
 	// Test OAuth1 token extract
@@ -213,7 +214,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		tokens.Token
 		oauth1.TokenExt
 	}
-	tokenRes := tokens.Get(newClient, newClient.ProviderClient.TokenID)
+	tokenRes := tokens.Get(context.TODO(), newClient, newClient.ProviderClient.TokenID)
 	err = tokenRes.ExtractInto(&token)
 	th.AssertNoErr(t, err)
 	oauth1Roles, err := tokenRes.ExtractRoles()

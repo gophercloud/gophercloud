@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -31,7 +32,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := ports.List(fake.ServiceClient(), ports.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := ports.List(fake.ServiceClient(), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := ports.ExtractPorts(page)
 		if err != nil {
@@ -95,7 +96,7 @@ func TestListWithExtensions(t *testing.T) {
 
 	var allPorts []portWithExt
 
-	allPages, err := ports.List(fake.ServiceClient(), ports.ListOpts{}).AllPages()
+	allPages, err := ports.List(fake.ServiceClient(), ports.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = ports.ExtractPortsInto(allPages, &allPorts)
@@ -119,7 +120,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, GetResponse)
 	})
 
-	n, err := ports.Get(fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").Extract()
+	n, err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -159,7 +160,7 @@ func TestGetWithExtensions(t *testing.T) {
 		portsecurity.PortSecurityExt
 	}
 
-	err := ports.Get(fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&portWithExtensions)
+	err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&portWithExtensions)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, portWithExtensions.Status, "ACTIVE")
@@ -196,7 +197,7 @@ func TestCreate(t *testing.T) {
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
 	}
-	n, err := ports.Create(fake.ServiceClient(), options).Extract()
+	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
@@ -245,7 +246,7 @@ func TestCreateOmitSecurityGroups(t *testing.T) {
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
 	}
-	n, err := ports.Create(fake.ServiceClient(), options).Extract()
+	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
@@ -295,7 +296,7 @@ func TestCreateWithNoSecurityGroup(t *testing.T) {
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
 	}
-	n, err := ports.Create(fake.ServiceClient(), options).Extract()
+	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
@@ -342,7 +343,7 @@ func TestCreateWithPropagateUplinkStatus(t *testing.T) {
 		},
 		PropagateUplinkStatus: &propagateUplinkStatus,
 	}
-	n, err := ports.Create(fake.ServiceClient(), options).Extract()
+	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
@@ -392,7 +393,7 @@ func TestCreateWithValueSpecs(t *testing.T) {
 			"test": "value",
 		},
 	}
-	n, err := ports.Create(fake.ServiceClient(), options).Extract()
+	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
@@ -448,7 +449,7 @@ func TestCreateWithInvalidValueSpecs(t *testing.T) {
 	}
 
 	// We expect an error here since we used a fobidden key in the value specs.
-	_, err := ports.Create(fake.ServiceClient(), options).Extract()
+	_, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertErr(t, err)
 
 	options.ValueSpecs = &map[string]string{
@@ -457,12 +458,12 @@ func TestCreateWithInvalidValueSpecs(t *testing.T) {
 	}
 
 	// We expect an error here since the value specs would overwrite an existing field.
-	_, err = ports.Create(fake.ServiceClient(), options).Extract()
+	_, err = ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertErr(t, err)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := ports.Create(fake.ServiceClient(), ports.CreateOpts{})
+	res := ports.Create(context.TODO(), fake.ServiceClient(), ports.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -509,7 +510,7 @@ func TestCreatePortSecurity(t *testing.T) {
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := ports.Create(fake.ServiceClient(), createOpts).ExtractInto(&portWithExt)
+	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, portWithExt.Status, "DOWN")
@@ -545,7 +546,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	s, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -586,7 +587,7 @@ func TestUpdateOmitSecurityGroups(t *testing.T) {
 		},
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	s, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -621,7 +622,7 @@ func TestUpdatePropagateUplinkStatus(t *testing.T) {
 		PropagateUplinkStatus: &propagateUplinkStatus,
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	s, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, s.PropagateUplinkStatus, propagateUplinkStatus)
@@ -650,7 +651,7 @@ func TestUpdateValueSpecs(t *testing.T) {
 		},
 	}
 
-	_, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	_, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -683,7 +684,7 @@ func TestUpdatePortSecurity(t *testing.T) {
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithExt)
+	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, portWithExt.Status, "DOWN")
@@ -733,12 +734,12 @@ func TestUpdateRevision(t *testing.T) {
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
 	}
-	_, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	_, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	revisionNumber := 42
 	options.RevisionNumber = &revisionNumber
-	_, err = ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0e", options).Extract()
+	_, err = ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0e", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -771,7 +772,7 @@ func TestRemoveSecurityGroups(t *testing.T) {
 		},
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	s, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -811,7 +812,7 @@ func TestRemoveAllowedAddressPairs(t *testing.T) {
 		AllowedAddressPairs: &[]ports.AddressPair{},
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	s, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -848,7 +849,7 @@ func TestDontUpdateAllowedAddressPairs(t *testing.T) {
 		SecurityGroups: &[]string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"},
 	}
 
-	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	s, err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -871,7 +872,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := ports.Delete(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d")
+	res := ports.Delete(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -894,7 +895,7 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 		extradhcpopts.ExtraDHCPOptsExt
 	}
 
-	err := ports.Get(fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
+	err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "ACTIVE")
@@ -960,7 +961,7 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 		extradhcpopts.ExtraDHCPOptsExt
 	}
 
-	err := ports.Create(fake.ServiceClient(), createOpts).ExtractInto(&s)
+	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "DOWN")
@@ -1025,7 +1026,7 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 		extradhcpopts.ExtraDHCPOptsExt
 	}
 
-	err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
+	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "DOWN")

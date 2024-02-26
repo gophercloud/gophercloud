@@ -1,6 +1,7 @@
 package webhooks
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 
@@ -32,7 +33,7 @@ func (opts TriggerOpts) ToWebhookTriggerQuery() (string, error) {
 }
 
 // Trigger an action represented by a webhook.
-func Trigger(client *gophercloud.ServiceClient, id string, opts TriggerOptsBuilder) (r TriggerResult) {
+func Trigger(ctx context.Context, client *gophercloud.ServiceClient, id string, opts TriggerOptsBuilder) (r TriggerResult) {
 	url := triggerURL(client, id)
 	if opts != nil {
 		query, err := opts.ToWebhookTriggerQuery()
@@ -46,7 +47,7 @@ func Trigger(client *gophercloud.ServiceClient, id string, opts TriggerOptsBuild
 		return
 	}
 
-	resp, err := client.Post(url, nil, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, url, nil, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

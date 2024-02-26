@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -25,7 +26,7 @@ func CreateRecordSet(t *testing.T, client *gophercloud.ServiceClient, zone *zone
 		Records:     []string{"10.1.0.2"},
 	}
 
-	rs, err := recordsets.Create(client, zone.ID, createOpts).Extract()
+	rs, err := recordsets.Create(context.TODO(), client, zone.ID, createOpts).Extract()
 	if err != nil {
 		return rs, err
 	}
@@ -34,7 +35,7 @@ func CreateRecordSet(t *testing.T, client *gophercloud.ServiceClient, zone *zone
 		return rs, err
 	}
 
-	newRS, err := recordsets.Get(client, rs.ZoneID, rs.ID).Extract()
+	newRS, err := recordsets.Get(context.TODO(), client, rs.ZoneID, rs.ID).Extract()
 	if err != nil {
 		return newRS, err
 	}
@@ -60,7 +61,7 @@ func CreateZone(t *testing.T, client *gophercloud.ServiceClient) (*zones.Zone, e
 		Description: "Test zone",
 	}
 
-	zone, err := zones.Create(client, createOpts).Extract()
+	zone, err := zones.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return zone, err
 	}
@@ -69,7 +70,7 @@ func CreateZone(t *testing.T, client *gophercloud.ServiceClient) (*zones.Zone, e
 		return zone, err
 	}
 
-	newZone, err := zones.Get(client, zone.ID).Extract()
+	newZone, err := zones.Get(context.TODO(), client, zone.ID).Extract()
 	if err != nil {
 		return zone, err
 	}
@@ -96,7 +97,7 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 		Masters: []string{"10.0.0.1"},
 	}
 
-	zone, err := zones.Create(client, createOpts).Extract()
+	zone, err := zones.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return zone, err
 	}
@@ -105,7 +106,7 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 		return zone, err
 	}
 
-	newZone, err := zones.Get(client, zone.ID).Extract()
+	newZone, err := zones.Get(context.TODO(), client, zone.ID).Extract()
 	if err != nil {
 		return zone, err
 	}
@@ -128,7 +129,7 @@ func CreateTransferRequest(t *testing.T, client *gophercloud.ServiceClient, zone
 		Description:     "Test transfer request",
 	}
 
-	transferRequest, err := transferRequests.Create(client, zone.ID, createOpts).Extract()
+	transferRequest, err := transferRequests.Create(context.TODO(), client, zone.ID, createOpts).Extract()
 	if err != nil {
 		return transferRequest, err
 	}
@@ -137,7 +138,7 @@ func CreateTransferRequest(t *testing.T, client *gophercloud.ServiceClient, zone
 		return transferRequest, err
 	}
 
-	newTransferRequest, err := transferRequests.Get(client, transferRequest.ID).Extract()
+	newTransferRequest, err := transferRequests.Get(context.TODO(), client, transferRequest.ID).Extract()
 	if err != nil {
 		return transferRequest, err
 	}
@@ -158,14 +159,14 @@ func CreateTransferAccept(t *testing.T, client *gophercloud.ServiceClient, zoneT
 		ZoneTransferRequestID: zoneTransferRequestID,
 		Key:                   key,
 	}
-	transferAccept, err := transferAccepts.Create(client, createOpts).Extract()
+	transferAccept, err := transferAccepts.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return transferAccept, err
 	}
 	if err := WaitForTransferAcceptStatus(client, transferAccept, "COMPLETE"); err != nil {
 		return transferAccept, err
 	}
-	newTransferAccept, err := transferAccepts.Get(client, transferAccept.ID).Extract()
+	newTransferAccept, err := transferAccepts.Get(context.TODO(), client, transferAccept.ID).Extract()
 	if err != nil {
 		return transferAccept, err
 	}
@@ -178,7 +179,7 @@ func CreateTransferAccept(t *testing.T, client *gophercloud.ServiceClient, zoneT
 // the transfer request failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, tr *transferRequests.TransferRequest) {
-	err := transferRequests.Delete(client, tr.ID).ExtractErr()
+	err := transferRequests.Delete(context.TODO(), client, tr.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete zone transfer request %s: %v", tr.ID, err)
 	}
@@ -189,7 +190,7 @@ func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, tr *
 // the record set failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteRecordSet(t *testing.T, client *gophercloud.ServiceClient, rs *recordsets.RecordSet) {
-	err := recordsets.Delete(client, rs.ZoneID, rs.ID).ExtractErr()
+	err := recordsets.Delete(context.TODO(), client, rs.ZoneID, rs.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete record set %s: %v", rs.ID, err)
 	}
@@ -201,7 +202,7 @@ func DeleteRecordSet(t *testing.T, client *gophercloud.ServiceClient, rs *record
 // the zone failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteZone(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zone) {
-	_, err := zones.Delete(client, zone.ID).Extract()
+	_, err := zones.Delete(context.TODO(), client, zone.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to delete zone %s: %v", zone.ID, err)
 	}
@@ -213,7 +214,7 @@ func DeleteZone(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zon
 // the specified status or the status becomes ERROR.
 func WaitForRecordSetStatus(client *gophercloud.ServiceClient, rs *recordsets.RecordSet, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		current, err := recordsets.Get(client, rs.ZoneID, rs.ID).Extract()
+		current, err := recordsets.Get(context.TODO(), client, rs.ZoneID, rs.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -230,7 +231,7 @@ func WaitForRecordSetStatus(client *gophercloud.ServiceClient, rs *recordsets.Re
 // the specified status or the status becomes ERROR.
 func WaitForTransferRequestStatus(client *gophercloud.ServiceClient, tr *transferRequests.TransferRequest, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		current, err := transferRequests.Get(client, tr.ID).Extract()
+		current, err := transferRequests.Get(context.TODO(), client, tr.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -245,7 +246,7 @@ func WaitForTransferRequestStatus(client *gophercloud.ServiceClient, tr *transfe
 // the specified status or the status becomes ERROR.
 func WaitForTransferAcceptStatus(client *gophercloud.ServiceClient, ta *transferAccepts.TransferAccept, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		current, err := transferAccepts.Get(client, ta.ID).Extract()
+		current, err := transferAccepts.Get(context.TODO(), client, ta.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -260,7 +261,7 @@ func WaitForTransferAcceptStatus(client *gophercloud.ServiceClient, ta *transfer
 // the specified status or the status becomes ERROR.
 func WaitForZoneStatus(client *gophercloud.ServiceClient, zone *zones.Zone, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		current, err := zones.Get(client, zone.ID).Extract()
+		current, err := zones.Get(context.TODO(), client, zone.ID).Extract()
 		if err != nil {
 			return false, err
 		}

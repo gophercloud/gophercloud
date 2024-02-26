@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -20,7 +21,7 @@ func TestStackTemplatesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteStack(t, client, stack.Name, stack.ID)
 
-	tmpl, err := stacktemplates.Get(client, stack.Name, stack.ID).Extract()
+	tmpl, err := stacktemplates.Get(context.TODO(), client, stack.Name, stack.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, tmpl)
 }
@@ -33,7 +34,7 @@ func TestStackTemplatesValidate(t *testing.T) {
 		Template: validateTemplate,
 	}
 
-	validatedTemplate, err := stacktemplates.Validate(client, validateOpts).Extract()
+	validatedTemplate, err := stacktemplates.Validate(context.TODO(), client, validateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, validatedTemplate)
 }
@@ -46,7 +47,7 @@ func TestStackTemplateWithFile(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteStack(t, client, stack.Name, stack.ID)
 
-	tmpl, err := stacktemplates.Get(client, stack.Name, stack.ID).Extract()
+	tmpl, err := stacktemplates.Get(context.TODO(), client, stack.Name, stack.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, tmpl)
 }

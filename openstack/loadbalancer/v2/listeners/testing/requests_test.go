@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -16,7 +17,7 @@ func TestListListeners(t *testing.T) {
 	HandleListenerListSuccessfully(t)
 
 	pages := 0
-	err := listeners.List(fake.ServiceClient(), listeners.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := listeners.List(fake.ServiceClient(), listeners.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := listeners.ExtractListeners(page)
@@ -45,7 +46,7 @@ func TestListAllListeners(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListenerListSuccessfully(t)
 
-	allPages, err := listeners.List(fake.ServiceClient(), listeners.ListOpts{}).AllPages()
+	allPages, err := listeners.List(fake.ServiceClient(), listeners.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := listeners.ExtractListeners(allPages)
 	th.AssertNoErr(t, err)
@@ -58,7 +59,7 @@ func TestCreateListener(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListenerCreationSuccessfully(t, SingleListenerBody)
 
-	actual, err := listeners.Create(fake.ServiceClient(), listeners.CreateOpts{
+	actual, err := listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{
 		Protocol:               "TCP",
 		Name:                   "db",
 		LoadbalancerID:         "79e05663-7f03-45d2-a092-8b94062f22ab",
@@ -76,23 +77,23 @@ func TestCreateListener(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := listeners.Create(fake.ServiceClient(), listeners.CreateOpts{})
+	res := listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo"})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar"})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar"})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar", ProtocolPort: 80})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar", ProtocolPort: 80})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -104,7 +105,7 @@ func TestGetListener(t *testing.T) {
 	HandleListenerGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := listeners.Get(client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	actual, err := listeners.Get(context.TODO(), client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -117,7 +118,7 @@ func TestDeleteListener(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListenerDeletionSuccessfully(t)
 
-	res := listeners.Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := listeners.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -136,7 +137,7 @@ func TestUpdateListener(t *testing.T) {
 		"X-Forwarded-Port": "false",
 	}
 	tlsVersions := []listeners.TLSVersion{"TLSv1.2", "TLSv1.3"}
-	actual, err := listeners.Update(client, "4ec89087-d057-4e2c-911f-60a3b47ee304", listeners.UpdateOpts{
+	actual, err := listeners.Update(context.TODO(), client, "4ec89087-d057-4e2c-911f-60a3b47ee304", listeners.UpdateOpts{
 		Name:                 &name,
 		ConnLimit:            &i1001,
 		DefaultPoolID:        &defaultPoolID,
@@ -160,7 +161,7 @@ func TestGetListenerStatsTree(t *testing.T) {
 	HandleListenerGetStatsTree(t)
 
 	client := fake.ServiceClient()
-	actual, err := listeners.GetStats(client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	actual, err := listeners.GetStats(context.TODO(), client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}

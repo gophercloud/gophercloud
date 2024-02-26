@@ -4,6 +4,7 @@
 package layer3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	_, err = extensions.Get(client, "l3_agent_scheduler").Extract()
+	_, err = extensions.Get(context.TODO(), client, "l3_agent_scheduler").Extract()
 	if err != nil {
 		t.Skip("Extension l3_agent_scheduler not present")
 	}
@@ -43,7 +44,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	defer DeleteRouterInterface(t, client, routerInterface.PortID, router.ID)
 
 	// List hosting agent
-	allPages, err := routers.ListL3Agents(client, router.ID).AllPages()
+	allPages, err := routers.ListL3Agents(client, router.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	hostingAgents, err := routers.ExtractL3Agents(allPages)
 	th.AssertNoErr(t, err)
@@ -52,7 +53,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	t.Logf("Router %s is scheduled on %s", router.ID, hostingAgent.ID)
 
 	// remove from hosting agent
-	err = agents.RemoveL3Router(client, hostingAgent.ID, router.ID).ExtractErr()
+	err = agents.RemoveL3Router(context.TODO(), client, hostingAgent.ID, router.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	containsRouterFunc := func(rs []routers.Router, routerID string) bool {
@@ -65,17 +66,17 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	}
 
 	// List routers on hosting agent
-	routersOnHostingAgent, err := agents.ListL3Routers(client, hostingAgent.ID).Extract()
+	routersOnHostingAgent, err := agents.ListL3Routers(context.TODO(), client, hostingAgent.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, containsRouterFunc(routersOnHostingAgent, router.ID), false)
 	t.Logf("Router %s is not scheduled on %s", router.ID, hostingAgent.ID)
 
 	// schedule back
-	err = agents.ScheduleL3Router(client, hostingAgents[0].ID, agents.ScheduleL3RouterOpts{RouterID: router.ID}).ExtractErr()
+	err = agents.ScheduleL3Router(context.TODO(), client, hostingAgents[0].ID, agents.ScheduleL3RouterOpts{RouterID: router.ID}).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// List hosting agent after readding
-	routersOnHostingAgent, err = agents.ListL3Routers(client, hostingAgent.ID).Extract()
+	routersOnHostingAgent, err = agents.ListL3Routers(context.TODO(), client, hostingAgent.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, containsRouterFunc(routersOnHostingAgent, router.ID), true)
 	t.Logf("Router %s is scheduled on %s", router.ID, hostingAgent.ID)

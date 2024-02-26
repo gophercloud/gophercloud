@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -30,14 +31,14 @@ func TestStacksCRUD(t *testing.T) {
 		Timeout:      20,
 	}
 
-	err = stacks.Update(client, createdStack.Name, createdStack.ID, updateOpts).ExtractErr()
+	err = stacks.Update(context.TODO(), client, createdStack.Name, createdStack.ID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForStackStatus(client, createdStack.Name, createdStack.ID, "UPDATE_COMPLETE")
 	th.AssertNoErr(t, err)
 
 	var found bool
-	allPages, err := stacks.List(client, nil).AllPages()
+	allPages, err := stacks.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allStacks, err := stacks.ExtractStacks(allPages)
 	th.AssertNoErr(t, err)

@@ -1,6 +1,7 @@
 package peers
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -18,7 +19,7 @@ func CreateBGPPeer(t *testing.T, client *gophercloud.ServiceClient) (*peers.BGPP
 	opts.PeerIP = "192.168.0.1"
 
 	t.Logf("Attempting to create BGP Peer: %s", opts.Name)
-	bgpPeer, err := peers.Create(client, opts).Extract()
+	bgpPeer, err := peers.Create(context.TODO(), client, opts).Extract()
 	if err != nil {
 		return bgpPeer, err
 	}

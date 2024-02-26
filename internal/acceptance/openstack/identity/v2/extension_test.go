@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestExtensionsList(t *testing.T) {
 	client, err := clients.NewIdentityV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := extensions.List(client).AllPages()
+	allPages, err := extensions.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allExtensions, err := extensions.ExtractExtensions(allPages)
@@ -43,7 +44,7 @@ func TestExtensionsGet(t *testing.T) {
 	client, err := clients.NewIdentityV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "OS-KSCRUD").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "OS-KSCRUD").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, extension)

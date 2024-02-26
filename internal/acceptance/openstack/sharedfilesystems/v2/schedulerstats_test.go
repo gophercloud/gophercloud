@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestSchedulerStatsList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "2.23"
 
-	allPages, err := schedulerstats.List(client, nil).AllPages()
+	allPages, err := schedulerstats.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPools, err := schedulerstats.ExtractPools(allPages)

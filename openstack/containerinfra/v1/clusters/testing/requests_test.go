@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -40,7 +41,7 @@ func TestCreateCluster(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	res := clusters.Create(sc, opts)
+	res := clusters.Create(context.TODO(), sc, opts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")
@@ -60,7 +61,7 @@ func TestGetCluster(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	actual, err := clusters.Get(sc, "746e779a-751a-456b-a3e9-c883d734946f").Extract()
+	actual, err := clusters.Get(context.TODO(), sc, "746e779a-751a-456b-a3e9-c883d734946f").Extract()
 	th.AssertNoErr(t, err)
 	actual.CreatedAt = actual.CreatedAt.UTC()
 	actual.UpdatedAt = actual.UpdatedAt.UTC()
@@ -76,7 +77,7 @@ func TestListClusters(t *testing.T) {
 	count := 0
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	clusters.List(sc, clusters.ListOpts{Limit: 2}).EachPage(func(page pagination.Page) (bool, error) {
+	clusters.List(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := clusters.ExtractClusters(page)
 		th.AssertNoErr(t, err)
@@ -103,7 +104,7 @@ func TestListDetailClusters(t *testing.T) {
 	count := 0
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	clusters.ListDetail(sc, clusters.ListOpts{Limit: 2}).EachPage(func(page pagination.Page) (bool, error) {
+	clusters.ListDetail(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := clusters.ExtractClusters(page)
 		th.AssertNoErr(t, err)
@@ -142,7 +143,7 @@ func TestUpdateCluster(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	res := clusters.Update(sc, clusterUUID, updateOpts)
+	res := clusters.Update(context.TODO(), sc, clusterUUID, updateOpts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")
@@ -167,7 +168,7 @@ func TestUpgradeCluster(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	res := clusters.Upgrade(sc, clusterUUID, opts)
+	res := clusters.Upgrade(context.TODO(), sc, clusterUUID, opts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")
@@ -187,7 +188,7 @@ func TestDeleteCluster(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	r := clusters.Delete(sc, clusterUUID)
+	r := clusters.Delete(context.TODO(), sc, clusterUUID)
 	err := r.ExtractErr()
 	th.AssertNoErr(t, err)
 
@@ -220,7 +221,7 @@ func TestResizeCluster(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	res := clusters.Resize(sc, clusterUUID, opts)
+	res := clusters.Resize(context.TODO(), sc, clusterUUID, opts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")

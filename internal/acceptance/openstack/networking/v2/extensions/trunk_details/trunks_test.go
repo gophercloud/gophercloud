@@ -4,6 +4,7 @@
 package trunk_details
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -27,7 +28,7 @@ func TestListPortWithSubports(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	_, err = extensions.Get(client, "trunk-details").Extract()
+	_, err = extensions.Get(context.TODO(), client, "trunk-details").Extract()
 	if err != nil {
 		t.Skip("This test requires trunk-details Neutron extension")
 	}
@@ -72,7 +73,7 @@ func TestListPortWithSubports(t *testing.T) {
 	defer v2Trunks.DeleteTrunk(t, client, trunk.ID)
 
 	// Test LIST ports with trunk details
-	allPages, err := ports.List(client, ports.ListOpts{ID: parentPort.ID}).AllPages()
+	allPages, err := ports.List(client, ports.ListOpts{ID: parentPort.ID}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	var allPorts []portWithTrunkDetails
@@ -103,7 +104,7 @@ func TestListPortWithSubports(t *testing.T) {
 	}, port.TrunkDetails.SubPorts[1].Subport)
 
 	// Test GET port with trunk details
-	err = ports.Get(client, parentPort.ID).ExtractInto(&port)
+	err = ports.Get(context.TODO(), client, parentPort.ID).ExtractInto(&port)
 	th.AssertEquals(t, trunk.ID, port.TrunkDetails.TrunkID)
 	th.AssertEquals(t, 2, len(port.TrunkDetails.SubPorts))
 	th.AssertDeepEquals(t, trunk_details.Subport{

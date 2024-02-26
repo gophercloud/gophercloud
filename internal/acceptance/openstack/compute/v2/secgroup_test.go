@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestSecGroupsList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := secgroups.List(client).AllPages()
+	allPages, err := secgroups.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allSecGroups, err := secgroups.ExtractSecurityGroups(allPages)
@@ -51,7 +52,7 @@ func TestSecGroupsCRUD(t *testing.T) {
 		Name:        newName,
 		Description: &description,
 	}
-	updatedSecurityGroup, err := secgroups.Update(client, securityGroup.ID, updateOpts).Extract()
+	updatedSecurityGroup, err := secgroups.Update(context.TODO(), client, securityGroup.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedSecurityGroup)
@@ -78,7 +79,7 @@ func TestSecGroupsRuleCreate(t *testing.T) {
 
 	tools.PrintResource(t, rule)
 
-	newSecurityGroup, err := secgroups.Get(client, securityGroup.ID).Extract()
+	newSecurityGroup, err := secgroups.Get(context.TODO(), client, securityGroup.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSecurityGroup)
@@ -105,10 +106,10 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
 	t.Logf("Adding group %s to server %s", securityGroup.ID, server.ID)
-	err = secgroups.AddServer(client, server.ID, securityGroup.Name).ExtractErr()
+	err = secgroups.AddServer(context.TODO(), client, server.ID, securityGroup.Name).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
@@ -123,10 +124,10 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	t.Logf("Removing group %s from server %s", securityGroup.ID, server.ID)
-	err = secgroups.RemoveServer(client, server.ID, securityGroup.Name).ExtractErr()
+	err = secgroups.RemoveServer(context.TODO(), client, server.ID, securityGroup.Name).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	found = false

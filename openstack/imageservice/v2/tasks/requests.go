@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -89,8 +91,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific Imageservice task based on its ID.
-func Get(c *gophercloud.ServiceClient, taskID string) (r GetResult) {
-	resp, err := c.Get(getURL(c, taskID), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, taskID string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, taskID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -116,13 +118,13 @@ func (opts CreateOpts) ToTaskCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new Imageservice task on the server.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTaskCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -29,7 +30,7 @@ func TestGet(t *testing.T) {
 		string(imageimport.WebDownloadMethod),
 	}
 
-	s, err := imageimport.Get(fakeclient.ServiceClient()).Extract()
+	s, err := imageimport.Get(context.TODO(), fakeclient.ServiceClient()).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ImportMethods.Description, "Import methods available.")
@@ -55,6 +56,6 @@ func TestCreate(t *testing.T) {
 		Name: imageimport.WebDownloadMethod,
 		URI:  "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img",
 	}
-	err := imageimport.Create(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
+	err := imageimport.Create(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -42,7 +43,7 @@ func authTokenPost(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope
 	expected := &tokens.Token{
 		ExpiresAt: time.Date(2014, 10, 2, 13, 45, 0, 0, time.UTC),
 	}
-	actual, err := tokens.Create(&client, &options).Extract()
+	actual, err := tokens.Create(context.TODO(), &client, &options).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, expected, actual)
 }
@@ -63,7 +64,7 @@ func authTokenPostErr(t *testing.T, options tokens.AuthOptions, scope *tokens.Sc
 		options.Scope = *scope
 	}
 
-	_, err := tokens.Create(&client, &options).Extract()
+	_, err := tokens.Create(context.TODO(), &client, &options).Extract()
 	if err == nil {
 		t.Errorf("Create did NOT return an error")
 	}
@@ -425,7 +426,7 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	})
 
 	options := tokens.AuthOptions{UserID: "me", Password: "shhh"}
-	token, err := tokens.Create(&client, &options).Extract()
+	token, err := tokens.Create(context.TODO(), &client, &options).Extract()
 	if err != nil {
 		t.Fatalf("Create returned an error: %v", err)
 	}
@@ -567,7 +568,7 @@ func TestGetRequest(t *testing.T) {
 		`)
 	})
 
-	token, err := tokens.Get(&client, "abcdef12345").Extract()
+	token, err := tokens.Get(context.TODO(), &client, "abcdef12345").Extract()
 	if err != nil {
 		t.Errorf("Info returned an error: %v", err)
 	}
@@ -604,7 +605,7 @@ func TestValidateRequestSuccessful(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "HEAD", http.StatusNoContent)
 
-	ok, err := tokens.Validate(&client, "abcdef12345")
+	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
 	if err != nil {
 		t.Errorf("Unexpected error from Validate: %v", err)
 	}
@@ -619,7 +620,7 @@ func TestValidateRequestFailure(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "HEAD", http.StatusNotFound)
 
-	ok, err := tokens.Validate(&client, "abcdef12345")
+	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
 	if err != nil {
 		t.Errorf("Unexpected error from Validate: %v", err)
 	}
@@ -634,7 +635,7 @@ func TestValidateRequestError(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "HEAD", http.StatusMethodNotAllowed)
 
-	_, err := tokens.Validate(&client, "abcdef12345")
+	_, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
 	if err == nil {
 		t.Errorf("Missing expected error from Validate")
 	}
@@ -645,7 +646,7 @@ func TestRevokeRequestSuccessful(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNoContent)
 
-	res := tokens.Revoke(&client, "abcdef12345")
+	res := tokens.Revoke(context.TODO(), &client, "abcdef12345")
 	testhelper.AssertNoErr(t, res.Err)
 }
 
@@ -654,7 +655,7 @@ func TestRevokeRequestError(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNotFound)
 
-	res := tokens.Revoke(&client, "abcdef12345")
+	res := tokens.Revoke(context.TODO(), &client, "abcdef12345")
 	if res.Err == nil {
 		t.Errorf("Missing expected error from Revoke")
 	}
@@ -675,6 +676,6 @@ func TestNoTokenInResponse(t *testing.T) {
 	})
 
 	options := tokens.AuthOptions{UserID: "me", Password: "squirrel!"}
-	_, err := tokens.Create(&client, &options).Extract()
+	_, err := tokens.Create(context.TODO(), &client, &options).Extract()
 	testhelper.AssertNoErr(t, err)
 }

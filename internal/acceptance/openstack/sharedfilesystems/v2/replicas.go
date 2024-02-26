@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -20,7 +21,7 @@ func CreateReplica(t *testing.T, client *gophercloud.ServiceClient, share *share
 		AvailabilityZone: share.AvailabilityZone,
 	}
 
-	replica, err := replicas.Create(client, createOpts).Extract()
+	replica, err := replicas.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		t.Logf("Failed to create replica")
 		return nil, err
@@ -39,7 +40,7 @@ func CreateReplica(t *testing.T, client *gophercloud.ServiceClient, share *share
 // DeleteReplica will delete a replica. A fatal error will occur if the replica
 // failed to be deleted. This works best when used as a deferred function.
 func DeleteReplica(t *testing.T, client *gophercloud.ServiceClient, replica *replicas.Replica) {
-	err := replicas.Delete(client, replica.ID).ExtractErr()
+	err := replicas.Delete(context.TODO(), client, replica.ID).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			return
@@ -61,7 +62,7 @@ func ListShareReplicas(t *testing.T, client *gophercloud.ServiceClient, shareID 
 	opts := replicas.ListOpts{
 		ShareID: shareID,
 	}
-	pages, err := replicas.List(client, opts).AllPages()
+	pages, err := replicas.List(client, opts).AllPages(context.TODO())
 	if err != nil {
 		t.Errorf("Unable to list %q share replicas: %v", shareID, err)
 	}
@@ -75,7 +76,7 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 	err := tools.WaitFor(func() (bool, error) {
 		var err error
 
-		current, err = replicas.Get(c, id).Extract()
+		current, err = replicas.Get(context.TODO(), c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {
@@ -115,7 +116,7 @@ func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state s
 	err := tools.WaitFor(func() (bool, error) {
 		var err error
 
-		current, err = replicas.Get(c, id).Extract()
+		current, err = replicas.Get(context.TODO(), c, id).Extract()
 		if err != nil {
 			return false, err
 		}

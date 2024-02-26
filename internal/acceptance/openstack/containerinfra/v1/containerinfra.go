@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"strings"
@@ -45,7 +46,7 @@ func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, c
 		ServerType:          "vm",
 	}
 
-	res := clustertemplates.Create(client, createOpts)
+	res := clustertemplates.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -89,7 +90,7 @@ func CreateKubernetesClusterTemplate(t *testing.T, client *gophercloud.ServiceCl
 func DeleteClusterTemplate(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete cluster-template: %s", id)
 
-	err := clustertemplates.Delete(client, id).ExtractErr()
+	err := clustertemplates.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Error deleting cluster-template %s: %s:", id, err)
 	}
@@ -126,7 +127,7 @@ func CreateClusterTimeout(t *testing.T, client *gophercloud.ServiceClient, clust
 		NodeCount:         &nodeCount,
 	}
 
-	createResult := clusters.Create(client, createOpts)
+	createResult := clusters.Create(context.TODO(), client, createOpts)
 	th.AssertNoErr(t, createResult.Err)
 	if len(createResult.Header["X-Openstack-Request-Id"]) > 0 {
 		t.Logf("Cluster Create Request ID: %s", createResult.Header["X-Openstack-Request-Id"][0])
@@ -162,8 +163,8 @@ func CreateKubernetesCluster(t *testing.T, client *gophercloud.ServiceClient, cl
 func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete cluster: %s", id)
 
-	r := clusters.Delete(client, id)
-	err := clusters.Delete(client, id).ExtractErr()
+	r := clusters.Delete(context.TODO(), client, id)
+	err := clusters.Delete(context.TODO(), client, id).ExtractErr()
 	deleteRequestID := ""
 	idKey := "X-Openstack-Request-Id"
 	if len(r.Header[idKey]) > 0 {
@@ -185,7 +186,7 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 
 func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status string, timeout time.Duration) error {
 	return tools.WaitForTimeout(func() (bool, error) {
-		cluster, err := clusters.Get(client, clusterID).Extract()
+		cluster, err := clusters.Get(context.TODO(), client, clusterID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETE_COMPLETE" {
 				return true, nil
@@ -225,7 +226,7 @@ func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quota
 		HardLimit: 10,
 	}
 
-	res := quotas.Create(client, createOpts)
+	res := quotas.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}

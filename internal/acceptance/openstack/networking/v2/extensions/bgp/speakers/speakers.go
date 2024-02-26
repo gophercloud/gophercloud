@@ -1,6 +1,7 @@
 package speakers
 
 import (
+	"context"
 	"strconv"
 	"testing"
 
@@ -21,7 +22,7 @@ func CreateBGPSpeaker(t *testing.T, client *gophercloud.ServiceClient) (*speaker
 	}
 
 	t.Logf("Attempting to create BGP Speaker: %s", opts.Name)
-	bgpSpeaker, err := speakers.Create(client, opts).Extract()
+	bgpSpeaker, err := speakers.Create(context.TODO(), client, opts).Extract()
 	if err != nil {
 		return bgpSpeaker, err
 	}

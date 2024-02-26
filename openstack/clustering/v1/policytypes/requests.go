@@ -1,6 +1,8 @@
 package policytypes
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -15,10 +17,10 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get makes a request against the API to get details for a policy type.
-func Get(client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
+func Get(ctx context.Context, client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
 	url := policyTypeGetURL(client, policyTypeName)
 
-	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

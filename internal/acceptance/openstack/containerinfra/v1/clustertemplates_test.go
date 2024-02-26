@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -23,7 +24,7 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	defer DeleteClusterTemplate(t, client, clusterTemplate.UUID)
 
 	// Test clusters list
-	allPages, err := clustertemplates.List(client, nil).AllPages()
+	allPages, err := clustertemplates.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allClusterTemplates, err := clustertemplates.ExtractClusterTemplates(allPages)
@@ -38,7 +39,7 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	template, err := clustertemplates.Get(client, clusterTemplate.UUID).Extract()
+	template, err := clustertemplates.Get(context.TODO(), client, clusterTemplate.UUID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, clusterTemplate.UUID, template.UUID)
 
@@ -61,7 +62,7 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 		},
 	}
 
-	updateClusterTemplate, err := clustertemplates.Update(client, clusterTemplate.UUID, updateOpts).Extract()
+	updateClusterTemplate, err := clustertemplates.Update(context.TODO(), client, clusterTemplate.UUID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, updateClusterTemplate.MasterLBEnabled)
 	th.AssertEquals(t, false, updateClusterTemplate.RegistryEnabled)

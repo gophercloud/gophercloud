@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -38,7 +39,7 @@ func TestNetworksExternalList(t *testing.T) {
 		External:        &iTrue,
 	}
 
-	allPages, err := networks.List(client, listOpts).AllPages()
+	allPages, err := networks.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = networks.ExtractNetworksInto(allPages, &allNetworks)
@@ -62,7 +63,7 @@ func TestNetworksExternalList(t *testing.T) {
 		External:        &iFalse,
 	}
 
-	allPages, err = networks.List(client, listOpts).AllPages()
+	allPages, err = networks.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	v, err := networks.ExtractNetworks(allPages)
@@ -87,10 +88,10 @@ func TestNetworksCRUD(t *testing.T) {
 		Description: &newDescription,
 	}
 
-	_, err = networks.Update(client, network.ID, updateOpts).Extract()
+	_, err = networks.Update(context.TODO(), client, network.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newNetwork, err := networks.Get(client, network.ID).Extract()
+	newNetwork, err := networks.Get(context.TODO(), client, network.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newNetwork)
@@ -104,7 +105,7 @@ func TestNetworksCRUD(t *testing.T) {
 
 	var allNetworks []networkWithExt
 
-	allPages, err := networks.List(client, nil).AllPages()
+	allPages, err := networks.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = networks.ExtractNetworksInto(allPages, &allNetworks)
@@ -136,7 +137,7 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 		portsecurity.PortSecurityExt
 	}
 
-	err = networks.Get(client, network.ID).ExtractInto(&networkWithExtensions)
+	err = networks.Get(context.TODO(), client, network.ID).ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, networkWithExtensions)
@@ -148,7 +149,7 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 		PortSecurityEnabled: &iTrue,
 	}
 
-	err = networks.Update(client, network.ID, updateOpts).ExtractInto(&networkWithExtensions)
+	err = networks.Update(context.TODO(), client, network.ID, updateOpts).ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, networkWithExtensions)
@@ -176,7 +177,7 @@ func TestNetworksRevision(t *testing.T) {
 		Name:        &newName,
 		Description: &newDescription,
 	}
-	network, err = networks.Update(client, network.ID, updateOpts).Extract()
+	network, err = networks.Update(context.TODO(), client, network.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, network)
@@ -188,14 +189,14 @@ func TestNetworksRevision(t *testing.T) {
 		Description:    &newDescription,
 		RevisionNumber: &oldRevisionNumber,
 	}
-	_, err = networks.Update(client, network.ID, updateOpts).Extract()
+	_, err = networks.Update(context.TODO(), client, network.ID, updateOpts).Extract()
 	th.AssertErr(t, err)
 	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
 		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
 	}
 
 	// Reread the network to show that it did not change.
-	network, err = networks.Get(client, network.ID).Extract()
+	network, err = networks.Get(context.TODO(), client, network.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, network)
@@ -207,7 +208,7 @@ func TestNetworksRevision(t *testing.T) {
 		Description:    &newDescription,
 		RevisionNumber: &network.RevisionNumber,
 	}
-	network, err = networks.Update(client, network.ID, updateOpts).Extract()
+	network, err = networks.Update(context.TODO(), client, network.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, network)

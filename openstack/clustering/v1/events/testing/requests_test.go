@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/clustering/v1/events"
@@ -17,7 +18,7 @@ func TestListEvents(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	pageCount := 0
-	err := events.List(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := events.List(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pageCount++
 		actual, err := events.ExtractEvents(page)
 		th.AssertNoErr(t, err)
@@ -39,7 +40,7 @@ func TestGetEvent(t *testing.T) {
 
 	HandleGetSuccessfully(t, ExpectedEvent1.ID)
 
-	actual, err := events.Get(fake.ServiceClient(), ExpectedEvent1.ID).Extract()
+	actual, err := events.Get(context.TODO(), fake.ServiceClient(), ExpectedEvent1.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedEvent1, *actual)
 }

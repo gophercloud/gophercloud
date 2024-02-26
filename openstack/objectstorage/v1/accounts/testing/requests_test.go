@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -20,7 +21,7 @@ func TestUpdateAccount(t *testing.T) {
 		ContentType:       new(string),
 		DetectContentType: new(bool),
 	}
-	res := accounts.Update(fake.ServiceClient(), options)
+	res := accounts.Update(context.TODO(), fake.ServiceClient(), options)
 	th.AssertNoErr(t, res.Err)
 
 	expected := &accounts.UpdateHeader{
@@ -37,7 +38,7 @@ func TestGetAccount(t *testing.T) {
 	HandleGetAccountSuccessfully(t)
 
 	expectedMetadata := map[string]string{"Subject": "books", "Quota-Bytes": "42", "Temp-Url-Key": "testsecret"}
-	res := accounts.Get(fake.ServiceClient(), &accounts.GetOpts{})
+	res := accounts.Get(context.TODO(), fake.ServiceClient(), &accounts.GetOpts{})
 	th.AssertNoErr(t, res.Err)
 	actualMetadata, _ := res.ExtractMetadata()
 	th.CheckDeepEquals(t, expectedMetadata, actualMetadata)
@@ -64,7 +65,7 @@ func TestGetAccountNoQuota(t *testing.T) {
 	HandleGetAccountNoQuotaSuccessfully(t)
 
 	expectedMetadata := map[string]string{"Subject": "books"}
-	res := accounts.Get(fake.ServiceClient(), &accounts.GetOpts{})
+	res := accounts.Get(context.TODO(), fake.ServiceClient(), &accounts.GetOpts{})
 	th.AssertNoErr(t, res.Err)
 	actualMetadata, _ := res.ExtractMetadata()
 	th.CheckDeepEquals(t, expectedMetadata, actualMetadata)

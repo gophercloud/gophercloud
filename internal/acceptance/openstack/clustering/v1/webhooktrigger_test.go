@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -37,7 +38,7 @@ func TestClusteringWebhookTrigger(t *testing.T) {
 	defer DeleteReceiver(t, client, receiver.ID)
 
 	// trigger webhook
-	actionID, err := webhooks.Trigger(client, receiver.ID, opts).Extract()
+	actionID, err := webhooks.Trigger(context.TODO(), client, receiver.ID, opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to extract webhooks trigger: %v", err)
 	} else {
@@ -54,7 +55,7 @@ func TestClusteringWebhookTrigger(t *testing.T) {
 		ClusterID: cluster.ID,
 	}
 
-	allPages, err := nodes.List(client, nodelistopts).AllPages()
+	allPages, err := nodes.List(client, nodelistopts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNodes, err := nodes.ExtractNodes(allPages)

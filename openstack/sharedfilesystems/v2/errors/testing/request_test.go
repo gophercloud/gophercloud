@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/errors"
@@ -16,7 +17,7 @@ func TestCreate(t *testing.T) {
 	MockCreateResponse(t)
 
 	options := &shares.CreateOpts{Size: 1, Name: "my_test_share", ShareProto: "NFS", SnapshotID: "70bfbebc-d3ff-4528-8bbb-58422daa280b"}
-	_, err := shares.Create(client.ServiceClient(), options).Extract()
+	_, err := shares.Create(context.TODO(), client.ServiceClient(), options).Extract()
 
 	if err == nil {
 		t.Fatal("Expected error")

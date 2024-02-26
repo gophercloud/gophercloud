@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestDomainsListAvailable(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := domains.ListAvailable(client).AllPages()
+	allPages, err := domains.ListAvailable(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allDomains, err := domains.ExtractDomains(allPages)
@@ -40,7 +41,7 @@ func TestDomainsList(t *testing.T) {
 		Enabled: &iTrue,
 	}
 
-	allPages, err := domains.List(client, listOpts).AllPages()
+	allPages, err := domains.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allDomains, err := domains.ExtractDomains(allPages)
@@ -64,7 +65,7 @@ func TestDomainsGet(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	p, err := domains.Get(client, "default").Extract()
+	p, err := domains.Get(context.TODO(), client, "default").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)
@@ -100,7 +101,7 @@ func TestDomainsCRUD(t *testing.T) {
 		Enabled:     &iFalse,
 	}
 
-	newDomain, err := domains.Update(client, domain.ID, updateOpts).Extract()
+	newDomain, err := domains.Update(context.TODO(), client, domain.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newDomain)

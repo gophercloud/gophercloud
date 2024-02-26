@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -18,7 +19,7 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	resp := shareaccessrules.Get(client.ServiceClient(), "507bf114-36f2-4f56-8cf4-857985ca87c1")
+	resp := shareaccessrules.Get(context.TODO(), client.ServiceClient(), "507bf114-36f2-4f56-8cf4-857985ca87c1")
 	th.AssertNoErr(t, resp.Err)
 
 	accessRule, err := resp.Extract()

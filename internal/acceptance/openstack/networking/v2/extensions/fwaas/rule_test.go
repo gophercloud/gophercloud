@@ -4,6 +4,7 @@
 package fwaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -28,15 +29,15 @@ func TestRuleCRUD(t *testing.T) {
 		Description: &ruleDescription,
 	}
 
-	_, err = rules.Update(client, rule.ID, updateOpts).Extract()
+	_, err = rules.Update(context.TODO(), client, rule.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newRule, err := rules.Get(client, rule.ID).Extract()
+	newRule, err := rules.Get(context.TODO(), client, rule.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
 
-	allPages, err := rules.List(client, nil).AllPages()
+	allPages, err := rules.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allRules, err := rules.ExtractRules(allPages)

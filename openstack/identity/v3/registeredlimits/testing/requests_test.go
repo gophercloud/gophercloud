@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/registeredlimits"
@@ -15,7 +16,7 @@ func TestListRegisteredLimits(t *testing.T) {
 	HandleListRegisteredLimitsSuccessfully(t)
 
 	count := 0
-	err := registeredlimits.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := registeredlimits.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := registeredlimits.ExtractRegisteredLimits(page)
@@ -34,7 +35,7 @@ func TestListRegisteredLimitsAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListRegisteredLimitsSuccessfully(t)
 
-	allPages, err := registeredlimits.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := registeredlimits.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := registeredlimits.ExtractRegisteredLimits(allPages)
 	th.AssertNoErr(t, err)
@@ -62,7 +63,7 @@ func TestCreateRegisteredLimits(t *testing.T) {
 		},
 	}
 
-	actual, err := registeredlimits.BatchCreate(client.ServiceClient(), createOpts).Extract()
+	actual, err := registeredlimits.BatchCreate(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedRegisteredLimitsSlice, actual)
 }
@@ -72,7 +73,7 @@ func TestGetRegisteredLimit(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetRegisteredLimitSuccessfully(t)
 
-	actual, err := registeredlimits.Get(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05").Extract()
+	actual, err := registeredlimits.Get(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegisteredLimit, *actual)
 }
@@ -82,7 +83,7 @@ func TestDeleteRegisteredLimit(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteRegisteredLimitSuccessfully(t)
 
-	res := registeredlimits.Delete(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05")
+	res := registeredlimits.Delete(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -98,7 +99,7 @@ func TestUpdateRegisteredLimit(t *testing.T) {
 		DefaultLimit: &defaultLimit,
 	}
 
-	actual, err := registeredlimits.Update(client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
+	actual, err := registeredlimits.Update(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, UpdatedSecondRegisteredLimit, *actual)
 }

@@ -1,6 +1,8 @@
 package flavors
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -141,13 +143,13 @@ func (opts CreateOpts) ToFlavorCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new flavor.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFlavorCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -172,13 +174,13 @@ func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update requests the update of a new flavor.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFlavorUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -187,15 +189,15 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 
 // Get retrieves details of a single flavor. Use Extract to convert its
 // result into a Flavor.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified flavor ID.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -227,13 +229,13 @@ func (opts AddAccessOpts) ToFlavorAddAccessMap() (map[string]interface{}, error)
 }
 
 // AddAccess grants a tenant/project access to a flavor.
-func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
 	b, err := opts.ToFlavorAddAccessMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(accessActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, accessActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -258,13 +260,13 @@ func (opts RemoveAccessOpts) ToFlavorRemoveAccessMap() (map[string]interface{}, 
 }
 
 // RemoveAccess removes/revokes a tenant/project access to a flavor.
-func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
 	b, err := opts.ToFlavorRemoveAccessMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(accessActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, accessActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -272,14 +274,14 @@ func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAcces
 }
 
 // ExtraSpecs requests all the extra-specs for the given flavor ID.
-func ListExtraSpecs(client *gophercloud.ServiceClient, flavorID string) (r ListExtraSpecsResult) {
-	resp, err := client.Get(extraSpecsListURL(client, flavorID), &r.Body, nil)
+func ListExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, flavorID string) (r ListExtraSpecsResult) {
+	resp, err := client.Get(ctx, extraSpecsListURL(client, flavorID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func GetExtraSpec(client *gophercloud.ServiceClient, flavorID string, key string) (r GetExtraSpecResult) {
-	resp, err := client.Get(extraSpecsGetURL(client, flavorID, key), &r.Body, nil)
+func GetExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavorID string, key string) (r GetExtraSpecResult) {
+	resp, err := client.Get(ctx, extraSpecsGetURL(client, flavorID, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -301,13 +303,13 @@ func (opts ExtraSpecsOpts) ToFlavorExtraSpecsCreateMap() (map[string]interface{}
 
 // CreateExtraSpecs will create or update the extra-specs key-value pairs for
 // the specified Flavor.
-func CreateExtraSpecs(client *gophercloud.ServiceClient, flavorID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
+func CreateExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, flavorID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
 	b, err := opts.ToFlavorExtraSpecsCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(extraSpecsCreateURL(client, flavorID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, extraSpecsCreateURL(client, flavorID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -340,13 +342,13 @@ func (opts ExtraSpecsOpts) ToFlavorExtraSpecUpdateMap() (map[string]string, stri
 
 // UpdateExtraSpec will updates the value of the specified flavor's extra spec
 // for the key in opts.
-func UpdateExtraSpec(client *gophercloud.ServiceClient, flavorID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
+func UpdateExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavorID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
 	b, key, err := opts.ToFlavorExtraSpecUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Put(extraSpecUpdateURL(client, flavorID, key), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(ctx, extraSpecUpdateURL(client, flavorID, key), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -355,8 +357,8 @@ func UpdateExtraSpec(client *gophercloud.ServiceClient, flavorID string, opts Up
 
 // DeleteExtraSpec will delete the key-value pair with the given key for the given
 // flavor ID.
-func DeleteExtraSpec(client *gophercloud.ServiceClient, flavorID, key string) (r DeleteExtraSpecResult) {
-	resp, err := client.Delete(extraSpecDeleteURL(client, flavorID, key), &gophercloud.RequestOpts{
+func DeleteExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavorID, key string) (r DeleteExtraSpecResult) {
+	resp, err := client.Delete(ctx, extraSpecDeleteURL(client, flavorID, key), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

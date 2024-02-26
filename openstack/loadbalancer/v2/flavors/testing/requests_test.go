@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavors"
@@ -16,7 +17,7 @@ func TestListFlavors(t *testing.T) {
 	HandleFlavorListSuccessfully(t)
 
 	pages := 0
-	err := flavors.List(fake.ServiceClient(), flavors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := flavors.List(fake.ServiceClient(), flavors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavors.ExtractFlavors(page)
@@ -45,7 +46,7 @@ func TestListAllFlavors(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFlavorListSuccessfully(t)
 
-	allPages, err := flavors.List(fake.ServiceClient(), flavors.ListOpts{}).AllPages()
+	allPages, err := flavors.List(fake.ServiceClient(), flavors.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := flavors.ExtractFlavors(allPages)
 	th.AssertNoErr(t, err)
@@ -58,7 +59,7 @@ func TestCreateFlavor(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFlavorCreationSuccessfully(t, SingleFlavorBody)
 
-	actual, err := flavors.Create(fake.ServiceClient(), flavors.CreateOpts{
+	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
 		Enabled:         true,
@@ -70,7 +71,7 @@ func TestCreateFlavor(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := flavors.Create(fake.ServiceClient(), flavors.CreateOpts{})
+	res := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -82,7 +83,7 @@ func TestGetFlavor(t *testing.T) {
 	HandleFlavorGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := flavors.Get(client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0").Extract()
+	actual, err := flavors.Get(context.TODO(), client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -95,7 +96,7 @@ func TestDeleteFlavor(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFlavorDeletionSuccessfully(t)
 
-	res := flavors.Delete(fake.ServiceClient(), "5548c807-e6e8-43d7-9ea4-b38d34dd74a0")
+	res := flavors.Delete(context.TODO(), fake.ServiceClient(), "5548c807-e6e8-43d7-9ea4-b38d34dd74a0")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -105,7 +106,7 @@ func TestUpdateFlavor(t *testing.T) {
 	HandleFlavorUpdateSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := flavors.Update(client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0", flavors.UpdateOpts{
+	actual, err := flavors.Update(context.TODO(), client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0", flavors.UpdateOpts{
 		Name:        "Basic v2",
 		Description: "Rename flavor",
 		Enabled:     true,

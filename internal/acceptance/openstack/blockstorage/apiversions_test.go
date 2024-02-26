@@ -4,6 +4,7 @@
 package blockstorage
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestAPIVersionsList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := apiversions.List(client).AllPages()
+	allPages, err := apiversions.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve API versions: %v", err)
 	}
@@ -38,7 +39,7 @@ func TestAPIVersionsGet(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := apiversions.List(client).AllPages()
+	allPages, err := apiversions.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve API versions: %v", err)
 	}

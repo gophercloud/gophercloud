@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -34,18 +35,18 @@ func TestACLCRUD(t *testing.T) {
 		},
 	}
 
-	aclRef, err := acls.SetSecretACL(client, secretID, setOpts).Extract()
+	aclRef, err := acls.SetSecretACL(context.TODO(), client, secretID, setOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, aclRef)
 	defer func() {
-		err := acls.DeleteSecretACL(client, secretID).ExtractErr()
+		err := acls.DeleteSecretACL(context.TODO(), client, secretID).ExtractErr()
 		th.AssertNoErr(t, err)
-		acl, err := acls.GetSecretACL(client, secretID).Extract()
+		acl, err := acls.GetSecretACL(context.TODO(), client, secretID).Extract()
 		th.AssertNoErr(t, err)
 		tools.PrintResource(t, acl)
 	}()
 
-	acl, err := acls.GetSecretACL(client, secretID).Extract()
+	acl, err := acls.GetSecretACL(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
@@ -60,11 +61,11 @@ func TestACLCRUD(t *testing.T) {
 		},
 	}
 
-	aclRef, err = acls.UpdateSecretACL(client, secretID, updateOpts).Extract()
+	aclRef, err = acls.UpdateSecretACL(context.TODO(), client, secretID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, aclRef)
 
-	acl, err = acls.GetSecretACL(client, secretID).Extract()
+	acl, err = acls.GetSecretACL(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
@@ -77,29 +78,29 @@ func TestACLCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteContainer(t, client, containerID)
 
-	aclRef, err = acls.SetContainerACL(client, containerID, setOpts).Extract()
+	aclRef, err = acls.SetContainerACL(context.TODO(), client, containerID, setOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, aclRef)
 	defer func() {
-		err := acls.DeleteContainerACL(client, containerID).ExtractErr()
+		err := acls.DeleteContainerACL(context.TODO(), client, containerID).ExtractErr()
 		th.AssertNoErr(t, err)
-		acl, err := acls.GetContainerACL(client, containerID).Extract()
+		acl, err := acls.GetContainerACL(context.TODO(), client, containerID).Extract()
 		th.AssertNoErr(t, err)
 		tools.PrintResource(t, acl)
 	}()
 
-	acl, err = acls.GetContainerACL(client, containerID).Extract()
+	acl, err = acls.GetContainerACL(context.TODO(), client, containerID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
 	th.AssertEquals(t, len((*acl)["read"].Users), 1)
 	th.AssertEquals(t, (*acl)["read"].ProjectAccess, false)
 
-	aclRef, err = acls.UpdateContainerACL(client, containerID, updateOpts).Extract()
+	aclRef, err = acls.UpdateContainerACL(context.TODO(), client, containerID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, aclRef)
 
-	acl, err = acls.GetContainerACL(client, containerID).Extract()
+	acl, err = acls.GetContainerACL(context.TODO(), client, containerID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)

@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestPolicyTypeList(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := policytypes.List(client).AllPages()
+	allPages, err := policytypes.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicyTypes, err := policytypes.ExtractPolicyTypes(allPages)
@@ -32,7 +33,7 @@ func TestPolicyTypeList_v_1_5(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	client.Microversion = "1.5"
-	allPages, err := policytypes.List(client).AllPages()
+	allPages, err := policytypes.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicyTypes, err := policytypes.ExtractPolicyTypes(allPages)
@@ -47,7 +48,7 @@ func TestPolicyTypeGet(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
-	policyType, err := policytypes.Get(client, "senlin.policy.batch-1.0").Extract()
+	policyType, err := policytypes.Get(context.TODO(), client, "senlin.policy.batch-1.0").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, policyType)
@@ -58,7 +59,7 @@ func TestPolicyTypeGet_v_1_5(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	client.Microversion = "1.5"
-	policyType, err := policytypes.Get(client, "senlin.policy.batch-1.0").Extract()
+	policyType, err := policytypes.Get(context.TODO(), client, "senlin.policy.batch-1.0").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, policyType)

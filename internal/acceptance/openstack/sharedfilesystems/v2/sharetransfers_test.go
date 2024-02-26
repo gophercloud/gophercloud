@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -39,7 +40,7 @@ func TestTransferRequestCRUD(t *testing.T) {
 	defer DeleteTransferRequest(t, client, transferRequest)
 
 	// list transfer requests
-	allTransferRequestsPages, err := sharetransfers.ListDetail(client, nil).AllPages()
+	allTransferRequestsPages, err := sharetransfers.ListDetail(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allTransferRequests, err := sharetransfers.ExtractTransfers(allTransferRequestsPages)
@@ -56,7 +57,7 @@ func TestTransferRequestCRUD(t *testing.T) {
 	th.AssertEquals(t, foundRequest, true)
 
 	// checking get
-	tr, err := sharetransfers.Get(client, transferRequest.ID).Extract()
+	tr, err := sharetransfers.Get(context.TODO(), client, transferRequest.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, transferRequest.ID == tr.ID, true)

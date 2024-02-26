@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"log"
 	"os"
 	"reflect"
@@ -22,7 +23,7 @@ func TestQuotasGet(t *testing.T) {
 	client, err := clients.NewLoadBalancerV2Client()
 	th.AssertNoErr(t, err)
 
-	quotasInfo, err := quotas.Get(client, os.Getenv("OS_PROJECT_NAME")).Extract()
+	quotasInfo, err := quotas.Get(context.TODO(), client, os.Getenv("OS_PROJECT_NAME")).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotasInfo)
@@ -34,7 +35,7 @@ func TestQuotasUpdate(t *testing.T) {
 	client, err := clients.NewLoadBalancerV2Client()
 	th.AssertNoErr(t, err)
 
-	originalQuotas, err := quotas.Get(client, os.Getenv("OS_PROJECT_NAME")).Extract()
+	originalQuotas, err := quotas.Get(context.TODO(), client, os.Getenv("OS_PROJECT_NAME")).Extract()
 	th.AssertNoErr(t, err)
 
 	var quotaUpdateOpts = quotas.UpdateOpts{
@@ -50,7 +51,7 @@ func TestQuotasUpdate(t *testing.T) {
 		quotaUpdateOpts.L7Rule = gophercloud.IntToPointer(105)
 	}
 
-	newQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), quotaUpdateOpts).Extract()
+	newQuotas, err := quotas.Update(context.TODO(), client, os.Getenv("OS_PROJECT_NAME"), quotaUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newQuotas)
@@ -73,7 +74,7 @@ func TestQuotasUpdate(t *testing.T) {
 	}
 
 	// Restore original quotas.
-	restoredQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), restoredQuotaUpdate).Extract()
+	restoredQuotas, err := quotas.Update(context.TODO(), client, os.Getenv("OS_PROJECT_NAME"), restoredQuotaUpdate).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, originalQuotas, restoredQuotas)

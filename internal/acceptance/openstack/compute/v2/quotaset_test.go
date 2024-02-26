@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -26,7 +27,7 @@ func TestQuotasetGet(t *testing.T) {
 	projectID, err := getProjectID(t, identityClient)
 	th.AssertNoErr(t, err)
 
-	quotaSet, err := quotasets.Get(client, projectID).Extract()
+	quotaSet, err := quotasets.Get(context.TODO(), client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSet)
@@ -35,7 +36,7 @@ func TestQuotasetGet(t *testing.T) {
 }
 
 func getProjectID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
-	allPages, err := projects.ListAvailable(client).AllPages()
+	allPages, err := projects.ListAvailable(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allPages)
@@ -49,7 +50,7 @@ func getProjectID(t *testing.T, client *gophercloud.ServiceClient) (string, erro
 }
 
 func getProjectIDByName(t *testing.T, client *gophercloud.ServiceClient, name string) (string, error) {
-	allPages, err := projects.List(client, nil).AllPages()
+	allPages, err := projects.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allPages)
@@ -113,20 +114,20 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// save original quotas
-	orig, err := quotasets.Get(client, projectid).Extract()
+	orig, err := quotasets.Get(context.TODO(), client, projectid).Extract()
 	th.AssertNoErr(t, err)
 
 	// Test Update
-	res, err := quotasets.Update(client, projectid, UpdateQuotaOpts).Extract()
+	res, err := quotasets.Update(context.TODO(), client, projectid, UpdateQuotaOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, UpdatedQuotas, *res)
 
 	// Test Delete
-	_, err = quotasets.Delete(client, projectid).Extract()
+	_, err = quotasets.Delete(context.TODO(), client, projectid).Extract()
 	th.AssertNoErr(t, err)
 
 	// We dont know the default quotas, so just check if the quotas are not the same as before
-	newres, err := quotasets.Get(client, projectid).Extract()
+	newres, err := quotasets.Get(context.TODO(), client, projectid).Extract()
 	th.AssertNoErr(t, err)
 	if newres.RAM == res.RAM {
 		t.Fatalf("Failed to update quotas")
@@ -136,7 +137,7 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	FillUpdateOptsFromQuotaSet(*orig, &restore)
 
 	// restore original quotas
-	res, err = quotasets.Update(client, projectid, restore).Extract()
+	res, err = quotasets.Update(context.TODO(), client, projectid, restore).Extract()
 	th.AssertNoErr(t, err)
 
 	orig.ID = ""

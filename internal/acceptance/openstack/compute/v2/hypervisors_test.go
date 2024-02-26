@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestHypervisorsList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := hypervisors.List(client, nil).AllPages()
+	allPages, err := hypervisors.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
@@ -40,7 +41,7 @@ func TestHypervisorsGet(t *testing.T) {
 	hypervisorID, err := getHypervisorID(t, client)
 	th.AssertNoErr(t, err)
 
-	hypervisor, err := hypervisors.Get(client, hypervisorID).Extract()
+	hypervisor, err := hypervisors.Get(context.TODO(), client, hypervisorID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, hypervisor)
@@ -54,7 +55,7 @@ func TestHypervisorsGetStatistics(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	hypervisorsStats, err := hypervisors.GetStatistics(client).Extract()
+	hypervisorsStats, err := hypervisors.GetStatistics(context.TODO(), client).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, hypervisorsStats)
@@ -73,7 +74,7 @@ func TestHypervisorsGetUptime(t *testing.T) {
 	hypervisorID, err := getHypervisorID(t, client)
 	th.AssertNoErr(t, err)
 
-	hypervisor, err := hypervisors.GetUptime(client, hypervisorID).Extract()
+	hypervisor, err := hypervisors.GetUptime(context.TODO(), client, hypervisorID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, hypervisor)
@@ -98,7 +99,7 @@ func TestHypervisorListQuery(t *testing.T) {
 		WithServers: &iTrue,
 	}
 
-	allPages, err := hypervisors.List(client, listOpts).AllPages()
+	allPages, err := hypervisors.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
@@ -111,7 +112,7 @@ func TestHypervisorListQuery(t *testing.T) {
 }
 
 func getHypervisorID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
-	allPages, err := hypervisors.List(client, nil).AllPages()
+	allPages, err := hypervisors.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
