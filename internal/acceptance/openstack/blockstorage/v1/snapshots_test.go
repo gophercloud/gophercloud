@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestSnapshotsList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages()
+	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve snapshots: %v", err)
 	}
@@ -52,7 +53,7 @@ func TestSnapshotsCreateDelete(t *testing.T) {
 	}
 	defer DeleteSnapshotshot(t, client, snapshot)
 
-	newSnapshot, err := snapshots.Get(client, snapshot.ID).Extract()
+	newSnapshot, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve snapshot: %v", err)
 	}

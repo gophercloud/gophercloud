@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestMessageList(t *testing.T) {
 	}
 	client.Microversion = minimumManilaMessagesMicroVersion
 
-	allPages, err := messages.List(client, messages.ListOpts{}).AllPages()
+	allPages, err := messages.List(client, messages.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve messages: %v", err)
 	}
@@ -46,7 +47,7 @@ func TestMessageListFiltering(t *testing.T) {
 		RequestID: requestID,
 	}
 
-	allPages, err := messages.List(client, options).AllPages()
+	allPages, err := messages.List(client, options).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve messages: %v", err)
 	}
@@ -77,7 +78,7 @@ func TestMessageDelete(t *testing.T) {
 		RequestID: requestID,
 	}
 
-	allPages, err := messages.List(client, options).AllPages()
+	allPages, err := messages.List(client, options).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve messages: %v", err)
 	}
@@ -100,7 +101,7 @@ func TestMessageDelete(t *testing.T) {
 		messageID = listedMessage.ID
 	}
 
-	message, err := messages.Get(client, messageID).Extract()
+	message, err := messages.Get(context.TODO(), client, messageID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve the message: %v", err)
 	}

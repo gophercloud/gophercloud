@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestLoadbalancersList(t *testing.T) {
 	client, err := clients.NewLoadBalancerV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := loadbalancers.List(client, nil).AllPages()
+	allPages, err := loadbalancers.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allLoadbalancers, err := loadbalancers.ExtractLoadBalancers(allPages)
@@ -59,7 +60,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	listOpts := loadbalancers.ListOpts{
 		Tags: tags,
 	}
-	allPages, err := loadbalancers.List(lbClient, listOpts).AllPages()
+	allPages, err := loadbalancers.List(lbClient, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allLoadbalancers, err := loadbalancers.ExtractLoadBalancers(allPages)
 	th.AssertNoErr(t, err)
@@ -69,7 +70,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	listOpts = loadbalancers.ListOpts{
 		TagsNot: tags,
 	}
-	allPages, err = loadbalancers.List(lbClient, listOpts).AllPages()
+	allPages, err = loadbalancers.List(lbClient, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allLoadbalancers, err = loadbalancers.ExtractLoadBalancers(allPages)
 	th.AssertNoErr(t, err)
@@ -79,7 +80,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	listOpts = loadbalancers.ListOpts{
 		TagsAny: tags,
 	}
-	allPages, err = loadbalancers.List(lbClient, listOpts).AllPages()
+	allPages, err = loadbalancers.List(lbClient, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allLoadbalancers, err = loadbalancers.ExtractLoadBalancers(allPages)
 	th.AssertNoErr(t, err)
@@ -89,7 +90,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	listOpts = loadbalancers.ListOpts{
 		TagsNotAny: tags,
 	}
-	allPages, err = loadbalancers.List(lbClient, listOpts).AllPages()
+	allPages, err = loadbalancers.List(lbClient, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allLoadbalancers, err = loadbalancers.ExtractLoadBalancers(allPages)
 	th.AssertNoErr(t, err)
@@ -132,14 +133,14 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 		Description: &newDescription,
 		Tags:        &tags,
 	}
-	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
+	_, err = l7policies.Update(context.TODO(), lbClient, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newPolicy, err := l7policies.Get(lbClient, policy.ID).Extract()
+	newPolicy, err := l7policies.Get(context.TODO(), lbClient, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPolicy)
@@ -153,7 +154,7 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
-	allPages, err := l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
+	allPages, err := l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allRules, err := l7policies.ExtractRules(allPages)
 	th.AssertNoErr(t, err)
@@ -168,14 +169,14 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 		Value:       "/images/special*",
 		Tags:        &tags,
 	}
-	_, err = l7policies.UpdateRule(lbClient, policy.ID, rule.ID, updateL7ruleOpts).Extract()
+	_, err = l7policies.UpdateRule(context.TODO(), lbClient, policy.ID, rule.ID, updateL7ruleOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newRule, err := l7policies.GetRule(lbClient, newPolicy.ID, rule.ID).Extract()
+	newRule, err := l7policies.GetRule(context.TODO(), lbClient, newPolicy.ID, rule.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
@@ -193,14 +194,14 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 		Name:        &poolName,
 		Description: &poolDescription,
 	}
-	_, err = pools.Update(lbClient, pool.ID, updatePoolOpts).Extract()
+	_, err = pools.Update(context.TODO(), lbClient, pool.ID, updatePoolOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newPool, err := pools.Get(lbClient, pool.ID).Extract()
+	newPool, err := pools.Get(context.TODO(), lbClient, pool.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPool)
@@ -214,14 +215,14 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 		RedirectPoolID: &newPool.ID,
 		RedirectURL:    &newRedirectURL,
 	}
-	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
+	_, err = l7policies.Update(context.TODO(), lbClient, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newPolicy, err = l7policies.Get(lbClient, policy.ID).Extract()
+	newPolicy, err = l7policies.Get(context.TODO(), lbClient, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPolicy)
@@ -312,14 +313,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Description:    &lbDescription,
 		VipQosPolicyID: &policy2.ID,
 	}
-	_, err = loadbalancers.Update(lbClient, lb.ID, updateLoadBalancerOpts).Extract()
+	_, err = loadbalancers.Update(context.TODO(), lbClient, lb.ID, updateLoadBalancerOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newLB, err := loadbalancers.Get(lbClient, lb.ID).Extract()
+	newLB, err := loadbalancers.Get(context.TODO(), lbClient, lb.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newLB)
@@ -327,7 +328,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertEquals(t, newLB.Description, lbDescription)
 	th.AssertEquals(t, newLB.VipQosPolicyID, policy2.ID)
 
-	lbStats, err := loadbalancers.GetStats(lbClient, lb.ID).Extract()
+	lbStats, err := loadbalancers.GetStats(context.TODO(), lbClient, lb.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, lbStats)
@@ -346,14 +347,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Name:        &listenerName,
 		Description: &listenerDescription,
 	}
-	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
+	_, err = listeners.Update(context.TODO(), lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newListener, err := listeners.Get(lbClient, listener.ID).Extract()
+	newListener, err := listeners.Get(context.TODO(), lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
@@ -361,7 +362,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertEquals(t, newListener.Name, listenerName)
 	th.AssertEquals(t, newListener.Description, listenerDescription)
 
-	listenerStats, err := listeners.GetStats(lbClient, listener.ID).Extract()
+	listenerStats, err := listeners.GetStats(context.TODO(), lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, listenerStats)
@@ -375,14 +376,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	updateListenerOpts = listeners.UpdateOpts{
 		DefaultPoolID: &pool.ID,
 	}
-	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
+	_, err = listeners.Update(context.TODO(), lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newListener, err = listeners.Get(lbClient, listener.ID).Extract()
+	newListener, err = listeners.Get(context.TODO(), lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
@@ -394,14 +395,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	updateListenerOpts = listeners.UpdateOpts{
 		DefaultPoolID: &emptyPoolID,
 	}
-	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
+	_, err = listeners.Update(context.TODO(), lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newListener, err = listeners.Get(lbClient, listener.ID).Extract()
+	newListener, err = listeners.Get(context.TODO(), lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
@@ -419,14 +420,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Name:   &memberName,
 		Weight: &newWeight,
 	}
-	_, err = pools.UpdateMember(lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
+	_, err = pools.UpdateMember(context.TODO(), lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newMember, err := pools.GetMember(lbClient, pool.ID, member.ID).Extract()
+	newMember, err := pools.GetMember(context.TODO(), lbClient, pool.ID, member.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
@@ -439,7 +440,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Weight:       &newWeight,
 	}
 	batchMembers := []pools.BatchUpdateMemberOpts{memberOpts}
-	if err = pools.BatchUpdateMembers(lbClient, pool.ID, batchMembers).ExtractErr(); err != nil {
+	if err = pools.BatchUpdateMembers(context.TODO(), lbClient, pool.ID, batchMembers).ExtractErr(); err != nil {
 		t.Fatalf("Unable to batch update members")
 	}
 
@@ -447,12 +448,12 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newMember, err = pools.GetMember(lbClient, pool.ID, member.ID).Extract()
+	newMember, err = pools.GetMember(context.TODO(), lbClient, pool.ID, member.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
 
-	pool, err = pools.Get(lbClient, pool.ID).Extract()
+	pool, err = pools.Get(context.TODO(), lbClient, pool.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, pool)
@@ -470,14 +471,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Delay:          newDelay,
 		MaxRetriesDown: newMaxRetriesDown,
 	}
-	_, err = monitors.Update(lbClient, monitor.ID, updateMonitorOpts).Extract()
+	_, err = monitors.Update(context.TODO(), lbClient, monitor.ID, updateMonitorOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newMonitor, err := monitors.Get(lbClient, monitor.ID).Extract()
+	newMonitor, err := monitors.Get(context.TODO(), lbClient, monitor.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMonitor)
@@ -507,7 +508,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
 
-	newLB, err := loadbalancers.Get(lbClient, lb.ID).Extract()
+	newLB, err := loadbalancers.Get(context.TODO(), lbClient, lb.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newLB)
@@ -523,14 +524,14 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	updateListenerOpts := listeners.UpdateOpts{
 		Description: &listenerDescription,
 	}
-	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
+	_, err = listeners.Update(context.TODO(), lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newListener, err := listeners.Get(lbClient, listener.ID).Extract()
+	newListener, err := listeners.Get(context.TODO(), lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
@@ -543,14 +544,14 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	updatePoolOpts := pools.UpdateOpts{
 		Description: &poolDescription,
 	}
-	_, err = pools.Update(lbClient, pool.ID, updatePoolOpts).Extract()
+	_, err = pools.Update(context.TODO(), lbClient, pool.ID, updatePoolOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newPool, err := pools.Get(lbClient, pool.ID).Extract()
+	newPool, err := pools.Get(context.TODO(), lbClient, pool.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPool)
@@ -563,14 +564,14 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	updateMemberOpts := pools.UpdateMemberOpts{
 		Weight: &newWeight,
 	}
-	_, err = pools.UpdateMember(lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
+	_, err = pools.UpdateMember(context.TODO(), lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newMember, err := pools.GetMember(lbClient, pool.ID, member.ID).Extract()
+	newMember, err := pools.GetMember(context.TODO(), lbClient, pool.ID, member.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
@@ -585,14 +586,14 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 		Delay:          newDelay,
 		MaxRetriesDown: newMaxRetriesDown,
 	}
-	_, err = monitors.Update(lbClient, monitor.ID, updateMonitorOpts).Extract()
+	_, err = monitors.Update(context.TODO(), lbClient, monitor.ID, updateMonitorOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
-	newMonitor, err := monitors.Get(lbClient, monitor.ID).Extract()
+	newMonitor, err := monitors.Get(context.TODO(), lbClient, monitor.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMonitor)
@@ -621,7 +622,7 @@ func TestLoadbalancersFullyPopulatedCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
 
-	newLB, err := loadbalancers.Get(lbClient, lb.ID).Extract()
+	newLB, err := loadbalancers.Get(context.TODO(), lbClient, lb.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newLB)

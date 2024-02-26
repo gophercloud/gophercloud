@@ -355,17 +355,12 @@ type requestState struct {
 
 var applicationJSON = "application/json"
 
-// RequestWithContext performs an HTTP request using the ProviderClient's
+// Request performs an HTTP request using the ProviderClient's
 // current HTTPClient. An authentication header will automatically be provided.
-func (client *ProviderClient) RequestWithContext(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error) {
+func (client *ProviderClient) Request(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error) {
 	return client.doRequest(ctx, method, url, options, &requestState{
 		hasReauthenticated: false,
 	})
-}
-
-// Request is a compatibility wrapper for Request.
-func (client *ProviderClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
-	return client.RequestWithContext(context.Background(), method, url, options)
 }
 
 func (client *ProviderClient) doRequest(ctx context.Context, method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {

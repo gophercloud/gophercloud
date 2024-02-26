@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -83,7 +84,7 @@ func TestEnumerateMarker(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 
 	callCount := 0
-	err := pager.EachPage(func(page pagination.Page) (bool, error) {
+	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := ExtractMarkerStrings(page)
 		if err != nil {
 			return false, err
@@ -117,7 +118,7 @@ func TestAllPagesMarker(t *testing.T) {
 	pager := createMarkerPaged(t)
 	defer testhelper.TeardownHTTP()
 
-	page, err := pager.AllPages()
+	page, err := pager.AllPages(context.TODO())
 	testhelper.AssertNoErr(t, err)
 
 	expected := []string{"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii"}

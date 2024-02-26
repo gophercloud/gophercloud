@@ -4,6 +4,7 @@
 package quotas
 
 import (
+	"context"
 	"log"
 	"os"
 	"reflect"
@@ -21,7 +22,7 @@ func TestQuotasGet(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	quotasInfo, err := quotas.Get(client, os.Getenv("OS_PROJECT_NAME")).Extract()
+	quotasInfo, err := quotas.Get(context.TODO(), client, os.Getenv("OS_PROJECT_NAME")).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotasInfo)
@@ -33,10 +34,10 @@ func TestQuotasUpdate(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	originalQuotas, err := quotas.Get(client, os.Getenv("OS_PROJECT_NAME")).Extract()
+	originalQuotas, err := quotas.Get(context.TODO(), client, os.Getenv("OS_PROJECT_NAME")).Extract()
 	th.AssertNoErr(t, err)
 
-	newQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), updateOpts).Extract()
+	newQuotas, err := quotas.Update(context.TODO(), client, os.Getenv("OS_PROJECT_NAME"), updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newQuotas)
@@ -46,7 +47,7 @@ func TestQuotasUpdate(t *testing.T) {
 	}
 
 	// Restore original quotas.
-	restoredQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), quotas.UpdateOpts{
+	restoredQuotas, err := quotas.Update(context.TODO(), client, os.Getenv("OS_PROJECT_NAME"), quotas.UpdateOpts{
 		FloatingIP:        &originalQuotas.FloatingIP,
 		Network:           &originalQuotas.Network,
 		Port:              &originalQuotas.Port,

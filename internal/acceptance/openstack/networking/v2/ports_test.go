@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -49,7 +50,7 @@ func TestPortsCRUD(t *testing.T) {
 		Name:        &newPortName,
 		Description: &newPortDescription,
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -57,7 +58,7 @@ func TestPortsCRUD(t *testing.T) {
 	th.AssertEquals(t, newPort.Name, newPortName)
 	th.AssertEquals(t, newPort.Description, newPortDescription)
 
-	allPages, err := ports.List(client, nil).AllPages()
+	allPages, err := ports.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPorts, err := ports.ExtractPorts(allPages)
@@ -125,7 +126,7 @@ func TestPortsCRUD(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("List ports by %s", tt.name), func(t *testing.T) {
-			allPages, err := ports.List(client, tt.opts).AllPages()
+			allPages, err := ports.List(client, tt.opts).AllPages(context.TODO())
 			th.AssertNoErr(t, err)
 
 			allPorts, err := ports.ExtractPorts(allPages)
@@ -189,14 +190,14 @@ func TestPortsRemoveSecurityGroups(t *testing.T) {
 	updateOpts := ports.UpdateOpts{
 		SecurityGroups: &[]string{group.ID},
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Remove the group
 	updateOpts = ports.UpdateOpts{
 		SecurityGroups: &[]string{},
 	}
-	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -236,7 +237,7 @@ func TestPortsDontAlterSecurityGroups(t *testing.T) {
 	updateOpts := ports.UpdateOpts{
 		SecurityGroups: &[]string{group.ID},
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Update the port again
@@ -244,7 +245,7 @@ func TestPortsDontAlterSecurityGroups(t *testing.T) {
 	updateOpts = ports.UpdateOpts{
 		Name: &name,
 	}
-	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -307,14 +308,14 @@ func TestPortsRemoveAddressPair(t *testing.T) {
 			{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
 		},
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Remove the address pair
 	updateOpts = ports.UpdateOpts{
 		AllowedAddressPairs: &[]ports.AddressPair{},
 	}
-	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -351,7 +352,7 @@ func TestPortsDontUpdateAllowedAddressPairs(t *testing.T) {
 			{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
 		},
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -361,7 +362,7 @@ func TestPortsDontUpdateAllowedAddressPairs(t *testing.T) {
 	updateOpts = ports.UpdateOpts{
 		Name: &name,
 	}
-	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -395,7 +396,7 @@ func TestPortsPortSecurityCRUD(t *testing.T) {
 		portsecurity.PortSecurityExt
 	}
 
-	err = ports.Get(client, port.ID).ExtractInto(&portWithExt)
+	err = ports.Get(context.TODO(), client, port.ID).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, portWithExt)
@@ -407,7 +408,7 @@ func TestPortsPortSecurityCRUD(t *testing.T) {
 		PortSecurityEnabled: &iTrue,
 	}
 
-	err = ports.Update(client, port.ID, updateOpts).ExtractInto(&portWithExt)
+	err = ports.Update(context.TODO(), client, port.ID, updateOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, portWithExt)
@@ -458,7 +459,7 @@ func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	}
 
 	newPort := &PortWithExtraDHCPOpts{}
-	err = ports.Update(client, port.ID, updateOpts).ExtractInto(newPort)
+	err = ports.Update(context.TODO(), client, port.ID, updateOpts).ExtractInto(newPort)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -493,7 +494,7 @@ func TestPortsRevision(t *testing.T) {
 		},
 		RevisionNumber: &port.RevisionNumber,
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -503,14 +504,14 @@ func TestPortsRevision(t *testing.T) {
 		AllowedAddressPairs: &[]ports.AddressPair{},
 		RevisionNumber:      &port.RevisionNumber,
 	}
-	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertErr(t, err)
 	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
 		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
 	}
 
 	// The previous ports.Update returns an empty object, so get the port again.
-	newPort, err = ports.Get(client, port.ID).Extract()
+	newPort, err = ports.Get(context.TODO(), client, port.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, newPort)
 
@@ -519,7 +520,7 @@ func TestPortsRevision(t *testing.T) {
 	updateOpts = ports.UpdateOpts{
 		AllowedAddressPairs: &[]ports.AddressPair{},
 	}
-	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
+	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)

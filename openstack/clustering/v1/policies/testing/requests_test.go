@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/clustering/v1/policies"
@@ -20,7 +21,7 @@ func TestListPolicies(t *testing.T) {
 	}
 
 	count := 0
-	err := policies.List(fake.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := policies.List(fake.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := policies.ExtractPolicies(page)
 		if err != nil {
 			t.Errorf("Failed to extract policies: %v", err)
@@ -53,7 +54,7 @@ func TestCreatePolicy(t *testing.T) {
 		Spec: ExpectedCreatePolicy.Spec,
 	}
 
-	actual, err := policies.Create(fake.ServiceClient(), opts).Extract()
+	actual, err := policies.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -65,7 +66,7 @@ func TestDeletePolicy(t *testing.T) {
 
 	HandlePolicyDelete(t)
 
-	res := policies.Delete(fake.ServiceClient(), PolicyIDtoDelete)
+	res := policies.Delete(context.TODO(), fake.ServiceClient(), PolicyIDtoDelete)
 	th.AssertNoErr(t, res.ExtractErr())
 
 	requestID := res.Header["X-Openstack-Request-Id"][0]
@@ -84,7 +85,7 @@ func TestUpdatePolicy(t *testing.T) {
 		Name: ExpectedUpdatePolicy.Name,
 	}
 
-	actual, err := policies.Update(fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
+	actual, err := policies.Update(context.TODO(), fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
@@ -100,7 +101,7 @@ func TestBadUpdatePolicy(t *testing.T) {
 		Name: ExpectedUpdatePolicy.Name,
 	}
 
-	_, err := policies.Update(fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
+	_, err := policies.Update(context.TODO(), fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
 	th.AssertEquals(t, false, err == nil)
 }
 
@@ -116,7 +117,7 @@ func TestValidatePolicy(t *testing.T) {
 		Spec: ExpectedValidatePolicy.Spec,
 	}
 
-	actual, err := policies.Validate(fake.ServiceClient(), opts).Extract()
+	actual, err := policies.Validate(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &expected, actual)
 }
@@ -131,7 +132,7 @@ func TestBadValidatePolicy(t *testing.T) {
 		Spec: ExpectedValidatePolicy.Spec,
 	}
 
-	_, err := policies.Validate(fake.ServiceClient(), opts).Extract()
+	_, err := policies.Validate(context.TODO(), fake.ServiceClient(), opts).Extract()
 	th.AssertEquals(t, false, err == nil)
 }
 
@@ -141,7 +142,7 @@ func TestGetPolicy(t *testing.T) {
 
 	HandlePolicyGet(t)
 
-	actual, err := policies.Get(fake.ServiceClient(), PolicyIDtoGet).Extract()
+	actual, err := policies.Get(context.TODO(), fake.ServiceClient(), PolicyIDtoGet).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, ExpectedGetPolicy, *actual)

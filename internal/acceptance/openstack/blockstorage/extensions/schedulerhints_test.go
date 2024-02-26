@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,12 +26,12 @@ func TestSchedulerHints(t *testing.T) {
 		Name: volumeName,
 	}
 
-	volume1, err := volumes.Create(client, createOpts).Extract()
+	volume1, err := volumes.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	err = volumes.WaitForStatus(client, volume1.ID, "available", 60)
+	err = volumes.WaitForStatus(context.TODO(), client, volume1.ID, "available", 60)
 	th.AssertNoErr(t, err)
-	defer volumes.Delete(client, volume1.ID, volumes.DeleteOpts{})
+	defer volumes.Delete(context.TODO(), client, volume1.ID, volumes.DeleteOpts{})
 
 	volumeName = tools.RandomString("ACPTTEST", 16)
 	base := volumes.CreateOpts{
@@ -49,12 +50,12 @@ func TestSchedulerHints(t *testing.T) {
 		SchedulerHints:          schedulerHints,
 	}
 
-	volume2, err := volumes.Create(client, createOptsWithHints).Extract()
+	volume2, err := volumes.Create(context.TODO(), client, createOptsWithHints).Extract()
 	th.AssertNoErr(t, err)
 
-	err = volumes.WaitForStatus(client, volume2.ID, "available", 60)
+	err = volumes.WaitForStatus(context.TODO(), client, volume2.ID, "available", 60)
 	th.AssertNoErr(t, err)
 
-	err = volumes.Delete(client, volume2.ID, volumes.DeleteOpts{}).ExtractErr()
+	err = volumes.Delete(context.TODO(), client, volume2.ID, volumes.DeleteOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 }

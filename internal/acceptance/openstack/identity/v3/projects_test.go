@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestProjectsListAvailable(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := projects.ListAvailable(client).AllPages()
+	allPages, err := projects.ListAvailable(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allPages)
@@ -40,7 +41,7 @@ func TestProjectsList(t *testing.T) {
 		Enabled: &iTrue,
 	}
 
-	allPages, err := projects.List(client, listOpts).AllPages()
+	allPages, err := projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allPages)
@@ -61,7 +62,7 @@ func TestProjectsList(t *testing.T) {
 		"name__contains": "dmi",
 	}
 
-	allPages, err = projects.List(client, listOpts).AllPages()
+	allPages, err = projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err = projects.ExtractProjects(allPages)
@@ -82,7 +83,7 @@ func TestProjectsList(t *testing.T) {
 		"name__contains": "foo",
 	}
 
-	allPages, err = projects.List(client, listOpts).AllPages()
+	allPages, err = projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err = projects.ExtractProjects(allPages)
@@ -106,14 +107,14 @@ func TestProjectsGet(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := projects.List(client, nil).AllPages()
+	allPages, err := projects.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allPages)
 	th.AssertNoErr(t, err)
 
 	project := allProjects[0]
-	p, err := projects.Get(client, project.ID).Extract()
+	p, err := projects.Get(context.TODO(), client, project.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get project: %v", err)
 	}
@@ -142,7 +143,7 @@ func TestProjectsCRUD(t *testing.T) {
 		Enabled:     &iFalse,
 	}
 
-	updatedProject, err := projects.Update(client, project.ID, updateOpts).Extract()
+	updatedProject, err := projects.Update(context.TODO(), client, project.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
@@ -184,7 +185,7 @@ func TestProjectsDomain(t *testing.T) {
 		Enabled: &iFalse,
 	}
 
-	_, err = projects.Update(client, projectDomain.ID, updateOpts).Extract()
+	_, err = projects.Update(context.TODO(), client, projectDomain.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -232,7 +233,7 @@ func TestProjectsTags(t *testing.T) {
 		Tags: "Tag1,Tag2",
 	}
 
-	allPages, err := projects.List(client, listOpts).AllPages()
+	allPages, err := projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allPages)
@@ -254,7 +255,7 @@ func TestProjectsTags(t *testing.T) {
 		Tags: "Tag1,Tag2,Tag3",
 	}
 
-	allPages, err = projects.List(client, listOpts).AllPages()
+	allPages, err = projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err = projects.ExtractProjects(allPages)
@@ -267,7 +268,7 @@ func TestProjectsTags(t *testing.T) {
 		TagsAny: "Tag1,Tag2,Tag3",
 	}
 
-	allPages, err = projects.List(client, listOpts).AllPages()
+	allPages, err = projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err = projects.ExtractProjects(allPages)
@@ -289,7 +290,7 @@ func TestProjectsTags(t *testing.T) {
 		NotTagsAny: "Tag1",
 	}
 
-	allPages, err = projects.List(client, listOpts).AllPages()
+	allPages, err = projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err = projects.ExtractProjects(allPages)
@@ -311,7 +312,7 @@ func TestProjectsTags(t *testing.T) {
 		NotTags: "Tag1,Tag2,Tag3",
 	}
 
-	allPages, err = projects.List(client, listOpts).AllPages()
+	allPages, err = projects.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjects, err = projects.ExtractProjects(allPages)
@@ -333,7 +334,7 @@ func TestProjectsTags(t *testing.T) {
 		Tags: &[]string{"Tag1"},
 	}
 
-	updatedProject, err := projects.Update(client, projectMain.ID, updateOpts).Extract()
+	updatedProject, err := projects.Update(context.TODO(), client, projectMain.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
@@ -346,7 +347,7 @@ func TestProjectsTags(t *testing.T) {
 		Description: &description,
 	}
 
-	updatedProject, err = projects.Update(client, projectMain.ID, updateOpts).Extract()
+	updatedProject, err = projects.Update(context.TODO(), client, projectMain.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
@@ -358,7 +359,7 @@ func TestProjectsTags(t *testing.T) {
 		Tags: &[]string{},
 	}
 
-	updatedProject, err = projects.Update(client, projectMain.ID, updateOpts).Extract()
+	updatedProject, err = projects.Update(context.TODO(), client, projectMain.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)

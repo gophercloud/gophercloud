@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,7 +26,7 @@ func TestVolumesCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteVolume(t, client, volume)
 
-	newVolume, err := volumes.Get(client, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	// Update volume
@@ -35,14 +36,14 @@ func TestVolumesCreateDestroy(t *testing.T) {
 		Name:        &updatedVolumeName,
 		Description: &updatedVolumeDescription,
 	}
-	updatedVolume, err := volumes.Update(client, volume.ID, updateOpts).Extract()
+	updatedVolume, err := volumes.Update(context.TODO(), client, volume.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedVolume)
 	th.AssertEquals(t, updatedVolume.Name, updatedVolumeName)
 	th.AssertEquals(t, updatedVolume.Description, updatedVolumeDescription)
 
-	allPages, err := volumes.List(client, volumes.ListOpts{}).AllPages()
+	allPages, err := volumes.List(client, volumes.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allVolumes, err := volumes.ExtractVolumes(allPages)
@@ -69,12 +70,12 @@ func TestVolumesCreateForceDestroy(t *testing.T) {
 	volume, err := CreateVolume(t, client)
 	th.AssertNoErr(t, err)
 
-	newVolume, err := volumes.Get(client, volume.ID).Extract()
+	newVolume, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newVolume)
 
-	err = volumeactions.ForceDelete(client, newVolume.ID).ExtractErr()
+	err = volumeactions.ForceDelete(context.TODO(), client, newVolume.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -88,7 +89,7 @@ func TestVolumesCascadeDelete(t *testing.T) {
 	vol, err := CreateVolume(t, client)
 	th.AssertNoErr(t, err)
 
-	err = volumes.WaitForStatus(client, vol.ID, "available", 60)
+	err = volumes.WaitForStatus(context.TODO(), client, vol.ID, "available", 60)
 	th.AssertNoErr(t, err)
 
 	snapshot1, err := CreateSnapshot(t, client, vol)
@@ -100,14 +101,14 @@ func TestVolumesCascadeDelete(t *testing.T) {
 	t.Logf("Attempting to delete volume: %s", vol.ID)
 
 	deleteOpts := volumes.DeleteOpts{Cascade: true}
-	err = volumes.Delete(client, vol.ID, deleteOpts).ExtractErr()
+	err = volumes.Delete(context.TODO(), client, vol.ID, deleteOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete volume %s: %v", vol.ID, err)
 	}
 
 	for _, sid := range []string{snapshot1.ID, snapshot2.ID} {
 		err := tools.WaitFor(func() (bool, error) {
-			_, err := snapshots.Get(client, sid).Extract()
+			_, err := snapshots.Get(context.TODO(), client, sid).Extract()
 			if err != nil {
 				return true, nil
 			}
@@ -118,7 +119,7 @@ func TestVolumesCascadeDelete(t *testing.T) {
 	}
 
 	err = tools.WaitFor(func() (bool, error) {
-		_, err := volumes.Get(client, vol.ID).Extract()
+		_, err := volumes.Get(context.TODO(), client, vol.ID).Extract()
 		if err != nil {
 			return true, nil
 		}

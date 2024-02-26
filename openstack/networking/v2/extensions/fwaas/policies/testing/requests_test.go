@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -56,7 +57,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	policies.List(fake.ServiceClient(), policies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	policies.List(fake.ServiceClient(), policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := policies.ExtractPolicies(page)
 		if err != nil {
@@ -157,7 +158,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	_, err := policies.Create(fake.ServiceClient(), options).Extract()
+	_, err := policies.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -190,7 +191,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	policy, err := policies.Get(fake.ServiceClient(), "bcab5315-64f6-4ea3-8e58-981cc37c6f61").Extract()
+	policy, err := policies.Get(context.TODO(), fake.ServiceClient(), "bcab5315-64f6-4ea3-8e58-981cc37c6f61").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "www", policy.Name)
@@ -257,7 +258,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	_, err := policies.Update(fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c", options).Extract()
+	_, err := policies.Update(context.TODO(), fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -271,6 +272,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := policies.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	res := policies.Delete(context.TODO(), fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

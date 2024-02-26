@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/usage"
@@ -15,7 +16,7 @@ func TestGetTenant(t *testing.T) {
 	HandleGetSingleTenantSuccessfully(t)
 
 	count := 0
-	err := usage.SingleTenant(client.ServiceClient(), FirstTenantID, nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := usage.SingleTenant(client.ServiceClient(), FirstTenantID, nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := usage.ExtractSingleTenant(page)
@@ -38,7 +39,7 @@ func TestAllTenants(t *testing.T) {
 	}
 
 	count := 0
-	err := usage.AllTenants(client.ServiceClient(), getOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := usage.AllTenants(client.ServiceClient(), getOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := usage.ExtractAllTenants(page)

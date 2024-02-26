@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -55,7 +56,7 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, profileID st
 		Config: map[string]interface{}{},
 	}
 
-	res := clusters.Create(client, createOpts)
+	res := clusters.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -112,7 +113,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, prof
 		Role:      "",
 	}
 
-	res := nodes.Create(client, createOpts)
+	res := nodes.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -143,7 +144,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, prof
 
 	t.Logf("Successfully created node: %s", node.ID)
 
-	node, err = nodes.Get(client, node.ID).Extract()
+	node, err = nodes.Get(context.TODO(), client, node.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +170,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient) (*policies.Po
 		Spec: TestPolicySpec,
 	}
 
-	res := policies.Create(client, createOpts)
+	res := policies.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -226,7 +227,7 @@ func CreateProfile(t *testing.T, client *gophercloud.ServiceClient) (*profiles.P
 		},
 	}
 
-	res := profiles.Create(client, createOpts)
+	res := profiles.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -266,7 +267,7 @@ func CreateWebhookReceiver(t *testing.T, client *gophercloud.ServiceClient, clus
 		Action:    "CLUSTER_SCALE_OUT",
 	}
 
-	res := receivers.Create(client, createOpts)
+	res := receivers.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -299,7 +300,7 @@ func CreateMessageReceiver(t *testing.T, client *gophercloud.ServiceClient, clus
 		Type:      receivers.MessageReceiver,
 	}
 
-	res := receivers.Create(client, createOpts)
+	res := receivers.Create(context.TODO(), client, createOpts)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -325,7 +326,7 @@ func CreateMessageReceiver(t *testing.T, client *gophercloud.ServiceClient, clus
 func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete cluster: %s", id)
 
-	res := clusters.Delete(client, id)
+	res := clusters.Delete(context.TODO(), client, id)
 	if res.Err != nil {
 		t.Fatalf("Error deleting cluster %s: %s:", id, res.Err)
 	}
@@ -350,7 +351,7 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete node: %s", id)
 
-	res := nodes.Delete(client, id)
+	res := nodes.Delete(context.TODO(), client, id)
 	if res.Err != nil {
 		t.Fatalf("Error deleting node %s: %s:", id, res.Err)
 	}
@@ -376,7 +377,7 @@ func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete policy: %s", id)
 
-	err := policies.Delete(client, id).ExtractErr()
+	err := policies.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Error deleting policy %s: %s:", id, err)
 	}
@@ -391,7 +392,7 @@ func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func DeleteProfile(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete profile: %s", id)
 
-	err := profiles.Delete(client, id).ExtractErr()
+	err := profiles.Delete(context.TODO(), client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Error deleting profile %s: %s:", id, err)
 	}
@@ -406,7 +407,7 @@ func DeleteProfile(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func DeleteReceiver(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete Receiver: %s", id)
 
-	res := receivers.Delete(client, id)
+	res := receivers.Delete(context.TODO(), client, id)
 	if res.Err != nil {
 		t.Fatalf("Error deleting receiver %s: %s:", id, res.Err)
 	}
@@ -431,7 +432,7 @@ func GetActionID(headers http.Header) (string, error) {
 
 func WaitForAction(client *gophercloud.ServiceClient, actionID string) error {
 	return tools.WaitFor(func() (bool, error) {
-		action, err := actions.Get(client, actionID).Extract()
+		action, err := actions.Get(context.TODO(), client, actionID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -450,7 +451,7 @@ func WaitForAction(client *gophercloud.ServiceClient, actionID string) error {
 
 func WaitForNodeStatus(client *gophercloud.ServiceClient, id string, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		latest, err := nodes.Get(client, id).Extract()
+		latest, err := nodes.Get(context.TODO(), client, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETED" {
 				return true, nil

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/allocations"
@@ -15,7 +16,7 @@ func TestListAllocations(t *testing.T) {
 	HandleAllocationListSuccessfully(t)
 
 	pages := 0
-	err := allocations.List(client.ServiceClient(), allocations.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := allocations.List(client.ServiceClient(), allocations.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := allocations.ExtractAllocations(page)
@@ -44,7 +45,7 @@ func TestCreateAllocation(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAllocationCreationSuccessfully(t, SingleAllocationBody)
 
-	actual, err := allocations.Create(client.ServiceClient(), allocations.CreateOpts{
+	actual, err := allocations.Create(context.TODO(), client.ServiceClient(), allocations.CreateOpts{
 		Name:           "allocation-1",
 		ResourceClass:  "baremetal",
 		CandidateNodes: []string{"344a3e2-978a-444e-990a-cbf47c62ef88"},
@@ -60,7 +61,7 @@ func TestDeleteAllocation(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAllocationDeletionSuccessfully(t)
 
-	res := allocations.Delete(client.ServiceClient(), "344a3e2-978a-444e-990a-cbf47c62ef88")
+	res := allocations.Delete(context.TODO(), client.ServiceClient(), "344a3e2-978a-444e-990a-cbf47c62ef88")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -70,7 +71,7 @@ func TestGetAllocation(t *testing.T) {
 	HandleAllocationGetSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := allocations.Get(c, "344a3e2-978a-444e-990a-cbf47c62ef88").Extract()
+	actual, err := allocations.Get(context.TODO(), c, "344a3e2-978a-444e-990a-cbf47c62ef88").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}

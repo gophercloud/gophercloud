@@ -1,6 +1,7 @@
 package accept
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -42,8 +43,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns information about a transfer accept, given its ID.
-func Get(client *gophercloud.ServiceClient, transferAcceptID string) (r GetResult) {
-	resp, err := client.Get(resourceURL(client, transferAcceptID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, transferAcceptID string) (r GetResult) {
+	resp, err := client.Get(ctx, resourceURL(client, transferAcceptID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -74,13 +75,13 @@ func (opts CreateOpts) ToTransferAcceptCreateMap() (map[string]interface{}, erro
 }
 
 // Create implements a transfer accept create request.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTransferAcceptCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{http.StatusCreated, http.StatusAccepted},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

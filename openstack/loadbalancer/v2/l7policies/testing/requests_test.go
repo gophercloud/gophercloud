@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/l7policies"
@@ -14,7 +15,7 @@ func TestCreateL7Policy(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleL7PolicyCreationSuccessfully(t, SingleL7PolicyBody)
 
-	actual, err := l7policies.Create(fake.ServiceClient(), l7policies.CreateOpts{
+	actual, err := l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{
 		Name:        "redirect-example.com",
 		ListenerID:  "023f2e34-7806-443b-bfae-16c324569a3d",
 		Action:      l7policies.ActionRedirectToURL,
@@ -27,13 +28,13 @@ func TestCreateL7Policy(t *testing.T) {
 
 func TestRequiredL7PolicyCreateOpts(t *testing.T) {
 	// no param specified.
-	res := l7policies.Create(fake.ServiceClient(), l7policies.CreateOpts{})
+	res := l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 
 	// Action is invalid.
-	res = l7policies.Create(fake.ServiceClient(), l7policies.CreateOpts{
+	res = l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{
 		ListenerID: "023f2e34-7806-443b-bfae-16c324569a3d",
 		Action:     l7policies.Action("invalid"),
 	})
@@ -48,7 +49,7 @@ func TestListL7Policies(t *testing.T) {
 	HandleL7PolicyListSuccessfully(t)
 
 	pages := 0
-	err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := l7policies.ExtractL7Policies(page)
@@ -77,7 +78,7 @@ func TestListAllL7Policies(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleL7PolicyListSuccessfully(t)
 
-	allPages, err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).AllPages()
+	allPages, err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := l7policies.ExtractL7Policies(allPages)
 	th.AssertNoErr(t, err)
@@ -91,7 +92,7 @@ func TestGetL7Policy(t *testing.T) {
 	HandleL7PolicyGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := l7policies.Get(client, "8a1412f0-4c32-4257-8b07-af4770b604fd").Extract()
+	actual, err := l7policies.Get(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -104,7 +105,7 @@ func TestDeleteL7Policy(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleL7PolicyDeletionSuccessfully(t)
 
-	res := l7policies.Delete(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd")
+	res := l7policies.Delete(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -116,7 +117,7 @@ func TestUpdateL7Policy(t *testing.T) {
 	client := fake.ServiceClient()
 	newName := "NewL7PolicyName"
 	redirectURL := "http://www.new-example.com"
-	actual, err := l7policies.Update(client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
+	actual, err := l7policies.Update(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
 		l7policies.UpdateOpts{
 			Name:        &newName,
 			Action:      l7policies.ActionRedirectToURL,
@@ -137,7 +138,7 @@ func TestUpdateL7PolicyNullRedirectURL(t *testing.T) {
 	client := fake.ServiceClient()
 	newName := "NewL7PolicyName"
 	redirectURL := ""
-	actual, err := l7policies.Update(client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
+	actual, err := l7policies.Update(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
 		l7policies.UpdateOpts{
 			Name:        &newName,
 			RedirectURL: &redirectURL,
@@ -153,7 +154,7 @@ func TestUpdateL7PolicyWithInvalidOpts(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	res := l7policies.Update(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.UpdateOpts{
+	res := l7policies.Update(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.UpdateOpts{
 		Action: l7policies.Action("invalid"),
 	})
 	if res.Err == nil {
@@ -166,7 +167,7 @@ func TestCreateRule(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRuleCreationSuccessfully(t, SingleRuleBody)
 
-	actual, err := l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	actual, err := l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images*",
@@ -180,17 +181,17 @@ func TestRequiredRuleCreateOpts(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	res := l7policies.CreateRule(fake.ServiceClient(), "", l7policies.CreateRuleOpts{})
+	res := l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "", l7policies.CreateRuleOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType: l7policies.TypePath,
 	})
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
-	res = l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType:    l7policies.RuleType("invalid"),
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images*",
@@ -198,7 +199,7 @@ func TestRequiredRuleCreateOpts(t *testing.T) {
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
-	res = l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareType("invalid"),
 		Value:       "/images*",
@@ -214,7 +215,7 @@ func TestListRules(t *testing.T) {
 	HandleRuleListSuccessfully(t)
 
 	pages := 0
-	err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := l7policies.ExtractRules(page)
@@ -243,7 +244,7 @@ func TestListAllRules(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRuleListSuccessfully(t)
 
-	allPages, err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).AllPages()
+	allPages, err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := l7policies.ExtractRules(allPages)
@@ -258,7 +259,7 @@ func TestGetRule(t *testing.T) {
 	HandleRuleGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := l7policies.GetRule(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c").Extract()
+	actual, err := l7policies.GetRule(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -271,7 +272,7 @@ func TestDeleteRule(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRuleDeletionSuccessfully(t)
 
-	res := l7policies.DeleteRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c")
+	res := l7policies.DeleteRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -283,7 +284,7 @@ func TestUpdateRule(t *testing.T) {
 	client := fake.ServiceClient()
 	invert := false
 	key := ""
-	actual, err := l7policies.UpdateRule(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c", l7policies.UpdateRuleOpts{
+	actual, err := l7policies.UpdateRule(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c", l7policies.UpdateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images/special*",
@@ -301,14 +302,14 @@ func TestUpdateRuleWithInvalidOpts(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	res := l7policies.UpdateRule(fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
+	res := l7policies.UpdateRule(context.TODO(), fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
 		RuleType: l7policies.RuleType("invalid"),
 	})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 
-	res = l7policies.UpdateRule(fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
+	res = l7policies.UpdateRule(context.TODO(), fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
 		CompareType: l7policies.CompareType("invalid"),
 	})
 	if res.Err == nil {

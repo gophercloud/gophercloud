@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ func TestSecretsCRUD(t *testing.T) {
 	defer DeleteSecret(t, client, secretID)
 
 	// Test payload retrieval
-	actual, err := secrets.GetPayload(client, secretID, nil).Extract()
+	actual, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, payload, string(actual))
 
@@ -39,7 +40,7 @@ func TestSecretsCRUD(t *testing.T) {
 		CreatedQuery: createdQuery,
 	}
 
-	allPages, err := secrets.List(client, listOpts).AllPages()
+	allPages, err := secrets.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allSecrets, err := secrets.ExtractSecrets(allPages)
@@ -71,11 +72,11 @@ func TestSecretsDelayedPayload(t *testing.T) {
 		Payload:     payload,
 	}
 
-	err = secrets.Update(client, secretID, updateOpts).ExtractErr()
+	err = secrets.Update(context.TODO(), client, secretID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Test payload retrieval
-	actual, err := secrets.GetPayload(client, secretID, nil).Extract()
+	actual, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, payload, string(actual))
 }
@@ -97,12 +98,12 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 		"something": "something else",
 	}
 
-	ref, err := secrets.CreateMetadata(client, secretID, createOpts).Extract()
+	ref, err := secrets.CreateMetadata(context.TODO(), client, secretID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ref["metadata_ref"], secret.SecretRef+"/metadata")
 
 	// Get the metadata
-	metadata, err := secrets.GetMetadata(client, secretID).Extract()
+	metadata, err := secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
 	th.AssertEquals(t, metadata["foo"], "bar")
@@ -114,10 +115,10 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 		Value: "baz",
 	}
 
-	err = secrets.CreateMetadatum(client, secretID, metadatumOpts).ExtractErr()
+	err = secrets.CreateMetadatum(context.TODO(), client, secretID, metadatumOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	metadata, err = secrets.GetMetadata(client, secretID).Extract()
+	metadata, err = secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
 	th.AssertEquals(t, len(metadata), 3)
@@ -129,13 +130,13 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	metadatumOpts.Key = "foo"
 	metadatumOpts.Value = "foo"
 
-	metadatum, err := secrets.UpdateMetadatum(client, secretID, metadatumOpts).Extract()
+	metadatum, err := secrets.UpdateMetadatum(context.TODO(), client, secretID, metadatumOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadatum)
 	th.AssertDeepEquals(t, metadatum.Key, "foo")
 	th.AssertDeepEquals(t, metadatum.Value, "foo")
 
-	metadata, err = secrets.GetMetadata(client, secretID).Extract()
+	metadata, err = secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
 	th.AssertEquals(t, len(metadata), 3)
@@ -144,10 +145,10 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	th.AssertEquals(t, metadata["bar"], "baz")
 
 	// Delete a metadatum
-	err = secrets.DeleteMetadatum(client, secretID, "foo").ExtractErr()
+	err = secrets.DeleteMetadatum(context.TODO(), client, secretID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 
-	metadata, err = secrets.GetMetadata(client, secretID).Extract()
+	metadata, err = secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
 	th.AssertEquals(t, len(metadata), 2)
@@ -165,7 +166,7 @@ func TestSymmetricSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -184,7 +185,7 @@ func TestCertificateSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -203,7 +204,7 @@ func TestPrivateSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -221,7 +222,7 @@ func TestPublicSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -237,7 +238,7 @@ func TestPassphraseSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }

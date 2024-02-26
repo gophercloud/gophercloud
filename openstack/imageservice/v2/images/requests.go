@@ -1,6 +1,7 @@
 package images
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"time"
@@ -206,39 +207,39 @@ func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
 }
 
 // Create implements create image request.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToImageCreateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{201}})
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{201}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete implements image delete request.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get implements image get request.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Update implements image updated request.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToImageUpdateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-	resp, err := client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes:     []int{200},
 		MoreHeaders: map[string]string{"Content-Type": "application/openstack-images-v2.1-json-patch"},
 	})

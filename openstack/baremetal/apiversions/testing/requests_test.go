@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/apiversions"
@@ -14,7 +15,7 @@ func TestListAPIVersions(t *testing.T) {
 
 	MockListResponse(t)
 
-	actual, err := apiversions.List(client.ServiceClient()).Extract()
+	actual, err := apiversions.List(context.TODO(), client.ServiceClient()).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, IronicAllAPIVersionResults, *actual)
@@ -26,7 +27,7 @@ func TestGetAPIVersion(t *testing.T) {
 
 	MockGetResponse(t)
 
-	actual, err := apiversions.Get(client.ServiceClient(), "v1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v1").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, IronicAPIVersion1Result, *actual)

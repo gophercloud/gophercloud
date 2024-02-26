@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -18,7 +19,7 @@ func TestServicesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := services.List(client, nil).AllPages()
+	allPages, err := services.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)
@@ -46,7 +47,7 @@ func TestServicesListWithOpts(t *testing.T) {
 		Binary: "nova-scheduler",
 	}
 
-	allPages, err := services.List(client, opts).AllPages()
+	allPages, err := services.List(client, opts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)
@@ -76,7 +77,7 @@ func TestServicesUpdate(t *testing.T) {
 	}
 
 	client.Microversion = "2.53"
-	allPages, err := services.List(client, listOpts).AllPages()
+	allPages, err := services.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)
@@ -87,14 +88,14 @@ func TestServicesUpdate(t *testing.T) {
 		opts := services.UpdateOpts{
 			Status: services.ServiceDisabled,
 		}
-		updated, err := services.Update(client, service.ID, opts).Extract()
+		updated, err := services.Update(context.TODO(), client, service.ID, opts).Extract()
 		th.AssertNoErr(t, err)
 
 		th.AssertEquals(t, updated.ID, service.ID)
 	}
 
 	// verify all services are disabled
-	allPages, err = services.List(client, listOpts).AllPages()
+	allPages, err = services.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err = services.ExtractServices(allPages)
@@ -105,7 +106,7 @@ func TestServicesUpdate(t *testing.T) {
 	}
 
 	// reenable all services
-	allPages, err = services.List(client, listOpts).AllPages()
+	allPages, err = services.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err = services.ExtractServices(allPages)
@@ -115,7 +116,7 @@ func TestServicesUpdate(t *testing.T) {
 		opts := services.UpdateOpts{
 			Status: services.ServiceEnabled,
 		}
-		updated, err := services.Update(client, service.ID, opts).Extract()
+		updated, err := services.Update(context.TODO(), client, service.ID, opts).Extract()
 		th.AssertNoErr(t, err)
 
 		th.AssertEquals(t, updated.ID, service.ID)

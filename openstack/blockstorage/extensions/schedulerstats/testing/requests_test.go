@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/schedulerstats"
@@ -15,7 +16,7 @@ func TestListStoragePoolsDetail(t *testing.T) {
 	HandleStoragePoolsListSuccessfully(t)
 
 	pages := 0
-	err := schedulerstats.List(client.ServiceClient(), schedulerstats.ListOpts{Detail: true}).EachPage(func(page pagination.Page) (bool, error) {
+	err := schedulerstats.List(client.ServiceClient(), schedulerstats.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := schedulerstats.ExtractStoragePools(page)

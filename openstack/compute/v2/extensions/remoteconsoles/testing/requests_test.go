@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -31,7 +32,7 @@ func TestCreate(t *testing.T) {
 		Protocol: remoteconsoles.ConsoleProtocolVNC,
 		Type:     remoteconsoles.ConsoleTypeNoVNC,
 	}
-	s, err := remoteconsoles.Create(fake.ServiceClient(), "b16ba811-199d-4ffd-8839-ba96c1185a67", opts).Extract()
+	s, err := remoteconsoles.Create(context.TODO(), fake.ServiceClient(), "b16ba811-199d-4ffd-8839-ba96c1185a67", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Protocol, string(remoteconsoles.ConsoleProtocolVNC))

@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -20,7 +21,7 @@ func TestFlavorsList(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	allPages, err := flavors.ListDetail(client, nil).AllPages()
+	allPages, err := flavors.ListDetail(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allFlavors, err := flavors.ExtractFlavors(allPages)
@@ -50,7 +51,7 @@ func TestFlavorsAccessTypeList(t *testing.T) {
 
 	for flavorTypeName, flavorAccessType := range flavorAccessTypes {
 		t.Logf("** %s flavors: **", flavorTypeName)
-		allPages, err := flavors.ListDetail(client, flavors.ListOpts{AccessType: flavorAccessType}).AllPages()
+		allPages, err := flavors.ListDetail(client, flavors.ListOpts{AccessType: flavorAccessType}).AllPages(context.TODO())
 		th.AssertNoErr(t, err)
 
 		allFlavors, err := flavors.ExtractFlavors(allPages)
@@ -69,7 +70,7 @@ func TestFlavorsGet(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	flavor, err := flavors.Get(client, choices.FlavorID).Extract()
+	flavor, err := flavors.Get(context.TODO(), client, choices.FlavorID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, flavor)
@@ -94,12 +95,12 @@ func TestFlavorExtraSpecsGet(t *testing.T) {
 		"hw:cpu_policy":        "CPU-POLICY",
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
 	}
-	createdExtraSpecs, err := flavors.CreateExtraSpecs(client, flavor.ID, createOpts).Extract()
+	createdExtraSpecs, err := flavors.CreateExtraSpecs(context.TODO(), client, flavor.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, createdExtraSpecs)
 
-	flavor, err = flavors.Get(client, flavor.ID).Extract()
+	flavor, err = flavors.Get(context.TODO(), client, flavor.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, flavor)
@@ -138,7 +139,7 @@ func TestFlavorsCreateUpdateDelete(t *testing.T) {
 		Description: newFlavorDescription,
 	}
 
-	flavor, err = flavors.Update(client, flavor.ID, updateOpts).Extract()
+	flavor, err = flavors.Update(context.TODO(), client, flavor.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, flavor.Description, newFlavorDescription)
 
@@ -155,7 +156,7 @@ func TestFlavorsAccessesList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteFlavor(t, client, flavor)
 
-	allPages, err := flavors.ListAccesses(client, flavor.ID).AllPages()
+	allPages, err := flavors.ListAccesses(client, flavor.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allAccesses, err := flavors.ExtractAccesses(allPages)
@@ -185,7 +186,7 @@ func TestFlavorsAccessCRUD(t *testing.T) {
 		Tenant: project.ID,
 	}
 
-	accessList, err := flavors.AddAccess(client, flavor.ID, addAccessOpts).Extract()
+	accessList, err := flavors.AddAccess(context.TODO(), client, flavor.ID, addAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, len(accessList), 1)
@@ -200,7 +201,7 @@ func TestFlavorsAccessCRUD(t *testing.T) {
 		Tenant: project.ID,
 	}
 
-	accessList, err = flavors.RemoveAccess(client, flavor.ID, removeAccessOpts).Extract()
+	accessList, err = flavors.RemoveAccess(context.TODO(), client, flavor.ID, removeAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, len(accessList), 0)
@@ -220,7 +221,7 @@ func TestFlavorsExtraSpecsCRUD(t *testing.T) {
 		"hw:cpu_policy":        "CPU-POLICY",
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
 	}
-	createdExtraSpecs, err := flavors.CreateExtraSpecs(client, flavor.ID, createOpts).Extract()
+	createdExtraSpecs, err := flavors.CreateExtraSpecs(context.TODO(), client, flavor.ID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, createdExtraSpecs)
@@ -229,18 +230,18 @@ func TestFlavorsExtraSpecsCRUD(t *testing.T) {
 	th.AssertEquals(t, createdExtraSpecs["hw:cpu_policy"], "CPU-POLICY")
 	th.AssertEquals(t, createdExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY")
 
-	err = flavors.DeleteExtraSpec(client, flavor.ID, "hw:cpu_policy").ExtractErr()
+	err = flavors.DeleteExtraSpec(context.TODO(), client, flavor.ID, "hw:cpu_policy").ExtractErr()
 	th.AssertNoErr(t, err)
 
 	updateOpts := flavors.ExtraSpecsOpts{
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY-BETTER",
 	}
-	updatedExtraSpec, err := flavors.UpdateExtraSpec(client, flavor.ID, updateOpts).Extract()
+	updatedExtraSpec, err := flavors.UpdateExtraSpec(context.TODO(), client, flavor.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedExtraSpec)
 
-	allExtraSpecs, err := flavors.ListExtraSpecs(client, flavor.ID).Extract()
+	allExtraSpecs, err := flavors.ListExtraSpecs(context.TODO(), client, flavor.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, allExtraSpecs)
@@ -248,7 +249,7 @@ func TestFlavorsExtraSpecsCRUD(t *testing.T) {
 	th.AssertEquals(t, len(allExtraSpecs), 1)
 	th.AssertEquals(t, allExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY-BETTER")
 
-	spec, err := flavors.GetExtraSpec(client, flavor.ID, "hw:cpu_thread_policy").Extract()
+	spec, err := flavors.GetExtraSpec(context.TODO(), client, flavor.ID, "hw:cpu_thread_policy").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, spec)

@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -28,7 +29,7 @@ func CreateShareType(t *testing.T, client *gophercloud.ServiceClient) (*sharetyp
 		ExtraSpecs: extraSpecsOps,
 	}
 
-	shareType, err := sharetypes.Create(client, createOpts).Extract()
+	shareType, err := sharetypes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return shareType, err
 	}
@@ -39,7 +40,7 @@ func CreateShareType(t *testing.T, client *gophercloud.ServiceClient) (*sharetyp
 // DeleteShareType will delete a share type. An error will occur if
 // the share type was unable to be deleted.
 func DeleteShareType(t *testing.T, client *gophercloud.ServiceClient, shareType *sharetypes.ShareType) {
-	err := sharetypes.Delete(client, shareType.ID).ExtractErr()
+	err := sharetypes.Delete(context.TODO(), client, shareType.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Failed to delete share type %s: %v", shareType.ID, err)
 	}

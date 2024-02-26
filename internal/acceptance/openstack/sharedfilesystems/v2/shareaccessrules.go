@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func ShareAccessRuleGet(t *testing.T, client *gophercloud.ServiceClient, accessID string) (*shareaccessrules.ShareAccess, error) {
-	accessRule, err := shareaccessrules.Get(client, accessID).Extract()
+	accessRule, err := shareaccessrules.Get(context.TODO(), client, accessID).Extract()
 	if err != nil {
 		t.Logf("Failed to get share access rule %s: %v", accessID, err)
 		return nil, err
@@ -63,7 +64,7 @@ func WaitForShareAccessRule(t *testing.T, client *gophercloud.ServiceClient, acc
 }
 
 func ShareAccessRuleList(t *testing.T, client *gophercloud.ServiceClient, shareID string) ([]shareaccessrules.ShareAccess, error) {
-	accessRules, err := shareaccessrules.List(client, shareID).Extract()
+	accessRules, err := shareaccessrules.List(context.TODO(), client, shareID).Extract()
 	if err != nil {
 		t.Logf("Failed to list share access rules for share %s: %v", shareID, err)
 		return nil, err

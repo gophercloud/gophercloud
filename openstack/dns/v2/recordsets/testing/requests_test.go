@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
@@ -16,7 +17,7 @@ func TestListByZone(t *testing.T) {
 	HandleListByZoneSuccessfully(t)
 
 	count := 0
-	err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
@@ -38,7 +39,7 @@ func TestListByZoneLimited(t *testing.T) {
 		Limit:  1,
 		Marker: "f7b10e9b-0cae-4a91-b162-562bc6096648",
 	}
-	err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
@@ -55,7 +56,7 @@ func TestListByZoneAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListByZoneSuccessfully(t)
 
-	allPages, err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).AllPages()
+	allPages, err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
 	th.AssertNoErr(t, err)
@@ -67,7 +68,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := recordsets.Get(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", "f7b10e9b-0cae-4a91-b162-562bc6096648").Extract()
+	actual, err := recordsets.Get(context.TODO(), client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", "f7b10e9b-0cae-4a91-b162-562bc6096648").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstRecordSet, actual)
 }
@@ -99,7 +100,7 @@ func TestCreate(t *testing.T) {
 		Records:     []string{"10.1.0.2"},
 	}
 
-	actual, err := recordsets.Create(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", createOpts).Extract()
+	actual, err := recordsets.Create(context.TODO(), client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedRecordSet, actual)
 }
@@ -124,7 +125,7 @@ func TestUpdate(t *testing.T) {
 	UpdatedRecordSet.Records = []string{"10.1.0.2", "10.1.0.3"}
 	UpdatedRecordSet.Version = 2
 
-	actual, err := recordsets.Update(client.ServiceClient(), UpdatedRecordSet.ZoneID, UpdatedRecordSet.ID, updateOpts).Extract()
+	actual, err := recordsets.Update(context.TODO(), client.ServiceClient(), UpdatedRecordSet.ZoneID, UpdatedRecordSet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &UpdatedRecordSet, actual)
 }
@@ -141,7 +142,7 @@ func TestDelete(t *testing.T) {
 	DeletedRecordSet.Records = []string{"10.1.0.2", "10.1.0.3"}
 	DeletedRecordSet.Version = 2
 
-	err := recordsets.Delete(client.ServiceClient(), DeletedRecordSet.ZoneID, DeletedRecordSet.ID).ExtractErr()
+	err := recordsets.Delete(context.TODO(), client.ServiceClient(), DeletedRecordSet.ZoneID, DeletedRecordSet.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	//th.CheckDeepEquals(t, &DeletedZone, actual)
 }

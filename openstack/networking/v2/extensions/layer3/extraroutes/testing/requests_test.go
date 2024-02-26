@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -62,7 +63,7 @@ func TestAddExtraRoutes(t *testing.T) {
 	}
 	options := extraroutes.Opts{Routes: &r}
 
-	n, err := extraroutes.Add(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := extraroutes.Add(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, n.Routes, []routers.Route{
@@ -134,7 +135,7 @@ func TestRemoveExtraRoutes(t *testing.T) {
 	}
 	options := extraroutes.Opts{Routes: &r}
 
-	n, err := extraroutes.Remove(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := extraroutes.Remove(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, n.Routes, []routers.Route{

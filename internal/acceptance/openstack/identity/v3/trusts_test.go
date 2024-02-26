@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -34,15 +35,15 @@ func TestTrustCRUD(t *testing.T) {
 		DomainID:   ao.DomainID,
 	}
 
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
-	adminUser, err := tokens.Get(client, token.ID).ExtractUser()
+	adminUser, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 
 	// Get the admin and member role IDs.
 	adminRoleID := ""
 	memberRoleID := ""
-	allPages, err := roles.List(client, nil).AllPages()
+	allPages, err := roles.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allRoles, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -70,7 +71,7 @@ func TestTrustCRUD(t *testing.T) {
 		ProjectID: trusteeProject.ID,
 	}
 
-	err = roles.Assign(client, adminRoleID, assignOpts).ExtractErr()
+	err = roles.Assign(context.TODO(), client, adminRoleID, assignOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Create a user as the trustee.
@@ -102,7 +103,7 @@ func TestTrustCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Get trust
-	p, err := trusts.Get(client, trust.ID).Extract()
+	p, err := trusts.Get(context.TODO(), client, trust.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.ExpiresAt, expiresAt)
 	th.AssertEquals(t, p.DeletedAt.IsZero(), true)
@@ -110,7 +111,7 @@ func TestTrustCRUD(t *testing.T) {
 	tools.PrintResource(t, p)
 
 	// List trust roles
-	rolesPages, err := trusts.ListRoles(client, p.ID).AllPages()
+	rolesPages, err := trusts.ListRoles(client, p.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTrustRoles, err := trusts.ExtractRoles(rolesPages)
 	th.AssertNoErr(t, err)
@@ -118,11 +119,11 @@ func TestTrustCRUD(t *testing.T) {
 	th.AssertEquals(t, allTrustRoles[0].ID, memberRoleID)
 
 	// Get trust role
-	role, err := trusts.GetRole(client, p.ID, memberRoleID).Extract()
+	role, err := trusts.GetRole(context.TODO(), client, p.ID, memberRoleID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, role.ID, memberRoleID)
 
 	// Check trust role
-	err = trusts.CheckRole(client, p.ID, memberRoleID).ExtractErr()
+	err = trusts.CheckRole(context.TODO(), client, p.ID, memberRoleID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

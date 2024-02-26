@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -18,7 +19,7 @@ func CreateResourceProvider(t *testing.T, client *gophercloud.ServiceClient) (*r
 	}
 
 	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := resourceproviders.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return resourceProvider, err
 	}
@@ -41,7 +42,7 @@ func CreateResourceProviderWithParent(t *testing.T, client *gophercloud.ServiceC
 	}
 
 	client.Microversion = "1.20"
-	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	resourceProvider, err := resourceproviders.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return resourceProvider, err
 	}
@@ -61,7 +62,7 @@ func CreateResourceProviderWithParent(t *testing.T, client *gophercloud.ServiceC
 func DeleteResourceProvider(t *testing.T, client *gophercloud.ServiceClient, resourceProviderID string) {
 	t.Logf("Attempting to delete resourceProvider: %s", resourceProviderID)
 
-	err := resourceproviders.Delete(client, resourceProviderID).ExtractErr()
+	err := resourceproviders.Delete(context.TODO(), client, resourceProviderID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete resourceProvider %s: %v", resourceProviderID, err)
 	}

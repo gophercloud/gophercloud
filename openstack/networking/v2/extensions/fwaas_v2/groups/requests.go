@@ -1,6 +1,8 @@
 package groups
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -66,8 +68,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a particular firewall group based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	return
 }
 
@@ -99,13 +101,13 @@ func (opts CreateOpts) ToFirewallGroupCreateMap() (map[string]interface{}, error
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall group
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFirewallGroupCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	_, r.Err = c.Post(ctx, rootURL(c), b, &r.Body, nil)
 	return
 }
 
@@ -134,13 +136,13 @@ func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]interface{}, error
 }
 
 // Update allows firewall groups to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFirewallGroupUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return
@@ -157,13 +159,13 @@ type RemoveIngressPolicyOpts struct {
 	IngressFirewallPolicyID *string `json:"ingress_firewall_policy_id"`
 }
 
-func RemoveIngressPolicy(c *gophercloud.ServiceClient, id string) (r UpdateResult) {
+func RemoveIngressPolicy(ctx context.Context, c *gophercloud.ServiceClient, id string) (r UpdateResult) {
 	b, err := gophercloud.BuildRequestBody(RemoveIngressPolicyOpts{IngressFirewallPolicyID: nil}, "firewall_group")
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return
@@ -173,20 +175,20 @@ type RemoveEgressPolicyOpts struct {
 	EgressFirewallPolicyID *string `json:"egress_firewall_policy_id"`
 }
 
-func RemoveEgressPolicy(c *gophercloud.ServiceClient, id string) (r UpdateResult) {
+func RemoveEgressPolicy(ctx context.Context, c *gophercloud.ServiceClient, id string) (r UpdateResult) {
 	b, err := gophercloud.BuildRequestBody(RemoveEgressPolicyOpts{EgressFirewallPolicyID: nil}, "firewall_group")
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return
 }
 
 // Delete will permanently delete a particular firewall group based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = c.Delete(resourceURL(c, id), nil)
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(ctx, resourceURL(c, id), nil)
 	return
 }

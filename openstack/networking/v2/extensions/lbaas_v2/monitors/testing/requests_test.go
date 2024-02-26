@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
@@ -15,7 +16,7 @@ func TestListHealthmonitors(t *testing.T) {
 	HandleHealthmonitorListSuccessfully(t)
 
 	pages := 0
-	err := monitors.List(fake.ServiceClient(), monitors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := monitors.List(fake.ServiceClient(), monitors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := monitors.ExtractMonitors(page)
@@ -44,7 +45,7 @@ func TestListAllHealthmonitors(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleHealthmonitorListSuccessfully(t)
 
-	allPages, err := monitors.List(fake.ServiceClient(), monitors.ListOpts{}).AllPages()
+	allPages, err := monitors.List(fake.ServiceClient(), monitors.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := monitors.ExtractMonitors(allPages)
 	th.AssertNoErr(t, err)
@@ -57,7 +58,7 @@ func TestCreateHealthmonitor(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleHealthmonitorCreationSuccessfully(t, SingleHealthmonitorBody)
 
-	actual, err := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{
+	actual, err := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{
 		Type:          "HTTP",
 		Name:          "db",
 		PoolID:        "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
@@ -74,11 +75,11 @@ func TestCreateHealthmonitor(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{})
+	res := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = monitors.Create(fake.ServiceClient(), monitors.CreateOpts{Type: monitors.TypeHTTP})
+	res = monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{Type: monitors.TypeHTTP})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -90,7 +91,7 @@ func TestGetHealthmonitor(t *testing.T) {
 	HandleHealthmonitorGetSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := monitors.Get(client, "5d4b5228-33b0-4e60-b225-9b727c1a20e7").Extract()
+	actual, err := monitors.Get(context.TODO(), client, "5d4b5228-33b0-4e60-b225-9b727c1a20e7").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -103,7 +104,7 @@ func TestDeleteHealthmonitor(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleHealthmonitorDeletionSuccessfully(t)
 
-	res := monitors.Delete(fake.ServiceClient(), "5d4b5228-33b0-4e60-b225-9b727c1a20e7")
+	res := monitors.Delete(context.TODO(), fake.ServiceClient(), "5d4b5228-33b0-4e60-b225-9b727c1a20e7")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -114,7 +115,7 @@ func TestUpdateHealthmonitor(t *testing.T) {
 
 	client := fake.ServiceClient()
 	name := "NewHealthmonitorName"
-	actual, err := monitors.Update(client, "5d4b5228-33b0-4e60-b225-9b727c1a20e7", monitors.UpdateOpts{
+	actual, err := monitors.Update(context.TODO(), client, "5d4b5228-33b0-4e60-b225-9b727c1a20e7", monitors.UpdateOpts{
 		Name:          &name,
 		Delay:         3,
 		Timeout:       20,
@@ -130,7 +131,7 @@ func TestUpdateHealthmonitor(t *testing.T) {
 }
 
 func TestDelayMustBeGreaterOrEqualThanTimeout(t *testing.T) {
-	_, err := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{
+	_, err := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{
 		Type:          "HTTP",
 		PoolID:        "d459f7d8-c6ee-439d-8713-d3fc08aeed8d",
 		Delay:         1,
@@ -144,7 +145,7 @@ func TestDelayMustBeGreaterOrEqualThanTimeout(t *testing.T) {
 		t.Fatalf("Expected error, got none")
 	}
 
-	_, err = monitors.Update(fake.ServiceClient(), "453105b9-1754-413f-aab1-55f1af620750", monitors.UpdateOpts{
+	_, err = monitors.Update(context.TODO(), fake.ServiceClient(), "453105b9-1754-413f-aab1-55f1af620750", monitors.UpdateOpts{
 		Delay:   1,
 		Timeout: 10,
 	}).Extract()

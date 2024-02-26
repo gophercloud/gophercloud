@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -35,7 +36,7 @@ func TestWebhookTrigger(t *testing.T) {
 			"bar": "baz",
 		},
 	}
-	result, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", triggerOpts).Extract()
+	result, err := webhooks.Trigger(context.TODO(), fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", triggerOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, result, "290c44fa-c60f-4d75-a0eb-87433ba982a3")
 }
@@ -80,7 +81,7 @@ func TestWebhooksInvalidAction(t *testing.T) {
 			"bar": "baz",
 		},
 	}
-	_, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", triggerOpts).Extract()
+	_, err := webhooks.Trigger(context.TODO(), fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", triggerOpts).Extract()
 	isValid := err.(*json.UnmarshalTypeError) == nil
 	th.AssertEquals(t, false, isValid)
 }
@@ -103,7 +104,7 @@ func TestWebhookTriggerInvalidEmptyOpt(t *testing.T) {
 			}`)
 	})
 
-	_, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", webhooks.TriggerOpts{}).Extract()
+	_, err := webhooks.Trigger(context.TODO(), fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", webhooks.TriggerOpts{}).Extract()
 	if err == nil {
 		t.Errorf("Expected error without V param")
 	}
@@ -127,7 +128,7 @@ func TestWebhookTriggerInvalidNilOpt(t *testing.T) {
 			}`)
 	})
 
-	_, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", nil).Extract()
+	_, err := webhooks.Trigger(context.TODO(), fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", nil).Extract()
 
 	if err == nil {
 		t.Errorf("Expected error with nil param")

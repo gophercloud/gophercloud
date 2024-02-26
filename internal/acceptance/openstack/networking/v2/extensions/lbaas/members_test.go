@@ -4,6 +4,7 @@
 package lbaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -20,7 +21,7 @@ func TestMembersList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := members.List(client, members.ListOpts{}).AllPages()
+	allPages, err := members.List(client, members.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list members: %v", err)
 	}
@@ -72,12 +73,12 @@ func TestMembersCRUD(t *testing.T) {
 		AdminStateUp: gophercloud.Enabled,
 	}
 
-	_, err = members.Update(client, member.ID, updateOpts).Extract()
+	_, err = members.Update(context.TODO(), client, member.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update member: %v", err)
 	}
 
-	newMember, err := members.Get(client, member.ID).Extract()
+	newMember, err := members.Get(context.TODO(), client, member.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get member: %v", err)
 	}

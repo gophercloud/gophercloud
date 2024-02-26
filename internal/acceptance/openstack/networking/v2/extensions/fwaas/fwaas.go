@@ -1,6 +1,7 @@
 package fwaas
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"testing"
@@ -30,7 +31,7 @@ func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID st
 		AdminStateUp: &iTrue,
 	}
 
-	firewall, err := firewalls.Create(client, createOpts).Extract()
+	firewall, err := firewalls.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return firewall, err
 	}
@@ -68,7 +69,7 @@ func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, pol
 		RouterIDs:         []string{routerID},
 	}
 
-	firewall, err := firewalls.Create(client, createOpts).Extract()
+	firewall, err := firewalls.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return firewall, err
 	}
@@ -102,7 +103,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 		},
 	}
 
-	policy, err := policies.Create(client, createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return policy, err
 	}
@@ -139,7 +140,7 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 		DestinationPort:      destinationPort,
 	}
 
-	rule, err := rules.Create(client, createOpts).Extract()
+	rule, err := rules.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return rule, err
 	}
@@ -162,7 +163,7 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 func DeleteFirewall(t *testing.T, client *gophercloud.ServiceClient, firewallID string) {
 	t.Logf("Attempting to delete firewall: %s", firewallID)
 
-	err := firewalls.Delete(client, firewallID).ExtractErr()
+	err := firewalls.Delete(context.TODO(), client, firewallID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete firewall %s: %v", firewallID, err)
 	}
@@ -181,7 +182,7 @@ func DeleteFirewall(t *testing.T, client *gophercloud.ServiceClient, firewallID 
 func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
 	t.Logf("Attempting to delete policy: %s", policyID)
 
-	err := policies.Delete(client, policyID).ExtractErr()
+	err := policies.Delete(context.TODO(), client, policyID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete policy %s: %v", policyID, err)
 	}
@@ -195,7 +196,7 @@ func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) {
 	t.Logf("Attempting to delete rule: %s", ruleID)
 
-	err := rules.Delete(client, ruleID).ExtractErr()
+	err := rules.Delete(context.TODO(), client, ruleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete rule %s: %v", ruleID, err)
 	}
@@ -206,7 +207,7 @@ func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) 
 // WaitForFirewallState will wait until a firewall reaches a given state.
 func WaitForFirewallState(client *gophercloud.ServiceClient, firewallID, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		current, err := firewalls.Get(client, firewallID).Extract()
+		current, err := firewalls.Get(context.TODO(), client, firewallID).Extract()
 		if err != nil {
 			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {
 				if httpStatus.Actual == 404 {

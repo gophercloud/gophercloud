@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/instanceactions"
@@ -16,7 +17,7 @@ func TestList(t *testing.T) {
 
 	expected := ListExpected
 	pages := 0
-	err := instanceactions.List(client.ServiceClient(), "asdfasdfasdf", nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := instanceactions.List(client.ServiceClient(), "asdfasdfasdf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := instanceactions.ExtractInstanceActions(page)
@@ -39,7 +40,7 @@ func TestGet(t *testing.T) {
 	HandleInstanceActionGetSuccessfully(t)
 
 	client := client.ServiceClient()
-	actual, err := instanceactions.Get(client, "asdfasdfasdf", "okzeorkmkfs").Extract()
+	actual, err := instanceactions.Get(context.TODO(), client, "asdfasdfasdf", "okzeorkmkfs").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}

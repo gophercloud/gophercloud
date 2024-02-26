@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -38,7 +39,7 @@ func TestListMessages(t *testing.T) {
 	listOpts := messages.ListOpts{}
 
 	pager := messages.List(client, createdQueueName, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := messages.ExtractMessages(page)
 		if err != nil {
 			t.Fatalf("Unable to extract messages: %v", err)
@@ -91,7 +92,7 @@ func TestGetMessages(t *testing.T) {
 	var messageIDs []string
 
 	pager := messages.List(client, createdQueueName, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := messages.ExtractMessages(page)
 		if err != nil {
 			t.Fatalf("Unable to extract messages: %v", err)
@@ -108,7 +109,7 @@ func TestGetMessages(t *testing.T) {
 		IDs: messageIDs,
 	}
 	t.Logf("Attempting to get messages from queue %s with ids: %v", createdQueueName, messageIDs)
-	messagesList, err := messages.GetMessages(client, createdQueueName, getMessageOpts).Extract()
+	messagesList, err := messages.GetMessages(context.TODO(), client, createdQueueName, getMessageOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get messages from queue: %s", createdQueueName)
 	}
@@ -138,7 +139,7 @@ func TestGetMessage(t *testing.T) {
 	var messageIDs []string
 
 	pager := messages.List(client, createdQueueName, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := messages.ExtractMessages(page)
 		if err != nil {
 			t.Fatalf("Unable to extract messages: %v", err)
@@ -153,7 +154,7 @@ func TestGetMessage(t *testing.T) {
 
 	for _, messageID := range messageIDs {
 		t.Logf("Attempting to get message from queue %s: %s", createdQueueName, messageID)
-		message, getErr := messages.Get(client, createdQueueName, messageID).Extract()
+		message, getErr := messages.Get(context.TODO(), client, createdQueueName, messageID).Extract()
 		if getErr != nil {
 			t.Fatalf("Unable to get message from queue %s: %s", createdQueueName, messageID)
 		}
@@ -185,7 +186,7 @@ func TestDeleteMessagesIDs(t *testing.T) {
 	var messageIDs []string
 
 	pager := messages.List(client, createdQueueName, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := messages.ExtractMessages(page)
 		if err != nil {
 			t.Fatalf("Unable to extract messages: %v", err)
@@ -204,7 +205,7 @@ func TestDeleteMessagesIDs(t *testing.T) {
 	}
 
 	t.Logf("Attempting to delete messages: %v", messageIDs)
-	deleteErr := messages.DeleteMessages(client, createdQueueName, deleteOpts).ExtractErr()
+	deleteErr := messages.DeleteMessages(context.TODO(), client, createdQueueName, deleteOpts).ExtractErr()
 	if deleteErr != nil {
 		t.Fatalf("Unable to delete messages: %v", deleteErr)
 	}
@@ -247,7 +248,7 @@ func TestDeleteMessagesPop(t *testing.T) {
 	}
 
 	t.Logf("Attempting to Pop last %v messages.", popNumber)
-	popMessages, deleteErr := messages.PopMessages(client, createdQueueName, PopOpts).Extract()
+	popMessages, deleteErr := messages.PopMessages(context.TODO(), client, createdQueueName, PopOpts).Extract()
 	if deleteErr != nil {
 		t.Fatalf("Unable to Pop messages: %v", deleteErr)
 	}
@@ -282,7 +283,7 @@ func TestDeleteMessage(t *testing.T) {
 	var messageIDs []string
 
 	pager := messages.List(client, createdQueueName, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := messages.ExtractMessages(page)
 		if err != nil {
 			t.Fatalf("Unable to extract messages: %v", err)
@@ -298,7 +299,7 @@ func TestDeleteMessage(t *testing.T) {
 	for _, messageID := range messageIDs {
 		t.Logf("Attempting to delete message from queue %s: %s", createdQueueName, messageID)
 		deleteOpts := messages.DeleteOpts{}
-		deleteErr := messages.Delete(client, createdQueueName, messageID, deleteOpts).ExtractErr()
+		deleteErr := messages.Delete(context.TODO(), client, createdQueueName, messageID, deleteOpts).ExtractErr()
 		if deleteErr != nil {
 			t.Fatalf("Unable to delete message from queue %s: %s", createdQueueName, messageID)
 		} else {

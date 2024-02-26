@@ -26,7 +26,7 @@ func TestAuthenticatedClient(t *testing.T) {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
 
-	client, err := openstack.AuthenticatedClient(ao)
+	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
 	if err != nil {
 		t.Fatalf("Unable to authenticate: %v", err)
 	}
@@ -68,15 +68,15 @@ func TestEC2AuthMethod(t *testing.T) {
 			DomainName:  ao.DomainName,
 		},
 	}
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -88,11 +88,11 @@ func TestEC2AuthMethod(t *testing.T) {
 	}
 
 	// Create a credential
-	credential, err := credentials.Create(client, createOpts).Extract()
+	credential, err := credentials.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Delete a credential
-	defer credentials.Delete(client, credential.ID)
+	defer credentials.Delete(context.TODO(), client, credential.ID)
 	tools.PrintResource(t, credential)
 
 	newClient, err := clients.NewIdentityV3UnauthenticatedClient()
@@ -104,7 +104,7 @@ func TestEC2AuthMethod(t *testing.T) {
 		Secret: "secretKey",
 	}
 
-	err = openstack.AuthenticateV3(newClient.ProviderClient, ec2AuthOptions, gophercloud.EndpointOpts{})
+	err = openstack.AuthenticateV3(context.TODO(), newClient.ProviderClient, ec2AuthOptions, gophercloud.EndpointOpts{})
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newClient.TokenID)
@@ -124,7 +124,7 @@ func TestReauth(t *testing.T) {
 		t.Fatalf("Unable to create provider: %v", err)
 	}
 
-	err = openstack.Authenticate(provider, ao)
+	err = openstack.Authenticate(context.TODO(), provider, ao)
 	if err != nil {
 		t.Fatalf("Unable to authenticate: %v", err)
 	}

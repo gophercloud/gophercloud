@@ -4,6 +4,7 @@
 package layer3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -28,16 +29,16 @@ func TestAddressScopesCRUD(t *testing.T) {
 		Name: &newName,
 	}
 
-	_, err = addressscopes.Update(client, addressScope.ID, updateOpts).Extract()
+	_, err = addressscopes.Update(context.TODO(), client, addressScope.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newAddressScope, err := addressscopes.Get(client, addressScope.ID).Extract()
+	newAddressScope, err := addressscopes.Get(context.TODO(), client, addressScope.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newAddressScope)
 	th.AssertEquals(t, newAddressScope.Name, newName)
 
-	allPages, err := addressscopes.List(client, nil).AllPages()
+	allPages, err := addressscopes.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allAddressScopes, err := addressscopes.ExtractAddressScopes(allPages)

@@ -1,12 +1,14 @@
 package quotas
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 )
 
 // Get returns load balancer Quotas for a project.
-func Get(client *gophercloud.ServiceClient, projectID string) (r GetResult) {
-	resp, err := client.Get(getURL(client, projectID), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, projectID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -48,13 +50,13 @@ func (opts UpdateOpts) ToQuotaUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing load balancer Quotas using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToQuotaUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, projectID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, updateURL(c, projectID), b, &r.Body, &gophercloud.RequestOpts{
 		// allow 200 (neutron/lbaasv2) and 202 (octavia)
 		OkCodes: []int{200, 202},
 	})

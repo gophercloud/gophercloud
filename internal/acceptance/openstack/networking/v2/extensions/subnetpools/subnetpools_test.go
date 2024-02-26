@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -30,17 +31,17 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 		Description: &newDescription,
 	}
 
-	_, err = subnetpools.Update(client, subnetPool.ID, updateOpts).Extract()
+	_, err = subnetpools.Update(context.TODO(), client, subnetPool.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	newSubnetPool, err := subnetpools.Get(client, subnetPool.ID).Extract()
+	newSubnetPool, err := subnetpools.Get(context.TODO(), client, subnetPool.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnetPool)
 	th.AssertEquals(t, newSubnetPool.Name, newName)
 	th.AssertEquals(t, newSubnetPool.Description, newDescription)
 
-	allPages, err := subnetpools.List(client, nil).AllPages()
+	allPages, err := subnetpools.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allSubnetPools, err := subnetpools.ExtractSubnetPools(allPages)

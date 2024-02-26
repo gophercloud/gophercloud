@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -31,7 +32,7 @@ func TestList(t *testing.T) {
 	}
 	var actual []networkVLANTransparentExt
 
-	allPages, err := networks.List(fake.ServiceClient(), networks.ListOpts{}).AllPages()
+	allPages, err := networks.List(fake.ServiceClient(), networks.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = networks.ExtractNetworksInto(allPages, &actual)
@@ -66,7 +67,7 @@ func TestGet(t *testing.T) {
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Get(fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&s)
+	err := networks.Get(context.TODO(), fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
@@ -111,7 +112,7 @@ func TestCreate(t *testing.T) {
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Create(fake.ServiceClient(), vlanTransparentCreateOpts).ExtractInto(&s)
+	err := networks.Create(context.TODO(), fake.ServiceClient(), vlanTransparentCreateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
@@ -158,7 +159,7 @@ func TestUpdate(t *testing.T) {
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", vlanTransparentUpdateOpts).ExtractInto(&s)
+	err := networks.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", vlanTransparentUpdateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)

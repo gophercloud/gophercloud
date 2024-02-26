@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -29,7 +30,7 @@ func TestNodesCRUD(t *testing.T) {
 	defer DeleteNode(t, client, node.ID)
 
 	// Test nodes list
-	allPages, err := nodes.List(client, nil).AllPages()
+	allPages, err := nodes.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNodes, err := nodes.ExtractNodes(allPages)
@@ -53,7 +54,7 @@ func TestNodesCRUD(t *testing.T) {
 		},
 	}
 
-	res := nodes.Update(client, node.ID, updateOpts)
+	res := nodes.Update(context.TODO(), client, node.ID, updateOpts)
 	th.AssertNoErr(t, res.Err)
 
 	actionID, err := GetActionID(res.Header)
@@ -62,7 +63,7 @@ func TestNodesCRUD(t *testing.T) {
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	node, err = nodes.Get(client, node.ID).Extract()
+	node, err = nodes.Get(context.TODO(), client, node.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, node)
@@ -110,13 +111,13 @@ func TestNodesOps(t *testing.T) {
 	for _, op := range ops {
 		opName := string(op.Operation)
 		t.Logf("Attempting to perform '%s' on node: %s", opName, node.ID)
-		actionID, res := nodes.Ops(client, node.ID, op).Extract()
+		actionID, res := nodes.Ops(context.TODO(), client, node.ID, op).Extract()
 		th.AssertNoErr(t, res)
 
 		err = WaitForAction(client, actionID)
 		th.AssertNoErr(t, err)
 
-		node, err = nodes.Get(client, node.ID).Extract()
+		node, err = nodes.Get(context.TODO(), client, node.ID).Extract()
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, "Operation '"+opName+"' succeeded", node.StatusReason)
 		t.Logf("Successfully performed '%s' on node: %s", opName, node.ID)
@@ -168,7 +169,7 @@ func TestNodesRecover(t *testing.T) {
 			t.Logf("Attempting to recover by using '%s' on node: %s", recoverOpt.Operation, node.ID)
 		}
 
-		actionID, err := nodes.Recover(client, node.ID, recoverOpt).Extract()
+		actionID, err := nodes.Recover(context.TODO(), client, node.ID, recoverOpt).Extract()
 		th.AssertNoErr(t, err)
 
 		err = WaitForAction(client, actionID)
@@ -179,7 +180,7 @@ func TestNodesRecover(t *testing.T) {
 			t.Logf("Successfully recovered by using '%s' on node: %s", recoverOpt.Operation, node.ID)
 		}
 
-		node, err := nodes.Get(client, node.ID).Extract()
+		node, err := nodes.Get(context.TODO(), client, node.ID).Extract()
 		th.AssertNoErr(t, err)
 		tools.PrintResource(t, node)
 	}
@@ -203,13 +204,13 @@ func TestNodeCheck(t *testing.T) {
 
 	t.Logf("Attempting to check on node: %s", node.ID)
 
-	actionID, err := nodes.Check(client, node.ID).Extract()
+	actionID, err := nodes.Check(context.TODO(), client, node.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
-	node, err = nodes.Get(client, node.ID).Extract()
+	node, err = nodes.Get(context.TODO(), client, node.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "Check: Node is ACTIVE.", node.StatusReason)
 	tools.PrintResource(t, node)

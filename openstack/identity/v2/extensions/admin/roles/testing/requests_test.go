@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/extensions/admin/roles"
@@ -17,7 +18,7 @@ func TestRole(t *testing.T) {
 
 	count := 0
 
-	err := roles.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := roles.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoles(page)
 		if err != nil {
@@ -48,7 +49,7 @@ func TestAddUser(t *testing.T) {
 
 	MockAddUserRoleResponse(t)
 
-	err := roles.AddUser(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := roles.AddUser(context.TODO(), client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }
@@ -59,7 +60,7 @@ func TestDeleteUser(t *testing.T) {
 
 	MockDeleteUserRoleResponse(t)
 
-	err := roles.DeleteUser(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := roles.DeleteUser(context.TODO(), client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }

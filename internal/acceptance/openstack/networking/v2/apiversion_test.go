@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,7 +18,7 @@ func TestAPIVersionsList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := apiversions.ListVersions(client).AllPages()
+	allPages, err := apiversions.ListVersions(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list api versions: %v", err)
 	}
@@ -38,7 +39,7 @@ func TestAPIResourcesList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	allPages, err := apiversions.ListVersionResources(client, "v2.0").AllPages()
+	allPages, err := apiversions.ListVersionResources(client, "v2.0").AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list api version resources: %v", err)
 	}

@@ -4,6 +4,7 @@
 package vpnaas
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -16,7 +17,7 @@ func TestIPSecPolicyList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := ipsecpolicies.List(client, nil).AllPages()
+	allPages, err := ipsecpolicies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := ipsecpolicies.ExtractPolicies(allPages)
@@ -41,11 +42,11 @@ func TestIPSecPolicyCRUD(t *testing.T) {
 		Description: &updatedDescription,
 	}
 
-	policy, err = ipsecpolicies.Update(client, policy.ID, updateOpts).Extract()
+	policy, err = ipsecpolicies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, policy)
 
-	newPolicy, err := ipsecpolicies.Get(client, policy.ID).Extract()
+	newPolicy, err := ipsecpolicies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, newPolicy)
 }

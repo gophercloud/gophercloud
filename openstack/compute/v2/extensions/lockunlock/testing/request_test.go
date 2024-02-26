@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
@@ -16,7 +17,7 @@ func TestLock(t *testing.T) {
 
 	mockStartServerResponse(t, serverID)
 
-	err := lockunlock.Lock(client.ServiceClient(), serverID).ExtractErr()
+	err := lockunlock.Lock(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -26,6 +27,6 @@ func TestUnlock(t *testing.T) {
 
 	mockStopServerResponse(t, serverID)
 
-	err := lockunlock.Unlock(client.ServiceClient(), serverID).ExtractErr()
+	err := lockunlock.Unlock(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -1,6 +1,7 @@
 package mtu
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -41,7 +42,7 @@ func CreateNetworkWithMTU(t *testing.T, client *gophercloud.ServiceClient, netwo
 
 	var network NetworkMTU
 
-	err := networks.Create(client, createOpts).ExtractInto(&network)
+	err := networks.Create(context.TODO(), client, createOpts).ExtractInto(&network)
 	if err != nil {
 		return &network, err
 	}

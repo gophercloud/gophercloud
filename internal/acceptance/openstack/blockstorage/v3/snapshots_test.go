@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestSnapshots(t *testing.T) {
 		Description: &updatedSnapshotDescription,
 	}
 	t.Logf("Attempting to update snapshot: %s", updatedSnapshotName)
-	updatedSnapshot, err := snapshots.Update(client, snapshot1.ID, updateOpts).Extract()
+	updatedSnapshot, err := snapshots.Update(context.TODO(), client, snapshot1.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedSnapshot)
@@ -56,7 +57,7 @@ func TestSnapshots(t *testing.T) {
 		Limit: 1,
 	}
 
-	err = snapshots.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err = snapshots.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := snapshots.ExtractSnapshots(page)
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, 1, len(actual))
@@ -95,10 +96,10 @@ func TestSnapshotsResetStatus(t *testing.T) {
 		Status: "error",
 	}
 	t.Logf("Attempting to reset snapshot status to %s", resetOpts.Status)
-	err = snapshots.ResetStatus(client, snapshot1.ID, resetOpts).ExtractErr()
+	err = snapshots.ResetStatus(context.TODO(), client, snapshot1.ID, resetOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	snapshot, err := snapshots.Get(client, snapshot1.ID).Extract()
+	snapshot, err := snapshots.Get(context.TODO(), client, snapshot1.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	if snapshot.Status != resetOpts.Status {
@@ -110,10 +111,10 @@ func TestSnapshotsResetStatus(t *testing.T) {
 		Status: "available",
 	}
 	t.Logf("Attempting to reset snapshot status to %s", resetOpts.Status)
-	err = snapshots.ResetStatus(client, snapshot1.ID, resetOpts).ExtractErr()
+	err = snapshots.ResetStatus(context.TODO(), client, snapshot1.ID, resetOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	snapshot, err = snapshots.Get(client, snapshot1.ID).Extract()
+	snapshot, err = snapshots.Get(context.TODO(), client, snapshot1.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	if snapshot.Status != resetOpts.Status {
@@ -140,10 +141,10 @@ func TestSnapshotsUpdateStatus(t *testing.T) {
 		Status: "creating",
 	}
 	t.Logf("Attempting to update snapshot status to %s", resetOpts.Status)
-	err = snapshots.ResetStatus(client, snapshot1.ID, resetOpts).ExtractErr()
+	err = snapshots.ResetStatus(context.TODO(), client, snapshot1.ID, resetOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	snapshot, err := snapshots.Get(client, snapshot1.ID).Extract()
+	snapshot, err := snapshots.Get(context.TODO(), client, snapshot1.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	if snapshot.Status != resetOpts.Status {
@@ -155,10 +156,10 @@ func TestSnapshotsUpdateStatus(t *testing.T) {
 		Status: "available",
 	}
 	t.Logf("Attempting to update snapshot status to %s", updateOpts.Status)
-	err = snapshots.UpdateStatus(client, snapshot1.ID, updateOpts).ExtractErr()
+	err = snapshots.UpdateStatus(context.TODO(), client, snapshot1.ID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	snapshot, err = snapshots.Get(client, snapshot1.ID).Extract()
+	snapshot, err = snapshots.Get(context.TODO(), client, snapshot1.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	if snapshot.Status != updateOpts.Status {
@@ -182,11 +183,11 @@ func TestSnapshotsForceDelete(t *testing.T) {
 
 	// Force delete snapshot
 	t.Logf("Attempting to force delete %s snapshot", snapshot.ID)
-	err = snapshots.ForceDelete(client, snapshot.ID).ExtractErr()
+	err = snapshots.ForceDelete(context.TODO(), client, snapshot.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = tools.WaitFor(func() (bool, error) {
-		_, err := snapshots.Get(client, snapshot.ID).Extract()
+		_, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				return true, nil

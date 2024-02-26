@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/roles"
@@ -15,7 +16,7 @@ func TestListRoles(t *testing.T) {
 	HandleListRolesSuccessfully(t)
 
 	count := 0
-	err := roles.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := roles.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -34,7 +35,7 @@ func TestListRolesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListRolesSuccessfully(t)
 
-	allPages, err := roles.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := roles.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -79,7 +80,7 @@ func TestGetRole(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetRoleSuccessfully(t)
 
-	actual, err := roles.Get(client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := roles.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRole, *actual)
@@ -98,7 +99,7 @@ func TestCreateRole(t *testing.T) {
 		},
 	}
 
-	actual, err := roles.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := roles.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
@@ -114,7 +115,7 @@ func TestUpdateRole(t *testing.T) {
 		},
 	}
 
-	actual, err := roles.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := roles.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRoleUpdated, *actual)
 }
@@ -124,7 +125,7 @@ func TestDeleteRole(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteRoleSuccessfully(t)
 
-	res := roles.Delete(client.ServiceClient(), "9fe1d3")
+	res := roles.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -134,7 +135,7 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 	HandleListRoleAssignmentsSuccessfully(t)
 
 	count := 0
-	err := roles.ListAssignments(client.ServiceClient(), roles.ListAssignmentsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := roles.ListAssignments(client.ServiceClient(), roles.ListAssignmentsOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
 		th.AssertNoErr(t, err)
@@ -158,7 +159,7 @@ func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
 	}
 
 	count := 0
-	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
 		th.AssertNoErr(t, err)
@@ -182,7 +183,7 @@ func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
 	}
 
 	count := 0
-	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
 		th.AssertNoErr(t, err)
@@ -204,7 +205,7 @@ func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
 	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
-	}).EachPage(func(page pagination.Page) (bool, error) {
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -226,7 +227,7 @@ func TestListAssignmentsOnResource_DomainsUsers(t *testing.T) {
 	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
-	}).EachPage(func(page pagination.Page) (bool, error) {
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -248,7 +249,7 @@ func TestListAssignmentsOnResource_ProjectsGroups(t *testing.T) {
 	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
-	}).EachPage(func(page pagination.Page) (bool, error) {
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -270,7 +271,7 @@ func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
 	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
-	}).EachPage(func(page pagination.Page) (bool, error) {
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -288,25 +289,25 @@ func TestAssign(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAssignSuccessfully(t)
 
-	err := roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err := roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
@@ -318,25 +319,25 @@ func TestUnassign(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUnassignSuccessfully(t)
 
-	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err := roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err = roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err = roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err = roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()

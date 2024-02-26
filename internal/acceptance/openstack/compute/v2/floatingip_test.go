@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -23,7 +24,7 @@ func TestFloatingIPsCreateDelete(t *testing.T) {
 
 	tools.PrintResource(t, floatingIP)
 
-	allPages, err := floatingips.List(client).AllPages()
+	allPages, err := floatingips.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allFloatingIPs, err := floatingips.ExtractFloatingIPs(allPages)
@@ -40,7 +41,7 @@ func TestFloatingIPsCreateDelete(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	fip, err := floatingips.Get(client, floatingIP.ID).Extract()
+	fip, err := floatingips.Get(context.TODO(), client, floatingIP.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, floatingIP.ID, fip.ID)
@@ -66,7 +67,7 @@ func TestFloatingIPsAssociate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DisassociateFloatingIP(t, client, floatingIP, server)
 
-	newFloatingIP, err := floatingips.Get(client, floatingIP.ID).Extract()
+	newFloatingIP, err := floatingips.Get(context.TODO(), client, floatingIP.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Floating IP %s is associated with Fixed IP %s", floatingIP.IP, newFloatingIP.FixedIP)
@@ -89,7 +90,7 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	floatingIP, err := CreateFloatingIP(t, client)
@@ -112,7 +113,7 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DisassociateFloatingIP(t, client, floatingIP, newServer)
 
-	newFloatingIP, err := floatingips.Get(client, floatingIP.ID).Extract()
+	newFloatingIP, err := floatingips.Get(context.TODO(), client, floatingIP.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Floating IP %s is associated with Fixed IP %s", floatingIP.IP, newFloatingIP.FixedIP)

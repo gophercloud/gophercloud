@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -27,10 +28,10 @@ func TestSnapshots(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSnapshot(t, client, snapshot)
 
-	newSnapshot, err := snapshots.Get(client, snapshot.ID).Extract()
+	newSnapshot, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages()
+	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allSnapshots, err := snapshots.ExtractSnapshots(allPages)

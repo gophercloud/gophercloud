@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -16,7 +17,7 @@ func TestCreateConsumer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateConsumer(t)
 
-	consumer, err := oauth1.CreateConsumer(client.ServiceClient(), oauth1.CreateConsumerOpts{
+	consumer, err := oauth1.CreateConsumer(context.TODO(), client.ServiceClient(), oauth1.CreateConsumerOpts{
 		Description: "My consumer",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -29,7 +30,7 @@ func TestUpdateConsumer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateConsumer(t)
 
-	consumer, err := oauth1.UpdateConsumer(client.ServiceClient(), "7fea2d", oauth1.UpdateConsumerOpts{
+	consumer, err := oauth1.UpdateConsumer(context.TODO(), client.ServiceClient(), "7fea2d", oauth1.UpdateConsumerOpts{
 		Description: "My new consumer",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -42,7 +43,7 @@ func TestDeleteConsumer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteConsumer(t)
 
-	err := oauth1.DeleteConsumer(client.ServiceClient(), "7fea2d").ExtractErr()
+	err := oauth1.DeleteConsumer(context.TODO(), client.ServiceClient(), "7fea2d").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -51,7 +52,7 @@ func TestGetConsumer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetConsumer(t)
 
-	consumer, err := oauth1.GetConsumer(client.ServiceClient(), "7fea2d").Extract()
+	consumer, err := oauth1.GetConsumer(context.TODO(), client.ServiceClient(), "7fea2d").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, FirstConsumer, *consumer)
@@ -63,7 +64,7 @@ func TestListConsumers(t *testing.T) {
 	HandleListConsumers(t)
 
 	count := 0
-	err := oauth1.ListConsumers(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := oauth1.ListConsumers(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := oauth1.ExtractConsumers(page)
@@ -82,7 +83,7 @@ func TestListConsumersAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListConsumers(t)
 
-	allPages, err := oauth1.ListConsumers(client.ServiceClient()).AllPages()
+	allPages, err := oauth1.ListConsumers(client.ServiceClient()).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := oauth1.ExtractConsumers(allPages)
 	th.AssertNoErr(t, err)
@@ -95,7 +96,7 @@ func TestRequestToken(t *testing.T) {
 	HandleRequestToken(t)
 
 	ts := time.Unix(0, 0)
-	token, err := oauth1.RequestToken(client.ServiceClient(), oauth1.RequestTokenOpts{
+	token, err := oauth1.RequestToken(context.TODO(), client.ServiceClient(), oauth1.RequestTokenOpts{
 		OAuthConsumerKey:     Consumer.ID,
 		OAuthConsumerSecret:  Consumer.Secret,
 		OAuthSignatureMethod: oauth1.HMACSHA1,
@@ -113,7 +114,7 @@ func TestAuthorizeToken(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAuthorizeToken(t)
 
-	token, err := oauth1.AuthorizeToken(client.ServiceClient(), "29971f", oauth1.AuthorizeTokenOpts{
+	token, err := oauth1.AuthorizeToken(context.TODO(), client.ServiceClient(), "29971f", oauth1.AuthorizeTokenOpts{
 		Roles: []oauth1.Role{
 			{
 				ID: "a3b29b",
@@ -134,7 +135,7 @@ func TestCreateAccessToken(t *testing.T) {
 	HandleCreateAccessToken(t)
 
 	ts := time.Unix(1586804894, 0)
-	token, err := oauth1.CreateAccessToken(client.ServiceClient(), oauth1.CreateAccessTokenOpts{
+	token, err := oauth1.CreateAccessToken(context.TODO(), client.ServiceClient(), oauth1.CreateAccessTokenOpts{
 		OAuthConsumerKey:     Consumer.ID,
 		OAuthConsumerSecret:  Consumer.Secret,
 		OAuthToken:           Token.OAuthToken,
@@ -154,7 +155,7 @@ func TestGetAccessToken(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetAccessToken(t)
 
-	token, err := oauth1.GetAccessToken(client.ServiceClient(), "ce9e07", "6be26a").Extract()
+	token, err := oauth1.GetAccessToken(context.TODO(), client.ServiceClient(), "ce9e07", "6be26a").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, UserAccessToken, *token)
@@ -165,7 +166,7 @@ func TestRevokeAccessToken(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRevokeAccessToken(t)
 
-	err := oauth1.RevokeAccessToken(client.ServiceClient(), "ce9e07", "6be26a").ExtractErr()
+	err := oauth1.RevokeAccessToken(context.TODO(), client.ServiceClient(), "ce9e07", "6be26a").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -175,7 +176,7 @@ func TestListAccessTokens(t *testing.T) {
 	HandleListAccessTokens(t)
 
 	count := 0
-	err := oauth1.ListAccessTokens(client.ServiceClient(), "ce9e07").EachPage(func(page pagination.Page) (bool, error) {
+	err := oauth1.ListAccessTokens(client.ServiceClient(), "ce9e07").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := oauth1.ExtractAccessTokens(page)
@@ -194,7 +195,7 @@ func TestListAccessTokensAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListAccessTokens(t)
 
-	allPages, err := oauth1.ListAccessTokens(client.ServiceClient(), "ce9e07").AllPages()
+	allPages, err := oauth1.ListAccessTokens(client.ServiceClient(), "ce9e07").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := oauth1.ExtractAccessTokens(allPages)
 	th.AssertNoErr(t, err)
@@ -207,7 +208,7 @@ func TestListAccessTokenRoles(t *testing.T) {
 	HandleListAccessTokenRoles(t)
 
 	count := 0
-	err := oauth1.ListAccessTokenRoles(client.ServiceClient(), "ce9e07", "6be26a").EachPage(func(page pagination.Page) (bool, error) {
+	err := oauth1.ListAccessTokenRoles(client.ServiceClient(), "ce9e07", "6be26a").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := oauth1.ExtractAccessTokenRoles(page)
@@ -226,7 +227,7 @@ func TestListAccessTokenRolesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListAccessTokenRoles(t)
 
-	allPages, err := oauth1.ListAccessTokenRoles(client.ServiceClient(), "ce9e07", "6be26a").AllPages()
+	allPages, err := oauth1.ListAccessTokenRoles(client.ServiceClient(), "ce9e07", "6be26a").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := oauth1.ExtractAccessTokenRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -238,7 +239,7 @@ func TestGetAccessTokenRole(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetAccessTokenRole(t)
 
-	role, err := oauth1.GetAccessTokenRole(client.ServiceClient(), "ce9e07", "6be26a", "5ad150").Extract()
+	role, err := oauth1.GetAccessTokenRole(context.TODO(), client.ServiceClient(), "ce9e07", "6be26a", "5ad150").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, UserAccessTokenRole, *role)
@@ -264,7 +265,7 @@ func TestAuthenticate(t *testing.T) {
 		OAuthNonce:           "66148873158553341551586804894",
 	}
 
-	actual, err := oauth1.Create(client.ServiceClient(), options).Extract()
+	actual, err := oauth1.Create(context.TODO(), client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }

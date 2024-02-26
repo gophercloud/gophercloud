@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -25,7 +26,7 @@ func TestBackupsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteBackup(t, blockClient, backup.ID)
 
-	allPages, err := backups.List(blockClient, nil).AllPages()
+	allPages, err := backups.List(blockClient, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allBackups, err := backups.ExtractBackups(allPages)
@@ -75,7 +76,7 @@ func TestBackupsForceDelete(t *testing.T) {
 	err = WaitForBackupStatus(blockClient, backup.ID, "available")
 	th.AssertNoErr(t, err)
 
-	err = backups.ForceDelete(blockClient, backup.ID).ExtractErr()
+	err = backups.ForceDelete(context.TODO(), blockClient, backup.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForBackupStatus(blockClient, backup.ID, "deleted")

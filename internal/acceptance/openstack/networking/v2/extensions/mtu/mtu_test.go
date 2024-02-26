@@ -4,6 +4,7 @@
 package mtu
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,13 +23,13 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(client, "net-mtu").Extract()
+	extension, err := extensions.Get(context.TODO(), client, "net-mtu").Extract()
 	if err != nil {
 		t.Skip("This test requires net-mtu Neutron extension")
 	}
 	tools.PrintResource(t, extension)
 
-	mtuWritable, _ := extensions.Get(client, "net-mtu-writable").Extract()
+	mtuWritable, _ := extensions.Get(context.TODO(), client, "net-mtu-writable").Extract()
 	tools.PrintResource(t, mtuWritable)
 
 	// Create Network
@@ -51,7 +52,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		}
 		var listedNetworks []NetworkMTU
 		i := 0
-		err = networks.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+		err = networks.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 			i++
 			err := networks.ExtractNetworksInto(page, &listedNetworks)
 			if err != nil {
@@ -75,7 +76,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 			MTU:             1,
 		}
 		i = 0
-		err = networks.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+		err = networks.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 			i++
 			err := networks.ExtractNetworksInto(page, &listedNetworks)
 			if err != nil {
@@ -96,7 +97,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 
 	// Get network
 	var getNetwork NetworkMTU
-	err = networks.Get(client, network.ID).ExtractInto(&getNetwork)
+	err = networks.Get(context.TODO(), client, network.ID).ExtractInto(&getNetwork)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, getNetwork)
@@ -116,7 +117,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		}
 
 		var newNetwork NetworkMTU
-		err = networks.Update(client, network.ID, updateOpts).ExtractInto(&newNetwork)
+		err = networks.Update(context.TODO(), client, network.ID, updateOpts).ExtractInto(&newNetwork)
 		th.AssertNoErr(t, err)
 
 		tools.PrintResource(t, newNetwork)
@@ -125,7 +126,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 
 		// Get updated network
 		var getNewNetwork NetworkMTU
-		err = networks.Get(client, network.ID).ExtractInto(&getNewNetwork)
+		err = networks.Get(context.TODO(), client, network.ID).ExtractInto(&getNewNetwork)
 		th.AssertNoErr(t, err)
 
 		tools.PrintResource(t, getNewNetwork)

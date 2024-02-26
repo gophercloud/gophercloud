@@ -1,6 +1,7 @@
 package projects
 
 import (
+	"context"
 	"net/url"
 	"strings"
 
@@ -94,8 +95,8 @@ func ListAvailable(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieves details on a single project, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -156,20 +157,20 @@ func (opts CreateOpts) ToProjectCreateMap() (map[string]interface{}, error) {
 }
 
 // Create creates a new Project.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToProjectCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), &b, &r.Body, nil)
+	resp, err := client.Post(ctx, createURL(client), &b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes a project.
-func Delete(client *gophercloud.ServiceClient, projectID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, projectID), nil)
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, projectID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -230,13 +231,13 @@ func (opts UpdateOpts) ToProjectUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update modifies the attributes of a project.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToProjectUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

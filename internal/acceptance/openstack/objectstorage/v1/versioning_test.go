@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -33,18 +34,18 @@ func TestObjectsVersioning(t *testing.T) {
 	opts := containers.CreateOpts{
 		VersionsEnabled: true,
 	}
-	header, err := containers.Create(client, cName, opts).Extract()
+	header, err := containers.Create(context.TODO(), client, cName, opts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Create container headers: %+v\n", header)
 
 	// Defer deletion of the container until after testing.
 	defer func() {
-		res := containers.Delete(client, cName)
+		res := containers.Delete(context.TODO(), client, cName)
 		th.AssertNoErr(t, res.Err)
 	}()
 
 	// ensure versioning is enabled
-	get, err := containers.Get(client, cName, nil).Extract()
+	get, err := containers.Get(context.TODO(), client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Get container headers: %+v\n", get)
 	th.AssertEquals(t, true, get.VersionsEnabled)
@@ -57,7 +58,7 @@ func TestObjectsVersioning(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oContents[i]),
 		}
-		obj, err := objects.Create(client, cName, oNames[i], createOpts).Extract()
+		obj, err := objects.Create(context.TODO(), client, cName, oNames[i], createOpts).Extract()
 		th.AssertNoErr(t, err)
 		oContentVersionIDs[i] = obj.ObjectVersionID
 	}
@@ -67,7 +68,7 @@ func TestObjectsVersioning(t *testing.T) {
 		createOpts := objects.CreateOpts{
 			Content: strings.NewReader(oNewContents[i]),
 		}
-		_, err := objects.Create(client, cName, oNames[i], createOpts).Extract()
+		_, err := objects.Create(context.TODO(), client, cName, oNames[i], createOpts).Extract()
 		th.AssertNoErr(t, err)
 	}
 	// Delete the objects after testing two times.
@@ -76,13 +77,13 @@ func TestObjectsVersioning(t *testing.T) {
 		opts := containers.UpdateOpts{
 			VersionsEnabled: new(bool),
 		}
-		header, err := containers.Update(client, cName, opts).Extract()
+		header, err := containers.Update(context.TODO(), client, cName, opts).Extract()
 		th.AssertNoErr(t, err)
 
 		t.Logf("Update container headers: %+v\n", header)
 
 		// ensure versioning is disabled
-		get, err := containers.Get(client, cName, nil).Extract()
+		get, err := containers.Get(context.TODO(), client, cName, nil).Extract()
 		th.AssertNoErr(t, err)
 		t.Logf("Get container headers: %+v\n", get)
 		th.AssertEquals(t, false, get.VersionsEnabled)
@@ -93,7 +94,7 @@ func TestObjectsVersioning(t *testing.T) {
 			opts := objects.DeleteOpts{
 				ObjectVersionID: oContentVersionIDs[i],
 			}
-			obj, err := objects.Delete(client, cName, oNames[i], opts).Extract()
+			obj, err := objects.Delete(context.TODO(), client, cName, oNames[i], opts).Extract()
 			th.AssertNoErr(t, err)
 			currentVersionIDs[i] = obj.ObjectCurrentVersionID
 		}
@@ -101,7 +102,7 @@ func TestObjectsVersioning(t *testing.T) {
 			opts := objects.DeleteOpts{
 				ObjectVersionID: currentVersionIDs[i],
 			}
-			res := objects.Delete(client, cName, oNames[i], opts)
+			res := objects.Delete(context.TODO(), client, cName, oNames[i], opts)
 			th.AssertNoErr(t, res.Err)
 		}
 	}()
@@ -111,7 +112,7 @@ func TestObjectsVersioning(t *testing.T) {
 		Prefix: "test-object-",
 	}
 
-	allPages, err := objects.List(client, cName, listOpts).AllPages()
+	allPages, err := objects.List(client, cName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list objects: %v", err)
 	}
@@ -134,7 +135,7 @@ func TestObjectsVersioning(t *testing.T) {
 		Versions: true,
 	}
 
-	allPages, err = objects.List(client, cName, listOpts).AllPages()
+	allPages, err = objects.List(client, cName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list objects: %v", err)
 	}
@@ -164,7 +165,7 @@ func TestObjectsVersioning(t *testing.T) {
 	}
 
 	// Download one of the objects that was created above.
-	downloadres := objects.Download(client, cName, oNames[0], nil)
+	downloadres := objects.Download(context.TODO(), client, cName, oNames[0], nil)
 	th.AssertNoErr(t, downloadres.Err)
 
 	o1Content, err := downloadres.ExtractContent()
@@ -177,7 +178,7 @@ func TestObjectsVersioning(t *testing.T) {
 	downloadOpts := objects.DownloadOpts{
 		Newest: true,
 	}
-	downloadres = objects.Download(client, cName, oNames[1], downloadOpts)
+	downloadres = objects.Download(context.TODO(), client, cName, oNames[1], downloadOpts)
 	th.AssertNoErr(t, downloadres.Err)
 	o2Content, err := downloadres.ExtractContent()
 	th.AssertNoErr(t, err)

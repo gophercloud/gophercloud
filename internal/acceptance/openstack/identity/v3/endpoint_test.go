@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestEndpointsList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := endpoints.List(client, nil).AllPages()
+	allPages, err := endpoints.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allEndpoints, err := endpoints.ExtractEndpoints(allPages)
@@ -50,7 +51,7 @@ func TestEndpointsNavigateCatalog(t *testing.T) {
 		ServiceType: "compute",
 	}
 
-	allPages, err := services.List(client, serviceListOpts).AllPages()
+	allPages, err := services.List(client, serviceListOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)
@@ -67,7 +68,7 @@ func TestEndpointsNavigateCatalog(t *testing.T) {
 		ServiceID:    computeService.ID,
 	}
 
-	allPages, err = endpoints.List(client, endpointListOpts).AllPages()
+	allPages, err = endpoints.List(client, endpointListOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allEndpoints, err := endpoints.ExtractEndpoints(allPages)

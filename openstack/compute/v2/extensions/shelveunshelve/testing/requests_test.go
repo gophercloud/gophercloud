@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/shelveunshelve"
@@ -17,7 +18,7 @@ func TestShelve(t *testing.T) {
 
 	mockShelveServerResponse(t, serverID)
 
-	err := shelveunshelve.Shelve(client.ServiceClient(), serverID).ExtractErr()
+	err := shelveunshelve.Shelve(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -27,7 +28,7 @@ func TestShelveOffload(t *testing.T) {
 
 	mockShelveOffloadServerResponse(t, serverID)
 
-	err := shelveunshelve.ShelveOffload(client.ServiceClient(), serverID).ExtractErr()
+	err := shelveunshelve.ShelveOffload(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -39,7 +40,7 @@ func TestUnshelveNoAvailabilityZone(t *testing.T) {
 
 	mockUnshelveServerResponseNoAvailabilityZone(t, serverID)
 
-	err := shelveunshelve.Unshelve(client.ServiceClient(), serverID, unshelveOpts).ExtractErr()
+	err := shelveunshelve.Unshelve(context.TODO(), client.ServiceClient(), serverID, unshelveOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -53,6 +54,6 @@ func TestUnshelveWithAvailabilityZone(t *testing.T) {
 
 	mockUnshelveServerResponseWithAvailabilityZone(t, serverID, availabilityZone)
 
-	err := shelveunshelve.Unshelve(client.ServiceClient(), serverID, unshelveOpts).ExtractErr()
+	err := shelveunshelve.Unshelve(context.TODO(), client.ServiceClient(), serverID, unshelveOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

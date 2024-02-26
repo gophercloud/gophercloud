@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -31,7 +32,7 @@ func TestAttachDetachInterface(t *testing.T) {
 
 	tools.PrintResource(t, iface)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	var found bool

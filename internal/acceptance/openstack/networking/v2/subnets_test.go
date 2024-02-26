@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -38,18 +39,18 @@ func TestSubnetCRUD(t *testing.T) {
 		Name:        &newSubnetName,
 		Description: &newSubnetDescription,
 	}
-	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	_, err = subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Get subnet
-	newSubnet, err := subnets.Get(client, subnet.ID).Extract()
+	newSubnet, err := subnets.Get(context.TODO(), client, subnet.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnet)
 	th.AssertEquals(t, newSubnet.Name, newSubnetName)
 	th.AssertEquals(t, newSubnet.Description, newSubnetDescription)
 
-	allPages, err := subnets.List(client, nil).AllPages()
+	allPages, err := subnets.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allSubnets, err := subnets.ExtractSubnets(allPages)
@@ -86,7 +87,7 @@ func TestSubnetsServiceType(t *testing.T) {
 		ServiceTypes: &serviceTypes,
 	}
 
-	newSubnet, err := subnets.Update(client, subnet.ID, updateOpts).Extract()
+	newSubnet, err := subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, newSubnet.ServiceTypes, serviceTypes)
@@ -117,7 +118,7 @@ func TestSubnetsDefaultGateway(t *testing.T) {
 		GatewayIP: &noGateway,
 	}
 
-	newSubnet, err := subnets.Update(client, subnet.ID, updateOpts).Extract()
+	newSubnet, err := subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if newSubnet.GatewayIP != "" {
@@ -151,7 +152,7 @@ func TestSubnetsNoGateway(t *testing.T) {
 		GatewayIP: &newGateway,
 	}
 
-	newSubnet, err := subnets.Update(client, subnet.ID, updateOpts).Extract()
+	newSubnet, err := subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if newSubnet.GatewayIP == "" {
@@ -267,11 +268,11 @@ func TestSubnetDNSNameservers(t *testing.T) {
 	updateOpts := subnets.UpdateOpts{
 		DNSNameservers: &dnsNameservers,
 	}
-	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	_, err = subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Get subnet
-	newSubnet, err := subnets.Get(client, subnet.ID).Extract()
+	newSubnet, err := subnets.Get(context.TODO(), client, subnet.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnet)
@@ -282,11 +283,11 @@ func TestSubnetDNSNameservers(t *testing.T) {
 	updateOpts = subnets.UpdateOpts{
 		DNSNameservers: &dnsNameservers,
 	}
-	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	_, err = subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Get subnet
-	newSubnet, err = subnets.Get(client, subnet.ID).Extract()
+	newSubnet, err = subnets.Get(context.TODO(), client, subnet.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnet)
@@ -320,7 +321,7 @@ func TestSubnetsRevision(t *testing.T) {
 		Name:        &newSubnetName,
 		Description: &newSubnetDescription,
 	}
-	subnet, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	subnet, err = subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, subnet)
@@ -332,14 +333,14 @@ func TestSubnetsRevision(t *testing.T) {
 		Description:    &newSubnetDescription,
 		RevisionNumber: &oldRevisionNumber,
 	}
-	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	_, err = subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertErr(t, err)
 	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
 		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
 	}
 
 	// Reread the subnet to show that it did not change.
-	subnet, err = subnets.Get(client, subnet.ID).Extract()
+	subnet, err = subnets.Get(context.TODO(), client, subnet.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, subnet)
@@ -351,7 +352,7 @@ func TestSubnetsRevision(t *testing.T) {
 		Description:    &newSubnetDescription,
 		RevisionNumber: &subnet.RevisionNumber,
 	}
-	subnet, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
+	subnet, err = subnets.Update(context.TODO(), client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, subnet)

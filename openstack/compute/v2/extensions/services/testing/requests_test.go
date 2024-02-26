@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/services"
@@ -15,7 +16,7 @@ func TestListServicesPre253(t *testing.T) {
 	HandleListPre253Successfully(t)
 
 	pages := 0
-	err := services.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)
@@ -51,7 +52,7 @@ func TestListServices(t *testing.T) {
 		Binary: "fake-binary",
 		Host:   "host123",
 	}
-	err := services.List(client.ServiceClient(), opts).EachPage(func(page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(), opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)
@@ -83,7 +84,7 @@ func TestUpdateService(t *testing.T) {
 	HandleUpdateSuccessfully(t)
 
 	client := client.ServiceClient()
-	actual, err := services.Update(client, "fake-service-id", services.UpdateOpts{Status: services.ServiceDisabled}).Extract()
+	actual, err := services.Update(context.TODO(), client, "fake-service-id", services.UpdateOpts{Status: services.ServiceDisabled}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
@@ -97,7 +98,7 @@ func TestDeleteService(t *testing.T) {
 	HandleDeleteSuccessfully(t)
 
 	client := client.ServiceClient()
-	res := services.Delete(client, "fake-service-id")
+	res := services.Delete(context.TODO(), client, "fake-service-id")
 
 	testhelper.AssertNoErr(t, res.Err)
 }

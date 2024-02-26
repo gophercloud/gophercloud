@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -31,7 +32,7 @@ func TestServerWithUsageExt(t *testing.T) {
 	}
 
 	// Extract basic fields.
-	err := ports.Get(fake.ServiceClient(), portIDFixture).ExtractInto(&portExt)
+	err := ports.Get(context.TODO(), fake.ServiceClient(), portIDFixture).ExtractInto(&portExt)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, portExt.TrunkDetails.TrunkID, "f170c831-8c55-4ceb-ad13-75eab4a121e5")

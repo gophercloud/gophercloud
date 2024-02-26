@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -69,7 +70,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	routers.List(fake.ServiceClient(), routers.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	routers.List(fake.ServiceClient(), routers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := routers.ExtractRouters(page)
 		if err != nil {
@@ -197,7 +198,7 @@ func TestCreate(t *testing.T) {
 		GatewayInfo:           &gwi,
 		AvailabilityZoneHints: []string{"zone1", "zone2"},
 	}
-	r, err := routers.Create(fake.ServiceClient(), options).Extract()
+	r, err := routers.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	gwi.ExternalFixedIPs = []routers.ExternalFixedIP{{
@@ -250,7 +251,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	n, err := routers.Get(fake.ServiceClient(), "a07eea83-7710-4860-931b-5fe220fae533").Extract()
+	n, err := routers.Get(context.TODO(), fake.ServiceClient(), "a07eea83-7710-4860-931b-5fe220fae533").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -333,7 +334,7 @@ func TestUpdate(t *testing.T) {
 	r := []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}
 	options := routers.UpdateOpts{Name: "new_name", GatewayInfo: &gwi, Routes: &r}
 
-	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := routers.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	gwi.ExternalFixedIPs = []routers.ExternalFixedIP{
@@ -393,7 +394,7 @@ func TestUpdateWithoutRoutes(t *testing.T) {
 
 	options := routers.UpdateOpts{Name: "new_name"}
 
-	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := routers.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_name")
@@ -441,7 +442,7 @@ func TestAllRoutesRemoved(t *testing.T) {
 	r := []routers.Route{}
 	options := routers.UpdateOpts{Routes: &r}
 
-	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := routers.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, n.Routes, []routers.Route{})
@@ -457,7 +458,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := routers.Delete(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	res := routers.Delete(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -490,7 +491,7 @@ func TestAddInterface(t *testing.T) {
 	})
 
 	opts := routers.AddInterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
-	res, err := routers.AddInterface(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	res, err := routers.AddInterface(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "0d32a837-8069-4ec3-84c4-3eef3e10b188", res.SubnetID)
@@ -500,11 +501,11 @@ func TestAddInterface(t *testing.T) {
 }
 
 func TestAddInterfaceRequiredOpts(t *testing.T) {
-	_, err := routers.AddInterface(fake.ServiceClient(), "foo", routers.AddInterfaceOpts{}).Extract()
+	_, err := routers.AddInterface(context.TODO(), fake.ServiceClient(), "foo", routers.AddInterfaceOpts{}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	_, err = routers.AddInterface(fake.ServiceClient(), "foo", routers.AddInterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
+	_, err = routers.AddInterface(context.TODO(), fake.ServiceClient(), "foo", routers.AddInterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -539,7 +540,7 @@ func TestRemoveInterface(t *testing.T) {
 	})
 
 	opts := routers.RemoveInterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
-	res, err := routers.RemoveInterface(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	res, err := routers.RemoveInterface(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "0d32a837-8069-4ec3-84c4-3eef3e10b188", res.SubnetID)
@@ -621,7 +622,7 @@ func TestListL3Agents(t *testing.T) {
 			`)
 	})
 
-	l3AgentsPages, err := routers.ListL3Agents(fake.ServiceClient(), "fa3a4aaa-c73f-48aa-a603-8c8bf642b7c0").AllPages()
+	l3AgentsPages, err := routers.ListL3Agents(fake.ServiceClient(), "fa3a4aaa-c73f-48aa-a603-8c8bf642b7c0").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := routers.ExtractL3Agents(l3AgentsPages)
 	th.AssertNoErr(t, err)

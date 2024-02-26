@@ -4,6 +4,7 @@
 package extensions
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestSchedulerStatsList(t *testing.T) {
 		Detail: true,
 	}
 
-	allPages, err := schedulerstats.List(blockClient, listOpts).AllPages()
+	allPages, err := schedulerstats.List(blockClient, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allStats, err := schedulerstats.ExtractStoragePools(allPages)

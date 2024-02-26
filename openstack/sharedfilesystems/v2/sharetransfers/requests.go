@@ -1,6 +1,8 @@
 package sharetransfers
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -27,13 +29,13 @@ func (opts CreateOpts) ToTransferCreateMap() (map[string]interface{}, error) {
 }
 
 // Create will create a share tranfer request based on the values in CreateOpts.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTransferCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(transferURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, transferURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -56,13 +58,13 @@ func (opts AcceptOpts) ToAcceptMap() (map[string]interface{}, error) {
 }
 
 // Accept will accept a share tranfer request based on the values in AcceptOpts.
-func Accept(client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r AcceptResult) {
+func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r AcceptResult) {
 	b, err := opts.ToAcceptMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(acceptURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, acceptURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -70,8 +72,8 @@ func Accept(client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r Ac
 }
 
 // Delete deletes a share transfer.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), &gophercloud.RequestOpts{
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, id), &gophercloud.RequestOpts{
 		// DELETE requests response with a 200 code, adding it here
 		OkCodes: []int{200, 202, 204},
 	})
@@ -162,8 +164,8 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 
 // Get retrieves the Transfer with the provided ID. To extract the Transfer object
 // from the response, call the Extract method on the GetResult.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

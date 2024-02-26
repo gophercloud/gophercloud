@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -19,7 +20,7 @@ func TestNetworksList(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	allPages, err := networks.List(client).AllPages()
+	allPages, err := networks.List(client).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNetworks, err := networks.ExtractNetworks(allPages)
@@ -47,7 +48,7 @@ func TestNetworksGet(t *testing.T) {
 	networkID, err := GetNetworkIDFromOSNetworks(t, client, choices.NetworkName)
 	th.AssertNoErr(t, err)
 
-	network, err := networks.Get(client, networkID).Extract()
+	network, err := networks.Get(context.TODO(), client, networkID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, network)

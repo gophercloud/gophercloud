@@ -1,6 +1,8 @@
 package hypervisors
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -56,8 +58,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Statistics makes a request against the API to get hypervisors statistics.
-func GetStatistics(client *gophercloud.ServiceClient) (r StatisticsResult) {
-	resp, err := client.Get(hypervisorsStatisticsURL(client), &r.Body, &gophercloud.RequestOpts{
+func GetStatistics(ctx context.Context, client *gophercloud.ServiceClient) (r StatisticsResult) {
+	resp, err := client.Get(ctx, hypervisorsStatisticsURL(client), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -65,8 +67,8 @@ func GetStatistics(client *gophercloud.ServiceClient) (r StatisticsResult) {
 }
 
 // Get makes a request against the API to get details for specific hypervisor.
-func Get(client *gophercloud.ServiceClient, hypervisorID string) (r HypervisorResult) {
-	resp, err := client.Get(hypervisorsGetURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, hypervisorID string) (r HypervisorResult) {
+	resp, err := client.Get(ctx, hypervisorsGetURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -74,8 +76,8 @@ func Get(client *gophercloud.ServiceClient, hypervisorID string) (r HypervisorRe
 }
 
 // GetUptime makes a request against the API to get uptime for specific hypervisor.
-func GetUptime(client *gophercloud.ServiceClient, hypervisorID string) (r UptimeResult) {
-	resp, err := client.Get(hypervisorsUptimeURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
+func GetUptime(ctx context.Context, client *gophercloud.ServiceClient, hypervisorID string) (r UptimeResult) {
+	resp, err := client.Get(ctx, hypervisorsUptimeURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

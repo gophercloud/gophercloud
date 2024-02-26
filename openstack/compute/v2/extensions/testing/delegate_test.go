@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	common "github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
@@ -17,7 +18,7 @@ func TestList(t *testing.T) {
 	HandleListExtensionsSuccessfully(t)
 
 	count := 0
-	extensions.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	extensions.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := extensions.ExtractExtensions(page)
 		th.AssertNoErr(t, err)
@@ -45,7 +46,7 @@ func TestGet(t *testing.T) {
 
 	HandleGetExtensionsSuccessfully(t)
 
-	ext, err := extensions.Get(client.ServiceClient(), "agent").Extract()
+	ext, err := extensions.Get(context.TODO(), client.ServiceClient(), "agent").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")

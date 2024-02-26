@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/ports"
@@ -15,7 +16,7 @@ func TestListDetailPorts(t *testing.T) {
 	HandlePortListDetailSuccessfully(t)
 
 	pages := 0
-	err := ports.ListDetail(client.ServiceClient(), ports.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := ports.ListDetail(client.ServiceClient(), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ports.ExtractPorts(page)
@@ -45,7 +46,7 @@ func TestListPorts(t *testing.T) {
 	HandlePortListSuccessfully(t)
 
 	pages := 0
-	err := ports.List(client.ServiceClient(), ports.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := ports.List(client.ServiceClient(), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ports.ExtractPorts(page)
@@ -90,7 +91,7 @@ func TestCreatePort(t *testing.T) {
 	HandlePortCreationSuccessfully(t, SinglePortBody)
 
 	iTrue := true
-	actual, err := ports.Create(client.ServiceClient(), ports.CreateOpts{
+	actual, err := ports.Create(context.TODO(), client.ServiceClient(), ports.CreateOpts{
 		NodeUUID:   "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
 		Address:    "52:54:00:4d:87:e6",
 		PXEEnabled: &iTrue,
@@ -105,7 +106,7 @@ func TestDeletePort(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandlePortDeletionSuccessfully(t)
 
-	res := ports.Delete(client.ServiceClient(), "3abe3f36-9708-4e9f-b07e-0f898061d3a7")
+	res := ports.Delete(context.TODO(), client.ServiceClient(), "3abe3f36-9708-4e9f-b07e-0f898061d3a7")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -115,7 +116,7 @@ func TestGetPort(t *testing.T) {
 	HandlePortGetSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := ports.Get(c, "f2845e11-dbd4-4728-a8c0-30d19f48924a").Extract()
+	actual, err := ports.Get(context.TODO(), c, "f2845e11-dbd4-4728-a8c0-30d19f48924a").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
@@ -129,7 +130,7 @@ func TestUpdatePort(t *testing.T) {
 	HandlePortUpdateSuccessfully(t, SinglePortBody)
 
 	c := client.ServiceClient()
-	actual, err := ports.Update(c, "f2845e11-dbd4-4728-a8c0-30d19f48924a", ports.UpdateOpts{
+	actual, err := ports.Update(context.TODO(), c, "f2845e11-dbd4-4728-a8c0-30d19f48924a", ports.UpdateOpts{
 		ports.UpdateOperation{
 			Op:    ports.ReplaceOp,
 			Path:  "/address",

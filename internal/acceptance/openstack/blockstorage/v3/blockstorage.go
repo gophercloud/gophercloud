@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -28,17 +29,17 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 		Description: snapshotDescription,
 	}
 
-	snapshot, err := snapshots.Create(client, createOpts).Extract()
+	snapshot, err := snapshots.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return snapshot, err
 	}
 
-	err = snapshots.WaitForStatus(client, snapshot.ID, "available", 60)
+	err = snapshots.WaitForStatus(context.TODO(), client, snapshot.ID, "available", 60)
 	if err != nil {
 		return snapshot, err
 	}
 
-	snapshot, err = snapshots.Get(client, snapshot.ID).Extract()
+	snapshot, err = snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 	if err != nil {
 		return snapshot, err
 	}
@@ -65,17 +66,17 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 		Description: volumeDescription,
 	}
 
-	volume, err := volumes.Create(client, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return volume, err
 	}
 
-	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	err = volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60)
 	if err != nil {
 		return volume, err
 	}
 
-	volume, err = volumes.Get(client, volume.ID).Extract()
+	volume, err = volumes.Get(context.TODO(), client, volume.ID).Extract()
 	if err != nil {
 		return volume, err
 	}
@@ -105,17 +106,17 @@ func CreateVolumeWithType(t *testing.T, client *gophercloud.ServiceClient, vt *v
 		VolumeType:  vt.Name,
 	}
 
-	volume, err := volumes.Create(client, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return volume, err
 	}
 
-	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	err = volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60)
 	if err != nil {
 		return volume, err
 	}
 
-	volume, err = volumes.Get(client, volume.ID).Extract()
+	volume, err = volumes.Get(context.TODO(), client, volume.ID).Extract()
 	if err != nil {
 		return volume, err
 	}
@@ -144,7 +145,7 @@ func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumet
 		Description: description,
 	}
 
-	vt, err := volumetypes.Create(client, createOpts).Extract()
+	vt, err := volumetypes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +178,7 @@ func CreateVolumeTypeNoExtraSpecs(t *testing.T, client *gophercloud.ServiceClien
 		Description: description,
 	}
 
-	vt, err := volumetypes.Create(client, createOpts).Extract()
+	vt, err := volumetypes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func CreateVolumeTypeMultiAttach(t *testing.T, client *gophercloud.ServiceClient
 		Description: description,
 	}
 
-	vt, err := volumetypes.Create(client, createOpts).Extract()
+	vt, err := volumetypes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +239,7 @@ func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*
 		IsPublic:    &isPublic,
 	}
 
-	vt, err := volumetypes.Create(client, createOpts).Extract()
+	vt, err := volumetypes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -256,7 +257,7 @@ func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*
 // DeleteSnapshot will delete a snapshot. A fatal error will occur if the
 // snapshot failed to be deleted.
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {
-	err := snapshots.Delete(client, snapshot.ID).ExtractErr()
+	err := snapshots.Delete(context.TODO(), client, snapshot.ID).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			t.Logf("Snapshot %s is already deleted", snapshot.ID)
@@ -268,7 +269,7 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 	// Volumes can't be deleted until their snapshots have been,
 	// so block until the snapshoth as been deleted.
 	err = tools.WaitFor(func() (bool, error) {
-		_, err := snapshots.Get(client, snapshot.ID).Extract()
+		_, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
 		if err != nil {
 			return true, nil
 		}
@@ -287,7 +288,7 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) {
 	t.Logf("Attempting to delete volume: %s", volume.ID)
 
-	err := volumes.Delete(client, volume.ID, volumes.DeleteOpts{}).ExtractErr()
+	err := volumes.Delete(context.TODO(), client, volume.ID, volumes.DeleteOpts{}).ExtractErr()
 	if err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			t.Logf("Volume %s is already deleted", volume.ID)
@@ -299,7 +300,7 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 	// VolumeTypes can't be deleted until their volumes have been,
 	// so block until the volume is deleted.
 	err = tools.WaitFor(func() (bool, error) {
-		_, err := volumes.Get(client, volume.ID).Extract()
+		_, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
 		if err != nil {
 			return true, nil
 		}
@@ -319,7 +320,7 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 func DeleteVolumeType(t *testing.T, client *gophercloud.ServiceClient, vt *volumetypes.VolumeType) {
 	t.Logf("Attempting to delete volume type: %s", vt.ID)
 
-	err := volumetypes.Delete(client, vt.ID).ExtractErr()
+	err := volumetypes.Delete(context.TODO(), client, vt.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete volume type %s: %v", vt.ID, err)
 	}
@@ -341,7 +342,7 @@ func CreateQoS(t *testing.T, client *gophercloud.ServiceClient) (*qos.QoS, error
 		},
 	}
 
-	qs, err := qos.Create(client, createOpts).Extract()
+	qs, err := qos.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -365,7 +366,7 @@ func DeleteQoS(t *testing.T, client *gophercloud.ServiceClient, qs *qos.QoS) {
 		Force: true,
 	}
 
-	err := qos.Delete(client, qs.ID, deleteOpts).ExtractErr()
+	err := qos.Delete(context.TODO(), client, qs.ID, deleteOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete QoS %s: %v", qs.ID, err)
 	}

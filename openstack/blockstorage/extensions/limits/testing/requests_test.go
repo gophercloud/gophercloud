@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/limits"
@@ -13,7 +14,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := limits.Get(client.ServiceClient()).Extract()
+	actual, err := limits.Get(context.TODO(), client.ServiceClient()).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &LimitsResult, actual)
 }

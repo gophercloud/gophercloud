@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -27,7 +28,7 @@ func TestProjectEndpoints(t *testing.T) {
 	tools.PrintResource(t, project)
 
 	// Get an endpoint
-	allEndpointsPages, err := endpoints.List(client, nil).AllPages()
+	allEndpointsPages, err := endpoints.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allEndpoints, err := endpoints.ExtractEndpoints(allEndpointsPages)
@@ -36,11 +37,11 @@ func TestProjectEndpoints(t *testing.T) {
 	endpoint := allEndpoints[0]
 
 	// Attach endpoint
-	err = projectendpoints.Create(client, project.ID, endpoint.ID).Err
+	err = projectendpoints.Create(context.TODO(), client, project.ID, endpoint.ID).Err
 	th.AssertNoErr(t, err)
 
 	// List endpoints
-	allProjectEndpointsPages, err := projectendpoints.List(client, project.ID).AllPages()
+	allProjectEndpointsPages, err := projectendpoints.List(client, project.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allProjectEndpoints, err := projectendpoints.ExtractEndpoints(allProjectEndpointsPages)
@@ -50,7 +51,7 @@ func TestProjectEndpoints(t *testing.T) {
 	tools.PrintResource(t, allProjectEndpoints[0])
 
 	// Detach endpoint
-	err = projectendpoints.Delete(client, project.ID, endpoint.ID).Err
+	err = projectendpoints.Delete(context.TODO(), client, project.ID, endpoint.ID).Err
 	th.AssertNoErr(t, err)
 
 }

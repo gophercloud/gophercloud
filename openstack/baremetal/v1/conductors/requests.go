@@ -1,6 +1,7 @@
 package conductors
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -63,8 +64,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get requests details on a single conductor by hostname
-func Get(client *gophercloud.ServiceClient, name string) (r GetResult) {
-	resp, err := client.Get(getURL(client, name), &r.Body, &gophercloud.RequestOpts{
+func Get(ctx context.Context, client *gophercloud.ServiceClient, name string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, name), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

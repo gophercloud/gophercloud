@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -22,7 +23,7 @@ func TestSecurityServiceCreateDelete(t *testing.T) {
 		t.Fatalf("Unable to create security service: %v", err)
 	}
 
-	newSecurityService, err := securityservices.Get(client, securityService.ID).Extract()
+	newSecurityService, err := securityservices.Get(context.TODO(), client, securityService.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve the security service: %v", err)
 	}
@@ -46,7 +47,7 @@ func TestSecurityServiceList(t *testing.T) {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
-	allPages, err := securityservices.List(client, securityservices.ListOpts{}).AllPages()
+	allPages, err := securityservices.List(client, securityservices.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve security services: %v", err)
 	}
@@ -85,7 +86,7 @@ func TestSecurityServiceListFiltering(t *testing.T) {
 		Name: securityService.Name,
 	}
 
-	allPages, err := securityservices.List(client, options).AllPages()
+	allPages, err := securityservices.List(client, options).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to retrieve security services: %v", err)
 	}
@@ -124,12 +125,12 @@ func TestSecurityServiceUpdate(t *testing.T) {
 		Type:        "ldap",
 	}
 
-	_, err = securityservices.Update(client, securityService.ID, options).Extract()
+	_, err = securityservices.Update(context.TODO(), client, securityService.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to update the security service: %v", err)
 	}
 
-	newSecurityService, err := securityservices.Get(client, securityService.ID).Extract()
+	newSecurityService, err := securityservices.Get(context.TODO(), client, securityService.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve the security service: %v", err)
 	}

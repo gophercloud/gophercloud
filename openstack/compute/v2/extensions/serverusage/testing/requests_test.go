@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -29,7 +30,7 @@ func TestServerWithUsageExt(t *testing.T) {
 		serverusage.UsageExt
 	}
 	var serverWithUsageExt serverUsageExt
-	err := servers.Get(fake.ServiceClient(), "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithUsageExt)
+	err := servers.Get(context.TODO(), fake.ServiceClient(), "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithUsageExt)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, serverWithUsageExt.LaunchedAt, time.Date(2018, 07, 27, 9, 15, 55, 0, time.UTC))

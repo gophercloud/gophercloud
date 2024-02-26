@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -22,7 +23,7 @@ func TestInstanceActions(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	allPages, err := instanceactions.List(client, server.ID, nil).AllPages()
+	allPages, err := instanceactions.List(client, server.ID, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allActions, err := instanceactions.ExtractInstanceActions(allPages)
 	th.AssertNoErr(t, err)
@@ -30,7 +31,7 @@ func TestInstanceActions(t *testing.T) {
 	var found bool
 
 	for _, action := range allActions {
-		action, err := instanceactions.Get(client, server.ID, action.RequestID).Extract()
+		action, err := instanceactions.Get(context.TODO(), client, server.ID, action.RequestID).Extract()
 		th.AssertNoErr(t, err)
 		tools.PrintResource(t, action)
 
@@ -59,7 +60,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 		Type: servers.HardReboot,
 	}
 
-	err = servers.Reboot(client, server.ID, rebootOpts).ExtractErr()
+	err = servers.Reboot(context.TODO(), client, server.ID, rebootOpts).ExtractErr()
 	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
@@ -69,7 +70,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 		ChangesSince: &now,
 	}
 
-	allPages, err := instanceactions.List(client, server.ID, listOpts).AllPages()
+	allPages, err := instanceactions.List(client, server.ID, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allActions, err := instanceactions.ExtractInstanceActions(allPages)
@@ -78,7 +79,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 	var found bool
 
 	for _, action := range allActions {
-		action, err := instanceactions.Get(client, server.ID, action.RequestID).Extract()
+		action, err := instanceactions.Get(context.TODO(), client, server.ID, action.RequestID).Extract()
 		th.AssertNoErr(t, err)
 		tools.PrintResource(t, action)
 
@@ -94,7 +95,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 		ChangesBefore: &now,
 	}
 
-	allPages, err = instanceactions.List(client, server.ID, listOpts).AllPages()
+	allPages, err = instanceactions.List(client, server.ID, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allActions, err = instanceactions.ExtractInstanceActions(allPages)

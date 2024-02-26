@@ -1,6 +1,8 @@
 package bootfromvolume
 
 import (
+	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 )
@@ -128,13 +130,13 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a server from the given block device mapping.
-func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) (r servers.CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) (r servers.CreateResult) {
 	b, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

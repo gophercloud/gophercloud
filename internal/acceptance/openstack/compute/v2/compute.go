@@ -3,6 +3,7 @@
 package v2
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
@@ -43,7 +44,7 @@ func AssociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floati
 	}
 
 	t.Logf("Attempting to associate floating IP %s to instance %s", floatingIP.IP, server.ID)
-	err := floatingips.AssociateInstance(client, server.ID, associateOpts).ExtractErr()
+	err := floatingips.AssociateInstance(context.TODO(), client, server.ID, associateOpts).ExtractErr()
 	if err != nil {
 		return err
 	}
@@ -61,7 +62,7 @@ func AssociateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceCli
 	}
 
 	t.Logf("Attempting to associate floating IP %s to fixed IP %s on instance %s", floatingIP.IP, fixedIP, server.ID)
-	err := floatingips.AssociateInstance(client, server.ID, associateOpts).ExtractErr()
+	err := floatingips.AssociateInstance(context.TODO(), client, server.ID, associateOpts).ExtractErr()
 	if err != nil {
 		return err
 	}
@@ -88,7 +89,7 @@ func AttachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID s
 		NetworkID: networkID,
 	}
 
-	iface, err := attachinterfaces.Create(client, serverID, createOpts).Extract()
+	iface, err := attachinterfaces.Create(context.TODO(), client, serverID, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -110,14 +111,14 @@ func CreateAggregate(t *testing.T, client *gophercloud.ServiceClient) (*aggregat
 		AvailabilityZone: availabilityZone,
 	}
 
-	aggregate, err := aggregates.Create(client, createOpts).Extract()
+	aggregate, err := aggregates.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
 
 	t.Logf("Successfully created aggregate %d", aggregate.ID)
 
-	aggregate, err = aggregates.Get(client, aggregate.ID).Extract()
+	aggregate, err = aggregates.Get(context.TODO(), client, aggregate.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 		serverCreateOpts.ImageRef = blockDevices[0].UUID
 	}
 
-	server, err = bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
+	server, err = bootfromvolume.Create(context.TODO(), client, bootfromvolume.CreateOptsExt{
 		CreateOptsBuilder: serverCreateOpts,
 		BlockDevice:       blockDevices,
 	}).Extract()
@@ -172,7 +173,7 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 		return server, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +194,7 @@ func CreateDefaultRule(t *testing.T, client *gophercloud.ServiceClient) (dsr.Def
 		CIDR:       "0.0.0.0/0",
 	}
 
-	defaultRule, err := dsr.Create(client, createOpts).Extract()
+	defaultRule, err := dsr.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return *defaultRule, err
 	}
@@ -223,7 +224,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 		Description: flavorDescription,
 	}
 
-	flavor, err := flavors.Create(client, createOpts).Extract()
+	flavor, err := flavors.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +252,7 @@ func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient) (*floatin
 	createOpts := floatingips.CreateOpts{
 		Pool: choices.FloatingIPPoolName,
 	}
-	floatingIP, err := floatingips.Create(client, createOpts).Extract()
+	floatingIP, err := floatingips.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return floatingIP, err
 	}
@@ -287,7 +288,7 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 	createOpts := keypairs.CreateOpts{
 		Name: keyPairName,
 	}
-	keyPair, err := keypairs.Create(client, createOpts).Extract()
+	keyPair, err := keypairs.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return keyPair, err
 	}
@@ -329,7 +330,7 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 		},
 	}
 
-	server, err = bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
+	server, err = bootfromvolume.Create(context.TODO(), client, bootfromvolume.CreateOptsExt{
 		CreateOptsBuilder: serverCreateOpts,
 		BlockDevice:       blockDevices,
 	}).Extract()
@@ -342,7 +343,7 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 		return server, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return server, err
 	}
@@ -368,7 +369,7 @@ func CreatePrivateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flav
 		IsPublic: &isPublic,
 	}
 
-	flavor, err := flavors.Create(client, createOpts).Extract()
+	flavor, err := flavors.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -394,7 +395,7 @@ func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*secg
 		Description: "something",
 	}
 
-	securityGroup, err := secgroups.Create(client, createOpts).Extract()
+	securityGroup, err := secgroups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -420,7 +421,7 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(client, createOpts).Extract()
+	rule, err := secgroups.CreateRule(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -455,7 +456,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err := servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
@@ -481,7 +482,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 		return nil, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -515,7 +516,7 @@ func CreateMicroversionServer(t *testing.T, client *gophercloud.ServiceClient) (
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err := servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
@@ -535,7 +536,7 @@ func CreateMicroversionServer(t *testing.T, client *gophercloud.ServiceClient) (
 		return nil, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -567,7 +568,7 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err := servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		AdminPass: pwd,
@@ -609,7 +610,7 @@ func CreateServerWithTags(t *testing.T, client *gophercloud.ServiceClient, netwo
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err := servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
@@ -636,7 +637,7 @@ func CreateServerWithTags(t *testing.T, client *gophercloud.ServiceClient, netwo
 		return nil, err
 	}
 
-	res := servers.Get(client, server.ID)
+	res := servers.Get(context.TODO(), client, server.ID)
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -656,7 +657,7 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 
 	t.Logf("Attempting to create server group %s", name)
 
-	sg, err := servergroups.Create(client, &servergroups.CreateOpts{
+	sg, err := servergroups.Create(context.TODO(), client, &servergroups.CreateOpts{
 		Name:     name,
 		Policies: []string{policy},
 	}).Extract()
@@ -681,7 +682,7 @@ func CreateServerGroupMicroversion(t *testing.T, client *gophercloud.ServiceClie
 
 	t.Logf("Attempting to create %s server group with max server per host = %d: %s", policy, maxServerPerHost, name)
 
-	sg, err := servergroups.Create(client, &servergroups.CreateOpts{
+	sg, err := servergroups.Create(context.TODO(), client, &servergroups.CreateOpts{
 		Name:   name,
 		Policy: policy,
 		Rules: &servergroups.Rules{
@@ -734,7 +735,7 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 			Group: serverGroup.ID,
 		},
 	}
-	server, err := servers.Create(client, schedulerHintsOpts).Extract()
+	server, err := servers.Create(context.TODO(), client, schedulerHintsOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -743,7 +744,7 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 		return nil, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -780,7 +781,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 		},
 	}
 
-	server, err := servers.Create(client, keypairs.CreateOptsExt{
+	server, err := servers.Create(context.TODO(), client, keypairs.CreateOptsExt{
 		CreateOptsBuilder: serverCreateOpts,
 		KeyName:           keyPairName,
 	}).Extract()
@@ -792,7 +793,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 		return nil, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -817,12 +818,12 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 	}
 
 	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
-	volumeAttachment, err := volumeattach.Create(client, server.ID, volumeAttachOptions).Extract()
+	volumeAttachment, err := volumeattach.Create(context.TODO(), client, server.ID, volumeAttachOptions).Extract()
 	if err != nil {
 		return volumeAttachment, err
 	}
 
-	if err := volumes.WaitForStatus(blockClient, volume.ID, "in-use", 60); err != nil {
+	if err := volumes.WaitForStatus(context.TODO(), blockClient, volume.ID, "in-use", 60); err != nil {
 		return volumeAttachment, err
 	}
 
@@ -833,7 +834,7 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 // the aggregate deleting is failed. This works best when using it as a
 // deferred function.
 func DeleteAggregate(t *testing.T, client *gophercloud.ServiceClient, aggregate *aggregates.Aggregate) {
-	err := aggregates.Delete(client, aggregate.ID).ExtractErr()
+	err := aggregates.Delete(context.TODO(), client, aggregate.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete aggregate %d", aggregate.ID)
 	}
@@ -845,7 +846,7 @@ func DeleteAggregate(t *testing.T, client *gophercloud.ServiceClient, aggregate 
 // A fatal error will occur if the rule failed to delete. This works best when
 // using it as a deferred function.
 func DeleteDefaultRule(t *testing.T, client *gophercloud.ServiceClient, defaultRule dsr.DefaultRule) {
-	err := dsr.Delete(client, defaultRule.ID).ExtractErr()
+	err := dsr.Delete(context.TODO(), client, defaultRule.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete default rule %s: %v", defaultRule.ID, err)
 	}
@@ -856,7 +857,7 @@ func DeleteDefaultRule(t *testing.T, client *gophercloud.ServiceClient, defaultR
 // DeleteFlavor will delete a flavor. A fatal error will occur if the flavor
 // could not be deleted. This works best when using it as a deferred function.
 func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavors.Flavor) {
-	err := flavors.Delete(client, flavor.ID).ExtractErr()
+	err := flavors.Delete(context.TODO(), client, flavor.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete flavor %s", flavor.ID)
 	}
@@ -868,7 +869,7 @@ func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavo
 // the floating IP failed to de-allocate. This works best when using it as a
 // deferred function.
 func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP) {
-	err := floatingips.Delete(client, floatingIP.ID).ExtractErr()
+	err := floatingips.Delete(context.TODO(), client, floatingIP.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete floating IP %s: %v", floatingIP.ID, err)
 	}
@@ -880,7 +881,7 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 // the keypair failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteKeyPair(t *testing.T, client *gophercloud.ServiceClient, keyPair *keypairs.KeyPair) {
-	err := keypairs.Delete(client, keyPair.Name, nil).ExtractErr()
+	err := keypairs.Delete(context.TODO(), client, keyPair.Name, nil).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete keypair %s: %v", keyPair.Name, err)
 	}
@@ -891,7 +892,7 @@ func DeleteKeyPair(t *testing.T, client *gophercloud.ServiceClient, keyPair *key
 // DeleteSecurityGroup will delete a security group. A fatal error will occur
 // if the group failed to be deleted. This works best as a deferred function.
 func DeleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, securityGroupID string) {
-	err := secgroups.Delete(client, securityGroupID).ExtractErr()
+	err := secgroups.Delete(context.TODO(), client, securityGroupID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete security group %s: %s", securityGroupID, err)
 	}
@@ -903,7 +904,7 @@ func DeleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, securi
 // will occur if the rule failed to be deleted. This works best when used
 // as a deferred function.
 func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) {
-	err := secgroups.DeleteRule(client, ruleID).ExtractErr()
+	err := secgroups.DeleteRule(context.TODO(), client, ruleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete rule: %v", err)
 	}
@@ -915,7 +916,7 @@ func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, ru
 // A fatal error will occur if the instance failed to be destroyed. This works
 // best when using it as a deferred function.
 func DeleteServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) {
-	err := servers.Delete(client, server.ID).ExtractErr()
+	err := servers.Delete(context.TODO(), client, server.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete server %s: %s", server.ID, err)
 	}
@@ -937,7 +938,7 @@ func DeleteServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 // the server group failed to be deleted. This works best when used as a
 // deferred function.
 func DeleteServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGroup *servergroups.ServerGroup) {
-	err := servergroups.Delete(client, serverGroup.ID).ExtractErr()
+	err := servergroups.Delete(context.TODO(), client, serverGroup.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete server group %s: %v", serverGroup.ID, err)
 	}
@@ -950,12 +951,12 @@ func DeleteServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGr
 // as a deferred function.
 func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volumeAttachment *volumeattach.VolumeAttachment) {
 
-	err := volumeattach.Delete(client, server.ID, volumeAttachment.VolumeID).ExtractErr()
+	err := volumeattach.Delete(context.TODO(), client, server.ID, volumeAttachment.VolumeID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to detach volume: %v", err)
 	}
 
-	if err := volumes.WaitForStatus(blockClient, volumeAttachment.ID, "available", 60); err != nil {
+	if err := volumes.WaitForStatus(context.TODO(), blockClient, volumeAttachment.ID, "available", 60); err != nil {
 		t.Fatalf("Unable to wait for volume: %v", err)
 	}
 	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)
@@ -967,7 +968,7 @@ func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 func DetachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID, portID string) {
 	t.Logf("Attempting to detach interface %s from server %s", portID, serverID)
 
-	err := attachinterfaces.Delete(client, serverID, portID).ExtractErr()
+	err := attachinterfaces.Delete(context.TODO(), client, serverID, portID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to detach interface %s from server %s", portID, serverID)
 	}
@@ -983,7 +984,7 @@ func DisassociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, flo
 		FloatingIP: floatingIP.IP,
 	}
 
-	err := floatingips.DisassociateInstance(client, server.ID, disassociateOpts).ExtractErr()
+	err := floatingips.DisassociateInstance(context.TODO(), client, server.ID, disassociateOpts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to disassociate floating IP %s from server %s: %v", floatingIP.IP, server.ID, err)
 	}
@@ -995,7 +996,7 @@ func DisassociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, flo
 // UUID using the os-networks API extension. An error will be returned if the
 // network could not be retrieved.
 func GetNetworkIDFromOSNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := networks.List(client).AllPages()
+	allPages, err := networks.List(client).AllPages(context.TODO())
 	if err != nil {
 		t.Fatalf("Unable to list networks: %v", err)
 	}
@@ -1022,7 +1023,7 @@ func GetNetworkIDFromOSNetworks(t *testing.T, client *gophercloud.ServiceClient,
 // network name using the os-tenant-networks API extension. An error will be
 // returned if the network could not be retrieved.
 func GetNetworkIDFromTenantNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := tenantnetworks.List(client).AllPages()
+	allPages, err := tenantnetworks.List(client).AllPages(context.TODO())
 	if err != nil {
 		return "", err
 	}
@@ -1045,7 +1046,7 @@ func GetNetworkIDFromTenantNetworks(t *testing.T, client *gophercloud.ServiceCli
 // name using either the os-tenant-networks API extension or Neutron API.
 // An error will be returned if the network could not be retrieved.
 func GetNetworkIDFromNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := tenantnetworks.List(client).AllPages()
+	allPages, err := tenantnetworks.List(client).AllPages(context.TODO())
 	if err == nil {
 		allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
 		if err != nil {
@@ -1062,7 +1063,7 @@ func GetNetworkIDFromNetworks(t *testing.T, client *gophercloud.ServiceClient, n
 	networkClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages2, err := neutron.List(networkClient, nil).AllPages()
+	allPages2, err := neutron.List(networkClient, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allNetworks, err := neutron.ExtractNetworks(allPages2)
@@ -1087,7 +1088,7 @@ func ImportPublicKey(t *testing.T, client *gophercloud.ServiceClient, publicKey 
 		Name:      keyPairName,
 		PublicKey: publicKey,
 	}
-	keyPair, err := keypairs.Create(client, createOpts).Extract()
+	keyPair, err := keypairs.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return keyPair, err
 	}
@@ -1112,7 +1113,7 @@ func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 	opts := &servers.ResizeOpts{
 		FlavorRef: choices.FlavorIDResize,
 	}
-	if res := servers.Resize(client, server.ID, opts); res.Err != nil {
+	if res := servers.Resize(context.TODO(), client, server.ID, opts); res.Err != nil {
 		return res.Err
 	}
 
@@ -1127,7 +1128,7 @@ func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 // the specified status or the status becomes ERROR.
 func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Server, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		latest, err := servers.Get(client, server.ID).Extract()
+		latest, err := servers.Get(context.TODO(), client, server.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -1166,7 +1167,7 @@ func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOp
 // RescueServer will place the specified server into rescue mode.
 func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to put server %s into rescue mode", server.ID)
-	_, err := rescueunrescue.Rescue(client, server.ID, rescueunrescue.RescueOpts{}).Extract()
+	_, err := rescueunrescue.Rescue(context.TODO(), client, server.ID, rescueunrescue.RescueOpts{}).Extract()
 	if err != nil {
 		return err
 	}
@@ -1181,7 +1182,7 @@ func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 // UnrescueServer will return server from rescue mode.
 func UnrescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to return server %s from rescue mode", server.ID)
-	if err := rescueunrescue.Unrescue(client, server.ID).ExtractErr(); err != nil {
+	if err := rescueunrescue.Unrescue(context.TODO(), client, server.ID).ExtractErr(); err != nil {
 		return err
 	}
 
@@ -1200,7 +1201,7 @@ func CreateRemoteConsole(t *testing.T, client *gophercloud.ServiceClient, server
 	}
 
 	t.Logf("Attempting to create a %s console for the server %s", createOpts.Type, serverID)
-	remoteConsole, err := remoteconsoles.Create(client, serverID, createOpts).Extract()
+	remoteConsole, err := remoteconsoles.Create(context.TODO(), client, serverID, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -1225,7 +1226,7 @@ func CreateServerNoNetwork(t *testing.T, client *gophercloud.ServiceClient) (*se
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err := servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
@@ -1249,7 +1250,7 @@ func CreateServerNoNetwork(t *testing.T, client *gophercloud.ServiceClient) (*se
 		return nil, err
 	}
 
-	newServer, err := servers.Get(client, server.ID).Extract()
+	newServer, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	if err != nil {
 		return nil, err
 	}

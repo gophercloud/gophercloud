@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	db "github.com/gophercloud/gophercloud/v2/openstack/db/v1/databases"
@@ -37,7 +38,7 @@ func TestCreate(t *testing.T) {
 		VolumeType: "ssd",
 	}
 
-	instance, err := instances.Create(fake.ServiceClient(), opts).Extract()
+	instance, err := instances.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &expectedInstance, instance)
@@ -69,7 +70,7 @@ func TestCreateWithFault(t *testing.T) {
 		VolumeType: "ssd",
 	}
 
-	instance, err := instances.Create(fake.ServiceClient(), opts).Extract()
+	instance, err := instances.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &expectedInstanceWithFault, instance)
@@ -81,7 +82,7 @@ func TestInstanceList(t *testing.T) {
 	HandleList(t)
 
 	pages := 0
-	err := instances.List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := instances.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := instances.ExtractInstances(page)
@@ -102,7 +103,7 @@ func TestGetInstance(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGet(t)
 
-	instance, err := instances.Get(fake.ServiceClient(), instanceID).Extract()
+	instance, err := instances.Get(context.TODO(), fake.ServiceClient(), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &expectedGetInstance, instance)
@@ -113,7 +114,7 @@ func TestDeleteInstance(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDelete(t)
 
-	res := instances.Delete(fake.ServiceClient(), instanceID)
+	res := instances.Delete(context.TODO(), fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -123,7 +124,7 @@ func TestEnableRootUser(t *testing.T) {
 	HandleEnableRoot(t)
 
 	expected := &users.User{Name: "root", Password: "secretsecret"}
-	user, err := instances.EnableRootUser(fake.ServiceClient(), instanceID).Extract()
+	user, err := instances.EnableRootUser(context.TODO(), fake.ServiceClient(), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, user)
@@ -134,7 +135,7 @@ func TestIsRootEnabled(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleIsRootEnabled(t)
 
-	isEnabled, err := instances.IsRootEnabled(fake.ServiceClient(), instanceID).Extract()
+	isEnabled, err := instances.IsRootEnabled(context.TODO(), fake.ServiceClient(), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, isEnabled)
@@ -145,7 +146,7 @@ func TestRestart(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRestart(t)
 
-	res := instances.Restart(fake.ServiceClient(), instanceID)
+	res := instances.Restart(context.TODO(), fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -154,7 +155,7 @@ func TestResize(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleResize(t)
 
-	res := instances.Resize(fake.ServiceClient(), instanceID, "2")
+	res := instances.Resize(context.TODO(), fake.ServiceClient(), instanceID, "2")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -163,7 +164,7 @@ func TestResizeVolume(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleResizeVol(t)
 
-	res := instances.ResizeVolume(fake.ServiceClient(), instanceID, 4)
+	res := instances.ResizeVolume(context.TODO(), fake.ServiceClient(), instanceID, 4)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -172,7 +173,7 @@ func TestAttachConfigurationGroup(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleAttachConfigurationGroup(t)
 
-	res := instances.AttachConfigurationGroup(fake.ServiceClient(), instanceID, configGroupID)
+	res := instances.AttachConfigurationGroup(context.TODO(), fake.ServiceClient(), instanceID, configGroupID)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -181,6 +182,6 @@ func TestDetachConfigurationGroup(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDetachConfigurationGroup(t)
 
-	res := instances.DetachConfigurationGroup(fake.ServiceClient(), instanceID)
+	res := instances.DetachConfigurationGroup(context.TODO(), fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
 }

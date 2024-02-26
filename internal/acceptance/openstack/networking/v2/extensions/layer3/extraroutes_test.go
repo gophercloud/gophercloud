@@ -4,6 +4,7 @@
 package layer3
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"testing"
@@ -43,7 +44,7 @@ func TestLayer3ExtraRoutesAddRemove(t *testing.T) {
 	aiOpts := routers.AddInterfaceOpts{
 		SubnetID: subnet.ID,
 	}
-	iface, err := routers.AddInterface(client, router.ID, aiOpts).Extract()
+	iface, err := routers.AddInterface(context.TODO(), client, router.ID, aiOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, iface)
@@ -53,7 +54,7 @@ func TestLayer3ExtraRoutesAddRemove(t *testing.T) {
 		riOpts := routers.RemoveInterfaceOpts{
 			SubnetID: subnet.ID,
 		}
-		_, err = routers.RemoveInterface(client, router.ID, riOpts).Extract()
+		_, err = routers.RemoveInterface(context.TODO(), client, router.ID, riOpts).Extract()
 		th.AssertNoErr(t, err)
 	}()
 
@@ -63,7 +64,7 @@ func TestLayer3ExtraRoutesAddRemove(t *testing.T) {
 		opts := routers.UpdateOpts{
 			Routes: &routes,
 		}
-		_, err = routers.Update(client, router.ID, opts).Extract()
+		_, err = routers.Update(context.TODO(), client, router.ID, opts).Extract()
 		th.AssertNoErr(t, err)
 	}()
 
@@ -80,7 +81,7 @@ func TestLayer3ExtraRoutesAddRemove(t *testing.T) {
 	updateOpts := routers.UpdateOpts{
 		Routes: &routes,
 	}
-	_, err = routers.Update(client, router.ID, updateOpts).Extract()
+	_, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	newRoutes := []routers.Route{
@@ -97,12 +98,12 @@ func TestLayer3ExtraRoutesAddRemove(t *testing.T) {
 		Routes: &newRoutes,
 	}
 	// add new routes
-	rt, err := extraroutes.Add(client, router.ID, opts).Extract()
+	rt, err := extraroutes.Add(context.TODO(), client, router.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, append(routes, newRoutes...), rt.Routes)
 
 	// remove new routes
-	rt, err = extraroutes.Remove(client, router.ID, opts).Extract()
+	rt, err = extraroutes.Remove(context.TODO(), client, router.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, routes, rt.Routes)
 }

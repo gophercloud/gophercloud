@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/resetnetwork"
@@ -16,6 +17,6 @@ func TestResetNetwork(t *testing.T) {
 
 	mockResetNetworkResponse(t, serverID)
 
-	err := resetnetwork.ResetNetwork(client.ServiceClient(), serverID).ExtractErr()
+	err := resetnetwork.ResetNetwork(context.TODO(), client.ServiceClient(), serverID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

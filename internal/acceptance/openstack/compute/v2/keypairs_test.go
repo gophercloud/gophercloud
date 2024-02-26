@@ -4,6 +4,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -44,7 +45,7 @@ func TestKeyPairsCreateDelete(t *testing.T) {
 
 	tools.PrintResource(t, keyPair)
 
-	allPages, err := keypairs.List(client, nil).AllPages()
+	allPages, err := keypairs.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allKeys, err := keypairs.ExtractKeyPairs(allPages)
@@ -93,7 +94,7 @@ func TestKeyPairsServerCreateWithKey(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	server, err = servers.Get(client, server.ID).Extract()
+	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, server.KeyName, keyPair.Name)
@@ -120,14 +121,14 @@ func TestKeyPairsCreateDeleteByID(t *testing.T) {
 		UserID: user.ID,
 	}
 
-	keyPair, err := keypairs.Create(computeClient, createOpts).Extract()
+	keyPair, err := keypairs.Create(context.TODO(), computeClient, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	getOpts := keypairs.GetOpts{
 		UserID: user.ID,
 	}
 
-	newKeyPair, err := keypairs.Get(computeClient, keyPair.Name, getOpts).Extract()
+	newKeyPair, err := keypairs.Get(context.TODO(), computeClient, keyPair.Name, getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, keyPair.Name, newKeyPair.Name)
 
@@ -135,7 +136,7 @@ func TestKeyPairsCreateDeleteByID(t *testing.T) {
 		UserID: user.ID,
 	}
 
-	allPages, err := keypairs.List(computeClient, listOpts).AllPages()
+	allPages, err := keypairs.List(computeClient, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allKeys, err := keypairs.ExtractKeyPairs(allPages)
@@ -154,6 +155,6 @@ func TestKeyPairsCreateDeleteByID(t *testing.T) {
 		UserID: user.ID,
 	}
 
-	err = keypairs.Delete(computeClient, keyPair.Name, deleteOpts).ExtractErr()
+	err = keypairs.Delete(context.TODO(), computeClient, keyPair.Name, deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

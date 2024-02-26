@@ -1,6 +1,7 @@
 package lbaas_v2
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -33,7 +34,7 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 		ProtocolPort:   listenerPort,
 	}
 
-	listener, err := listeners.Create(client, createOpts).Extract()
+	listener, err := listeners.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return listener, err
 	}
@@ -68,7 +69,7 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 		AdminStateUp: gophercloud.Enabled,
 	}
 
-	lb, err := loadbalancers.Create(client, createOpts).Extract()
+	lb, err := loadbalancers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return lb, err
 	}
@@ -113,7 +114,7 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalan
 
 	t.Logf("Member create opts: %#v", createOpts)
 
-	member, err := pools.CreateMember(client, pool.ID, createOpts).Extract()
+	member, err := pools.CreateMember(context.TODO(), client, pool.ID, createOpts).Extract()
 	if err != nil {
 		return member, err
 	}
@@ -145,7 +146,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 		Type:       monitors.TypePING,
 	}
 
-	monitor, err := monitors.Create(client, createOpts).Extract()
+	monitor, err := monitors.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return monitor, err
 	}
@@ -179,7 +180,7 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 		LBMethod:       pools.LBMethodLeastConnections,
 	}
 
-	pool, err := pools.Create(client, createOpts).Extract()
+	pool, err := pools.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return pool, err
 	}
@@ -216,7 +217,7 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 		RedirectURL: "http://www.example.com",
 	}
 
-	policy, err := l7policies.Create(client, createOpts).Extract()
+	policy, err := l7policies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return policy, err
 	}
@@ -246,7 +247,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 		Value:       "/api",
 	}
 
-	rule, err := l7policies.CreateRule(client, policyID, createOpts).Extract()
+	rule, err := l7policies.CreateRule(context.TODO(), client, policyID, createOpts).Extract()
 	if err != nil {
 		return rule, err
 	}
@@ -270,7 +271,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 func DeleteL7Policy(t *testing.T, client *gophercloud.ServiceClient, lbID, policyID string) {
 	t.Logf("Attempting to delete l7 policy %s", policyID)
 
-	if err := l7policies.Delete(client, policyID).ExtractErr(); err != nil {
+	if err := l7policies.Delete(context.TODO(), client, policyID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete l7 policy: %v", err)
 		}
@@ -289,7 +290,7 @@ func DeleteL7Policy(t *testing.T, client *gophercloud.ServiceClient, lbID, polic
 func DeleteL7Rule(t *testing.T, client *gophercloud.ServiceClient, lbID, policyID, ruleID string) {
 	t.Logf("Attempting to delete l7 rule %s", ruleID)
 
-	if err := l7policies.DeleteRule(client, policyID, ruleID).ExtractErr(); err != nil {
+	if err := l7policies.DeleteRule(context.TODO(), client, policyID, ruleID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete l7 rule: %v", err)
 		}
@@ -308,7 +309,7 @@ func DeleteL7Rule(t *testing.T, client *gophercloud.ServiceClient, lbID, policyI
 func DeleteListener(t *testing.T, client *gophercloud.ServiceClient, lbID, listenerID string) {
 	t.Logf("Attempting to delete listener %s", listenerID)
 
-	if err := listeners.Delete(client, listenerID).ExtractErr(); err != nil {
+	if err := listeners.Delete(context.TODO(), client, listenerID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete listener: %v", err)
 		}
@@ -327,7 +328,7 @@ func DeleteListener(t *testing.T, client *gophercloud.ServiceClient, lbID, liste
 func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID, memberID string) {
 	t.Logf("Attempting to delete member %s", memberID)
 
-	if err := pools.DeleteMember(client, poolID, memberID).ExtractErr(); err != nil {
+	if err := pools.DeleteMember(context.TODO(), client, poolID, memberID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete member: %s", memberID)
 		}
@@ -346,7 +347,7 @@ func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID,
 func DeleteLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, lbID string) {
 	t.Logf("Attempting to delete loadbalancer %s", lbID)
 
-	if err := loadbalancers.Delete(client, lbID).ExtractErr(); err != nil {
+	if err := loadbalancers.Delete(context.TODO(), client, lbID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete loadbalancer: %v", err)
 		}
@@ -367,7 +368,7 @@ func DeleteLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, lbID st
 func DeleteMonitor(t *testing.T, client *gophercloud.ServiceClient, lbID, monitorID string) {
 	t.Logf("Attempting to delete monitor %s", monitorID)
 
-	if err := monitors.Delete(client, monitorID).ExtractErr(); err != nil {
+	if err := monitors.Delete(context.TODO(), client, monitorID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete monitor: %v", err)
 		}
@@ -385,7 +386,7 @@ func DeleteMonitor(t *testing.T, client *gophercloud.ServiceClient, lbID, monito
 func DeletePool(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID string) {
 	t.Logf("Attempting to delete pool %s", poolID)
 
-	if err := pools.Delete(client, poolID).ExtractErr(); err != nil {
+	if err := pools.Delete(context.TODO(), client, poolID).ExtractErr(); err != nil {
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete pool: %v", err)
 		}
@@ -401,7 +402,7 @@ func DeletePool(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID st
 // WaitForLoadBalancerState will wait until a loadbalancer reaches a given state.
 func WaitForLoadBalancerState(client *gophercloud.ServiceClient, lbID, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		current, err := loadbalancers.Get(client, lbID).Extract()
+		current, err := loadbalancers.Get(context.TODO(), client, lbID).Extract()
 		if err != nil {
 			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {
 				if httpStatus.Actual == 404 {

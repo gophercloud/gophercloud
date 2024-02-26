@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -26,7 +27,7 @@ func CreateSubnetPool(t *testing.T, client *gophercloud.ServiceClient) (*subnetp
 
 	t.Logf("Attempting to create a subnetpool: %s", subnetPoolName)
 
-	subnetPool, err := subnetpools.Create(client, createOpts).Extract()
+	subnetPool, err := subnetpools.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +45,7 @@ func CreateSubnetPool(t *testing.T, client *gophercloud.ServiceClient) (*subnetp
 func DeleteSubnetPool(t *testing.T, client *gophercloud.ServiceClient, subnetPoolID string) {
 	t.Logf("Attempting to delete the subnetpool: %s", subnetPoolID)
 
-	err := subnetpools.Delete(client, subnetPoolID).ExtractErr()
+	err := subnetpools.Delete(context.TODO(), client, subnetPoolID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete subnetpool %s: %v", subnetPoolID, err)
 	}

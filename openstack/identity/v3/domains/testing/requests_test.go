@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/domains"
@@ -15,7 +16,7 @@ func TestListAvailableDomains(t *testing.T) {
 	HandleListAvailableDomainsSuccessfully(t)
 
 	count := 0
-	err := domains.ListAvailable(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := domains.ListAvailable(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := domains.ExtractDomains(page)
@@ -35,7 +36,7 @@ func TestListDomains(t *testing.T) {
 	HandleListDomainsSuccessfully(t)
 
 	count := 0
-	err := domains.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := domains.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := domains.ExtractDomains(page)
@@ -54,7 +55,7 @@ func TestListDomainsAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListDomainsSuccessfully(t)
 
-	allPages, err := domains.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := domains.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := domains.ExtractDomains(allPages)
 	th.AssertNoErr(t, err)
@@ -66,7 +67,7 @@ func TestGetDomain(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetDomainSuccessfully(t)
 
-	actual, err := domains.Get(client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := domains.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
@@ -80,7 +81,7 @@ func TestCreateDomain(t *testing.T) {
 		Name: "domain two",
 	}
 
-	actual, err := domains.Create(client.ServiceClient(), createOpts).Extract()
+	actual, err := domains.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
@@ -90,7 +91,7 @@ func TestDeleteDomain(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteDomainSuccessfully(t)
 
-	res := domains.Delete(client.ServiceClient(), "9fe1d3")
+	res := domains.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -104,7 +105,7 @@ func TestUpdateDomain(t *testing.T) {
 		Description: &description,
 	}
 
-	actual, err := domains.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := domains.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomainUpdated, *actual)
 }

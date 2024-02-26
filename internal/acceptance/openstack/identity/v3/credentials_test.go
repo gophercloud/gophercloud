@@ -4,6 +4,7 @@
 package v3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -35,15 +36,15 @@ func TestCredentialsCRUD(t *testing.T) {
 			DomainName:  ao.DomainName,
 		},
 	}
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -55,11 +56,11 @@ func TestCredentialsCRUD(t *testing.T) {
 	}
 
 	// Create a credential
-	credential, err := credentials.Create(client, createOpts).Extract()
+	credential, err := credentials.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Delete a credential
-	defer credentials.Delete(client, credential.ID)
+	defer credentials.Delete(context.TODO(), client, credential.ID)
 	tools.PrintResource(t, credential)
 
 	th.AssertEquals(t, credential.Blob, createOpts.Blob)
@@ -68,7 +69,7 @@ func TestCredentialsCRUD(t *testing.T) {
 	th.AssertEquals(t, credential.ProjectID, createOpts.ProjectID)
 
 	// Get a credential
-	getCredential, err := credentials.Get(client, credential.ID).Extract()
+	getCredential, err := credentials.Get(context.TODO(), client, credential.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getCredential)
 
@@ -85,7 +86,7 @@ func TestCredentialsCRUD(t *testing.T) {
 	}
 
 	// Update a credential
-	updateCredential, err := credentials.Update(client, credential.ID, updateOpts).Extract()
+	updateCredential, err := credentials.Update(context.TODO(), client, credential.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updateCredential)
 
@@ -112,15 +113,15 @@ func TestCredentialsValidateS3(t *testing.T) {
 			DomainName:  ao.DomainName,
 		},
 	}
-	token, err := tokens.Create(client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -132,11 +133,11 @@ func TestCredentialsValidateS3(t *testing.T) {
 	}
 
 	// Create a credential
-	credential, err := credentials.Create(client, createOpts).Extract()
+	credential, err := credentials.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Delete a credential
-	defer credentials.Delete(client, credential.ID)
+	defer credentials.Delete(context.TODO(), client, credential.ID)
 	tools.PrintResource(t, credential)
 
 	th.AssertEquals(t, credential.Blob, createOpts.Blob)
@@ -152,7 +153,7 @@ func TestCredentialsValidateS3(t *testing.T) {
 	}
 
 	// Validate a credential
-	token, err = ec2tokens.ValidateS3Token(client, &opts).Extract()
+	token, err = ec2tokens.ValidateS3Token(context.TODO(), client, &opts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 }

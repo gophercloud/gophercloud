@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -52,7 +53,7 @@ func TestEnumerateSinglePaged(t *testing.T) {
 	pager := setupSinglePaged()
 	defer testhelper.TeardownHTTP()
 
-	err := pager.EachPage(func(page pagination.Page) (bool, error) {
+	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		callCount++
 
 		expected := []int{1, 2, 3}
@@ -69,7 +70,7 @@ func TestAllPagesSingle(t *testing.T) {
 	pager := setupSinglePaged()
 	defer testhelper.TeardownHTTP()
 
-	page, err := pager.AllPages()
+	page, err := pager.AllPages(context.TODO())
 	testhelper.AssertNoErr(t, err)
 
 	expected := []int{1, 2, 3}

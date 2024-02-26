@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -39,7 +40,7 @@ func TestCapsuleBase(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	pager := capsules.List(client, nil)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		v, err := capsules.ExtractCapsules(page)
 		th.AssertNoErr(t, err)
 		allCapsules := v.([]capsules.Capsule)
@@ -93,7 +94,7 @@ func TestCapsuleV132(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	pager := capsules.List(client, nil)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allCapsules, err := capsules.ExtractCapsulesV132(page)
 		th.AssertNoErr(t, err)
 
