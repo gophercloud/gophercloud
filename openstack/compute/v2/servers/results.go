@@ -276,6 +276,9 @@ type Server struct {
 
 	// DiskConfig is the disk configuration of the server.
 	DiskConfig DiskConfig `json:"OS-DCF:diskConfig"`
+
+	// AvailabilityZone is the availabilty zone the server is in.
+	AvailabilityZone string `json:"OS-EXT-AZ:availability_zone"`
 }
 
 type AttachedVolume struct {

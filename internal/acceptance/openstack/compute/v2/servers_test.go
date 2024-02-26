@@ -13,7 +13,6 @@ import (
 	networks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/suspendresume"
@@ -87,11 +86,6 @@ func TestServersCreateDestroy(t *testing.T) {
 func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
 
-	var extendedServer struct {
-		servers.Server
-		availabilityzones.ServerAvailabilityZoneExt
-	}
-
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
@@ -99,16 +93,16 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	err = servers.Get(context.TODO(), client, server.ID).ExtractInto(&extendedServer)
+	created, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
-	tools.PrintResource(t, extendedServer)
+	tools.PrintResource(t, created)
 
-	th.AssertEquals(t, extendedServer.AvailabilityZone, "nova")
-	th.AssertEquals(t, int(extendedServer.PowerState), servers.RUNNING)
-	th.AssertEquals(t, extendedServer.TaskState, "")
-	th.AssertEquals(t, extendedServer.VmState, "active")
-	th.AssertEquals(t, extendedServer.LaunchedAt.IsZero(), false)
-	th.AssertEquals(t, extendedServer.TerminatedAt.IsZero(), true)
+	th.AssertEquals(t, created.AvailabilityZone, "nova")
+	th.AssertEquals(t, int(created.PowerState), servers.RUNNING)
+	th.AssertEquals(t, created.TaskState, "")
+	th.AssertEquals(t, created.VmState, "active")
+	th.AssertEquals(t, created.LaunchedAt.IsZero(), false)
+	th.AssertEquals(t, created.TerminatedAt.IsZero(), true)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {

@@ -8,12 +8,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
-// ServerAvailabilityZoneExt is an extension to the base Server object.
-type ServerAvailabilityZoneExt struct {
-	// AvailabilityZone is the availabilty zone the server is in.
-	AvailabilityZone string `json:"OS-EXT-AZ:availability_zone"`
-}
-
 // ServiceState represents the state of a service in an AvailabilityZone.
 type ServiceState struct {
 	Active    bool      `json:"active"`

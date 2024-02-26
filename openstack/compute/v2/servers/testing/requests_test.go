@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -63,15 +62,10 @@ func TestListAllServersWithExtensions(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleServerListSuccessfully(t)
 
-	type ServerWithExt struct {
-		servers.Server
-		availabilityzones.ServerAvailabilityZoneExt
-	}
-
 	allPages, err := servers.List(client.ServiceClient(), servers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
-	var actual []ServerWithExt
+	var actual []servers.Server
 	err = servers.ExtractServersInto(allPages, &actual)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 3, len(actual))
@@ -690,10 +684,10 @@ func TestGetServerWithExtensions(t *testing.T) {
 
 	var s struct {
 		servers.Server
-		availabilityzones.ServerAvailabilityZoneExt
 	}
 
-	err := servers.Get(context.TODO(), client.ServiceClient(), "1234asdf").ExtractInto(&s)
+	client := client.ServiceClient()
+	err := servers.Get(context.TODO(), client, "1234asdf").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "nova", s.AvailabilityZone)
 	th.AssertEquals(t, "RUNNING", s.PowerState.String())
@@ -701,7 +695,7 @@ func TestGetServerWithExtensions(t *testing.T) {
 	th.AssertEquals(t, "active", s.VmState)
 	th.AssertEquals(t, servers.Manual, s.DiskConfig)
 
-	err = servers.Get(context.TODO(), client.ServiceClient(), "1234asdf").ExtractInto(s)
+	err = servers.Get(context.TODO(), client, "1234asdf").ExtractInto(s)
 	if err == nil {
 		t.Errorf("Expected error when providing non-pointer struct")
 	}

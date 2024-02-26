@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	az "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
+	az "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/availabilityzones"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
