@@ -273,6 +273,9 @@ type Server struct {
 
 	LaunchedAt   time.Time `json:"-"`
 	TerminatedAt time.Time `json:"-"`
+
+	// DiskConfig is the disk configuration of the server.
+	DiskConfig DiskConfig `json:"OS-DCF:diskConfig"`
 }
 
 type AttachedVolume struct {

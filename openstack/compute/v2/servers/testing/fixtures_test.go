@@ -556,6 +556,7 @@ var (
 		PowerState:         servers.RUNNING,
 		LaunchedAt:         time.Date(2014, 9, 25, 13, 10, 10, 0, time.UTC),
 		TerminatedAt:       time.Time{},
+		DiskConfig:         servers.Manual,
 	}
 
 	derpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:41Z")
@@ -627,6 +628,7 @@ var (
 		PowerState:         servers.RUNNING,
 		LaunchedAt:         time.Date(2014, 9, 25, 13, 04, 49, 0, time.UTC),
 		TerminatedAt:       time.Time{},
+		DiskConfig:         servers.Manual,
 	}
 
 	ConsoleOutput = "abc"
@@ -692,6 +694,7 @@ var (
 		PowerState:         servers.RUNNING,
 		LaunchedAt:         time.Date(2014, 9, 25, 13, 04, 49, 0, time.UTC),
 		TerminatedAt:       time.Time{},
+		DiskConfig:         servers.Manual,
 	}
 
 	faultTimeCreated, _ = time.Parse(time.RFC3339, "2017-11-11T07:58:39Z")

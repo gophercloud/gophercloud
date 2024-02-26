@@ -265,6 +265,25 @@ func (f *File) MarshalJSON() ([]byte, error) {
 	return json.Marshal(file)
 }
 
+// DiskConfig represents one of the two possible settings for the DiskConfig
+// option when creating, rebuilding, or resizing servers: Auto or Manual.
+type DiskConfig string
+
+const (
+	// Auto builds a server with a single partition the size of the target flavor
+	// disk and automatically adjusts the filesystem to fit the entire partition.
+	// Auto may only be used with images and servers that use a single EXT3
+	// partition.
+	Auto DiskConfig = "AUTO"
+
+	// Manual builds a server using whatever partition scheme and filesystem are
+	// present in the source image. If the target flavor disk is larger, the
+	// remaining space is left unpartitioned. This enables images to have non-EXT3
+	// filesystems, multiple partitions, and so on, and enables you to manage the
+	// disk configuration. It also results in slightly shorter boot times.
+	Manual DiskConfig = "MANUAL"
+)
+
 // CreateOpts specifies server creation parameters.
 type CreateOpts struct {
 	// Name is the name to assign to the newly launched server.
@@ -335,6 +354,9 @@ type CreateOpts struct {
 
 	// BlockDevice describes the mapping of various block devices.
 	BlockDevice []BlockDevice `json:"block_device_mapping_v2,omitempty"`
+
+	// DiskConfig [optional] controls how the created server's disk is partitioned.
+	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
@@ -580,10 +602,20 @@ type RebuildOpts struct {
 	// Personality [optional] includes files to inject into the server at launch.
 	// Rebuild will base64-encode file contents for you.
 	Personality Personality `json:"personality,omitempty"`
+
+	// DiskConfig controls how the rebuilt server's disk is partitioned.
+	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
 }
 
 // ToServerRebuildMap formats a RebuildOpts struct into a map for use in JSON
 func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
+	if opts.DiskConfig != "" && opts.DiskConfig != Auto && opts.DiskConfig != Manual {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "servers.RebuildOpts.DiskConfig"
+		err.Info = "Must be either diskconfig.Auto or diskconfig.Manual"
+		return nil, err
+	}
+
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -616,11 +648,21 @@ type ResizeOptsBuilder interface {
 type ResizeOpts struct {
 	// FlavorRef is the ID of the flavor you wish your server to become.
 	FlavorRef string `json:"flavorRef" required:"true"`
+
+	// DiskConfig [optional] controls how the resized server's disk is partitioned.
+	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
 }
 
 // ToServerResizeMap formats a ResizeOpts as a map that can be used as a JSON
 // request body for the Resize request.
 func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
+	if opts.DiskConfig != "" && opts.DiskConfig != Auto && opts.DiskConfig != Manual {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "servers.ResizeOpts.DiskConfig"
+		err.Info = "Must be either diskconfig.Auto or diskconfig.Manual"
+		return nil, err
+	}
+
 	return gophercloud.BuildRequestBody(opts, "resize")
 }
 

@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/diskconfig"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -67,7 +66,6 @@ func TestListAllServersWithExtensions(t *testing.T) {
 	type ServerWithExt struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
-		diskconfig.ServerDiskConfigExt
 	}
 
 	allPages, err := servers.List(client.ServiceClient(), servers.ListOpts{}).AllPages(context.TODO())
@@ -81,7 +79,7 @@ func TestListAllServersWithExtensions(t *testing.T) {
 	th.AssertEquals(t, "RUNNING", actual[0].PowerState.String())
 	th.AssertEquals(t, "", actual[0].TaskState)
 	th.AssertEquals(t, "active", actual[0].VmState)
-	th.AssertEquals(t, diskconfig.Manual, actual[0].DiskConfig)
+	th.AssertEquals(t, servers.Manual, actual[0].DiskConfig)
 }
 
 func TestCreateServer(t *testing.T) {
@@ -216,6 +214,29 @@ func TestCreateServerWithHostname(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
+func TestCreateServerWithDiskConfig(t *testing.T) {
+	opts := servers.CreateOpts{
+		Name:       "createdserver",
+		ImageRef:   "asdfasdfasdf",
+		FlavorRef:  "performance1-1",
+		DiskConfig: servers.Manual,
+	}
+	expected := `
+		{
+			"server": {
+				"name": "createdserver",
+				"imageRef": "asdfasdfasdf",
+				"flavorRef": "performance1-1",
+				"OS-DCF:diskConfig": "MANUAL"
+			}
+		}
+	`
+
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
 }
 
 func TestCreateServerWithBFVBootFromNewVolume(t *testing.T) {
@@ -670,7 +691,6 @@ func TestGetServerWithExtensions(t *testing.T) {
 	var s struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
-		diskconfig.ServerDiskConfigExt
 	}
 
 	err := servers.Get(context.TODO(), client.ServiceClient(), "1234asdf").ExtractInto(&s)
@@ -679,7 +699,7 @@ func TestGetServerWithExtensions(t *testing.T) {
 	th.AssertEquals(t, "RUNNING", s.PowerState.String())
 	th.AssertEquals(t, "", s.TaskState)
 	th.AssertEquals(t, "active", s.VmState)
-	th.AssertEquals(t, diskconfig.Manual, s.DiskConfig)
+	th.AssertEquals(t, servers.Manual, s.DiskConfig)
 
 	err = servers.Get(context.TODO(), client.ServiceClient(), "1234asdf").ExtractInto(s)
 	if err == nil {
@@ -762,6 +782,29 @@ func TestRebuildServer(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestRebuildServerWithDiskConfig(t *testing.T) {
+	opts := servers.RebuildOpts{
+		Name:       "rebuiltserver",
+		AdminPass:  "swordfish",
+		ImageRef:   "asdfasdfasdf",
+		DiskConfig: servers.Auto,
+	}
+	expected := `
+		{
+			"rebuild": {
+				"name": "rebuiltserver",
+				"imageRef": "asdfasdfasdf",
+				"adminPass": "swordfish",
+				"OS-DCF:diskConfig": "AUTO"
+			}
+		}
+	`
+
+	actual, err := opts.ToServerRebuildMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
+
 func TestResizeServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -776,6 +819,25 @@ func TestResizeServer(t *testing.T) {
 
 	res := servers.Resize(context.TODO(), client.ServiceClient(), "1234asdf", servers.ResizeOpts{FlavorRef: "2"})
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestResizeServerWithDiskConfig(t *testing.T) {
+	opts := servers.ResizeOpts{
+		FlavorRef:  "performance1-8",
+		DiskConfig: servers.Auto,
+	}
+	expected := `
+		{
+			"resize": {
+				"flavorRef": "performance1-8",
+				"OS-DCF:diskConfig": "AUTO"
+			}
+		}
+	`
+
+	actual, err := opts.ToServerResizeMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
 }
 
 func TestConfirmResize(t *testing.T) {
