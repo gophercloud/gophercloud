@@ -16,7 +16,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/serverusage"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tags"
@@ -91,7 +90,6 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	var extendedServer struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
-		serverusage.UsageExt
 	}
 
 	client, err := clients.NewComputeV2Client()

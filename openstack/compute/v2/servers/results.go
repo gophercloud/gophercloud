@@ -270,6 +270,9 @@ type Server struct {
 	TaskState  string     `json:"OS-EXT-STS:task_state"`
 	VmState    string     `json:"OS-EXT-STS:vm_state"`
 	PowerState PowerState `json:"OS-EXT-STS:power_state"`
+
+	LaunchedAt   time.Time `json:"-"`
+	TerminatedAt time.Time `json:"-"`
 }
 
 type AttachedVolume struct {
@@ -327,7 +330,9 @@ func (r *Server) UnmarshalJSON(b []byte) error {
 	type tmp Server
 	var s struct {
 		tmp
-		Image interface{} `json:"image"`
+		Image        interface{}                     `json:"image"`
+		LaunchedAt   gophercloud.JSONRFC3339MilliNoZ `json:"OS-SRV-USG:launched_at"`
+		TerminatedAt gophercloud.JSONRFC3339MilliNoZ `json:"OS-SRV-USG:terminated_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -345,6 +350,9 @@ func (r *Server) UnmarshalJSON(b []byte) error {
 			r.Image = nil
 		}
 	}
+
+	r.LaunchedAt = time.Time(s.LaunchedAt)
+	r.TerminatedAt = time.Time(s.TerminatedAt)
 
 	return err
 }
