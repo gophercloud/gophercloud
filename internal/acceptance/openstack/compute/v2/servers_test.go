@@ -14,7 +14,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedserverattributes"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedstatus"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
@@ -572,24 +571,18 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	type serverAttributesExt struct {
-		servers.Server
-		extendedserverattributes.ServerAttributesExt
-	}
-	var serverWithAttributesExt serverAttributesExt
-
-	err = servers.Get(context.TODO(), client, server.ID).ExtractInto(&serverWithAttributesExt)
+	created, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Server With Extended Attributes: %#v", serverWithAttributesExt)
+	t.Logf("Server With Extended Attributes: %#v", created)
 
-	th.AssertEquals(t, *serverWithAttributesExt.ReservationID != "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.LaunchIndex, 0)
-	th.AssertEquals(t, *serverWithAttributesExt.RAMDiskID == "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.KernelID == "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.Hostname != "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.RootDeviceName != "", true)
-	th.AssertEquals(t, serverWithAttributesExt.Userdata == nil, true)
+	th.AssertEquals(t, *created.ReservationID != "", true)
+	th.AssertEquals(t, *created.LaunchIndex, 0)
+	th.AssertEquals(t, *created.RAMDiskID == "", true)
+	th.AssertEquals(t, *created.KernelID == "", true)
+	th.AssertEquals(t, *created.Hostname != "", true)
+	th.AssertEquals(t, *created.RootDeviceName != "", true)
+	th.AssertEquals(t, created.Userdata == nil, true)
 }
 
 func TestServerNoNetworkCreateDestroy(t *testing.T) {
