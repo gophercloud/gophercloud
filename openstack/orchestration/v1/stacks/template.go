@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
 )
 
 // Template is a structure that represents OpenStack Heat templates

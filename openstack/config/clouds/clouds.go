@@ -29,7 +29,7 @@ import (
 	"reflect"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // Parse fetches a clouds.yaml file from disk and returns the parsed

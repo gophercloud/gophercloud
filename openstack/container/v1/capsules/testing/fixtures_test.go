@@ -142,9 +142,9 @@ var ValidYAMLTemplateParsed = map[string]interface{}{
 			"app1": "web1",
 		},
 	},
-	"spec": map[interface{}]interface{}{
+	"spec": map[string]interface{}{
 		"restartPolicy": "Always",
-		"containers": []map[interface{}]interface{}{
+		"containers": []map[string]interface{}{
 			{
 				"image": "ubuntu",
 				"command": []interface{}{
@@ -153,20 +153,20 @@ var ValidYAMLTemplateParsed = map[string]interface{}{
 				"imagePullPolicy": "ifnotpresent",
 				"workDir":         "/root",
 				"ports": []interface{}{
-					map[interface{}]interface{}{
+					map[string]interface{}{
 						"name":          "nginx-port",
 						"containerPort": 80,
 						"hostPort":      80,
 						"protocol":      "TCP",
 					},
 				},
-				"resources": map[interface{}]interface{}{
-					"requests": map[interface{}]interface{}{
+				"resources": map[string]interface{}{
+					"requests": map[string]interface{}{
 						"cpu":    1,
 						"memory": 1024,
 					},
 				},
-				"env": map[interface{}]interface{}{
+				"env": map[string]interface{}{
 					"ENV1": "/usr/local/bin",
 					"ENV2": "/usr/bin",
 				},
