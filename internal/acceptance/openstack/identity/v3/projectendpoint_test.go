@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/endpoints"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/projectendpoints"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/projectendpoints"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 

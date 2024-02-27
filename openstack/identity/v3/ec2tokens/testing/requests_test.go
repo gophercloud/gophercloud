@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/ec2tokens"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	tokens_testing "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens/testing"
 	"github.com/gophercloud/gophercloud/v2/testhelper"
