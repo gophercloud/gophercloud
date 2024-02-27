@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/extensions/admin/roles"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/roles"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
