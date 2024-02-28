@@ -1,5 +1,5 @@
-//go:build acceptance || imageservice || tasks
-// +build acceptance imageservice tasks
+//go:build acceptance || image || tasks
+// +build acceptance image tasks
 
 package v2
 
@@ -9,13 +9,13 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/tasks"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/tasks"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestTasksListEachPage(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	listOpts := tasks.ListOpts{
@@ -36,7 +36,7 @@ func TestTasksListEachPage(t *testing.T) {
 }
 
 func TestTasksListAllPages(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	listOpts := tasks.ListOpts{}
@@ -53,12 +53,12 @@ func TestTasksListAllPages(t *testing.T) {
 }
 
 func TestTaskCreate(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	task, err := CreateTask(t, client, ImportImageURL)
 	if err != nil {
-		t.Fatalf("Unable to create an Imageservice task: %v", err)
+		t.Fatalf("Unable to create an Image service task: %v", err)
 	}
 
 	tools.PrintResource(t, task)
