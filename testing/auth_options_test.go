@@ -31,6 +31,19 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
+		// Trust-scoped
+		{
+			gophercloud.AuthOptions{
+				Scope: &gophercloud.AuthScope{
+					TrustID: "05144328-1f7d-46a9-a978-17eaad187077",
+				},
+			},
+			map[string]interface{}{
+				"OS-TRUST:trust": map[string]string{
+					"id": "05144328-1f7d-46a9-a978-17eaad187077",
+				},
+			},
+		},
 		// Project-scoped (ID)
 		{
 			gophercloud.AuthOptions{

@@ -76,6 +76,18 @@ type Project struct {
 	Name   string `json:"name"`
 }
 
+type TrustUser struct {
+	ID string `json:"id"`
+}
+
+// Trust provides information about trust with which User is authorized.
+type Trust struct {
+	ID            string    `json:"id"`
+	Impersonation bool      `json:"impersonation"`
+	TrusteeUserID TrustUser `json:"trustee_user"`
+	TrustorUserID TrustUser `json:"trustor_user"`
+}
+
 // commonResult is the response from a request. A commonResult has various
 // methods which can be used to extract different details about the result.
 type commonResult struct {
@@ -158,6 +170,15 @@ func (r commonResult) ExtractDomain() (*Domain, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Domain, err
+}
+
+// ExtractTrust returns Trust to which User is authorized.
+func (r commonResult) ExtractTrust() (*Trust, error) {
+	var s struct {
+		Trust *Trust `json:"OS-TRUST:trust"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Trust, err
 }
 
 // CreateResult is the response from a Create request. Use ExtractToken()

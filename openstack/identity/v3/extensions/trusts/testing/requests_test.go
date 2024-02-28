@@ -6,68 +6,10 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/trusts"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
-
-func TestCreateUserIDPasswordTrustID(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	ao := trusts.AuthOptsExt{
-		TrustID: "de0945a",
-		AuthOptionsBuilder: &tokens.AuthOptions{
-			UserID:   "me",
-			Password: "squirrel!",
-		},
-	}
-	HandleCreateTokenWithTrustID(t, ao, `
-		{
-			"auth": {
-				"identity": {
-					"methods": ["password"],
-					"password": {
-						"user": { "id": "me", "password": "squirrel!" }
-					}
-				},
-        "scope": {
-            "OS-TRUST:trust": {
-                "id": "de0945a"
-            }
-        }
-			}
-		}
-	`)
-
-	var actual struct {
-		tokens.Token
-		trusts.TokenExt
-	}
-	err := tokens.Create(context.TODO(), client.ServiceClient(), ao).ExtractInto(&actual)
-	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
-	}
-	expected := struct {
-		tokens.Token
-		trusts.TokenExt
-	}{
-		tokens.Token{
-			ExpiresAt: time.Date(2013, 02, 27, 18, 30, 59, 999999000, time.UTC),
-		},
-		trusts.TokenExt{
-			Trust: trusts.Trust{
-				ID:                 "fe0aef",
-				Impersonation:      false,
-				RedelegatedTrustID: "3ba234",
-				RedelegationCount:  2,
-			},
-		},
-	}
-
-	th.AssertDeepEquals(t, expected, actual)
-}
 
 func TestCreateTrust(t *testing.T) {
 	th.SetupHTTP()
