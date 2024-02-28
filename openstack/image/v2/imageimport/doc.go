@@ -1,6 +1,6 @@
 /*
 Package imageimport enables management of images import and retrieval of the
-Imageservice Import API information.
+Image service Import API information.
 
 Example to Get an information about the Import API
 

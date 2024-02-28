@@ -463,10 +463,10 @@ func NewIdentityV3UnauthenticatedClient() (*gophercloud.ServiceClient, error) {
 	return openstack.NewIdentityV3(client, gophercloud.EndpointOpts{})
 }
 
-// NewImageServiceV2Client returns a *ServiceClient for making calls to the
+// NewImageV2Client returns a *ServiceClient for making calls to the
 // OpenStack Image v2 API. An error will be returned if authentication or
 // client creation was not possible.
-func NewImageServiceV2Client() (*gophercloud.ServiceClient, error) {
+func NewImageV2Client() (*gophercloud.ServiceClient, error) {
 	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
@@ -479,7 +479,7 @@ func NewImageServiceV2Client() (*gophercloud.ServiceClient, error) {
 
 	client = configureDebug(client)
 
-	return openstack.NewImageServiceV2(client, gophercloud.EndpointOpts{
+	return openstack.NewImageV2(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }

@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/imagedata"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/imagedata"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )

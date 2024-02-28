@@ -9,7 +9,7 @@ import (
 )
 
 func TestImageStage(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	image, err := CreateEmptyImage(t, client)

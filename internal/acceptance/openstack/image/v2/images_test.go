@@ -1,5 +1,5 @@
-//go:build acceptance || imageservice || images
-// +build acceptance imageservice images
+//go:build acceptance || image || images
+// +build acceptance image images
 
 package v2
 
@@ -11,13 +11,13 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/imageservice/v2/images"
+	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/images"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestImagesListEachPage(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	listOpts := images.ListOpts{
@@ -41,7 +41,7 @@ func TestImagesListEachPage(t *testing.T) {
 }
 
 func TestImagesListAllPages(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	image, err := CreateEmptyImage(t, client)
@@ -70,7 +70,7 @@ func TestImagesListAllPages(t *testing.T) {
 }
 
 func TestImagesListByDate(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	date := time.Date(2014, 1, 1, 1, 1, 1, 0, time.UTC)
@@ -118,7 +118,7 @@ func TestImagesListByDate(t *testing.T) {
 }
 
 func TestImagesFilter(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	image, err := CreateEmptyImage(t, client)
@@ -143,7 +143,7 @@ func TestImagesFilter(t *testing.T) {
 }
 
 func TestImagesUpdate(t *testing.T) {
-	client, err := clients.NewImageServiceV2Client()
+	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	image, err := CreateEmptyImage(t, client)

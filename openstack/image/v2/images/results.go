@@ -20,7 +20,7 @@ type Image struct {
 	Name string `json:"name"`
 
 	// Status is the image status. It can be "queued" or "active"
-	// See imageservice/v2/images/type.go
+	// See image/v2/images/type.go
 	Status ImageStatus `json:"status"`
 
 	// Tags is a list of image tags. Tags are arbitrarily defined strings
