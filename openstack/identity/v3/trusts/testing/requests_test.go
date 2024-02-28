@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/trusts"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/trusts"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
