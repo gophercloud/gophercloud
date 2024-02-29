@@ -49,8 +49,8 @@ func TestNodeGroupsCRUD(t *testing.T) {
 	t.Logf("Created nodegroup: %s", nodeGroupID)
 
 	// Wait for the node group to finish creating
-	err = tools.WaitForTimeout(func() (bool, error) {
-		ng, err := nodegroups.Get(context.TODO(), client, clusterID, nodeGroupID).Extract()
+	err = tools.WaitForTimeout(func(ctx context.Context) (bool, error) {
+		ng, err := nodegroups.Get(ctx, client, clusterID, nodeGroupID).Extract()
 		if err != nil {
 			return false, fmt.Errorf("error waiting for node group to create: %v", err)
 		}
@@ -164,8 +164,8 @@ func testNodeGroupDelete(t *testing.T, client *gophercloud.ServiceClient, cluste
 	th.AssertNoErr(t, err)
 
 	// Wait for the node group to be deleted
-	err = tools.WaitFor(func() (bool, error) {
-		_, err := nodegroups.Get(context.TODO(), client, clusterID, nodeGroupID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := nodegroups.Get(ctx, client, clusterID, nodeGroupID).Extract()
 		if _, ok := err.(gophercloud.ErrDefault404); ok {
 			return true, nil
 		}

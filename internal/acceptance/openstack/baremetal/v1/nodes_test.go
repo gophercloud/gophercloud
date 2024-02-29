@@ -6,6 +6,7 @@ package v1
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/nodes"
@@ -51,7 +52,10 @@ func TestNodesCreateDestroy(t *testing.T) {
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = nodes.WaitForProvisionState(context.TODO(), client, node.UUID, nodes.Manageable, 5)
+	ctx, cancel := context.WithTimeout(context.TODO(), 5*time.Second)
+	defer cancel()
+
+	err = nodes.WaitForProvisionState(ctx, client, node.UUID, nodes.Manageable)
 	th.AssertNoErr(t, err)
 }
 

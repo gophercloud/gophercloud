@@ -6,6 +6,7 @@ package v3
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -91,7 +92,10 @@ func TestVolumesMultiAttach(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteVolume(t, client, vol)
 
-	err = volumes.WaitForStatus(context.TODO(), client, vol.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, vol.ID, "available")
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, vol.Multiattach, true)
@@ -106,7 +110,10 @@ func TestVolumesCascadeDelete(t *testing.T) {
 	vol, err := CreateVolume(t, client)
 	th.AssertNoErr(t, err)
 
-	err = volumes.WaitForStatus(context.TODO(), client, vol.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, vol.ID, "available")
 	th.AssertNoErr(t, err)
 
 	snapshot1, err := CreateSnapshot(t, client, vol)
@@ -124,8 +131,8 @@ func TestVolumesCascadeDelete(t *testing.T) {
 	}
 
 	for _, sid := range []string{snapshot1.ID, snapshot2.ID} {
-		err := tools.WaitFor(func() (bool, error) {
-			_, err := snapshots.Get(context.TODO(), client, sid).Extract()
+		err := tools.WaitFor(func(ctx context.Context) (bool, error) {
+			_, err := snapshots.Get(ctx, client, sid).Extract()
 			if err != nil {
 				return true, nil
 			}
@@ -135,8 +142,8 @@ func TestVolumesCascadeDelete(t *testing.T) {
 		t.Logf("Successfully deleted snapshot: %s", sid)
 	}
 
-	err = tools.WaitFor(func() (bool, error) {
-		_, err := volumes.Get(context.TODO(), client, vol.ID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := volumes.Get(ctx, client, vol.ID).Extract()
 		if err != nil {
 			return true, nil
 		}

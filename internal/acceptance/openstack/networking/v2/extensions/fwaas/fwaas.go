@@ -206,8 +206,8 @@ func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) 
 
 // WaitForFirewallState will wait until a firewall reaches a given state.
 func WaitForFirewallState(client *gophercloud.ServiceClient, firewallID, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := firewalls.Get(context.TODO(), client, firewallID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := firewalls.Get(ctx, client, firewallID).Extract()
 		if err != nil {
 			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {
 				if httpStatus.Actual == 404 {

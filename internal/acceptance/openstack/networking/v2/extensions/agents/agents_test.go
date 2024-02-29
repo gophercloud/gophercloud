@@ -128,11 +128,11 @@ func TestBGPAgentRUD(t *testing.T) {
 
 	// List the BGP Agents that accommodate the BGP Speaker
 	err = tools.WaitForTimeout(
-		func() (bool, error) {
+		func(ctx context.Context) (bool, error) {
 			flag := true
 			for _, agt := range bgpAgents {
 				t.Logf("BGP Speaker %s has been scheduled to agent %s", bgpSpeaker.ID, agt.ID)
-				bgpAgent, err := agents.Get(context.TODO(), client, agt.ID).Extract()
+				bgpAgent, err := agents.Get(ctx, client, agt.ID).Extract()
 				th.AssertNoErr(t, err)
 				numOfSpeakers := int(bgpAgent.Configurations["bgp_speakers"].(float64))
 				flag = flag && (numOfSpeakers == 1)
@@ -146,8 +146,8 @@ func TestBGPAgentRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	t.Logf("BGP Speaker %s has been removed from agent %s", bgpSpeaker.ID, bgpAgents[0].ID)
 	err = tools.WaitForTimeout(
-		func() (bool, error) {
-			bgpAgent, err := agents.Get(context.TODO(), client, bgpAgents[0].ID).Extract()
+		func(ctx context.Context) (bool, error) {
+			bgpAgent, err := agents.Get(ctx, client, bgpAgents[0].ID).Extract()
 			th.AssertNoErr(t, err)
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
@@ -174,8 +174,8 @@ func TestBGPAgentRUD(t *testing.T) {
 	t.Logf("Successfully scheduled speaker %s to agent %s", bgpSpeaker.ID, bgpAgents[0].ID)
 
 	err = tools.WaitForTimeout(
-		func() (bool, error) {
-			bgpAgent, err := agents.Get(context.TODO(), client, bgpAgents[0].ID).Extract()
+		func(ctx context.Context) (bool, error) {
+			bgpAgent, err := agents.Get(ctx, client, bgpAgents[0].ID).Extract()
 			th.AssertNoErr(t, err)
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
@@ -189,8 +189,8 @@ func TestBGPAgentRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully deleted the BGP Speaker, %s", bgpSpeaker.ID)
 	err = tools.WaitForTimeout(
-		func() (bool, error) {
-			bgpAgent, err := agents.Get(context.TODO(), client, bgpAgents[0].ID).Extract()
+		func(ctx context.Context) (bool, error) {
+			bgpAgent, err := agents.Get(ctx, client, bgpAgents[0].ID).Extract()
 			th.AssertNoErr(t, err)
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))

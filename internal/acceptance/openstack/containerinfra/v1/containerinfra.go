@@ -185,8 +185,8 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 }
 
 func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status string, timeout time.Duration) error {
-	return tools.WaitForTimeout(func() (bool, error) {
-		cluster, err := clusters.Get(context.TODO(), client, clusterID).Extract()
+	return tools.WaitForTimeout(func(ctx context.Context) (bool, error) {
+		cluster, err := clusters.Get(ctx, client, clusterID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETE_COMPLETE" {
 				return true, nil

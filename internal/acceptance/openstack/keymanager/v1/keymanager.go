@@ -742,8 +742,8 @@ func CreateRSAKeyPair(t *testing.T, passphrase string) ([]byte, []byte, error) {
 }
 
 func WaitForOrder(client *gophercloud.ServiceClient, orderID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		order, err := orders.Get(context.TODO(), client, orderID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		order, err := orders.Get(ctx, client, orderID).Extract()
 		if err != nil {
 			return false, err
 		}

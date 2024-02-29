@@ -97,8 +97,8 @@ func DeleteStack(t *testing.T, client *gophercloud.ServiceClient, stackName, sta
 
 // WaitForStackStatus will wait until a stack has reached a certain status.
 func WaitForStackStatus(client *gophercloud.ServiceClient, stackName, stackID, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		latest, err := stacks.Get(context.TODO(), client, stackName, stackID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := stacks.Get(ctx, client, stackName, stackID).Extract()
 		if err != nil {
 			return false, err
 		}

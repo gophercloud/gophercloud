@@ -186,8 +186,8 @@ func TestSnapshotsForceDelete(t *testing.T) {
 	err = snapshots.ForceDelete(context.TODO(), client, snapshot.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = tools.WaitFor(func() (bool, error) {
-		_, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := snapshots.Get(ctx, client, snapshot.ID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				return true, nil

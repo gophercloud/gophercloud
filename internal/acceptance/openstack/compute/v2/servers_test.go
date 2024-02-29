@@ -156,8 +156,8 @@ func TestServersUpdate(t *testing.T) {
 
 	th.AssertEquals(t, updated.ID, server.ID)
 
-	err = tools.WaitFor(func() (bool, error) {
-		latest, err := servers.Get(context.TODO(), client, updated.ID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := servers.Get(ctx, client, updated.ID).Extract()
 		if err != nil {
 			return false, err
 		}

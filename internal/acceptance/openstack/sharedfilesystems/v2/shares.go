@@ -137,10 +137,10 @@ func PrintMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error 
 func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) (*shares.Share, error) {
 	var current *shares.Share
 
-	err := tools.WaitFor(func() (bool, error) {
+	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
 		var err error
 
-		current, err = shares.Get(context.TODO(), c, id).Extract()
+		current, err = shares.Get(ctx, c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {

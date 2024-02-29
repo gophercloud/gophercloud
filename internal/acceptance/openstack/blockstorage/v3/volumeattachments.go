@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/attachments"
@@ -40,7 +41,10 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 		return err
 	}
 
-	if err = attachments.WaitForStatus(context.TODO(), client, attachment.ID, "attached", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err = attachments.WaitForStatus(ctx, client, attachment.ID, "attached"); err != nil {
 		e := attachments.Delete(context.TODO(), client, attachment.ID).ExtractErr()
 		if e != nil {
 			t.Logf("Failed to delete %q attachment: %s", attachment.ID, err)
@@ -85,7 +89,10 @@ func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 		t.Fatalf("Unable to detach volume %s: %v", volume.ID, err)
 	}
 
-	if err := v3.WaitForStatus(context.TODO(), client, volume.ID, "available", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := v3.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
 		t.Fatalf("Volume %s failed to become unavailable in 60 seconds: %v", volume.ID, err)
 	}
 
