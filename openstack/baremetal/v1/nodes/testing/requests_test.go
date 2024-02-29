@@ -743,3 +743,66 @@ func TestListFirmware(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeFirmwareList, actual)
 }
+
+func TestVirtualMediaOpts(t *testing.T) {
+	opts := nodes.DetachVirtualMediaOpts{
+		DeviceTypes: []nodes.VirtualMediaDeviceType{nodes.VirtualMediaCD, nodes.VirtualMediaDisk},
+	}
+
+	// Regular ListOpts can
+	query, err := opts.ToDetachVirtualMediaOptsQuery()
+	th.AssertEquals(t, "?device_types=cdrom%2Cdisk", query)
+	th.AssertNoErr(t, err)
+}
+
+func TestVirtualMediaAttach(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAttachVirtualMediaSuccessfully(t, false)
+
+	c := client.ServiceClient()
+	opts := nodes.AttachVirtualMediaOpts{
+		ImageURL:   "https://example.com/image",
+		DeviceType: nodes.VirtualMediaCD,
+	}
+	err := nodes.AttachVirtualMedia(context.TODO(), c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestVirtualMediaAttachWithSource(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAttachVirtualMediaSuccessfully(t, true)
+
+	c := client.ServiceClient()
+	opts := nodes.AttachVirtualMediaOpts{
+		ImageURL:            "https://example.com/image",
+		DeviceType:          nodes.VirtualMediaCD,
+		ImageDownloadSource: nodes.ImageDownloadSourceHTTP,
+	}
+	err := nodes.AttachVirtualMedia(context.TODO(), c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestVirtualMediaDetach(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDetachVirtualMediaSuccessfully(t, false)
+
+	c := client.ServiceClient()
+	err := nodes.DetachVirtualMedia(context.TODO(), c, "1234asdf", nodes.DetachVirtualMediaOpts{}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestVirtualMediaDetachWithTypes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDetachVirtualMediaSuccessfully(t, true)
+
+	c := client.ServiceClient()
+	opts := nodes.DetachVirtualMediaOpts{
+		DeviceTypes: []nodes.VirtualMediaDeviceType{nodes.VirtualMediaCD},
+	}
+	err := nodes.DetachVirtualMedia(context.TODO(), c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

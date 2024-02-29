@@ -85,3 +85,7 @@ func inventoryURL(client *gophercloud.ServiceClient, id string) string {
 func firmwareListURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("nodes", id, "firmware")
 }
+
+func virtualMediaURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "vmedia")
+}

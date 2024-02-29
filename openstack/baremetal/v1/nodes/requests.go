@@ -903,3 +903,78 @@ func ListFirmware(ctx context.Context, client *gophercloud.ServiceClient, id str
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+type VirtualMediaDeviceType string
+
+const (
+	VirtualMediaDisk   VirtualMediaDeviceType = "disk"
+	VirtualMediaCD     VirtualMediaDeviceType = "cdrom"
+	VirtualMediaFloppy VirtualMediaDeviceType = "floppy"
+)
+
+type ImageDownloadSource string
+
+const (
+	ImageDownloadSourceHTTP  ImageDownloadSource = "http"
+	ImageDownloadSourceLocal ImageDownloadSource = "local"
+	ImageDownloadSourceSwift ImageDownloadSource = "swift"
+)
+
+// The desired virtual media attachment on the baremetal node.
+type AttachVirtualMediaOpts struct {
+	DeviceType          VirtualMediaDeviceType `json:"device_type"`
+	ImageURL            string                 `json:"image_url"`
+	ImageDownloadSource ImageDownloadSource    `json:"image_download_source,omitempty"`
+}
+
+type AttachVirtualMediaOptsBuilder interface {
+	ToAttachVirtualMediaMap() (map[string]interface{}, error)
+}
+
+func (opts AttachVirtualMediaOpts) ToAttachVirtualMediaMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Request to attach a virtual media device to the Node.
+func AttachVirtualMedia(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AttachVirtualMediaOptsBuilder) (r VirtualMediaAttachResult) {
+	reqBody, err := opts.ToAttachVirtualMediaMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Post(ctx, virtualMediaURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// The desired virtual media detachment on the baremetal node.
+type DetachVirtualMediaOpts struct {
+	DeviceTypes []VirtualMediaDeviceType `q:"device_types" format:"comma-separated"`
+}
+
+type DetachVirtualMediaOptsBuilder interface {
+	ToDetachVirtualMediaOptsQuery() (string, error)
+}
+
+func (opts DetachVirtualMediaOpts) ToDetachVirtualMediaOptsQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Request to detach a virtual media device from the Node.
+func DetachVirtualMedia(ctx context.Context, client *gophercloud.ServiceClient, id string, opts DetachVirtualMediaOptsBuilder) (r VirtualMediaDetachResult) {
+	query, err := opts.ToDetachVirtualMediaOptsQuery()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Delete(ctx, virtualMediaURL(client, id)+query, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
