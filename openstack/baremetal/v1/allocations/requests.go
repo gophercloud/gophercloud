@@ -82,7 +82,7 @@ type ListOpts struct {
 	State AllocationState `q:"state"`
 
 	// One or more fields to be returned in the response.
-	Fields []string `q:"fields"`
+	Fields []string `q:"fields" format:"comma-separated"`
 
 	// Requests a page size of items.
 	Limit int `q:"limit"`
