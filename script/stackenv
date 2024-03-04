@@ -30,4 +30,8 @@ echo export OS_DOMAIN_ID=default >> openrc
 echo export OS_MAGNUM_IMAGE_ID="$_MAGNUM_IMAGE_ID" >> openrc
 echo export OS_MAGNUM_KEYPAIR=magnum >> openrc
 source openrc admin admin
+if [[ "${OS_SYSTEM_SCOPE:-}" == "all" ]]; then
+    unset PROJECT_NAME
+    unset TENANT_NAME
+fi
 popd
