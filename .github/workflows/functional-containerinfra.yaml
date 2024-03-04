@@ -35,30 +35,6 @@ jobs:
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/zed
               MAGNUMCLIENT_BRANCH=stable/zed
-          - name: "yoga"
-            openstack_version: "stable/yoga"
-            ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum stable/yoga
-              MAGNUMCLIENT_BRANCH=stable/yoga
-          - name: "xena"
-            openstack_version: "stable/xena"
-            ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum xena-eol
-              MAGNUMCLIENT_BRANCH=xena-eol
-          - name: "wallaby"
-            openstack_version: "stable/wallaby"
-            ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum wallaby-eol
-              MAGNUMCLIENT_BRANCH=wallaby-eol
-          - name: "victoria"
-            openstack_version: "stable/victoria"
-            ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum victoria-eol
-              MAGNUMCLIENT_BRANCH=victoria-em
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
