@@ -38,6 +38,9 @@ jobs:
         run: sudo apt update && sudo apt -y upgrade
         shell: bash
         if: matrix.ubuntu_version == '20.04'
+      - name: Work around broken dnsmasq
+        run: sudo apt-get purge -y dnsmasq-base
+        if: matrix.ubuntu_version == '22.04'
       - name: Deploy devstack
         uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
         with:
