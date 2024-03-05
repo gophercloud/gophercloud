@@ -267,6 +267,7 @@ const SingleServerBody = `
 		"OS-EXT-STS:task_state": null,
 		"OS-EXT-STS:vm_state": "active",
 		"OS-EXT-SRV-ATTR:instance_name": "instance-0000001d",
+		"OS-EXT-SRV-ATTR:hostname": "derp.local",
 		"OS-SRV-USG:launched_at": "2014-09-25T13:04:49.000000",
 		"OS-EXT-SRV-ATTR:hypervisor_hostname": "devstack",
 		"flavor": {
@@ -840,6 +841,25 @@ func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response stri
 				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
 				"flavorRef": "1",
 				"foo": "bar"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
+func HandleServerCreationWithHostname(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"hostname": "derp.local",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1"
 			}
 		}`)
 

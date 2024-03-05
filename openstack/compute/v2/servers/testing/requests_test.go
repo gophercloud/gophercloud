@@ -204,6 +204,22 @@ func TestCreateServerWithUserdataEncoded(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServerWithHostname(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationWithHostname(t, SingleServerBody)
+
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		Hostname:  "derp.local",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
