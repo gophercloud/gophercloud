@@ -23,18 +23,6 @@ jobs:
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
-          - name: "yoga"
-            openstack_version: "stable/yoga"
-            ubuntu_version: "20.04"
-          - name: "xena"
-            openstack_version: "stable/xena"
-            ubuntu_version: "20.04"
-          - name: "wallaby"
-            openstack_version: "stable/wallaby"
-            ubuntu_version: "20.04"
-          - name: "victoria"
-            openstack_version: "stable/victoria"
-            ubuntu_version: "20.04"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Ironic and run baremetal acceptance tests
     steps:
@@ -48,6 +36,9 @@ jobs:
         run: sudo apt update && sudo apt -y upgrade
         shell: bash
         if: matrix.ubuntu_version == '20.04'
+      - name: Work around broken dnsmasq
+        run: sudo apt-get purge -y dnsmasq-base
+        if: matrix.ubuntu_version == '22.04'
       - name: Deploy devstack
         uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
         with:
