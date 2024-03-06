@@ -375,9 +375,9 @@ func TestRequestWithContext(t *testing.T) {
 	defer ts.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	p := &gophercloud.ProviderClient{Context: ctx}
+	p := &gophercloud.ProviderClient{}
 
-	res, err := p.Request(context.TODO(), "GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
+	res, err := p.Request(ctx, "GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
 	th.AssertNoErr(t, err)
 	_, err = io.ReadAll(res.Body)
 	th.AssertNoErr(t, err)
@@ -385,7 +385,7 @@ func TestRequestWithContext(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	cancel()
-	res, err = p.Request(context.TODO(), "GET", ts.URL, &gophercloud.RequestOpts{})
+	res, err = p.Request(ctx, "GET", ts.URL, &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -605,9 +605,7 @@ func TestRequestRetryContext(t *testing.T) {
 		cancel()
 	}()
 
-	p := &gophercloud.ProviderClient{
-		Context: ctx,
-	}
+	p := &gophercloud.ProviderClient{}
 	p.UseTokenLock()
 	p.SetToken(client.TokenID)
 	p.MaxBackoffRetries = 3
@@ -624,7 +622,7 @@ func TestRequestRetryContext(t *testing.T) {
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(ctx, "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
