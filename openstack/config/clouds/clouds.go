@@ -86,7 +86,7 @@ func Parse(opts ...func(*cloudOpts)) (gophercloud.AuthOptions, gophercloud.Endpo
 			if err != nil {
 				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the user config directory: %w", err)
 			}
-			options.locations = []string{path.Join(cwd, "clouds.yaml"), path.Join(userConfig, "openstack", "clouds.yaml"), path.Join("/etc", "openstack", "clouds.yaml")}
+			options.locations = []string{path.Join(cwd, "clouds.yaml"), path.Join(userConfig, "openstack", "clouds.yaml"), path.Join("/etc", "openstack")}
 		}
 
 		for _, cloudsPath := range options.locations {
