@@ -15,6 +15,7 @@ BREAKING CHANGES:
 * [GH-2886](https://github.com/gophercloud/gophercloud/pull/2886) ports: Fix value_specs implementation
 * [GH-2665](https://github.com/gophercloud/gophercloud/pull/2665) Cinder: Remove multiatttach request parameter
 * [GH-2936](https://github.com/gophercloud/gophercloud/pull/2936) Make Gophercloud context-aware: all function signatures triggering an HTTP call now accept a context.Context for tracing and cancellation
+* [GH-2970](https://github.com/gophercloud/gophercloud/pull/2970) Remove context from the Provider client
 
 New features and improvements:
 
