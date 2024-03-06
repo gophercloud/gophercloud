@@ -53,7 +53,7 @@ import (
 //
 // Search locations, as well as individual `clouds.yaml` properties, can be
 // overwritten with functional options.
-func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOpts, *tls.Config, error) {
+func Parse(opts ...func(*cloudOpts)) (gophercloud.AuthOptions, gophercloud.EndpointOpts, *tls.Config, error) {
 	options := cloudOpts{
 		cloudName:    os.Getenv("OS_CLOUD"),
 		region:       os.Getenv("OS_REGION_NAME"),
