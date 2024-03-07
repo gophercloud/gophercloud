@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-
-	"github.com/gophercloud/gophercloud/v2/internal/ctxt"
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
@@ -88,11 +86,6 @@ type ProviderClient struct {
 	// Throwaway determines whether if this client is a throw-away client. It's a copy of user's provider client
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
 	Throwaway bool
-
-	// Context is the context passed to the HTTP request. Values set on the
-	// per-call context, when available, override values set on this
-	// context.
-	Context context.Context
 
 	// Retry backoff func is called when rate limited.
 	RetryBackoffFunc RetryBackoffFunc
@@ -392,12 +385,6 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 		body = options.RawBody
 	}
 
-	if client.Context != nil {
-		var cancel context.CancelFunc
-		ctx, cancel = ctxt.Merge(ctx, client.Context)
-		defer cancel()
-	}
-
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, err
@@ -555,7 +542,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				var e error
 
 				state.retries = state.retries + 1
-				e = f(client.Context, &respErr, err, state.retries)
+				e = f(ctx, &respErr, err, state.retries)
 
 				if e != nil {
 					return resp, e
@@ -592,7 +579,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 		if err != nil && client.RetryFunc != nil {
 			var e error
 			state.retries = state.retries + 1
-			e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
+			e = client.RetryFunc(ctx, method, url, options, err, state.retries)
 			if e != nil {
 				return resp, e
 			}
@@ -616,7 +603,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 			if client.RetryFunc != nil {
 				var e error
 				state.retries = state.retries + 1
-				e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
+				e = client.RetryFunc(ctx, method, url, options, err, state.retries)
 				if e != nil {
 					return resp, e
 				}
