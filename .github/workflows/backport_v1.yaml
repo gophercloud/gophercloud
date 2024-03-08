@@ -44,6 +44,16 @@ jobs:
           no-squash: true
           strategy-option: find-renames
 
+      - name: Report failure
+        if: failure()
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: >
+            Failed to backport PR to `v1` branch. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
       - name: Report an error if backport unsupported labels
         if: >
           contains(github.event.pull_request.labels.*.name, 'semver:major')
