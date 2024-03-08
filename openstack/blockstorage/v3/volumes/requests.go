@@ -147,6 +147,9 @@ type ListOpts struct {
 
 	// The ID of the last-seen item.
 	Marker string `q:"marker"`
+
+	// Bootable will filter results based on if they are bootable volumes
+	Bootable bool `q:"bootable"`
 }
 
 // ToVolumeListQuery formats a ListOpts into a query string.
