@@ -98,7 +98,7 @@ type ListOpts struct {
 	Fault string `q:"fault"`
 
 	// One or more fields to be returned in the response.
-	Fields []string `q:"fields"`
+	Fields []string `q:"fields" format:"comma-separated"`
 
 	// Requests a page size of items.
 	Limit int `q:"limit"`
@@ -658,7 +658,7 @@ type ListBIOSSettingsOpts struct {
 	Detail bool `q:"detail"`
 
 	// One or more fields to be returned in the response.
-	Fields []string `q:"fields"`
+	Fields []string `q:"fields" format:"comma-separated"`
 }
 
 // ToListBIOSSettingsOptsQuery formats a ListBIOSSettingsOpts into a query string

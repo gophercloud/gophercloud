@@ -81,7 +81,7 @@ func TestListOpts(t *testing.T) {
 
 	// Regular ListOpts can
 	query, err := opts.ToPortListQuery()
-	th.AssertEquals(t, query, "?fields=uuid&fields=address")
+	th.AssertEquals(t, "?fields=uuid%2Caddress", query)
 	th.AssertNoErr(t, err)
 }
 

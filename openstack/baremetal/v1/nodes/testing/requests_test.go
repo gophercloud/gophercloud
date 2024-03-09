@@ -84,7 +84,7 @@ func TestListOpts(t *testing.T) {
 
 	// Regular ListOpts can
 	query, err := opts.ToNodeListQuery()
-	th.AssertEquals(t, query, "?fields=name&fields=uuid")
+	th.AssertEquals(t, "?fields=name%2Cuuid", query)
 	th.AssertNoErr(t, err)
 }
 

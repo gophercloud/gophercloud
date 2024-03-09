@@ -88,7 +88,7 @@ func TestListOpts(t *testing.T) {
 
 	// Regular ListOpts can
 	query, err := opts.ToConductorListQuery()
-	th.AssertEquals(t, query, "?fields=hostname&fields=alive")
+	th.AssertEquals(t, "?fields=hostname%2Calive", query)
 	th.AssertNoErr(t, err)
 }
 
