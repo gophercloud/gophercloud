@@ -11,33 +11,36 @@ jobs:
         name: ["master"]
         openstack_version: ["master"]
         ubuntu_version: ["22.04"]
+        os_system_scope: ["all"]
         include:
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
+            os_system_scope: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
+            os_system_scope: ""
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
-          - name: "yoga"
-            openstack_version: "stable/yoga"
-            ubuntu_version: "20.04"
-          - name: "xena"
-            openstack_version: "stable/xena"
-            ubuntu_version: "20.04"
-          - name: "wallaby"
-            openstack_version: "stable/wallaby"
-            ubuntu_version: "20.04"
-          - name: "victoria"
-            openstack_version: "stable/victoria"
-            ubuntu_version: "20.04"
+            os_system_scope: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Ironic and run baremetal acceptance tests
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Workaround for grub-efi-amd64-signed
+        run: sudo rm /var/cache/debconf/config.dat
+        shell: bash
+        if: matrix.ubuntu_version == '20.04'
+      - name: Ensure update and upgrade
+        run: sudo apt update && sudo apt -y upgrade
+        shell: bash
+        if: matrix.ubuntu_version == '20.04'
+      - name: Work around broken dnsmasq
+        run: sudo apt-get purge -y dnsmasq-base
+        if: matrix.ubuntu_version == '22.04'
       - name: Deploy devstack
         uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
         with:
@@ -78,7 +81,7 @@ jobs:
             SWIFT_TEMPURL_KEY=secretkey
           enabled_services: 'ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent'
       - name: Checkout go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
@@ -87,6 +90,8 @@ jobs:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
           ACCEPTANCE_TESTS_FILTER: '^.*baremetal(.(?!noauth).*)?$'
           OS_BRANCH: ${{ matrix.openstack_version }}
+          # TODO(dtantsur): default to "all" when no longer supporting versions before 2024.1
+          OS_SYSTEM_SCOPE: ${{ matrix.os_system_scope }}
       - name: Generate logs on failure
         run: ./script/collectlogs
         if: failure()

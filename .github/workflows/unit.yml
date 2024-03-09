@@ -20,10 +20,10 @@ jobs:
       GO111MODULE: "on"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Go v1
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: 1
 
@@ -34,7 +34,7 @@ jobs:
 
       - if: ${{ matrix.go-version != '1' }}
         name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 

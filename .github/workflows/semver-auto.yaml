@@ -16,7 +16,7 @@ jobs:
           semver:unknown
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
@@ -37,7 +37,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         labels: semver:unknown
 
-    - uses: actions/setup-go@v4
+    - uses: actions/setup-go@v5
       with:
         go-version: '1'
 
@@ -46,7 +46,7 @@ jobs:
       # if semver=major, this will return RC=1, so let's ignore the failure so label
       # can be set later. We check for actual errors in the next step.
       continue-on-error: true
-      uses: joelanford/go-apidiff@v0.7.0
+      uses: joelanford/go-apidiff@002aa613b261e8d1547b516fb71793280f05bb78
 
     # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
     # a failure. Instead let's just return a failure if go-apidiff failed to run.

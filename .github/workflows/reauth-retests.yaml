@@ -14,11 +14,11 @@ jobs:
 
     steps:
       - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run reauth retests
         run: |

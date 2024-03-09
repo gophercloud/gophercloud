@@ -21,23 +21,11 @@ jobs:
           - name: "zed"
             openstack_version: "stable/zed"
             ubuntu_version: "20.04"
-          - name: "yoga"
-            openstack_version: "stable/yoga"
-            ubuntu_version: "20.04"
-          - name: "xena"
-            openstack_version: "stable/xena"
-            ubuntu_version: "20.04"
-          - name: "wallaby"
-            openstack_version: "stable/wallaby"
-            ubuntu_version: "20.04"
-          - name: "victoria"
-            openstack_version: "stable/victoria"
-            ubuntu_version: "20.04"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Senlin and run clustering acceptance tests
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy devstack
         uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
         with:
@@ -47,7 +35,7 @@ jobs:
             enable_plugin zaqar https://github.com/openstack/zaqar ${{ matrix.openstack_version }}
             ZAQARCLIENT_BRANCH=${{ matrix.openstack_version }}
       - name: Checkout go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '^1.15'
       - name: Run Gophercloud acceptance tests
