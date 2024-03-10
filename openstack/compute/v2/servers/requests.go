@@ -241,6 +241,12 @@ type CreateOpts struct {
 	// Tags allows a server to be tagged with single-word metadata.
 	// Requires microversion 2.52 or later.
 	Tags []string `json:"tags,omitempty"`
+
+	// (Available from 2.90) Hostname specifies the hostname to configure for the
+	// instance in the metadata service. Starting with microversion 2.94, this can
+	// be a Fully Qualified Domain Name (FQDN) of up to 255 characters in length.
+	// If not set, OpenStack will derive the server's hostname from the Name field.
+	Hostname string `json:"hostname,omitempty"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
