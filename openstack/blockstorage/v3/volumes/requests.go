@@ -149,7 +149,7 @@ type ListOpts struct {
 	Marker string `q:"marker"`
 
 	// Bootable will filter results based on if they are bootable volumes
-	Bootable bool `q:"bootable"`
+	Bootable *bool `q:"bootable,omitempty"`
 }
 
 // ToVolumeListQuery formats a ListOpts into a query string.
