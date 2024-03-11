@@ -859,6 +859,21 @@ const NodeFirmwareListBody = `
 }
 `
 
+const NodeVirtualMediaAttachBody = `
+{
+    "image_url": "https://example.com/image",
+    "device_type": "cdrom"
+}
+`
+
+const NodeVirtualMediaAttachBodyWithSource = `
+{
+    "image_url": "https://example.com/image",
+    "device_type": "cdrom",
+    "image_download_source": "http"
+}
+`
+
 var (
 	createdAtFoo, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
 	createdAtBar, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
@@ -1666,5 +1681,31 @@ func HandleListFirmwareSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, NodeFirmwareListBody)
+	})
+}
+
+func HandleAttachVirtualMediaSuccessfully(t *testing.T, withSource bool) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		if withSource {
+			th.TestJSONRequest(t, r, NodeVirtualMediaAttachBodyWithSource)
+		} else {
+			th.TestJSONRequest(t, r, NodeVirtualMediaAttachBody)
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleDetachVirtualMediaSuccessfully(t *testing.T, withType bool) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		if withType {
+			th.TestFormValues(t, r, map[string]string{"device_types": "cdrom"})
+		} else {
+			th.TestFormValues(t, r, map[string]string{})
+		}
+		w.WriteHeader(http.StatusNoContent)
 	})
 }

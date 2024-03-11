@@ -200,3 +200,33 @@ func TestNodesFirmwareInterface(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, nodeFirmwareCmps, []nodes.FirmwareComponent{})
 }
+
+func TestNodesVirtualMedia(t *testing.T) {
+	clients.SkipReleasesBelow(t, "master") // 2024.1
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.89"
+
+	node, err := CreateNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+
+	err = nodes.AttachVirtualMedia(context.TODO(), client, node.UUID, nodes.AttachVirtualMediaOpts{
+		DeviceType: nodes.VirtualMediaCD,
+		// It does not matter if QOTD server is actually present: the
+		// request is processes asynchronously, all we need is a valid URL
+		// that will not result in Ironic stuck for a long time.
+		ImageURL: "http://127.0.0.1:17",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = nodes.DetachVirtualMedia(context.TODO(), client, node.UUID, nodes.DetachVirtualMediaOpts{
+		DeviceTypes: []nodes.VirtualMediaDeviceType{nodes.VirtualMediaCD},
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = nodes.DetachVirtualMedia(context.TODO(), client, node.UUID, nodes.DetachVirtualMediaOpts{}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

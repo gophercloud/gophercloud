@@ -642,3 +642,11 @@ func (r ListFirmwareResult) Extract() ([]FirmwareComponent, error) {
 	err := r.ExtractInto(&s)
 	return s.Components, err
 }
+
+type VirtualMediaAttachResult struct {
+	gophercloud.ErrResult
+}
+
+type VirtualMediaDetachResult struct {
+	gophercloud.ErrResult
+}
