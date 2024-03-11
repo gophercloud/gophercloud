@@ -148,7 +148,7 @@ type ListOpts struct {
 	// The ID of the last-seen item.
 	Marker string `q:"marker"`
 
-	// Bootable will filter results based on if they are bootable volumes
+	// Bootable will filter results based on whether they are bootable volumes
 	Bootable *bool `q:"bootable,omitempty"`
 }
 
