@@ -45,6 +45,38 @@ func TestNodesCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, found, true)
 }
 
+func TestNodesFields(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.38"
+
+	node, err := CreateNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+	err = nodes.List(client, nodes.ListOpts{
+		Fields: []string{"uuid", "deploy_interface"},
+	}).EachPage(func(page pagination.Page) (bool, error) {
+		nodeList, err := nodes.ExtractNodes(page)
+		if err != nil {
+			return false, err
+		}
+
+		for _, n := range nodeList {
+			if n.UUID == "" || n.DeployInterface == "" {
+				t.Errorf("UUID or DeployInterface empty on %+v", n)
+			}
+			if n.BootInterface != "" {
+				t.Errorf("BootInterface was not fetched but is not empty on %+v", n)
+			}
+		}
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
 func TestNodesUpdate(t *testing.T) {
 	clients.RequireLong(t)
 
