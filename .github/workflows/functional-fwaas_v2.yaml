@@ -39,10 +39,6 @@ jobs:
             Q_ML2_PLUGIN_TYPE_DRIVERS=flat,gre,vlan,vxlan
             Q_ML2_TENANT_NETWORK_TYPE=vxlan
             Q_TUNNEL_TYPES=vxlan,gre
-
-            [[post-config|/etc/neutron/policy.d/port_binding.yaml]]
-            "create_port:binding:profile": "rule:admin_only or rule:service_api"
-            "update_port:binding:profile": "rule:admin_only or rule:service_api"
           enabled_services: 'q-svc,q-agt,q-dhcp,q-l3,q-meta,q-fwaas-v2,-cinder,-horizon,-tempest,-swift,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent'
       - name: Checkout go
         uses: actions/setup-go@v5
