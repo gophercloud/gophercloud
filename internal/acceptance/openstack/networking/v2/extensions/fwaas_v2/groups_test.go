@@ -51,7 +51,7 @@ func TestGroupCRUD(t *testing.T) {
 		EgressFirewallPolicyID:  &firewall_policy_id,
 	}
 
-	updatedGroup, err := groups.Update(client, createdGroup.ID, updateOpts).Extract()
+	updatedGroup, err := groups.Update(context.TODO(), client, createdGroup.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update firewall group %s: %v", createdGroup.ID, err)
 	}
@@ -65,7 +65,7 @@ func TestGroupCRUD(t *testing.T) {
 
 	t.Logf("Updated firewall group %s", updatedGroup.ID)
 
-	removeIngressPolicy, err := groups.RemoveIngressPolicy(client, updatedGroup.ID).Extract()
+	removeIngressPolicy, err := groups.RemoveIngressPolicy(context.TODO(), client, updatedGroup.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove ingress firewall policy from firewall group %s: %v", removeIngressPolicy.ID, err)
 	}
@@ -75,7 +75,7 @@ func TestGroupCRUD(t *testing.T) {
 
 	t.Logf("Ingress policy removed from firewall group %s", updatedGroup.ID)
 
-	removeEgressPolicy, err := groups.RemoveEgressPolicy(client, updatedGroup.ID).Extract()
+	removeEgressPolicy, err := groups.RemoveEgressPolicy(context.TODO(), client, updatedGroup.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to remove egress firewall policy from firewall group %s: %v", removeEgressPolicy.ID, err)
 	}
