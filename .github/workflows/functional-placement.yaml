@@ -29,7 +29,7 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: EmilienM/devstack-action@c41f86d8df58b53c55f070207b6dfce656788cfd
+        uses: EmilienM/devstack-action@e82a9cbead099cba72f99537e82a360c3e319c69
         with:
           branch: ${{ matrix.openstack_version }}
       - name: Checkout go
