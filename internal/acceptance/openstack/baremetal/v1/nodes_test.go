@@ -21,7 +21,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.38"
 
-	node, err := CreateNode(t, client)
+	node, err := CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node)
 
@@ -42,8 +42,17 @@ func TestNodesCreateDestroy(t *testing.T) {
 		return false, nil
 	})
 	th.AssertNoErr(t, err)
-
 	th.AssertEquals(t, found, true)
+
+	th.AssertEquals(t, node.ProvisionState, string(nodes.Enroll))
+
+	err = nodes.ChangeProvisionState(context.TODO(), client, node.UUID, nodes.ProvisionStateOpts{
+		Target: nodes.TargetManage,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = nodes.WaitForProvisionState(context.TODO(), client, node.UUID, nodes.Manageable, 5)
+	th.AssertNoErr(t, err)
 }
 
 func TestNodesFields(t *testing.T) {
