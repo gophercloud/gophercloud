@@ -561,8 +561,8 @@ func DeleteSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID stri
 }
 
 func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		p, err := ports.Get(context.TODO(), client, portID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		p, err := ports.Get(ctx, client, portID).Extract()
 		if err != nil {
 			return false, err
 		}

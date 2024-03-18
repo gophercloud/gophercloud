@@ -281,8 +281,8 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 }
 
 func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		r, err := routers.Get(context.TODO(), client, routerID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		r, err := routers.Get(ctx, client, routerID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -296,8 +296,8 @@ func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string) e
 }
 
 func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		_, err := routers.Get(context.TODO(), client, routerID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := routers.Get(ctx, client, routerID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				return true, nil
@@ -311,8 +311,8 @@ func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string) e
 }
 
 func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInterfaceID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		r, err := ports.Get(context.TODO(), client, routerInterfaceID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		r, err := ports.Get(ctx, client, routerInterfaceID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -326,8 +326,8 @@ func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInt
 }
 
 func WaitForRouterInterfaceToDetach(client *gophercloud.ServiceClient, routerInterfaceID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		r, err := ports.Get(context.TODO(), client, routerInterfaceID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		r, err := ports.Get(ctx, client, routerInterfaceID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				return true, nil

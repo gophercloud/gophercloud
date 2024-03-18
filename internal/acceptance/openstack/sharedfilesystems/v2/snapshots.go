@@ -70,8 +70,8 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 }
 
 func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) error {
-	err := tools.WaitFor(func() (bool, error) {
-		current, err := snapshots.Get(context.TODO(), c, id).Extract()
+	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := snapshots.Get(ctx, c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {

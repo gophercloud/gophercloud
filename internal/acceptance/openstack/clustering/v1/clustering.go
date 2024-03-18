@@ -431,8 +431,8 @@ func GetActionID(headers http.Header) (string, error) {
 }
 
 func WaitForAction(client *gophercloud.ServiceClient, actionID string) error {
-	return tools.WaitFor(func() (bool, error) {
-		action, err := actions.Get(context.TODO(), client, actionID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		action, err := actions.Get(ctx, client, actionID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -450,8 +450,8 @@ func WaitForAction(client *gophercloud.ServiceClient, actionID string) error {
 }
 
 func WaitForNodeStatus(client *gophercloud.ServiceClient, id string, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		latest, err := nodes.Get(context.TODO(), client, id).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := nodes.Get(ctx, client, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETED" {
 				return true, nil

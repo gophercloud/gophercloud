@@ -36,8 +36,8 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 	th.AssertEquals(t, execution.Description, executionDescription)
 
 	t.Logf("Wait for execution status SUCCESS: %s", executionDescription)
-	th.AssertNoErr(t, tools.WaitFor(func() (bool, error) {
-		latest, err := executions.Get(context.TODO(), client, execution.ID).Extract()
+	th.AssertNoErr(t, tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := executions.Get(ctx, client, execution.ID).Extract()
 		if err != nil {
 			return false, err
 		}

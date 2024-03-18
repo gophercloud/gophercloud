@@ -6,6 +6,7 @@ package extensions
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -29,7 +30,10 @@ func TestSchedulerHints(t *testing.T) {
 	volume1, err := volumes.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	err = volumes.WaitForStatus(context.TODO(), client, volume1.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, volume1.ID, "available")
 	th.AssertNoErr(t, err)
 	defer volumes.Delete(context.TODO(), client, volume1.ID, volumes.DeleteOpts{})
 
@@ -53,7 +57,10 @@ func TestSchedulerHints(t *testing.T) {
 	volume2, err := volumes.Create(context.TODO(), client, createOptsWithHints).Extract()
 	th.AssertNoErr(t, err)
 
-	err = volumes.WaitForStatus(context.TODO(), client, volume2.ID, "available", 60)
+	ctx2, cancel2 := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel2()
+
+	err = volumes.WaitForStatus(ctx2, client, volume2.ID, "available")
 	th.AssertNoErr(t, err)
 
 	err = volumes.Delete(context.TODO(), client, volume2.ID, volumes.DeleteOpts{}).ExtractErr()

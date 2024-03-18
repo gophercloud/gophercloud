@@ -8,6 +8,7 @@ import (
 	"crypto/rsa"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -823,7 +824,10 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 		return volumeAttachment, err
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), blockClient, volume.ID, "in-use", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, blockClient, volume.ID, "in-use"); err != nil {
 		return volumeAttachment, err
 	}
 
@@ -956,7 +960,10 @@ func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 		t.Fatalf("Unable to detach volume: %v", err)
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), blockClient, volumeAttachment.ID, "available", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, blockClient, volumeAttachment.ID, "available"); err != nil {
 		t.Fatalf("Unable to wait for volume: %v", err)
 	}
 	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)
@@ -1127,8 +1134,8 @@ func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 // WaitForComputeStatus will poll an instance's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Server, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		latest, err := servers.Get(context.TODO(), client, server.ID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := servers.Get(ctx, client, server.ID).Extract()
 		if err != nil {
 			return false, err
 		}

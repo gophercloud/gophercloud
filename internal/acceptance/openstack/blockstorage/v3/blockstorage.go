@@ -6,6 +6,7 @@ package v3
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -34,7 +35,10 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 		return snapshot, err
 	}
 
-	err = snapshots.WaitForStatus(context.TODO(), client, snapshot.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = snapshots.WaitForStatus(ctx, client, snapshot.ID, "available")
 	if err != nil {
 		return snapshot, err
 	}
@@ -71,7 +75,10 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 		return volume, err
 	}
 
-	err = volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, volume.ID, "available")
 	if err != nil {
 		return volume, err
 	}
@@ -111,7 +118,10 @@ func CreateVolumeWithType(t *testing.T, client *gophercloud.ServiceClient, vt *v
 		return volume, err
 	}
 
-	err = volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, volume.ID, "available")
 	if err != nil {
 		return volume, err
 	}
@@ -268,8 +278,8 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 
 	// Volumes can't be deleted until their snapshots have been,
 	// so block until the snapshoth as been deleted.
-	err = tools.WaitFor(func() (bool, error) {
-		_, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := snapshots.Get(ctx, client, snapshot.ID).Extract()
 		if err != nil {
 			return true, nil
 		}
@@ -299,8 +309,8 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 
 	// VolumeTypes can't be deleted until their volumes have been,
 	// so block until the volume is deleted.
-	err = tools.WaitFor(func() (bool, error) {
-		_, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := volumes.Get(ctx, client, volume.ID).Extract()
 		if err != nil {
 			return true, nil
 		}

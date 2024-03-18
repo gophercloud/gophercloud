@@ -73,10 +73,10 @@ func ListShareReplicas(t *testing.T, client *gophercloud.ServiceClient, shareID 
 func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) (*replicas.Replica, error) {
 	var current *replicas.Replica
 
-	err := tools.WaitFor(func() (bool, error) {
+	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
 		var err error
 
-		current, err = replicas.Get(context.TODO(), c, id).Extract()
+		current, err = replicas.Get(ctx, c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
 				switch status {
@@ -113,10 +113,10 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state string) (*replicas.Replica, error) {
 	var current *replicas.Replica
 
-	err := tools.WaitFor(func() (bool, error) {
+	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
 		var err error
 
-		current, err = replicas.Get(context.TODO(), c, id).Extract()
+		current, err = replicas.Get(ctx, c, id).Extract()
 		if err != nil {
 			return false, err
 		}

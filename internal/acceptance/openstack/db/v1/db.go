@@ -127,8 +127,8 @@ func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, instanceID, nam
 // the specified status or the status becomes ERROR.
 func WaitForInstanceStatus(
 	client *gophercloud.ServiceClient, instance *instances.Instance, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		latest, err := instances.Get(context.TODO(), client, instance.ID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := instances.Get(ctx, client, instance.ID).Extract()
 		if err != nil {
 			return false, err
 		}

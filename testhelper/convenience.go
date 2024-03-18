@@ -349,6 +349,20 @@ func AssertErr(t *testing.T, e error) {
 	}
 }
 
+// AssertErrIs is a convenience function for checking whether an error value is
+// target one
+func AssertErrIs(t *testing.T, e error, target error) {
+	t.Helper()
+
+	if e == nil {
+		logFatal(t, "expected error, got nil")
+	}
+
+	if !errors.Is(e, target) {
+		logFatal(t, fmt.Sprintf("expected error %v, got %v", target, e))
+	}
+}
+
 // CheckNoErr is similar to AssertNoErr, except with a non-fatal error
 func CheckNoErr(t *testing.T, e error) {
 	if e != nil {

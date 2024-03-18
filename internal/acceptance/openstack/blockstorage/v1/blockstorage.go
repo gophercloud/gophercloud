@@ -6,6 +6,7 @@ package v1
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -35,7 +36,10 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 		return snapshot, err
 	}
 
-	err = snapshots.WaitForStatus(context.TODO(), client, snapshot.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = snapshots.WaitForStatus(ctx, client, snapshot.ID, "available")
 	if err != nil {
 		return snapshot, err
 	}
@@ -65,7 +69,10 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 		return volume, err
 	}
 
-	err = volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, volume.ID, "available")
 	if err != nil {
 		return volume, err
 	}
@@ -106,8 +113,8 @@ func DeleteSnapshotshot(t *testing.T, client *gophercloud.ServiceClient, snapsho
 
 	// Volumes can't be deleted until their snapshots have been,
 	// so block until the snapshot has been deleted.
-	err = tools.WaitFor(func() (bool, error) {
-		_, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := snapshots.Get(ctx, client, snapshot.ID).Extract()
 		if err != nil {
 			return true, nil
 		}

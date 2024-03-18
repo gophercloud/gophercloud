@@ -40,7 +40,7 @@ func WaitForShareAccessRule(t *testing.T, client *gophercloud.ServiceClient, acc
 		return nil
 	}
 
-	return tools.WaitFor(func() (bool, error) {
+	return tools.WaitFor(func(context.Context) (bool, error) {
 		latest, err := ShareAccessRuleGet(t, client, accessRule.ID)
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {

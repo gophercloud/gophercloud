@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -41,7 +42,10 @@ func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *
 
 	t.Logf("Uploading volume %s as volume-backed image %s", volume.ID, imageName)
 
-	if err := volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
 		return volumeImage, err
 	}
 
@@ -87,7 +91,10 @@ func CreateVolumeAttach(t *testing.T, client *gophercloud.ServiceClient, volume 
 		return err
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), client, volume.ID, "in-use", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "in-use"); err != nil {
 		return err
 	}
 
@@ -128,7 +135,10 @@ func DeleteVolumeAttach(t *testing.T, client *gophercloud.ServiceClient, volume 
 		t.Fatalf("Unable to detach volume %s: %v", volume.ID, err)
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
 		t.Fatalf("Volume %s failed to become unavailable in 60 seconds: %v", volume.ID, err)
 	}
 
@@ -165,7 +175,10 @@ func ExtendVolumeSize(t *testing.T, client *gophercloud.ServiceClient, volume *v
 		return err
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
 		return err
 	}
 
@@ -241,8 +254,8 @@ func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID stri
 // WaitForBackupStatus will continually poll a backup, checking for a particular
 // status. It will do this for the amount of seconds defined.
 func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := backups.Get(context.TODO(), client, id).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := backups.Get(ctx, client, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "deleted" {
 				return true, nil
@@ -315,7 +328,10 @@ func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *v
 		return err
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
 		return err
 	}
 
@@ -334,7 +350,10 @@ func ResetVolumeStatus(t *testing.T, client *gophercloud.ServiceClient, volume *
 		return err
 	}
 
-	if err := volumes.WaitForStatus(context.TODO(), client, volume.ID, status, 60); err != nil {
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, status); err != nil {
 		return err
 	}
 
@@ -370,7 +389,10 @@ func ReImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Vo
 		return err
 	}
 
-	err = volumes.WaitForStatus(context.TODO(), client, volume.ID, "available", 60)
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	err = volumes.WaitForStatus(ctx, client, volume.ID, "available")
 	if err != nil {
 		return err
 	}

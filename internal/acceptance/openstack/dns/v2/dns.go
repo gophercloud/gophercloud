@@ -213,8 +213,8 @@ func DeleteZone(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zon
 // WaitForRecordSetStatus will poll a record set's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForRecordSetStatus(client *gophercloud.ServiceClient, rs *recordsets.RecordSet, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := recordsets.Get(context.TODO(), client, rs.ZoneID, rs.ID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := recordsets.Get(ctx, client, rs.ZoneID, rs.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -230,8 +230,8 @@ func WaitForRecordSetStatus(client *gophercloud.ServiceClient, rs *recordsets.Re
 // WaitForTransferRequestStatus will poll a transfer reqeust's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForTransferRequestStatus(client *gophercloud.ServiceClient, tr *transferRequests.TransferRequest, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := transferRequests.Get(context.TODO(), client, tr.ID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := transferRequests.Get(ctx, client, tr.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -245,8 +245,8 @@ func WaitForTransferRequestStatus(client *gophercloud.ServiceClient, tr *transfe
 // WaitForTransferAcceptStatus will poll a transfer accept's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForTransferAcceptStatus(client *gophercloud.ServiceClient, ta *transferAccepts.TransferAccept, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := transferAccepts.Get(context.TODO(), client, ta.ID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := transferAccepts.Get(ctx, client, ta.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -260,8 +260,8 @@ func WaitForTransferAcceptStatus(client *gophercloud.ServiceClient, ta *transfer
 // WaitForZoneStatus will poll a zone's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForZoneStatus(client *gophercloud.ServiceClient, zone *zones.Zone, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := zones.Get(context.TODO(), client, zone.ID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := zones.Get(ctx, client, zone.ID).Extract()
 		if err != nil {
 			return false, err
 		}

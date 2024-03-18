@@ -401,8 +401,8 @@ func DeletePool(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID st
 
 // WaitForLoadBalancerState will wait until a loadbalancer reaches a given state.
 func WaitForLoadBalancerState(client *gophercloud.ServiceClient, lbID, status string) error {
-	return tools.WaitFor(func() (bool, error) {
-		current, err := loadbalancers.Get(context.TODO(), client, lbID).Extract()
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := loadbalancers.Get(ctx, client, lbID).Extract()
 		if err != nil {
 			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {
 				if httpStatus.Actual == 404 {

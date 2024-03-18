@@ -1,39 +1,29 @@
 package tools
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"math/rand"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/gophercloud/gophercloud/v2"
 )
 
-// ErrTimeout is returned if WaitFor/WaitForTimeout take longer than their timeout duration.
-var ErrTimeout = errors.New("Timed out")
-
 // WaitFor uses WaitForTimeout to poll a predicate function once per second to
-// wait for a certain state to arrive, with a default timeout of 300 seconds.
-func WaitFor(predicate func() (bool, error)) error {
+// wait for a certain state to arrive, with a default timeout of 600 seconds.
+func WaitFor(predicate func(context.Context) (bool, error)) error {
 	return WaitForTimeout(predicate, 600*time.Second)
 }
 
 // WaitForTimeout polls a predicate function once per second to wait for a
 // certain state to arrive, or until the given timeout is reached.
-func WaitForTimeout(predicate func() (bool, error), timeout time.Duration) error {
-	startTime := time.Now()
-	for time.Since(startTime) < timeout {
-		time.Sleep(2 * time.Second)
+func WaitForTimeout(predicate func(context.Context) (bool, error), timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.TODO(), timeout)
+	defer cancel()
 
-		satisfied, err := predicate()
-		if err != nil {
-			return err
-		}
-		if satisfied {
-			return nil
-		}
-	}
-	return ErrTimeout
+	return gophercloud.WaitFor(ctx, predicate)
 }
 
 // MakeNewPassword generates a new string that's guaranteed to be different than the given one.
