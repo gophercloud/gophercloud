@@ -2,4 +2,6 @@
 #
 # Run all the tests.
 
+set -euxo pipefail
+
 exec go test -tags 'acceptance fixtures' ./... $@

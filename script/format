@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#
+# Run 'go fmt' (or rather, goimports) to warn about unformatted code
+
+set -euxo pipefail
 
 goimports="goimports"
 
