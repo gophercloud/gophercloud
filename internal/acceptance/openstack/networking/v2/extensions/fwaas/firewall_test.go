@@ -115,8 +115,8 @@ func TestFirewallCRUDRouter(t *testing.T) {
 	}
 
 	updateOpts := routerinsertion.UpdateOptsExt{
-		firewallUpdateOpts,
-		[]string{router2.ID},
+		UpdateOptsBuilder: firewallUpdateOpts,
+		RouterIDs:         []string{router2.ID},
 	}
 
 	_, err = firewalls.Update(context.TODO(), client, firewall.ID, updateOpts).Extract()
@@ -162,8 +162,8 @@ func TestFirewallCRUDRemoveRouter(t *testing.T) {
 	}
 
 	updateOpts := routerinsertion.UpdateOptsExt{
-		firewallUpdateOpts,
-		[]string{},
+		UpdateOptsBuilder: firewallUpdateOpts,
+		RouterIDs:         []string{},
 	}
 
 	_, err = firewalls.Update(context.TODO(), client, firewall.ID, updateOpts).Extract()

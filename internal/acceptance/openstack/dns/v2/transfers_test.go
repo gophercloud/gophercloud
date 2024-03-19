@@ -49,7 +49,7 @@ func TestTransferRequestCRUD(t *testing.T) {
 		Description: description,
 	}
 
-	newTransferRequest, err := transferRequests.Update(client, transferRequest.ID, updateOpts).Extract()
+	newTransferRequest, err := transferRequests.Update(context.TODO(), client, transferRequest.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, &newTransferRequest)

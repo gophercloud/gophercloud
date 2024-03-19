@@ -46,7 +46,7 @@ func TestZonesCRUD(t *testing.T) {
 		TTL:         0,
 	}
 
-	newZone, err := zones.Update(client, zone.ID, updateOpts).Extract()
+	newZone, err := zones.Update(context.TODO(), client, zone.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, &newZone)

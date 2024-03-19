@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -38,12 +39,12 @@ func TestConfigurationsCRUD(t *testing.T) {
 	values["collation_server"] = "latin1_swedish_ci"
 	createOpts.Values = values
 
-	cgroup, err := configurations.Create(client, createOpts).Extract()
+	cgroup, err := configurations.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create configuration: %v", err)
 	}
 
-	readCgroup, err := configurations.Get(client, cgroup.ID).Extract()
+	readCgroup, err := configurations.Get(context.TODO(), client, cgroup.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to read configuration: %v", err)
 	}
@@ -61,10 +62,10 @@ func TestConfigurationsCRUD(t *testing.T) {
 		Name:        newCgroupName,
 		Description: &newCgroupDescription,
 	}
-	err = configurations.Update(client, cgroup.ID, updateOpts).ExtractErr()
+	err = configurations.Update(context.TODO(), client, cgroup.ID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	newCgroup, err := configurations.Get(client, cgroup.ID).Extract()
+	newCgroup, err := configurations.Get(context.TODO(), client, cgroup.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to read updated configuration: %v", err)
 	}
@@ -73,7 +74,7 @@ func TestConfigurationsCRUD(t *testing.T) {
 	th.AssertEquals(t, newCgroup.Name, newCgroupName)
 	th.AssertEquals(t, newCgroup.Description, newCgroupDescription)
 
-	err = configurations.Delete(client, cgroup.ID).ExtractErr()
+	err = configurations.Delete(context.TODO(), client, cgroup.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete configuration: %v", err)
 	}

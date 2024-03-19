@@ -48,12 +48,12 @@ func TestInstances(t *testing.T) {
 	}
 
 	// Enable root user.
-	_, err = instances.EnableRootUser(client, instance.ID).Extract()
+	_, err = instances.EnableRootUser(context.TODO(), client, instance.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to enable root user: %v", err)
 	}
 
-	enabled, err := instances.IsRootEnabled(client, instance.ID).Extract()
+	enabled, err := instances.IsRootEnabled(context.TODO(), client, instance.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to check if root user is enabled: %v", err)
 	}
@@ -61,7 +61,7 @@ func TestInstances(t *testing.T) {
 	t.Logf("Root user is enabled: %t", enabled)
 
 	// Restart
-	err = instances.Restart(client, instance.ID).ExtractErr()
+	err = instances.Restart(context.TODO(), client, instance.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to restart instance: %v", err)
 	}

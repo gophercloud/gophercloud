@@ -50,7 +50,7 @@ func TestFlavorsGet(t *testing.T) {
 	}
 
 	if len(allFlavors) > 0 {
-		flavor, err := flavors.Get(client, allFlavors[0].StrID).Extract()
+		flavor, err := flavors.Get(context.TODO(), client, allFlavors[0].StrID).Extract()
 		if err != nil {
 			t.Fatalf("Unable to get flavor: %v", err)
 		}
