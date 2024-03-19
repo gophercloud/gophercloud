@@ -38,7 +38,7 @@ jobs:
 
       - name: Run go vet
         run: |
-          go vet ./...
+          ./script/vet
 
       - name: Run unit tests
         run: |
