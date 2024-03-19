@@ -77,7 +77,7 @@ jobs:
             IRONIC_VM_LOG_DIR=/opt/stack/new/ironic-bm-logs
             IRONIC_VM_SPECS_RAM=1024
             IRONIC_DEFAULT_DEPLOY_INTERFACE=direct
-            IRONIC_ENABLED_DEPLOY_INTERFACES=direct
+            IRONIC_ENABLED_DEPLOY_INTERFACES=direct,fake
             SWIFT_ENABLE_TEMPURLS=True
             SWIFT_TEMPURL_KEY=secretkey
           enabled_services: 'ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent'
