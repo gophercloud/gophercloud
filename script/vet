@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# Run go vet.
+
+set -e
+
+GOFLAGS="-tags=acceptance"
+go vet ./...
