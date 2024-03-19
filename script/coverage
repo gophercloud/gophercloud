@@ -1,6 +1,8 @@
 #!/bin/bash
+#
+# Run unit tests with coverage enabled.
 
-set -e
+set -euxo pipefail
 
 n=1
 for testpkg in $(go list ./testing ./.../testing); do

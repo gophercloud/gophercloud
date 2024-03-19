@@ -1,13 +1,21 @@
 #!/bin/bash
 #
-set -x
-set -o pipefail
+# Run acceptance tests.
 
-source `dirname $0`/stackenv
+# We intentionally don't set '-u' (error on unbound variables) or '-e' (exit on
+# first failure) initially since DevStack is not designed to run with these
+# flags and things crash and burn *spectacularly* 🔥🔥🔥
+set -xo pipefail
+
+source $(dirname $0)/stackenv
+
+# ...but we can do it after the fact
+set -eu
 
 timeout="60m"
 failed=
 
+LOG_DIR=${LOG_DIR:-}
 if [[ -z "${LOG_DIR}" ]]; then
     echo "LOG_DIR not set, will set a temp directory"
     LOG_DIR=/tmp/devstack-logs

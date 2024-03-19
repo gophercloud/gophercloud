@@ -2,7 +2,7 @@
 #
 # Run go vet.
 
-set -e
+set -euxo pipefail
 
 GOFLAGS="-tags=acceptance"
 go vet ./...
