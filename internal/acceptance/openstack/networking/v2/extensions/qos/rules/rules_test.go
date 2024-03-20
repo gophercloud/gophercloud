@@ -1,3 +1,5 @@
+//go:build acceptance || networking || qos || rules
+
 package rules
 
 import (
