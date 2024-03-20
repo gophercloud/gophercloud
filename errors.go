@@ -1,6 +1,8 @@
 package gophercloud
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -88,8 +90,8 @@ type ErrUnexpectedResponseCode struct {
 
 func (e ErrUnexpectedResponseCode) Error() string {
 	e.DefaultErrString = fmt.Sprintf(
-		"Expected HTTP response code %v when accessing [%s %s], but got %d instead\n%s",
-		e.Expected, e.Method, e.URL, e.Actual, e.Body,
+		"Expected HTTP response code %v when accessing [%s %s], but got %d instead: %s",
+		e.Expected, e.Method, e.URL, e.Actual, bytes.TrimSpace(e.Body),
 	)
 	return e.choseErrString()
 }
@@ -99,244 +101,22 @@ func (e ErrUnexpectedResponseCode) GetStatusCode() int {
 	return e.Actual
 }
 
-// StatusCodeError is a convenience interface to easily allow access to the
-// status code field of the various ErrDefault* types.
+// ResponseCodeIs returns true if this error is or contains an ErrUnexpectedResponseCode reporting
+// that the request failed with the given response code. For example, this checks if a request
+// failed because of a 404 error:
 //
-// By using this interface, you only have to make a single type cast of
-// the returned error to err.(StatusCodeError) and then call GetStatusCode()
-// instead of having a large switch statement checking for each of the
-// ErrDefault* types.
-type StatusCodeError interface {
-	Error() string
-	GetStatusCode() int
-}
-
-// ErrDefault400 is the default error type returned on a 400 HTTP response code.
-type ErrDefault400 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault400) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault401 is the default error type returned on a 401 HTTP response code.
-type ErrDefault401 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault401) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault403 is the default error type returned on a 403 HTTP response code.
-type ErrDefault403 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault403) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault404 is the default error type returned on a 404 HTTP response code.
-type ErrDefault404 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault404) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault405 is the default error type returned on a 405 HTTP response code.
-type ErrDefault405 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault405) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault408 is the default error type returned on a 408 HTTP response code.
-type ErrDefault408 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault408) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault409 is the default error type returned on a 409 HTTP response code.
-type ErrDefault409 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault409) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault429 is the default error type returned on a 429 HTTP response code.
-type ErrDefault429 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault429) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault500 is the default error type returned on a 500 HTTP response code.
-type ErrDefault500 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault500) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault502 is the default error type returned on a 502 HTTP response code.
-type ErrDefault502 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault502) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault503 is the default error type returned on a 503 HTTP response code.
-type ErrDefault503 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault503) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-// ErrDefault504 is the default error type returned on a 504 HTTP response code.
-type ErrDefault504 struct {
-	ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault504) Unwrap() error {
-	return e.ErrUnexpectedResponseCode
-}
-
-func (e ErrDefault400) Error() string {
-	e.DefaultErrString = fmt.Sprintf(
-		"Bad request with: [%s %s], error message: %s",
-		e.Method, e.URL, e.Body,
-	)
-	return e.choseErrString()
-}
-func (e ErrDefault401) Error() string {
-	return "Authentication failed"
-}
-func (e ErrDefault403) Error() string {
-	e.DefaultErrString = fmt.Sprintf(
-		"Request forbidden: [%s %s], error message: %s",
-		e.Method, e.URL, e.Body,
-	)
-	return e.choseErrString()
-}
-func (e ErrDefault404) Error() string {
-	e.DefaultErrString = fmt.Sprintf(
-		"Resource not found: [%s %s], error message: %s",
-		e.Method, e.URL, e.Body,
-	)
-	return e.choseErrString()
-}
-func (e ErrDefault405) Error() string {
-	return "Method not allowed"
-}
-func (e ErrDefault408) Error() string {
-	return "The server timed out waiting for the request"
-}
-func (e ErrDefault429) Error() string {
-	return "Too many requests have been sent in a given amount of time. Pause" +
-		" requests, wait up to one minute, and try again."
-}
-func (e ErrDefault500) Error() string {
-	return "Internal Server Error"
-}
-func (e ErrDefault502) Error() string {
-	return "Bad Gateway"
-}
-func (e ErrDefault503) Error() string {
-	return "The service is currently unable to handle the request due to a temporary" +
-		" overloading or maintenance. This is a temporary condition. Try again later."
-}
-func (e ErrDefault504) Error() string {
-	return "Gateway Timeout"
-}
-
-// Err400er is the interface resource error types implement to override the error message
-// from a 400 error.
-type Err400er interface {
-	Error400(ErrUnexpectedResponseCode) error
-}
-
-// Err401er is the interface resource error types implement to override the error message
-// from a 401 error.
-type Err401er interface {
-	Error401(ErrUnexpectedResponseCode) error
-}
-
-// Err403er is the interface resource error types implement to override the error message
-// from a 403 error.
-type Err403er interface {
-	Error403(ErrUnexpectedResponseCode) error
-}
-
-// Err404er is the interface resource error types implement to override the error message
-// from a 404 error.
-type Err404er interface {
-	Error404(ErrUnexpectedResponseCode) error
-}
-
-// Err405er is the interface resource error types implement to override the error message
-// from a 405 error.
-type Err405er interface {
-	Error405(ErrUnexpectedResponseCode) error
-}
-
-// Err408er is the interface resource error types implement to override the error message
-// from a 408 error.
-type Err408er interface {
-	Error408(ErrUnexpectedResponseCode) error
-}
-
-// Err409er is the interface resource error types implement to override the error message
-// from a 409 error.
-type Err409er interface {
-	Error409(ErrUnexpectedResponseCode) error
-}
-
-// Err429er is the interface resource error types implement to override the error message
-// from a 429 error.
-type Err429er interface {
-	Error429(ErrUnexpectedResponseCode) error
-}
-
-// Err500er is the interface resource error types implement to override the error message
-// from a 500 error.
-type Err500er interface {
-	Error500(ErrUnexpectedResponseCode) error
-}
-
-// Err502er is the interface resource error types implement to override the error message
-// from a 502 error.
-type Err502er interface {
-	Error502(ErrUnexpectedResponseCode) error
-}
-
-// Err503er is the interface resource error types implement to override the error message
-// from a 503 error.
-type Err503er interface {
-	Error503(ErrUnexpectedResponseCode) error
-}
-
-// Err504er is the interface resource error types implement to override the error message
-// from a 504 error.
-type Err504er interface {
-	Error504(ErrUnexpectedResponseCode) error
+//	allServers, err := servers.List(client, servers.ListOpts{})
+//	if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
+//		handleNotFound()
+//	}
+//
+// It is safe to pass a nil error, in which case this function always returns false.
+func ResponseCodeIs(err error, status int) bool {
+	var codeError ErrUnexpectedResponseCode
+	if errors.As(err, &codeError) {
+		return codeError.Actual == status
+	}
+	return false
 }
 
 // ErrTimeOut is the error type returned when an operations times out.

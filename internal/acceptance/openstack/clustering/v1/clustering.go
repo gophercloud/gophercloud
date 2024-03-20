@@ -453,7 +453,7 @@ func WaitForNodeStatus(client *gophercloud.ServiceClient, id string, status stri
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		latest, err := nodes.Get(ctx, client, id).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETED" {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) && status == "DELETED" {
 				return true, nil
 			}
 

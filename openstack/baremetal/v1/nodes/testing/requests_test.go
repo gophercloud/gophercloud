@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -336,8 +337,8 @@ func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 		},
 	}).ExtractErr()
 
-	if _, ok := err.(gophercloud.ErrDefault409); !ok {
-		t.Fatal("ErrDefault409 was expected to occur")
+	if !gophercloud.ResponseCodeIs(err, http.StatusConflict) {
+		t.Fatalf("expected 409 response, but got %s", err.Error())
 	}
 }
 
@@ -406,8 +407,8 @@ func TestChangePowerStateWithConflict(t *testing.T) {
 
 	c := client.ServiceClient()
 	err := nodes.ChangePowerState(context.TODO(), c, "1234asdf", opts).ExtractErr()
-	if _, ok := err.(gophercloud.ErrDefault409); !ok {
-		t.Fatal("ErrDefault409 was expected to occur")
+	if !gophercloud.ResponseCodeIs(err, http.StatusConflict) {
+		t.Fatalf("expected 409 response, but got %s", err.Error())
 	}
 }
 

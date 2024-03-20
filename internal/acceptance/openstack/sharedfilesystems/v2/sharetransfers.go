@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -39,7 +40,7 @@ func AcceptTransfer(t *testing.T, client *gophercloud.ServiceClient, transferReq
 func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, transfer *sharetransfers.Transfer) {
 	err := sharetransfers.Delete(context.TODO(), client, transfer.ID).ExtractErr()
 	if err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			return
 		}
 		t.Errorf("Unable to delete share transfer %s: %v", transfer.ID, err)

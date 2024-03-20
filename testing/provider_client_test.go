@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -364,8 +365,10 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	// did not attempt reauthentication again and just passed that 401 response to
 	// the caller as ErrDefault401.
 	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
-	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
-	th.AssertEquals(t, expectedErrorMessage, err.Error())
+	expectedErrorRx := regexp.MustCompile(`^Successfully re-authenticated, but got error executing request: Expected HTTP response code \[200\] when accessing \[GET http://[^/]*//route\], but got 401 instead: unauthorized$`)
+	if !expectedErrorRx.MatchString(err.Error()) {
+		t.Errorf("expected error that looks like %q, but got %q", expectedErrorRx.String(), err.Error())
+	}
 }
 
 func TestRequestWithContext(t *testing.T) {
