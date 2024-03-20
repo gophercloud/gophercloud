@@ -4,4 +4,4 @@
 
 set -euxo pipefail
 
-exec go test -tags 'acceptance fixtures' ./... $@
+go test -v -tags 'acceptance fixtures' ./... $@
