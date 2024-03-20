@@ -24,17 +24,8 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Setup environment
-        run: |
-          # Changing into a different directory to avoid polluting go.sum with "go get"
-          cd "$(mktemp -d)"
-          go mod init unit_tests
-
-          go install github.com/wadey/gocovmerge@master
-
       - name: Run unit tests
         run: |
-          ./script/coverage
           ./script/unittest
 
       - name: Check coverage
