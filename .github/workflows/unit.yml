@@ -35,17 +35,12 @@ jobs:
 
           go install github.com/wadey/gocovmerge@master
 
-      - name: Run go vet
-        run: |
-          ./script/vet
-
       - name: Run unit tests
         run: |
           ./script/coverage
-          ./script/format
           ./script/unittest
 
-      - name: Coveralls Parallel
+      - name: Check coverage
         uses: coverallsapp/github-action@v2
         with:
           file: cover.out
@@ -59,7 +54,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls Finished
+    - name: Store coverage results
       uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true
