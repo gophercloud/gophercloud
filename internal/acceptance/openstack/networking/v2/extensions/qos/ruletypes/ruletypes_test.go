@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/qos/ruletypes"
 )
 
@@ -19,11 +19,8 @@ func TestRuleTypes(t *testing.T) {
 		return
 	}
 
-	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
-	if err != nil {
-		t.Skip("This test requires qos Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "qos")
 
 	page, err := ruletypes.ListRuleTypes(client).AllPages(context.TODO())
 	if err != nil {

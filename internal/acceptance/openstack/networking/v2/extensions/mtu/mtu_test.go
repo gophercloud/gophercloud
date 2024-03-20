@@ -22,11 +22,8 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "net-mtu").Extract()
-	if err != nil {
-		t.Skip("This test requires net-mtu Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "net-mtu")
 
 	mtuWritable, _ := extensions.Get(context.TODO(), client, "net-mtu-writable").Extract()
 	tools.PrintResource(t, mtuWritable)
