@@ -43,14 +43,13 @@ func TestRecordSetsListByZone(t *testing.T) {
 		Limit: 1,
 	}
 
-	err = recordsets.ListByZone(client, zone.ID, listOpts).EachPage(
-		func(page pagination.Page) (bool, error) {
-			rr, err := recordsets.ExtractRecordSets(page)
-			th.AssertNoErr(t, err)
-			th.AssertEquals(t, len(rr), 1)
-			return true, nil
-		},
-	)
+	pager := recordsets.ListByZone(client, zone.ID, listOpts)
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		rr, err := recordsets.ExtractRecordSets(page)
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, len(rr), 1)
+		return true, nil
+	})
 	th.AssertNoErr(t, err)
 }
 
@@ -75,7 +74,7 @@ func TestRecordSetsCRUD(t *testing.T) {
 		Description: &description,
 	}
 
-	newRS, err := recordsets.Update(client, rs.ZoneID, rs.ID, updateOpts).Extract()
+	newRS, err := recordsets.Update(context.TODO(), client, rs.ZoneID, rs.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, &newRS)
@@ -87,7 +86,7 @@ func TestRecordSetsCRUD(t *testing.T) {
 		Records: records,
 	}
 
-	newRS, err = recordsets.Update(client, rs.ZoneID, rs.ID, updateOpts).Extract()
+	newRS, err = recordsets.Update(context.TODO(), client, rs.ZoneID, rs.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, &newRS)
@@ -100,7 +99,7 @@ func TestRecordSetsCRUD(t *testing.T) {
 		TTL: &ttl,
 	}
 
-	newRS, err = recordsets.Update(client, rs.ZoneID, rs.ID, updateOpts).Extract()
+	newRS, err = recordsets.Update(context.TODO(), client, rs.ZoneID, rs.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, &newRS)

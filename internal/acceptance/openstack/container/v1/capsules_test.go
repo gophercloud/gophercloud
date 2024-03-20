@@ -32,7 +32,7 @@ func TestCapsuleBase(t *testing.T) {
 		TemplateOpts: template,
 	}
 
-	v, err := capsules.Create(client, createOpts).Extract()
+	v, err := capsules.Create(context.TODO(), client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	capsule := v.(*capsules.Capsule)
 
@@ -50,12 +50,12 @@ func TestCapsuleBase(t *testing.T) {
 			if capsuleUUID != capsule.UUID {
 				continue
 			}
-			capsule, err := capsules.Get(client, capsuleUUID).ExtractBase()
+			capsule, err := capsules.Get(context.TODO(), client, capsuleUUID).ExtractBase()
 
 			th.AssertNoErr(t, err)
 			th.AssertEquals(t, capsule.MetaName, "template")
 
-			err = capsules.Delete(client, capsuleUUID).ExtractErr()
+			err = capsules.Delete(context.TODO(), client, capsuleUUID).ExtractErr()
 			th.AssertNoErr(t, err)
 
 		}
@@ -87,7 +87,7 @@ func TestCapsuleV132(t *testing.T) {
 		TemplateOpts: template,
 	}
 
-	capsule, err := capsules.Create(client, createOpts).ExtractV132()
+	capsule, err := capsules.Create(context.TODO(), client, createOpts).ExtractV132()
 	th.AssertNoErr(t, err)
 
 	err = WaitForCapsuleStatus(client, capsule.UUID, "Running")
@@ -103,12 +103,12 @@ func TestCapsuleV132(t *testing.T) {
 			if capsuleUUID != capsule.UUID {
 				continue
 			}
-			capsule, err := capsules.Get(client, capsuleUUID).ExtractV132()
+			capsule, err := capsules.Get(context.TODO(), client, capsuleUUID).ExtractV132()
 
 			th.AssertNoErr(t, err)
 			th.AssertEquals(t, capsule.MetaName, "template")
 
-			err = capsules.Delete(client, capsuleUUID).ExtractErr()
+			err = capsules.Delete(context.TODO(), client, capsuleUUID).ExtractErr()
 			th.AssertNoErr(t, err)
 
 		}
