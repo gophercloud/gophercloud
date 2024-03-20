@@ -1,5 +1,4 @@
 //go:build acceptance || networking || layer3 || router
-// +build acceptance networking layer3 router
 
 package layer3
 

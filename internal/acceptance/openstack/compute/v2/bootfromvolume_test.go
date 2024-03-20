@@ -1,5 +1,4 @@
 //go:build acceptance || compute || bootfromvolume
-// +build acceptance compute bootfromvolume
 
 package v2
 

@@ -1,5 +1,4 @@
 //go:build acceptance || networking || loadbalancer || listeners
-// +build acceptance networking loadbalancer listeners
 
 package v2
 

@@ -1,5 +1,4 @@
 //go:build acceptance || clustering || actions
-// +build acceptance clustering actions
 
 package v1
 

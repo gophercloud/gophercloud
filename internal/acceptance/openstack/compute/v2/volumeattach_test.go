@@ -1,5 +1,4 @@
 //go:build acceptance || compute || volumeattach
-// +build acceptance compute volumeattach
 
 package v2
 

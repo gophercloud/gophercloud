@@ -1,5 +1,4 @@
 //go:build acceptance || blockstorage
-// +build acceptance blockstorage
 
 package noauth
 

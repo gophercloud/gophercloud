@@ -1,5 +1,4 @@
 //go:build acceptance || networking || quotas
-// +build acceptance networking quotas
 
 package quotas
 

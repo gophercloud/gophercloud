@@ -1,5 +1,4 @@
 //go:build acceptance || share || transfers
-// +build acceptance share transfers
 
 package v2
 

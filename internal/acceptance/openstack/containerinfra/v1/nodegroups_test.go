@@ -1,5 +1,4 @@
 //go:build acceptance || containerinfra
-// +build acceptance containerinfra
 
 package v1
 
