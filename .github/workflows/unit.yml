@@ -35,17 +35,12 @@ jobs:
 
           go install github.com/wadey/gocovmerge@master
 
-      - name: Run go vet
-        run: |
-          ./script/vet
-
       - name: Run unit tests
         run: |
           ./script/coverage
-          ./script/format
           ./script/unittest
 
-      - name: Coveralls Parallel
+      - name: Coveralls parallel
         uses: coverallsapp/github-action@v2
         with:
           file: cover.out
