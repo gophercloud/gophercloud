@@ -13,6 +13,8 @@ import (
 )
 
 func TestSnapshotsList(t *testing.T) {
+	clients.RequireCinderNoAuth(t)
+
 	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
@@ -34,6 +36,8 @@ func TestSnapshotsList(t *testing.T) {
 }
 
 func TestSnapshotsCreateDelete(t *testing.T) {
+	clients.RequireCinderNoAuth(t)
+
 	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)

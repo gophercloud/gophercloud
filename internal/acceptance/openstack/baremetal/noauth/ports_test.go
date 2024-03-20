@@ -17,6 +17,7 @@ import (
 
 func TestPortsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
@@ -51,6 +52,7 @@ func TestPortsCreateDestroy(t *testing.T) {
 
 func TestPortsUpdate(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)

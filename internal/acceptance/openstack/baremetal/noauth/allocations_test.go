@@ -16,6 +16,7 @@ import (
 
 func TestAllocationsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
