@@ -44,7 +44,7 @@ jobs:
         run: |
           ./script/coverage
           ./script/format
-          ./script/unittest -v
+          ./script/unittest
 
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@v2
