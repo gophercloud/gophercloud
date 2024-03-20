@@ -1,5 +1,4 @@
 //go:build acceptance || messaging || claims
-// +build acceptance messaging claims
 
 package v2
 

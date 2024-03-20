@@ -1,5 +1,4 @@
 //go:build acceptance || clustering || profiletypes
-// +build acceptance clustering profiletypes
 
 package v1
 

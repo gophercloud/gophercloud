@@ -1,5 +1,4 @@
 //go:build acceptance || networking || lbaas || pool
-// +build acceptance networking lbaas pool
 
 package lbaas
 

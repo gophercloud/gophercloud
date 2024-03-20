@@ -1,5 +1,4 @@
 //go:build acceptance || baremetal || allocations
-// +build acceptance baremetal allocations
 
 package v1
 
