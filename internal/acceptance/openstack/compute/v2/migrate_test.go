@@ -1,5 +1,4 @@
 //go:build acceptance || compute || servers
-// +build acceptance compute servers
 
 package v2
 

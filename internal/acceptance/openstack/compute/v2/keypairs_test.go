@@ -1,5 +1,4 @@
 //go:build acceptance || compute || keypairs
-// +build acceptance compute keypairs
 
 package v2
 

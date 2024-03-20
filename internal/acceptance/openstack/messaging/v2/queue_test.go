@@ -1,5 +1,4 @@
 //go:build acceptance || messaging || queues
-// +build acceptance messaging queues
 
 package v2
 

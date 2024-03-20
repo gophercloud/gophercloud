@@ -1,5 +1,4 @@
 //go:build acceptance || compute || hypervisors
-// +build acceptance compute hypervisors
 
 package v2
 

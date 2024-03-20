@@ -1,5 +1,4 @@
 //go:build acceptance || compute || usage
-// +build acceptance compute usage
 
 package v2
 

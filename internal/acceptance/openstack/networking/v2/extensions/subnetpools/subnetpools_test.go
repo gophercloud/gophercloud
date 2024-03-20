@@ -1,5 +1,4 @@
 //go:build acceptance || networking || subnetpools
-// +build acceptance networking subnetpools
 
 package v2
 
