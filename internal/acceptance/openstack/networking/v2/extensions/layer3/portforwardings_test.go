@@ -1,3 +1,5 @@
+//go:build acceptance || networking || layer3 || portforwardings
+
 package layer3
 
 import (

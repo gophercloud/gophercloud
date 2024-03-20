@@ -1,3 +1,5 @@
+//go:build acceptance || placement || resourceproviders
+
 package v1
 
 import (

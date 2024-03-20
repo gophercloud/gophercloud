@@ -1,3 +1,5 @@
+//go:build acceptance || blockstorage || limits
+
 package extensions
 
 import (
