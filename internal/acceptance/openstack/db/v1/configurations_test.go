@@ -1,4 +1,4 @@
-//go:build acceptance || db
+//go:build acceptance || db || configurations
 
 package v1
 

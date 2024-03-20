@@ -1,4 +1,4 @@
-//go:build acceptance || db
+//go:build acceptance || db || users
 
 package v1
 

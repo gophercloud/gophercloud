@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || sharedfilesystems || availabilityzones
 
 package v2
 

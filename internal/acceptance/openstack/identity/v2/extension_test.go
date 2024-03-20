@@ -1,4 +1,4 @@
-//go:build acceptance || identity
+//go:build acceptance || identity || extensions
 
 package v2
 

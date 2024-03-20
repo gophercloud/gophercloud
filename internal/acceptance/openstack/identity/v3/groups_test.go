@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || identity || groups
 
 package v3
 

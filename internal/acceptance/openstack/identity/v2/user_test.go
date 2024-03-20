@@ -1,4 +1,4 @@
-//go:build acceptance || identity
+//go:build acceptance || identity || users
 
 package v2
 

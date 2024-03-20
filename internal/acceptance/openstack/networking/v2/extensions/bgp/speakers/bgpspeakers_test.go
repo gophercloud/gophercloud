@@ -1,3 +1,5 @@
+//go:build acceptance || networking || bgp || speakers
+
 package speakers
 
 import (

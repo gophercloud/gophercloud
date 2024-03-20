@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || orchestration || stackevents
 
 package v1
 

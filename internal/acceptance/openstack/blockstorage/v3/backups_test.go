@@ -1,4 +1,4 @@
-//go:build acceptance || blockstorage
+//go:build acceptance || blockstorage || backups
 
 package v3
 

@@ -1,3 +1,5 @@
+//go:build acceptance || sharedfilesystems || messages
+
 package messages
 
 import (

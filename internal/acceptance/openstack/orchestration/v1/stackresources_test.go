@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || orchestration || stackresources
 
 package v1
 

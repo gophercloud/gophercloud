@@ -1,4 +1,4 @@
-//go:build acceptance || quotasets
+//go:build acceptance || blockstorage || quotasets
 
 package v3
 

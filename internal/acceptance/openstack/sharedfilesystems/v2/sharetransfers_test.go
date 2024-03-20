@@ -1,4 +1,4 @@
-//go:build acceptance || share || transfers
+//go:build acceptance || sharedfilesystems || sharetransfers
 
 package v2
 

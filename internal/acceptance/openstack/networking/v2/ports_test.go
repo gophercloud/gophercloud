@@ -1,4 +1,4 @@
-//go:build acceptance || networking
+//go:build acceptance || networking || ports
 
 package v2
 

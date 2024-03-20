@@ -1,4 +1,4 @@
-//go:build acceptance || containerinfra
+//go:build acceptance || containerinfra || clusters
 
 package v1
 

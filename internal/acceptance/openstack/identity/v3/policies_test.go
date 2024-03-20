@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || identity || policies
 
 package v3
 

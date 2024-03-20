@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || identity || reauth
 
 package v3
 

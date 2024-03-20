@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || objectstorage || objects
 
 package v1
 

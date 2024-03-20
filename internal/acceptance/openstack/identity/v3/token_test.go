@@ -1,4 +1,4 @@
-//go:build acceptance
+//go:build acceptance || identity || tokens
 
 package v3
 
