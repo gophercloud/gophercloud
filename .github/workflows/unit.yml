@@ -16,9 +16,6 @@ jobs:
           - "1.21"
           - "1"
 
-    env:
-      GO111MODULE: "on"
-
     steps:
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
