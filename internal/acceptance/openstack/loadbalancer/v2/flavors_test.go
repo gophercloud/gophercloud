@@ -1,5 +1,4 @@
 //go:build acceptance || networking || loadbalancer || flavors
-// +build acceptance networking loadbalancer flavors
 
 package v2
 

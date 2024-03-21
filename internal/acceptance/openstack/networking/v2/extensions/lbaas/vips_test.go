@@ -1,5 +1,4 @@
 //go:build acceptance || networking || lbaas || vip
-// +build acceptance networking lbaas vip
 
 package lbaas
 

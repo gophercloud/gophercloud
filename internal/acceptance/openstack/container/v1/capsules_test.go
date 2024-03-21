@@ -1,5 +1,4 @@
 //go:build acceptance || containers || capsules
-// +build acceptance containers capsules
 
 package v1
 

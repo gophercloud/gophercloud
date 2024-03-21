@@ -1,5 +1,4 @@
 //go:build acceptance || compute || availabilityzones
-// +build acceptance compute availabilityzones
 
 package v2
 

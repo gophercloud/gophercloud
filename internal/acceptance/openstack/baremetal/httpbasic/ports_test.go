@@ -1,5 +1,4 @@
 //go:build acceptance || baremetal || ports
-// +build acceptance baremetal ports
 
 package httpbasic
 

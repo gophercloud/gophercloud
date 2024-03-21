@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# Run go vet.
+
+set -euxo pipefail
+
+GOFLAGS="-tags=acceptance"
+go vet ./...

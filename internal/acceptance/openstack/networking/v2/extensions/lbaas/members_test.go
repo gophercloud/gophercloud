@@ -1,5 +1,4 @@
 //go:build acceptance || networking || lbaas || member
-// +build acceptance networking lbaas member
 
 package lbaas
 

@@ -1,5 +1,4 @@
 //go:build acceptance || clustering || policies
-// +build acceptance clustering policies
 
 package v1
 

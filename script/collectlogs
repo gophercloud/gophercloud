@@ -1,5 +1,8 @@
 #!/bin/bash
-set -x
+#
+# Collect logs after an integration test failure.
+
+set -euxo pipefail
 
 LOG_DIR=${LOG_DIR:-/tmp/devstack-logs}
 mkdir -p $LOG_DIR

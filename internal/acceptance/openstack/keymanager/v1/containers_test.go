@@ -1,5 +1,4 @@
 //go:build acceptance || keymanager || containers
-// +build acceptance keymanager containers
 
 package v1
 

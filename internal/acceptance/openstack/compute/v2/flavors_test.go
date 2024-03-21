@@ -1,5 +1,4 @@
 //go:build acceptance || compute || flavors
-// +build acceptance compute flavors
 
 package v2
 

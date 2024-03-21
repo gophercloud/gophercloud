@@ -1,5 +1,4 @@
 //go:build acceptance || blockstorage
-// +build acceptance blockstorage
 
 package noauth
 
@@ -13,6 +12,8 @@ import (
 )
 
 func TestVolumesList(t *testing.T) {
+	clients.RequireCinderNoAuth(t)
+
 	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
@@ -34,6 +35,8 @@ func TestVolumesList(t *testing.T) {
 }
 
 func TestVolumesCreateDestroy(t *testing.T) {
+	clients.RequireCinderNoAuth(t)
+
 	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
 		t.Fatalf("Unable to create blockstorage client: %v", err)

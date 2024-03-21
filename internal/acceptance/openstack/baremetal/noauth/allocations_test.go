@@ -1,5 +1,4 @@
 //go:build acceptance || baremetal || allocations
-// +build acceptance baremetal allocations
 
 package noauth
 
@@ -16,6 +15,7 @@ import (
 
 func TestAllocationsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)

@@ -1,5 +1,4 @@
 //go:build acceptance || compute || images
-// +build acceptance compute images
 
 package v2
 

@@ -1,5 +1,4 @@
 //go:build acceptance || identity
-// +build acceptance identity
 
 package v2
 

@@ -218,7 +218,7 @@ func NewBlockStorageV2NoAuthClient() (*gophercloud.ServiceClient, error) {
 }
 
 // NewBlockStorageV3NoAuthClient returns a noauth *ServiceClient for
-// making calls to the OpenStack Block Storage v2 API. An error will be
+// making calls to the OpenStack Block Storage v3 API. An error will be
 // returned if client creation was not possible.
 func NewBlockStorageV3NoAuthClient() (*gophercloud.ServiceClient, error) {
 	client, err := blockstorageNoAuth.NewClient(gophercloud.AuthOptions{

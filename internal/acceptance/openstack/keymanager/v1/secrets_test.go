@@ -1,5 +1,4 @@
 //go:build acceptance || keymanager || secrets
-// +build acceptance keymanager secrets
 
 package v1
 

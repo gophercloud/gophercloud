@@ -1,5 +1,4 @@
 //go:build acceptance || networking || loadbalancer || pools
-// +build acceptance networking loadbalancer pools
 
 package v2
 
