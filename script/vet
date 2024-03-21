@@ -4,5 +4,5 @@
 
 set -euxo pipefail
 
-GOFLAGS="-tags=acceptance"
+export GOFLAGS="-tags=acceptance"
 go vet ./...
