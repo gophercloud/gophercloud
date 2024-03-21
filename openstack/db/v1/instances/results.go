@@ -100,6 +100,9 @@ type Instance struct {
 	// Indicates the unique identifier for the instance resource.
 	ID string `json:"id"`
 
+	// The operating status of the database service inside the Trove instance.
+	OperatingStatus string `json:"operating_status,omitempty"`
+
 	// Exposes various links that reference the instance resource.
 	Links []gophercloud.Link `json:"links"`
 
