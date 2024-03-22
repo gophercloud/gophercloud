@@ -7,7 +7,10 @@ import (
 // CreateOptsExt adds a Segments option to the base Network CreateOpts.
 type CreateOptsExt struct {
 	networks.CreateOptsBuilder
-	Segments []Segment `json:"segments,omitempty"`
+	NetworkType     string    `json:"provider:network_type,omitempty"`
+	PhysicalNetwork string    `json:"provider:physical_network,omitempty"`
+	SegmentationID  int       `json:"provider:segmentation_id,omitempty"`
+	Segments        []Segment `json:"segments,omitempty"`
 }
 
 // ToNetworkCreateMap adds segments to the base network creation options.
@@ -17,12 +20,23 @@ func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if opts.Segments == nil {
-		return base, nil
+	network := base["network"].(map[string]interface{})
+
+	if opts.NetworkType != "" {
+		network["provider:network_type"] = opts.NetworkType
 	}
 
-	providerMap := base["network"].(map[string]interface{})
-	providerMap["segments"] = opts.Segments
+	if opts.PhysicalNetwork != "" {
+		network["provider:physical_network"] = opts.PhysicalNetwork
+	}
+
+	if opts.SegmentationID > 0 {
+		network["provider:segmentation_id"] = opts.SegmentationID
+	}
+
+	if opts.Segments != nil {
+		network["segments"] = opts.Segments
+	}
 
 	return base, nil
 }
