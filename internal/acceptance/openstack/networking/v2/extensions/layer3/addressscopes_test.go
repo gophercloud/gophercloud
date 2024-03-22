@@ -1,5 +1,4 @@
 //go:build acceptance || networking || layer3 || addressscopes
-// +build acceptance networking layer3 addressscopes
 
 package layer3
 

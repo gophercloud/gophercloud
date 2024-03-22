@@ -1,3 +1,5 @@
+//go:build acceptance || blockstorage || qos
+
 package v3
 
 import (

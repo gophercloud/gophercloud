@@ -1,5 +1,4 @@
 //go:build acceptance || networking || security
-// +build acceptance networking security
 
 package extensions
 

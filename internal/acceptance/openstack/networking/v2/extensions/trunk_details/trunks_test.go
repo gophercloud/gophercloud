@@ -1,5 +1,4 @@
 //go:build acceptance || trunks
-// +build acceptance trunks
 
 package trunk_details
 

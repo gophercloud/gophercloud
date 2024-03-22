@@ -1,5 +1,4 @@
 //go:build acceptance || compute || remoteconsoles
-// +build acceptance compute remoteconsoles
 
 package v2
 

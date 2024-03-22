@@ -1,3 +1,5 @@
+//go:build acceptance || identity || catalog
+
 package v3
 
 import (

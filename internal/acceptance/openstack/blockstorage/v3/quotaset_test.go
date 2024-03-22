@@ -1,5 +1,4 @@
 //go:build acceptance || quotasets
-// +build acceptance quotasets
 
 package v3
 

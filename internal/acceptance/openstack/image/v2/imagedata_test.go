@@ -1,3 +1,5 @@
+//go:build acceptance || image || imagedata
+
 package v2
 
 import (

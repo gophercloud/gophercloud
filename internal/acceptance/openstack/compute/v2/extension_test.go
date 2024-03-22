@@ -1,5 +1,4 @@
 //go:build acceptance || compute || extensions
-// +build acceptance compute extensions
 
 package v2
 
