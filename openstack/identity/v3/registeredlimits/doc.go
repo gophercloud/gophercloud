@@ -36,7 +36,7 @@ Example to Create a RegisteredLimit
 		},
 	}
 
-	createdRegisteredLimits, err := limits.Create(identityClient, batchCreateOpts).Extract()
+	createdRegisteredLimits, err := limits.Create(context.TODO(), identityClient, batchCreateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Create a RegisteredLimit
 Example to Get a RegisteredLimit
 
 	    registeredLimitID := "966b3c7d36a24facaf20b7e458bf2192"
-	    registered_limit, err := registeredlimits.Get(client, registeredLimitID).Extract()
+	    registered_limit, err := registeredlimits.Get(context.TODO(), client, registeredLimitID).Extract()
 		if err != nil {
 			panic(err)
 		}
@@ -65,7 +65,7 @@ Example to Update a RegisteredLimit
 			ServiceID:    "9408080f1970482aa0e38bc2d4ea34b7",
 		}
 
-		registered_limit, err := registeredlimits.Update(client, registeredLimitID, updateOpts).Extract()
+		registered_limit, err := registeredlimits.Update(context.TODO(), client, registeredLimitID, updateOpts).Extract()
 		if err != nil {
 			panic(err)
 		}
@@ -73,7 +73,7 @@ Example to Update a RegisteredLimit
 Example to Delete a RegisteredLimit
 
 	registeredLimitID := "966b3c7d36a24facaf20b7e458bf2192"
-	err := registeredlimits.Delete(identityClient, registeredLimitID).ExtractErr()
+	err := registeredlimits.Delete(context.TODO(), identityClient, registeredLimitID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

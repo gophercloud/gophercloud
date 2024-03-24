@@ -12,7 +12,7 @@ Example to Create an Unscoped Token from a Password
 		Password: "pass"
 	}
 
-	token, err := tokens.Create(identityClient, authOpts).ExtractToken()
+	token, err := tokens.Create(context.TODO(), identityClient, authOpts).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ Example to Create a Token from a Tenant ID and Password
 		TenantID: "fc394f2ab2df4114bde39905f800dc57"
 	}
 
-	token, err := tokens.Create(identityClient, authOpts).ExtractToken()
+	token, err := tokens.Create(context.TODO(), identityClient, authOpts).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ Example to Create a Token from a Tenant Name and Password
 		TenantName: "tenantname"
 	}
 
-	token, err := tokens.Create(identityClient, authOpts).ExtractToken()
+	token, err := tokens.Create(context.TODO(), identityClient, authOpts).ExtractToken()
 	if err != nil {
 		panic(err)
 	}

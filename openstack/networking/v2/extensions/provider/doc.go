@@ -65,7 +65,7 @@ Example to Create a Provider Network
 		Segments:          segments,
 	}
 
-	network, err := networks.Create(networkClient, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

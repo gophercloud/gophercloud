@@ -8,7 +8,7 @@ Example to Authenticate with swauth
 		Key:  "password",
 	}
 
-	swiftClient, err := swauth.NewObjectStorageV1(providerClient, authOpts)
+	swiftClient, err := swauth.NewObjectStorageV1(context.TODO(), providerClient, authOpts)
 	if err != nil {
 		panic(err)
 	}

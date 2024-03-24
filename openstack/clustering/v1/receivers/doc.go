@@ -11,7 +11,7 @@ Example to Create a Receiver
 		Type:       receivers.WebhookReceiver,
 	}
 
-	receiver, err := receivers.Create(serviceClient, createOpts).Extract()
+	receiver, err := receivers.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +20,7 @@ Example to Create a Receiver
 
 Example to Get a Receiver
 
-	receiver, err := receivers.Get(serviceClient, "receiver-name").Extract()
+	receiver, err := receivers.Get(context.TODO(), serviceClient, "receiver-name").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ Example to Get a Receiver
 Example to Delete receiver
 
 	receiverID := "6dc6d336e3fc4c0a951b5698cd1236ee"
-	err := receivers.Delete(serviceClient, receiverID).ExtractErr()
+	err := receivers.Delete(context.TODO(), serviceClient, receiverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Update Receiver
 	}
 
 	receiverID := "6dc6d336e3fc4c0a951b5698cd1236ee"
-	receiver, err := receivers.Update(serviceClient, receiverID, updateOpts).Extract()
+	receiver, err := receivers.Update(context.TODO(), serviceClient, receiverID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ Example to List Receivers
 Example to Notify a Receiver
 
 	receiverID := "6dc6d336e3fc4c0a951b5698cd1236ee"
-	requestID, err := receivers.Notify(serviceClient, receiverID).Extract()
+	requestID, err := receivers.Notify(context.TODO(), serviceClient, receiverID).Extract()
 	if err != nil {
 		panic(err)
 	}

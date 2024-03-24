@@ -21,7 +21,7 @@ Example to Create a Cluster
 		MasterLBEnabled:   &masterLBEnabled,
 	}
 
-	cluster, err := clusters.Create(serviceClient, createOpts).Extract()
+	cluster, err := clusters.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ Example to Create a Cluster
 Example to Get a Cluster
 
 	clusterName := "cluster123"
-	cluster, err := clusters.Get(serviceClient, clusterName).Extract()
+	cluster, err := clusters.Get(context.TODO(), serviceClient, clusterName).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +85,7 @@ Example to Update a Cluster
 			Value: "True",
 		},
 	}
-	clusterUUID, err := clusters.Update(serviceClient, clusterUUID, updateOpts).Extract()
+	clusterUUID, err := clusters.Update(context.TODO(), serviceClient, clusterUUID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -96,7 +96,7 @@ Example to Upgrade a Cluster
 	upgradeOpts := clusters.UpgradeOpts{
 		ClusterTemplate: "0562d357-8641-4759-8fed-8173f02c9633",
 	}
-	clusterUUID, err := clusters.Upgrade(serviceClient, clusterUUID, upgradeOpts).Extract()
+	clusterUUID, err := clusters.Upgrade(context.TODO(), serviceClient, clusterUUID, upgradeOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -105,7 +105,7 @@ Example to Upgrade a Cluster
 Example to Delete a Cluster
 
 	clusterUUID := "dc6d336e3fc4c0a951b5698cd1236ee"
-	err := clusters.Delete(serviceClient, clusterUUID).ExtractErr()
+	err := clusters.Delete(context.TODO(), serviceClient, clusterUUID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

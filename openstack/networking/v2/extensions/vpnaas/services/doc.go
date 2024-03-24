@@ -31,7 +31,7 @@ Example to Create a Service
 		AdminStateUp: gophercloud.Enabled,
 	}
 
-	service, err := services.Create(networkClient, createOpts).Extract()
+	service, err := services.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Update a Service
 		Description: "New Description",
 	}
 
-	service, err := services.Update(networkClient, serviceID, updateOpts).Extract()
+	service, err := services.Update(context.TODO(), networkClient, serviceID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -52,14 +52,14 @@ Example to Update a Service
 Example to Delete a Service
 
 	serviceID := "38aee955-6283-4279-b091-8b9c828000ec"
-	err := services.Delete(networkClient, serviceID).ExtractErr()
+	err := services.Delete(context.TODO(), networkClient, serviceID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Show the details of a specific Service by ID
 
-	service, err := services.Get(client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+	service, err := services.Get(context.TODO(), client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
 	if err != nil {
 		panic(err)
 	}

@@ -26,7 +26,7 @@ Example to Add a Member to an Image
 	imageID := "2b6cacd4-cfd6-4b95-8302-4c04ccf0be3f"
 	projectID := "fc404778935a4cebaddcb4788fb3ff2c"
 
-	member, err := members.Create(imageClient, imageID, projectID).Extract()
+	member, err := members.Create(context.TODO(), imageClient, imageID, projectID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example to Update the Status of a Member
 		Status: "accepted",
 	}
 
-	member, err := members.Update(imageClient, imageID, projectID, updateOpts).Extract()
+	member, err := members.Update(context.TODO(), imageClient, imageID, projectID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Delete a Member from an Image
 	imageID := "2b6cacd4-cfd6-4b95-8302-4c04ccf0be3f"
 	projectID := "fc404778935a4cebaddcb4788fb3ff2c"
 
-	err := members.Delete(imageClient, imageID, projectID).ExtractErr()
+	err := members.Delete(context.TODO(), imageClient, imageID, projectID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

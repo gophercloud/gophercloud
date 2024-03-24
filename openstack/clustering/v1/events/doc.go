@@ -23,7 +23,7 @@ Example to List Events
 Example to Get an Event
 
 	eventID := "edce3528-864f-41fb-8759-f4707925cc09"
-	event, err := events.Get(serviceClient, eventID).Extract()
+	event, err := events.Get(context.TODO(), serviceClient, eventID).Extract()
 	if err != nil {
 		panic(err)
 	}

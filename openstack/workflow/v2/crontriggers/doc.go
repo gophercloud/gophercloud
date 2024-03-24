@@ -48,14 +48,14 @@ Create a cron trigger. This example will start the workflow "echo" each day at 8
 			"msg": "world",
 		},
 	}
-	crontrigger, err := crontriggers.Create(mistralClient, createOpts).Extract()
+	crontrigger, err := crontriggers.Create(context.TODO(), mistralClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Get a cron trigger
 
-	crontrigger, err := crontriggers.Get(mistralClient, "0520ffd8-f7f1-4f2e-845b-55d953a1cf46").Extract()
+	crontrigger, err := crontriggers.Get(context.TODO(), mistralClient, "0520ffd8-f7f1-4f2e-845b-55d953a1cf46").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ Get a cron trigger
 
 Delete a cron trigger
 
-	res := crontriggers.Delete(mistralClient, "0520ffd8-f7f1-4f2e-845b-55d953a1cf46")
+	res := crontriggers.Delete(context.TODO(), mistralClient, "0520ffd8-f7f1-4f2e-845b-55d953a1cf46")
 	if res.Err != nil {
 		panic(res.Err)
 	}

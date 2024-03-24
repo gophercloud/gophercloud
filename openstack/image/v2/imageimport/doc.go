@@ -4,7 +4,7 @@ Image service Import API information.
 
 Example to Get an information about the Import API
 
-	importInfo, err := imageimport.Get(imagesClient).Extract()
+	importInfo, err := imageimport.Get(context.TODO(), imagesClient).Extract()
 	if err != nil {
 	  panic(err)
 	}
@@ -19,7 +19,7 @@ Example to Create a new image import
 	}
 	imageID := "da3b75d9-3f4a-40e7-8a2c-bfab23927dea"
 
-	err := imageimport.Create(imagesClient, imageID, createOpts).ExtractErr()
+	err := imageimport.Create(context.TODO(), imagesClient, imageID, createOpts).ExtractErr()
 	if err != nil {
 	  panic(err)
 	}

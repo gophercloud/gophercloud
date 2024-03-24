@@ -22,7 +22,7 @@ Example to Create a RBAC Policy
 	                ObjectID:     "240d22bf-bd17-4238-9758-25f72610ecdc"
 		}
 
-		rbacPolicy, err := rbacpolicies.Create(rbacClient, createOpts).Extract()
+		rbacPolicy, err := rbacpolicies.Create(context.TODO(), rbacClient, createOpts).Extract()
 		if err != nil {
 			panic(err)
 		}
@@ -50,7 +50,7 @@ Example to List RBAC Policies
 Example to Delete a RBAC Policy
 
 	rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
-	err := rbacpolicies.Delete(rbacClient, rbacPolicyID).ExtractErr()
+	err := rbacpolicies.Delete(context.TODO(), rbacClient, rbacPolicyID).ExtractErr()
 	if err != nil {
 	  panic(err)
 	}
@@ -58,7 +58,7 @@ Example to Delete a RBAC Policy
 Example to Get RBAC Policy by ID
 
 	rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
-	rbacpolicy, err := rbacpolicies.Get(rbacClient, rbacPolicyID).Extract()
+	rbacpolicy, err := rbacpolicies.Get(context.TODO(), rbacClient, rbacPolicyID).Extract()
 	if err != nil {
 	  panic(err)
 	}
@@ -70,7 +70,7 @@ Example to Update a RBAC Policy
 	updateOpts := rbacpolicies.UpdateOpts{
 		TargetTenant: "9d766060b6354c9e8e2da44cab0e8f38",
 	}
-	rbacPolicy, err := rbacpolicies.Update(rbacClient, rbacPolicyID, updateOpts).Extract()
+	rbacPolicy, err := rbacpolicies.Update(context.TODO(), rbacClient, rbacPolicyID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

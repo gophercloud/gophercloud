@@ -36,7 +36,7 @@ Example to Create a Monitor
 		ExpectedCodes:  "200-299",
 	}
 
-	monitor, err := monitors.Create(networkClient, createOpts).Extract()
+	monitor, err := monitors.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ Example to Update a Monitor
 		ExpectedCodes:  "301",
 	}
 
-	monitor, err := monitors.Update(networkClient, monitorID, updateOpts).Extract()
+	monitor, err := monitors.Update(context.TODO(), networkClient, monitorID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,7 @@ Example to Update a Monitor
 Example to Delete a Monitor
 
 	monitorID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	err := monitors.Delete(networkClient, monitorID).ExtractErr()
+	err := monitors.Delete(context.TODO(), networkClient, monitorID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

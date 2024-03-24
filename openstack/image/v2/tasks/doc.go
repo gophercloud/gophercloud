@@ -24,7 +24,7 @@ Example to List Tasks
 
 Example to Get a Task
 
-	task, err := tasks.Get(imagesClient, "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
+	task, err := tasks.Get(context.TODO(), imagesClient, "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
 	if err != nil {
 	  panic(err)
 	}
@@ -45,7 +45,7 @@ Example to Create a Task
 	  },
 	}
 
-	task, err := tasks.Create(imagesClient, createOpts).Extract()
+	task, err := tasks.Create(context.TODO(), imagesClient, createOpts).Extract()
 	if err != nil {
 	  panic(err)
 	}

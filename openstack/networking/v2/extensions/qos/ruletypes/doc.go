@@ -19,7 +19,7 @@ Example of Getting a single QoS rule type by name
 
 	ruleTypeName := "bandwidth_limit"
 
-	ruleType, err := ruletypes.Get(networkClient, ruleTypeName).Extract()
+	ruleType, err := ruletypes.Get(context.TODO(), networkClient, ruleTypeName).Extract()
 	if err != nil {
 	    panic(err)
 	}

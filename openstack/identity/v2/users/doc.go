@@ -26,7 +26,7 @@ Example to Create a User
 		Enabled:  gophercloud.Enabled,
 	}
 
-	user, err := users.Create(identityClient, createOpts).Extract()
+	user, err := users.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example to Update a User
 		Enabled: gophercloud.Disabled,
 	}
 
-	user, err := users.Update(identityClient, userID, updateOpts).Extract()
+	user, err := users.Update(context.TODO(), identityClient, userID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ Example to Update a User
 Example to Delete a User
 
 	userID := "9fe2ff9ee4384b1894a90878d3e92bab"
-	err := users.Delete(identityClient, userID).ExtractErr()
+	err := users.Delete(context.TODO(), identityClient, userID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

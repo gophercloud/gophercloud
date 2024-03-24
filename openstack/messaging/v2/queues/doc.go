@@ -6,24 +6,24 @@ Lists all queues and creates, shows information for updates, deletes, and action
 
 Example to List Queues
 
-		listOpts := queues.ListOpts{
-			Limit: 10,
+	listOpts := queues.ListOpts{
+		Limit: 10,
+	}
+
+	pager := queues.List(cclient, listOpts)
+
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		queues, err := queues.ExtractQueues(page)
+		if err != nil {
+			panic(err)
 		}
 
-		pager := queues.List(client, listOpts)
+		for _, queue := range queues {
+			fmt.Printf("%+v\n", queue)
+		}
 
-	    err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-			queues, err := queues.ExtractQueues(page)
-			if err != nil {
-				panic(err)
-			}
-
-			for _, queue := range queues {
-				fmt.Printf("%+v\n", queue)
-			}
-
-			return true, nil
-		})
+		return true, nil
+	})
 
 Example to Create a Queue
 
@@ -37,7 +37,7 @@ Example to Create a Queue
 		Extra:                      map[string]interface{}{"description": "Test queue."},
 	}
 
-	err := queues.Create(client, createOpts).ExtractErr()
+	err := queues.Create(context.TODO(), client, createOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -57,28 +57,28 @@ Example to Update a Queue
 		},
 	}
 
-	updateResult, err := queues.Update(client, queueName, updateOpts).Extract()
+	updateResult, err := queues.Update(context.TODO(), client, queueName, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Get a Queue
 
-	queue, err := queues.Get(client, queueName).Extract()
+	queue, err := queues.Get(context.TODO(), client, queueName).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Queue
 
-	err := queues.Delete(client, queueName).ExtractErr()
+	err := queues.Delete(context.TODO(), client, queueName).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Get Message Stats of a Queue
 
-	queueStats, err := queues.GetStats(client, queueName).Extract()
+	queueStats, err := queues.GetStats(context.TODO(), client, queueName).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +90,7 @@ Example to Share a queue
 		Methods: []queues.ShareMethod{queues.MethodGet},
 	}
 
-	queueShare, err := queues.Share(client, queueName, shareOpts).Extract()
+	queueShare, err := queues.Share(context.TODO(), client, queueName, shareOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -103,7 +103,7 @@ Example to Purge a queue
 		},
 	}
 
-	err := queues.Purge(client, queueName, purgeOpts).ExtractErr()
+	err := queues.Purge(context.TODO(), client, queueName, purgeOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

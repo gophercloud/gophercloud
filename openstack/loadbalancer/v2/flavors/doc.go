@@ -29,7 +29,7 @@ Example to Create a Flavor
 		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}
 
-	flavor, err := flavors.Create(octaviaClient, createOpts).Extract()
+	flavor, err := flavors.Create(context.TODO(), octaviaClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ Example to Update a Flavor
 		Name: "New name",
 	}
 
-	flavor, err := flavors.Update(octaviaClient, flavorID, updateOpts).Extract()
+	flavor, err := flavors.Update(context.TODO(), octaviaClient, flavorID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Update a Flavor
 Example to Delete a Flavor
 
 	flavorID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	err := flavors.Delete(octaviaClient, flavorID).ExtractErr()
+	err := flavors.Delete(context.TODO(), octaviaClient, flavorID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

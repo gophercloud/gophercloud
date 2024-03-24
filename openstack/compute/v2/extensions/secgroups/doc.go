@@ -50,7 +50,7 @@ Example to Create a Security Group
 		Description: "A Security Group",
 	}
 
-	sg, err := secgroups.Create(computeClient, createOpts).Extract()
+	sg, err := secgroups.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +67,7 @@ Example to Create a Security Group Rule
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(computeClient, createOpts).Extract()
+	rule, err := secgroups.CreateRule(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ Example to Add a Security Group to a Server
 	serverID := "aab3ad01-9956-4623-a29b-24afc89a7d36"
 	sgID := "37d94f8a-d136-465c-ae46-144f0d8ef141"
 
-	err := secgroups.AddServer(computeClient, serverID, sgID).ExtractErr()
+	err := secgroups.AddServer(context.TODO(), computeClient, serverID, sgID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +87,7 @@ Example to Remove a Security Group from a Server
 	serverID := "aab3ad01-9956-4623-a29b-24afc89a7d36"
 	sgID := "37d94f8a-d136-465c-ae46-144f0d8ef141"
 
-	err := secgroups.RemoveServer(computeClient, serverID, sgID).ExtractErr()
+	err := secgroups.RemoveServer(context.TODO(), computeClient, serverID, sgID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ Example to Remove a Security Group from a Server
 # Example to Delete a Security Group
 
 	sgID := "37d94f8a-d136-465c-ae46-144f0d8ef141"
-	err := secgroups.Delete(computeClient, sgID).ExtractErr()
+	err := secgroups.Delete(context.TODO(), computeClient, sgID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -103,7 +103,7 @@ Example to Remove a Security Group from a Server
 Example to Delete a Security Group Rule
 
 	ruleID := "6221fe3e-383d-46c9-a3a6-845e66c1e8b4"
-	err := secgroups.DeleteRule(computeClient, ruleID).ExtractErr()
+	err := secgroups.DeleteRule(context.TODO(), computeClient, ruleID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

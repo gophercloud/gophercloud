@@ -29,7 +29,7 @@ Example to Create an Image
 		Visibility: images.ImageVisibilityPrivate,
 	}
 
-	image, err := images.Create(imageClient, createOpts)
+	image, err := images.Create(context.TODO(), imageClient, createOpts)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Update an Image
 		},
 	}
 
-	image, err := images.Update(imageClient, imageID, updateOpts).Extract()
+	image, err := images.Update(context.TODO(), imageClient, imageID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to Update an Image
 Example to Delete an Image
 
 	imageID := "1bea47ed-f6a9-463b-b423-14b9cca9ad27"
-	err := images.Delete(imageClient, imageID).ExtractErr()
+	err := images.Delete(context.TODO(), imageClient, imageID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

@@ -60,7 +60,7 @@ Example to Create a Container
 		},
 	}
 
-	container, err := containers.Create(objectStorageClient, createOpts).Extract()
+	container, err := containers.Create(context.TODO(), objectStorageClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -78,7 +78,7 @@ Example to Update a Container
 		},
 	}
 
-	container, err := containers.Update(objectStorageClient, containerName, updateOpts).Extract()
+	container, err := containers.Update(context.TODO(), objectStorageClient, containerName, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +87,7 @@ Example to Delete a Container
 
 	containerName := "my_container"
 
-	container, err := containers.Delete(objectStorageClient, containerName).Extract()
+	container, err := containers.Delete(context.TODO(), objectStorageClient, containerName).Extract()
 	if err != nil {
 		panic(err)
 	}

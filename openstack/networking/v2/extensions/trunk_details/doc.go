@@ -10,7 +10,7 @@ Example:
 	}
 	var portExt portExt
 
-	err := ports.Get(networkClient, "2ba3a709-e40e-462c-a541-85e99de589bf").ExtractInto(&portExt)
+	err := ports.Get(context.TODO(), networkClient, "2ba3a709-e40e-462c-a541-85e99de589bf").ExtractInto(&portExt)
 	if err != nil {
 	  panic(err)
 	}

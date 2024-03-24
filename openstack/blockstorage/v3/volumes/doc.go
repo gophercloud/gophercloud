@@ -13,7 +13,7 @@ Example to create a Volume from a Backup
 	}
 
 	client.Microversion = "3.47"
-	volume, err := volumes.Create(client, options).Extract()
+	volume, err := volumes.Create(context.TODO(), client, options).Extract()
 	if err != nil {
 		panic(err)
 	}

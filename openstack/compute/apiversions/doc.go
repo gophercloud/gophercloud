@@ -20,7 +20,7 @@ Example to List API Versions
 
 Example to Get an API Version
 
-	version, err := apiVersions.Get(computeClient, "v2.1").Extract()
+	version, err := apiVersions.Get(context.TODO(), computeClient, "v2.1").Extract()
 	if err != nil {
 		panic(err)
 	}

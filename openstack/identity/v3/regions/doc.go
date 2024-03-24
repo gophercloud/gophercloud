@@ -31,7 +31,7 @@ Example to Create a Region
 		}
 	}
 
-	region, err := regions.Create(identityClient, createOpts).Extract()
+	region, err := regions.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ Example to Update a Region
 		Description: "Updated Description for region",
 	}
 
-	region, err := regions.Update(identityClient, regionID, updateOpts).Extract()
+	region, err := regions.Update(context.TODO(), identityClient, regionID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ Example to Update a Region
 Example to Delete a Region
 
 	regionID := "TestRegion"
-	err := regions.Delete(identityClient, regionID).ExtractErr()
+	err := regions.Delete(context.TODO(), identityClient, regionID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

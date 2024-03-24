@@ -11,7 +11,7 @@ Example of Attaching a Volume to an Instance
 		InstanceUUID: server.ID,
 	}
 
-	err := volumeactions.Attach(client, volume.ID, attachOpts).ExtractErr()
+	err := volumeactions.Attach(context.TODO(), client, volume.ID, attachOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +20,7 @@ Example of Attaching a Volume to an Instance
 		AttachmentID: volume.Attachments[0].AttachmentID,
 	}
 
-	err = volumeactions.Detach(client, volume.ID, detachOpts).ExtractErr()
+	err = volumeactions.Detach(context.TODO(), client, volume.ID, detachOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ Example of Creating an Image from a Volume
 		Force:     true,
 	}
 
-	volumeImage, err := volumeactions.UploadImage(client, volume.ID, uploadImageOpts).Extract()
+	volumeImage, err := volumeactions.UploadImage(context.TODO(), client, volume.ID, uploadImageOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ Example of Extending a Volume's Size
 		NewSize: 100,
 	}
 
-	err := volumeactions.ExtendSize(client, volume.ID, extendOpts).ExtractErr()
+	err := volumeactions.ExtendSize(context.TODO(), client, volume.ID, extendOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ Example of Initializing a Volume Connection
 		OSType:    "linux2",
 	}
 
-	connectionInfo, err := volumeactions.InitializeConnection(client, volume.ID, connectOpts).Extract()
+	connectionInfo, err := volumeactions.InitializeConnection(context.TODO(), client, volume.ID, connectOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ Example of Initializing a Volume Connection
 		OSType:    "linux2",
 	}
 
-	err = volumeactions.TerminateConnection(client, volume.ID, terminateOpts).ExtractErr()
+	err = volumeactions.TerminateConnection(context.TODO(), client, volume.ID, terminateOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -88,7 +88,7 @@ Example of Setting a Volume's Bootable status
 		Bootable: true,
 	}
 
-	err := volumeactions.SetBootable(client, volume.ID, options).ExtractErr()
+	err := volumeactions.SetBootable(context.TODO(), client, volume.ID, options).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +100,7 @@ Example of Changing Type of a Volume
 		MigrationPolicy: volumeactions.MigrationPolicyOnDemand,
 	}
 
-	err = volumeactions.ChangeType(client, volumeID, changeTypeOpts).ExtractErr()
+	err = volumeactions.ChangeType(context.TODO(), client, volumeID, changeTypeOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

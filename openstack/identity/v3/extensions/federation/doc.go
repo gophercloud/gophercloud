@@ -46,14 +46,14 @@ Example to Create Mappings
 		},
 	}
 
-	createdMapping, err := federation.CreateMapping(identityClient, "ACME", createOpts).Extract()
+	createdMapping, err := federation.CreateMapping(context.TODO(), identityClient, "ACME", createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Get a Mapping
 
-	mapping, err := federation.GetMapping(identityClient, "ACME").Extract()
+	mapping, err := federation.GetMapping(context.TODO(), identityClient, "ACME").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -90,14 +90,14 @@ Example to Update a Mapping
 			},
 		},
 	}
-	updatedMapping, err := federation.UpdateMapping(identityClient, "ACME", updateOpts).Extract()
+	updatedMapping, err := federation.UpdateMapping(context.TODO(), identityClient, "ACME", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Mapping
 
-	err := federation.DeleteMapping(identityClient, "ACME").ExtractErr()
+	err := federation.DeleteMapping(context.TODO(), identityClient, "ACME").ExtractErr()
 	if err != nil {
 		panic(err)
 	}

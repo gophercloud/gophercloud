@@ -23,7 +23,7 @@ Example to List Actions
 Example to Get an Action
 
 	actionID := "edce3528-864f-41fb-8759-f4707925cc09"
-	action, err := actions.Get(serviceClient, actionID).Extract()
+	action, err := actions.Get(context.TODO(), serviceClient, actionID).Extract()
 	if err != nil {
 		panic(err)
 	}

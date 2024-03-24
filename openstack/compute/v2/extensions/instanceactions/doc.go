@@ -16,7 +16,7 @@ Example to List and Get actions:
 	}
 
 	for _, action := range actions {
-		action, err = instanceactions.Get(client, "server-id", action.RequestID).Extract()
+		action, err = instanceactions.Get(context.TODO(), client, "server-id", action.RequestID).Extract()
 		if err != nil {
 			panic("fail to get instance action")
 		}

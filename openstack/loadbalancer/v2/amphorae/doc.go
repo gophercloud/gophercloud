@@ -26,7 +26,7 @@ Example to Failover an amphora
 
 	ampID := "d67d56a6-4a86-4688-a282-f46444705c64"
 
-	err := amphorae.Failover(octaviaClient, ampID).ExtractErr()
+	err := amphorae.Failover(context.TODO(), octaviaClient, ampID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

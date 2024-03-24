@@ -24,7 +24,7 @@ Example to Create a Server Group
 		Policies: []string{"anti-affinity"},
 	}
 
-	sg, err := servergroups.Create(computeClient, createOpts).Extract()
+	sg, err := servergroups.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example to Create a Server Group with additional microversion 2.64 fields
 		}
 
 		computeClient.Microversion = "2.64"
-		result := servergroups.Create(computeClient, createOpts)
+		result := servergroups.Create(context.TODO(), computeClient, createOpts)
 
 		serverGroup, err := result.Extract()
 		if err != nil {
@@ -50,7 +50,7 @@ Example to Create a Server Group with additional microversion 2.64 fields
 Example to Delete a Server Group
 
 	sgID := "7a6f29ad-e34d-4368-951a-58a08f11cfb7"
-	err := servergroups.Delete(computeClient, sgID).ExtractErr()
+	err := servergroups.Delete(context.TODO(), computeClient, sgID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

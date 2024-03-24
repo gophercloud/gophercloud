@@ -4,7 +4,7 @@ Package quotas provides the ability to retrieve and manage Load Balancer quotas
 Example to Get project quotas
 
 	projectID = "23d5d3f79dfa4f73b72b8b0b0063ec55"
-	quotasInfo, err := quotas.Get(networkClient, projectID).Extract()
+	quotasInfo, err := quotas.Get(context.TODO(), networkClient, projectID).Extract()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -24,7 +24,7 @@ Example to Update project quotas
 			L7Policy:      gophercloud.IntToPointer(50),
 			L7Rule:        gophercloud.IntToPointer(100),
 	    }
-	    quotasInfo, err := quotas.Update(networkClient, projectID)
+	    quotasInfo, err := quotas.Update(context.TODO(), networkClient, projectID)
 	    if err != nil {
 	        log.Fatal(err)
 	    }

@@ -31,7 +31,7 @@ Example to Create a Volume Transfer request
 		Name:	  "my-volume-transfer",
 	}
 
-	transfer, err := volumetransfers.Create(client, createOpts).Extract()
+	transfer, err := volumetransfers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ Example to Accept a Volume Transfer request from the target project
 	}
 
 	// see the transfer ID from the create response above
-	transfer, err := volumetransfers.Accept(client, "transfer-uuid", acceptOpts).Extract()
+	transfer, err := volumetransfers.Accept(context.TODO(), client, "transfer-uuid", acceptOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ Example to Accept a Volume Transfer request from the target project
 
 Example to Delete a Volume Transfer request from the source project
 
-	err := volumetransfers.Delete(client, "transfer-uuid").ExtractErr()
+	err := volumetransfers.Delete(context.TODO(), client, "transfer-uuid").ExtractErr()
 	if err != nil {
 		panic(err)
 	}

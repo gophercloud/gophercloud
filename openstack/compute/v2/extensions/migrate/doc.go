@@ -5,7 +5,7 @@ provisioned by the OpenStack Compute service.
 Example of Migrate Server (migrate Action)
 
 	serverID := "b16ba811-199d-4ffd-8839-ba96c1185a67"
-	err := migrate.Migrate(computeClient, serverID).ExtractErr()
+	err := migrate.Migrate(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +21,7 @@ Example of Live-Migrate Server (os-migrateLive Action)
 		BlockMigration: &blockMigration,
 	}
 
-	err := migrate.LiveMigrate(computeClient, serverID, migrationOpts).ExtractErr()
+	err := migrate.LiveMigrate(context.TODO(), computeClient, serverID, migrationOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

@@ -8,21 +8,21 @@ Example to Create a Policy
 		Name:        "IPSecPolicy_1",
 	}
 
-	policy, err := policies.Create(networkClient, createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Policy
 
-	err := ipsecpolicies.Delete(client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
+	err := ipsecpolicies.Delete(context.TODO(), client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Show the details of a specific IPSec policy by ID
 
-	policy, err := ipsecpolicies.Get(client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+	policy, err := ipsecpolicies.Get(context.TODO(), client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ Example to Update an IPSec policy
 		Name:        &name,
 		Description: &description,
 	}
-	updatedPolicy, err := ipsecpolicies.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	updatedPolicy, err := ipsecpolicies.Update(context.TODO(), client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

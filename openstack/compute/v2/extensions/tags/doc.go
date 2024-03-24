@@ -7,7 +7,7 @@ Example to List all server Tags
 
 		client.Microversion = "2.26"
 
-	    serverTags, err := tags.List(client, serverID).Extract()
+	    serverTags, err := tags.List(context.TODO(), client, serverID).Extract()
 	    if err != nil {
 	        log.Fatal(err)
 	    }
@@ -18,7 +18,7 @@ Example to Check if the specific Tag exists on a server
 
 	client.Microversion = "2.26"
 
-	exists, err := tags.Check(client, serverID, tag).Extract()
+	exists, err := tags.Check(context.TODO(), client, serverID, tag).Extract()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -33,7 +33,7 @@ Example to Replace all Tags on a server
 
 	client.Microversion = "2.26"
 
-	newTags, err := tags.ReplaceAll(client, serverID, tags.ReplaceAllOpts{Tags: []string{"foo", "bar"}}).Extract()
+	newTags, err := tags.ReplaceAll(context.TODO(), client, serverID, tags.ReplaceAllOpts{Tags: []string{"foo", "bar"}}).Extract()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -44,7 +44,7 @@ Example to Add a new Tag on a server
 
 	client.Microversion = "2.26"
 
-	err := tags.Add(client, serverID, "foo").ExtractErr()
+	err := tags.Add(context.TODO(), client, serverID, "foo").ExtractErr()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -53,7 +53,7 @@ Example to Delete a Tag on a server
 
 	client.Microversion = "2.26"
 
-	err := tags.Delete(client, serverID, "foo").ExtractErr()
+	err := tags.Delete(context.TODO(), client, serverID, "foo").ExtractErr()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -62,7 +62,7 @@ Example to Delete all Tags on a server
 
 	client.Microversion = "2.26"
 
-	err := tags.DeleteAll(client, serverID).ExtractErr()
+	err := tags.DeleteAll(context.TODO(), client, serverID).ExtractErr()
 	if err != nil {
 	    log.Fatal(err)
 	}

@@ -32,7 +32,7 @@ Example to Create a Service
 		},
 	}
 
-	service, err := services.Create(identityClient, createOpts).Extract()
+	service, err := services.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ Example to Update a Service
 		},
 	}
 
-	service, err := services.Update(identityClient, serviceID, updateOpts).Extract()
+	service, err := services.Update(context.TODO(), identityClient, serviceID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ Example to Update a Service
 Example to Delete a Service
 
 	serviceID := "3c7bbe9a6ecb453ca1789586291380ed"
-	err := services.Delete(identityClient, serviceID).ExtractErr()
+	err := services.Delete(context.TODO(), identityClient, serviceID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

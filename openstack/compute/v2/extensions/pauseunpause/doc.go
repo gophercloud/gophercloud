@@ -5,12 +5,12 @@ have been provisioned by the OpenStack Compute service.
 Example to Pause and Unpause a Server
 
 	serverID := "32c8baf7-1cdb-4cc2-bc31-c3a55b89f56b"
-	err := pauseunpause.Pause(computeClient, serverID).ExtractErr()
+	err := pauseunpause.Pause(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
-	err = pauseunpause.Unpause(computeClient, serverID).ExtractErr()
+	err = pauseunpause.Unpause(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

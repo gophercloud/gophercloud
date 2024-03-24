@@ -38,7 +38,7 @@ Example to List Conductors
 
 Example to Get Conductor
 
-	showConductor, err := conductors.Get(client, "compute2.localdomain").Extract()
+	showConductor, err := conductors.Get(context.TODO(), client, "compute2.localdomain").Extract()
 	if err != nil {
 		panic(err)
 	}

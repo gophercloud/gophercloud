@@ -45,7 +45,7 @@ Example to Create a Network with External Information
 		&iTrue,
 	}
 
-	network, err := networks.Create(networkClient, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

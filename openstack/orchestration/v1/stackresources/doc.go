@@ -6,7 +6,7 @@ balancer, some configuration management system, and so forth).
 
 Example of get resource information in stack
 
-	rsrc_result := stackresources.Get(client, stack.Name, stack.ID, rsrc.Name)
+	rsrc_result := stackresources.Get(context.TODO(), client, stack.Name, stack.ID, rsrc.Name)
 	if rsrc_result.Err != nil {
 	    panic(rsrc_result.Err)
 	}
@@ -30,7 +30,7 @@ Example for list stack resources
 	fmt.Println("Resource List:")
 	for _, rsrc := range all_stack_rsrcs {
 	    // Get information of a resource in stack
-	    rsrc_result := stackresources.Get(client, stack.Name, stack.ID, rsrc.Name)
+	    rsrc_result := stackresources.Get(context.TODO(), client, stack.Name, stack.ID, rsrc.Name)
 	    if rsrc_result.Err != nil {
 	        panic(rsrc_result.Err)
 	    }
@@ -43,7 +43,7 @@ Example for list stack resources
 
 Example for get resource type schema
 
-	schema_result := stackresources.Schema(client, "OS::Heat::Stack")
+	schema_result := stackresources.Schema(context.TODO(), client, "OS::Heat::Stack")
 	if schema_result.Err != nil {
 	    panic(schema_result.Err)
 	}
@@ -56,7 +56,7 @@ Example for get resource type schema
 
 Example for get resource type Template
 
-	tmp_result := stackresources.Template(client, "OS::Heat::Stack")
+	tmp_result := stackresources.Template(context.TODO(), client, "OS::Heat::Stack")
 	if tmp_result.Err != nil {
 	    panic(tmp_result.Err)
 	}

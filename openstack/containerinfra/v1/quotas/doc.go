@@ -9,7 +9,7 @@ Example to Create a Quota
 		HardLimit: 10,
 	}
 
-	quota, err := quotas.Create(serviceClient, createOpts).Extract()
+	quota, err := quotas.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

@@ -20,7 +20,7 @@ Example of Retrieving all API Versions
 
 Example of Retrieving an API Version
 
-	version, err := apiversions.Get(client, "v3").Extract()
+	version, err := apiversions.Get(context.TODO(), client, "v3").Extract()
 	if err != nil {
 		panic("unable to get API version: " + err.Error())
 	}

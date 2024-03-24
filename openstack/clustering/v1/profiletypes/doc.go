@@ -19,7 +19,7 @@ Example to List ProfileType
 Example to Get a ProfileType
 
 	profileTypeName := "os.nova.server"
-	profileType, err := profiletypes.Get(clusteringClient, profileTypeName).Extract()
+	profileType, err := profiletypes.Get(context.TODO(), clusteringClient, profileTypeName).Extract()
 	if err != nil {
 		panic(err)
 	}

@@ -9,7 +9,7 @@ Example to Get a Port with Extra DHCP Options
 		extradhcpopts.ExtraDHCPOptsExt
 	}
 
-	err := ports.Get(networkClient, portID).ExtractInto(&s)
+	err := ports.Get(context.TODO(), networkClient, portID).ExtractInto(&s)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ Example to Create a Port with Extra DHCP Options
 		},
 	}
 
-	err := ports.Create(networkClient, createOpts).ExtractInto(&s)
+	err := ports.Create(context.TODO(), networkClient, createOpts).ExtractInto(&s)
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ Example to Update a Port with Extra DHCP Options
 	}
 
 	portID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
-	err := ports.Update(networkClient, portID, updateOpts).ExtractInto(&s)
+	err := ports.Update(context.TODO(), networkClient, portID, updateOpts).ExtractInto(&s)
 	if err != nil {
 		panic(err)
 	}

@@ -11,7 +11,7 @@ Example to Upload Image Data
 	}
 	defer imageData.Close()
 
-	err = imagedata.Upload(imageClient, imageID, imageData).ExtractErr()
+	err = imagedata.Upload(context.TODO(), imageClient, imageID, imageData).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example to Stage Image Data
 	}
 	defer imageData.Close()
 
-	err = imagedata.Stage(imageClient, imageID, imageData).ExtractErr()
+	err = imagedata.Stage(context.TODO(), imageClient, imageID, imageData).ExtractErr()
 	if err != nil {
 	  panic(err)
 	}
@@ -35,7 +35,7 @@ Example to Download Image Data
 
 	imageID := "da3b75d9-3f4a-40e7-8a2c-bfab23927dea"
 
-	image, err := imagedata.Download(imageClient, imageID).Extract()
+	image, err := imagedata.Download(context.TODO(), imageClient, imageID).Extract()
 	if err != nil {
 		panic(err)
 	}

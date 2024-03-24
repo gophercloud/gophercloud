@@ -11,21 +11,21 @@ Example to Create an IKE policy
 		PFS:                 ikepolicies.PFSGroup5,
 	}
 
-	policy, err := ikepolicies.Create(networkClient, createOpts).Extract()
+	policy, err := ikepolicies.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Show the details of a specific IKE policy by ID
 
-	policy, err := ikepolicies.Get(client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+	policy, err := ikepolicies.Get(context.TODO(), client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Policy
 
-	err := ikepolicies.Delete(client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
+	err := ikepolicies.Delete(context.TODO(), client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
 	if err != nil {
 		panic(err)
 
@@ -40,7 +40,7 @@ Example to Update an IKE policy
 			Value: 7000,
 		},
 	}
-	updatedPolicy, err := ikepolicies.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	updatedPolicy, err := ikepolicies.Update(context.TODO(), client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

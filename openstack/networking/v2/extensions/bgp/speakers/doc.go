@@ -8,7 +8,7 @@ Package speakers contains the functionality for working with Neutron bgp speaker
 
 Example:
 
-        pages, err := speakers.List(c).AllPages(context.TODO())
+        pages, err := speakers.List(client).AllPages(context.TODO())
         if err != nil {
                 log.Panic(err)
         }
@@ -26,7 +26,7 @@ Example:
 
 Example:
 
-        speaker, err := speakers.Get(c, id).Extract()
+        speaker, err := speakers.Get(context.TODO(), client, id).Extract()
         if err != nil {
                 log.Panic(nil)
         }
@@ -45,7 +45,7 @@ Example:
                 LocalAS:                       "2000",
                 Networks:                      []string{},
         }
-        r, err := speakers.Create(c, opts).Extract()
+        r, err := speakers.Create(context.TODO(), client, opts).Extract()
         if err != nil {
                 log.Panic(err)
         }
@@ -72,7 +72,7 @@ Example:
                 AdvertiseTenantNetworks:       false,
                 AdvertiseFloatingIPHostRoutes: true,
         }
-        spk, err := speakers.Update(c, bgpSpeakerID, opts).Extract()
+        spk, err := speakers.Update(context.TODO(), client, bgpSpeakerID, opts).Extract()
         if err != nil {
                 log.Panic(err)
         }
@@ -84,7 +84,7 @@ Example:
 Example:
 
         opts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeerID}
-        r, err := speakers.AddBGPPeer(c, bgpSpeakerID, opts).Extract()
+        r, err := speakers.AddBGPPeer(context.TODO(), client, bgpSpeakerID, opts).Extract()
         if err != nil {
                 log.Panic(err)
         }
@@ -96,7 +96,7 @@ Example:
 Example:
 
         opts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeerID}
-        err := speakers.RemoveBGPPeer(c, bgpSpeakerID, opts).ExtractErr()
+        err := speakers.RemoveBGPPeer(context.TODO(), client, bgpSpeakerID, opts).ExtractErr()
         if err != nil {
                 log.Panic(err)
         }
@@ -107,7 +107,7 @@ Example:
 
 Example:
 
-        pages, err := speakers.GetAdvertisedRoutes(c, speakerID).AllPages(context.TODO())
+        pages, err := speakers.GetAdvertisedRoutes(client, speakerID).AllPages(context.TODO())
         if err != nil {
                 log.Panic(err)
         }
@@ -126,7 +126,7 @@ Example:
 
 
         opts := speakers.AddGatewayNetworkOpts{NetworkID: networkID}
-        r, err := speakers.AddGatewayNetwork(c, speakerID, opts).Extract()
+        r, err := speakers.AddGatewayNetwork(context.TODO(), client, speakerID, opts).Extract()
         if err != nil {
                 log.Panic(err)
         }
@@ -138,7 +138,7 @@ Example:
 Example:
 
         opts := speakers.RemoveGatewayNetworkOpts{NetworkID: networkID}
-        err := speakers.RemoveGatewayNetwork(c, speakerID, opts).ExtractErr()
+        err := speakers.RemoveGatewayNetwork(context.TODO(), client, speakerID, opts).ExtractErr()
         if err != nil {
                 log.Panic(err)
         }

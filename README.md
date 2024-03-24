@@ -140,7 +140,7 @@ specification) and image ID (operating system) we're interested in:
 ```go
 import "github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 
-server, err := servers.Create(client, servers.CreateOpts{
+server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 	Name:      "My new server!",
 	FlavorRef: "flavor_id",
 	ImageRef:  "image_id",

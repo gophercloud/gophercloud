@@ -31,7 +31,7 @@ Example to Create a Backup
 		Name:     "my-backup",
 	}
 
-	backup, err := backups.Create(client, createOpts).Extract()
+	backup, err := backups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Update a Backup
 		Name: "new-name",
 	}
 
-	backup, err := backups.Update(client, "uuid", updateOpts).Extract()
+	backup, err := backups.Update(context.TODO(), client, "uuid", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ Example to Restore a Backup to a Volume
 		Name:     "vol-001",
 	}
 
-	restore, err := backups.RestoreFromBackup(client, "uuid", options).Extract()
+	restore, err := backups.RestoreFromBackup(context.TODO(), client, "uuid", options).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -67,14 +67,14 @@ Example to Restore a Backup to a Volume
 
 Example to Delete a Backup
 
-	err := backups.Delete(client, "uuid").ExtractErr()
+	err := backups.Delete(context.TODO(), client, "uuid").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Export a Backup
 
-	export, err := backups.Export(client, "uuid").Extract()
+	export, err := backups.Export(context.TODO(), client, "uuid").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +114,7 @@ Example to Import a Backup
 		BackupURL:     backupURL,
 	}
 
-	backup, err := backups.Import(client, options).Extract()
+	backup, err := backups.Import(context.TODO(), client, options).Extract()
 	if err != nil {
 		panic(err)
 	}

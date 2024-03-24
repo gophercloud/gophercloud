@@ -46,14 +46,14 @@ Example to Create a Port
 	    PhysicalNetwork: "my-network",
 		}
 
-	 	createPort, err := ports.Create(client, createOpts).Extract()
+	 	createPort, err := ports.Create(context.TODO(), client, createOpts).Extract()
 	 	if err != nil {
 	 		panic(err)
 	 	}
 
 Example to Get a Port
 
-	showPort, err := ports.Get(client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").Extract()
+	showPort, err := ports.Get(context.TODO(), client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -68,14 +68,14 @@ Example to Update a Port
 	 		},
 		}
 
-	 	updatePort, err := ports.Update(client, "c9afd385-5d89-4ecb-9e1c-68194da6b474", updateOpts).Extract()
+	 	updatePort, err := ports.Update(context.TODO(), client, "c9afd385-5d89-4ecb-9e1c-68194da6b474", updateOpts).Extract()
 	 	if err != nil {
 	 		panic(err)
 	 	}
 
 Example to Delete a Port
 
-	 	err = ports.Delete(client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").ExtractErr()
+	 	err = ports.Delete(context.TODO(), client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").ExtractErr()
 	 	if err != nil {
 	 		panic(err)
 		}

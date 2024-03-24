@@ -8,14 +8,14 @@ API reference https://developer.openstack.org/api-ref/baremetal-introspection/#n
 
 Example to Start Introspection
 
-	err := introspection.StartIntrospection(client, NodeUUID, introspection.StartOpts{}).ExtractErr()
+	err := introspection.StartIntrospection(context.TODO(), client, NodeUUID, introspection.StartOpts{}).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Get an Introspection status
 
-	_, err := introspection.GetIntrospectionStatus(client, NodeUUID).Extract()
+	_, err := introspection.GetIntrospectionStatus(context.TODO(), client, NodeUUID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ Example to List all introspection statuses
 
 Example to Abort an Introspection
 
-	err := introspection.AbortIntrospection(client, NodeUUID).ExtractErr()
+	err := introspection.AbortIntrospection(context.TODO(), client, NodeUUID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

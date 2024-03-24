@@ -38,7 +38,7 @@ Example of Creating a Server with Disk Config
 		DiskConfig:        diskconfig.Manual,
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic("Unable to create server: %s", err)
 	}

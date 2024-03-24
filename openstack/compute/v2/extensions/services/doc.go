@@ -28,14 +28,14 @@ Example of updating a service
 		Status: services.ServiceDisabled,
 	}
 
-	updated, err := services.Update(client, serviceID, opts).Extract()
+	updated, err := services.Update(context.TODO(), client, serviceID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example of delete a service
 
-	updated, err := services.Delete(client, serviceID).Extract()
+	updated, err := services.Delete(context.TODO(), client, serviceID).Extract()
 	if err != nil {
 		panic(err)
 	}

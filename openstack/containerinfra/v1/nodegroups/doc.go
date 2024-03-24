@@ -25,7 +25,7 @@ Create a client to use:
 
 Example of Getting a node group:
 
-	ng, err := nodegroups.Get(client, clusterUUID, nodeGroupUUID).Extract()
+	ng, err := nodegroups.Get(context.TODO(), client, clusterUUID, nodeGroupUUID).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -57,7 +57,7 @@ Example of Creating a node group:
 	// Role will default to "worker" if not set.
 
 	// To add a label to the new node group, need to know the cluster labels
-	cluster, err := clusters.Get(client, clusterUUID).Extract()
+	cluster, err := clusters.Get(context.TODO(), client, clusterUUID).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -74,7 +74,7 @@ Example of Creating a node group:
 	    Labels: labels,
 	}
 
-	ng, err := nodegroups.Create(client, clusterUUID, createOpts).Extract()
+	ng, err := nodegroups.Create(context.TODO(), client, clusterUUID, createOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -95,7 +95,7 @@ Example of Updating a node group:
 	    },
 	}
 
-	ng, err = nodegroups.Update(client, clusterUUID, nodeGroupUUID, updateOpts).Extract()
+	ng, err = nodegroups.Update(context.TODO(), client, clusterUUID, nodeGroupUUID, updateOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -104,7 +104,7 @@ Example of Updating a node group:
 
 Example of Deleting a node group:
 
-	err = nodegroups.Delete(client, clusterUUID, nodeGroupUUID).ExtractErr()
+	err = nodegroups.Delete(context.TODO(), client, clusterUUID, nodeGroupUUID).ExtractErr()
 	if err != nil {
 	    panic(err)
 	}

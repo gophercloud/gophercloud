@@ -25,7 +25,7 @@ Example to Create a Profile
 		},
 	}
 
-	profile, err := profiles.Create(serviceClient, createOpts).Extract()
+	profile, err := profiles.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ Example to Create a Profile
 
 Example to Get a Profile
 
-	profile, err := profiles.Get(serviceClient, "profile-name").Extract()
+	profile, err := profiles.Get(context.TODO(), serviceClient, "profile-name").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ Example to Update a Profile
 		Name: "new-name",
 	}
 
-	profile, err := profiles.Update(serviceClient, profileName, updateOpts).Extract()
+	profile, err := profiles.Update(context.TODO(), serviceClient, profileName, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -75,7 +75,7 @@ Example to Update a Profile
 Example to Delete a Profile
 
 	profileID := "6dc6d336e3fc4c0a951b5698cd1236ee"
-	err := profiles.Delete(serviceClient, profileID).ExtractErr()
+	err := profiles.Delete(context.TODO(), serviceClient, profileID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +100,7 @@ Example to Validate a profile
 		},
 	}
 
-	profile, err := profiles.Validate(serviceClient, validateOpts).Extract()
+	profile, err := profiles.Validate(context.TODO(), serviceClient, validateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

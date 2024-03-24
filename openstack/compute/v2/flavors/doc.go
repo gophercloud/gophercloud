@@ -37,7 +37,7 @@ Example to Create a Flavor
 		RxTxFactor: 1.0,
 	}
 
-	flavor, err := flavors.Create(computeClient, createOpts).Extract()
+	flavor, err := flavors.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Update a Flavor
 		Description: "This is a good description"
 	}
 
-	flavor, err := flavors.Update(computeClient, flavorID, updateOpts).Extract()
+	flavor, err := flavors.Update(context.TODO(), computeClient, flavorID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -81,7 +81,7 @@ Example to Grant Access to a Flavor
 		Tenant: "15153a0979884b59b0592248ef947921",
 	}
 
-	accessList, err := flavors.AddAccess(computeClient, flavor.ID, accessOpts).Extract()
+	accessList, err := flavors.AddAccess(context.TODO(), computeClient, flavor.ID, accessOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ Example to Remove/Revoke Access to a Flavor
 		Tenant: "15153a0979884b59b0592248ef947921",
 	}
 
-	accessList, err := flavors.RemoveAccess(computeClient, flavor.ID, accessOpts).Extract()
+	accessList, err := flavors.RemoveAccess(context.TODO(), computeClient, flavor.ID, accessOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -107,7 +107,7 @@ Example to Create Extra Specs for a Flavor
 		"hw:cpu_policy":        "CPU-POLICY",
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
 	}
-	createdExtraSpecs, err := flavors.CreateExtraSpecs(computeClient, flavorID, createOpts).Extract()
+	createdExtraSpecs, err := flavors.CreateExtraSpecs(context.TODO(), computeClient, flavorID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -118,7 +118,7 @@ Example to Get Extra Specs for a Flavor
 
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
 
-	extraSpecs, err := flavors.ListExtraSpecs(computeClient, flavorID).Extract()
+	extraSpecs, err := flavors.ListExtraSpecs(context.TODO(), computeClient, flavorID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -132,7 +132,7 @@ Example to Update Extra Specs for a Flavor
 	updateOpts := flavors.ExtraSpecsOpts{
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY-UPDATED",
 	}
-	updatedExtraSpec, err := flavors.UpdateExtraSpec(computeClient, flavorID, updateOpts).Extract()
+	updatedExtraSpec, err := flavors.UpdateExtraSpec(context.TODO(), computeClient, flavorID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -142,7 +142,7 @@ Example to Update Extra Specs for a Flavor
 Example to Delete an Extra Spec for a Flavor
 
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
-	err := flavors.DeleteExtraSpec(computeClient, flavorID, "hw:cpu_thread_policy").ExtractErr()
+	err := flavors.DeleteExtraSpec(context.TODO(), computeClient, flavorID, "hw:cpu_thread_policy").ExtractErr()
 	if err != nil {
 		panic(err)
 	}

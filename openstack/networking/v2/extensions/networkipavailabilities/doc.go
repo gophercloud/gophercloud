@@ -20,7 +20,7 @@ Example of Listing NetworkIPAvailabilities
 
 Example of Getting a single NetworkIPAvailability
 
-	availability, err := networkipavailabilities.Get(networkClient, "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
+	availability, err := networkipavailabilities.Get(context.TODO(), networkClient, "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
 	if err != nil {
 	  panic(err)
 	}

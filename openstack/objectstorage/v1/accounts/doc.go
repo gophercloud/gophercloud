@@ -9,7 +9,7 @@ services.
 
 Example to Get an Account
 
-	account, err := accounts.Get(objectStorageClient, nil).Extract()
+	account, err := accounts.Get(context.TODO(), objectStorageClient, nil).Extract()
 	fmt.Printf("%+v\n", account)
 
 Example to Update an Account
@@ -22,7 +22,7 @@ Example to Update an Account
 		Metadata: metadata,
 	}
 
-	updateResult, err := accounts.Update(objectStorageClient, updateOpts).Extract()
+	updateResult, err := accounts.Update(context.TODO(), objectStorageClient, updateOpts).Extract()
 	fmt.Printf("%+v\n", updateResult)
 */
 package accounts
