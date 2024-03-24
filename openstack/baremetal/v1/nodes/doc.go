@@ -4,7 +4,7 @@ resource in the OpenStack Bare Metal service.
 
 Example to List Nodes with Detail
 
-	nodes.ListDetail(client, nodes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	nodes.ListDetail(client, nodes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		nodeList, err := nodes.ExtractNodes(page)
 		if err != nil {
 			return false, err
@@ -24,7 +24,7 @@ Example to List Nodes
 		Fields:         []string{"name"},
 	}
 
-	nodes.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	nodes.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		nodeList, err := nodes.ExtractNodes(page)
 		if err != nil {
 			return false, err

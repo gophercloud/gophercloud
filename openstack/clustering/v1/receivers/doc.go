@@ -57,7 +57,7 @@ Example to List Receivers
 		Limit: 2,
 	}
 
-	receivers.List(serviceClient, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	receivers.List(serviceClient, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allReceivers, err := receivers.ExtractReceivers(page)
 		if err != nil {
 			panic(err)

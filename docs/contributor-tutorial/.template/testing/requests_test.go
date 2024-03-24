@@ -15,7 +15,7 @@ func TestListResources(t *testing.T) {
 	HandleListResourcesSuccessfully(t)
 
 	count := 0
-	err := resources.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := resources.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := resources.ExtractResources(page)

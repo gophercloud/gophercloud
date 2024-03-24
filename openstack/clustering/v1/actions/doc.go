@@ -8,7 +8,7 @@ Example to List Actions
 		Limit: 5,
 	}
 
-	err = actions.List(serviceClient, opts).EachPage(func(page pagination.Page) (bool, error) {
+	err = actions.List(serviceClient, opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actionInfos, err := actions.ExtractActions(page)
 		if err != nil {
 			return false, err

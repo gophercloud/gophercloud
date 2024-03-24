@@ -4,7 +4,7 @@ Clustering Service.
 
 Example to List ProfileType
 
-	err = profiletypes.List(serviceClient).EachPage(func(page pagination.Page) (bool, error) {
+	err = profiletypes.List(serviceClient).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		profileTypes, err := profiletypes.ExtractProfileTypes(page)
 		if err != nil {
 			return false, err

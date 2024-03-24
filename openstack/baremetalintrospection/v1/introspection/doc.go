@@ -22,7 +22,7 @@ Example to Get an Introspection status
 
 Example to List all introspection statuses
 
-	introspection.ListIntrospections(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	introspection.ListIntrospections(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		introspectionsList, err := introspection.ExtractIntrospections(page)
 		if err != nil {
 			return false, err

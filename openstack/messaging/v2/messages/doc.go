@@ -12,7 +12,7 @@ Example to List Messages
 
 	pager := messages.List(client, queueName, listOpts)
 
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := queues.ExtractQueues(page)
 		if err != nil {
 			panic(err)

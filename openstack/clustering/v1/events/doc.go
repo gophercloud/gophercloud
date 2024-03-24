@@ -8,7 +8,7 @@ Example to List Events
 		Limit: 5,
 	}
 
-	err = events.List(serviceClient, opts).EachPage(func(page pagination.Page) (bool, error) {
+	err = events.List(serviceClient, opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		eventInfos, err := events.ExtractEvents(page)
 		if err != nil {
 			return false, err

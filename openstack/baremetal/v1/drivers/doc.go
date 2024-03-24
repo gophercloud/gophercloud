@@ -6,7 +6,7 @@ API reference: https://developer.openstack.org/api-ref/baremetal/#drivers-driver
 
 Example to List Drivers
 
-	drivers.ListDrivers(client.ServiceClient(), drivers.ListDriversOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	drivers.ListDrivers(client.ServiceClient(), drivers.ListDriversOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		driversList, err := drivers.ExtractDrivers(page)
 		if err != nil {
 			return false, err

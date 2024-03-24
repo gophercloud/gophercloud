@@ -47,7 +47,7 @@ Example to List Profiles
 		Limit: 2,
 	}
 
-	profiles.List(serviceClient, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	profiles.List(serviceClient, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allProfiles, err := profiles.ExtractProfiles(page)
 		if err != nil {
 			panic(err)

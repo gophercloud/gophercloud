@@ -6,7 +6,7 @@
 
 Example to List Ports with Detail
 
-	ports.ListDetail(client, nil).EachPage(func(page pagination.Page) (bool, error) {
+	ports.ListDetail(client, nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		portList, err := ports.ExtractPorts(page)
 		if err != nil {
 			return false, err
@@ -25,7 +25,7 @@ Example to List Ports
 	 		Limit: 10,
 		}
 
-	 	ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	 	ports.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 	 		portList, err := ports.ExtractPorts(page)
 	 		if err != nil {
 	 			return false, err

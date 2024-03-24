@@ -4,7 +4,7 @@ resource in the OpenStack Bare Metal service.
 
 Example to List Conductors with Detail
 
-	conductors.List(client, conductors.ListOpts{Detail: true}).EachPage(func(page pagination.Page) (bool, error) {
+	conductors.List(client, conductors.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		conductorList, err := conductors.ExtractConductors(page)
 		if err != nil {
 			return false, err
@@ -23,7 +23,7 @@ Example to List Conductors
 		Fields:         []string{"hostname"},
 	}
 
-	conductors.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	conductors.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		conductorList, err := conductors.ExtractConductors(page)
 		if err != nil {
 			return false, err

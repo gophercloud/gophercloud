@@ -19,7 +19,7 @@ Example to Retrieve Usage for a Single Tenant:
 		End: &end,
 	}
 
-	err := usage.SingleTenant(computeClient, tenantID, singleTenantOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := usage.SingleTenant(computeClient, tenantID, singleTenantOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		tenantUsage, err := usage.ExtractSingleTenant(page)
 		if err != nil {
 			return false, err
@@ -40,7 +40,7 @@ Example to Retrieve Usage for All Tenants:
 		Detailed: true,
 	}
 
-	err := usage.AllTenants(computeClient, allTenantsOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := usage.AllTenants(computeClient, allTenantsOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allTenantsUsage, err := usage.ExtractAllTenants(page)
 		if err != nil {
 			return false, err
