@@ -5,7 +5,7 @@ updating and abandoning.
 
 Example for list events for a stack
 
-	pages, err := stackevents.List(client, stack.Name, stack.ID, nil).AllPages()
+	pages, err := stackevents.List(client, stack.Name, stack.ID, nil).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

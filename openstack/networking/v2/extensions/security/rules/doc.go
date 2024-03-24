@@ -8,7 +8,7 @@ Example to List Security Groups Rules
 		Protocol: "tcp",
 	}
 
-	allPages, err := rules.List(networkClient, listOpts).AllPages()
+	allPages, err := rules.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

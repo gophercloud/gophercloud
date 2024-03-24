@@ -5,7 +5,7 @@ define the volume capabilities.
 
 Example to list Volume Types
 
-	allPages, err := volumetypes.List(client, volumetypes.ListOpts{}).AllPages()
+	allPages, err := volumetypes.List(client, volumetypes.ListOpts{}).AllPages(context.TODO())
 	if err != nil{
 		panic(err)
 	}
@@ -121,7 +121,7 @@ Example to List Volume Type Access
 
 	typeID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
 
-	allPages, err := volumetypes.ListAccesses(client, typeID).AllPages()
+	allPages, err := volumetypes.ListAccesses(client, typeID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -6,7 +6,7 @@ Example to List FlavorProfiles
 
 	listOpts := flavorprofiles.ListOpts{}
 
-	allPages, err := flavorprofiles.List(octaviaClient, listOpts).AllPages()
+	allPages, err := flavorprofiles.List(octaviaClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

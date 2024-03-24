@@ -12,7 +12,7 @@ Example to List Flavors
 		AccessType: flavors.PublicAccess,
 	}
 
-	allPages, err := flavors.ListDetail(computeClient, listOpts).AllPages()
+	allPages, err := flavors.ListDetail(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -59,7 +59,7 @@ Example to List Flavor Access
 
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
 
-	allPages, err := flavors.ListAccesses(computeClient, flavorID).AllPages()
+	allPages, err := flavors.ListAccesses(computeClient, flavorID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

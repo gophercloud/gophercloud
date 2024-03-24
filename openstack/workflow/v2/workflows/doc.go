@@ -12,7 +12,7 @@ List workflows
 		Namespace: "some-namespace",
 	}
 
-	allPages, err := workflows.List(mistralClient, listOpts).AllPages()
+	allPages, err := workflows.List(mistralClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

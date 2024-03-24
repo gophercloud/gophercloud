@@ -8,7 +8,7 @@ Example to List Amphorae
 		LoadbalancerID: "6bd55cd3-802e-447e-a518-1e74e23bb106",
 	}
 
-	allPages, err := amphorae.List(octaviaClient, listOpts).AllPages()
+	allPages, err := amphorae.List(octaviaClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

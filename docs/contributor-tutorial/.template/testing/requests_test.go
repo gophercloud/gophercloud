@@ -34,7 +34,7 @@ func TestListResourcesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListResourcesSuccessfully(t)
 
-	allPages, err := resources.List(client.ServiceClient(), nil).AllPages()
+	allPages, err := resources.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := resources.ExtractResources(allPages)
 	th.AssertNoErr(t, err)

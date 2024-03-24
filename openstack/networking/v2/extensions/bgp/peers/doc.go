@@ -7,7 +7,7 @@ Package peers contains the functionality for working with Neutron bgp peers.
 
 Example:
 
-        pages, err := peers.List(c).AllPages()
+        pages, err := peers.List(c).AllPages(context.TODO())
         if err != nil {
                 log.Panic(err)
         }

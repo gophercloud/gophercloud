@@ -20,7 +20,7 @@ Default Filter checks equality, but you can override it with provided filter typ
 		},
 	}
 
-	allPages, err := crontriggers.List(mistralClient, listOpts).AllPages()
+	allPages, err := crontriggers.List(mistralClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

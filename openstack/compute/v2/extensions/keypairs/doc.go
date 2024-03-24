@@ -4,7 +4,7 @@ servers with a specified key pair.
 
 Example to List Key Pairs
 
-	allPages, err := keypairs.List(computeClient, nil).AllPages()
+	allPages, err := keypairs.List(computeClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example to List Key Pairs using microversion 2.10 or greater
 		UserID: "user-id",
 	}
 
-	allPages, err := keypairs.List(computeClient, listOpts).AllPages()
+	allPages, err := keypairs.List(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

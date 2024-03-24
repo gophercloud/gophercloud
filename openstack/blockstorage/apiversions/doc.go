@@ -4,7 +4,7 @@ API versions for the OpenStack Block Storage service, code-named Cinder.
 
 Example of Retrieving all API Versions
 
-	allPages, err := apiversions.List(client).AllPages()
+	allPages, err := apiversions.List(client).AllPages(context.TODO())
 	if err != nil {
 		panic("unable to get API versions: " + err.Error())
 	}

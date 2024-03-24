@@ -29,7 +29,7 @@ Example to List Networks with Provider Information
 
 	var allNetworks []NetworkWithProvider
 
-	allPages, err := networks.List(networkClient, nil).AllPages()
+	allPages, err := networks.List(networkClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

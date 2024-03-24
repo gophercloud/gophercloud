@@ -8,7 +8,7 @@ Example to List Policies
 		Type: "application/json",
 	}
 
-	allPages, err := policies.List(identityClient, listOpts).AllPages()
+	allPages, err := policies.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

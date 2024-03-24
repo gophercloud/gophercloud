@@ -4,7 +4,7 @@ networkipavailabilities through the Neutron API.
 
 Example of Listing NetworkIPAvailabilities
 
-	allPages, err := networkipavailabilities.List(networkClient, networkipavailabilities.ListOpts{}).AllPages()
+	allPages, err := networkipavailabilities.List(networkClient, networkipavailabilities.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 	  panic(err)
 	}

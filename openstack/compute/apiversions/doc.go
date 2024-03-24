@@ -4,7 +4,7 @@ API versions for the Compute service, code-named Nova.
 
 Example to List API Versions
 
-	allPages, err := apiversions.List(computeClient).AllPages()
+	allPages, err := apiversions.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

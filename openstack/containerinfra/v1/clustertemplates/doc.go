@@ -52,7 +52,7 @@ Example to List Clusters Templates
 		Limit: 20,
 	}
 
-	allPages, err := clustertemplates.List(serviceClient, listOpts).AllPages()
+	allPages, err := clustertemplates.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

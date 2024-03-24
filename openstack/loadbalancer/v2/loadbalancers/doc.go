@@ -8,7 +8,7 @@ Example to List Load Balancers
 		Provider: "haproxy",
 	}
 
-	allPages, err := loadbalancers.List(networkClient, listOpts).AllPages()
+	allPages, err := loadbalancers.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

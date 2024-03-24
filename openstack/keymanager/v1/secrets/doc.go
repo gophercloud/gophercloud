@@ -13,7 +13,7 @@ Example to List Secrets
 		CreatedQuery: createdQuery,
 	}
 
-	allPages, err := secrets.List(client, listOpts).AllPages()
+	allPages, err := secrets.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -8,7 +8,7 @@ Example to List Floating IPs
 		FloatingNetworkID: "a6917946-38ab-4ffd-a55a-26c0980ce5ee",
 	}
 
-	allPages, err := floatingips.List(networkClient, listOpts).AllPages()
+	allPages, err := floatingips.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

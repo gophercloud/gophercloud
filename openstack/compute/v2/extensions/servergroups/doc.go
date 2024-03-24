@@ -3,7 +3,7 @@ Package servergroups provides the ability to manage server groups.
 
 Example to List Server Groups
 
-	allpages, err := servergroups.List(computeClient).AllPages()
+	allpages, err := servergroups.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

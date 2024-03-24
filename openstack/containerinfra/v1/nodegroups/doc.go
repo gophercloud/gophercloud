@@ -37,7 +37,7 @@ Example of Listing node groups:
 	    Role: "worker",
 	}
 
-	allPages, err := nodegroups.List(client, clusterUUID, listOpts).AllPages()
+	allPages, err := nodegroups.List(client, clusterUUID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

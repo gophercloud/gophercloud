@@ -11,7 +11,7 @@ Example to List Servers
 		AllTenants: true,
 	}
 
-	allPages, err := servers.ListSimple(computeClient, listOpts).AllPages()
+	allPages, err := servers.ListSimple(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,7 @@ Example to List Detail Servers
 		AllTenants: true,
 	}
 
-	allPages, err := servers.List(computeClient, listOpts).AllPages()
+	allPages, err := servers.List(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

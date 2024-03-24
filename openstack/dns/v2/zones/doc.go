@@ -8,7 +8,7 @@ Example to List Zones
 		Email: "jdoe@example.com",
 	}
 
-	allPages, err := zones.List(dnsClient, listOpts).AllPages()
+	allPages, err := zones.List(dnsClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

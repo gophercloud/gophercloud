@@ -40,7 +40,7 @@ Example to Delete a site connection
 
 Example to List site connections
 
-	allPages, err := siteconnections.List(client, nil).AllPages()
+	allPages, err := siteconnections.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

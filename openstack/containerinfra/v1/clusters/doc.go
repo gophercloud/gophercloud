@@ -41,7 +41,7 @@ Example to List Clusters
 		Limit: 20,
 	}
 
-	allPages, err := clusters.List(serviceClient, listOpts).AllPages()
+	allPages, err := clusters.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ Example to List Clusters
 
 Example to List Clusters with detailed information
 
-	allPagesDetail, err := clusters.ListDetail(serviceClient, clusters.ListOpts{}).AllPages()
+	allPagesDetail, err := clusters.ListDetail(serviceClient, clusters.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

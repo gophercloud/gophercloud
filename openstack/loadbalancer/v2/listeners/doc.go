@@ -8,7 +8,7 @@ Example to List Listeners
 		LoadbalancerID : "ca430f80-1737-4712-8dc6-3f640d55594b",
 	}
 
-	allPages, err := listeners.List(networkClient, listOpts).AllPages()
+	allPages, err := listeners.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

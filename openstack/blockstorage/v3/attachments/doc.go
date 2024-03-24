@@ -12,7 +12,7 @@ Example to List Attachments
 	}
 
 	client.Microversion = "3.27"
-	allPages, err := attachments.List(client, listOpts).AllPages()
+	allPages, err := attachments.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

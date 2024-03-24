@@ -12,7 +12,7 @@ Example of Extend server result with Availability Zone Information:
 
 	var allServers []ServerWithAZ
 
-	allPages, err := servers.List(client, nil).AllPages()
+	allPages, err := servers.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic("Unable to retrieve servers: %s", err)
 	}
@@ -28,7 +28,7 @@ Example of Extend server result with Availability Zone Information:
 
 Example of Get Availability Zone Information
 
-		allPages, err := availabilityzones.List(computeClient).AllPages()
+		allPages, err := availabilityzones.List(computeClient).AllPages(context.TODO())
 		if err != nil {
 			panic(err)
 		}
@@ -44,7 +44,7 @@ Example of Get Availability Zone Information
 
 Example of Get Detailed Availability Zone Information
 
-		allPages, err := availabilityzones.ListDetail(computeClient).AllPages()
+		allPages, err := availabilityzones.ListDetail(computeClient).AllPages(context.TODO())
 		if err != nil {
 			panic(err)
 		}

@@ -186,7 +186,7 @@ Example to List QoS policies
 	        Shared: &shared,
 	    }
 
-	    allPages, err := policies.List(networkClient, listOpts).AllPages()
+	    allPages, err := policies.List(networkClient, listOpts).AllPages(context.TODO())
 	    if err != nil {
 	        panic(err)
 	    }

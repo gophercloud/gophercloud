@@ -69,7 +69,7 @@ Example to List a Trust
 		TrustorUserId: "3422b7c113894f5d90665e1a79655e23",
 	}
 
-	allPages, err := trusts.List(identityClient, listOpts).AllPages()
+	allPages, err := trusts.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

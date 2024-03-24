@@ -13,7 +13,7 @@ Example to List Endpoints
 		ServiceID: serviceID,
 	}
 
-	allPages, err := endpoints.List(identityClient, listOpts).AllPages()
+	allPages, err := endpoints.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

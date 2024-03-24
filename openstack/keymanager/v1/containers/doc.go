@@ -4,7 +4,7 @@ Service.
 
 Example to List Containers
 
-	allPages, err := containers.List(client, nil).AllPages()
+	allPages, err := containers.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ Example to Delete a Container
 
 Example to List Consumers of a Container
 
-	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages()
+	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

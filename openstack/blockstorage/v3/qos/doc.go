@@ -36,7 +36,7 @@ Example to list QoS specifications
 
 	listOpts := qos.ListOpts{}
 
-	allPages, err := qos.List(client, listOpts).AllPages()
+	allPages, err := qos.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -129,7 +129,7 @@ Example of listing all associations of a QoS
 
 	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
 
-	allQosAssociations, err := qos.ListAssociations(client, qosID).AllPages()
+	allQosAssociations, err := qos.ListAssociations(client, qosID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

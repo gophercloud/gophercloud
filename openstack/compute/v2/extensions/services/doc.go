@@ -8,7 +8,7 @@ Example of Retrieving list of all services
 		Binary: "nova-scheduler",
 	}
 
-	allPages, err := services.List(computeClient, opts).AllPages()
+	allPages, err := services.List(computeClient, opts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -11,7 +11,7 @@ service.
 
 Example to List Floating IPs
 
-	allPages, err := floatingips.List(computeClient).AllPages()
+	allPages, err := floatingips.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -6,7 +6,7 @@ programmatically.
 
 Example to list Snapshots
 
-	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages()
+	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages(context.TODO())
 	if err != nil{
 		panic(err)
 	}

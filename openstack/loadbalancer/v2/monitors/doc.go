@@ -8,7 +8,7 @@ Example to List Monitors
 		PoolID: "c79a4468-d788-410c-bf79-9a8ef6354852",
 	}
 
-	allPages, err := monitors.List(networkClient, listOpts).AllPages()
+	allPages, err := monitors.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

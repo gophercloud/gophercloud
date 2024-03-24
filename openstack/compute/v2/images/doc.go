@@ -15,7 +15,7 @@ Example to List Images
 		Limit: 2,
 	}
 
-	allPages, err := images.ListDetail(computeClient, listOpts).AllPages()
+	allPages, err := images.ListDetail(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

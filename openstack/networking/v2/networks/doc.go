@@ -14,7 +14,7 @@ Example to List Networks
 		TenantID: "a99e9b4e620e4db09a2dfb6e42a01e66",
 	}
 
-	allPages, err := networks.List(networkClient, listOpts).AllPages()
+	allPages, err := networks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

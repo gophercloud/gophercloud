@@ -4,7 +4,7 @@ Service.
 
 Example to List Orders
 
-	allPages, err := orders.List(client, nil).AllPages()
+	allPages, err := orders.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

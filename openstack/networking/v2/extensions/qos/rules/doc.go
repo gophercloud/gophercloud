@@ -9,7 +9,7 @@ Example of Listing BandwidthLimitRules
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	allPages, err := rules.ListBandwidthLimitRules(networkClient, policyID, listOpts).AllPages()
+	allPages, err := rules.ListBandwidthLimitRules(networkClient, policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -87,7 +87,7 @@ Example of Listing DSCP marking rules
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	allPages, err := rules.ListDSCPMarkingRules(networkClient, policyID, listOpts).AllPages()
+	allPages, err := rules.ListDSCPMarkingRules(networkClient, policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -164,7 +164,7 @@ Example of Listing MinimumBandwidthRules
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	allPages, err := rules.ListMinimumBandwidthRules(networkClient, policyID, listOpts).AllPages()
+	allPages, err := rules.ListMinimumBandwidthRules(networkClient, policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

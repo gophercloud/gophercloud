@@ -4,7 +4,7 @@ API versions for the Shared File System service, code-named Manila.
 
 Example to List API Versions
 
-	allPages, err := apiversions.List(client).AllPages()
+	allPages, err := apiversions.List(client).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

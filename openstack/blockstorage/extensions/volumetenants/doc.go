@@ -9,7 +9,7 @@ tenant/project information. Example:
 
 	var allVolumes []VolumeWithTenant
 
-	allPages, err := volumes.List(client, nil).AllPages()
+	allPages, err := volumes.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic("Unable to retrieve volumes: %s", err)
 	}

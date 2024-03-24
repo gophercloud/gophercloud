@@ -8,7 +8,7 @@ Example to List Projects
 		Enabled: gophercloud.Enabled,
 	}
 
-	allPages, err := projects.List(identityClient, listOpts).AllPages()
+	allPages, err := projects.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

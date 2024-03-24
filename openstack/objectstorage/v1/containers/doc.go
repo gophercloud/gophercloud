@@ -17,7 +17,7 @@ Example to List Containers
 		Full: true,
 	}
 
-	allPages, err := containers.List(objectStorageClient, listOpts).AllPages()
+	allPages, err := containers.List(objectStorageClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ Example to List Only Container Names
 		Full: false,
 	}
 
-	allPages, err := containers.List(objectStorageClient, listOpts).AllPages()
+	allPages, err := containers.List(objectStorageClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

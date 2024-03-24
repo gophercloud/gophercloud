@@ -14,7 +14,7 @@ Example to List Ports
 		DeviceID: "b0b89efe-82f8-461d-958b-adbf80f50c7d",
 	}
 
-	allPages, err := ports.List(networkClient, listOpts).AllPages()
+	allPages, err := ports.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

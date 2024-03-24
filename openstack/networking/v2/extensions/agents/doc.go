@@ -7,7 +7,7 @@ Example of Listing Agents
 		AgentType: "Open vSwitch agent",
 	}
 
-	allPages, err := agents.List(networkClient, listOpts).AllPages()
+	allPages, err := agents.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +85,7 @@ Example to Remove a network from a DHCP Agent
 
 Example to List BGP speakers by dragent
 
-	pages, err := agents.ListBGPSpeakers(c, agentID).AllPages()
+	pages, err := agents.ListBGPSpeakers(c, agentID).AllPages(context.TODO())
 	if err != nil {
 		log.Panicf("%v", err)
 	}
@@ -115,7 +115,7 @@ Example to Remove bgp speaker from dragent
 
 Example to list dragents hosting specific bgp speaker
 
-	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, speakerID).AllPages()
+	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, speakerID).AllPages(context.TODO())
 	if err != nil {
 		log.Panic(err)
 	}

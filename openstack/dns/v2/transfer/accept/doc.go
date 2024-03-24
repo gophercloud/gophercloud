@@ -5,7 +5,7 @@ resource for the OpenStack DNS service.
 Example to List Zone Transfer Accepts
 
 	// Optionaly you can provide Status as query parameter for filtering the result.
-	allPages, err := transferAccepts.List(dnsClient, nil).AllPages()
+	allPages, err := transferAccepts.List(dnsClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

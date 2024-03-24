@@ -7,7 +7,7 @@ Example to List Users
 		DomainID: "default",
 	}
 
-	allPages, err := users.List(identityClient, listOpts).AllPages()
+	allPages, err := users.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ Example to List Groups a User Belongs To
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	allPages, err := users.ListGroups(identityClient, userID).AllPages()
+	allPages, err := users.ListGroups(identityClient, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -133,7 +133,7 @@ Example to List Projects a User Belongs To
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	allPages, err := users.ListProjects(identityClient, userID).AllPages()
+	allPages, err := users.ListProjects(identityClient, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -154,7 +154,7 @@ Example to List Users in a Group
 		DomainID: "default",
 	}
 
-	allPages, err := users.ListInGroup(identityClient, groupID, listOpts).AllPages()
+	allPages, err := users.ListInGroup(identityClient, groupID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

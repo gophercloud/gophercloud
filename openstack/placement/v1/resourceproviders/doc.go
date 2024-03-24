@@ -3,7 +3,7 @@ Package resourceproviders creates and lists all resource providers from the Open
 
 Example to list resource providers
 
-	allPages, err := resourceproviders.List(placementClient, resourceproviders.ListOpts{}).AllPages()
+	allPages, err := resourceproviders.List(placementClient, resourceproviders.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

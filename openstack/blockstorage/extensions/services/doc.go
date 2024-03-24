@@ -4,7 +4,7 @@ OpenStack cloud.
 
 Example of Retrieving list of all services
 
-	allPages, err := services.List(blockstorageClient, services.ListOpts{}).AllPages()
+	allPages, err := services.List(blockstorageClient, services.ListOpts{}).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

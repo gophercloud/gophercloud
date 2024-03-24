@@ -33,7 +33,7 @@ Example to List RBAC Policies
 		TenantID: "a99e9b4e620e4db09a2dfb6e42a01e66",
 	}
 
-	allPages, err := rbacpolicies.List(rbacClient, listOpts).AllPages()
+	allPages, err := rbacpolicies.List(rbacClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

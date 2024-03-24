@@ -5,7 +5,7 @@ OpenStack Networking service.
 Example to list all Port Forwardings for a floating IP
 
 	fipID := "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
-	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fipID).AllPages()
+	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fipID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

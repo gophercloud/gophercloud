@@ -20,7 +20,7 @@ Example to List L7Policies
 	listOpts := l7policies.ListOpts{
 		ListenerID: "c79a4468-d788-410c-bf79-9a8ef6354852",
 	}
-	allPages, err := l7policies.List(lbClient, listOpts).AllPages()
+	allPages, err := l7policies.List(lbClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -78,7 +78,7 @@ Example to List L7 Rules
 	listOpts := l7policies.ListRulesOpts{
 		RuleType: l7policies.TypePath,
 	}
-	allPages, err := l7policies.ListRules(lbClient, l7policyID, listOpts).AllPages()
+	allPages, err := l7policies.ListRules(lbClient, l7policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

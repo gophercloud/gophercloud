@@ -5,7 +5,7 @@ Networking service.
 Example to List Routers
 
 	listOpts := routers.ListOpts{}
-	allPages, err := routers.List(networkClient, listOpts).AllPages()
+	allPages, err := routers.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -122,7 +122,7 @@ Example to List an L3 agents for a Router
 
 	routerID := "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
 
-	allPages, err := routers.ListL3Agents(networkClient, routerID).AllPages()
+	allPages, err := routers.ListL3Agents(networkClient, routerID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

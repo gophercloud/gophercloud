@@ -7,7 +7,7 @@ Example to List Members of an Image
 
 	imageID := "2b6cacd4-cfd6-4b95-8302-4c04ccf0be3f"
 
-	allPages, err := members.List(imageID).AllPages()
+	allPages, err := members.List(imageID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

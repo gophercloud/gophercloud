@@ -8,7 +8,7 @@ Example to List Images
 		Owner: "a7509e1ae65945fda83f3e52c6296017",
 	}
 
-	allPages, err := images.List(imagesClient, listOpts).AllPages()
+	allPages, err := images.List(imagesClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

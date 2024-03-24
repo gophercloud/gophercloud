@@ -4,7 +4,7 @@ from the OpenStack Clustering Service.
 
 Example to List Policy Types
 
-	allPages, err := policytypes.List(clusteringClient).AllPages()
+	allPages, err := policytypes.List(clusteringClient).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

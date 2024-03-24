@@ -8,7 +8,7 @@ Example to List Pools
 		LoadbalancerID: "c79a4468-d788-410c-bf79-9a8ef6354852",
 	}
 
-	allPages, err := pools.List(networkClient, listOpts).AllPages()
+	allPages, err := pools.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +68,7 @@ Example to List Pool Members
 		ProtocolPort: 80,
 	}
 
-	allPages, err := pools.ListMembers(networkClient, poolID, listOpts).AllPages()
+	allPages, err := pools.ListMembers(networkClient, poolID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

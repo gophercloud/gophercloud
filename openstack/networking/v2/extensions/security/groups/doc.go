@@ -8,7 +8,7 @@ Example to List Security Groups
 		TenantID: "966b3c7d36a24facaf20b7e458bf2192",
 	}
 
-	allPages, err := groups.List(networkClient, listOpts).AllPages()
+	allPages, err := groups.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

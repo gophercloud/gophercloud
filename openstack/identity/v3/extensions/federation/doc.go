@@ -4,7 +4,7 @@ Openstack Identity service.
 
 Example to List Mappings
 
-	allPages, err := federation.ListMappings(identityClient).AllPages()
+	allPages, err := federation.ListMappings(identityClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

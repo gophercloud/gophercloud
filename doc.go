@@ -100,7 +100,7 @@ of results:
 If you want to obtain the entire collection of pages without doing any
 intermediary processing on each page, you can use the AllPages method:
 
-	allPages, err := servers.List(client, nil).AllPages()
+	allPages, err := servers.List(client, nil).AllPages(context.TODO())
 	allServers, err := servers.ExtractServers(allPages)
 
 This top-level package contains utility functions and data types that are used

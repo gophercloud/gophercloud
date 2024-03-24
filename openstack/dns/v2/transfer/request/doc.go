@@ -4,7 +4,7 @@ resource for the OpenStack DNS service.
 
 Example to List Zone Transfer Requests
 
-	allPages, err := transferRequests.List(dnsClient, nil).AllPages()
+	allPages, err := transferRequests.List(dnsClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

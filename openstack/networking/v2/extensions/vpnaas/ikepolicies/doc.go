@@ -47,7 +47,7 @@ Example to Update an IKE policy
 
 Example to List IKE policies
 
-	allPages, err := ikepolicies.List(client, nil).AllPages()
+	allPages, err := ikepolicies.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

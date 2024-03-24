@@ -42,7 +42,7 @@ Example to Update an IPSec policy
 
 Example to List IPSec policies
 
-	allPages, err := ipsecpolicies.List(client, nil).AllPages()
+	allPages, err := ipsecpolicies.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -8,7 +8,7 @@ Package speakers contains the functionality for working with Neutron bgp speaker
 
 Example:
 
-        pages, err := speakers.List(c).AllPages()
+        pages, err := speakers.List(c).AllPages(context.TODO())
         if err != nil {
                 log.Panic(err)
         }
@@ -107,7 +107,7 @@ Example:
 
 Example:
 
-        pages, err := speakers.GetAdvertisedRoutes(c, speakerID).AllPages()
+        pages, err := speakers.GetAdvertisedRoutes(c, speakerID).AllPages(context.TODO())
         if err != nil {
                 log.Panic(err)
         }

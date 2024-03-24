@@ -8,7 +8,7 @@ Example to List Services
 		TenantID: "966b3c7d36a24facaf20b7e458bf2192",
 	}
 
-	allPages, err := services.List(networkClient, listOpts).AllPages()
+	allPages, err := services.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

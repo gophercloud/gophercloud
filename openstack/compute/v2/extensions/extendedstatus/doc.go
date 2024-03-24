@@ -9,7 +9,7 @@ the extended status information. Example:
 
 	var allServers []ServerWithExt
 
-	allPages, err := servers.List(client, nil).AllPages()
+	allPages, err := servers.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic("Unable to retrieve servers: %s", err)
 	}

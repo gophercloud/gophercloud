@@ -15,7 +15,7 @@ Example to List Limits
 		ProjectID: "3d596369fd2043bf8aca3c8decb0189e",
 	}
 
-	allPages, err := limits.List(identityClient, listOpts).AllPages()
+	allPages, err := limits.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

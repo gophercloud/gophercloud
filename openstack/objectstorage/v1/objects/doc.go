@@ -16,7 +16,7 @@ Example to List Objects
 		Full: true,
 	}
 
-	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages()
+	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ Example to List Object Names
 		Full: false,
 	}
 
-	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages()
+	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

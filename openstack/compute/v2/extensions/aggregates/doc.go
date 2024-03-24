@@ -48,7 +48,7 @@ Example of Update Aggregate
 
 Example of Retrieving list of all aggregates
 
-	allPages, err := aggregates.List(computeClient).AllPages()
+	allPages, err := aggregates.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

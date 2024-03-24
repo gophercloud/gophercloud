@@ -59,7 +59,7 @@ Example of deleting a Trunk
 Example of listing Trunks
 
 	listOpts := trunks.ListOpts{}
-	allPages, err := trunks.List(networkClient, listOpts).AllPages()
+	allPages, err := trunks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -8,7 +8,7 @@ Example to List Roles
 		DomainID: "default",
 	}
 
-	allPages, err := roles.List(identityClient, listOpts).AllPages()
+	allPages, err := roles.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ Example to List Role Assignments
 		ScopeProjectID: "9df1a02f5eb2416a9781e8b0c022d3ae",
 	}
 
-	allPages, err := roles.ListAssignments(identityClient, listOpts).AllPages()
+	allPages, err := roles.ListAssignments(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -88,7 +88,7 @@ Example to List Role Assignments for a User on a Project
 		ProjectID: projectID,
 	}
 
-	allPages, err := roles.ListAssignmentsOnResource(identityClient, listAssignmentsOnResourceOpts).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(identityClient, listAssignmentsOnResourceOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

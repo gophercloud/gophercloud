@@ -7,7 +7,7 @@ Example of Listing Subnetpools
 		IPVersion: 6,
 	}
 
-	allPages, err := subnetpools.List(networkClient, listOpts).AllPages()
+	allPages, err := subnetpools.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

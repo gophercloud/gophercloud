@@ -10,7 +10,7 @@ Example to List Backups
 		VolumeID: "uuid",
 	}
 
-	allPages, err := backups.List(client, listOpts).AllPages()
+	allPages, err := backups.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

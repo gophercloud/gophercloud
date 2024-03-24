@@ -8,7 +8,7 @@ Example to List Policies
 		Limit: 2,
 	}
 
-	allPages, err := policies.List(clusteringClient, listOpts).AllPages()
+	allPages, err := policies.List(clusteringClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

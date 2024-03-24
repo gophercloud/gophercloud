@@ -8,7 +8,7 @@ Example to List RegisteredLimits
 		ResourceName: "image_size_total",
 	}
 
-	allPages, err := registeredlimits.List(identityClient, listOpts).AllPages()
+	allPages, err := registeredlimits.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

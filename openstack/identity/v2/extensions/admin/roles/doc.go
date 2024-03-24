@@ -17,7 +17,7 @@ arbitrary name assigned by the user.
 
 Example to List Roles
 
-	allPages, err := roles.List(identityClient).AllPages()
+	allPages, err := roles.List(identityClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -32,7 +32,7 @@ Example to Delete an Endpoint Group
 
 Example to List Endpoint groups
 
-	allPages, err := endpointgroups.List(client, nil).AllPages()
+	allPages, err := endpointgroups.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

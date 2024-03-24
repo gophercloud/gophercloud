@@ -10,7 +10,7 @@ Example to List all Volume Transfer requests being an OpenStack admin
 		AllTenants: true,
 	}
 
-	allPages, err := volumetransfers.List(client, listOpts).AllPages()
+	allPages, err := volumetransfers.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

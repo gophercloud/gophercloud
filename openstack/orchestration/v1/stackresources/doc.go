@@ -17,7 +17,7 @@ Example of get resource information in stack
 
 Example for list stack resources
 
-	all_stack_rsrc_pages, err := stackresources.List(client, stack.Name, stack.ID, nil).AllPages()
+	all_stack_rsrc_pages, err := stackresources.List(client, stack.Name, stack.ID, nil).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

@@ -7,7 +7,7 @@ Example of Listing Address scopes
 	    IPVersion: 6,
 	}
 
-	allPages, err := addressscopes.List(networkClient, listOpts).AllPages()
+	allPages, err := addressscopes.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

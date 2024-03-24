@@ -22,7 +22,7 @@ Default Filter checks equality, but you can override it with provided filter typ
 		},
 	}
 
-	allPages, err := executions.List(mistralClient, listOpts).AllPages()
+	allPages, err := executions.List(mistralClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

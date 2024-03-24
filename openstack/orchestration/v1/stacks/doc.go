@@ -24,7 +24,7 @@ Example of Preparing Orchestration client:
 
 Example of List Stack:
 
-	all_stack_pages, err := stacks.List(client, nil).AllPages()
+	all_stack_pages, err := stacks.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}

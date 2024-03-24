@@ -7,7 +7,7 @@ Example to List Groups
 		DomainID: "default",
 	}
 
-	allPages, err := groups.List(identityClient, listOpts).AllPages()
+	allPages, err := groups.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

@@ -12,7 +12,7 @@ Example to List Tenants
 		Limit: 2,
 	}
 
-	allPages, err := tenants.List(identityClient, listOpts).AllPages()
+	allPages, err := tenants.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

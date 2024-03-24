@@ -30,7 +30,7 @@ Example of list operations supported by a profile type
 	serviceClient.Microversion = "1.5"
 
 	profileTypeName := "os.nova.server-1.0"
-	allPages, err := profiletypes.ListOps(serviceClient, profileTypeName).AllPages()
+	allPages, err := profiletypes.ListOps(serviceClient, profileTypeName).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

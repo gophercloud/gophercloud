@@ -25,7 +25,7 @@ Example to List Nodes
 		Name: "testnode",
 	}
 
-	allPages, err := nodes.List(serviceClient, listOpts).AllPages()
+	allPages, err := nodes.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

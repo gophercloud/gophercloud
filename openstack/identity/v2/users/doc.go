@@ -4,7 +4,7 @@ resource for the OpenStack Identity Service.
 
 Example to List Users
 
-	allPages, err := users.List(identityClient).AllPages()
+	allPages, err := users.List(identityClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ Example to List a User's Roles
 	tenantID := "1d8b6120dcc640fda4fc9194ffc80273"
 	userID := "c39e3de9be2d4c779f1dfd6abacc176d"
 
-	allPages, err := users.ListRoles(identityClient, tenantID, userID).AllPages()
+	allPages, err := users.ListRoles(identityClient, tenantID, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

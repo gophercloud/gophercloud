@@ -8,7 +8,7 @@ Example to List Domains
 		Enabled: &iTrue,
 	}
 
-	allPages, err := domains.List(identityClient, listOpts).AllPages()
+	allPages, err := domains.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

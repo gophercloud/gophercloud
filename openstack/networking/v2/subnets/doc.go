@@ -15,7 +15,7 @@ Example to List Subnets
 		IPVersion: 4,
 	}
 
-	allPages, err := subnets.List(networkClient, listOpts).AllPages()
+	allPages, err := subnets.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

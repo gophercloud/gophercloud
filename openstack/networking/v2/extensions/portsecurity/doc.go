@@ -15,7 +15,7 @@ Example to List Networks with Port Security Information
 		Name: "network_1",
 	}
 
-	allPages, err := networks.List(networkClient, listOpts).AllPages()
+	allPages, err := networks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

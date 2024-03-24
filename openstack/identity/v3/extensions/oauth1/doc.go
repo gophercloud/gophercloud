@@ -64,7 +64,7 @@ Example to Create an OAuth1 Access Token
 
 Example to List User's OAuth1 Access Tokens
 
-	allPages, err := oauth1.ListAccessTokens(identityClient, userID).AllPages()
+	allPages, err := oauth1.ListAccessTokens(identityClient, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

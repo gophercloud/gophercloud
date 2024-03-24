@@ -8,7 +8,7 @@ Example to List Services
 		ServiceType: "compute",
 	}
 
-	allPages, err := services.List(identityClient, listOpts).AllPages()
+	allPages, err := services.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

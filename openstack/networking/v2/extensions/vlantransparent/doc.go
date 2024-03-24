@@ -18,7 +18,7 @@ Example of Listing Networks with the vlan-transparent extension
 
 	    var allNetworks []NetworkWithVLANTransparentExt
 
-	    allPages, err := networks.List(networkClient, listOpts).AllPages()
+	    allPages, err := networks.List(networkClient, listOpts).AllPages(context.TODO())
 	    if err != nil {
 	        panic(err)
 	    }

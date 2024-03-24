@@ -10,7 +10,7 @@ Example to List RecordSets by Zone
 
 	zoneID := "fff121f5-c506-410a-a69e-2d73ef9cbdbd"
 
-	allPages, err := recordsets.ListByZone(dnsClient, zoneID, listOpts).AllPages()
+	allPages, err := recordsets.ListByZone(dnsClient, zoneID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

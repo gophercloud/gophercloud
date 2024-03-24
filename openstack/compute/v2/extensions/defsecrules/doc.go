@@ -10,7 +10,7 @@ not work if the OpenStack environment is running the OpenStack Networking
 
 Example of Listing Default Security Group Rules
 
-	allPages, err := defsecrules.List(computeClient).AllPages()
+	allPages, err := defsecrules.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

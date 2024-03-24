@@ -8,7 +8,7 @@ Example to List Tasks
 	  Owner: "424e7cf0243c468ca61732ba45973b3e",
 	}
 
-	allPages, err := tasks.List(imagesClient, listOpts).AllPages()
+	allPages, err := tasks.List(imagesClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 	  panic(err)
 	}

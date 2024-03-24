@@ -3,7 +3,7 @@ Package ruletypes contains functionality for working with Neutron 'quality of se
 
 Example of Listing QoS rule types
 
-	page, err := ruletypes.ListRuleTypes(client).AllPages()
+	page, err := ruletypes.ListRuleTypes(client).AllPages(context.TODO())
 	if err != nil {
 		return
 	}

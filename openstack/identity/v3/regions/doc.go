@@ -7,7 +7,7 @@ Example to List Regions
 		ParentRegionID: "RegionOne",
 	}
 
-	allPages, err := regions.List(identityClient, listOpts).AllPages()
+	allPages, err := regions.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

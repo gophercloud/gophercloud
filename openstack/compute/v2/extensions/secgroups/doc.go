@@ -11,7 +11,7 @@ service.
 
 Example to List Security Groups
 
-	allPages, err := secroups.List(computeClient).AllPages()
+	allPages, err := secroups.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ Example to List Security Groups by Server
 
 	serverID := "aab3ad01-9956-4623-a29b-24afc89a7d36"
 
-	allPages, err := secroups.ListByServer(computeClient, serverID).AllPages()
+	allPages, err := secroups.ListByServer(computeClient, serverID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

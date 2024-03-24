@@ -30,7 +30,7 @@ Example to List Clusters
 		Name: "testcluster",
 	}
 
-	allPages, err := clusters.List(serviceClient, listOpts).AllPages()
+	allPages, err := clusters.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +117,7 @@ Example to ScaleOut a cluster
 Example to List Policies for a Cluster
 
 	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
-	allPages, err := clusters.ListPolicies(serviceClient, clusterID, nil).AllPages()
+	allPages, err := clusters.ListPolicies(serviceClient, clusterID, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
