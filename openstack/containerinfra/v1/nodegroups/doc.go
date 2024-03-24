@@ -11,7 +11,7 @@ Create a client to use:
 	    panic(err)
 	}
 
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 	if err != nil {
 	    panic(err)
 	}

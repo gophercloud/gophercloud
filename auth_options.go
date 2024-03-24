@@ -19,13 +19,13 @@ An example of manually providing authentication information:
 	  TenantID: "{tenant_id}",
 	}
 
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 An example of using AuthOptionsFromEnv(), where the environment variables can
 be read from a file, such as a standard openrc file:
 
 	opts, err := openstack.AuthOptionsFromEnv()
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 */
 type AuthOptions struct {
 	// IdentityEndpoint specifies the HTTP endpoint that is required to work with

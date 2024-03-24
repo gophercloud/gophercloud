@@ -29,7 +29,7 @@ specified like so:
 		TenantID: "{tenant_id}",
 	}
 
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 You can authenticate with a token by doing:
 
@@ -39,7 +39,7 @@ You can authenticate with a token by doing:
 		TenantID: "{tenant_id}",
 	}
 
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 You may also use the openstack.AuthOptionsFromEnv() helper function. This
 function reads in standard environment variables frequently found in an
@@ -47,7 +47,7 @@ OpenStack `openrc` file. Again note that Gophercloud currently uses "tenant"
 instead of "project".
 
 	opts, err := openstack.AuthOptionsFromEnv()
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 # Service Clients
 

@@ -71,7 +71,7 @@ import (
 opts := new(clientconfig.ClientOpts)
 opts.Cloud = "devstack-admin"
 
-provider, err := clientconfig.AuthenticatedClient(opts)
+provider, err := clientconfig.AuthenticatedClient(context.TODO(), opts)
 ```
 
 A provider client is a top-level client that all of your OpenStack service
@@ -118,7 +118,7 @@ Once you have the `opts` variable, you can pass it in and get back a
 `ProviderClient` struct:
 
 ```go
-provider, err := openstack.AuthenticatedClient(opts)
+provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 ```
 
 As above, you can then use this provider client to generate a service client

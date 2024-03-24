@@ -31,7 +31,7 @@ To use this function, first set the OS_* environment variables (for example,
 by sourcing an `openrc` file), then:
 
 	opts, err := openstack.AuthOptionsFromEnv()
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 */
 func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	authURL := os.Getenv("OS_AUTH_URL")
