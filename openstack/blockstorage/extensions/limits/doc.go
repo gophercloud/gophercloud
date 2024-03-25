@@ -5,7 +5,7 @@ Example to Retrieve Limits
 
 	limits, err := limits.Get(context.TODO(), blockStorageClient).Extract()
 	if err != nil {
-	    panic(err)
+		panic(err)
 	}
 
 	fmt.Printf("%+v\n", limits)
