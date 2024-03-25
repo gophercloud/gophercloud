@@ -4,7 +4,7 @@ Package quotas provides the ability to retrieve and manage Networking quotas thr
 Example to Get project quotas
 
 	projectID = "23d5d3f79dfa4f73b72b8b0b0063ec55"
-	quotasInfo, err := quotas.Get(networkClient, projectID).Extract()
+	quotasInfo, err := quotas.Get(context.TODO(), networkClient, projectID).Extract()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -14,7 +14,7 @@ Example to Get project quotas
 Example to Get a Detailed Quota Set
 
 	projectID = "23d5d3f79dfa4f73b72b8b0b0063ec55"
-	quotasInfo, err := quotas.GetDetail(networkClient, projectID).Extract()
+	quotasInfo, err := quotas.GetDetail(context.TODO(), networkClient, projectID).Extract()
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -37,7 +37,7 @@ Example to Update project quotas
 	    SubnetPool:        gophercloud.IntToPointer(0),
 	    Trunk:             gophercloud.IntToPointer(0),
 	}
-	quotasInfo, err := quotas.Update(networkClient, projectID)
+	quotasInfo, err := quotas.Update(context.TODO(), networkClient, projectID)
 	if err != nil {
 	    log.Fatal(err)
 	}

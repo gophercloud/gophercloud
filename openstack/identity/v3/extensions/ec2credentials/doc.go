@@ -12,7 +12,7 @@ Example to Create an EC2 credential
 		TenantID: projectID,
 	}
 
-	credential, err := ec2credentials.Create(identityClient, userID, createOpts).Extract()
+	credential, err := ec2credentials.Create(context.TODO(), identityClient, userID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

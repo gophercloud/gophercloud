@@ -8,7 +8,7 @@ Example to List Policies
 		Limit: 2,
 	}
 
-	allPages, err := policies.List(clusteringClient, listOpts).AllPages()
+	allPages, err := policies.List(clusteringClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ Example to Create a Policy
 		},
 	}
 
-	createdPolicy, err := policies.Create(client, createOpts).Extract()
+	createdPolicy, err := policies.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Create a Policy
 Example to Get a Policy
 
 	policyName := "get_policy"
-	policyDetail, err := policies.Get(clusteringClient, policyName).Extract()
+	policyDetail, err := policies.Get(context.TODO(), clusteringClient, policyName).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -63,7 +63,7 @@ Example to Update a Policy
 		Name: "update_policy",
 	}
 
-	updatePolicy, err := policies.Update(client, opts).Extract()
+	updatePolicy, err := policies.Update(context.TODO(), client, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +87,7 @@ Example to Validate a Policy
 		},
 	}
 
-	validatePolicy, err := policies.Validate(client, opts).Extract()
+	validatePolicy, err := policies.Validate(context.TODO(), client, opts).Extract()
 	if err != nil {
 		panic(err)
 	}

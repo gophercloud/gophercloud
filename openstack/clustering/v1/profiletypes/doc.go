@@ -4,7 +4,7 @@ Clustering Service.
 
 Example to List ProfileType
 
-	err = profiletypes.List(serviceClient).EachPage(func(page pagination.Page) (bool, error) {
+	err = profiletypes.List(serviceClient).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		profileTypes, err := profiletypes.ExtractProfileTypes(page)
 		if err != nil {
 			return false, err
@@ -19,7 +19,7 @@ Example to List ProfileType
 Example to Get a ProfileType
 
 	profileTypeName := "os.nova.server"
-	profileType, err := profiletypes.Get(clusteringClient, profileTypeName).Extract()
+	profileType, err := profiletypes.Get(context.TODO(), clusteringClient, profileTypeName).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ Example of list operations supported by a profile type
 	serviceClient.Microversion = "1.5"
 
 	profileTypeName := "os.nova.server-1.0"
-	allPages, err := profiletypes.ListOps(serviceClient, profileTypeName).AllPages()
+	allPages, err := profiletypes.ListOps(serviceClient, profileTypeName).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

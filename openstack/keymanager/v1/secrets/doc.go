@@ -13,7 +13,7 @@ Example to List Secrets
 		CreatedQuery: createdQuery,
 	}
 
-	allPages, err := secrets.List(client, listOpts).AllPages()
+	allPages, err := secrets.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ Example to List Secrets
 
 Example to Get a Secret
 
-	secret, err := secrets.Get(client, secretID).Extract()
+	secret, err := secrets.Get(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +39,7 @@ Example to Get a Secret
 Example to Get a Payload
 
 	// if "Extract" method is not called, the HTTP connection will remain consumed
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ Example to Create a Secrets
 		SecretType:         secrets.OpaqueSecret,
 	}
 
-	secret, err := secrets.Create(client, createOpts).Extract()
+	secret, err := secrets.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -72,14 +72,14 @@ Example to Add a Payload
 		Payload:     "super-secret",
 	}
 
-	err := secrets.Update(client, secretID, updateOpts).ExtractErr()
+	err := secrets.Update(context.TODO(), client, secretID, updateOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Secrets
 
-	err := secrets.Delete(client, secretID).ExtractErr()
+	err := secrets.Delete(context.TODO(), client, secretID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -91,7 +91,7 @@ Example to Create Metadata for a Secret
 		"something": "something else",
 	}
 
-	ref, err := secrets.CreateMetadata(client, secretID, createOpts).Extract()
+	ref, err := secrets.CreateMetadata(context.TODO(), client, secretID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +100,7 @@ Example to Create Metadata for a Secret
 
 Example to Get Metadata for a Secret
 
-	metadata, err := secrets.GetMetadata(client, secretID).Extract()
+	metadata, err := secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +114,7 @@ Example to Add Metadata to a Secret
 		Value: "bar",
 	}
 
-	err := secrets.CreateMetadatum(client, secretID, metadatumOpts).ExtractErr()
+	err := secrets.CreateMetadatum(context.TODO(), client, secretID, metadatumOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -126,7 +126,7 @@ Example to Update Metadata of a Secret
 		Value: "bar",
 	}
 
-	metadatum, err := secrets.UpdateMetadatum(client, secretID, metadatumOpts).Extract()
+	metadatum, err := secrets.UpdateMetadatum(context.TODO(), client, secretID, metadatumOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -135,7 +135,7 @@ Example to Update Metadata of a Secret
 
 Example to Delete Metadata of a Secret
 
-	err := secrets.DeleteMetadatum(client, secretID, "foo").ExtractErr()
+	err := secrets.DeleteMetadatum(context.TODO(), client, secretID, "foo").ExtractErr()
 	if err != nil {
 		panic(err)
 	}

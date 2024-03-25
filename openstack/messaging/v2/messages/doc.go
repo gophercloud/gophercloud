@@ -12,7 +12,7 @@ Example to List Messages
 
 	pager := messages.List(client, queueName, listOpts)
 
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		allMessages, err := queues.ExtractQueues(page)
 		if err != nil {
 			panic(err)
@@ -49,7 +49,7 @@ Example to Create Messages
 		},
 	}
 
-	resources, err := messages.Create(client, queueName, createOpts).Extract()
+	resources, err := messages.Create(context.TODO(), client, queueName, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -62,7 +62,7 @@ Example to Get a set of Messages
 		IDs: "123456",
 	}
 
-	messagesList, err := messages.GetMessages(client, createdQueueName, getMessageOpts).Extract()
+	messagesList, err := messages.GetMessages(context.TODO(), client, createdQueueName, getMessageOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ Example to get a singular Message
 	queueName := "my_queue"
 	messageID := "123456"
 
-	message, err := messages.Get(client, queueName, messageID).Extract()
+	message, err := messages.Get(context.TODO(), client, queueName, messageID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +85,7 @@ Example to Delete a set of Messages
 		IDs: []string{"9988776655"},
 	}
 
-	err := messages.DeleteMessages(client, queueName, deleteMessagesOpts).ExtractErr()
+	err := messages.DeleteMessages(context.TODO(), client, queueName, deleteMessagesOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -98,7 +98,7 @@ Example to Pop a set of Messages
 		Pop: 5,
 	}
 
-	resources, err := messages.PopMessages(client, queueName, popMessagesOpts).Extract()
+	resources, err := messages.PopMessages(context.TODO(), client, queueName, popMessagesOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +113,7 @@ Example to Delete a singular Message
 		ClaimID: "12345",
 	}
 
-	err := messages.Delete(client), queueName, messageID, deleteOpts).ExtractErr()
+	err := messages.Delete(context.TODO(), client), queueName, messageID, deleteOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

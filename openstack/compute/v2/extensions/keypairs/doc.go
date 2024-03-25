@@ -4,7 +4,7 @@ servers with a specified key pair.
 
 Example to List Key Pairs
 
-	allPages, err := keypairs.List(computeClient, nil).AllPages()
+	allPages, err := keypairs.List(computeClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example to List Key Pairs using microversion 2.10 or greater
 		UserID: "user-id",
 	}
 
-	allPages, err := keypairs.List(computeClient, listOpts).AllPages()
+	allPages, err := keypairs.List(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ Example to Create a Key Pair
 		Name: "keypair-name",
 	}
 
-	keypair, err := keypairs.Create(computeClient, createOpts).Extract()
+	keypair, err := keypairs.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -60,14 +60,14 @@ Example to Import a Key Pair
 		PublicKey: "public-key",
 	}
 
-	keypair, err := keypairs.Create(computeClient, createOpts).Extract()
+	keypair, err := keypairs.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Key Pair
 
-	err := keypairs.Delete(computeClient, "keypair-name", nil).ExtractErr()
+	err := keypairs.Delete(context.TODO(), computeClient, "keypair-name", nil).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +80,7 @@ Example to Delete a Key Pair owned by a certain user using microversion 2.10 or 
 		UserID: "user-id",
 	}
 
-	err := keypairs.Delete(client, "keypair-name", deleteOpts).ExtractErr()
+	err := keypairs.Delete(context.TODO(), client, "keypair-name", deleteOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -98,7 +98,7 @@ Example to Create a Server With a Key Pair
 		KeyName:           "keypair-name",
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -111,7 +111,7 @@ Example to Get a Key Pair owned by a certain user using microversion 2.10 or gre
 		UserID: "user-id",
 	}
 
-	keypair, err := keypairs.Get(computeClient, "keypair-name", getOpts).Extract()
+	keypair, err := keypairs.Get(context.TODO(), computeClient, "keypair-name", getOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

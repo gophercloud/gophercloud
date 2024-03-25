@@ -21,7 +21,7 @@ Example to Place Volume B on a Different Host than Volume A
 		SchedulerHints:    schedulerHints,
 	}
 
-	volume, err := volumes.Create(computeClient, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Place Volume B on the Same Host as Volume A
 		SchedulerHints:    schedulerHints,
 	}
 
-	volume, err := volumes.Create(computeClient, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

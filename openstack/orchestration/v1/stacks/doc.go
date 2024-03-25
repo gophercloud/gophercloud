@@ -24,7 +24,7 @@ Example of Preparing Orchestration client:
 
 Example of List Stack:
 
-	all_stack_pages, err := stacks.List(client, nil).AllPages()
+	all_stack_pages, err := stacks.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -90,7 +90,7 @@ Example to Create an Stack
 	    Tags: tags,
 	}
 
-	r := stacks.Create(client, createOpts)
+	r := stacks.Create(context.TODO(), client, createOpts)
 	//dcreated_stack := stacks.CreatedStack()
 	if r.Err != nil {
 	    panic(r.Err)
@@ -103,7 +103,7 @@ Example to Create an Stack
 
 Example for Get Stack
 
-	get_result := stacks.Get(client, stackName, created_stack.ID)
+	get_result := stacks.Get(context.TODO(), client, stackName, created_stack.ID)
 	if get_result.Err != nil {
 	    panic(get_result.Err)
 	}
@@ -115,7 +115,7 @@ Example for Get Stack
 
 Example for Find Stack
 
-	find_result  := stacks.Find(client, stackIdentity)
+	find_result  := stacks.Find(context.TODO(), client, stackIdentity)
 	if find_result.Err != nil {
 		panic(find_result.Err)
 	}
@@ -127,7 +127,7 @@ Example for Find Stack
 
 Example for Delete Stack
 
-	del_r := stacks.Delete(client, stackName, created_stack.ID)
+	del_r := stacks.Delete(context.TODO(), client, stackName, created_stack.ID)
 	if del_r.Err != nil {
 	    panic(del_r.Err)
 	}
@@ -180,7 +180,7 @@ Example to Update a Stack Using the Update (PUT) Method
 		TemplateOpts: &template,
 	}
 
-	res := stacks.Update(orchestrationClient, stackName, stackId, stackOpts)
+	res := stacks.Update(context.TODO(), orchestrationClient, stackName, stackId, stackOpts)
 	if res.Err != nil {
 		panic(res.Err)
 	}
@@ -197,7 +197,7 @@ Example to Update a Stack Using the UpdatePatch (PATCH) Method
 		Parameters: params,
 	}
 
-	res := stacks.UpdatePatch(orchestrationClient, stackName, stackId, stackOpts)
+	res := stacks.UpdatePatch(context.TODO(), orchestrationClient, stackName, stackId, stackOpts)
 	if res.Err != nil {
 		panic(res.Err)
 	}

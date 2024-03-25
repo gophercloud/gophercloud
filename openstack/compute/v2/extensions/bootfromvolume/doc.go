@@ -37,7 +37,7 @@ a server without using block device mappings.
 		BlockDevice:       blockDevices,
 	}
 
-	server, err := bootfromvolume.Create(client, createOpts).Extract()
+	server, err := bootfromvolume.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +67,7 @@ server will use this volume as its root disk.
 		BlockDevice:       blockDevices,
 	}
 
-	server, err := bootfromvolume.Create(client, createOpts).Extract()
+	server, err := bootfromvolume.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ This example will create a server with an existing volume as its root disk.
 		BlockDevice:       blockDevices,
 	}
 
-	server, err := bootfromvolume.Create(client, createOpts).Extract()
+	server, err := bootfromvolume.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -144,7 +144,7 @@ ephemeral disks must have an index of -1.
 		BlockDevice:       blockDevices,
 	}
 
-	server, err := bootfromvolume.Create(client, createOpts).Extract()
+	server, err := bootfromvolume.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

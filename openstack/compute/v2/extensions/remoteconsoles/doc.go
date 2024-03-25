@@ -15,7 +15,7 @@ Example of Creating a new RemoteConsole
 	}
 	serverID := "b16ba811-199d-4ffd-8839-ba96c1185a67"
 
-	remtoteConsole, err := remoteconsoles.Create(computeClient, serverID, createOpts).Extract()
+	remtoteConsole, err := remoteconsoles.Create(context.TODO(), computeClient, serverID, createOpts).Extract()
 	if err != nil {
 	  panic(err)
 	}

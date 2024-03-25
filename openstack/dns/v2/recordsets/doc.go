@@ -10,7 +10,7 @@ Example to List RecordSets by Zone
 
 	zoneID := "fff121f5-c506-410a-a69e-2d73ef9cbdbd"
 
-	allPages, err := recordsets.ListByZone(dnsClient, zoneID, listOpts).AllPages()
+	allPages, err := recordsets.ListByZone(dnsClient, zoneID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,7 @@ Example to Create a RecordSet
 
 	zoneID := "fff121f5-c506-410a-a69e-2d73ef9cbdbd"
 
-	rr, err := recordsets.Create(dnsClient, zoneID, createOpts).Extract()
+	rr, err := recordsets.Create(context.TODO(), dnsClient, zoneID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ Example to Delete a RecordSet
 	zoneID := "fff121f5-c506-410a-a69e-2d73ef9cbdbd"
 	recordsetID := "d96ed01a-b439-4eb8-9b90-7a9f71017f7b"
 
-	err := recordsets.Delete(dnsClient, zoneID, recordsetID).ExtractErr()
+	err := recordsets.Delete(context.TODO(), dnsClient, zoneID, recordsetID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

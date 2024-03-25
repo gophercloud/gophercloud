@@ -7,7 +7,7 @@ Example to Retrieve Limits for a Tenant
 		TenantID: "tenant-id",
 	}
 
-	limits, err := limits.Get(computeClient, getOpts).Extract()
+	limits, err := limits.Get(context.TODO(), computeClient, getOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

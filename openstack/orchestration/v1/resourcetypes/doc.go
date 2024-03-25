@@ -9,7 +9,7 @@ Example of listing available resource types:
 	    SupportStatus: resourcetypes.SupportStatusSupported,
 	}
 
-	resourceTypes, err := resourcetypes.List(client, listOpts).Extract()
+	resourceTypes, err := resourcetypes.List(context.TODO(), client, listOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}

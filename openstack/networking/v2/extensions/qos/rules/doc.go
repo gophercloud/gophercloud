@@ -9,7 +9,7 @@ Example of Listing BandwidthLimitRules
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	allPages, err := rules.ListBandwidthLimitRules(networkClient, policyID, listOpts).AllPages()
+	allPages, err := rules.ListBandwidthLimitRules(networkClient, policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -28,7 +28,7 @@ Example of Getting a single BandwidthLimitRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	rule, err := rules.GetBandwidthLimitRule(networkClient, policyID, ruleID).ExtractBandwidthLimitRule()
+	rule, err := rules.GetBandwidthLimitRule(context.TODO(), networkClient, policyID, ruleID).ExtractBandwidthLimitRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -44,7 +44,7 @@ Example of Creating a single BandwidthLimitRule
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	rule, err := rules.CreateBandwidthLimitRule(networkClient, policyID, opts).ExtractBandwidthLimitRule()
+	rule, err := rules.CreateBandwidthLimitRule(context.TODO(), networkClient, policyID, opts).ExtractBandwidthLimitRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -64,7 +64,7 @@ Example of Updating a single BandwidthLimitRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	rule, err := rules.UpdateBandwidthLimitRule(networkClient, policyID, ruleID, opts).ExtractBandwidthLimitRule()
+	rule, err := rules.UpdateBandwidthLimitRule(context.TODO(), networkClient, policyID, ruleID, opts).ExtractBandwidthLimitRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -87,7 +87,7 @@ Example of Listing DSCP marking rules
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	allPages, err := rules.ListDSCPMarkingRules(networkClient, policyID, listOpts).AllPages()
+	allPages, err := rules.ListDSCPMarkingRules(networkClient, policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -106,7 +106,7 @@ Example of Getting a single DSCPMarkingRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	rule, err := rules.GetDSCPMarkingRule(networkClient, policyID, ruleID).ExtractDSCPMarkingRule()
+	rule, err := rules.GetDSCPMarkingRule(context.TODO(), networkClient, policyID, ruleID).ExtractDSCPMarkingRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -121,7 +121,7 @@ Example of Creating a single DSCPMarkingRule
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	rule, err := rules.CreateDSCPMarkingRule(networkClient, policyID, opts).ExtractDSCPMarkingRule()
+	rule, err := rules.CreateDSCPMarkingRule(context.TODO(), networkClient, policyID, opts).ExtractDSCPMarkingRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -139,7 +139,7 @@ Example of Updating a single DSCPMarkingRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	rule, err := rules.UpdateDSCPMarkingRule(networkClient, policyID, ruleID, opts).ExtractDSCPMarkingRule()
+	rule, err := rules.UpdateDSCPMarkingRule(context.TODO(), networkClient, policyID, ruleID, opts).ExtractDSCPMarkingRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -164,7 +164,7 @@ Example of Listing MinimumBandwidthRules
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	allPages, err := rules.ListMinimumBandwidthRules(networkClient, policyID, listOpts).AllPages()
+	allPages, err := rules.ListMinimumBandwidthRules(networkClient, policyID, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -183,7 +183,7 @@ Example of Getting a single MinimumBandwidthRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	rule, err := rules.GetMinimumBandwidthRule(networkClient, policyID, ruleID).ExtractMinimumBandwidthRule()
+	rule, err := rules.GetMinimumBandwidthRule(context.TODO(), networkClient, policyID, ruleID).ExtractMinimumBandwidthRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -198,7 +198,7 @@ Example of Creating a single MinimumBandwidthRule
 
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-	rule, err := rules.CreateMinimumBandwidthRule(networkClient, policyID, opts).ExtractMinimumBandwidthRule()
+	rule, err := rules.CreateMinimumBandwidthRule(context.TODO(), networkClient, policyID, opts).ExtractMinimumBandwidthRule()
 	if err != nil {
 	    panic(err)
 	}
@@ -216,7 +216,7 @@ Example of Updating a single MinimumBandwidthRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	rule, err := rules.UpdateMinimumBandwidthRule(networkClient, policyID, ruleID, opts).ExtractMinimumBandwidthRule()
+	rule, err := rules.UpdateMinimumBandwidthRule(context.TODO(), networkClient, policyID, ruleID, opts).ExtractMinimumBandwidthRule()
 	if err != nil {
 	    panic(err)
 	}

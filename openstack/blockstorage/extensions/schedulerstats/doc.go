@@ -6,7 +6,7 @@ and utilisation. Example:
 		Detail: true,
 	}
 
-	allPages, err := schedulerstats.List(client, listOpts).AllPages()
+	allPages, err := schedulerstats.List(client, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

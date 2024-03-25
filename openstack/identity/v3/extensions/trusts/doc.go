@@ -18,7 +18,7 @@ Example to Create a Token with Username, Password, and Trust ID
 		TrustID:            "de0945a",
 	}
 
-	err := tokens.Create(identityClient, createOpts).ExtractInto(&trustToken)
+	err := tokens.Create(context.TODO(), identityClient, createOpts).ExtractInto(&trustToken)
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example to Create a Trust
 	    TrustorUserID: "959ed913a32c4ec88c041c98e61cbbc3",
 	}
 
-	trust, err := trusts.Create(identityClient, createOpts).Extract()
+	trust, err := trusts.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Create a Trust
 Example to Delete a Trust
 
 	trustID := "3422b7c113894f5d90665e1a79655e23"
-	err := trusts.Delete(identityClient, trustID).ExtractErr()
+	err := trusts.Delete(context.TODO(), identityClient, trustID).ExtractErr()
 	if err != nil {
 	    panic(err)
 	}
@@ -58,7 +58,7 @@ Example to Delete a Trust
 Example to Get a Trust
 
 	trustID := "3422b7c113894f5d90665e1a79655e23"
-	err := trusts.Get(identityClient, trustID).ExtractErr()
+	err := trusts.Get(context.TODO(), identityClient, trustID).ExtractErr()
 	if err != nil {
 	    panic(err)
 	}
@@ -69,7 +69,7 @@ Example to List a Trust
 		TrustorUserId: "3422b7c113894f5d90665e1a79655e23",
 	}
 
-	allPages, err := trusts.List(identityClient, listOpts).AllPages()
+	allPages, err := trusts.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

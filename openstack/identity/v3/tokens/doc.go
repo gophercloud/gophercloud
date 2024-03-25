@@ -12,7 +12,7 @@ Example to Create a Token From a Username and Password
 		Password: "password",
 	}
 
-	token, err := tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ Example to Create a Token From a Username, Password, and Domain
 		DomainID: "default",
 	}
 
-	token, err := tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,7 @@ Example to Create a Token From a Username, Password, and Domain
 		DomainName: "default",
 	}
 
-	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ Example to Create a Token From a Token
 		TokenID: "token_id",
 	}
 
-	token, err := tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ Example to Create a Token from a Username and Password with Project ID Scope
 		Password: "password",
 	}
 
-	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -81,7 +81,7 @@ Example to Create a Token from a Username and Password with Domain ID Scope
 		Password: "password",
 	}
 
-	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -99,7 +99,7 @@ Example to Create a Token from a Username and Password with Project Name Scope
 		Password: "password",
 	}
 
-	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}

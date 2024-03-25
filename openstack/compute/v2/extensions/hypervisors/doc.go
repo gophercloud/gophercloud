@@ -5,7 +5,7 @@ and shows summary statistics for all hypervisors over all compute nodes in the O
 Example of Show Hypervisor Details
 
 	hypervisorID := "42"
-	hypervisor, err := hypervisors.Get(computeClient, hypervisorID).Extract()
+	hypervisor, err := hypervisors.Get(context.TODO(), computeClient, hypervisorID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -17,7 +17,7 @@ Example of Show Hypervisor Details when using Compute API microversion greater t
 	computeClient.Microversion = "2.53"
 
 	hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
-	hypervisor, err := hypervisors.Get(computeClient, hypervisorID).Extract()
+	hypervisor, err := hypervisors.Get(context.TODO(), computeClient, hypervisorID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example of Show Hypervisor Details when using Compute API microversion greater t
 
 Example of Retrieving Details of All Hypervisors
 
-	allPages, err := hypervisors.List(computeClient, nil).AllPages()
+	allPages, err := hypervisors.List(computeClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ Example of Retrieving Details of All Hypervisors when using Compute API microver
 		WithServers: &true,
 	}
 
-	allPages, err := hypervisors.List(computeClient, listOpts).AllPages()
+	allPages, err := hypervisors.List(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ Example of Retrieving Details of All Hypervisors when using Compute API microver
 
 Example of Show Hypervisors Statistics
 
-	hypervisorsStatistics, err := hypervisors.GetStatistics(computeClient).Extract()
+	hypervisorsStatistics, err := hypervisors.GetStatistics(context.TODO(), computeClient).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -75,7 +75,7 @@ Example of Show Hypervisors Statistics
 Example of Show Hypervisor Uptime
 
 	hypervisorID := "42"
-	hypervisorUptime, err := hypervisors.GetUptime(computeClient, hypervisorID).Extract()
+	hypervisorUptime, err := hypervisors.GetUptime(context.TODO(), computeClient, hypervisorID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +87,7 @@ Example of Show Hypervisor Uptime with Compute API microversion greater than 2.5
 	computeClient.Microversion = "2.53"
 
 	hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
-	hypervisorUptime, err := hypervisors.GetUptime(computeClient, hypervisorID).Extract()
+	hypervisorUptime, err := hypervisors.GetUptime(context.TODO(), computeClient, hypervisorID).Extract()
 	if err != nil {
 		panic(err)
 	}

@@ -10,7 +10,7 @@ not work if the OpenStack environment is running the OpenStack Networking
 
 Example of Listing Default Security Group Rules
 
-	allPages, err := defsecrules.List(computeClient).AllPages()
+	allPages, err := defsecrules.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example of Listing Default Security Group Rules
 
 Example of Retrieving a Default Security Group Rule
 
-	rule, err := defsecrules.Get(computeClient, "rule-id").Extract()
+	rule, err := defsecrules.Get(context.TODO(), computeClient, "rule-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,14 +40,14 @@ Example of Creating a Default Security Group Rule
 		CIDR:       "10.10.12.0/24",
 	}
 
-	rule, err := defsecrules.Create(computeClient, createOpts).Extract()
+	rule, err := defsecrules.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example of Deleting a Default Security Group Rule
 
-	err := defsecrules.Delete(computeClient, "rule-id").ExtractErr()
+	err := defsecrules.Delete(context.TODO(), computeClient, "rule-id").ExtractErr()
 	if err != nil {
 		panic(err)
 	}

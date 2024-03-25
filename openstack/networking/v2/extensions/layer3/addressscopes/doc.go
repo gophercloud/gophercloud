@@ -7,7 +7,7 @@ Example of Listing Address scopes
 	    IPVersion: 6,
 	}
 
-	allPages, err := addressscopes.List(networkClient, listOpts).AllPages()
+	allPages, err := addressscopes.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -24,7 +24,7 @@ Example of Listing Address scopes
 Example to Get an Address scope
 
 	addressScopeID = "9cc35860-522a-4d35-974d-51d4b011801e"
-	addressScope, err := addressscopes.Get(networkClient, addressScopeID).Extract()
+	addressScope, err := addressscopes.Get(context.TODO(), networkClient, addressScopeID).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -35,7 +35,7 @@ Example to Create a new Address scope
 	    Name: "my_address_scope",
 	    IPVersion: 6,
 	}
-	addressScope, err := addressscopes.Create(networkClient, addressScopeOpts).Extract()
+	addressScope, err := addressscopes.Create(context.TODO(), networkClient, addressScopeOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -48,7 +48,7 @@ Example to Update an Address scope
 	    Name: &newName,
 	}
 
-	addressScope, err := addressscopes.Update(networkClient, addressScopeID, updateOpts).Extract()
+	addressScope, err := addressscopes.Update(context.TODO(), networkClient, addressScopeID, updateOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -56,7 +56,7 @@ Example to Update an Address scope
 Example to Delete an Address scope
 
 	addressScopeID = "9cc35860-522a-4d35-974d-51d4b011801e"
-	err := addressscopes.Delete(networkClient, addressScopeID).ExtractErr()
+	err := addressscopes.Delete(context.TODO(), networkClient, addressScopeID).ExtractErr()
 	if err != nil {
 	    panic(err)
 	}

@@ -9,7 +9,7 @@ This API works in both Neutron and nova-network based OpenStack clouds.
 
 Example to List Networks Available to a Tenant
 
-	allPages, err := tenantnetworks.List(computeClient).AllPages()
+	allPages, err := tenantnetworks.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

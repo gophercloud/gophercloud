@@ -3,7 +3,7 @@ Package ruletypes contains functionality for working with Neutron 'quality of se
 
 Example of Listing QoS rule types
 
-	page, err := ruletypes.ListRuleTypes(client).AllPages()
+	page, err := ruletypes.ListRuleTypes(client).AllPages(context.TODO())
 	if err != nil {
 		return
 	}
@@ -19,7 +19,7 @@ Example of Getting a single QoS rule type by name
 
 	ruleTypeName := "bandwidth_limit"
 
-	ruleType, err := ruletypes.Get(networkClient, ruleTypeName).Extract()
+	ruleType, err := ruletypes.Get(context.TODO(), networkClient, ruleTypeName).Extract()
 	if err != nil {
 	    panic(err)
 	}

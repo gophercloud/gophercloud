@@ -8,7 +8,7 @@ Example to List Load Balancers
 		Provider: "haproxy",
 	}
 
-	allPages, err := loadbalancers.List(networkClient, listOpts).AllPages()
+	allPages, err := loadbalancers.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ Example to Create a Load Balancer
 		Tags:         []string{"test", "stage"},
 	}
 
-	lb, err := loadbalancers.Create(networkClient, createOpts).Extract()
+	lb, err := loadbalancers.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ Example to Create a fully populated Load Balancer
 		}},
 	}
 
-	lb, err := loadbalancers.Create(networkClient, createOpts).Extract()
+	lb, err := loadbalancers.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ Example to Update a Load Balancer
 	updateOpts := loadbalancers.UpdateOpts{
 		Name: &name,
 	}
-	lb, err := loadbalancers.Update(networkClient, lbID, updateOpts).Extract()
+	lb, err := loadbalancers.Update(context.TODO(), networkClient, lbID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -107,7 +107,7 @@ Example to Delete a Load Balancers
 
 	lbID := "d67d56a6-4a86-4688-a282-f46444705c64"
 
-	err := loadbalancers.Delete(networkClient, lbID, deleteOpts).ExtractErr()
+	err := loadbalancers.Delete(context.TODO(), networkClient, lbID, deleteOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +115,7 @@ Example to Delete a Load Balancers
 Example to Get the Status of a Load Balancer
 
 	lbID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	status, err := loadbalancers.GetStatuses(networkClient, LBID).Extract()
+	status, err := loadbalancers.GetStatuses(context.TODO(), networkClient, LBID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -123,7 +123,7 @@ Example to Get the Status of a Load Balancer
 Example to Get the Statistics of a Load Balancer
 
 	lbID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	stats, err := loadbalancers.GetStats(networkClient, LBID).Extract()
+	stats, err := loadbalancers.GetStats(context.TODO(), networkClient, LBID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -132,7 +132,7 @@ Example to Failover a Load Balancers
 
 	lbID := "d67d56a6-4a86-4688-a282-f46444705c64"
 
-	err := loadbalancers.Failover(networkClient, lbID).ExtractErr()
+	err := loadbalancers.Failover(context.TODO(), networkClient, lbID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

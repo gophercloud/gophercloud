@@ -12,6 +12,6 @@ Example of obtaining and using a client:
 		panic(err)
 	}
 
-	introspection.GetIntrospectionStatus(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8")
+	introspection.GetIntrospectionStatus(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8")
 */
 package httpbasic

@@ -22,7 +22,7 @@ Default Filter checks equality, but you can override it with provided filter typ
 		},
 	}
 
-	allPages, err := executions.List(mistralClient, listOpts).AllPages()
+	allPages, err := executions.List(mistralClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -46,14 +46,14 @@ Create an execution
 		Description: "this is a description",
 	}
 
-	execution, err := executions.Create(mistralClient, createOpts).Extract()
+	execution, err := executions.Create(context.TODO(), mistralClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Get an execution
 
-	execution, err := executions.Get(mistralClient, "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
+	execution, err := executions.Get(context.TODO(), mistralClient, "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ Get an execution
 
 Delete an execution
 
-	res := executions.Delete(mistralClient, "50bb59f1-eb77-4017-a77f-6d575b002667")
+	res := executions.Delete(context.TODO(), mistralClient, "50bb59f1-eb77-4017-a77f-6d575b002667")
 	if res.Err != nil {
 		panic(res.Err)
 	}

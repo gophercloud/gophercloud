@@ -12,7 +12,7 @@ Example to Create a Claim on a specified Zaqar queue
 
 	queueName := "my_queue"
 
-	messages, err := claims.Create(messagingClient, queueName, createOpts).Extract()
+	messages, err := claims.Create(context.TODO(), messagingClient, queueName, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ Example to get a claim for a specified Zaqar queue
 	queueName := "my_queue"
 	claimID := "123456789012345678"
 
-	claim, err := claims.Get(messagingClient, queueName, claimID).Extract()
+	claim, err := claims.Get(context.TODO(), messagingClient, queueName, claimID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,7 @@ Example to update a claim for a specified Zaqar queue
 
 	queueName := "my_queue"
 
-	err := claims.Update(messagingClient, queueName, claimID, updateOpts).ExtractErr()
+	err := claims.Update(context.TODO(), messagingClient, queueName, claimID, updateOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ Example to delete a claim for a specified Zaqar queue
 
 	queueName := "my_queue"
 
-	err := claims.Delete(messagingClient, queueName, claimID).ExtractErr()
+	err := claims.Delete(context.TODO(), messagingClient, queueName, claimID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

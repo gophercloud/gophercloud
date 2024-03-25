@@ -8,7 +8,7 @@ Example to List Roles
 		DomainID: "default",
 	}
 
-	allPages, err := roles.List(identityClient, listOpts).AllPages()
+	allPages, err := roles.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ Example to Create a Role
 		}
 	}
 
-	role, err := roles.Create(identityClient, createOpts).Extract()
+	role, err := roles.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ Example to Update a Role
 		Name: "read only admin",
 	}
 
-	role, err := roles.Update(identityClient, roleID, updateOpts).Extract()
+	role, err := roles.Update(context.TODO(), identityClient, roleID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ Example to Update a Role
 Example to Delete a Role
 
 	roleID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := roles.Delete(identityClient, roleID).ExtractErr()
+	err := roles.Delete(context.TODO(), identityClient, roleID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ Example to List Role Assignments
 		ScopeProjectID: "9df1a02f5eb2416a9781e8b0c022d3ae",
 	}
 
-	allPages, err := roles.ListAssignments(identityClient, listOpts).AllPages()
+	allPages, err := roles.ListAssignments(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -88,7 +88,7 @@ Example to List Role Assignments for a User on a Project
 		ProjectID: projectID,
 	}
 
-	allPages, err := roles.ListAssignmentsOnResource(identityClient, listAssignmentsOnResourceOpts).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(identityClient, listAssignmentsOnResourceOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +108,7 @@ Example to Assign a Role to a User in a Project
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := roles.Assign(identityClient, roleID, roles.AssignOpts{
+	err := roles.Assign(context.TODO(), identityClient, roleID, roles.AssignOpts{
 		UserID:    userID,
 		ProjectID: projectID,
 	}).ExtractErr()
@@ -123,7 +123,7 @@ Example to Unassign a Role From a User in a Project
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := roles.Unassign(identityClient, roleID, roles.UnassignOpts{
+	err := roles.Unassign(context.TODO(), identityClient, roleID, roles.UnassignOpts{
 		UserID:    userID,
 		ProjectID: projectID,
 	}).ExtractErr()

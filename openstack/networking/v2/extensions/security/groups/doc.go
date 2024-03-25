@@ -8,7 +8,7 @@ Example to List Security Groups
 		TenantID: "966b3c7d36a24facaf20b7e458bf2192",
 	}
 
-	allPages, err := groups.List(networkClient, listOpts).AllPages()
+	allPages, err := groups.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ Example to Create a Security Group
 		Description: "A Security Group",
 	}
 
-	group, err := groups.Create(networkClient, createOpts).Extract()
+	group, err := groups.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ Example to Update a Security Group
 		Name: "new_name",
 	}
 
-	group, err := groups.Update(networkClient, groupID, updateOpts).Extract()
+	group, err := groups.Update(context.TODO(), networkClient, groupID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Update a Security Group
 Example to Delete a Security Group
 
 	groupID := "37d94f8a-d136-465c-ae46-144f0d8ef141"
-	err := groups.Delete(networkClient, groupID).ExtractErr()
+	err := groups.Delete(context.TODO(), networkClient, groupID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

@@ -4,7 +4,7 @@ Openstack Identity service.
 
 Example to Get EnforcementModel
 
-	model, err := limits.GetEnforcementModel(identityClient).Extract()
+	model, err := limits.GetEnforcementModel(context.TODO(), identityClient).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -15,7 +15,7 @@ Example to List Limits
 		ProjectID: "3d596369fd2043bf8aca3c8decb0189e",
 	}
 
-	allPages, err := limits.List(identityClient, listOpts).AllPages()
+	allPages, err := limits.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -44,14 +44,14 @@ Example to Create Limits
 		},
 	}
 
-	createdLimits, err := limits.Create(identityClient, batchCreateOpts).Extract()
+	createdLimits, err := limits.Create(context.TODO(), identityClient, batchCreateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Get a Limit
 
-	limit, err := limits.Get(identityClient, "25a04c7a065c430590881c646cdcdd58").Extract()
+	limit, err := limits.Get(context.TODO(), identityClient, "25a04c7a065c430590881c646cdcdd58").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +67,7 @@ Example to Update a Limit
 	  ResourceLimit: &resourceLimit,
 	}
 
-	limit, err := limits.Update(identityClient, limitID, updateOpts).Extract()
+	limit, err := limits.Update(context.TODO(), identityClient, limitID, updateOpts).Extract()
 	if err != nil {
 	  panic(err)
 	}
@@ -75,7 +75,7 @@ Example to Update a Limit
 Example to Delete a Limit
 
 	limitID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := limits.Delete(identityClient, limitID).ExtractErr()
+	err := limits.Delete(context.TODO(), identityClient, limitID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

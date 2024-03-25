@@ -8,7 +8,7 @@ Example to List Events
 		Limit: 5,
 	}
 
-	err = events.List(serviceClient, opts).EachPage(func(page pagination.Page) (bool, error) {
+	err = events.List(serviceClient, opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		eventInfos, err := events.ExtractEvents(page)
 		if err != nil {
 			return false, err
@@ -23,7 +23,7 @@ Example to List Events
 Example to Get an Event
 
 	eventID := "edce3528-864f-41fb-8759-f4707925cc09"
-	event, err := events.Get(serviceClient, eventID).Extract()
+	event, err := events.Get(context.TODO(), serviceClient, eventID).Extract()
 	if err != nil {
 		panic(err)
 	}

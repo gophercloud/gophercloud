@@ -4,7 +4,7 @@ from the OpenStack Clustering Service.
 
 Example to List Policy Types
 
-	allPages, err := policytypes.List(clusteringClient).AllPages()
+	allPages, err := policytypes.List(clusteringClient).AllPages(context.TODO())
 	if err != nil {
 	    panic(err)
 	}
@@ -21,7 +21,7 @@ Example to List Policy Types
 Example to Get a Policy Type
 
 	policyTypeName := "senlin.policy.affinity-1.0"
-	policyTypeDetail, err := policyTypes.Get(clusteringClient, policyTypeName).Extract()
+	policyTypeDetail, err := policyTypes.Get(context.TODO(), clusteringClient, policyTypeName).Extract()
 	if err != nil {
 	    panic(err)
 	}

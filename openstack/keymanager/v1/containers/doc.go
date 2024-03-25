@@ -4,7 +4,7 @@ Service.
 
 Example to List Containers
 
-	allPages, err := containers.List(client, nil).AllPages()
+	allPages, err := containers.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,7 @@ Example to Create a Container
 		},
 	}
 
-	container, err := containers.Create(client, createOpts).Extract()
+	container, err := containers.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,14 +40,14 @@ Example to Create a Container
 
 Example to Delete a Container
 
-	err := containers.Delete(client, containerID).ExtractErr()
+	err := containers.Delete(context.TODO(), client, containerID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to List Consumers of a Container
 
-	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages()
+	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +66,7 @@ Example to Create a Consumer of a Container
 		URL:  "http://example.com",
 	}
 
-	container, err := containers.CreateConsumer(client, containerID, createOpts).Extract()
+	container, err := containers.CreateConsumer(context.TODO(), client, containerID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -78,7 +78,7 @@ Example to Delete a Consumer of a Container
 		URL:  "http://example.com",
 	}
 
-	container, err := containers.DeleteConsumer(client, containerID, deleteOpts).Extract()
+	container, err := containers.DeleteConsumer(context.TODO(), client, containerID, deleteOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

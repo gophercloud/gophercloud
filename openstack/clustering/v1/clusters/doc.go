@@ -10,7 +10,7 @@ Example to Create a Cluster
 		ProfileID:       "b7b870ee-d3c5-4a93-b9d7-846c53b2c2da",
 	}
 
-	cluster, err := clusters.Create(serviceClient, createOpts).Extract()
+	cluster, err := clusters.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -18,7 +18,7 @@ Example to Create a Cluster
 Example to Get a Cluster
 
 	clusterName := "cluster123"
-	cluster, err := clusters.Get(serviceClient, clusterName).Extract()
+	cluster, err := clusters.Get(context.TODO(), serviceClient, clusterName).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ Example to List Clusters
 		Name: "testcluster",
 	}
 
-	allPages, err := clusters.List(serviceClient, listOpts).AllPages()
+	allPages, err := clusters.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to Update a Cluster
 	}
 
 	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
-	cluster, err := clusters.Update(serviceClient, clusterName, opts).Extract()
+	cluster, err := clusters.Update(context.TODO(), serviceClient, clusterName, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ Example to Update a Cluster
 Example to Delete a Cluster
 
 	clusterID := "dc6d336e3fc4c0a951b5698cd1236ee"
-	err := clusters.Delete(serviceClient, clusterID).ExtractErr()
+	err := clusters.Delete(context.TODO(), serviceClient, clusterID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +83,7 @@ Example to Resize a Cluster
 		Strict:         &strict,
 	}
 
-	actionID, err := clusters.Resize(client, clusterName, resizeOpts).Extract()
+	actionID, err := clusters.Resize(context.TODO(), client, clusterName, resizeOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to resize cluster: %v", err)
 	}
@@ -97,7 +97,7 @@ Example to ScaleIn a Cluster
 	}
 	clusterID:  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
 
-	action, err := clusters.ScaleIn(computeClient, clusterID, scaleInOpts).Extract()
+	action, err := clusters.ScaleIn(context.TODO(), computeClient, clusterID, scaleInOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +109,7 @@ Example to ScaleOut a cluster
 	}
 	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
 
-	actionID, err := clusters.ScaleOut(computeClient, clusterID, scaleOutOpts).Extract()
+	actionID, err := clusters.ScaleOut(context.TODO(), computeClient, clusterID, scaleOutOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +117,7 @@ Example to ScaleOut a cluster
 Example to List Policies for a Cluster
 
 	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
-	allPages, err := clusters.ListPolicies(serviceClient, clusterID, nil).AllPages()
+	allPages, err := clusters.ListPolicies(serviceClient, clusterID, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -151,7 +151,7 @@ Example to Attach a Policy to a Cluster
 	}
 
 	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.AttachPolicy(serviceClient, clusterID, attachPolicyOpts).Extract()
+	actionID, err := clusters.AttachPolicy(context.TODO(), serviceClient, clusterID, attachPolicyOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -165,7 +165,7 @@ Example to Detach a Policy to Cluster
 	}
 
 	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.DetachPolicy(serviceClient, clusterID, detachpolicyOpts).Extract()
+	actionID, err := clusters.DetachPolicy(context.TODO(), serviceClient, clusterID, detachpolicyOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -181,7 +181,7 @@ Example to Update a Policy to a Cluster
 	}
 
 	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.UpdatePolicy(serviceClient, clusterID, updatePolicyOpts).Extract()
+	actionID, err := clusters.UpdatePolicy(context.TODO(), serviceClient, clusterID, updatePolicyOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -199,7 +199,7 @@ Example to Recover a Cluster
 	}
 
 	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.Recover(computeClient, clusterID, recoverOpts).Extract()
+	actionID, err := clusters.Recover(context.TODO(), computeClient, clusterID, recoverOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -208,7 +208,7 @@ Example to Recover a Cluster
 Example to Check a Cluster
 
 	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	action, err := clusters.Check(computeClient, clusterID).Extract()
+	action, err := clusters.Check(context.TODO(), computeClient, clusterID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -218,7 +218,7 @@ Example to Complete Life Cycle
 	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
 	lifecycleOpts := clusters.CompleteLifecycleOpts{LifecycleActionTokenID: "2b827124-69e1-496e-9484-33ca769fe4df"}
 
-	action, err := clusters.CompleteLifecycle(computeClient, clusterID, lifecycleOpts).Extract()
+	action, err := clusters.CompleteLifecycle(context.TODO(), computeClient, clusterID, lifecycleOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -229,7 +229,7 @@ Example to add nodes to a cluster
 			Nodes: []string{"node-123"},
 		}
 		clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-		actionID, err := clusters.AddNodes(serviceClient, clusterID, addNodesOpts).Extract()
+		actionID, err := clusters.AddNodes(context.TODO(), serviceClient, clusterID, addNodesOpts).Extract()
 		if err != nil {
 			panic(err)
 		}
@@ -241,7 +241,7 @@ Example to remove nodes from a cluster
 		Nodes: []string{"node-123"},
 	}
 	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	err := clusters.RemoveNodes(serviceClient, clusterID, removeNodesOpts).ExtractErr()
+	err := clusters.RemoveNodes(context.TODO(), serviceClient, clusterID, removeNodesOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -252,7 +252,7 @@ Example to replace nodes for a cluster
 		Nodes: map[string]string{"node-1234": "node-5678"},
 	}
 	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.ReplaceNodes(serviceClient, clusterID, replaceNodesOpts).Extract()
+	actionID, err := clusters.ReplaceNodes(context.TODO(), serviceClient, clusterID, replaceNodesOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -264,7 +264,7 @@ Example to collect node attributes across a cluster
 	opts := clusters.CollectOpts{
 		Path: "status",
 	}
-	attrs, err := clusters.Collect(serviceClient, clusterID, opts).Extract()
+	attrs, err := clusters.Collect(context.TODO(), serviceClient, clusterID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -278,7 +278,7 @@ Example to perform an operation on a cluster
 		Filters:   clusters.OperationFilters{"role": "slave"},
 		Params:    clusters.OperationParams{"type": "SOFT"},
 	}
-	actionID, err := clusters.Ops(serviceClient, clusterID, operationOpts).Extract()
+	actionID, err := clusters.Ops(context.TODO(), serviceClient, clusterID, operationOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

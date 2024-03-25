@@ -4,7 +4,7 @@ resource for the OpenStack DNS service.
 
 Example to List Zone Transfer Requests
 
-	allPages, err := transferRequests.List(dnsClient, nil).AllPages()
+	allPages, err := transferRequests.List(dnsClient, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example to Create a Zone Transfer Request
 	        TargetProjectID: targetProjectID,
 		Description: "This is a zone transfer request.",
 	}
-	transferRequest, err := transferRequests.Create(dnsClient, zoneID, createOpts).Extract()
+	transferRequest, err := transferRequests.Create(context.TODO(), dnsClient, zoneID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ Example to Create a Zone Transfer Request
 Example to Delete a Zone Transfer Request
 
 	transferID := "99d10f68-5623-4491-91a0-6daafa32b60e"
-	err := transferRequests.Delete(dnsClient, transferID).ExtractErr()
+	err := transferRequests.Delete(context.TODO(), dnsClient, transferID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

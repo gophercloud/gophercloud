@@ -10,7 +10,7 @@ Example to Get basic extended information:
 	}
 	var serverWithAttributesExt serverAttributesExt
 
-	err := servers.Get(computeClient, "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithAttributesExt)
+	err := servers.Get(context.TODO(), computeClient, "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithAttributesExt)
 	if err != nil {
 	  panic(err)
 	}
@@ -20,7 +20,7 @@ Example to Get basic extended information:
 Example to get additional fields with microversion 2.3 or later
 
 	computeClient.Microversion = "2.3"
-	result := servers.Get(computeClient, "d650a0ce-17c3-497d-961a-43c4af80998a")
+	result := servers.Get(context.TODO(), computeClient, "d650a0ce-17c3-497d-961a-43c4af80998a")
 
 	reservationID, err := extendedserverattributes.ExtractReservationID(result.Result)
 	if err != nil {

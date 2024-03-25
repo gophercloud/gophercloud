@@ -94,7 +94,7 @@ myOpts := MyCreateServerOpts{
 	Name: "s1",
 	Size: "100",
 }
-server, err := servers.Create(computeClient, myOpts).Extract()
+server, err := servers.Create(context.TODO(), computeClient, myOpts).Extract()
 // ...
 ```
 
@@ -114,7 +114,7 @@ var v struct {
   MyVolume `json:"volume"`
 }
 
-err := volumes.Get(client, volID).ExtractInto(&v)
+err := volumes.Get(context.TODO(), client, volID).ExtractInto(&v)
 // ...
 ```
 

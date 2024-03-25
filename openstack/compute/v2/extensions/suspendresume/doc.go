@@ -6,12 +6,12 @@ Example to Suspend and Resume a Server
 
 	serverID := "47b6b7b7-568d-40e4-868c-d5c41735532e"
 
-	err := suspendresume.Suspend(computeClient, serverID).ExtractErr()
+	err := suspendresume.Suspend(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
-	err := suspendresume.Resume(computeClient, serverID).ExtractErr()
+	err := suspendresume.Resume(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

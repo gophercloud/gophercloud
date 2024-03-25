@@ -8,7 +8,7 @@ Example to List Listeners
 		LoadbalancerID : "ca430f80-1737-4712-8dc6-3f640d55594b",
 	}
 
-	allPages, err := listeners.List(networkClient, listOpts).AllPages()
+	allPages, err := listeners.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ Example to Create a Listener
 		Tags:                   []string{"test", "stage"},
 	}
 
-	listener, err := listeners.Create(networkClient, createOpts).Extract()
+	listener, err := listeners.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ Example to Update a Listener
 		Tags: &newTags,
 	}
 
-	listener, err := listeners.Update(networkClient, listenerID, updateOpts).Extract()
+	listener, err := listeners.Update(context.TODO(), networkClient, listenerID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ Example to Update a Listener
 Example to Delete a Listener
 
 	listenerID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	err := listeners.Delete(networkClient, listenerID).ExtractErr()
+	err := listeners.Delete(context.TODO(), networkClient, listenerID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ Example to Delete a Listener
 Example to Get the Statistics of a Listener
 
 	listenerID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	stats, err := listeners.GetStats(networkClient, listenerID).Extract()
+	stats, err := listeners.GetStats(context.TODO(), networkClient, listenerID).Extract()
 	if err != nil {
 		panic(err)
 	}

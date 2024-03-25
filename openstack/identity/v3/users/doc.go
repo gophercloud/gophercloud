@@ -7,7 +7,7 @@ Example to List Users
 		DomainID: "default",
 	}
 
-	allPages, err := users.List(identityClient, listOpts).AllPages()
+	allPages, err := users.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,7 @@ Example to Create a User
 		}
 	}
 
-	user, err := users.Create(identityClient, createOpts).Extract()
+	user, err := users.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ Example to Update a User
 		Enabled: gophercloud.Disabled,
 	}
 
-	user, err := users.Update(identityClient, userID, updateOpts).Extract()
+	user, err := users.Update(context.TODO(), identityClient, userID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ Example to Change Password of a User
 		Password:         password,
 	}
 
-	err := users.ChangePassword(identityClient, userID, changePasswordOpts).ExtractErr()
+	err := users.ChangePassword(context.TODO(), identityClient, userID, changePasswordOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +73,7 @@ Example to Change Password of a User
 Example to Delete a User
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := users.Delete(identityClient, userID).ExtractErr()
+	err := users.Delete(context.TODO(), identityClient, userID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ Example to List Groups a User Belongs To
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	allPages, err := users.ListGroups(identityClient, userID).AllPages()
+	allPages, err := users.ListGroups(identityClient, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +100,7 @@ Example to Add a User to a Group
 
 	groupID := "bede500ee1124ae9b0006ff859758b3a"
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := users.AddToGroup(identityClient, groupID, userID).ExtractErr()
+	err := users.AddToGroup(context.TODO(), identityClient, groupID, userID).ExtractErr()
 
 	if err != nil {
 		panic(err)
@@ -110,7 +110,7 @@ Example to Check Whether a User Belongs to a Group
 
 	groupID := "bede500ee1124ae9b0006ff859758b3a"
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
-	ok, err := users.IsMemberOfGroup(identityClient, groupID, userID).Extract()
+	ok, err := users.IsMemberOfGroup(context.TODO(), identityClient, groupID, userID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -123,7 +123,7 @@ Example to Remove a User from a Group
 
 	groupID := "bede500ee1124ae9b0006ff859758b3a"
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := users.RemoveFromGroup(identityClient, groupID, userID).ExtractErr()
+	err := users.RemoveFromGroup(context.TODO(), identityClient, groupID, userID).ExtractErr()
 
 	if err != nil {
 		panic(err)
@@ -133,7 +133,7 @@ Example to List Projects a User Belongs To
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	allPages, err := users.ListProjects(identityClient, userID).AllPages()
+	allPages, err := users.ListProjects(identityClient, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -154,7 +154,7 @@ Example to List Users in a Group
 		DomainID: "default",
 	}
 
-	allPages, err := users.ListInGroup(identityClient, groupID, listOpts).AllPages()
+	allPages, err := users.ListInGroup(identityClient, groupID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

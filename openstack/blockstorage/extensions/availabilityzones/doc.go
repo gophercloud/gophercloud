@@ -4,7 +4,7 @@ available volume availability zones.
 
 Example of Get Availability Zone Information
 
-		allPages, err := availabilityzones.List(volumeClient).AllPages()
+		allPages, err := availabilityzones.List(volumeClient).AllPages(context.TODO())
 		if err != nil {
 			panic(err)
 		}

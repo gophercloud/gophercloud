@@ -8,7 +8,7 @@ Example to List Policies
 		Type: "application/json",
 	}
 
-	allPages, err := policies.List(identityClient, listOpts).AllPages()
+	allPages, err := policies.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ Example to Create a Policy
 		},
 	}
 
-	policy, err := policies.Create(identityClient, createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example to Create a Policy
 Example to Get a Policy
 
 	policyID := "0fe36e73809d46aeae6705c39077b1b3"
-	policy, err := policies.Get(identityClient, policyID).Extract()
+	policy, err := policies.Get(context.TODO(), identityClient, policyID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -59,7 +59,7 @@ Example to Update a Policy
 		},
 	}
 
-	policy, err := policies.Update(identityClient, policyID, updateOpts).Extract()
+	policy, err := policies.Update(context.TODO(), identityClient, policyID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ Example to Update a Policy
 Example to Delete a Policy
 
 	policyID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := policies.Delete(identityClient, policyID).ExtractErr()
+	err := policies.Delete(context.TODO(), identityClient, policyID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

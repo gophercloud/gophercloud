@@ -11,7 +11,7 @@ service.
 
 Example to List Floating IPs
 
-	allPages, err := floatingips.List(computeClient).AllPages()
+	allPages, err := floatingips.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -31,14 +31,14 @@ Example to Create a Floating IP
 		Pool: "nova",
 	}
 
-	fip, err := floatingips.Create(computeClient, createOpts).Extract()
+	fip, err := floatingips.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete a Floating IP
 
-	err := floatingips.Delete(computeClient, "floatingip-id").ExtractErr()
+	err := floatingips.Delete(context.TODO(), computeClient, "floatingip-id").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ Example to Associate a Floating IP With a Server
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := floatingips.AssociateInstance(computeClient, "server-id", associateOpts).ExtractErr()
+	err := floatingips.AssociateInstance(context.TODO(), computeClient, "server-id", associateOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ Example to Disassociate a Floating IP From a Server
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := floatingips.DisassociateInstance(computeClient, "server-id", disassociateOpts).ExtractErr()
+	err := floatingips.DisassociateInstance(context.TODO(), computeClient, "server-id", disassociateOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

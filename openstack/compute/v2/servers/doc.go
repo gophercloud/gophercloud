@@ -11,7 +11,7 @@ Example to List Servers
 		AllTenants: true,
 	}
 
-	allPages, err := servers.ListSimple(computeClient, listOpts).AllPages()
+	allPages, err := servers.ListSimple(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,7 @@ Example to List Detail Servers
 		AllTenants: true,
 	}
 
-	allPages, err := servers.List(computeClient, listOpts).AllPages()
+	allPages, err := servers.List(computeClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ Example to Create a Server
 		FlavorRef: "flavor-uuid",
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ Example to Create a Server
 Example to Delete a Server
 
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
-	err := servers.Delete(computeClient, serverID).ExtractErr()
+	err := servers.Delete(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ Example to Delete a Server
 Example to Force Delete a Server
 
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
-	err := servers.ForceDelete(computeClient, serverID).ExtractErr()
+	err := servers.ForceDelete(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ Example to Reboot a Server
 
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
 
-	err := servers.Reboot(computeClient, serverID, rebootOpts).ExtractErr()
+	err := servers.Reboot(context.TODO(), computeClient, serverID, rebootOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -109,12 +109,12 @@ Example to Resize a Server
 
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
 
-	err := servers.Resize(computeClient, serverID, resizeOpts).ExtractErr()
+	err := servers.Resize(context.TODO(), computeClient, serverID, resizeOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
-	err = servers.ConfirmResize(computeClient, serverID).ExtractErr()
+	err = servers.ConfirmResize(context.TODO(), computeClient, serverID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -127,7 +127,7 @@ Example to Snapshot a Server
 
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
 
-	image, err := servers.CreateImage(computeClient, serverID, snapshotOpts).ExtractImageID()
+	image, err := servers.CreateImage(context.TODO(), computeClient, serverID, snapshotOpts).ExtractImageID()
 	if err != nil {
 		panic(err)
 	}

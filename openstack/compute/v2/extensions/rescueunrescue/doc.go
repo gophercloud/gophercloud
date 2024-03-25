@@ -10,7 +10,7 @@ Example to Rescue a server
 	}
 	serverID := "3f54d05f-3430-4d80-aa07-63e6af9e2488"
 
-	adminPass, err := rescueunrescue.Rescue(computeClient, serverID, rescueOpts).Extract()
+	adminPass, err := rescueunrescue.Rescue(context.TODO(), computeClient, serverID, rescueOpts).Extract()
 	if err != nil {
 	  panic(err)
 	}
@@ -21,7 +21,7 @@ Example to Unrescue a server
 
 	serverID := "3f54d05f-3430-4d80-aa07-63e6af9e2488"
 
-	if err := rescueunrescue.Unrescue(computeClient, serverID).ExtractErr(); err != nil {
+	if err := rescueunrescue.Unrescue(context.TODO(), computeClient, serverID).ExtractErr(); err != nil {
 	  panic(err)
 	}
 */

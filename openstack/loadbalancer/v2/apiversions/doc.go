@@ -5,7 +5,7 @@ restricted to this particular version.
 
 Example to List API Versions
 
-	allPages, err := apiversions.List(loadbalancerClient).AllPages()
+	allPages, err := apiversions.List(loadbalancerClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

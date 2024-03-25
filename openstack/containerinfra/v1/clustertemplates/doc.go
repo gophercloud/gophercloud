@@ -33,7 +33,7 @@ Example to Create Cluster Template
 		DNSNameServer:       "8.8.8.8",
 	}
 
-	clustertemplate, err := clustertemplates.Create(serviceClient, createOpts).Extract()
+	clustertemplate, err := clustertemplates.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ Example to Create Cluster Template
 Example to Delete Cluster Template
 
 	clusterTemplateID := "dc6d336e3fc4c0a951b5698cd1236ee"
-	err := clustertemplates.Delete(serviceClient, clusterTemplateID).ExtractErr()
+	err := clustertemplates.Delete(context.TODO(), serviceClient, clusterTemplateID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to List Clusters Templates
 		Limit: 20,
 	}
 
-	allPages, err := clustertemplates.List(serviceClient, listOpts).AllPages()
+	allPages, err := clustertemplates.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -81,7 +81,7 @@ Example to Update Cluster Template
 		},
 	}
 
-	clustertemplate, err := clustertemplates.Update(serviceClient, updateOpts).Extract()
+	clustertemplate, err := clustertemplates.Update(context.TODO(), serviceClient, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

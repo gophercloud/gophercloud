@@ -8,7 +8,7 @@ Example to List Projects
 		Enabled: gophercloud.Enabled,
 	}
 
-	allPages, err := projects.List(identityClient, listOpts).AllPages()
+	allPages, err := projects.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ Example to Create a Project
 		Tags:        []string{"FirstTag", "SecondTag"},
 	}
 
-	project, err := projects.Create(identityClient, createOpts).Extract()
+	project, err := projects.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ Example to Update a Project
 		Enabled: gophercloud.Disabled,
 	}
 
-	project, err := projects.Update(identityClient, projectID, updateOpts).Extract()
+	project, err := projects.Update(context.TODO(), identityClient, projectID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to Update a Project
 		Tags: &[]string{"FirstTag"},
 	}
 
-	project, err = projects.Update(identityClient, projectID, updateOpts).Extract()
+	project, err = projects.Update(context.TODO(), identityClient, projectID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ Example to Update a Project
 Example to Delete a Project
 
 	projectID := "966b3c7d36a24facaf20b7e458bf2192"
-	err := projects.Delete(identityClient, projectID).ExtractErr()
+	err := projects.Delete(context.TODO(), identityClient, projectID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

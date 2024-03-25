@@ -7,7 +7,7 @@ Example to List Groups
 		DomainID: "default",
 	}
 
-	allPages, err := groups.List(identityClient, listOpts).AllPages()
+	allPages, err := groups.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,7 @@ Example to Create a Group
 		}
 	}
 
-	group, err := groups.Create(identityClient, createOpts).Extract()
+	group, err := groups.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Update a Group
 		Description: "Updated Description for group",
 	}
 
-	group, err := groups.Update(identityClient, groupID, updateOpts).Extract()
+	group, err := groups.Update(context.TODO(), identityClient, groupID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to Update a Group
 Example to Delete a Group
 
 	groupID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := groups.Delete(identityClient, groupID).ExtractErr()
+	err := groups.Delete(context.TODO(), identityClient, groupID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

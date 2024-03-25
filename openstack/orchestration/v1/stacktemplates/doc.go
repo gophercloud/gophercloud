@@ -9,7 +9,7 @@ specific application stack.
 
 Example to get stack template
 
-	temp, err := stacktemplates.Get(client, stack.Name, stack.ID).Extract()
+	temp, err := stacktemplates.Get(context.TODO(), client, stack.Name, stack.ID).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -26,7 +26,7 @@ Example to validate stack template
 	validateOpts := &stacktemplates.ValidateOpts{
 	    Template: string(f2),
 	}
-	validate_result, err := stacktemplates.Validate(client, validateOpts).Extract()
+	validate_result, err := stacktemplates.Validate(context.TODO(), client, validateOpts).Extract()
 	if err != nil {
 	    // If validate failed, you will get error message here
 	    fmt.Println("Validate failed: ", err.Error())

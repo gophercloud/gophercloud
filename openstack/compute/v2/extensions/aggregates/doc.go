@@ -9,7 +9,7 @@ Example of Create Aggregate
 		AvailabilityZone: "london",
 	}
 
-	aggregate, err := aggregates.Create(computeClient, createOpts).Extract()
+	aggregate, err := aggregates.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -18,7 +18,7 @@ Example of Create Aggregate
 Example of Show Aggregate Details
 
 	aggregateID := 42
-	aggregate, err := aggregates.Get(computeClient, aggregateID).Extract()
+	aggregate, err := aggregates.Get(context.TODO(), computeClient, aggregateID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +27,7 @@ Example of Show Aggregate Details
 Example of Delete Aggregate
 
 	aggregateID := 32
-	err := aggregates.Delete(computeClient, aggregateID).ExtractErr()
+	err := aggregates.Delete(context.TODO(), computeClient, aggregateID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example of Update Aggregate
 		AvailabilityZone: "nova2",
 	}
 
-	aggregate, err := aggregates.Update(computeClient, aggregateID, opts).Extract()
+	aggregate, err := aggregates.Update(context.TODO(), computeClient, aggregateID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ Example of Update Aggregate
 
 Example of Retrieving list of all aggregates
 
-	allPages, err := aggregates.List(computeClient).AllPages()
+	allPages, err := aggregates.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ Example of Add Host
 		Host: "newhost-cmp1",
 	}
 
-	aggregate, err := aggregates.AddHost(computeClient, aggregateID, opts).Extract()
+	aggregate, err := aggregates.AddHost(context.TODO(), computeClient, aggregateID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ Example of Remove Host
 		Host: "newhost-cmp1",
 	}
 
-	aggregate, err := aggregates.RemoveHost(computeClient, aggregateID, opts).Extract()
+	aggregate, err := aggregates.RemoveHost(context.TODO(), computeClient, aggregateID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ Example of Create or Update Metadata
 		Metadata: map[string]string{"key": "value"},
 	}
 
-	aggregate, err := aggregates.SetMetadata(computeClient, aggregateID, opts).Extract()
+	aggregate, err := aggregates.SetMetadata(context.TODO(), computeClient, aggregateID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}

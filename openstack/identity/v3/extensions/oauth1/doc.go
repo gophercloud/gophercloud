@@ -6,7 +6,7 @@ Example to Create an OAuth1 Consumer
 	createConsumerOpts := oauth1.CreateConsumerOpts{
 		Description: "My consumer",
 	}
-	consumer, err := oauth1.CreateConsumer(identityClient, createConsumerOpts).Extract()
+	consumer, err := oauth1.CreateConsumer(context.TODO(), identityClient, createConsumerOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ Example to Request an unauthorized OAuth1 token
 		OAuthSignatureMethod: oauth1.HMACSHA1,
 		RequestedProjectID:   projectID,
 	}
-	requestToken, err := oauth1.RequestToken(identityClient, requestTokenOpts).Extract()
+	requestToken, err := oauth1.RequestToken(context.TODO(), identityClient, requestTokenOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ Example to Authorize an unauthorized OAuth1 token
 			{Name: "member"},
 		},
 	}
-	authToken, err := oauth1.AuthorizeToken(identityClient, requestToken.OAuthToken, authorizeTokenOpts).Extract()
+	authToken, err := oauth1.AuthorizeToken(context.TODO(), identityClient, requestToken.OAuthToken, authorizeTokenOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +54,7 @@ Example to Create an OAuth1 Access Token
 		OAuthVerifier:        authToken.OAuthVerifier,
 		OAuthSignatureMethod: oauth1.HMACSHA1,
 	}
-	accessToken, err := oauth1.CreateAccessToken(identityClient, accessTokenOpts).Extract()
+	accessToken, err := oauth1.CreateAccessToken(context.TODO(), identityClient, accessTokenOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ Example to Create an OAuth1 Access Token
 
 Example to List User's OAuth1 Access Tokens
 
-	allPages, err := oauth1.ListAccessTokens(identityClient, userID).AllPages()
+	allPages, err := oauth1.ListAccessTokens(identityClient, userID).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -93,7 +93,7 @@ Example to Authenticate a client using OAuth1 method
 		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
 		OAuthSignatureMethod: oauth1.HMACSHA1,
 	}
-	err = openstack.AuthenticateV3(client, authOptions, gophercloud.EndpointOpts{})
+	err = openstack.AuthenticateV3(context.TODO(), client, authOptions, gophercloud.EndpointOpts{})
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +114,7 @@ Example to Create a Token using OAuth1 method
 		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
 		OAuthSignatureMethod: oauth1.HMACSHA1,
 	}
-	err := tokens.Create(identityClient, createOpts).ExtractInto(&oauth1Token)
+	err := tokens.Create(context.TODO(), identityClient, createOpts).ExtractInto(&oauth1Token)
 	if err != nil {
 		panic(err)
 	}

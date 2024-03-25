@@ -8,7 +8,7 @@ Example to List Security Groups Rules
 		Protocol: "tcp",
 	}
 
-	allPages, err := rules.List(networkClient, listOpts).AllPages()
+	allPages, err := rules.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ Example to Create a Security Group Rule
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}
 
-	rule, err := rules.Create(networkClient, createOpts).Extract()
+	rule, err := rules.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ Example to Create a Security Group Rule
 Example to Delete a Security Group Rule
 
 	ruleID := "37d94f8a-d136-465c-ae46-144f0d8ef141"
-	err := rules.Delete(networkClient, ruleID).ExtractErr()
+	err := rules.Delete(context.TODO(), networkClient, ruleID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

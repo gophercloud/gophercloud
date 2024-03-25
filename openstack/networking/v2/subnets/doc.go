@@ -15,7 +15,7 @@ Example to List Subnets
 		IPVersion: 4,
 	}
 
-	allPages, err := subnets.List(networkClient, listOpts).AllPages()
+	allPages, err := subnets.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ Example to Create a Subnet With Specified Gateway
 		ServiceTypes: []string{"network:floatingip"},
 	}
 
-	subnet, err := subnets.Create(networkClient, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -70,7 +70,7 @@ Example to Create a Subnet With No Gateway
 		DNSNameservers: []string{},
 	}
 
-	subnet, err := subnets.Create(networkClient, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +90,7 @@ Example to Create a Subnet With a Default Gateway
 		DNSNameservers: []string{},
 	}
 
-	subnet, err := subnets.Create(networkClient, createOpts).Extract()
+	subnet, err := subnets.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +108,7 @@ Example to Update a Subnet
 		ServiceTypes:   &serviceTypes,
 	}
 
-	subnet, err := subnets.Update(networkClient, subnetID, updateOpts).Extract()
+	subnet, err := subnets.Update(context.TODO(), networkClient, subnetID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -122,7 +122,7 @@ Example to Remove a Gateway From a Subnet
 		GatewayIP: &noGateway,
 	}
 
-	subnet, err := subnets.Update(networkClient, subnetID, updateOpts).Extract()
+	subnet, err := subnets.Update(context.TODO(), networkClient, subnetID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -130,7 +130,7 @@ Example to Remove a Gateway From a Subnet
 Example to Delete a Subnet
 
 	subnetID := "db77d064-e34f-4d06-b060-f21e28a61c23"
-	err := subnets.Delete(networkClient, subnetID).ExtractErr()
+	err := subnets.Delete(context.TODO(), networkClient, subnetID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

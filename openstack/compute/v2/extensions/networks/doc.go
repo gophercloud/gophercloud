@@ -7,7 +7,7 @@ networks.
 
 Example to List Networks
 
-	allPages, err := networks.List(computeClient).AllPages()
+	allPages, err := networks.List(computeClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}

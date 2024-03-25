@@ -5,7 +5,7 @@ Package instanceactions provides the ability to list or get a server instance-ac
 
 Example to List and Get actions:
 
-	pages, err := instanceactions.List(client, "server-id", nil).AllPages()
+	pages, err := instanceactions.List(client, "server-id", nil).AllPages(context.TODO())
 	if err != nil {
 		panic("fail to get actions pages")
 	}
@@ -16,7 +16,7 @@ Example to List and Get actions:
 	}
 
 	for _, action := range actions {
-		action, err = instanceactions.Get(client, "server-id", action.RequestID).Extract()
+		action, err = instanceactions.Get(context.TODO(), client, "server-id", action.RequestID).Extract()
 		if err != nil {
 			panic("fail to get instance action")
 		}

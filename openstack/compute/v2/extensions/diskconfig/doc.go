@@ -11,7 +11,7 @@ Example of Obtaining the Disk Config of a Server
 
 	var allServers []ServerWithDiskConfig
 
-	allPages, err := servers.List(client, nil).AllPages()
+	allPages, err := servers.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic("Unable to retrieve servers: %s", err)
 	}
@@ -38,7 +38,7 @@ Example of Creating a Server with Disk Config
 		DiskConfig:        diskconfig.Manual,
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic("Unable to create server: %s", err)
 	}

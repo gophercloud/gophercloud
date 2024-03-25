@@ -14,7 +14,7 @@ Example to List Networks
 		TenantID: "a99e9b4e620e4db09a2dfb6e42a01e66",
 	}
 
-	allPages, err := networks.List(networkClient, listOpts).AllPages()
+	allPages, err := networks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,7 @@ Example to Create a Network
 		AdminStateUp: &iTrue,
 	}
 
-	network, err := networks.Create(networkClient, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Update a Network
 		Name: &name,
 	}
 
-	network, err := networks.Update(networkClient, networkID, updateOpts).Extract()
+	network, err := networks.Update(context.TODO(), networkClient, networkID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ Example to Update a Network
 Example to Delete a Network
 
 	networkID := "484cda0e-106f-4f4b-bb3f-d413710bbe78"
-	err := networks.Delete(networkClient, networkID).ExtractErr()
+	err := networks.Delete(context.TODO(), networkClient, networkID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

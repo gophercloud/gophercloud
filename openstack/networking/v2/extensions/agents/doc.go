@@ -7,7 +7,7 @@ Example of Listing Agents
 		AgentType: "Open vSwitch agent",
 	}
 
-	allPages, err := agents.List(networkClient, listOpts).AllPages()
+	allPages, err := agents.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +24,7 @@ Example of Listing Agents
 Example to Get an Agent
 
 	agentID := "76af7b1f-d61b-4526-94f7-d2e14e2698df"
-	agent, err := agents.Get(networkClient, agentID).Extract()
+	agent, err := agents.Get(context.TODO(), networkClient, agentID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ Example to Update an Agent
 		AdminStateUp: &adminStateUp,
 	}
 	agentID := "76af7b1f-d61b-4526-94f7-d2e14e2698df"
-	agent, err := agents.Update(networkClient, agentID, updateOpts).Extract()
+	agent, err := agents.Update(context.TODO(), networkClient, agentID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ Example to Update an Agent
 Example to Delete an Agent
 
 	agentID := "76af7b1f-d61b-4526-94f7-d2e14e2698df"
-	err := agents.Delete(networkClient, agentID).ExtractErr()
+	err := agents.Delete(context.TODO(), networkClient, agentID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +54,7 @@ Example to Delete an Agent
 Example to List Networks hosted by a DHCP Agent
 
 	agentID := "76af7b1f-d61b-4526-94f7-d2e14e2698df"
-	networks, err := agents.ListDHCPNetworks(networkClient, agentID).Extract()
+	networks, err := agents.ListDHCPNetworks(context.TODO(), networkClient, agentID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ Example to Schedule a network to a DHCP Agent
 	opts := &agents.ScheduleDHCPNetworkOpts{
 		NetworkID: "1ae075ca-708b-4e66-b4a7-b7698632f05f",
 	}
-	err := agents.ScheduleDHCPNetwork(networkClient, agentID, opts).ExtractErr()
+	err := agents.ScheduleDHCPNetwork(context.TODO(), networkClient, agentID, opts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -78,14 +78,14 @@ Example to Remove a network from a DHCP Agent
 
 	agentID := "76af7b1f-d61b-4526-94f7-d2e14e2698df"
 	networkID := "1ae075ca-708b-4e66-b4a7-b7698632f05f"
-	err := agents.RemoveDHCPNetwork(networkClient, agentID, networkID).ExtractErr()
+	err := agents.RemoveDHCPNetwork(context.TODO(), networkClient, agentID, networkID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to List BGP speakers by dragent
 
-	pages, err := agents.ListBGPSpeakers(c, agentID).AllPages()
+	pages, err := agents.ListBGPSpeakers(c, agentID).AllPages(context.TODO())
 	if err != nil {
 		log.Panicf("%v", err)
 	}
@@ -115,7 +115,7 @@ Example to Remove bgp speaker from dragent
 
 Example to list dragents hosting specific bgp speaker
 
-	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, speakerID).AllPages()
+	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, speakerID).AllPages(context.TODO())
 	if err != nil {
 		log.Panic(err)
 	}

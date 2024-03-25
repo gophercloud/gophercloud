@@ -18,7 +18,7 @@ Example to List Networks with External Information
 
 	var allNetworks []NetworkWithExternalExt
 
-	allPages, err := networks.List(networkClient, listOpts).AllPages()
+	allPages, err := networks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ Example to Create a Network with External Information
 		&iTrue,
 	}
 
-	network, err := networks.Create(networkClient, createOpts).Extract()
+	network, err := networks.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

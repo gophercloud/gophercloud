@@ -8,7 +8,7 @@ Example to List Domains
 		Enabled: &iTrue,
 	}
 
-	allPages, err := domains.List(identityClient, listOpts).AllPages()
+	allPages, err := domains.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ Example to Create a Domain
 		Description:      "Test domain",
 	}
 
-	domain, err := domains.Create(identityClient, createOpts).Extract()
+	domain, err := domains.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ Example to Update a Domain
 		Enabled: &iFalse,
 	}
 
-	domain, err := domains.Update(identityClient, domainID, updateOpts).Extract()
+	domain, err := domains.Update(context.TODO(), identityClient, domainID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +51,7 @@ Example to Update a Domain
 Example to Delete a Domain
 
 	domainID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := domains.Delete(identityClient, domainID).ExtractErr()
+	err := domains.Delete(context.TODO(), identityClient, domainID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

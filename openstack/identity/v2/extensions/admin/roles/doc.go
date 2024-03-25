@@ -17,7 +17,7 @@ arbitrary name assigned by the user.
 
 Example to List Roles
 
-	allPages, err := roles.List(identityClient).AllPages()
+	allPages, err := roles.List(identityClient).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ Example to Grant a Role to a User
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := roles.AddUser(identityClient, tenantID, userID, roleID).ExtractErr()
+	err := roles.AddUser(context.TODO(), identityClient, tenantID, userID, roleID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ Example to Remove a Role from a User
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := roles.DeleteUser(identityClient, tenantID, userID, roleID).ExtractErr()
+	err := roles.DeleteUser(context.TODO(), identityClient, tenantID, userID, roleID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

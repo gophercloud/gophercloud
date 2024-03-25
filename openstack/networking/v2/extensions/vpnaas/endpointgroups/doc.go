@@ -11,28 +11,28 @@ Example to create an Endpoint Group
 			"10.3.0.0/24",
 		},
 	}
-	group, err := endpointgroups.Create(client, createOpts).Extract()
+	group, err := endpointgroups.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		return group, err
 	}
 
 Example to retrieve an Endpoint Group
 
-	group, err := endpointgroups.Get(client, "6ecd9cf3-ca64-46c7-863f-f2eb1b9e838a").Extract()
+	group, err := endpointgroups.Get(context.TODO(), client, "6ecd9cf3-ca64-46c7-863f-f2eb1b9e838a").Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete an Endpoint Group
 
-	err := endpointgroups.Delete(client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
+	err := endpointgroups.Delete(context.TODO(), client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to List Endpoint groups
 
-	allPages, err := endpointgroups.List(client, nil).AllPages()
+	allPages, err := endpointgroups.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ Example to Update an endpoint group
 		Name:        &name,
 		Description: &description,
 	}
-	updatedPolicy, err := endpointgroups.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	updatedPolicy, err := endpointgroups.Update(context.TODO(), client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

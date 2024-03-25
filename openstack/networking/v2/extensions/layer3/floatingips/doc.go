@@ -8,7 +8,7 @@ Example to List Floating IPs
 		FloatingNetworkID: "a6917946-38ab-4ffd-a55a-26c0980ce5ee",
 	}
 
-	allPages, err := floatingips.List(networkClient, listOpts).AllPages()
+	allPages, err := floatingips.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ Example to Create a Floating IP
 		FloatingNetworkID: "a6917946-38ab-4ffd-a55a-26c0980ce5ee",
 	}
 
-	fip, err := floatingips.Create(networkingClient, createOpts).Extract()
+	fip, err := floatingips.Create(context.TODO(), networkingClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ Example to Update a Floating IP
 		PortID: &portID,
 	}
 
-	fip, err := floatingips.Update(networkingClient, fipID, updateOpts).Extract()
+	fip, err := floatingips.Update(context.TODO(), networkingClient, fipID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ Example to Disassociate a Floating IP with a Port
 		PortID: new(string),
 	}
 
-	fip, err := floatingips.Update(networkingClient, fipID, updateOpts).Extract()
+	fip, err := floatingips.Update(context.TODO(), networkingClient, fipID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,7 @@ Example to Disassociate a Floating IP with a Port
 Example to Delete a Floating IP
 
 	fipID := "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
-	err := floatingips.Delete(networkClient, fipID).ExtractErr()
+	err := floatingips.Delete(context.TODO(), networkClient, fipID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

@@ -20,7 +20,7 @@ Example to Add a Server to a Server Group
 		SchedulerHints:    schedulerHints,
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ Example to Place Server B on a Different Host than Server A
 		SchedulerHints:    schedulerHints,
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +68,7 @@ Example to Place Server B on the Same Host as Server A
 		SchedulerHints:    schedulerHints,
 	}
 
-	server, err := servers.Create(computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

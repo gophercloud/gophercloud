@@ -12,7 +12,7 @@ Example to List Tenants
 		Limit: 2,
 	}
 
-	allPages, err := tenants.List(identityClient, listOpts).AllPages()
+	allPages, err := tenants.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ Example to Create a Tenant
 		Enabled:     gophercloud.Enabled,
 	}
 
-	tenant, err := tenants.Create(identityClient, createOpts).Extract()
+	tenant, err := tenants.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ Example to Update a Tenant
 		Enabled:     gophercloud.Disabled,
 	}
 
-	tenant, err := tenants.Update(identityClient, tenantID, updateOpts).Extract()
+	tenant, err := tenants.Update(context.TODO(), identityClient, tenantID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ Example to Delete a Tenant
 
 	tenantID := "e6db6ed6277c461a853458589063b295"
 
-	err := tenants.Delete(identitYClient, tenantID).ExtractErr()
+	err := tenants.Delete(context.TODO(), identitYClient, tenantID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

@@ -15,7 +15,7 @@ Example to List Networks with Port Security Information
 		Name: "network_1",
 	}
 
-	allPages, err := networks.List(networkClient, listOpts).AllPages()
+	allPages, err := networks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ Example to Create a Network without Port Security
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := networks.Create(networkClient, createOpts).ExtractInto(&networkWithPortSecurityExt)
+	err := networks.Create(context.TODO(), networkClient, createOpts).ExtractInto(&networkWithPortSecurityExt)
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +68,7 @@ Example to Disable Port Security on an Existing Network
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := networks.Update(networkClient, networkID, updateOpts).ExtractInto(&networkWithPortSecurityExt)
+	err := networks.Update(context.TODO(), networkClient, networkID, updateOpts).ExtractInto(&networkWithPortSecurityExt)
 	if err != nil {
 		panic(err)
 	}
@@ -84,7 +84,7 @@ Example to Get a Port with Port Security Information
 
 	portID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
 
-	err := ports.Get(networkingClient, portID).ExtractInto(&portWithPortSecurityExtensions)
+	err := ports.Get(context.TODO(), networkingClient, portID).ExtractInto(&portWithPortSecurityExtensions)
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +112,7 @@ Example to Create a Port Without Port Security
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := ports.Create(networkingClient, createOpts).ExtractInto(&portWithPortSecurityExtensions)
+	err := ports.Create(context.TODO(), networkingClient, createOpts).ExtractInto(&portWithPortSecurityExtensions)
 	if err != nil {
 		panic(err)
 	}
@@ -135,7 +135,7 @@ Example to Disable Port Security on an Existing Port
 		PortSecurityEnabled: &iFalse,
 	}
 
-	err := ports.Update(networkingClient, portID, updateOpts).ExtractInto(&portWithPortSecurityExtensions)
+	err := ports.Update(context.TODO(), networkingClient, portID, updateOpts).ExtractInto(&portWithPortSecurityExtensions)
 	if err != nil {
 		panic(err)
 	}

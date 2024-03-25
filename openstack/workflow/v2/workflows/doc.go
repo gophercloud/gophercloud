@@ -12,7 +12,7 @@ List workflows
 		Namespace: "some-namespace",
 	}
 
-	allPages, err := workflows.List(mistralClient, listOpts).AllPages()
+	allPages, err := workflows.List(mistralClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ List workflows
 
 Get a workflow
 
-	workflow, err := workflows.Get(mistralClient, "604a3a1e-94e3-4066-a34a-aa56873ef236").Extract()
+	workflow, err := workflows.Get(context.TODO(), mistralClient, "604a3a1e-94e3-4066-a34a-aa56873ef236").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get workflow %s: %v", id, err)
 	}
@@ -56,7 +56,7 @@ Create a workflow
 			Namespace: "some-namespace",
 		}
 
-		workflow, err := workflows.Create(mistralClient, createOpts).Extract()
+		workflow, err := workflows.Create(context.TODO(), mistralClient, createOpts).Extract()
 		if err != nil {
 			panic(err)
 		}

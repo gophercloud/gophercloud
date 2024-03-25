@@ -12,7 +12,7 @@ Example to Create a Node
 		Role:      "",
 	}
 
-	node, err := nodes.Create(serviceClient, createOpts).Extract()
+	node, err := nodes.Create(context.TODO(), serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ Example to List Nodes
 		Name: "testnode",
 	}
 
-	allPages, err := nodes.List(serviceClient, listOpts).AllPages()
+	allPages, err := nodes.List(serviceClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ Example to Update a Node
 	}
 
 	nodeID := "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1"
-	node, err := nodes.Update(serviceClient, nodeID, opts).Extract()
+	node, err := nodes.Update(context.TODO(), serviceClient, nodeID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ Example to Update a Node
 Example to Delete a Node
 
 	nodeID := "6dc6d336e3fc4c0a951b5698cd1236ee"
-	err := nodes.Delete(serviceClient, nodeID).ExtractErr()
+	err := nodes.Delete(context.TODO(), serviceClient, nodeID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ Example to Delete a Node
 Example to Get a Node
 
 	nodeID := "node123"
-	node, err := nodes.Get(serviceClient, nodeID).Extract()
+	node, err := nodes.Get(context.TODO(), serviceClient, nodeID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +79,7 @@ Example to Perform an Operation on a Node
 		Operation: nodes.RebootOperation,
 		Params:    nodes.OperationParams{"type": "SOFT"},
 	}
-	actionID, err := nodes.Ops(serviceClient, nodeID, operationOpts).Extract()
+	actionID, err := nodes.Ops(context.TODO(), serviceClient, nodeID, operationOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +92,7 @@ Example to Recover a Node
 		Operation:     nodes.RebuildRecovery,
 		Check:         &check,
 	}
-	actionID, err := nodes.Recover(computeClient, nodeID, recoverOpts).Extract()
+	actionID, err := nodes.Recover(context.TODO(), computeClient, nodeID, recoverOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +101,7 @@ Example to Recover a Node
 Example to Check a Node
 
 	nodeID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := nodes.Check(serviceClient, nodeID).Extract()
+	actionID, err := nodes.Check(context.TODO(), serviceClient, nodeID).Extract()
 	if err != nil {
 		panic(err)
 	}

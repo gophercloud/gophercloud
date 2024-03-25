@@ -14,7 +14,7 @@ Example to List Ports
 		DeviceID: "b0b89efe-82f8-461d-958b-adbf80f50c7d",
 	}
 
-	allPages, err := ports.List(networkClient, listOpts).AllPages()
+	allPages, err := ports.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ Example to Create a Port
 		},
 	}
 
-	port, err := ports.Create(networkClient, createOpts).Extract()
+	port, err := ports.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ Example to Update a Port
 		SecurityGroups: &[]string{},
 	}
 
-	port, err := ports.Update(networkClient, portID, updateOpts).Extract()
+	port, err := ports.Update(context.TODO(), networkClient, portID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ Example to Update a Port
 Example to Delete a Port
 
 	portID := "c34bae2b-7641-49b6-bf6d-d8e473620ed8"
-	err := ports.Delete(networkClient, portID).ExtractErr()
+	err := ports.Delete(context.TODO(), networkClient, portID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

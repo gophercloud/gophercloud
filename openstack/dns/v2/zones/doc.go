@@ -8,7 +8,7 @@ Example to List Zones
 		Email: "jdoe@example.com",
 	}
 
-	allPages, err := zones.List(dnsClient, listOpts).AllPages()
+	allPages, err := zones.List(dnsClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ Example to Create a Zone
 		Description: "This is a zone.",
 	}
 
-	zone, err := zones.Create(dnsClient, createOpts).Extract()
+	zone, err := zones.Create(context.TODO(), dnsClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ Example to Create a Zone
 Example to Delete a Zone
 
 	zoneID := "99d10f68-5623-4491-91a0-6daafa32b60e"
-	err := zones.Delete(dnsClient, zoneID).ExtractErr()
+	err := zones.Delete(context.TODO(), dnsClient, zoneID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

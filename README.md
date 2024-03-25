@@ -71,7 +71,7 @@ import (
 opts := new(clientconfig.ClientOpts)
 opts.Cloud = "devstack-admin"
 
-provider, err := clientconfig.AuthenticatedClient(opts)
+provider, err := clientconfig.AuthenticatedClient(context.TODO(), opts)
 ```
 
 A provider client is a top-level client that all of your OpenStack service
@@ -118,7 +118,7 @@ Once you have the `opts` variable, you can pass it in and get back a
 `ProviderClient` struct:
 
 ```go
-provider, err := openstack.AuthenticatedClient(opts)
+provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 ```
 
 As above, you can then use this provider client to generate a service client
@@ -140,7 +140,7 @@ specification) and image ID (operating system) we're interested in:
 ```go
 import "github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 
-server, err := servers.Create(client, servers.CreateOpts{
+server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
 	Name:      "My new server!",
 	FlavorRef: "flavor_id",
 	ImageRef:  "image_id",

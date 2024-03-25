@@ -4,7 +4,7 @@ resource in the OpenStack Bare Metal service.
 
 Example to List Nodes with Detail
 
-	nodes.ListDetail(client, nodes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	nodes.ListDetail(client, nodes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		nodeList, err := nodes.ExtractNodes(page)
 		if err != nil {
 			return false, err
@@ -24,7 +24,7 @@ Example to List Nodes
 		Fields:         []string{"name"},
 	}
 
-	nodes.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	nodes.List(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		nodeList, err := nodes.ExtractNodes(page)
 		if err != nil {
 			return false, err
@@ -53,14 +53,14 @@ Example to Create Node
 		},
 	}
 
-	createNode, err := nodes.Create(client, createOpts).Extract()
+	createNode, err := nodes.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Get Node
 
-	showNode, err := nodes.Get(client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").Extract()
+	showNode, err := nodes.Get(context.TODO(), client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -75,35 +75,35 @@ Example to Update Node
 		},
 	}
 
-	updateNode, err := nodes.Update(client, "c9afd385-5d89-4ecb-9e1c-68194da6b474", updateOpts).Extract()
+	updateNode, err := nodes.Update(context.TODO(), client, "c9afd385-5d89-4ecb-9e1c-68194da6b474", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Delete Node
 
-	err = nodes.Delete(client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").ExtractErr()
+	err = nodes.Delete(context.TODO(), client, "c9afd385-5d89-4ecb-9e1c-68194da6b474").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Validate Node
 
-	validation, err := nodes.Validate(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
+	validation, err := nodes.Validate(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to inject non-masking interrupts
 
-	err := nodes.InjectNMI(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").ExtractErr()
+	err := nodes.InjectNMI(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to get array of supported boot devices for a node
 
-	bootDevices, err := nodes.GetSupportedBootDevices(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
+	bootDevices, err := nodes.GetSupportedBootDevices(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -115,21 +115,21 @@ Example to set boot device for a node
 		Persistent: false,
 	}
 
-	err := nodes.SetBootDevice(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", bootOpts).ExtractErr()
+	err := nodes.SetBootDevice(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", bootOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
 
 Example to get boot device for a node
 
-	bootDevice, err := nodes.GetBootDevice(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
+	bootDevice, err := nodes.GetBootDevice(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to list all vendor passthru methods
 
-	methods, err := nodes.GetVendorPassthruMethods(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
+	methods, err := nodes.GetVendorPassthruMethods(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -139,7 +139,7 @@ Example to list all subscriptions
 	method := nodes.CallVendorPassthruOpts{
 		Method: "get_all_subscriptions",
 	}
-	allSubscriptions, err := nodes.GetAllSubscriptions(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method).Extract()
+	allSubscriptions, err := nodes.GetAllSubscriptions(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -153,7 +153,7 @@ Example to get a subscription
 		Id:     "subscription id",
 	}
 
-	subscription, err := nodes.GetSubscription(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionOpt).Extract()
+	subscription, err := nodes.GetSubscription(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionOpt).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -167,7 +167,7 @@ Example to delete a subscription
 		Id: "subscription id",
 	}
 
-	err := nodes.DeleteSubscription(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionDeleteOpt).ExtractErr()
+	err := nodes.DeleteSubscription(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionDeleteOpt).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -185,7 +185,7 @@ Example to create a subscription
 		HttpHeaders: [{"Key1":"Value1"}, {"Key2":"Value2"}],
 	}
 
-	newSubscription, err := nodes.CreateSubscription(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionCreateOpt).Extract()
+	newSubscription, err := nodes.CreateSubscription(context.TODO(), client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionCreateOpt).Extract()
 	if err != nil {
 		panic(err)
 	}

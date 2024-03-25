@@ -8,7 +8,7 @@ Example to List Pools
 		LoadbalancerID: "c79a4468-d788-410c-bf79-9a8ef6354852",
 	}
 
-	allPages, err := pools.List(networkClient, listOpts).AllPages()
+	allPages, err := pools.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ Example to Create a Pool
 		LoadbalancerID: "79e05663-7f03-45d2-a092-8b94062f22ab",
 	}
 
-	pool, err := pools.Create(networkClient, createOpts).Extract()
+	pool, err := pools.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ Example to Update a Pool
 		Tags: &newTags,
 	}
 
-	pool, err := pools.Update(networkClient, poolID, updateOpts).Extract()
+	pool, err := pools.Update(context.TODO(), networkClient, poolID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ Example to Update a Pool
 Example to Delete a Pool
 
 	poolID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	err := pools.Delete(networkClient, poolID).ExtractErr()
+	err := pools.Delete(context.TODO(), networkClient, poolID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +68,7 @@ Example to List Pool Members
 		ProtocolPort: 80,
 	}
 
-	allPages, err := pools.ListMembers(networkClient, poolID, listOpts).AllPages()
+	allPages, err := pools.ListMembers(networkClient, poolID, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ Example to Create a Member
 		Weight:       &weight,
 	}
 
-	member, err := pools.CreateMember(networkClient, poolID, createOpts).Extract()
+	member, err := pools.CreateMember(context.TODO(), networkClient, poolID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -111,7 +111,7 @@ Example to Update a Member
 		Weight: &weight,
 	}
 
-	member, err := pools.UpdateMember(networkClient, poolID, memberID, updateOpts).Extract()
+	member, err := pools.UpdateMember(context.TODO(), networkClient, poolID, memberID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -121,7 +121,7 @@ Example to Delete a Member
 	poolID := "d67d56a6-4a86-4688-a282-f46444705c64"
 	memberID := "64dba99f-8af8-4200-8882-e32a0660f23e"
 
-	err := pools.DeleteMember(networkClient, poolID, memberID).ExtractErr()
+	err := pools.DeleteMember(context.TODO(), networkClient, poolID, memberID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +149,7 @@ Example to Update Members:
 	}
 	members := []pools.BatchUpdateMemberOpts{member1, member2}
 
-	err := pools.BatchUpdateMembers(networkClient, poolID, members).ExtractErr()
+	err := pools.BatchUpdateMembers(context.TODO(), networkClient, poolID, members).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

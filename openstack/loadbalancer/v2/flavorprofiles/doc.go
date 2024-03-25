@@ -6,7 +6,7 @@ Example to List FlavorProfiles
 
 	listOpts := flavorprofiles.ListOpts{}
 
-	allPages, err := flavorprofiles.List(octaviaClient, listOpts).AllPages()
+	allPages, err := flavorprofiles.List(octaviaClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ Example to Create a FlavorProfile
 		FlavorData:   "{\"loadbalancer_topology\": \"SINGLE\"}",
 	}
 
-	flavorProfile, err := flavorprofiles.Create(octaviaClient, createOpts).Extract()
+	flavorProfile, err := flavorprofiles.Create(context.TODO(), octaviaClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ Example to Update a FlavorProfile
 		Name: "amphora-single-updated",
 	}
 
-	flavorProfile, err := flavorprofiles.Update(octaviaClient, flavorProfileID, updateOpts).Extract()
+	flavorProfile, err := flavorprofiles.Update(context.TODO(), octaviaClient, flavorProfileID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ Example to Update a FlavorProfile
 Example to Delete a FlavorProfile
 
 	flavorProfileID := "dd6a26af-8085-4047-a62b-3080f4c76521"
-	err := flavorprofiles.Delete(octaviaClient, flavorProfileID).ExtractErr()
+	err := flavorprofiles.Delete(context.TODO(), octaviaClient, flavorProfileID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

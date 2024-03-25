@@ -11,7 +11,7 @@ Example to Get a Port with a QoS policy
 
 	portID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
 
-	err = ports.Get(client, portID).ExtractInto(&portWithQoS)
+	err = ports.Get(context.TODO(), client, portID).ExtractInto(&portWithQoS)
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -37,7 +37,7 @@ Example to Create a Port with a QoS policy
 	    QoSPolicyID:       policyID,
 	}
 
-	err = ports.Create(client, createOpts).ExtractInto(&portWithQoS)
+	err = ports.Create(context.TODO(), client, createOpts).ExtractInto(&portWithQoS)
 	if err != nil {
 	    panic(err)
 	}
@@ -60,7 +60,7 @@ Example to Add a QoS policy to an existing Port
 	    QoSPolicyID:       &policyID,
 	}
 
-	err := ports.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithQoS)
+	err := ports.Update(context.TODO(), client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithQoS)
 	if err != nil {
 	    panic(err)
 	}
@@ -83,7 +83,7 @@ Example to Delete a QoS policy from the existing Port
 	    QoSPolicyID:       &policyID,
 	}
 
-	err := ports.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithQoS)
+	err := ports.Update(context.TODO(), client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithQoS)
 	if err != nil {
 	    panic(err)
 	}
@@ -99,7 +99,7 @@ Example to Get a Network with a QoS policy
 
 	networkID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
 
-	err = networks.Get(client, networkID).ExtractInto(&networkWithQoS)
+	err = networks.Get(context.TODO(), client, networkID).ExtractInto(&networkWithQoS)
 	if err != nil {
 	    log.Fatal(err)
 	}
@@ -125,7 +125,7 @@ Example to Create a Network with a QoS policy
 	    QoSPolicyID:       policyID,
 	}
 
-	err = networks.Create(client, createOpts).ExtractInto(&networkWithQoS)
+	err = networks.Create(context.TODO(), client, createOpts).ExtractInto(&networkWithQoS)
 	if err != nil {
 	    panic(err)
 	}
@@ -148,7 +148,7 @@ Example to add a QoS policy to an existing Network
 	    QoSPolicyID:       &policyID,
 	}
 
-	err := networks.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
+	err := networks.Update(context.TODO(), client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
 	if err != nil {
 	    panic(err)
 	}
@@ -171,7 +171,7 @@ Example to delete a QoS policy from the existing Network
 	    QoSPolicyID:       &policyID,
 	}
 
-	err := networks.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
+	err := networks.Update(context.TODO(), client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
 	if err != nil {
 	    panic(err)
 	}
@@ -186,7 +186,7 @@ Example to List QoS policies
 	        Shared: &shared,
 	    }
 
-	    allPages, err := policies.List(networkClient, listOpts).AllPages()
+	    allPages, err := policies.List(networkClient, listOpts).AllPages(context.TODO())
 	    if err != nil {
 	        panic(err)
 	    }
@@ -204,7 +204,7 @@ Example to Get a specific QoS policy
 
 	policyID := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	policy, err := policies.Get(networkClient, policyID).Extract()
+	policy, err := policies.Get(context.TODO(), networkClient, policyID).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -219,7 +219,7 @@ Example to Create a QoS policy
 	    IsDefault: true,
 	}
 
-	policy, err := policies.Create(networkClient, createOpts).Extract()
+	policy, err := policies.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -238,7 +238,7 @@ Example to Update a QoS policy
 
 	policyID := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	policy, err := policies.Update(networkClient, policyID, opts).Extract()
+	policy, err := policies.Update(context.TODO(), networkClient, policyID, opts).Extract()
 	if err != nil {
 	    panic(err)
 	}
@@ -249,7 +249,7 @@ Example to Delete a QoS policy
 
 	policyID := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	err := policies.Delete(networkClient, policyID).ExtractErr()
+	err := policies.Delete(context.TODO(), networkClient, policyID).ExtractErr()
 	if err != nil {
 	    panic(err)
 	}

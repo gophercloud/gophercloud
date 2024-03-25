@@ -5,7 +5,7 @@ All functions have a Secret and Container equivalent.
 
 Example to Get a Secret's ACL
 
-	acl, err := acls.GetSecretACL(client, secretID).Extract()
+	acl, err := acls.GetSecretACL(context.TODO(), client, secretID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ Example to Set a Secret's ACL
 		ProjectAccess: &iFalse,
 	}
 
-	aclRef, err := acls.SetSecretACL(client, secretID, setOpts).Extract()
+	aclRef, err := acls.SetSecretACL(context.TODO(), client, secretID, setOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ Example to Update a Secret's ACL
 		users: &users,
 	}
 
-	aclRef, err := acls.UpdateSecretACL(client, secretID, setOpts).Extract()
+	aclRef, err := acls.UpdateSecretACL(context.TODO(), client, secretID, setOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ Example to Update a Secret's ACL
 
 Example to Delete a Secret's ACL
 
-	err := acls.DeleteSecretACL(client, secretID).ExtractErr()
+	err := acls.DeleteSecretACL(context.TODO(), client, secretID).ExtractErr()
 	if err != nil {
 		panci(err)
 	}

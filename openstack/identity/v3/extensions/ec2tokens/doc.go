@@ -13,7 +13,7 @@ Example to Create a Token From an EC2 access and secret keys
 		Secret: "18f4f6761ada4e3795fa5273c30349b9",
 	}
 
-	token, err := ec2tokens.Create(identityClient, authOptions).ExtractToken()
+	token, err := ec2tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ Example to auth a client using EC2 access and secret keys
 		AllowReauth: true,
 	}
 
-	err = openstack.AuthenticateV3(client, authOptions, gophercloud.EndpointOpts{})
+	err = openstack.AuthenticateV3(context.TODO(), client, authOptions, gophercloud.EndpointOpts{})
 	if err != nil {
 		panic(err)
 	}

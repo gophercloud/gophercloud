@@ -9,7 +9,7 @@ information about the Openstack host holding the volume. Example:
 
 	var allVolumes []VolumeWithHost
 
-	allPages, err := volumes.List(client, nil).AllPages()
+	allPages, err := volumes.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic("Unable to retrieve volumes: %s", err)
 	}

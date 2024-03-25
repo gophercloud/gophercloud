@@ -7,7 +7,7 @@ Example of Listing Subnetpools
 		IPVersion: 6,
 	}
 
-	allPages, err := subnetpools.List(networkClient, listOpts).AllPages()
+	allPages, err := subnetpools.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +24,7 @@ Example of Listing Subnetpools
 Example to Get a Subnetpool
 
 	subnetPoolID = "23d5d3f7-9dfa-4f73-b72b-8b0b0063ec55"
-	subnetPool, err := subnetpools.Get(networkClient, subnetPoolID).Extract()
+	subnetPool, err := subnetpools.Get(context.TODO(), networkClient, subnetPoolID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ Example to Create a new Subnetpool
 		Name: subnetPoolName,
 		Prefixes: subnetPoolPrefixes,
 	}
-	subnetPool, err := subnetpools.Create(networkClient, subnetPoolOpts).Extract()
+	subnetPool, err := subnetpools.Create(context.TODO(), networkClient, subnetPoolOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ Example to Update a Subnetpool
 		MaxPrefixLen: 72,
 	}
 
-	subnetPool, err := subnetpools.Update(networkClient, subnetPoolID, updateOpts).Extract()
+	subnetPool, err := subnetpools.Update(context.TODO(), networkClient, subnetPoolID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ Example to Update a Subnetpool
 Example to Delete a Subnetpool
 
 	subnetPoolID := "23d5d3f7-9dfa-4f73-b72b-8b0b0063ec55"
-	err := subnetpools.Delete(networkClient, subnetPoolID).ExtractErr()
+	err := subnetpools.Delete(context.TODO(), networkClient, subnetPoolID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

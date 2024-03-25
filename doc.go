@@ -29,7 +29,7 @@ specified like so:
 		TenantID: "{tenant_id}",
 	}
 
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 You can authenticate with a token by doing:
 
@@ -39,7 +39,7 @@ You can authenticate with a token by doing:
 		TenantID: "{tenant_id}",
 	}
 
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 You may also use the openstack.AuthOptionsFromEnv() helper function. This
 function reads in standard environment variables frequently found in an
@@ -47,7 +47,7 @@ OpenStack `openrc` file. Again note that Gophercloud currently uses "tenant"
 instead of "project".
 
 	opts, err := openstack.AuthOptionsFromEnv()
-	provider, err := openstack.AuthenticatedClient(opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 
 # Service Clients
 
@@ -65,7 +65,7 @@ pass in the parent provider, like so:
 Resource structs are the domain models that services make use of in order
 to work with and represent the state of API resources:
 
-	server, err := servers.Get(client, "{serverId}").Extract()
+	server, err := servers.Get(context.TODO(), client, "{serverId}").Extract()
 
 Intermediate Result structs are returned for API operations, which allow
 generic access to the HTTP headers, response body, and any errors associated
@@ -73,7 +73,7 @@ with the network transaction. To turn a result into a usable resource struct,
 you must call the Extract method which is chained to the response, or an
 Extract function from an applicable extension:
 
-	result := servers.Get(client, "{serverId}")
+	result := servers.Get(context.TODO(), client, "{serverId}")
 
 	// Attempt to extract the disk configuration from the OS-DCF disk config
 	// extension:
@@ -85,7 +85,7 @@ Pager to handle each successive Page in a closure, then use the appropriate
 extraction method from that request's package to interpret that Page as a slice
 of results:
 
-	err := servers.List(client, nil).EachPage(func (page pagination.Page) (bool, error) {
+	err := servers.List(client, nil).EachPage(context.TODO(), func (_ context.Context, page pagination.Page) (bool, error) {
 		s, err := servers.ExtractServers(page)
 		if err != nil {
 			return false, err
@@ -100,7 +100,7 @@ of results:
 If you want to obtain the entire collection of pages without doing any
 intermediary processing on each page, you can use the AllPages method:
 
-	allPages, err := servers.List(client, nil).AllPages()
+	allPages, err := servers.List(client, nil).AllPages(context.TODO())
 	allServers, err := servers.ExtractServers(allPages)
 
 This top-level package contains utility functions and data types that are used

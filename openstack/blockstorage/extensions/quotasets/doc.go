@@ -3,7 +3,7 @@ Package quotasets enables retrieving and managing Block Storage quotas.
 
 Example to Get a Quota Set
 
-	quotaset, err := quotasets.Get(blockStorageClient, "project-id").Extract()
+	quotaset, err := quotasets.Get(context.TODO(), blockStorageClient, "project-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -12,7 +12,7 @@ Example to Get a Quota Set
 
 Example to Get Quota Set Usage
 
-	quotaset, err := quotasets.GetUsage(blockStorageClient, "project-id").Extract()
+	quotaset, err := quotasets.GetUsage(context.TODO(), blockStorageClient, "project-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ Example to Update a Quota Set
 		Volumes: gophercloud.IntToPointer(100),
 	}
 
-	quotaset, err := quotasets.Update(blockStorageClient, "project-id", updateOpts).Extract()
+	quotaset, err := quotasets.Update(context.TODO(), blockStorageClient, "project-id", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ Example to Update a Quota set with volume_type quotas
 		},
 	}
 
-	quotaset, err := quotasets.Update(blockStorageClient, "project-id", updateOpts).Extract()
+	quotaset, err := quotasets.Update(context.TODO(), blockStorageClient, "project-id", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to Update a Quota set with volume_type quotas
 
 Example to Delete a Quota Set
 
-	err := quotasets.Delete(blockStorageClient, "project-id").ExtractErr()
+	err := quotasets.Delete(context.TODO(), blockStorageClient, "project-id").ExtractErr()
 	if err != nil {
 		panic(err)
 	}

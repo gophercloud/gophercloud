@@ -3,7 +3,7 @@ Package quotasets enables retrieving and managing Compute quotas.
 
 Example to Get a Quota Set
 
-	quotaset, err := quotasets.Get(computeClient, "tenant-id").Extract()
+	quotaset, err := quotasets.Get(context.TODO(), computeClient, "tenant-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -12,7 +12,7 @@ Example to Get a Quota Set
 
 Example to Get a Detailed Quota Set
 
-	quotaset, err := quotasets.GetDetail(computeClient, "tenant-id").Extract()
+	quotaset, err := quotasets.GetDetail(context.TODO(), computeClient, "tenant-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ Example to Update a Quota Set
 		Cores:    gophercloud.IntToPointer(64),
 	}
 
-	quotaset, err := quotasets.Update(computeClient, "tenant-id", updateOpts).Extract()
+	quotaset, err := quotasets.Update(context.TODO(), computeClient, "tenant-id", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

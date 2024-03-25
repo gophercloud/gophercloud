@@ -8,7 +8,7 @@ Example to Assign a Inherited Role to a User to a Domain
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := osinherit.Assign(identityClient, roleID, osinherit.AssignOpts{
+	err := osinherit.Assign(context.TODO(), identityClient, roleID, osinherit.AssignOpts{
 		UserID:   userID,
 		domainID: domainID,
 	}).ExtractErr()
@@ -23,7 +23,7 @@ Example to Assign a Inherited Role to a User to a Project's subtree
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := osinherit.Assign(identityClient, roleID, osinherit.AssignOpts{
+	err := osinherit.Assign(context.TODO(), identityClient, roleID, osinherit.AssignOpts{
 		UserID:    userID,
 		ProjectID: projectID,
 	}).ExtractErr()
@@ -38,7 +38,7 @@ Example to validate a Inherited Role to a User to a Project's subtree
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := osinherit.Validate(identityClient, roleID, osinherit.validateOpts{
+	err := osinherit.Validate(context.TODO(), identityClient, roleID, osinherit.validateOpts{
 		UserID:    userID,
 		ProjectID: projectID,
 	}).ExtractErr()
@@ -53,7 +53,7 @@ Example to unassign a Inherited Role to a User to a Project's subtree
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := osinherit.Unassign(identityClient, roleID, osinherit.UnassignOpts{
+	err := osinherit.Unassign(context.TODO(), identityClient, roleID, osinherit.UnassignOpts{
 		UserID:    userID,
 		ProjectID: projectID,
 	}).ExtractErr()

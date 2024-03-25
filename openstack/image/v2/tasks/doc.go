@@ -8,7 +8,7 @@ Example to List Tasks
 	  Owner: "424e7cf0243c468ca61732ba45973b3e",
 	}
 
-	allPages, err := tasks.List(imagesClient, listOpts).AllPages()
+	allPages, err := tasks.List(imagesClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 	  panic(err)
 	}
@@ -24,7 +24,7 @@ Example to List Tasks
 
 Example to Get a Task
 
-	task, err := tasks.Get(imagesClient, "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
+	task, err := tasks.Get(context.TODO(), imagesClient, "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
 	if err != nil {
 	  panic(err)
 	}
@@ -45,7 +45,7 @@ Example to Create a Task
 	  },
 	}
 
-	task, err := tasks.Create(imagesClient, createOpts).Extract()
+	task, err := tasks.Create(context.TODO(), imagesClient, createOpts).Extract()
 	if err != nil {
 	  panic(err)
 	}

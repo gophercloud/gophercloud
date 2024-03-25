@@ -13,7 +13,7 @@ Example to List Endpoints
 		ServiceID: serviceID,
 	}
 
-	allPages, err := endpoints.List(identityClient, listOpts).AllPages()
+	allPages, err := endpoints.List(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +39,7 @@ Example to Create an Endpoint
 		ServiceID:    serviceID,
 	}
 
-	endpoint, err := endpoints.Create(identityClient, createOpts).Extract()
+	endpoint, err := endpoints.Create(context.TODO(), identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ Example to Update an Endpoint
 		Region: "RegionTwo",
 	}
 
-	endpoint, err := endpoints.Update(identityClient, endpointID, updateOpts).Extract()
+	endpoint, err := endpoints.Update(context.TODO(), identityClient, endpointID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ Example to Update an Endpoint
 Example to Delete an Endpoint
 
 	endpointID := "ad59deeec5154d1fa0dcff518596f499"
-	err := endpoints.Delete(identityClient, endpointID).ExtractErr()
+	err := endpoints.Delete(context.TODO(), identityClient, endpointID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

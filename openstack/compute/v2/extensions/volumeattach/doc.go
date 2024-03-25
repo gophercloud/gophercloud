@@ -12,7 +12,7 @@ Example to Attach a Volume
 		VolumeID: volumeID,
 	}
 
-	result, err := volumeattach.Create(computeClient, serverID, createOpts).Extract()
+	result, err := volumeattach.Create(context.TODO(), computeClient, serverID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ Example to Detach a Volume
 	serverID := "7ac8686c-de71-4acb-9600-ec18b1a1ed6d"
 	volumeID := "ed081613-1c9b-4231-aa5e-ebfd4d87f983"
 
-	err := volumeattach.Delete(computeClient, serverID, volumeID).ExtractErr()
+	err := volumeattach.Delete(context.TODO(), computeClient, serverID, volumeID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

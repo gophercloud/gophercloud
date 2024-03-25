@@ -16,7 +16,7 @@ Example to List Objects
 		Full: true,
 	}
 
-	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages()
+	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ Example to List Object Names
 		Full: false,
 	}
 
-	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages()
+	allPages, err := objects.List(objectStorageClient, containerName, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,7 @@ Example to Create an Object
 		Content:     strings.NewReader(content),
 	}
 
-	object, err := objects.Create(objectStorageClient, containerName, objectName, createOpts).Extract()
+	object, err := objects.Create(context.TODO(), objectStorageClient, containerName, objectName, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ Example to Copy an Object
 		Destination: "/newContainer/newObject",
 	}
 
-	object, err := objects.Copy(objectStorageClient, containerName, objectName, copyOpts).Extract()
+	object, err := objects.Copy(context.TODO(), objectStorageClient, containerName, objectName, copyOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +87,7 @@ Example to Delete an Object
 	objectName := "my_object"
 	containerName := "my_container"
 
-	object, err := objects.Delete(objectStorageClient, containerName, objectName).Extract()
+	object, err := objects.Delete(context.TODO(), objectStorageClient, containerName, objectName).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ Example to Download an Object's Data
 	objectName := "my_object"
 	containerName := "my_container"
 
-	object := objects.Download(objectStorageClient, containerName, objectName, nil)
+	object := objects.Download(context.TODO(), objectStorageClient, containerName, objectName, nil)
 	if object.Err != nil {
 		panic(object.Err)
 	}

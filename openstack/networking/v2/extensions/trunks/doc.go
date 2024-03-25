@@ -14,7 +14,7 @@ Example of a new empty Trunk creation
 		PortID:       "a6f0560c-b7a8-401f-bf6e-d0a5c851ae10",
 	}
 
-	trunk, err := trunks.Create(networkClient, createOpts).Extract()
+	trunk, err := trunks.Create(context.TODO(), networkClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ Example of a new Trunk creation with 2 subports
 		},
 	}
 
-	trunk, err := trunks.Create(client, createOpts).Extract()
+	trunk, err := trunks.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +51,7 @@ Example of a new Trunk creation with 2 subports
 Example of deleting a Trunk
 
 	trunkID := "c36e7f2e-0c53-4742-8696-aee77c9df159"
-	err := trunks.Delete(networkClient, trunkID).ExtractErr()
+	err := trunks.Delete(context.TODO(), networkClient, trunkID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -59,7 +59,7 @@ Example of deleting a Trunk
 Example of listing Trunks
 
 	listOpts := trunks.ListOpts{}
-	allPages, err := trunks.List(networkClient, listOpts).AllPages()
+	allPages, err := trunks.List(networkClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +74,7 @@ Example of listing Trunks
 Example of getting a Trunk
 
 	trunkID = "52d8d124-3dc9-4563-9fef-bad3187ecf2d"
-	trunk, err := trunks.Get(networkClient, trunkID).Extract()
+	trunk, err := trunks.Get(context.TODO(), networkClient, trunkID).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -83,14 +83,14 @@ Example of getting a Trunk
 Example of updating a Trunk
 
 	trunkID := "c36e7f2e-0c53-4742-8696-aee77c9df159"
-	subports, err := trunks.GetSubports(client, trunkID).Extract()
+	subports, err := trunks.GetSubports(context.TODO(), client, trunkID).Extract()
 	iFalse := false
 	updateOpts := trunks.UpdateOpts{
 		AdminStateUp: &iFalse,
 		Name:         "updated_gophertrunk",
 		Description:  "trunk updated by gophercloud",
 	}
-	trunk, err = trunks.Update(networkClient, trunkID, updateOpts).Extract()
+	trunk, err = trunks.Update(context.TODO(), networkClient, trunkID, updateOpts).Extract()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -99,7 +99,7 @@ Example of updating a Trunk
 Example of showing subports of a Trunk
 
 	trunkID := "c36e7f2e-0c53-4742-8696-aee77c9df159"
-	subports, err := trunks.GetSubports(client, trunkID).Extract()
+	subports, err := trunks.GetSubports(context.TODO(), client, trunkID).Extract()
 	fmt.Printf("%+v\n", subports)
 
 Example of adding two subports to a Trunk
@@ -119,7 +119,7 @@ Example of adding two subports to a Trunk
 			},
 		},
 	}
-	trunk, err := trunks.AddSubports(client, trunkID, addSubportsOpts).Extract()
+	trunk, err := trunks.AddSubports(context.TODO(), client, trunkID, addSubportsOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -134,7 +134,7 @@ Example of deleting two subports from a Trunk
 			{PortID: "2cf671b9-02b3-4121-9e85-e0af3548d112"},
 		},
 	}
-	trunk, err := trunks.RemoveSubports(networkClient, trunkID, removeSubportsOpts).Extract()
+	trunk, err := trunks.RemoveSubports(context.TODO(), networkClient, trunkID, removeSubportsOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

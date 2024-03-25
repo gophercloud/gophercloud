@@ -4,7 +4,7 @@ Service.
 
 Example to List Orders
 
-	allPages, err := orders.List(client, nil).AllPages()
+	allPages, err := orders.List(client, nil).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ Example to Create a Order
 		},
 	}
 
-	order, err := orders.Create(client, createOpts).Extract()
+	order, err := orders.Create(context.TODO(), client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ Example to Create a Order
 
 Example to Delete a Order
 
-	err := orders.Delete(client, orderID).ExtractErr()
+	err := orders.Delete(context.TODO(), client, orderID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
