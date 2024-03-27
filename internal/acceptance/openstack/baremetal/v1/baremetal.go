@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -36,7 +37,15 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 
 // DeleteNode deletes a bare metal node via its UUID.
 func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node) {
-	err := nodes.Delete(context.TODO(), client, node.UUID).ExtractErr()
+	// Force deletion of provisioned nodes requires maintenance mode.
+	err := nodes.SetMaintenance(context.TODO(), client, node.UUID, nodes.MaintenanceOpts{
+		Reason: "forced deletion",
+	}).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to move node %s into maintenance mode: %s", node.UUID, err)
+	}
+
+	err = nodes.Delete(context.TODO(), client, node.UUID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete node %s: %s", node.UUID, err)
 	}
@@ -67,15 +76,16 @@ func DeleteAllocation(t *testing.T, client *gophercloud.ServiceClient, allocatio
 	t.Logf("Deleted allocation: %s", allocation.UUID)
 }
 
-// CreateFakeNode creates a node with fake-hardware to use for port tests.
+// CreateFakeNode creates a node with fake-hardware.
 func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, error) {
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bare metal node: %s", name)
 
 	node, err := nodes.Create(context.TODO(), client, nodes.CreateOpts{
-		Name:          name,
-		Driver:        "fake-hardware",
-		BootInterface: "fake",
+		Name:            name,
+		Driver:          "fake-hardware",
+		BootInterface:   "fake",
+		DeployInterface: "fake",
 		DriverInfo: map[string]interface{}{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
@@ -87,6 +97,68 @@ func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Nod
 	}).Extract()
 
 	return node, err
+}
+
+func ChangeProvisionStateAndWait(ctx context.Context, client *gophercloud.ServiceClient, node *nodes.Node,
+	change nodes.ProvisionStateOpts, expectedState nodes.ProvisionState) (*nodes.Node, error) {
+	err := nodes.ChangeProvisionState(ctx, client, node.UUID, change).ExtractErr()
+	if err != nil {
+		return node, err
+	}
+
+	err = nodes.WaitForProvisionState(ctx, client, node.UUID, expectedState)
+	if err != nil {
+		return node, err
+	}
+
+	return nodes.Get(ctx, client, node.UUID).Extract()
+}
+
+// DeployFakeNode deploys a node that uses fake-hardware.
+func DeployFakeNode(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node) (*nodes.Node, error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), 30*time.Second)
+	defer cancel()
+
+	currentState := node.ProvisionState
+
+	if currentState == string(nodes.Enroll) {
+		t.Logf("moving fake node %s to manageable", node.UUID)
+		err := nodes.ChangeProvisionState(ctx, client, node.UUID, nodes.ProvisionStateOpts{
+			Target: nodes.TargetManage,
+		}).ExtractErr()
+		if err != nil {
+			return node, err
+		}
+
+		err = nodes.WaitForProvisionState(ctx, client, node.UUID, nodes.Manageable)
+		if err != nil {
+			return node, err
+		}
+
+		currentState = string(nodes.Manageable)
+	}
+
+	if currentState == string(nodes.Manageable) {
+		t.Logf("moving fake node %s to available", node.UUID)
+		err := nodes.ChangeProvisionState(ctx, client, node.UUID, nodes.ProvisionStateOpts{
+			Target: nodes.TargetProvide,
+		}).ExtractErr()
+		if err != nil {
+			return node, err
+		}
+
+		err = nodes.WaitForProvisionState(ctx, client, node.UUID, nodes.Available)
+		if err != nil {
+			return node, err
+		}
+
+		currentState = string(nodes.Available)
+	}
+
+	t.Logf("deploying fake node %s", node.UUID)
+	return ChangeProvisionStateAndWait(ctx, client, node, nodes.ProvisionStateOpts{
+		Target: nodes.TargetActive,
+	}, nodes.Active)
 }
 
 // CreatePort - creates a port for a node with a fixed Address

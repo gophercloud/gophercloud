@@ -28,11 +28,13 @@ const (
 	Deploying    ProvisionState = "deploying"
 	DeployFail   ProvisionState = "deploy failed"
 	DeployDone   ProvisionState = "deploy complete"
+	DeployHold   ProvisionState = "deploy hold"
 	Deleting     ProvisionState = "deleting"
 	Deleted      ProvisionState = "deleted"
 	Cleaning     ProvisionState = "cleaning"
 	CleanWait    ProvisionState = "clean wait"
 	CleanFail    ProvisionState = "clean failed"
+	CleanHold    ProvisionState = "clean hold"
 	Error        ProvisionState = "error"
 	Rebuild      ProvisionState = "rebuild"
 	Inspecting   ProvisionState = "inspecting"
@@ -46,6 +48,10 @@ const (
 	UnrescueFail ProvisionState = "unrescue failed"
 	RescueWait   ProvisionState = "rescue wait"
 	Unrescuing   ProvisionState = "unrescuing"
+	Servicing    ProvisionState = "servicing"
+	ServiceWait  ProvisionState = "service wait"
+	ServiceFail  ProvisionState = "service fail"
+	ServiceHold  ProvisionState = "service hold"
 )
 
 // TargetProvisionState is used when setting the provision state for a node.
@@ -63,6 +69,16 @@ const (
 	TargetRescue   TargetProvisionState = "rescue"
 	TargetUnrescue TargetProvisionState = "unrescue"
 	TargetRebuild  TargetProvisionState = "rebuild"
+	TargetService  TargetProvisionState = "service"
+	TargetUnhold   TargetProvisionState = "unhold"
+)
+
+const (
+	StepHold     string = "hold"
+	StepWait     string = "wait"
+	StepPowerOn  string = "power_on"
+	StepPowerOff string = "power_off"
+	StepReboot   string = "reboot"
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -430,6 +446,9 @@ type CleanStep struct {
 	Args      map[string]interface{} `json:"args,omitempty"`
 }
 
+// A service step looks the same as a cleaning step.
+type ServiceStep = CleanStep
+
 // A deploy step has required keys ‘interface’, ‘step’, ’args’ and ’priority’.
 // The value for ‘args’ is a keyword variable argument dictionary that is passed to the deploy step
 // method. Priority is a numeric priority at which the step is running.
@@ -461,6 +480,7 @@ type ProvisionStateOpts struct {
 	ConfigDrive    interface{}          `json:"configdrive,omitempty"`
 	CleanSteps     []CleanStep          `json:"clean_steps,omitempty"`
 	DeploySteps    []DeployStep         `json:"deploy_steps,omitempty"`
+	ServiceSteps   []ServiceStep        `json:"service_steps,omitempty"`
 	RescuePassword string               `json:"rescue_password,omitempty"`
 }
 
