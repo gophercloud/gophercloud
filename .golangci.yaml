@@ -3,7 +3,6 @@ linters:
   disable:
     - errcheck  # Error return value is not checked (errcheck)
     - ineffassign  # ineffectual assignment to tags (ineffassign)
-    - unused
 issues:
   exclude:
     - SA1006  # printf-style function with dynamic format string and no further arguments should use print-style function instead (staticcheck)

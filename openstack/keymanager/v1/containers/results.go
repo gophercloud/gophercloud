@@ -176,28 +176,17 @@ func (r *Consumer) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type consumerResult struct {
-	gophercloud.Result
-}
-
-// Extract interprets any consumerResult as a Consumer.
-func (r consumerResult) Extract() (*Consumer, error) {
-	var s *Consumer
-	err := r.ExtractInto(&s)
-	return s, err
-}
-
 // CreateConsumerResult is the response from a CreateConsumer operation.
 // Call its Extract method to interpret it as a container.
 type CreateConsumerResult struct {
-	// This is not a typo.
+	// This is not a typo: the API returns a Container, not a Consumer
 	commonResult
 }
 
 // DeleteConsumerResult is the response from a DeleteConsumer operation.
 // Call its Extract to interpret it as a container.
 type DeleteConsumerResult struct {
-	// This is not a typo.
+	// This is not a typo: the API returns a Container, not a Consumer
 	commonResult
 }
 

@@ -387,7 +387,7 @@ func TestRequestWithContext(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	cancel()
-	res, err = p.Request(ctx, "GET", ts.URL, &gophercloud.RequestOpts{})
+	_, err = p.Request(ctx, "GET", ts.URL, &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}

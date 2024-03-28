@@ -13,8 +13,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-const tokenID = "blerb"
-
 func TestListFlavors(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
