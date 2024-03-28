@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/fwaas_v2/rules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -22,6 +23,9 @@ func TestRuleCRUD(t *testing.T) {
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "fwaas_v2")
 
 	rule, err := CreateRule(t, client)
 	th.AssertNoErr(t, err)

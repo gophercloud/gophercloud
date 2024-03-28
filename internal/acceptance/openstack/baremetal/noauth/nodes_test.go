@@ -14,6 +14,7 @@ import (
 
 func TestNodesCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
@@ -46,6 +47,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 
 func TestNodesUpdate(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
@@ -70,6 +72,7 @@ func TestNodesUpdate(t *testing.T) {
 func TestNodesRAIDConfig(t *testing.T) {
 	clients.SkipReleasesBelow(t, "stable/ussuri")
 	clients.RequireLong(t)
+	clients.RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
