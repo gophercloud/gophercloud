@@ -17,7 +17,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/bootfromvolume"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/rescueunrescue"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/schedulerhints"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
@@ -131,9 +130,9 @@ func CreateAggregate(t *testing.T, client *gophercloud.ServiceClient) (*aggregat
 }
 
 // CreateBootableVolumeServer works like CreateServer but is configured with
-// one or more block devices defined by passing in []bootfromvolume.BlockDevice.
+// one or more block devices defined by passing in []servers.BlockDevice.
 // An error will be returned if a server was unable to be created.
-func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
+func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []servers.BlockDevice) (*servers.Server, error) {
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -149,22 +148,20 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bootable volume server: %s", name)
 
-	serverCreateOpts := servers.CreateOpts{
+	createOpts := servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
+		BlockDevice: blockDevices,
 	}
 
-	if blockDevices[0].SourceType == bootfromvolume.SourceImage && blockDevices[0].DestinationType == bootfromvolume.DestinationLocal {
-		serverCreateOpts.ImageRef = blockDevices[0].UUID
+	if blockDevices[0].SourceType == servers.SourceImage && blockDevices[0].DestinationType == servers.DestinationLocal {
+		createOpts.ImageRef = blockDevices[0].UUID
 	}
 
-	server, err = bootfromvolume.Create(context.TODO(), client, bootfromvolume.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		BlockDevice:       blockDevices,
-	}).Extract()
+	server, err = servers.Create(context.TODO(), client, createOpts).Extract()
 
 	if err != nil {
 		return server, err
@@ -302,11 +299,11 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 }
 
 // CreateMultiEphemeralServer works like CreateServer but is configured with
-// one or more block devices defined by passing in []bootfromvolume.BlockDevice.
+// one or more block devices defined by passing in []servers.BlockDevice.
 // These block devices act like block devices when booting from a volume but
 // are actually local ephemeral disks.
 // An error will be returned if a server was unable to be created.
-func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
+func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []servers.BlockDevice) (*servers.Server, error) {
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -322,19 +319,17 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bootable volume server: %s", name)
 
-	serverCreateOpts := servers.CreateOpts{
+	createOpts := servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
+		BlockDevice: blockDevices,
 	}
 
-	server, err = bootfromvolume.Create(context.TODO(), client, bootfromvolume.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		BlockDevice:       blockDevices,
-	}).Extract()
+	server, err = servers.Create(context.TODO(), client, createOpts).Extract()
 
 	if err != nil {
 		return server, err

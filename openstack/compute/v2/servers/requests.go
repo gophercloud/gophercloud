@@ -153,6 +153,91 @@ type Network struct {
 	Tag string
 }
 
+type (
+	// DestinationType represents the type of medium being used as the
+	// destination of the bootable device.
+	DestinationType string
+
+	// SourceType represents the type of medium being used as the source of the
+	// bootable device.
+	SourceType string
+)
+
+const (
+	// DestinationLocal DestinationType is for using an ephemeral disk as the
+	// destination.
+	DestinationLocal DestinationType = "local"
+
+	// DestinationVolume DestinationType is for using a volume as the destination.
+	DestinationVolume DestinationType = "volume"
+
+	// SourceBlank SourceType is for a "blank" or empty source.
+	SourceBlank SourceType = "blank"
+
+	// SourceImage SourceType is for using images as the source of a block device.
+	SourceImage SourceType = "image"
+
+	// SourceSnapshot SourceType is for using a volume snapshot as the source of
+	// a block device.
+	SourceSnapshot SourceType = "snapshot"
+
+	// SourceVolume SourceType is for using a volume as the source of block
+	// device.
+	SourceVolume SourceType = "volume"
+)
+
+// BlockDevice is a structure with options for creating block devices in a
+// server. The block device may be created from an image, snapshot, new volume,
+// or existing volume. The destination may be a new volume, existing volume
+// which will be attached to the instance, ephemeral disk, or boot device.
+type BlockDevice struct {
+	// SourceType must be one of: "volume", "snapshot", "image", or "blank".
+	SourceType SourceType `json:"source_type" required:"true"`
+
+	// UUID is the unique identifier for the existing volume, snapshot, or
+	// image (see above).
+	UUID string `json:"uuid,omitempty"`
+
+	// BootIndex is the boot index. It defaults to 0.
+	BootIndex int `json:"boot_index"`
+
+	// DeleteOnTermination specifies whether or not to delete the attached volume
+	// when the server is deleted. Defaults to `false`.
+	DeleteOnTermination bool `json:"delete_on_termination"`
+
+	// DestinationType is the type that gets created. Possible values are "volume"
+	// and "local".
+	DestinationType DestinationType `json:"destination_type,omitempty"`
+
+	// GuestFormat specifies the format of the block device.
+	// Not specifying this will cause the device to be formatted to the default in Nova
+	// which is currently vfat.
+	// https://opendev.org/openstack/nova/src/commit/d0b459423dd81644e8d9382b6c87fabaa4f03ad4/nova/privsep/fs.py#L257
+	GuestFormat string `json:"guest_format,omitempty"`
+
+	// VolumeSize is the size of the volume to create (in gigabytes). This can be
+	// omitted for existing volumes.
+	VolumeSize int `json:"volume_size,omitempty"`
+
+	// DeviceType specifies the device type of the block devices.
+	// Examples of this are disk, cdrom, floppy, lun, etc.
+	DeviceType string `json:"device_type,omitempty"`
+
+	// DiskBus is the bus type of the block devices.
+	// Examples of this are ide, usb, virtio, scsi, etc.
+	DiskBus string `json:"disk_bus,omitempty"`
+
+	// VolumeType is the volume type of the block device.
+	// This requires Compute API microversion 2.67 or later.
+	VolumeType string `json:"volume_type,omitempty"`
+
+	// Tag is an arbitrary string that can be applied to a block device.
+	// Information about the device tags can be obtained from the metadata API
+	// and the config drive, allowing devices to be easily identified.
+	// This requires Compute API microversion 2.42 or later.
+	Tag string `json:"tag,omitempty"`
+}
+
 // Personality is an array of files that are injected into the server at launch.
 type Personality []*File
 
@@ -247,6 +332,9 @@ type CreateOpts struct {
 	// be a Fully Qualified Domain Name (FQDN) of up to 255 characters in length.
 	// If not set, OpenStack will derive the server's hostname from the Name field.
 	Hostname string `json:"hostname,omitempty"`
+
+	// BlockDevice describes the mapping of various block devices.
+	BlockDevice []BlockDevice `json:"block_device_mapping_v2,omitempty"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
@@ -322,7 +410,9 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(ctx, listURL(client), reqBody, &r.Body, nil)
+	resp, err := client.Post(ctx, createURL(client), reqBody, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

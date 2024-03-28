@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	blockstorage "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/blockstorage/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/bootfromvolume"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/volumeattach"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -24,12 +24,12 @@ func TestBootFromImage(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationLocal,
-			SourceType:          bootfromvolume.SourceImage,
+			DestinationType:     servers.DestinationLocal,
+			SourceType:          servers.SourceImage,
 			UUID:                choices.ImageID,
 		},
 	}
@@ -57,11 +57,11 @@ func TestBootFromNewVolume(t *testing.T) {
 	client.Microversion = "2.70"
 
 	tagName := "tag1"
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.SourceImage,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceImage,
 			UUID:                choices.ImageID,
 			VolumeSize:          2,
 			Tag:                 tagName,
@@ -106,11 +106,11 @@ func TestBootFromExistingVolume(t *testing.T) {
 
 	tools.PrintResource(t, volume)
 
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.SourceVolume,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceVolume,
 			UUID:                volume.ID,
 		},
 	}
@@ -146,29 +146,29 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			BootIndex:           0,
-			DestinationType:     bootfromvolume.DestinationLocal,
+			DestinationType:     servers.DestinationLocal,
 			DeleteOnTermination: true,
-			SourceType:          bootfromvolume.SourceImage,
+			SourceType:          servers.SourceImage,
 			UUID:                choices.ImageID,
 			VolumeSize:          5,
 		},
 		{
 			BootIndex:           -1,
-			DestinationType:     bootfromvolume.DestinationLocal,
+			DestinationType:     servers.DestinationLocal,
 			DeleteOnTermination: true,
 			GuestFormat:         "ext4",
-			SourceType:          bootfromvolume.SourceBlank,
+			SourceType:          servers.SourceBlank,
 			VolumeSize:          1,
 		},
 		{
 			BootIndex:           -1,
-			DestinationType:     bootfromvolume.DestinationLocal,
+			DestinationType:     servers.DestinationLocal,
 			DeleteOnTermination: true,
 			GuestFormat:         "ext4",
-			SourceType:          bootfromvolume.SourceBlank,
+			SourceType:          servers.SourceBlank,
 			VolumeSize:          1,
 		},
 	}
@@ -189,19 +189,19 @@ func TestAttachNewVolume(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationLocal,
-			SourceType:          bootfromvolume.SourceImage,
+			DestinationType:     servers.DestinationLocal,
+			SourceType:          servers.SourceImage,
 			UUID:                choices.ImageID,
 		},
 		{
 			BootIndex:           1,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.SourceBlank,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceBlank,
 			VolumeSize:          2,
 		},
 	}
@@ -240,19 +240,19 @@ func TestAttachExistingVolume(t *testing.T) {
 	volume, err := blockstorage.CreateVolume(t, blockStorageClient)
 	th.AssertNoErr(t, err)
 
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationLocal,
-			SourceType:          bootfromvolume.SourceImage,
+			DestinationType:     servers.DestinationLocal,
+			SourceType:          servers.SourceImage,
 			UUID:                choices.ImageID,
 		},
 		{
 			BootIndex:           1,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.SourceVolume,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceVolume,
 			UUID:                volume.ID,
 		},
 	}
@@ -292,11 +292,11 @@ func TestBootFromNewCustomizedVolume(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	blockDevices := []bootfromvolume.BlockDevice{
+	blockDevices := []servers.BlockDevice{
 		{
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.SourceImage,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceImage,
 			UUID:                choices.ImageID,
 			VolumeSize:          2,
 			DeviceType:          "disk",

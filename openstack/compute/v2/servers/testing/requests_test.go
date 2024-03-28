@@ -220,6 +220,402 @@ func TestCreateServerWithHostname(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServerWithBFVBootFromNewVolume(t *testing.T) {
+	opts := servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		BlockDevice: []servers.BlockDevice{
+			{
+				UUID:                "123456",
+				SourceType:          servers.SourceImage,
+				DestinationType:     servers.DestinationVolume,
+				VolumeSize:          10,
+				DeleteOnTermination: true,
+			},
+		},
+	}
+	expected := `
+	{
+		"server": {
+			"name":"createdserver",
+			"flavorRef":"performance1-1",
+			"imageRef":"",
+			"block_device_mapping_v2":[
+				{
+					"uuid":"123456",
+					"source_type":"image",
+					"destination_type":"volume",
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"volume_size": 10
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
+
+func TestCreateServerWithBFVBootFromExistingVolume(t *testing.T) {
+	opts := servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		BlockDevice: []servers.BlockDevice{
+			{
+				UUID:                "123456",
+				SourceType:          servers.SourceVolume,
+				DestinationType:     servers.DestinationVolume,
+				DeleteOnTermination: true,
+			},
+		},
+	}
+	expected := `
+	{
+		"server": {
+			"name":"createdserver",
+			"flavorRef":"performance1-1",
+			"imageRef":"",
+			"block_device_mapping_v2":[
+				{
+					"uuid":"123456",
+					"source_type":"volume",
+					"destination_type":"volume",
+					"boot_index": 0,
+					"delete_on_termination": true
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
+
+func TestCreateServerWithBFVBootFromImage(t *testing.T) {
+	var ImageRequest = servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		ImageRef:  "asdfasdfasdf",
+		BlockDevice: []servers.BlockDevice{
+			{
+				BootIndex:           0,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				SourceType:          servers.SourceImage,
+				UUID:                "asdfasdfasdf",
+			},
+		},
+	}
+	const ExpectedImageRequest = `
+	{
+		"server": {
+			"name": "createdserver",
+			"imageRef": "asdfasdfasdf",
+			"flavorRef": "performance1-1",
+			"block_device_mapping_v2":[
+				{
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"source_type":"image",
+					"uuid":"asdfasdfasdf"
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := ImageRequest.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, ExpectedImageRequest, actual)
+}
+
+func TestCreateServerWithBFVCreateMultiEphemeralOpts(t *testing.T) {
+	var MultiEphemeralRequest = servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		ImageRef:  "asdfasdfasdf",
+		BlockDevice: []servers.BlockDevice{
+			{
+				BootIndex:           0,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				SourceType:          servers.SourceImage,
+				UUID:                "asdfasdfasdf",
+			},
+			{
+				BootIndex:           -1,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				GuestFormat:         "ext4",
+				SourceType:          servers.SourceBlank,
+				VolumeSize:          1,
+			},
+			{
+				BootIndex:           -1,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				GuestFormat:         "ext4",
+				SourceType:          servers.SourceBlank,
+				VolumeSize:          1,
+			},
+		},
+	}
+	const ExpectedMultiEphemeralRequest = `
+	{
+		"server": {
+			"name": "createdserver",
+			"imageRef": "asdfasdfasdf",
+			"flavorRef": "performance1-1",
+			"block_device_mapping_v2":[
+				{
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"source_type":"image",
+					"uuid":"asdfasdfasdf"
+				},
+				{
+					"boot_index": -1,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"guest_format":"ext4",
+					"source_type":"blank",
+					"volume_size": 1
+				},
+				{
+					"boot_index": -1,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"guest_format":"ext4",
+					"source_type":"blank",
+					"volume_size": 1
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := MultiEphemeralRequest.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, ExpectedMultiEphemeralRequest, actual)
+}
+
+func TestCreateServerWithBFVAttachNewVolume(t *testing.T) {
+	opts := servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		ImageRef:  "asdfasdfasdf",
+		BlockDevice: []servers.BlockDevice{
+			{
+				BootIndex:           0,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				SourceType:          servers.SourceImage,
+				UUID:                "asdfasdfasdf",
+			},
+			{
+				BootIndex:           1,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationVolume,
+				SourceType:          servers.SourceBlank,
+				VolumeSize:          1,
+				DeviceType:          "disk",
+				DiskBus:             "scsi",
+			},
+		},
+	}
+	expected := `
+	{
+		"server": {
+			"name": "createdserver",
+			"imageRef": "asdfasdfasdf",
+			"flavorRef": "performance1-1",
+			"block_device_mapping_v2":[
+				{
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"source_type":"image",
+					"uuid":"asdfasdfasdf"
+				},
+				{
+					"boot_index": 1,
+					"delete_on_termination": true,
+					"destination_type":"volume",
+					"source_type":"blank",
+					"volume_size": 1,
+					"device_type": "disk",
+					"disk_bus": "scsi"
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
+
+func TestCreateServerWithBFVAttachExistingVolume(t *testing.T) {
+	opts := servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		ImageRef:  "asdfasdfasdf",
+		BlockDevice: []servers.BlockDevice{
+			{
+				BootIndex:           0,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				SourceType:          servers.SourceImage,
+				UUID:                "asdfasdfasdf",
+			},
+			{
+				BootIndex:           1,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationVolume,
+				SourceType:          servers.SourceVolume,
+				UUID:                "123456",
+				VolumeSize:          1,
+			},
+		},
+	}
+	expected := `
+	{
+		"server": {
+			"name": "createdserver",
+			"imageRef": "asdfasdfasdf",
+			"flavorRef": "performance1-1",
+			"block_device_mapping_v2":[
+				{
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"source_type":"image",
+					"uuid":"asdfasdfasdf"
+				},
+				{
+					"boot_index": 1,
+					"delete_on_termination": true,
+					"destination_type":"volume",
+					"source_type":"volume",
+					"uuid":"123456",
+					"volume_size": 1
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
+
+func TestCreateServerWithBFVBootFromNewVolumeType(t *testing.T) {
+	var NewVolumeTypeRequest = servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		BlockDevice: []servers.BlockDevice{
+			{
+				UUID:                "123456",
+				SourceType:          servers.SourceImage,
+				DestinationType:     servers.DestinationVolume,
+				VolumeSize:          10,
+				DeleteOnTermination: true,
+				VolumeType:          "ssd",
+			},
+		},
+	}
+	const ExpectedNewVolumeTypeRequest = `
+	{
+		"server": {
+			"name":"createdserver",
+			"flavorRef":"performance1-1",
+			"imageRef":"",
+			"block_device_mapping_v2":[
+				{
+					"uuid":"123456",
+					"source_type":"image",
+					"destination_type":"volume",
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"volume_size": 10,
+					"volume_type": "ssd"
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := NewVolumeTypeRequest.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, ExpectedNewVolumeTypeRequest, actual)
+}
+
+func TestCreateServerWithBFVAttachExistingVolumeWithTag(t *testing.T) {
+	var ImageAndExistingVolumeWithTagRequest = servers.CreateOpts{
+		Name:      "createdserver",
+		FlavorRef: "performance1-1",
+		ImageRef:  "asdfasdfasdf",
+		BlockDevice: []servers.BlockDevice{
+			{
+				BootIndex:           0,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationLocal,
+				SourceType:          servers.SourceImage,
+				UUID:                "asdfasdfasdf",
+			},
+			{
+				BootIndex:           -1,
+				DeleteOnTermination: true,
+				DestinationType:     servers.DestinationVolume,
+				SourceType:          servers.SourceVolume,
+				Tag:                 "volume-tag",
+				UUID:                "123456",
+				VolumeSize:          1,
+			},
+		},
+	}
+	const ExpectedImageAndExistingVolumeWithTagRequest = `
+	{
+		"server": {
+			"name": "createdserver",
+			"imageRef": "asdfasdfasdf",
+			"flavorRef": "performance1-1",
+			"block_device_mapping_v2":[
+				{
+					"boot_index": 0,
+					"delete_on_termination": true,
+					"destination_type":"local",
+					"source_type":"image",
+					"uuid":"asdfasdfasdf"
+				},
+				{
+					"boot_index": -1,
+					"delete_on_termination": true,
+					"destination_type":"volume",
+					"source_type":"volume",
+					"tag": "volume-tag",
+					"uuid":"123456",
+					"volume_size": 1
+				}
+			]
+		}
+	}
+	`
+
+	actual, err := ImageAndExistingVolumeWithTagRequest.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, ExpectedImageAndExistingVolumeWithTagRequest, actual)
+}
+
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

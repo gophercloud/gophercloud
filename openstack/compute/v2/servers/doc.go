@@ -58,6 +58,129 @@ Example to Create a Server
 		panic(err)
 	}
 
+# Example to Create a Server From an Image
+
+This example will boot a server from an image and use a standard ephemeral
+disk as the server's root disk. This is virtually no different than creating
+a server without using block device mappings.
+
+	blockDevices := []servers.BlockDevice{
+		servers.BlockDevice{
+			BootIndex:           0,
+			DeleteOnTermination: true,
+			DestinationType:     servers.DestinationLocal,
+			SourceType:          servers.SourceImage,
+			UUID:                "image-uuid",
+		},
+	}
+
+	createOpts := servers.CreateOpts{
+		Name:        "server_name",
+		FlavorRef:   "flavor-uuid",
+		ImageRef:    "image-uuid",
+		BlockDevice: blockDevices,
+	}
+
+	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+# Example to Create a Server From a New Volume
+
+This example will create a block storage volume based on the given Image. The
+server will use this volume as its root disk.
+
+	blockDevices := []servers.BlockDevice{
+		servers.BlockDevice{
+			DeleteOnTermination: true,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceImage,
+			UUID:                "image-uuid",
+			VolumeSize:          2,
+		},
+	}
+
+	createOpts := servers.CreateOpts{
+		Name:        "server_name",
+		FlavorRef:   "flavor-uuid",
+		BlockDevice: blockDevices,
+	}
+
+	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+# Example to Create a Server From an Existing Volume
+
+This example will create a server with an existing volume as its root disk.
+
+	blockDevices := []servers.BlockDevice{
+		servers.BlockDevice{
+			DeleteOnTermination: true,
+			DestinationType:     servers.DestinationVolume,
+			SourceType:          servers.SourceVolume,
+			UUID:                "volume-uuid",
+		},
+	}
+
+	createOpts := servers.CreateOpts{
+		Name:        "server_name",
+		FlavorRef:   "flavor-uuid",
+		BlockDevice: blockDevices,
+	}
+
+	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+# Example to Create a Server with Multiple Ephemeral Disks
+
+This example will create a server with multiple ephemeral disks. The first
+block device will be based off of an existing Image. Each additional
+ephemeral disks must have an index of -1.
+
+	blockDevices := []servers.BlockDevice{
+		servers.BlockDevice{
+			BootIndex:           0,
+			DestinationType:     servers.DestinationLocal,
+			DeleteOnTermination: true,
+			SourceType:          servers.SourceImage,
+			UUID:                "image-uuid",
+			VolumeSize:          5,
+		},
+		servers.BlockDevice{
+			BootIndex:           -1,
+			DestinationType:     servers.DestinationLocal,
+			DeleteOnTermination: true,
+			GuestFormat:         "ext4",
+			SourceType:          servers.SourceBlank,
+			VolumeSize:          1,
+		},
+		servers.BlockDevice{
+			BootIndex:           -1,
+			DestinationType:     servers.DestinationLocal,
+			DeleteOnTermination: true,
+			GuestFormat:         "ext4",
+			SourceType:          servers.SourceBlank,
+			VolumeSize:          1,
+		},
+	}
+
+	CreateOpts := servers.CreateOpts{
+		Name:        "server_name",
+		FlavorRef:   "flavor-uuid",
+		ImageRef:    "image-uuid",
+		BlockDevice: blockDevices,
+	}
+
+	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a Server
 
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
