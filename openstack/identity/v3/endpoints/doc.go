@@ -33,7 +33,6 @@ Example to Create an Endpoint
 
 	createOpts := endpoints.CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
-		Name:         "neutron",
 		Region:       "RegionOne",
 		URL:          "https://localhost:9696",
 		ServiceID:    serviceID,

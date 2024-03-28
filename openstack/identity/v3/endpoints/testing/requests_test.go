@@ -24,7 +24,6 @@ func TestCreateSuccessful(t *testing.T) {
       {
         "endpoint": {
           "interface": "public",
-          "name": "the-endiest-of-points",
           "region": "underground",
           "url": "https://1.2.3.4:9000/",
           "service_id": "asdfasdfasdfasdf"
@@ -42,7 +41,6 @@ func TestCreateSuccessful(t *testing.T) {
 		  "links": {
             "self": "https://localhost:5000/v3/endpoints/12"
           },
-          "name": "the-endiest-of-points",
           "region": "underground",
           "service_id": "asdfasdfasdfasdf",
           "url": "https://1.2.3.4:9000/"
@@ -53,7 +51,6 @@ func TestCreateSuccessful(t *testing.T) {
 
 	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(), endpoints.CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
-		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		URL:          "https://1.2.3.4:9000/",
 		ServiceID:    "asdfasdfasdfasdf",
@@ -64,7 +61,6 @@ func TestCreateSuccessful(t *testing.T) {
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
 		Enabled:      true,
-		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
@@ -92,7 +88,6 @@ func TestListEndpoints(t *testing.T) {
 						"links": {
 							"self": "https://localhost:5000/v3/endpoints/12"
 						},
-						"name": "the-endiest-of-points",
 						"region": "underground",
 						"service_id": "asdfasdfasdfasdf",
 						"url": "https://1.2.3.4:9000/"
@@ -104,7 +99,6 @@ func TestListEndpoints(t *testing.T) {
 						"links": {
 							"self": "https://localhost:5000/v3/endpoints/13"
 						},
-						"name": "shhhh",
 						"region": "underground",
 						"service_id": "asdfasdfasdfasdf",
 						"url": "https://1.2.3.4:9001/"
@@ -132,7 +126,6 @@ func TestListEndpoints(t *testing.T) {
 				ID:           "12",
 				Availability: gophercloud.AvailabilityPublic,
 				Enabled:      true,
-				Name:         "the-endiest-of-points",
 				Region:       "underground",
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9000/",
@@ -141,7 +134,6 @@ func TestListEndpoints(t *testing.T) {
 				ID:           "13",
 				Availability: gophercloud.AvailabilityInternal,
 				Enabled:      false,
-				Name:         "shhhh",
 				Region:       "underground",
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9001/",
@@ -163,7 +155,6 @@ func TestUpdateEndpoint(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 		{
 	    "endpoint": {
-	      "name": "renamed",
 				"region": "somewhere-else"
 	    }
 		}
@@ -178,7 +169,6 @@ func TestUpdateEndpoint(t *testing.T) {
 				"links": {
 					"self": "https://localhost:5000/v3/endpoints/12"
 				},
-				"name": "renamed",
 				"region": "somewhere-else",
 				"service_id": "asdfasdfasdfasdf",
 				"url": "https://1.2.3.4:9000/"
@@ -188,7 +178,6 @@ func TestUpdateEndpoint(t *testing.T) {
 	})
 
 	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(), "12", endpoints.UpdateOpts{
-		Name:   "renamed",
 		Region: "somewhere-else",
 	}).Extract()
 	if err != nil {
@@ -199,7 +188,6 @@ func TestUpdateEndpoint(t *testing.T) {
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
 		Enabled:      true,
-		Name:         "renamed",
 		Region:       "somewhere-else",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
