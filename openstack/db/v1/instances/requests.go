@@ -56,11 +56,13 @@ type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
 	// reference as specified in the response from the List() call. Required.
 	FlavorRef string
+	// ID or name of an existing instance to replicate from.
+	ReplicaOf string `json:"replica_of,omitempty"`
 	// Specifies the volume size in gigabytes (GB). The value must be between 1
 	// and 300. Required.
-	Size int
+	Size int `json:",omitempty"`
 	// Specifies the volume type.
-	VolumeType string
+	VolumeType string `json:",omitempty"`
 	// Name of the instance to create. The length of the name is limited to
 	// 255 characters and any characters are permitted. Optional.
 	Name string
@@ -77,7 +79,20 @@ type CreateOpts struct {
 
 // ToInstanceCreateMap will render a JSON map.
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
-	if opts.Size > 300 || opts.Size < 1 {
+	instance := map[string]interface{}{}
+
+	if opts.ReplicaOf != "" {
+		instance["replica_of"] = opts.ReplicaOf
+	}
+
+	// Volume Size cannot be specified when creating replicas of another instance.
+	if opts.Size > 0 && opts.ReplicaOf != "" {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.CreateOpts.Size"
+		err.Value = opts.Size
+		err.Info = "Volume Size cannot be specified when ReplicaOf is provided"
+		return nil, err
+	} else if (opts.Size > 300 || opts.Size < 1) && opts.ReplicaOf == "" {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "instances.CreateOpts.Size"
 		err.Value = opts.Size
@@ -85,13 +100,22 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if opts.FlavorRef == "" {
-		return nil, gophercloud.ErrMissingInput{Argument: "instances.CreateOpts.FlavorRef"}
+	// FlavorRef cannot be specified when creating replicas of another instance.
+	if opts.FlavorRef == "" && opts.ReplicaOf == "" {
+		err := gophercloud.ErrMissingInput{}
+		err.Argument = "instances.CreateOpts.FlavorRef or instances.CreateOpts.ReplicaOf"
+		err.Info = "ReplicaOf or FlavorRef should be provided"
+		return nil, err
+	}
+	if opts.FlavorRef != "" && opts.ReplicaOf != "" {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.CreateOpts.FlavorRef"
+		err.Value = opts.Size
+		err.Info = "FlavorRef cannot be specified when ReplicaOf is provided"
+		return nil, err
 	}
 
-	instance := map[string]interface{}{
-		"flavorRef": opts.FlavorRef,
-	}
+	instance["flavorRef"] = opts.FlavorRef
 
 	if opts.AvailabilityZone != "" {
 		instance["availability_zone"] = opts.AvailabilityZone
@@ -118,6 +142,15 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		}
 		instance["users"] = users["users"]
 	}
+
+	// Datastore cannot be specified when creating replicas of another instance.
+	if opts.Datastore != nil && opts.ReplicaOf != "" {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.CreateOpts.Datastore"
+		err.Value = opts.Size
+		err.Info = "Datastore cannot be specified when ReplicaOf is provided"
+		return nil, err
+	}
 	if opts.Datastore != nil {
 		datastore, err := opts.Datastore.ToMap()
 		if err != nil {
@@ -138,15 +171,26 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		instance["nics"] = networks
 	}
 
-	volume := map[string]interface{}{
-		"size": opts.Size,
+	volume := map[string]interface{}{}
+
+	if opts.ReplicaOf == "" {
+		volume["size"] = opts.Size
 	}
 
-	if opts.VolumeType != "" {
+	if opts.VolumeType != "" && opts.ReplicaOf != "" {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "instances.CreateOpts.VolumeType"
+		err.Value = opts.Size
+		err.Info = "Volume Type cannot be specified when ReplicaOf is provided"
+		return nil, err
+	}
+	if opts.VolumeType != "" && opts.ReplicaOf == "" {
 		volume["type"] = opts.VolumeType
 	}
 
-	instance["volume"] = volume
+	if opts.ReplicaOf == "" {
+		instance["volume"] = volume
+	}
 
 	return map[string]interface{}{"instance": instance}, nil
 }

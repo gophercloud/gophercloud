@@ -53,6 +53,24 @@ var instance = `
 }
 `
 
+// https://github.com/openstack/trove/blob/40fdb7b44fb33e022b77ba8df63fde2565c70dea/api-ref/source/parameters.yaml#L799
+var instanceReplicaOf = `
+{
+  "created": "` + timestamp + `",
+  "links": [
+    {
+      "href": "https://openstack.example.com/v1.0/1234/instances/1",
+      "rel": "self"
+    }
+  ],
+  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.openstack.example.com",
+  "id": "{instanceID}",
+  "name": "json_rack_instance",
+  "status": "BUILD",
+  "updated": "` + timestamp + `"
+}
+`
+
 var instanceGet = `
 {
   "created": "` + timestamp + `",
@@ -137,6 +155,16 @@ var createReq = `
 }
 `
 
+var createReplicaOfReq = `
+{
+	"instance": {
+		"availability_zone": "us-east1",
+		"replica_of": "master-server-to-replicate-of",
+		"name": "json_rack_instance",
+	}
+}
+`
+
 var instanceWithFault = `
 {
   "created": "` + timestamp + `",
@@ -198,6 +226,7 @@ var (
 
 var (
 	createResp          = fmt.Sprintf(`{"instance": %s}`, instance)
+	createReplicaOfResp = fmt.Sprintf(`{"instance": %s}`, instanceReplicaOf)
 	createWithFaultResp = fmt.Sprintf(`{"instance": %s}`, instanceWithFault)
 	listInstancesResp   = fmt.Sprintf(`{"instances":[%s]}`, instance)
 	getInstanceResp     = fmt.Sprintf(`{"instance": %s}`, instanceGet)
@@ -227,6 +256,18 @@ var expectedInstance = instances.Instance{
 		Type:    "mysql",
 		Version: "5.6",
 	},
+}
+
+var expectedInstanceReplicaOf = instances.Instance{
+	Created: timeVal,
+	Updated: timeVal,
+	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.openstack.example.com",
+	ID:       instanceID,
+	Links: []gophercloud.Link{
+		{Href: "https://openstack.example.com/v1.0/1234/instances/1", Rel: "self"},
+	},
+	Name:   "json_rack_instance",
+	Status: "BUILD",
 }
 
 var expectedGetInstance = instances.Instance{
@@ -287,6 +328,10 @@ var expectedInstanceWithFault = instances.Instance{
 
 func HandleCreate(t *testing.T) {
 	fixture.SetupHandler(t, rootURL, "POST", createReq, createResp, 200)
+}
+
+func HandleCreateWithReplicaOf(t *testing.T) {
+	fixture.SetupHandler(t, rootURL, "POST", createReplicaOfReq, createReplicaOfResp, 200)
 }
 
 func HandleCreateWithFault(t *testing.T) {
