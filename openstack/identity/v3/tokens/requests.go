@@ -13,6 +13,7 @@ type Scope struct {
 	DomainID    string
 	DomainName  string
 	System      bool
+	TrustID     string
 }
 
 // AuthOptionsBuilder provides the ability for extensions to add additional

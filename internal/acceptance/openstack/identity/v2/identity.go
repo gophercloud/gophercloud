@@ -8,7 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/extensions/admin/roles"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/roles"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tenants"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/users"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"

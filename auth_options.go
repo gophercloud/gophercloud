@@ -102,6 +102,7 @@ type AuthScope struct {
 	DomainID    string
 	DomainName  string
 	System      bool
+	TrustID     string
 }
 
 // ToTokenV2CreateMap allows AuthOptions to satisfy the AuthOptionsBuilder
@@ -426,6 +427,14 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 		return map[string]interface{}{
 			"system": map[string]interface{}{
 				"all": true,
+			},
+		}, nil
+	}
+
+	if opts.Scope.TrustID != "" {
+		return map[string]interface{}{
+			"OS-TRUST:trust": map[string]string{
+				"id": opts.Scope.TrustID,
 			},
 		}, nil
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
@@ -199,25 +200,25 @@ func TestCreateDomainNameScope(t *testing.T) {
 	options := tokens.AuthOptions{UserID: "someuser", Password: "somepassword"}
 	scope := &tokens.Scope{DomainName: "evil-plans"}
 	authTokenPost(t, options, scope, `
-                {
-                        "auth": {
-                                "identity": {
-                                        "methods": ["password"],
-                                        "password": {
-                                                "user": {
-                                                        "id": "someuser",
-                                                        "password": "somepassword"
-                                                }
-                                        }
-                                },
-                                "scope": {
-                                        "domain": {
-                                                "name": "evil-plans"
-                                        }
-                                }
-                        }
-                }
-        `)
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"id": "someuser",
+							"password": "somepassword"
+						}
+					}
+				},
+				"scope": {
+					"domain": {
+						"name": "evil-plans"
+					}
+				}
+			}
+		}
+	`)
 }
 
 func TestCreateProjectNameAndDomainIDScope(t *testing.T) {
@@ -299,6 +300,112 @@ func TestCreateSystemScope(t *testing.T) {
 			}
 		}
 	`)
+}
+
+func TestCreateUserIDPasswordTrustID(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	requestJSON := `{
+		"auth": {
+			"identity": {
+				"methods": ["password"],
+				"password": {
+					"user": { "id": "demo", "password": "squirrel!" }
+				}
+			},
+			"scope": {
+				"OS-TRUST:trust": {
+					"id": "95946f9eef864fdc993079d8fe3e5747"
+				}
+			}
+		}
+	}`
+	responseJSON := `{
+		"token": {
+			"OS-TRUST:trust": {
+				"id": "95946f9eef864fdc993079d8fe3e5747",
+				"impersonation": false,
+				"trustee_user": {
+					"id": "64f9caa2872b442c98d42a986ee3b37a"
+				},
+				"trustor_user": {
+					"id": "c88693b7c81c408e9084ac1e51082bfb"
+				}
+			},
+			"audit_ids": [
+				"wwcoUZGPR6mCIIl-COn8Kg"
+			],
+			"catalog": [],
+			"expires_at": "2024-02-28T12:10:39.000000Z",
+			"issued_at": "2024-02-28T11:10:39.000000Z",
+			"methods": [
+				"password"
+			],
+			"project": {
+				"domain": {
+					"id": "default",
+					"name": "Default"
+				},
+				"id": "1fd93a4455c74d2ea94b929fc5f0e488",
+				"name": "admin"
+			},
+			"roles": [],
+			"user": {
+				"domain": {
+					"id": "default",
+					"name": "Default"
+				},
+				"id": "64f9caa2872b442c98d42a986ee3b37a",
+				"name": "demo",
+				"password_expires_at": null
+			}
+		}
+	}`
+	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "Content-Type", "application/json")
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestJSONRequest(t, r, requestJSON)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, responseJSON)
+	})
+
+	ao := gophercloud.AuthOptions{
+		UserID:   "demo",
+		Password: "squirrel!",
+		Scope: &gophercloud.AuthScope{
+			TrustID: "95946f9eef864fdc993079d8fe3e5747",
+		},
+	}
+
+	rsp := tokens.Create(context.TODO(), client.ServiceClient(), &ao)
+
+	token, err := rsp.Extract()
+	if err != nil {
+		t.Errorf("Create returned an error: %v", err)
+	}
+	expectedToken := &tokens.Token{
+		ExpiresAt: time.Date(2024, 02, 28, 12, 10, 39, 0, time.UTC),
+	}
+	testhelper.AssertDeepEquals(t, expectedToken, token)
+
+	trust, err := rsp.ExtractTrust()
+	if err != nil {
+		t.Errorf("ExtractTrust returned an error: %v", err)
+	}
+	expectedTrust := &tokens.Trust{
+		ID:            "95946f9eef864fdc993079d8fe3e5747",
+		Impersonation: false,
+		TrusteeUserID: tokens.TrustUser{
+			ID: "64f9caa2872b442c98d42a986ee3b37a",
+		},
+		TrustorUserID: tokens.TrustUser{
+			ID: "c88693b7c81c408e9084ac1e51082bfb",
+		},
+	}
+	testhelper.AssertDeepEquals(t, expectedTrust, trust)
 }
 
 func TestCreateApplicationCredentialIDAndSecret(t *testing.T) {
