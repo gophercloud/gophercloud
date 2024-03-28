@@ -11,7 +11,6 @@ issues:
     - SA4006  # this value of `***` is never used (staticcheck)
     - SA5011  # possible nil pointer dereference (staticcheck)
     - SA6005  # should use strings.EqualFold instead (staticcheck)
-    - S1005  # unnecessary assignment to the blank identifier (gosimple)
     - S1020  # when ok is true, err can't be nil (gosimple)
     - S1021  # should merge variable declaration with assignment on next line (gosimple)
     - S1030  # should use buf.String() instead of string(buf.Bytes()) (gosimple)

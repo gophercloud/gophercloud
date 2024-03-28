@@ -265,12 +265,12 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 	if opts.Timestamp != nil {
 		date = *opts.Timestamp
 	}
-	if v, _ := c["body_hash"]; v == nil {
+	if v := c["body_hash"]; v == nil {
 		// when body_hash is not set, generate a random one
 		c["body_hash"] = randomBodyHash()
 	}
 
-	signedHeaders, _ := h["X-Amz-SignedHeaders"]
+	signedHeaders := h["X-Amz-SignedHeaders"]
 
 	stringToSign := EC2CredentialsBuildStringToSignV4(*opts, signedHeaders, c["body_hash"].(string), date)
 	key := EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, date)
