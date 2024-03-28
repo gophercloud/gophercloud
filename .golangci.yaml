@@ -14,7 +14,6 @@ issues:
     - S1005  # unnecessary assignment to the blank identifier (gosimple)
     - S1020  # when ok is true, err can't be nil (gosimple)
     - S1021  # should merge variable declaration with assignment on next line (gosimple)
-    - S1023  # redundant `return` statement (gosimple)
     - S1030  # should use buf.String() instead of string(buf.Bytes()) (gosimple)
     - S1033  # unnecessary guard around call to delete (gosimple)
     - S1034  # assigning the result of this type assertion to a variable (***) could eliminate type assertions in switch cases (gosimple)

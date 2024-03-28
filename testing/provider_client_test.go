@@ -177,7 +177,6 @@ func TestReauthEndLoop(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		// route always return 401
 		w.WriteHeader(http.StatusUnauthorized)
-		return
 	})
 
 	reqopts := new(gophercloud.RequestOpts)

@@ -97,8 +97,6 @@ func DeleteClusterTemplate(t *testing.T, client *gophercloud.ServiceClient, id s
 	}
 
 	t.Logf("Successfully deleted cluster-template: %s", id)
-
-	return
 }
 
 // CreateClusterTimeout will create a random cluster and wait for it to reach CREATE_COMPLETE status
@@ -181,8 +179,6 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	}
 
 	t.Logf("Successfully deleted cluster: %s", id)
-
-	return
 }
 
 func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status string, timeout time.Duration) error {
