@@ -238,12 +238,8 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 
 	// detect and process a signature v2
 	if v, ok := p["SignatureVersion"]; ok && v == "2" {
-		if _, ok := c["body_hash"]; ok {
-			delete(c, "body_hash")
-		}
-		if _, ok := c["headers"]; ok {
-			delete(c, "headers")
-		}
+		delete(c, "body_hash")
+		delete(c, "headers")
 		if v, ok := p["SignatureMethod"]; ok {
 			// params is a map of strings
 			strToSign := EC2CredentialsBuildStringToSignV2(*opts)
@@ -370,9 +366,7 @@ func interfaceToMap(c map[string]interface{}, key string) map[string]string {
 func deleteBodyElements(b map[string]interface{}, elements ...string) {
 	if c, ok := b["credentials"].(map[string]interface{}); ok {
 		for _, k := range elements {
-			if _, ok := c[k]; ok {
-				delete(c, k)
-			}
+			delete(c, k)
 		}
 	}
 }
