@@ -113,6 +113,40 @@ func TestUnmarshalAnonymousStructs(t *testing.T) {
 	th.AssertEquals(t, "Canada unmarshalled", actual.Location)
 }
 
+func TestUnmarshalNilStruct(t *testing.T) {
+	var x *TestPerson
+	var y TestPerson
+
+	err1 := gophercloud.Result{}.ExtractIntoStructPtr(&x, "")
+	err2 := gophercloud.Result{}.ExtractIntoStructPtr(nil, "")
+	err3 := gophercloud.Result{}.ExtractIntoStructPtr(y, "")
+	err4 := gophercloud.Result{}.ExtractIntoStructPtr(&y, "")
+	err5 := gophercloud.Result{}.ExtractIntoStructPtr(x, "")
+
+	th.AssertErr(t, err1)
+	th.AssertErr(t, err2)
+	th.AssertErr(t, err3)
+	th.AssertNoErr(t, err4)
+	th.AssertErr(t, err5)
+}
+
+func TestUnmarshalNilSlice(t *testing.T) {
+	var x *[]TestPerson
+	var y []TestPerson
+
+	err1 := gophercloud.Result{}.ExtractIntoSlicePtr(&x, "")
+	err2 := gophercloud.Result{}.ExtractIntoSlicePtr(nil, "")
+	err3 := gophercloud.Result{}.ExtractIntoSlicePtr(y, "")
+	err4 := gophercloud.Result{}.ExtractIntoSlicePtr(&y, "")
+	err5 := gophercloud.Result{}.ExtractIntoSlicePtr(x, "")
+
+	th.AssertErr(t, err1)
+	th.AssertErr(t, err2)
+	th.AssertErr(t, err3)
+	th.AssertNoErr(t, err4)
+	th.AssertErr(t, err5)
+}
+
 // TestUnmarshalSliceofAnonymousStructs tests if UnmarshalJSON is called on each
 // of the anonymous structs contained in an overarching struct slice.
 func TestUnmarshalSliceOfAnonymousStructs(t *testing.T) {
