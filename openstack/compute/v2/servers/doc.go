@@ -58,6 +58,76 @@ Example to Create a Server
 		panic(err)
 	}
 
+Example to Add a Server to a Server Group
+
+	schedulerHints := schedulerhints.SchedulerHints{
+		Group: "servergroup-uuid",
+	}
+
+	serverCreateOpts := servers.CreateOpts{
+		Name:      "server_name",
+		ImageRef:  "image-uuid",
+		FlavorRef: "flavor-uuid",
+	}
+
+	createOpts := schedulerhints.CreateOptsExt{
+		CreateOptsBuilder: serverCreateOpts,
+		SchedulerHints:    schedulerHints,
+	}
+
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Place Server B on a Different Host than Server A
+
+	schedulerHints := schedulerhints.SchedulerHints{
+		DifferentHost: []string{
+			"server-a-uuid",
+		}
+	}
+
+	serverCreateOpts := servers.CreateOpts{
+		Name:      "server_b",
+		ImageRef:  "image-uuid",
+		FlavorRef: "flavor-uuid",
+	}
+
+	createOpts := schedulerhints.CreateOptsExt{
+		CreateOptsBuilder: serverCreateOpts,
+		SchedulerHints:    schedulerHints,
+	}
+
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Place Server B on the Same Host as Server A
+
+	schedulerHints := schedulerhints.SchedulerHints{
+		SameHost: []string{
+			"server-a-uuid",
+		}
+	}
+
+	serverCreateOpts := servers.CreateOpts{
+		Name:      "server_b",
+		ImageRef:  "image-uuid",
+		FlavorRef: "flavor-uuid",
+	}
+
+	createOpts := schedulerhints.CreateOptsExt{
+		CreateOptsBuilder: serverCreateOpts,
+		SchedulerHints:    schedulerHints,
+	}
+
+	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 # Example to Create a Server From an Image
 
 This example will boot a server from an image and use a standard ephemeral

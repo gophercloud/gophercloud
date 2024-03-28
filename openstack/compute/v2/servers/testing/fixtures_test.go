@@ -716,7 +716,14 @@ type CreateOptsWithCustomField struct {
 }
 
 func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "server")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	delete(b, "SchedulerHints")
+
+	return map[string]interface{}{"server": b}, nil
 }
 
 // HandleServerNoNetworkCreationSuccessfully sets up the test server with no

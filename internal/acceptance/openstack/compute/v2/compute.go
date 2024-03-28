@@ -17,7 +17,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/schedulerhints"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/floatingips"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
@@ -722,15 +721,12 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
-	}
-
-	schedulerHintsOpts := schedulerhints.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		SchedulerHints: schedulerhints.SchedulerHints{
+		SchedulerHints: servers.SchedulerHints{
 			Group: serverGroup.ID,
 		},
 	}
-	server, err := servers.Create(context.TODO(), client, schedulerHintsOpts).Extract()
+
+	server, err := servers.Create(context.TODO(), client, serverCreateOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
