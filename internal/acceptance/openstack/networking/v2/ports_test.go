@@ -503,7 +503,7 @@ func TestPortsRevision(t *testing.T) {
 		AllowedAddressPairs: &[]ports.AddressPair{},
 		RevisionNumber:      &port.RevisionNumber,
 	}
-	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	_, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertErr(t, err)
 	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
 		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
