@@ -1,0 +1,20 @@
+---
+linters:
+  disable:
+    - errcheck  # Error return value is not checked (errcheck)
+    - ineffassign  # ineffectual assignment to tags (ineffassign)
+    - unused
+issues:
+  exclude:
+    - SA1006  # printf-style function with dynamic format string and no further arguments should use print-style function instead (staticcheck)
+    - SA1019  # (deprecated standard library function) (staticcheck)
+    - SA4006  # this value of `***` is never used (staticcheck)
+    - SA5011  # possible nil pointer dereference (staticcheck)
+    - SA6005  # should use strings.EqualFold instead (staticcheck)
+    - S1005  # unnecessary assignment to the blank identifier (gosimple)
+    - S1020  # when ok is true, err can't be nil (gosimple)
+    - S1021  # should merge variable declaration with assignment on next line (gosimple)
+    - S1023  # redundant `return` statement (gosimple)
+    - S1030  # should use buf.String() instead of string(buf.Bytes()) (gosimple)
+    - S1033  # unnecessary guard around call to delete (gosimple)
+    - S1034  # assigning the result of this type assertion to a variable (***) could eliminate type assertions in switch cases (gosimple)

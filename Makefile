@@ -1,8 +1,30 @@
 undefine GOFLAGS
 
+GOLANGCI_LINT_VERSION?=v1.57.1
+
+ifeq ($(shell command -v podman 2> /dev/null),)
+	RUNNER=docker
+else
+	RUNNER=podman
+endif
+
+# if the golangci-lint steps fails with the following error message:
+#
+#   directory prefix . does not contain main module or its selected dependencies
+#
+# you probably have to fix the SELinux security context for root directory plus your cache
+#
+#   chcon -Rt svirt_sandbox_file_t .
+#   chcon -Rt svirt_sandbox_file_t ~/.cache/golangci-lint
 lint:
 	go fmt ./...
 	go vet -tags "fixtures acceptance" ./...
+	$(RUNNER) run -t --rm \
+		-v $(shell pwd):/app \
+		-v ~/.cache/golangci-lint/$(GOLANGCI_LINT_VERSION):/root/.cache \
+		-w /app \
+		-e GOFLAGS="-tags=acceptance" \
+		golangci/golangci-lint:$(GOLANGCI_LINT_VERSION) golangci-lint run
 .PHONY: lint
 
 unit:
