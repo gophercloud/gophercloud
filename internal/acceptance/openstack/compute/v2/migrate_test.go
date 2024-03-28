@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/migrate"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -25,7 +25,7 @@ func TestMigrate(t *testing.T) {
 
 	t.Logf("Attempting to migrate server %s", server.ID)
 
-	err = migrate.Migrate(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Migrate(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -46,11 +46,11 @@ func TestLiveMigrate(t *testing.T) {
 	blockMigration := false
 	diskOverCommit := false
 
-	liveMigrateOpts := migrate.LiveMigrateOpts{
+	liveMigrateOpts := servers.LiveMigrateOpts{
 		BlockMigration: &blockMigration,
 		DiskOverCommit: &diskOverCommit,
 	}
 
-	err = migrate.LiveMigrate(context.TODO(), client, server.ID, liveMigrateOpts).ExtractErr()
+	err = servers.LiveMigrate(context.TODO(), client, server.ID, liveMigrateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

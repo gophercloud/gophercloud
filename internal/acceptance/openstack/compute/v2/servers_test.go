@@ -12,16 +12,9 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	networks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/attachinterfaces"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/availabilityzones"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedserverattributes"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/extendedstatus"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/lockunlock"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/pauseunpause"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/serverusage"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/suspendresume"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/tags"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tags"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -90,13 +83,6 @@ func TestServersCreateDestroy(t *testing.T) {
 func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
 
-	var extendedServer struct {
-		servers.Server
-		availabilityzones.ServerAvailabilityZoneExt
-		extendedstatus.ServerExtendedStatusExt
-		serverusage.UsageExt
-	}
-
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
@@ -104,16 +90,16 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	err = servers.Get(context.TODO(), client, server.ID).ExtractInto(&extendedServer)
+	created, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
-	tools.PrintResource(t, extendedServer)
+	tools.PrintResource(t, created)
 
-	th.AssertEquals(t, extendedServer.AvailabilityZone, "nova")
-	th.AssertEquals(t, int(extendedServer.PowerState), extendedstatus.RUNNING)
-	th.AssertEquals(t, extendedServer.TaskState, "")
-	th.AssertEquals(t, extendedServer.VmState, "active")
-	th.AssertEquals(t, extendedServer.LaunchedAt.IsZero(), false)
-	th.AssertEquals(t, extendedServer.TerminatedAt.IsZero(), true)
+	th.AssertEquals(t, created.AvailabilityZone, "nova")
+	th.AssertEquals(t, int(created.PowerState), servers.RUNNING)
+	th.AssertEquals(t, created.TaskState, "")
+	th.AssertEquals(t, created.VmState, "active")
+	th.AssertEquals(t, created.LaunchedAt.IsZero(), false)
+	th.AssertEquals(t, created.TerminatedAt.IsZero(), true)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
@@ -405,13 +391,13 @@ func TestServersActionPause(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to pause server %s", server.ID)
-	err = pauseunpause.Pause(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Pause(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "PAUSED")
 	th.AssertNoErr(t, err)
 
-	err = pauseunpause.Unpause(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Unpause(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -429,13 +415,13 @@ func TestServersActionSuspend(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to suspend server %s", server.ID)
-	err = suspendresume.Suspend(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Suspend(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "SUSPENDED")
 	th.AssertNoErr(t, err)
 
-	err = suspendresume.Resume(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Resume(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -454,7 +440,7 @@ func TestServersActionLock(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to Lock server %s", server.ID)
-	err = lockunlock.Lock(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Lock(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to delete locked server %s", server.ID)
@@ -462,7 +448,7 @@ func TestServersActionLock(t *testing.T) {
 	th.AssertEquals(t, err != nil, true)
 
 	t.Logf("Attempting to unlock server %s", server.ID)
-	err = lockunlock.Unlock(context.TODO(), client, server.ID).ExtractErr()
+	err = servers.Unlock(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
@@ -572,24 +558,18 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	type serverAttributesExt struct {
-		servers.Server
-		extendedserverattributes.ServerAttributesExt
-	}
-	var serverWithAttributesExt serverAttributesExt
-
-	err = servers.Get(context.TODO(), client, server.ID).ExtractInto(&serverWithAttributesExt)
+	created, err := servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Server With Extended Attributes: %#v", serverWithAttributesExt)
+	t.Logf("Server With Extended Attributes: %#v", created)
 
-	th.AssertEquals(t, *serverWithAttributesExt.ReservationID != "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.LaunchIndex, 0)
-	th.AssertEquals(t, *serverWithAttributesExt.RAMDiskID == "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.KernelID == "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.Hostname != "", true)
-	th.AssertEquals(t, *serverWithAttributesExt.RootDeviceName != "", true)
-	th.AssertEquals(t, serverWithAttributesExt.Userdata == nil, true)
+	th.AssertEquals(t, *created.ReservationID != "", true)
+	th.AssertEquals(t, *created.LaunchIndex, 0)
+	th.AssertEquals(t, *created.RAMDiskID == "", true)
+	th.AssertEquals(t, *created.KernelID == "", true)
+	th.AssertEquals(t, *created.Hostname != "", true)
+	th.AssertEquals(t, *created.RootDeviceName != "", true)
+	th.AssertEquals(t, created.Userdata == nil, true)
 }
 
 func TestServerNoNetworkCreateDestroy(t *testing.T) {

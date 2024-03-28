@@ -14,23 +14,20 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/aggregates"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/attachinterfaces"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/bootfromvolume"
-	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/defsecrules"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/floatingips"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/keypairs"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/networks"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/quotasets"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/remoteconsoles"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/rescueunrescue"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/schedulerhints"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/secgroups"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/servergroups"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/tenantnetworks"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/volumeattach"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
+	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/floatingips"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/networks"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/quotasets"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/remoteconsoles"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/secgroups"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servergroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tenantnetworks"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/volumeattach"
 	neutron "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 
@@ -131,9 +128,9 @@ func CreateAggregate(t *testing.T, client *gophercloud.ServiceClient) (*aggregat
 }
 
 // CreateBootableVolumeServer works like CreateServer but is configured with
-// one or more block devices defined by passing in []bootfromvolume.BlockDevice.
+// one or more block devices defined by passing in []servers.BlockDevice.
 // An error will be returned if a server was unable to be created.
-func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
+func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []servers.BlockDevice) (*servers.Server, error) {
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -149,22 +146,20 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bootable volume server: %s", name)
 
-	serverCreateOpts := servers.CreateOpts{
+	createOpts := servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
+		BlockDevice: blockDevices,
 	}
 
-	if blockDevices[0].SourceType == bootfromvolume.SourceImage && blockDevices[0].DestinationType == bootfromvolume.DestinationLocal {
-		serverCreateOpts.ImageRef = blockDevices[0].UUID
+	if blockDevices[0].SourceType == servers.SourceImage && blockDevices[0].DestinationType == servers.DestinationLocal {
+		createOpts.ImageRef = blockDevices[0].UUID
 	}
 
-	server, err = bootfromvolume.Create(context.TODO(), client, bootfromvolume.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		BlockDevice:       blockDevices,
-	}).Extract()
+	server, err = servers.Create(context.TODO(), client, createOpts).Extract()
 
 	if err != nil {
 		return server, err
@@ -302,11 +297,11 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 }
 
 // CreateMultiEphemeralServer works like CreateServer but is configured with
-// one or more block devices defined by passing in []bootfromvolume.BlockDevice.
+// one or more block devices defined by passing in []servers.BlockDevice.
 // These block devices act like block devices when booting from a volume but
 // are actually local ephemeral disks.
 // An error will be returned if a server was unable to be created.
-func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
+func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []servers.BlockDevice) (*servers.Server, error) {
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -322,19 +317,17 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bootable volume server: %s", name)
 
-	serverCreateOpts := servers.CreateOpts{
+	createOpts := servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
+		BlockDevice: blockDevices,
 	}
 
-	server, err = bootfromvolume.Create(context.TODO(), client, bootfromvolume.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		BlockDevice:       blockDevices,
-	}).Extract()
+	server, err = servers.Create(context.TODO(), client, createOpts).Extract()
 
 	if err != nil {
 		return server, err
@@ -728,15 +721,12 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
-	}
-
-	schedulerHintsOpts := schedulerhints.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		SchedulerHints: schedulerhints.SchedulerHints{
+		SchedulerHints: servers.SchedulerHints{
 			Group: serverGroup.ID,
 		},
 	}
-	server, err := servers.Create(context.TODO(), client, schedulerHintsOpts).Extract()
+
+	server, err := servers.Create(context.TODO(), client, serverCreateOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -1174,7 +1164,7 @@ func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOp
 // RescueServer will place the specified server into rescue mode.
 func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to put server %s into rescue mode", server.ID)
-	_, err := rescueunrescue.Rescue(context.TODO(), client, server.ID, rescueunrescue.RescueOpts{}).Extract()
+	_, err := servers.Rescue(context.TODO(), client, server.ID, servers.RescueOpts{}).Extract()
 	if err != nil {
 		return err
 	}
@@ -1189,7 +1179,7 @@ func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 // UnrescueServer will return server from rescue mode.
 func UnrescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to return server %s from rescue mode", server.ID)
-	if err := rescueunrescue.Unrescue(context.TODO(), client, server.ID).ExtractErr(); err != nil {
+	if err := servers.Unrescue(context.TODO(), client, server.ID).ExtractErr(); err != nil {
 		return err
 	}
 

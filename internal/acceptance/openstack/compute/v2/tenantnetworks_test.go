@@ -9,7 +9,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/extensions/tenantnetworks"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tenantnetworks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 

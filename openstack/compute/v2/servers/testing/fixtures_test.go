@@ -267,7 +267,6 @@ const SingleServerBody = `
 		"OS-EXT-STS:task_state": null,
 		"OS-EXT-STS:vm_state": "active",
 		"OS-EXT-SRV-ATTR:instance_name": "instance-0000001d",
-		"OS-EXT-SRV-ATTR:hostname": "derp.local",
 		"OS-SRV-USG:launched_at": "2014-09-25T13:04:49.000000",
 		"OS-EXT-SRV-ATTR:hypervisor_hostname": "devstack",
 		"flavor": {
@@ -545,6 +544,20 @@ var (
 				"name": "default",
 			},
 		},
+		Host:               "devstack",
+		Hostname:           nil,
+		HypervisorHostname: "devstack",
+		InstanceName:       "instance-0000001e",
+		LaunchIndex:        nil,
+		ReservationID:      nil,
+		RootDeviceName:     nil,
+		Userdata:           nil,
+		VmState:            "active",
+		PowerState:         servers.RUNNING,
+		LaunchedAt:         time.Date(2014, 9, 25, 13, 10, 10, 0, time.UTC),
+		TerminatedAt:       time.Time{},
+		DiskConfig:         servers.Manual,
+		AvailabilityZone:   "nova",
 	}
 
 	derpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:41Z")
@@ -604,6 +617,20 @@ var (
 				"name": "default",
 			},
 		},
+		Host:               "devstack",
+		Hostname:           nil,
+		HypervisorHostname: "devstack",
+		InstanceName:       "instance-0000001d",
+		LaunchIndex:        nil,
+		ReservationID:      nil,
+		RootDeviceName:     nil,
+		Userdata:           nil,
+		VmState:            "active",
+		PowerState:         servers.RUNNING,
+		LaunchedAt:         time.Date(2014, 9, 25, 13, 04, 49, 0, time.UTC),
+		TerminatedAt:       time.Time{},
+		DiskConfig:         servers.Manual,
+		AvailabilityZone:   "nova",
 	}
 
 	ConsoleOutput = "abc"
@@ -657,6 +684,20 @@ var (
 				"name": "default",
 			},
 		},
+		Host:               "devstack",
+		Hostname:           nil,
+		HypervisorHostname: "devstack",
+		InstanceName:       "instance-0000001d",
+		LaunchIndex:        nil,
+		ReservationID:      nil,
+		RootDeviceName:     nil,
+		Userdata:           nil,
+		VmState:            "active",
+		PowerState:         servers.RUNNING,
+		LaunchedAt:         time.Date(2014, 9, 25, 13, 04, 49, 0, time.UTC),
+		TerminatedAt:       time.Time{},
+		DiskConfig:         servers.Manual,
+		AvailabilityZone:   "nova",
 	}
 
 	faultTimeCreated, _ = time.Parse(time.RFC3339, "2017-11-11T07:58:39Z")
@@ -675,7 +716,14 @@ type CreateOptsWithCustomField struct {
 }
 
 func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "server")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	delete(b, "SchedulerHints")
+
+	return map[string]interface{}{"server": b}, nil
 }
 
 // HandleServerNoNetworkCreationSuccessfully sets up the test server with no
