@@ -11,7 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/quotasets"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumetypes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )

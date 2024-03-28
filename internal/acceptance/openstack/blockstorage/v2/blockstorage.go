@@ -5,14 +5,19 @@ package v2
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/backups"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/snapshots"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/images"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -164,4 +169,333 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 	}
 
 	t.Logf("Successfully deleted snapshot: %s", snapshot.ID)
+}
+
+// CreateBackup will create a backup based on a volume. An error will be
+// will be returned if the backup could not be created.
+func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID string) (*backups.Backup, error) {
+	t.Logf("Attempting to create a backup of volume %s", volumeID)
+
+	backupName := tools.RandomString("ACPTTEST", 16)
+	createOpts := backups.CreateOpts{
+		VolumeID: volumeID,
+		Name:     backupName,
+	}
+
+	backup, err := backups.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	err = WaitForBackupStatus(client, backup.ID, "available")
+	if err != nil {
+		return nil, err
+	}
+
+	backup, err = backups.Get(context.TODO(), client, backup.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created backup %s", backup.ID)
+	tools.PrintResource(t, backup)
+
+	th.AssertEquals(t, backup.Name, backupName)
+
+	return backup, nil
+}
+
+// DeleteBackup will delete a backup. A fatal error will occur if the backup
+// could not be deleted. This works best when used as a deferred function.
+func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID string) {
+	if err := backups.Delete(context.TODO(), client, backupID).ExtractErr(); err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			t.Logf("Backup %s is already deleted", backupID)
+			return
+		}
+		t.Fatalf("Unable to delete backup %s: %s", backupID, err)
+	}
+
+	t.Logf("Deleted backup %s", backupID)
+}
+
+// WaitForBackupStatus will continually poll a backup, checking for a particular
+// status. It will do this for the amount of seconds defined.
+func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) error {
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		current, err := backups.Get(ctx, client, id).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "deleted" {
+				return true, nil
+			}
+			return false, err
+		}
+
+		if current.Status == status {
+			return true, nil
+		}
+
+		return false, nil
+	})
+}
+
+// ResetBackupStatus will reset the status of a backup.
+func ResetBackupStatus(t *testing.T, client *gophercloud.ServiceClient, backup *backups.Backup, status string) error {
+	t.Logf("Attempting to reset the status of backup %s from %s to %s", backup.ID, backup.Status, status)
+
+	resetOpts := backups.ResetStatusOpts{
+		Status: status,
+	}
+	err := backups.ResetStatus(context.TODO(), client, backup.ID, resetOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	return WaitForBackupStatus(client, backup.ID, status)
+}
+
+// CreateUploadImage will upload volume it as volume-baked image. An name of new image or err will be
+// returned
+func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) (volumes.VolumeImage, error) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume-backed image uploading in short mode.")
+	}
+
+	imageName := tools.RandomString("ACPTTEST", 16)
+	uploadImageOpts := volumes.UploadImageOpts{
+		ImageName: imageName,
+		Force:     true,
+	}
+
+	volumeImage, err := volumes.UploadImage(context.TODO(), client, volume.ID, uploadImageOpts).Extract()
+	if err != nil {
+		return volumeImage, err
+	}
+
+	t.Logf("Uploading volume %s as volume-backed image %s", volume.ID, imageName)
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
+		return volumeImage, err
+	}
+
+	t.Logf("Uploaded volume %s as volume-backed image %s", volume.ID, imageName)
+
+	return volumeImage, nil
+
+}
+
+// DeleteUploadedImage deletes uploaded image. An error will be returned
+// if the deletion request failed.
+func DeleteUploadedImage(t *testing.T, client *gophercloud.ServiceClient, imageID string) error {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume-backed image removing in short mode.")
+	}
+
+	t.Logf("Removing image %s", imageID)
+
+	err := images.Delete(context.TODO(), client, imageID).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CreateVolumeAttach will attach a volume to an instance. An error will be
+// returned if the attachment failed.
+func CreateVolumeAttach(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume, server *servers.Server) error {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume attachment in short mode.")
+	}
+
+	attachOpts := volumes.AttachOpts{
+		MountPoint:   "/mnt",
+		Mode:         "rw",
+		InstanceUUID: server.ID,
+	}
+
+	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
+
+	if err := volumes.Attach(context.TODO(), client, volume.ID, attachOpts).ExtractErr(); err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "in-use"); err != nil {
+		return err
+	}
+
+	t.Logf("Attached volume %s to server %s", volume.ID, server.ID)
+
+	return nil
+}
+
+// CreateVolumeReserve creates a volume reservation. An error will be returned
+// if the reservation failed.
+func CreateVolumeReserve(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume reservation in short mode.")
+	}
+
+	t.Logf("Attempting to reserve volume %s", volume.ID)
+
+	if err := volumes.Reserve(context.TODO(), client, volume.ID).ExtractErr(); err != nil {
+		return err
+	}
+
+	t.Logf("Reserved volume %s", volume.ID)
+
+	return nil
+}
+
+// DeleteVolumeAttach will detach a volume from an instance. A fatal error will
+// occur if the snapshot failed to be deleted. This works best when used as a
+// deferred function.
+func DeleteVolumeAttach(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) {
+	t.Logf("Attepting to detach volume volume: %s", volume.ID)
+
+	detachOpts := volumes.DetachOpts{
+		AttachmentID: volume.Attachments[0].AttachmentID,
+	}
+
+	if err := volumes.Detach(context.TODO(), client, volume.ID, detachOpts).ExtractErr(); err != nil {
+		t.Fatalf("Unable to detach volume %s: %v", volume.ID, err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
+		t.Fatalf("Volume %s failed to become unavailable in 60 seconds: %v", volume.ID, err)
+	}
+
+	t.Logf("Detached volume: %s", volume.ID)
+}
+
+// DeleteVolumeReserve deletes a volume reservation. A fatal error will occur
+// if the deletion request failed. This works best when used as a deferred
+// function.
+func DeleteVolumeReserve(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume reservation in short mode.")
+	}
+
+	t.Logf("Attempting to unreserve volume %s", volume.ID)
+
+	if err := volumes.Unreserve(context.TODO(), client, volume.ID).ExtractErr(); err != nil {
+		t.Fatalf("Unable to unreserve volume %s: %v", volume.ID, err)
+	}
+
+	t.Logf("Unreserved volume %s", volume.ID)
+}
+
+// ExtendVolumeSize will extend the size of a volume.
+func ExtendVolumeSize(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	t.Logf("Attempting to extend the size of volume %s", volume.ID)
+
+	extendOpts := volumes.ExtendSizeOpts{
+		NewSize: 2,
+	}
+
+	err := volumes.ExtendSize(context.TODO(), client, volume.ID, extendOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, "available"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetImageMetadata will apply the metadata to a volume.
+func SetImageMetadata(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	t.Logf("Attempting to apply image metadata to volume %s", volume.ID)
+
+	imageMetadataOpts := volumes.ImageMetadataOpts{
+		Metadata: map[string]string{
+			"image_name": "testimage",
+		},
+	}
+
+	err := volumes.SetImageMetadata(context.TODO(), client, volume.ID, imageMetadataOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetBootable will set a bootable status to a volume.
+func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	t.Logf("Attempting to apply bootable status to volume %s", volume.ID)
+
+	bootableOpts := volumes.BootableOpts{
+		Bootable: true,
+	}
+
+	err := volumes.SetBootable(context.TODO(), client, volume.ID, bootableOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	vol, err := volumes.Get(context.TODO(), client, volume.ID).Extract()
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(vol.Bootable) != "true" {
+		return fmt.Errorf("Volume bootable status is %q, expected 'true'", vol.Bootable)
+	}
+
+	bootableOpts = volumes.BootableOpts{
+		Bootable: false,
+	}
+
+	err = volumes.SetBootable(context.TODO(), client, volume.ID, bootableOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	vol, err = volumes.Get(context.TODO(), client, volume.ID).Extract()
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(vol.Bootable) == "true" {
+		return fmt.Errorf("Volume bootable status is %q, expected 'false'", vol.Bootable)
+	}
+
+	return nil
+}
+
+// ResetVolumeStatus will reset the status of a volume.
+func ResetVolumeStatus(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume, status string) error {
+	t.Logf("Attempting to reset the status of volume %s from %s to %s", volume.ID, volume.Status, status)
+
+	resetOpts := volumes.ResetStatusOpts{
+		Status: status,
+	}
+	err := volumes.ResetStatus(context.TODO(), client, volume.ID, resetOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, volume.ID, status); err != nil {
+		return err
+	}
+
+	return nil
 }
