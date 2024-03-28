@@ -184,7 +184,7 @@ func TestBGPAgentRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Delete the BGP Speaker
-	speakers.Delete(context.TODO(), client, bgpSpeaker.ID).ExtractErr()
+	err = speakers.Delete(context.TODO(), client, bgpSpeaker.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully deleted the BGP Speaker, %s", bgpSpeaker.ID)
 	err = tools.WaitForTimeout(

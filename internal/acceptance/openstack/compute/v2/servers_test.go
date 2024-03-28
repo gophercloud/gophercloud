@@ -331,7 +331,8 @@ func TestServersActionResizeConfirm(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to resize server %s", server.ID)
-	ResizeServer(t, client, server)
+	err = ResizeServer(t, client, server)
+	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to confirm resize for server %s", server.ID)
 	if res := servers.ConfirmResize(context.TODO(), client, server.ID); res.Err != nil {
@@ -362,7 +363,8 @@ func TestServersActionResizeRevert(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to resize server %s", server.ID)
-	ResizeServer(t, client, server)
+	err = ResizeServer(t, client, server)
+	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to revert resize for server %s", server.ID)
 	if res := servers.RevertResize(context.TODO(), client, server.ID); res.Err != nil {

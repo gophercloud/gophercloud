@@ -267,7 +267,11 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 	}
 	if v := c["body_hash"]; v == nil {
 		// when body_hash is not set, generate a random one
-		c["body_hash"] = randomBodyHash()
+		bodyHash, err := randomBodyHash()
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate random hash")
+		}
+		c["body_hash"] = bodyHash
 	}
 
 	signedHeaders := h["X-Amz-SignedHeaders"]
@@ -340,10 +344,12 @@ func sumHMAC256(key []byte, data []byte) []byte {
 }
 
 // randomBodyHash is a func to generate a random sha256 hexdigest.
-func randomBodyHash() string {
+func randomBodyHash() (string, error) {
 	h := make([]byte, 64)
-	rand.Read(h)
-	return hex.EncodeToString(h)
+	if _, err := rand.Read(h); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(h), nil
 }
 
 // interfaceToMap is a func used to represent a "credentials" map element as a

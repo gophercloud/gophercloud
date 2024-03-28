@@ -85,7 +85,7 @@ func TestListClusterTemplates(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	clustertemplates.List(sc, clustertemplates.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := clustertemplates.List(sc, clustertemplates.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := clustertemplates.ExtractClusterTemplates(page)
 		th.AssertNoErr(t, err)
@@ -96,6 +96,7 @@ func TestListClusterTemplates(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

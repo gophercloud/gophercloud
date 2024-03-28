@@ -18,7 +18,7 @@ func TestList(t *testing.T) {
 	HandleListExtensionsSuccessfully(t)
 
 	count := 0
-	extensions.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := extensions.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := extensions.ExtractExtensions(page)
 		th.AssertNoErr(t, err)
@@ -37,6 +37,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 	th.CheckEquals(t, 1, count)
 }
 

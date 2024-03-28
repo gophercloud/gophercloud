@@ -41,7 +41,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	extensions.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := extensions.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := extensions.ExtractExtensions(page)
 		if err != nil {
@@ -65,6 +65,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

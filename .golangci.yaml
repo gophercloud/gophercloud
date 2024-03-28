@@ -1,7 +1,6 @@
 ---
 linters:
   disable:
-    - errcheck  # Error return value is not checked (errcheck)
     - ineffassign  # ineffectual assignment to tags (ineffassign)
 issues:
   exclude:

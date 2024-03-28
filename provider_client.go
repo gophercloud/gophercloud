@@ -470,7 +470,9 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				}
 				if options.RawBody != nil {
 					if seeker, ok := options.RawBody.(io.Seeker); ok {
-						seeker.Seek(0, 0)
+						if _, err := seeker.Seek(0, 0); err != nil {
+							return nil, err
+						}
 					}
 				}
 				state.hasReauthenticated = true

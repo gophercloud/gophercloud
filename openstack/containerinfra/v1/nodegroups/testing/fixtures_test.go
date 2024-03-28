@@ -181,7 +181,9 @@ func handleListNodeGroupsLimitSuccess(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		if marker, ok := r.Form["marker"]; !ok {
 			// No marker, this is the first request.
 			th.TestFormValues(t, r, map[string]string{"limit": "1"})

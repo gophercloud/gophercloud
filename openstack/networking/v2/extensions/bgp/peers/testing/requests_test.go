@@ -27,7 +27,7 @@ func TestList(t *testing.T) {
 		})
 	count := 0
 
-	peers.List(fake.ServiceClient()).EachPage(
+	err := peers.List(fake.ServiceClient()).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -41,6 +41,7 @@ func TestList(t *testing.T) {
 			th.CheckDeepEquals(t, expected, actual)
 			return true, nil
 		})
+	th.AssertNoErr(t, err)
 }
 
 func TestGet(t *testing.T) {

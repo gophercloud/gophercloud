@@ -40,7 +40,9 @@ func createMarkerPaged(t *testing.T) pagination.Pager {
 	testhelper.SetupHTTP()
 
 	testhelper.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		ms := r.Form["marker"]
 		switch {
 		case len(ms) == 0:

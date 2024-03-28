@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/messages"
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/queues"
 	"github.com/gophercloud/gophercloud/v2/pagination"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
@@ -32,7 +33,8 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 		t.Fatalf("Unable to create Queue: %v", createErr)
 	}
 
-	GetQueue(t, client, queueName)
+	_, err := GetQueue(t, client, queueName)
+	th.AssertNoErr(t, err)
 
 	t.Logf("Created Queue: %s", queueName)
 	return queueName, nil

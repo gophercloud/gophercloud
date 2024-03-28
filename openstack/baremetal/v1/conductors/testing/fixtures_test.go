@@ -143,7 +143,9 @@ func HandleConductorListSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		marker := r.Form.Get("marker")
 		switch marker {
@@ -164,7 +166,9 @@ func HandleConductorListDetailSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		fmt.Fprintf(w, ConductorListDetailBody)
 	})

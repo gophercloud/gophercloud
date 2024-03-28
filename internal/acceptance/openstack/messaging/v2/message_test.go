@@ -28,7 +28,8 @@ func TestListMessages(t *testing.T) {
 	currentNumberOfMessages := 0
 
 	for i := 0; i < totalNumberOfMessages; i++ {
-		CreateMessage(t, client, createdQueueName)
+		_, err = CreateMessage(t, client, createdQueueName)
+		th.AssertNoErr(t, err)
 	}
 
 	// Use a different client/clientID in order to see messages on the Queue
@@ -65,7 +66,8 @@ func TestCreateMessages(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	CreateMessage(t, client, createdQueueName)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 }
 
 func TestGetMessages(t *testing.T) {
@@ -79,8 +81,10 @@ func TestGetMessages(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	CreateMessage(t, client, createdQueueName)
-	CreateMessage(t, client, createdQueueName)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
@@ -127,7 +131,8 @@ func TestGetMessage(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	CreateMessage(t, client, createdQueueName)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
@@ -172,8 +177,10 @@ func TestDeleteMessagesIDs(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	CreateMessage(t, client, createdQueueName)
-	CreateMessage(t, client, createdQueueName)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
@@ -229,7 +236,8 @@ func TestDeleteMessagesPop(t *testing.T) {
 	defer DeleteQueue(t, client, createdQueueName)
 
 	for i := 0; i < 5; i++ {
-		CreateMessage(t, client, createdQueueName)
+		_, err = CreateMessage(t, client, createdQueueName)
+		th.AssertNoErr(t, err)
 	}
 
 	// Use a different client/clientID in order to see messages on the Queue
@@ -271,7 +279,8 @@ func TestDeleteMessage(t *testing.T) {
 	createdQueueName, err := CreateQueue(t, client)
 	defer DeleteQueue(t, client, createdQueueName)
 
-	CreateMessage(t, client, createdQueueName)
+	_, err = CreateMessage(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"

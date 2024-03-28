@@ -119,7 +119,7 @@ func TestListEndpoints(t *testing.T) {
 	})
 
 	count := 0
-	endpoints.List(client.ServiceClient(), endpoints.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := endpoints.List(client.ServiceClient(), endpoints.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := endpoints.ExtractEndpoints(page)
 		if err != nil {
@@ -150,6 +150,7 @@ func TestListEndpoints(t *testing.T) {
 		th.AssertDeepEquals(t, expected, actual)
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
 
