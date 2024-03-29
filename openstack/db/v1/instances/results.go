@@ -129,6 +129,15 @@ type Instance struct {
 
 	// The primary instance ID of this replica.
 	ReplicaOf *Replica `json:"replica_of,omitempty"`
+
+	// The ID of the underlying Nova instance for an instance.
+	ServerId string `json:"server_id,omitempty"`
+
+	// The ID of a volume.
+	VolumeId string `json:"volume_id,omitempty"`
+
+	// The region name of an instance.
+	Region string `json:"region,omitempty"`
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {
