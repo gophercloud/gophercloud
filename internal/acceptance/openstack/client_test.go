@@ -14,7 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/credentials"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/extensions/ec2tokens"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
