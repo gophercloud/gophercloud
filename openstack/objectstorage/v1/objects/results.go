@@ -329,15 +329,11 @@ func (r *CreateHeader) UnmarshalJSON(b []byte) error {
 
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
-	checksum string
 	gophercloud.HeaderResult
 }
 
 // Extract will return a struct of headers returned from a call to Create.
 func (r CreateResult) Extract() (*CreateHeader, error) {
-	//if r.Header.Get("ETag") != fmt.Sprintf("%x", localChecksum) {
-	//	return nil, ErrWrongChecksum{}
-	//}
 	var s CreateHeader
 	err := r.ExtractInto(&s)
 	return &s, err
