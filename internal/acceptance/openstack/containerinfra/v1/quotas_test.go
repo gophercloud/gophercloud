@@ -1,5 +1,4 @@
-//go:build acceptance || containerinfra
-// +build acceptance containerinfra
+//go:build acceptance || containerinfra || quotas
 
 package v1
 

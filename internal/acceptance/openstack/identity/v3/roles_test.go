@@ -1,5 +1,4 @@
-//go:build acceptance
-// +build acceptance
+//go:build acceptance || identity || roles
 
 package v3
 

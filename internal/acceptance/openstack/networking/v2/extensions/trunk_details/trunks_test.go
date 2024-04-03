@@ -1,5 +1,4 @@
-//go:build acceptance || trunks
-// +build acceptance trunks
+//go:build acceptance || networking || trunks
 
 package trunk_details
 

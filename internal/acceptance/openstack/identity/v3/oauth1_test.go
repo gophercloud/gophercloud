@@ -1,5 +1,4 @@
-//go:build acceptance
-// +build acceptance
+//go:build acceptance || identity || oauth1
 
 package v3
 

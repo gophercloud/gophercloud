@@ -1,5 +1,4 @@
-//go:build acceptance
-// +build acceptance
+//go:build acceptance || sharedfilesystems || shares
 
 package v2
 

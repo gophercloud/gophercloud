@@ -1,5 +1,4 @@
 //go:build acceptance || baremetal || conductors
-// +build acceptance baremetal conductors
 
 package v1
 

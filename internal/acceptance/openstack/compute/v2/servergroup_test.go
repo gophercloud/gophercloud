@@ -1,5 +1,4 @@
 //go:build acceptance || compute || servergroups
-// +build acceptance compute servergroups
 
 package v2
 

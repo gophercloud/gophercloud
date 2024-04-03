@@ -1,5 +1,4 @@
 //go:build acceptance || identity || roles
-// +build acceptance identity roles
 
 package v2
 

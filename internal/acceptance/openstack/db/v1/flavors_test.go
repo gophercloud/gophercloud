@@ -1,5 +1,4 @@
-//go:build acceptance || db
-// +build acceptance db
+//go:build acceptance || db || flavors
 
 package v1
 

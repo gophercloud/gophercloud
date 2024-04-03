@@ -1,3 +1,5 @@
+//go:build acceptance || workflow || executions
+
 package v2
 
 import (

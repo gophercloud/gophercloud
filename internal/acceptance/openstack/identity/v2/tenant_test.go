@@ -1,5 +1,4 @@
-//go:build acceptance || identity
-// +build acceptance identity
+//go:build acceptance || identity || tenants
 
 package v2
 

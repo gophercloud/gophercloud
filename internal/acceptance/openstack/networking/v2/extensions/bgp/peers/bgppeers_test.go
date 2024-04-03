@@ -1,3 +1,5 @@
+//go:build acceptance || networking || bgp || peers
+
 package peers
 
 import (

@@ -1,3 +1,5 @@
+//go:build acceptance || workflow || crontriggers
+
 package v2
 
 import (

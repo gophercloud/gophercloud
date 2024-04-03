@@ -1,5 +1,4 @@
 //go:build acceptance || networking || loadbalancer || l7policies
-// +build acceptance networking loadbalancer l7policies
 
 package v2
 

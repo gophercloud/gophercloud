@@ -1,5 +1,4 @@
-//go:build acceptance || networking
-// +build acceptance networking
+//go:build acceptance || networking || subnets
 
 package v2
 

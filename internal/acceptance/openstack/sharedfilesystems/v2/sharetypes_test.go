@@ -1,5 +1,4 @@
-//go:build acceptance
-// +build acceptance
+//go:build acceptance || sharedfilesystems || sharetypes
 
 package v2
 

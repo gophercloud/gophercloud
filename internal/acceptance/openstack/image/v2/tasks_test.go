@@ -1,5 +1,4 @@
 //go:build acceptance || image || tasks
-// +build acceptance image tasks
 
 package v2
 

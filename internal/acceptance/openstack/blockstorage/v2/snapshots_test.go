@@ -1,5 +1,4 @@
-//go:build acceptance || blockstorage
-// +build acceptance blockstorage
+//go:build acceptance || blockstorage || snapshots
 
 package v2
 

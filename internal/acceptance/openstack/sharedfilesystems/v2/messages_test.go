@@ -1,4 +1,6 @@
-package messages
+//go:build acceptance || sharedfilesystems || messages
+
+package v2
 
 import (
 	"context"
