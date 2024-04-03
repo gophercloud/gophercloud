@@ -111,7 +111,7 @@ func TestShowMemberDetails(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	if md == nil {
-		t.Errorf("Expected non-nil value for md")
+		t.Fatalf("Expected non-nil value for md")
 	}
 
 	createdAt, err := time.Parse(time.RFC3339, "2013-11-26T07:21:21Z")
