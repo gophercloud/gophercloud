@@ -330,24 +330,6 @@ func TestCreateObjectWithoutContentType(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
-/*
-func TestErrorIsRaisedForChecksumMismatch(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("ETag", "acbd18db4cc2f85cedef654fccc4a4d8")
-		w.WriteHeader(http.StatusCreated)
-	})
-
-	content := strings.NewReader("The sky was the color of television, tuned to a dead channel.")
-	res := Create(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", &CreateOpts{Content: content})
-
-	err := fmt.Errorf("Local checksum does not match API ETag header")
-	th.AssertDeepEquals(t, err, res.Err)
-}
-*/
-
 func TestCopyObject(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 		th.SetupHTTP()
