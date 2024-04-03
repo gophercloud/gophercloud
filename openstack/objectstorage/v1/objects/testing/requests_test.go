@@ -137,7 +137,7 @@ func TestDownloadReader(t *testing.T) {
 	buf := bytes.NewBuffer(make([]byte, 0))
 	_, err := io.CopyN(buf, response.Body, 10)
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, "Successful", string(buf.Bytes()))
+	th.CheckEquals(t, "Successful", buf.String())
 }
 
 func TestDownloadExtraction(t *testing.T) {

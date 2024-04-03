@@ -54,9 +54,7 @@ func TestPortsbindingCRUD(t *testing.T) {
 		Description: &newPortDescription,
 	}
 
-	var finalUpdateOpts ports.UpdateOptsBuilder
-
-	finalUpdateOpts = portsbinding.UpdateOptsExt{
+	finalUpdateOpts := portsbinding.UpdateOptsExt{
 		UpdateOptsBuilder: updateOpts,
 		HostID:            &newHostID,
 		Profile:           newProfile,

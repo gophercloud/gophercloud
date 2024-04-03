@@ -163,8 +163,7 @@ func TestUpgradeCluster(t *testing.T) {
 
 	HandleUpgradeClusterSuccessfully(t)
 
-	var opts clusters.UpgradeOptsBuilder
-	opts = clusters.UpgradeOpts{
+	opts := clusters.UpgradeOpts{
 		ClusterTemplate: "0562d357-8641-4759-8fed-8173f02c9633",
 	}
 
@@ -216,8 +215,7 @@ func TestResizeCluster(t *testing.T) {
 
 	nodeCount := 2
 
-	var opts clusters.ResizeOptsBuilder
-	opts = clusters.ResizeOpts{
+	opts := clusters.ResizeOpts{
 		NodeCount: &nodeCount,
 	}
 

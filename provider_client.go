@@ -478,15 +478,15 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				state.hasReauthenticated = true
 				resp, err = client.doRequest(ctx, method, url, options, state)
 				if err != nil {
-					switch err.(type) {
+					switch e := err.(type) {
 					case *ErrUnexpectedResponseCode:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err.(*ErrUnexpectedResponseCode)
-						return nil, e
+						err := &ErrErrorAfterReauthentication{}
+						err.ErrOriginal = e
+						return nil, err
 					default:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
-						return nil, e
+						err := &ErrErrorAfterReauthentication{}
+						err.ErrOriginal = e
+						return nil, err
 					}
 				}
 				return resp, nil

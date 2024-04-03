@@ -106,8 +106,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		networkUpdateOpts := networks.UpdateOpts{
 			Description: &newNetworkDescription,
 		}
-		var updateOpts networks.UpdateOptsBuilder
-		updateOpts = mtu.UpdateOptsExt{
+		updateOpts := mtu.UpdateOptsExt{
 			UpdateOptsBuilder: networkUpdateOpts,
 			MTU:               newNetworkMTU,
 		}
