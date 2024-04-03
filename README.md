@@ -1,20 +1,22 @@
 # Gophercloud: an OpenStack SDK for Go
 [![Coverage Status](https://coveralls.io/repos/github/gophercloud/gophercloud/badge.svg?branch=master)](https://coveralls.io/github/gophercloud/gophercloud?branch=master)
 
-[Reference documentation](http://godoc.org/github.com/gophercloud/gophercloud)
+[Reference documentation](http://godoc.org/github.com/gophercloud/gophercloud/v2)
 
 Gophercloud is a Go SDK for OpenStack.
 
 Join us on kubernetes slack, on [#gophercloud](https://kubernetes.slack.com/archives/C05G4NJ6P6X). Visit [slack.k8s.io](https://slack.k8s.io) for an invitation.
 
-This is the development branch of Gophercloud; stable releases are cut from the branch `v1`.
+> **Note**
+> This branch contains the current stable branch of Gophercloud: `v2`.
+> The legacy stable version can be found in the `v1` branch.
 
 ## How to install
 
 Reference a Gophercloud package in your code:
 
 ```go
-import "github.com/gophercloud/gophercloud"
+import "github.com/gophercloud/gophercloud/v2"
 ```
 
 Then update your `go.mod`:
@@ -48,86 +50,140 @@ of your access details to environment variables. To use the `clouds.yaml` file,
 place it at `~/.config/openstack/clouds.yaml`. To use the `openrc` file, run
 `source openrc` and you will be prompted for your password.
 
-### Authentication
+### Gophercloud authentication
 
-Once you have access to your credentials, you can begin plugging them into
-Gophercloud. The next step is authentication, which is handled by a base
-"Provider" struct. There are number of ways to construct such a struct.
-
-**With `gophercloud/utils`**
-
-The [github.com/gophercloud/utils](https://github.com/gophercloud/utils)
-library provides the `clientconfig` package to simplify authentication. It
-provides additional functionality, such as the ability to read `clouds.yaml`
-files. To generate a "Provider" struct using the `clientconfig` package:
-
-```go
-import (
-	"github.com/gophercloud/utils/openstack/clientconfig"
-)
-
-// You can also skip configuring this and instead set 'OS_CLOUD' in your
-// environment
-opts := new(clientconfig.ClientOpts)
-opts.Cloud = "devstack-admin"
-
-provider, err := clientconfig.AuthenticatedClient(context.TODO(), opts)
-```
+Gophercloud authentication is organized into two layered abstractions:
+* `ProviderClient` holds the authentication token and can be used to build a
+  `ServiceClient`.
+* `ServiceClient` specializes against one specific OpenStack module and can
+  directly be used to make API calls.
 
 A provider client is a top-level client that all of your OpenStack service
 clients derive from. The provider contains all of the authentication details
 that allow your Go code to access the API - such as the base URL and token ID.
 
-Once we have a base Provider, we inject it as a dependency into each OpenStack
-service. For example, in order to work with the Compute API, we need a Compute
-service client. This can be created like so:
+One single Provider client can be used to build as many Service clients as needed.
+
+**With `clouds.yaml`**
 
 ```go
-client, err := clientconfig.NewServiceClient("compute", opts)
-```
+package main
 
-**Without `gophercloud/utils`**
-
-> *Note*
-> gophercloud doesn't provide support for `clouds.yaml` file so you need to
-> implement this functionality yourself if you don't wish to use
-> `gophercloud/utils`.
-
-You can also generate a "Provider" struct without using the `clientconfig`
-package from `gophercloud/utils`. To do this, you can either pass in your
-credentials explicitly or tell Gophercloud to use environment variables:
-
-```go
 import (
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack"
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2/openstack"
+	"github.com/gophercloud/gophercloud/v2/openstack/config"
+	"github.com/gophercloud/gophercloud/v2/openstack/config/clouds"
 )
 
-// Option 1: Pass in the values yourself
-opts := gophercloud.AuthOptions{
-  IdentityEndpoint: "https://openstack.example.com:5000/v2.0",
-  Username: "{username}",
-  Password: "{password}",
+func main() {
+	ctx := context.Background()
+
+	// Fetch coordinates from a `cloud.yaml` in the current directory, or
+	// in the well-known config directories (different for each operating
+	// system).
+	authOptions, endpointOptions, tlsConfig, err := clouds.Parse()
+	if err != nil {
+		panic(err)
+	}
+
+	// Call Keystone to get an authentication token, and use it to
+	// construct a ProviderClient. All functions hitting the OpenStack API
+	// accept a `context.Context` to enable tracing and cancellation.
+	providerClient, err := config.NewProviderClient(ctx, authOptions, config.WithTLSConfig(tlsConfig))
+	if err != nil {
+		panic(err)
+	}
+
+	// Use the ProviderClient and the endpoint options fetched from
+	// `clouds.yaml` to build a service client: a compute client in this
+	// case. Note that the contructor does not accept a `context.Context`:
+	// no further call to the OpenStack API is needed at this stage.
+	computeClient, err := openstack.NewComputeV2(providerClient, endpointOptions)
+	if err != nil {
+		panic(err)
+	}
+
+	// use the computeClient
 }
-
-// Option 2: Use a utility function to retrieve all your environment variables
-opts, err := openstack.AuthOptionsFromEnv()
 ```
 
-Once you have the `opts` variable, you can pass it in and get back a
-`ProviderClient` struct:
+**With environment variables (`openrc`)**
+
+Gophercloud can parse the environment variables set by running `source openrc`:
 
 ```go
-provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
+package main
+
+import (
+	"context"
+	"os"
+
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack"
+)
+
+func main() {
+	ctx := context.Background()
+
+	opts, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		panic(err)
+	}
+
+	providerClient, err := openstack.AuthenticatedClient(ctx, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	computeClient, err := openstack.NewComputeV2(providerClient, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// use the computeClient
+}
 ```
 
-As above, you can then use this provider client to generate a service client
-for a particular OpenStack service:
+**Manually**
+
+You can also generate a "Provider" by passing in your credentials
+explicitly:
 
 ```go
-client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
-	Region: os.Getenv("OS_REGION_NAME"),
-})
+package main
+
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack"
+)
+
+func main() {
+	ctx := context.Background()
+
+	providerClient, err := openstack.AuthenticatedClient(ctx, gophercloud.AuthOptions{
+		IdentityEndpoint: "https://openstack.example.com:5000/v2.0",
+		Username:         "username",
+		Password:         "password",
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	computeClient, err := openstack.NewComputeV2(providerClient, gophercloud.EndpointOpts{
+		Region: "RegionName",
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// use the computeClient
+}
 ```
 
 ### Provision a server
@@ -138,18 +194,22 @@ we invoke the `Create` method and pass in the flavor ID (hardware
 specification) and image ID (operating system) we're interested in:
 
 ```go
-import "github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+import "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 
-server, err := servers.Create(context.TODO(), client, servers.CreateOpts{
-	Name:      "My new server!",
-	FlavorRef: "flavor_id",
-	ImageRef:  "image_id",
-}).Extract()
+func main() {
+    // [...]
+
+    server, err := servers.Create(context.TODO(), computeClient, servers.CreateOpts{
+        Name:      "My new server!",
+        FlavorRef: "flavor_id",
+        ImageRef:  "image_id",
+    }).Extract()
+
+    // [...]
 ```
 
-The above code sample creates a new server with the parameters, and embodies the
-new resource in the `server` variable (a
-[`servers.Server`](http://godoc.org/github.com/gophercloud/gophercloud) struct).
+The above code sample creates a new server with the parameters, and returns a
+[`servers.Server`](https://pkg.go.dev/github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers#Server).
 
 ## Advanced Usage
 
