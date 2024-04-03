@@ -93,11 +93,11 @@ func TestOAuth1CRUD(t *testing.T) {
 
 	// test HMACSHA1 and PLAINTEXT signature methods
 	for _, method := range []oauth1.SignatureMethod{oauth1.HMACSHA1, oauth1.PLAINTEXT} {
-		oauth1MethodTest(t, client, consumer, method, user, project, roles, ao.IdentityEndpoint)
+		oauth1MethodTest(t, client, consumer, method, user, project, roles)
 	}
 }
 
-func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer *oauth1.Consumer, method oauth1.SignatureMethod, user *tokens.User, project *tokens.Project, roles []tokens.Role, identityEndpoint string) {
+func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer *oauth1.Consumer, method oauth1.SignatureMethod, user *tokens.User, project *tokens.Project, roles []tokens.Role) {
 	// Request a token
 	requestTokenOpts := oauth1.RequestTokenOpts{
 		OAuthConsumerKey:     consumer.ID,

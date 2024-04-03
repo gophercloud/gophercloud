@@ -54,7 +54,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 
 	containsRouterFunc := func(rs []routers.Router, routerID string) bool {
 		for _, r := range rs {
-			if r.ID == router.ID {
+			if r.ID == routerID {
 				return true
 			}
 		}

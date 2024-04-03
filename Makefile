@@ -17,8 +17,6 @@ endif
 #   chcon -Rt svirt_sandbox_file_t .
 #   chcon -Rt svirt_sandbox_file_t ~/.cache/golangci-lint
 lint:
-	go fmt ./...
-	go vet -tags "fixtures acceptance" ./...
 	$(RUNNER) run -t --rm \
 		-v $(shell pwd):/app \
 		-v ~/.cache/golangci-lint/$(GOLANGCI_LINT_VERSION):/root/.cache \

@@ -268,7 +268,7 @@ func CheckDeepEquals(t *testing.T, expected, actual interface{}) {
 	})
 }
 
-func isByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) bool {
+func isByteArrayEquals(expectedBytes []byte, actualBytes []byte) bool {
 	return bytes.Equal(expectedBytes, actualBytes)
 }
 
@@ -276,7 +276,7 @@ func isByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) b
 func AssertByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) {
 	t.Helper()
 
-	if !isByteArrayEquals(t, expectedBytes, actualBytes) {
+	if !isByteArrayEquals(expectedBytes, actualBytes) {
 		logFatal(t, "The bytes differed.")
 	}
 }
@@ -285,7 +285,7 @@ func AssertByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byt
 func CheckByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) {
 	t.Helper()
 
-	if !isByteArrayEquals(t, expectedBytes, actualBytes) {
+	if !isByteArrayEquals(expectedBytes, actualBytes) {
 		logError(t, "The bytes differed.")
 	}
 }

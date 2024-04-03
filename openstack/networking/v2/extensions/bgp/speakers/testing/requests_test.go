@@ -224,9 +224,9 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 			}
 
 			expected := []speakers.AdvertisedRoute{
-				speakers.AdvertisedRoute{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
-				speakers.AdvertisedRoute{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
-				speakers.AdvertisedRoute{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
+				{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
+				{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
+				{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
 			}
 			th.CheckDeepEquals(t, count, 1)
 			th.CheckDeepEquals(t, expected, actual)

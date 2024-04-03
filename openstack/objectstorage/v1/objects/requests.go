@@ -596,10 +596,7 @@ func CreateTempURL(ctx context.Context, c *gophercloud.ServiceClient, containerN
 	if err != nil {
 		return "", err
 	}
-	urlToBeSigned, err := tempURL(c, containerName, objectName)
-	if err != nil {
-		return "", err
-	}
+	urlToBeSigned := tempURL(c, containerName, objectName)
 
 	if opts.Split == "" {
 		opts.Split = "/v1/"
