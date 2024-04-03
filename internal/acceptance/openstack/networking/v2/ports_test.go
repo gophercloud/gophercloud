@@ -189,14 +189,14 @@ func TestPortsRemoveSecurityGroups(t *testing.T) {
 	updateOpts := ports.UpdateOpts{
 		SecurityGroups: &[]string{group.ID},
 	}
-	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	_, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Remove the group
 	updateOpts = ports.UpdateOpts{
 		SecurityGroups: &[]string{},
 	}
-	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -236,7 +236,7 @@ func TestPortsDontAlterSecurityGroups(t *testing.T) {
 	updateOpts := ports.UpdateOpts{
 		SecurityGroups: &[]string{group.ID},
 	}
-	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	_, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Update the port again
@@ -244,7 +244,7 @@ func TestPortsDontAlterSecurityGroups(t *testing.T) {
 	updateOpts = ports.UpdateOpts{
 		Name: &name,
 	}
-	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
@@ -307,14 +307,14 @@ func TestPortsRemoveAddressPair(t *testing.T) {
 			{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
 		},
 	}
-	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	_, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	// Remove the address pair
 	updateOpts = ports.UpdateOpts{
 		AllowedAddressPairs: &[]ports.AddressPair{},
 	}
-	newPort, err = ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
+	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)

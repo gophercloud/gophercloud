@@ -101,6 +101,7 @@ func TestListPortWithSubports(t *testing.T) {
 
 	// Test GET port with trunk details
 	err = ports.Get(context.TODO(), client, parentPort.ID).ExtractInto(&port)
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, trunk.ID, port.TrunkDetails.TrunkID)
 	th.AssertEquals(t, 2, len(port.TrunkDetails.SubPorts))
 	th.AssertDeepEquals(t, trunk_details.Subport{

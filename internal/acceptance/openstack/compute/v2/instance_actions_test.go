@@ -60,6 +60,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 	}
 
 	err = servers.Reboot(context.TODO(), client, server.ID, rebootOpts).ExtractErr()
+	th.AssertNoErr(t, err)
 	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}

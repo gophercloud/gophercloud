@@ -149,6 +149,7 @@ func TestServersUpdate(t *testing.T) {
 
 		return latest.Name == alternateName, nil
 	})
+	th.AssertNoErr(t, err)
 }
 
 func TestServersMetadata(t *testing.T) {

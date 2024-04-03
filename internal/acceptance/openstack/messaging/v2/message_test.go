@@ -22,6 +22,7 @@ func TestListMessages(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	totalNumberOfMessages := 3
@@ -35,6 +36,7 @@ func TestListMessages(t *testing.T) {
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
 	client, err = clients.NewMessagingV2Client(clientID)
+	th.AssertNoErr(t, err)
 
 	listOpts := messages.ListOpts{}
 
@@ -52,6 +54,7 @@ func TestListMessages(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, totalNumberOfMessages, currentNumberOfMessages)
 }
 
@@ -64,6 +67,7 @@ func TestCreateMessages(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	_, err = CreateMessage(t, client, createdQueueName)
@@ -79,6 +83,7 @@ func TestGetMessages(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	_, err = CreateMessage(t, client, createdQueueName)
@@ -89,6 +94,7 @@ func TestGetMessages(t *testing.T) {
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
 	client, err = clients.NewMessagingV2Client(clientID)
+	th.AssertNoErr(t, err)
 
 	listOpts := messages.ListOpts{}
 
@@ -107,6 +113,7 @@ func TestGetMessages(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	getMessageOpts := messages.GetMessagesOpts{
 		IDs: messageIDs,
@@ -129,6 +136,7 @@ func TestGetMessage(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	_, err = CreateMessage(t, client, createdQueueName)
@@ -137,6 +145,7 @@ func TestGetMessage(t *testing.T) {
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
 	client, err = clients.NewMessagingV2Client(clientID)
+	th.AssertNoErr(t, err)
 
 	listOpts := messages.ListOpts{}
 
@@ -155,6 +164,7 @@ func TestGetMessage(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	for _, messageID := range messageIDs {
 		t.Logf("Attempting to get message from queue %s: %s", createdQueueName, messageID)
@@ -175,6 +185,7 @@ func TestDeleteMessagesIDs(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	_, err = CreateMessage(t, client, createdQueueName)
@@ -186,6 +197,7 @@ func TestDeleteMessagesIDs(t *testing.T) {
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
 
 	client, err = clients.NewMessagingV2Client(clientID)
+	th.AssertNoErr(t, err)
 
 	listOpts := messages.ListOpts{}
 
@@ -205,6 +217,7 @@ func TestDeleteMessagesIDs(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	deleteOpts := messages.DeleteMessagesOpts{
 		IDs: messageIDs,
@@ -218,6 +231,7 @@ func TestDeleteMessagesIDs(t *testing.T) {
 
 	t.Logf("Attempting to list messages.")
 	messageList, err := ListMessages(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	if len(messageList) > 0 {
 		t.Fatalf("Did not delete all specified messages in the queue.")
@@ -233,6 +247,7 @@ func TestDeleteMessagesPop(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	for i := 0; i < 5; i++ {
@@ -244,8 +259,10 @@ func TestDeleteMessagesPop(t *testing.T) {
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
 
 	client, err = clients.NewMessagingV2Client(clientID)
+	th.AssertNoErr(t, err)
 
 	messageList, err := ListMessages(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	messagesNumber := len(messageList)
 	popNumber := 3
@@ -263,6 +280,7 @@ func TestDeleteMessagesPop(t *testing.T) {
 	tools.PrintResource(t, popMessages)
 
 	messageList, err = ListMessages(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 	if len(messageList) != messagesNumber-popNumber {
 		t.Fatalf("Unable to Pop specified number of messages.")
 	}
@@ -277,6 +295,7 @@ func TestDeleteMessage(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	_, err = CreateMessage(t, client, createdQueueName)
@@ -285,6 +304,7 @@ func TestDeleteMessage(t *testing.T) {
 	// Use a different client/clientID in order to see messages on the Queue
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
 	client, err = clients.NewMessagingV2Client(clientID)
+	th.AssertNoErr(t, err)
 
 	listOpts := messages.ListOpts{}
 
@@ -303,6 +323,7 @@ func TestDeleteMessage(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	for _, messageID := range messageIDs {
 		t.Logf("Attempting to delete message from queue %s: %s", createdQueueName, messageID)
