@@ -122,7 +122,7 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 		createOpts.ImageRef = blockDevices[0].UUID
 	}
 
-	server, err = servers.Create(context.TODO(), client, createOpts).Extract()
+	server, err = servers.Create(context.TODO(), client, createOpts, nil).Extract()
 
 	if err != nil {
 		return server, err
@@ -249,7 +249,7 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 		BlockDevice: blockDevices,
 	}
 
-	server, err = servers.Create(context.TODO(), client, createOpts).Extract()
+	server, err = servers.Create(context.TODO(), client, createOpts, nil).Extract()
 
 	if err != nil {
 		return server, err
@@ -389,7 +389,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 				Contents: []byte("hello world"),
 			},
 		},
-	}).Extract()
+	}, nil).Extract()
 	if err != nil {
 		return server, err
 	}
@@ -443,7 +443,7 @@ func CreateMicroversionServer(t *testing.T, client *gophercloud.ServiceClient) (
 		Metadata: map[string]string{
 			"abc": "def",
 		},
-	}).Extract()
+	}, nil).Extract()
 	if err != nil {
 		return server, err
 	}
@@ -497,7 +497,7 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 				Contents: []byte("hello world"),
 			},
 		},
-	}).Extract()
+	}, nil).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -544,7 +544,7 @@ func CreateServerWithTags(t *testing.T, client *gophercloud.ServiceClient, netwo
 			},
 		},
 		Tags: []string{"tag1", "tag2"},
-	}).Extract()
+	}, nil).Extract()
 	if err != nil {
 		return server, err
 	}
@@ -643,12 +643,12 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
-		SchedulerHints: servers.SchedulerHints{
-			Group: serverGroup.ID,
-		},
+	}
+	schedulerHintOpts := servers.SchedulerHintOpts{
+		Group: serverGroup.ID,
 	}
 
-	server, err := servers.Create(context.TODO(), client, serverCreateOpts).Extract()
+	server, err := servers.Create(context.TODO(), client, serverCreateOpts, schedulerHintOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -697,7 +697,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 	server, err := servers.Create(context.TODO(), client, keypairs.CreateOptsExt{
 		CreateOptsBuilder: serverCreateOpts,
 		KeyName:           keyPairName,
-	}).Extract()
+	}, nil).Extract()
 	if err != nil {
 		return nil, err
 	}
@@ -1056,7 +1056,7 @@ func CreateServerNoNetwork(t *testing.T, client *gophercloud.ServiceClient) (*se
 				Contents: []byte("hello world"),
 			},
 		},
-	}).Extract()
+	}, nil).Extract()
 	if err != nil {
 		return server, err
 	}
