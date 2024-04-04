@@ -158,7 +158,7 @@ func TestVolumeActionsUploadImageDestroy(t *testing.T) {
 	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
-	computeClient, err := clients.NewComputeV2Client()
+	imageClient, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
 	volume, err := CreateVolume(t, blockClient)
@@ -170,7 +170,7 @@ func TestVolumeActionsUploadImageDestroy(t *testing.T) {
 
 	tools.PrintResource(t, volumeImage)
 
-	err = DeleteUploadedImage(t, computeClient, volumeImage.ImageID)
+	err = DeleteUploadedImage(t, imageClient, volumeImage.ImageID)
 	th.AssertNoErr(t, err)
 }
 

@@ -16,57 +16,19 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
-	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/floatingips"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/networks"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/quotasets"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/remoteconsoles"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/secgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servergroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tenantnetworks"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/volumeattach"
 	neutron "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 
 	"golang.org/x/crypto/ssh"
 )
-
-// AssociateFloatingIP will associate a floating IP with an instance. An error
-// will be returned if the floating IP was unable to be associated.
-func AssociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP, server *servers.Server) error {
-	associateOpts := floatingips.AssociateOpts{
-		FloatingIP: floatingIP.IP,
-	}
-
-	t.Logf("Attempting to associate floating IP %s to instance %s", floatingIP.IP, server.ID)
-	err := floatingips.AssociateInstance(context.TODO(), client, server.ID, associateOpts).ExtractErr()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// AssociateFloatingIPWithFixedIP will associate a floating IP with an
-// instance's specific fixed IP. An error will be returend if the floating IP
-// was unable to be associated.
-func AssociateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP, server *servers.Server, fixedIP string) error {
-	associateOpts := floatingips.AssociateOpts{
-		FloatingIP: floatingIP.IP,
-		FixedIP:    fixedIP,
-	}
-
-	t.Logf("Attempting to associate floating IP %s to fixed IP %s on instance %s", floatingIP.IP, fixedIP, server.ID)
-	err := floatingips.AssociateInstance(context.TODO(), client, server.ID, associateOpts).ExtractErr()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 // AttachInterface will create and attach an interface on a given server.
 // An error will returned if the interface could not be created.
@@ -179,27 +141,6 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	return newServer, nil
 }
 
-// CreateDefaultRule will create a default security group rule with a
-// random port range between 80 and 90. An error will be returned if
-// a default rule was unable to be created.
-func CreateDefaultRule(t *testing.T, client *gophercloud.ServiceClient) (dsr.DefaultRule, error) {
-	createOpts := dsr.CreateOpts{
-		FromPort:   tools.RandomInt(80, 89),
-		ToPort:     tools.RandomInt(90, 99),
-		IPProtocol: "TCP",
-		CIDR:       "0.0.0.0/0",
-	}
-
-	defaultRule, err := dsr.Create(context.TODO(), client, createOpts).Extract()
-	if err != nil {
-		return *defaultRule, err
-	}
-
-	t.Logf("Created default rule: %s", defaultRule.ID)
-
-	return *defaultRule, nil
-}
-
 // CreateFlavor will create a flavor with a random name.
 // An error will be returned if the flavor could not be created.
 func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Flavor, error) {
@@ -235,26 +176,6 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 	th.AssertEquals(t, flavor.Description, flavorDescription)
 
 	return flavor, nil
-}
-
-// CreateFloatingIP will allocate a floating IP.
-// An error will be returend if one was unable to be allocated.
-func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient) (*floatingips.FloatingIP, error) {
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	createOpts := floatingips.CreateOpts{
-		Pool: choices.FloatingIPPoolName,
-	}
-	floatingIP, err := floatingips.Create(context.TODO(), client, createOpts).Extract()
-	if err != nil {
-		return floatingIP, err
-	}
-
-	t.Logf("Created floating IP: %s", floatingIP.ID)
-	return floatingIP, nil
 }
 
 func createKey() (string, error) {
@@ -836,18 +757,6 @@ func DeleteAggregate(t *testing.T, client *gophercloud.ServiceClient, aggregate 
 	t.Logf("Deleted aggregate: %d", aggregate.ID)
 }
 
-// DeleteDefaultRule deletes a default security group rule.
-// A fatal error will occur if the rule failed to delete. This works best when
-// using it as a deferred function.
-func DeleteDefaultRule(t *testing.T, client *gophercloud.ServiceClient, defaultRule dsr.DefaultRule) {
-	err := dsr.Delete(context.TODO(), client, defaultRule.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to delete default rule %s: %v", defaultRule.ID, err)
-	}
-
-	t.Logf("Deleted default rule: %s", defaultRule.ID)
-}
-
 // DeleteFlavor will delete a flavor. A fatal error will occur if the flavor
 // could not be deleted. This works best when using it as a deferred function.
 func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavors.Flavor) {
@@ -857,18 +766,6 @@ func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavo
 	}
 
 	t.Logf("Deleted flavor: %s", flavor.ID)
-}
-
-// DeleteFloatingIP will de-allocate a floating IP. A fatal error will occur if
-// the floating IP failed to de-allocate. This works best when using it as a
-// deferred function.
-func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP) {
-	err := floatingips.Delete(context.TODO(), client, floatingIP.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to delete floating IP %s: %v", floatingIP.ID, err)
-	}
-
-	t.Logf("Deleted floating IP: %s", floatingIP.ID)
 }
 
 // DeleteKeyPair will delete a specified keypair. A fatal error will occur if
@@ -973,90 +870,10 @@ func DetachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID, 
 	t.Logf("Detached interface %s from server %s", portID, serverID)
 }
 
-// DisassociateFloatingIP will disassociate a floating IP from an instance. A
-// fatal error will occur if the floating IP failed to disassociate. This works
-// best when using it as a deferred function.
-func DisassociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP, server *servers.Server) {
-	disassociateOpts := floatingips.DisassociateOpts{
-		FloatingIP: floatingIP.IP,
-	}
-
-	err := floatingips.DisassociateInstance(context.TODO(), client, server.ID, disassociateOpts).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to disassociate floating IP %s from server %s: %v", floatingIP.IP, server.ID, err)
-	}
-
-	t.Logf("Disassociated floating IP %s from server %s", floatingIP.IP, server.ID)
-}
-
-// GetNetworkIDFromOSNetworks will return the network ID from a specified network
-// UUID using the os-networks API extension. An error will be returned if the
-// network could not be retrieved.
-func GetNetworkIDFromOSNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := networks.List(client).AllPages(context.TODO())
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
-
-	networkList, err := networks.ExtractNetworks(allPages)
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
-
-	networkID := ""
-	for _, network := range networkList {
-		t.Logf("Network: %v", network)
-		if network.Label == networkName {
-			networkID = network.ID
-		}
-	}
-
-	t.Logf("Found network ID for %s: %s", networkName, networkID)
-
-	return networkID, nil
-}
-
-// GetNetworkIDFromTenantNetworks will return the network UUID for a given
-// network name using the os-tenant-networks API extension. An error will be
-// returned if the network could not be retrieved.
-func GetNetworkIDFromTenantNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := tenantnetworks.List(client).AllPages(context.TODO())
-	if err != nil {
-		return "", err
-	}
-
-	allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
-	if err != nil {
-		return "", err
-	}
-
-	for _, network := range allTenantNetworks {
-		if network.Name == networkName {
-			return network.ID, nil
-		}
-	}
-
-	return "", fmt.Errorf("Failed to obtain network ID for network %s", networkName)
-}
-
 // GetNetworkIDFromNetworks will return the network UUID for a given network
-// name using either the os-tenant-networks API extension or Neutron API.
+// name using the Neutron API.
 // An error will be returned if the network could not be retrieved.
 func GetNetworkIDFromNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := tenantnetworks.List(client).AllPages(context.TODO())
-	if err == nil {
-		allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
-		if err != nil {
-			return "", err
-		}
-
-		for _, network := range allTenantNetworks {
-			if network.Name == networkName {
-				return network.ID, nil
-			}
-		}
-	}
-
 	networkClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
