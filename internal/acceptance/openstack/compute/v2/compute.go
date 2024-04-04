@@ -18,7 +18,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/networks"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/quotasets"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/remoteconsoles"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/secgroups"
@@ -869,33 +868,6 @@ func DetachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID, 
 	}
 
 	t.Logf("Detached interface %s from server %s", portID, serverID)
-}
-
-// GetNetworkIDFromOSNetworks will return the network ID from a specified network
-// UUID using the os-networks API extension. An error will be returned if the
-// network could not be retrieved.
-func GetNetworkIDFromOSNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := networks.List(client).AllPages(context.TODO())
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
-
-	networkList, err := networks.ExtractNetworks(allPages)
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
-
-	networkID := ""
-	for _, network := range networkList {
-		t.Logf("Network: %v", network)
-		if network.Label == networkName {
-			networkID = network.ID
-		}
-	}
-
-	t.Logf("Found network ID for %s: %s", networkName, networkID)
-
-	return networkID, nil
 }
 
 // GetNetworkIDFromNetworks will return the network UUID for a given network
