@@ -16,7 +16,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
-	dsr "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/defsecrules"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/floatingips"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
@@ -177,27 +176,6 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	th.AssertEquals(t, newServer.Name, name)
 
 	return newServer, nil
-}
-
-// CreateDefaultRule will create a default security group rule with a
-// random port range between 80 and 90. An error will be returned if
-// a default rule was unable to be created.
-func CreateDefaultRule(t *testing.T, client *gophercloud.ServiceClient) (dsr.DefaultRule, error) {
-	createOpts := dsr.CreateOpts{
-		FromPort:   tools.RandomInt(80, 89),
-		ToPort:     tools.RandomInt(90, 99),
-		IPProtocol: "TCP",
-		CIDR:       "0.0.0.0/0",
-	}
-
-	defaultRule, err := dsr.Create(context.TODO(), client, createOpts).Extract()
-	if err != nil {
-		return *defaultRule, err
-	}
-
-	t.Logf("Created default rule: %s", defaultRule.ID)
-
-	return *defaultRule, nil
 }
 
 // CreateFlavor will create a flavor with a random name.
@@ -834,18 +812,6 @@ func DeleteAggregate(t *testing.T, client *gophercloud.ServiceClient, aggregate 
 	}
 
 	t.Logf("Deleted aggregate: %d", aggregate.ID)
-}
-
-// DeleteDefaultRule deletes a default security group rule.
-// A fatal error will occur if the rule failed to delete. This works best when
-// using it as a deferred function.
-func DeleteDefaultRule(t *testing.T, client *gophercloud.ServiceClient, defaultRule dsr.DefaultRule) {
-	err := dsr.Delete(context.TODO(), client, defaultRule.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to delete default rule %s: %v", defaultRule.ID, err)
-	}
-
-	t.Logf("Deleted default rule: %s", defaultRule.ID)
 }
 
 // DeleteFlavor will delete a flavor. A fatal error will occur if the flavor
