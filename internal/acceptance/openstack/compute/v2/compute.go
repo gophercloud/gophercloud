@@ -24,7 +24,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/secgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servergroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/tenantnetworks"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/volumeattach"
 	neutron "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -899,47 +898,10 @@ func GetNetworkIDFromOSNetworks(t *testing.T, client *gophercloud.ServiceClient,
 	return networkID, nil
 }
 
-// GetNetworkIDFromTenantNetworks will return the network UUID for a given
-// network name using the os-tenant-networks API extension. An error will be
-// returned if the network could not be retrieved.
-func GetNetworkIDFromTenantNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := tenantnetworks.List(client).AllPages(context.TODO())
-	if err != nil {
-		return "", err
-	}
-
-	allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
-	if err != nil {
-		return "", err
-	}
-
-	for _, network := range allTenantNetworks {
-		if network.Name == networkName {
-			return network.ID, nil
-		}
-	}
-
-	return "", fmt.Errorf("Failed to obtain network ID for network %s", networkName)
-}
-
 // GetNetworkIDFromNetworks will return the network UUID for a given network
-// name using either the os-tenant-networks API extension or Neutron API.
+// name using the Neutron API.
 // An error will be returned if the network could not be retrieved.
 func GetNetworkIDFromNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
-	allPages, err := tenantnetworks.List(client).AllPages(context.TODO())
-	if err == nil {
-		allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
-		if err != nil {
-			return "", err
-		}
-
-		for _, network := range allTenantNetworks {
-			if network.Name == networkName {
-				return network.ID, nil
-			}
-		}
-	}
-
 	networkClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
