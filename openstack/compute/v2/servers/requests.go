@@ -173,7 +173,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if opts.Group != "" {
 		if !uuidRegex.MatchString(opts.Group) {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "schedulerhints.SchedulerHints.Group"
+			err.Argument = "servers.SchedulerHints.Group"
 			err.Value = opts.Group
 			err.Info = "Group must be a UUID"
 			return nil, err
@@ -185,7 +185,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		for _, diffHost := range opts.DifferentHost {
 			if !uuidRegex.MatchString(diffHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "schedulerhints.SchedulerHints.DifferentHost"
+				err.Argument = "servers.SchedulerHints.DifferentHost"
 				err.Value = opts.DifferentHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -198,7 +198,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		for _, sameHost := range opts.SameHost {
 			if !uuidRegex.MatchString(sameHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "schedulerhints.SchedulerHints.SameHost"
+				err.Argument = "servers.SchedulerHints.SameHost"
 				err.Value = opts.SameHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -222,7 +222,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if len(opts.Query) > 0 {
 		if len(opts.Query) < 3 {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "schedulerhints.SchedulerHints.Query"
+			err.Argument = "servers.SchedulerHints.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
 			return nil, err
@@ -232,7 +232,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		b, err := json.Marshal(opts.Query)
 		if err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "schedulerhints.SchedulerHints.Query"
+			err.Argument = "servers.SchedulerHints.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
 			return nil, err
@@ -252,7 +252,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if opts.BuildNearHostIP != "" {
 		if _, _, err := net.ParseCIDR(opts.BuildNearHostIP); err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "schedulerhints.SchedulerHints.BuildNearHostIP"
+			err.Argument = "servers.SchedulerHints.BuildNearHostIP"
 			err.Value = opts.BuildNearHostIP
 			err.Info = "Must be a valid subnet in the form 192.168.1.1/24"
 			return nil, err

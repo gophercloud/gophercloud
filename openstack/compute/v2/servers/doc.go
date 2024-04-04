@@ -60,19 +60,13 @@ Example to Create a Server
 
 Example to Add a Server to a Server Group
 
-	schedulerHints := schedulerhints.SchedulerHints{
-		Group: "servergroup-uuid",
-	}
-
-	serverCreateOpts := servers.CreateOpts{
-		Name:      "server_name",
-		ImageRef:  "image-uuid",
-		FlavorRef: "flavor-uuid",
-	}
-
-	createOpts := schedulerhints.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		SchedulerHints:    schedulerHints,
+	createOpts := servers.CreateOpts{
+		Name:           "server_name",
+		ImageRef:       "image-uuid",
+		FlavorRef:      "flavor-uuid",
+		SchedulerHints: servers.SchedulerHints{
+			Group: "servergroup-uuid",
+		},
 	}
 
 	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
@@ -82,21 +76,15 @@ Example to Add a Server to a Server Group
 
 Example to Place Server B on a Different Host than Server A
 
-	schedulerHints := schedulerhints.SchedulerHints{
-		DifferentHost: []string{
-			"server-a-uuid",
-		}
-	}
-
-	serverCreateOpts := servers.CreateOpts{
-		Name:      "server_b",
-		ImageRef:  "image-uuid",
-		FlavorRef: "flavor-uuid",
-	}
-
-	createOpts := schedulerhints.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		SchedulerHints:    schedulerHints,
+	createOpts := servers.CreateOpts{
+		Name:           "server_name",
+		ImageRef:       "image-uuid",
+		FlavorRef:      "flavor-uuid",
+		SchedulerHints: servers.SchedulerHints{
+			DifferentHost: []string{
+				"server-a-uuid",
+			}
+		},
 	}
 
 	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
@@ -106,21 +94,15 @@ Example to Place Server B on a Different Host than Server A
 
 Example to Place Server B on the Same Host as Server A
 
-	schedulerHints := schedulerhints.SchedulerHints{
-		SameHost: []string{
-			"server-a-uuid",
-		}
-	}
-
-	serverCreateOpts := servers.CreateOpts{
-		Name:      "server_b",
-		ImageRef:  "image-uuid",
-		FlavorRef: "flavor-uuid",
-	}
-
-	createOpts := schedulerhints.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		SchedulerHints:    schedulerHints,
+	createOpts := servers.CreateOpts{
+		Name:           "server_name",
+		ImageRef:       "image-uuid",
+		FlavorRef:      "flavor-uuid",
+		SchedulerHints: servers.SchedulerHints{
+			SameHost: []string{
+				"server-a-uuid",
+			}
+		},
 	}
 
 	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
