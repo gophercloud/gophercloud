@@ -17,7 +17,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/aggregates"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/floatingips"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/networks"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/quotasets"
@@ -32,40 +31,6 @@ import (
 
 	"golang.org/x/crypto/ssh"
 )
-
-// AssociateFloatingIP will associate a floating IP with an instance. An error
-// will be returned if the floating IP was unable to be associated.
-func AssociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP, server *servers.Server) error {
-	associateOpts := floatingips.AssociateOpts{
-		FloatingIP: floatingIP.IP,
-	}
-
-	t.Logf("Attempting to associate floating IP %s to instance %s", floatingIP.IP, server.ID)
-	err := floatingips.AssociateInstance(context.TODO(), client, server.ID, associateOpts).ExtractErr()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// AssociateFloatingIPWithFixedIP will associate a floating IP with an
-// instance's specific fixed IP. An error will be returend if the floating IP
-// was unable to be associated.
-func AssociateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP, server *servers.Server, fixedIP string) error {
-	associateOpts := floatingips.AssociateOpts{
-		FloatingIP: floatingIP.IP,
-		FixedIP:    fixedIP,
-	}
-
-	t.Logf("Attempting to associate floating IP %s to fixed IP %s on instance %s", floatingIP.IP, fixedIP, server.ID)
-	err := floatingips.AssociateInstance(context.TODO(), client, server.ID, associateOpts).ExtractErr()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 // AttachInterface will create and attach an interface on a given server.
 // An error will returned if the interface could not be created.
@@ -213,26 +178,6 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 	th.AssertEquals(t, flavor.Description, flavorDescription)
 
 	return flavor, nil
-}
-
-// CreateFloatingIP will allocate a floating IP.
-// An error will be returend if one was unable to be allocated.
-func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient) (*floatingips.FloatingIP, error) {
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	createOpts := floatingips.CreateOpts{
-		Pool: choices.FloatingIPPoolName,
-	}
-	floatingIP, err := floatingips.Create(context.TODO(), client, createOpts).Extract()
-	if err != nil {
-		return floatingIP, err
-	}
-
-	t.Logf("Created floating IP: %s", floatingIP.ID)
-	return floatingIP, nil
 }
 
 func createKey() (string, error) {
@@ -825,18 +770,6 @@ func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavo
 	t.Logf("Deleted flavor: %s", flavor.ID)
 }
 
-// DeleteFloatingIP will de-allocate a floating IP. A fatal error will occur if
-// the floating IP failed to de-allocate. This works best when using it as a
-// deferred function.
-func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP) {
-	err := floatingips.Delete(context.TODO(), client, floatingIP.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to delete floating IP %s: %v", floatingIP.ID, err)
-	}
-
-	t.Logf("Deleted floating IP: %s", floatingIP.ID)
-}
-
 // DeleteKeyPair will delete a specified keypair. A fatal error will occur if
 // the keypair failed to be deleted. This works best when used as a deferred
 // function.
@@ -937,22 +870,6 @@ func DetachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID, 
 	}
 
 	t.Logf("Detached interface %s from server %s", portID, serverID)
-}
-
-// DisassociateFloatingIP will disassociate a floating IP from an instance. A
-// fatal error will occur if the floating IP failed to disassociate. This works
-// best when using it as a deferred function.
-func DisassociateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingIP *floatingips.FloatingIP, server *servers.Server) {
-	disassociateOpts := floatingips.DisassociateOpts{
-		FloatingIP: floatingIP.IP,
-	}
-
-	err := floatingips.DisassociateInstance(context.TODO(), client, server.ID, disassociateOpts).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to disassociate floating IP %s from server %s: %v", floatingIP.IP, server.ID, err)
-	}
-
-	t.Logf("Disassociated floating IP %s from server %s", floatingIP.IP, server.ID)
 }
 
 // GetNetworkIDFromOSNetworks will return the network ID from a specified network
