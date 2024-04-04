@@ -68,7 +68,7 @@ func TestConcurrentReauth(t *testing.T) {
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func(_ context.Context) error {
 		p.SetThrowaway(true)
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Microsecond)
 		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
@@ -242,7 +242,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		if info.numreauths == 0 {
 			info.mut.RUnlock()
 			close(info.reauthCh)
-			time.Sleep(1 * time.Second)
+			time.Sleep(10 * time.Microsecond)
 		} else {
 			info.mut.RUnlock()
 		}
@@ -459,9 +459,10 @@ func retryBackoffTest(retryCounter *uint, t *testing.T) gophercloud.RetryBackoff
 
 		var sleep time.Duration
 
-		// Parse delay seconds or HTTP date
+		// Parse delay seconds or HTTP date. Note that we don't actually _use_
+		// these exact times in the sleep since that takes too long
 		if v, err := strconv.ParseUint(retryAfter, 10, 32); err == nil {
-			sleep = time.Duration(v) * time.Second
+			sleep = time.Duration(v) * time.Millisecond
 		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err == nil {
 			sleep = time.Until(v)
 		} else {
@@ -469,16 +470,17 @@ func retryBackoffTest(retryCounter *uint, t *testing.T) gophercloud.RetryBackoff
 		}
 
 		if ctx != nil {
-			t.Logf("Context sleeping for %d milliseconds", sleep.Milliseconds())
+			// this can go negative since we're using milliseconds
+			t.Logf("Context (fake) sleeping for %d milliseconds", sleep.Milliseconds())
 			select {
-			case <-time.After(sleep):
+			case <-time.After(sleep):  // we only sleep for 1% of the time to speed things up
 				t.Log("sleep is over")
 			case <-ctx.Done():
 				t.Log(ctx.Err())
 				return e
 			}
 		} else {
-			t.Logf("Sleeping for %d milliseconds", sleep.Milliseconds())
+			t.Logf("Fake sleeping for %d milliseconds", sleep.Milliseconds())
 			time.Sleep(sleep)
 			t.Log("sleep is over")
 		}
@@ -503,7 +505,7 @@ func TestRequestRetry(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Retry-After", "1")
+		w.Header().Set("Retry-After", "10")
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
@@ -530,7 +532,7 @@ func TestRequestRetryHTTPDate(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Retry-After", time.Now().Add(1*time.Second).UTC().Format(http.TimeFormat))
+		w.Header().Set("Retry-After", time.Now().Add(10*time.Millisecond).UTC().Format(http.TimeFormat))
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
@@ -595,12 +597,15 @@ func TestRequestRetrySuccess(t *testing.T) {
 	th.AssertEquals(t, retryCounter, uint(0))
 }
 
+// TestRequestRetryContext tests that we stop retries if our context is
+// cancelled before all potential retries have been completed.
 func TestRequestRetryContext(t *testing.T) {
 	var retryCounter uint
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		sleep := 2.5 * 1000 * time.Millisecond
+		// we have 3 retries of 10 mS each, so cancel the context before then (25mS < 30mS)
+		sleep := 2.5 * 10 * time.Millisecond
 		time.Sleep(sleep)
 		cancel()
 	}()
@@ -616,7 +621,7 @@ func TestRequestRetryContext(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Retry-After", "1")
+		w.Header().Set("Retry-After", "10")
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)

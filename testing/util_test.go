@@ -15,7 +15,7 @@ import (
 )
 
 func TestWaitFor(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 
 	err := gophercloud.WaitFor(ctx, func(context.Context) (bool, error) {
@@ -29,7 +29,7 @@ func TestWaitForTimeout(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 
 	err := gophercloud.WaitFor(ctx, func(context.Context) (bool, error) {
@@ -43,7 +43,7 @@ func TestWaitForError(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 
 	err := gophercloud.WaitFor(ctx, func(context.Context) (bool, error) {
@@ -57,7 +57,7 @@ func TestWaitForPredicateExceed(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 
 	err := gophercloud.WaitFor(ctx, func(ctx context.Context) (bool, error) {
@@ -66,7 +66,7 @@ func TestWaitForPredicateExceed(t *testing.T) {
 		case <-ctx.Done():
 			return true, ctx.Err()
 
-		case <-time.After(4 * time.Second):
+		case <-time.After(40 * time.Millisecond):
 			return false, errors.New("Just wasting time")
 		}
 	})
