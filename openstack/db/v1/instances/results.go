@@ -138,6 +138,9 @@ type Instance struct {
 
 	// The region name of an instance.
 	Region string `json:"region,omitempty"`
+
+	// The ID of a tenant.
+	TenantId string `json:"tenant_id,omitempty"`
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {
