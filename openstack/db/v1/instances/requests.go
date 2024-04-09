@@ -38,6 +38,15 @@ type NetworkOpts struct {
 
 	// V6FixedIP [optional] specifies a fixed IPv6 address to be used on this network.
 	V6FixedIP string `json:"v6-fixed-ip,omitempty"`
+
+	// UUID of nova-network
+	NetworkId string `json:"network_id,omitempty"`
+
+	// UUID of nova subnet
+	SubnetId string `json:"subnet_id,omitempty"`
+
+	// Fixed IPv4 address to be used on this network
+	IpAddress string `json:"ip_address,omitempty"`
 }
 
 // ToMap converts a NetworkOpts to a map[string]string (for a request body)
