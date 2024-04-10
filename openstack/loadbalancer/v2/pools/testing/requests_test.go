@@ -295,6 +295,9 @@ func TestBatchUpdateMembers(t *testing.T) {
 
 	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", members)
 	th.AssertNoErr(t, res.Err)
+
+	res = pools.BatchUpdateMembersAdditiveOnly(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", members)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestEmptyBatchUpdateMembers(t *testing.T) {
@@ -304,6 +307,9 @@ func TestEmptyBatchUpdateMembers(t *testing.T) {
 
 	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{})
 	th.AssertNoErr(t, res.Err)
+
+	res = pools.BatchUpdateMembersAdditiveOnly(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{})
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestRequiredBatchUpdateMemberOpts(t *testing.T) {
@@ -312,6 +318,15 @@ func TestRequiredBatchUpdateMemberOpts(t *testing.T) {
 
 	name := "web-server-1"
 	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
+		{
+			Name: &name,
+		},
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, but got none")
+	}
+
+	res = pools.BatchUpdateMembersAdditiveOnly(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
 		{
 			Name: &name,
 		},
@@ -330,7 +345,27 @@ func TestRequiredBatchUpdateMemberOpts(t *testing.T) {
 		t.Fatalf("Expected error, but got none")
 	}
 
+	res = pools.BatchUpdateMembersAdditiveOnly(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
+		{
+			Address: "192.0.2.17",
+			Name:    &name,
+		},
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, but got none")
+	}
+
 	res = pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
+		{
+			ProtocolPort: 80,
+			Name:         &name,
+		},
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, but got none")
+	}
+
+	res = pools.BatchUpdateMembersAdditiveOnly(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
 		{
 			ProtocolPort: 80,
 			Name:         &name,
