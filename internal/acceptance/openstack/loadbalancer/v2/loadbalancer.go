@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -504,7 +505,7 @@ func DeleteL7Policy(t *testing.T, client *gophercloud.ServiceClient, lbID, polic
 	t.Logf("Attempting to delete l7 policy %s", policyID)
 
 	if err := l7policies.Delete(context.TODO(), client, policyID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete l7 policy: %v", err)
 		}
 	}
@@ -523,7 +524,7 @@ func DeleteL7Rule(t *testing.T, client *gophercloud.ServiceClient, lbID, policyI
 	t.Logf("Attempting to delete l7 rule %s", ruleID)
 
 	if err := l7policies.DeleteRule(context.TODO(), client, policyID, ruleID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete l7 rule: %v", err)
 		}
 	}
@@ -542,7 +543,7 @@ func DeleteListener(t *testing.T, client *gophercloud.ServiceClient, lbID, liste
 	t.Logf("Attempting to delete listener %s", listenerID)
 
 	if err := listeners.Delete(context.TODO(), client, listenerID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete listener: %v", err)
 		}
 	}
@@ -561,7 +562,7 @@ func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID,
 	t.Logf("Attempting to delete member %s", memberID)
 
 	if err := pools.DeleteMember(context.TODO(), client, poolID, memberID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete member: %s", memberID)
 		}
 	}
@@ -584,7 +585,7 @@ func DeleteLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, lbID st
 	}
 
 	if err := loadbalancers.Delete(context.TODO(), client, lbID, deleteOpts).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete loadbalancer: %v", err)
 		}
 	}
@@ -628,7 +629,7 @@ func DeleteMonitor(t *testing.T, client *gophercloud.ServiceClient, lbID, monito
 	t.Logf("Attempting to delete monitor %s", monitorID)
 
 	if err := monitors.Delete(context.TODO(), client, monitorID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete monitor: %v", err)
 		}
 	}
@@ -646,7 +647,7 @@ func DeletePool(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID st
 	t.Logf("Attempting to delete pool %s", poolID)
 
 	if err := pools.Delete(context.TODO(), client, poolID).ExtractErr(); err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+		if !gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			t.Fatalf("Unable to delete pool: %v", err)
 		}
 	}
@@ -663,12 +664,8 @@ func WaitForLoadBalancerState(client *gophercloud.ServiceClient, lbID, status st
 	return tools.WaitFor(func(ctx context.Context) (bool, error) {
 		current, err := loadbalancers.Get(ctx, client, lbID).Extract()
 		if err != nil {
-			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {
-				if httpStatus.Actual == 404 {
-					if status == "DELETED" {
-						return true, nil
-					}
-				}
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) && status == "DELETED" {
+				return true, nil
 			}
 			return false, err
 		}

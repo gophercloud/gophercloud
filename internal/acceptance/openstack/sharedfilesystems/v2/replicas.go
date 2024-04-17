@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -42,7 +43,7 @@ func CreateReplica(t *testing.T, client *gophercloud.ServiceClient, share *share
 func DeleteReplica(t *testing.T, client *gophercloud.ServiceClient, replica *replicas.Replica) {
 	err := replicas.Delete(context.TODO(), client, replica.ID).ExtractErr()
 	if err != nil {
-		if _, ok := err.(gophercloud.ErrDefault404); ok {
+		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 			return
 		}
 		t.Errorf("Unable to delete replica %s: %v", replica.ID, err)
@@ -78,7 +79,7 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 
 		current, err = replicas.Get(ctx, c, id).Extract()
 		if err != nil {
-			if _, ok := err.(gophercloud.ErrDefault404); ok {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
 				switch status {
 				case "deleted":
 					return true, nil

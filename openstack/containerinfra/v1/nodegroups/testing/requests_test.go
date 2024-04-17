@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -37,10 +38,7 @@ func TestGetNodeGroupNotFound(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.Get(context.TODO(), sc, clusterUUID, badNodeGroupUUID).Extract()
-	th.AssertEquals(t, true, err != nil)
-
-	_, isNotFound := err.(gophercloud.ErrDefault404)
-	th.AssertEquals(t, true, isNotFound)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 // TestGetNodeGroupClusterNotFound tries to get a node group in
@@ -55,10 +53,7 @@ func TestGetNodeGroupClusterNotFound(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.Get(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).Extract()
-	th.AssertEquals(t, true, err != nil)
-
-	_, isNotFound := err.(gophercloud.ErrDefault404)
-	th.AssertEquals(t, true, isNotFound)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 // TestListNodeGroupsSuccess lists the node groups of a cluster successfully.
@@ -116,10 +111,7 @@ func TestListNodeGroupsClusterNotFound(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.List(sc, clusterUUID, nodegroups.ListOpts{}).AllPages(context.TODO())
-	th.AssertEquals(t, true, err != nil)
-
-	_, isNotFound := err.(gophercloud.ErrDefault404)
-	th.AssertEquals(t, true, isNotFound)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 // TestCreateNodeGroupSuccess creates a node group successfully.
@@ -158,9 +150,7 @@ func TestCreateNodeGroupDuplicate(t *testing.T) {
 	}
 
 	_, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
-	_, isNotAccepted := err.(gophercloud.ErrDefault409)
-	th.AssertEquals(t, true, isNotAccepted)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 // TestCreateNodeGroupMaster creates a node group with
@@ -180,9 +170,7 @@ func TestCreateNodeGroupMaster(t *testing.T) {
 	}
 
 	_, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
-	_, isBadRequest := err.(gophercloud.ErrDefault400)
-	th.AssertEquals(t, true, isBadRequest)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 // TestCreateNodeGroupBadSizes creates a node group with
@@ -204,9 +192,7 @@ func TestCreateNodeGroupBadSizes(t *testing.T) {
 	}
 
 	_, err := nodegroups.Create(context.TODO(), sc, clusterUUID, createOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
-	_, isNotAccepted := err.(gophercloud.ErrDefault409)
-	th.AssertEquals(t, true, isNotAccepted)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 // TestUpdateNodeGroupSuccess updates a node group successfully.
@@ -252,9 +238,7 @@ func TestUpdateNodeGroupInternal(t *testing.T) {
 	}
 
 	_, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
-	_, isBadRequest := err.(gophercloud.ErrDefault400)
-	th.AssertEquals(t, true, isBadRequest)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 // TestUpdateNodeGroupBadField tries to update a
@@ -277,9 +261,7 @@ func TestUpdateNodeGroupBadField(t *testing.T) {
 	}
 
 	_, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
-	_, isBadRequest := err.(gophercloud.ErrDefault400)
-	th.AssertEquals(t, true, isBadRequest)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 // TestUpdateNodeGroupBadMin tries to set a minimum node count
@@ -302,9 +284,7 @@ func TestUpdateNodeGroupBadMin(t *testing.T) {
 	}
 
 	_, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
-	_, isNotAccepted := err.(gophercloud.ErrDefault409)
-	th.AssertEquals(t, true, isNotAccepted)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 // TestDeleteNodeGroupSuccess deletes a node group successfully.
@@ -332,8 +312,7 @@ func TestDeleteNodeGroupNotFound(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, badNodeGroupUUID).ExtractErr()
-	_, isNotFound := err.(gophercloud.ErrDefault404)
-	th.AssertEquals(t, true, isNotFound)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 // TestDeleteNodeGroupClusterNotFound tries to delete a node group in a cluster that does not exist.
@@ -347,8 +326,7 @@ func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
-	_, isNotFound := err.(gophercloud.ErrDefault404)
-	th.AssertEquals(t, true, isNotFound)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 // TestDeleteNodeGroupDefault tries to delete a protected default node group.
@@ -362,6 +340,5 @@ func TestDeleteNodeGroupDefault(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()
-	_, isBadRequest := err.(gophercloud.ErrDefault400)
-	th.AssertEquals(t, true, isBadRequest)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
