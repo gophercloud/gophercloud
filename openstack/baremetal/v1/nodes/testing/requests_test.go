@@ -380,6 +380,28 @@ func TestCleanStepRequiresStep(t *testing.T) {
 	}
 }
 
+func TestNodeChangeProvisionStateService(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeChangeProvisionStateService(t)
+
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
+		Target: nodes.TargetService,
+		ServiceSteps: []nodes.ServiceStep{
+			{
+				Interface: nodes.InterfaceBIOS,
+				Step:      "apply_configuration",
+				Args: map[string]interface{}{
+					"settings": []string{},
+				},
+			},
+		},
+	}).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
+
 func TestChangePowerState(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

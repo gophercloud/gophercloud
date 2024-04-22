@@ -183,6 +183,9 @@ type Node struct {
 	// Current deploy step.
 	DeployStep map[string]interface{} `json:"deploy_step"`
 
+	// Current service step.
+	ServiceStep map[string]interface{} `json:"service_step"`
+
 	// String which can be used by external schedulers to identify this Node as a unit of a specific type of resource.
 	// For more details, see: https://docs.openstack.org/ironic/latest/install/configure-nova-flavors.html
 	ResourceClass string `json:"resource_class"`

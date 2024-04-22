@@ -242,3 +242,33 @@ func TestNodesVirtualMedia(t *testing.T) {
 	err = nodes.DetachVirtualMedia(context.TODO(), client, node.UUID, nodes.DetachVirtualMediaOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestNodesServicingHold(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/2023.2")
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.87"
+
+	node, err := CreateFakeNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+
+	node, err = DeployFakeNode(t, client, node)
+	th.AssertNoErr(t, err)
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 30*time.Second)
+	defer cancel()
+
+	_, err = ChangeProvisionStateAndWait(ctx, client, node, nodes.ProvisionStateOpts{
+		Target: nodes.TargetService,
+		ServiceSteps: []nodes.ServiceStep{
+			{
+				Interface: nodes.InterfaceDeploy,
+				Step:      nodes.StepReboot,
+			},
+		},
+	}, nodes.Active)
+	th.AssertNoErr(t, err)
+}

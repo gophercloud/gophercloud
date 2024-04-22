@@ -614,6 +614,21 @@ const NodeProvisionStateConfigDriveBody = `
 }
 `
 
+const NodeProvisionStateServiceBody = `
+{
+    "target": "service",
+    "service_steps": [
+        {
+            "interface": "bios",
+            "step": "apply_configuration",
+            "args": {
+		"settings": []
+            }
+        }
+    ]
+}
+`
+
 const NodeBIOSSettingsBody = `
 {
   "bios": [
@@ -1454,6 +1469,15 @@ func HandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateConfigDriveBody)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func HandleNodeChangeProvisionStateService(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeProvisionStateServiceBody)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
