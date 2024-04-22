@@ -17,6 +17,12 @@ jobs:
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum master
               MAGNUMCLIENT_BRANCH=master
+          - name: "caracal"
+            openstack_version: "stable/2024.1"
+            ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum stable/2024.1
+              MAGNUMCLIENT_BRANCH=stable/2024.1
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
