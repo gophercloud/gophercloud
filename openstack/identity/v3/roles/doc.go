@@ -131,5 +131,46 @@ Example to Unassign a Role From a User in a Project
 	if err != nil {
 		panic(err)
 	}
+
+Example to Create a Role Inference Rule
+
+	priorRoleID := "7ceab6192ea34a548cc71b24f72e762c"
+	impliedRoleID := "97e2f5d38bc94842bc3da818c16762ed"
+
+	actual, err := roles.CreateRoleInferenceRule(context.TODO(), identityClient, priorRoleID, impliedRoleID).Extract()
+
+	if err != nil {
+		panic(err)
+	}
+
+Example to Get a Role Inference Rule
+
+	priorRoleID := "7ceab6192ea34a548cc71b24f72e762c"
+	impliedRoleID := "97e2f5d38bc94842bc3da818c16762ed"
+
+	actual, err := roles.GetRoleInferenceRule(context.TODO(), identityClient, priorRoleID, impliedRoleID).Extract()
+
+	if err != nil {
+		panic(err)
+	}
+
+Example to Delete a Role Inference Rule
+
+	priorRoleID := "7ceab6192ea34a548cc71b24f72e762c"
+	impliedRoleID := "97e2f5d38bc94842bc3da818c16762ed"
+
+	actual, err := roles.DeleteRoleInferenceRule(context.TODO(), identityClient, priorRoleID, impliedRoleID).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
+
+Example to List Role Inference Rules
+
+	actual, err := roles.ListRoleInferenceRules(context.TODO(), identityClient).Extract()
+
+	if err != nil {
+		panic(err)
+	}
 */
 package roles
