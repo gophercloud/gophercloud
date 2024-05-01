@@ -138,6 +138,44 @@ const UpdateOutput = `
 }
 `
 
+// ListTagsOutput provides the output to a ListTags request.
+const ListTagsOutput = `
+{
+    "tags": ["foo", "bar"]
+}
+`
+
+// ModifyProjectTagsRequest provides the input to a ModifyTags request.
+const ModifyProjectTagsRequest = `
+{
+    "tags": ["foo", "bar"]
+}
+`
+
+// ModifyProjectTagsOutput provides the output to a ModifyTags request.
+const ModifyProjectTagsOutput = `
+{
+    "links": {
+        "next": null,
+        "previous": null,
+        "self": "http://identity:5000/v3/projects"
+    },
+    "projects": [
+        {
+            "description": "Test Project",
+            "domain_id": "default",
+            "enabled": true,
+            "id": "3d4c2c82bd5948f0bcab0cf3a7c9b48c",
+            "links": {
+                "self": "http://identity:5000/v3/projects/3d4c2c82bd5948f0bcab0cf3a7c9b48c"
+            },
+            "name": "demo",
+            "tags": ["foo", "bar"]
+        }
+    ]
+}
+`
+
 // FirstProject is a Project fixture.
 var FirstProject = projects.Project{
 	Description: "my first project",
@@ -211,6 +249,31 @@ var ExpectedAvailableProjectsSlice = []projects.Project{FirstProject, SecondProj
 
 // ExpectedProjectSlice is the slice of projects expected to be returned from ListOutput.
 var ExpectedProjectSlice = []projects.Project{RedTeam, BlueTeam}
+
+var ExpectedTags = projects.Tags{
+	Tags: []string{"foo", "bar"},
+}
+
+var ExpectedProjects = projects.ProjectTags{
+	Projects: []projects.Project{
+		{
+			Description: "Test Project",
+			DomainID:    "default",
+			Enabled:     true,
+			ID:          "3d4c2c82bd5948f0bcab0cf3a7c9b48c",
+			Extra: map[string]interface{}{"links": map[string]interface{}{
+				"self": "http://identity:5000/v3/projects/3d4c2c82bd5948f0bcab0cf3a7c9b48c",
+			}},
+			Name: "demo",
+			Tags: []string{"foo", "bar"},
+		},
+	},
+	Links: map[string]interface{}{
+		"next":     nil,
+		"previous": nil,
+		"self":     "http://identity:5000/v3/projects",
+	},
+}
 
 // HandleListAvailableProjectsSuccessfully creates an HTTP handler at `/auth/projects`
 // on the test handler mux that responds with a list of two tenants.
@@ -288,5 +351,34 @@ func HandleUpdateProjectSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, UpdateOutput)
+	})
+}
+
+func HandleListProjectTagsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/966b3c7d36a24facaf20b7e458bf2192/tags", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListTagsOutput)
+	})
+}
+
+func HandleModifyProjectTagsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/966b3c7d36a24facaf20b7e458bf2192/tags", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, ModifyProjectTagsRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ModifyProjectTagsOutput)
+	})
+}
+func HandleDeleteProjectTagsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/966b3c7d36a24facaf20b7e458bf2192/tags", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }

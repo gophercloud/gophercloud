@@ -364,3 +364,32 @@ func TestProjectsTags(t *testing.T) {
 	tools.PrintResource(t, updatedProject)
 	th.AssertEquals(t, len(updatedProject.Tags), 0)
 }
+
+func TestProjectsTagsCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	createOpts := projects.CreateOpts{
+		Tags: []string{"Tag1", "Tag2"},
+	}
+
+	projectMain, err := CreateProject(t, client, &createOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, client, projectMain.ID)
+
+	projectTagsList, err := projects.ListTags(context.TODO(), client, projectMain.ID).Extract()
+	tools.PrintResource(t, projectTagsList)
+	th.AssertNoErr(t, err)
+
+	modifyOpts := projects.ModifyTagsOpts{
+		Tags: []string{"foo", "bar"},
+	}
+	projectTags, err := projects.ModifyTags(context.TODO(), client, projectMain.ID, modifyOpts).Extract()
+	tools.PrintResource(t, projectTags)
+	th.AssertNoErr(t, err)
+
+	err = projects.DeleteTags(context.TODO(), client, projectMain.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

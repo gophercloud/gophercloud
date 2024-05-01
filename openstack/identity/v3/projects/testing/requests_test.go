@@ -134,4 +134,37 @@ func TestUpdateProject(t *testing.T) {
 	actual, err := projects.Update(context.TODO(), client.ServiceClient(), "1234", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, UpdatedRedTeam, *actual)
+	t.Log(projects.Update(context.TODO(), client.ServiceClient(), "1234", updateOpts))
+}
+
+func TestListProjectTags(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListProjectTagsSuccessfully(t)
+
+	actual, err := projects.ListTags(context.TODO(), client.ServiceClient(), "966b3c7d36a24facaf20b7e458bf2192").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedTags, *actual)
+}
+
+func TestModifyProjectTags(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleModifyProjectTagsSuccessfully(t)
+
+	modifyOpts := projects.ModifyTagsOpts{
+		Tags: []string{"foo", "bar"},
+	}
+	actual, err := projects.ModifyTags(context.TODO(), client.ServiceClient(), "966b3c7d36a24facaf20b7e458bf2192", modifyOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedProjects, *actual)
+}
+
+func TestDeleteTags(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteProjectTagsSuccessfully(t)
+
+	err := projects.DeleteTags(context.TODO(), client.ServiceClient(), "966b3c7d36a24facaf20b7e458bf2192").ExtractErr()
+	th.AssertNoErr(t, err)
 }

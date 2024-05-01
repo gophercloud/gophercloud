@@ -154,3 +154,49 @@ func (r projectResult) Extract() (*Project, error) {
 	err := r.ExtractInto(&s)
 	return s.Project, err
 }
+
+// Tags represents a list of Tags object.
+type Tags struct {
+	// Tags is the list of tags associated with the project.
+	Tags []string `json:"tags,omitempty"`
+}
+
+// ListTagsResult is the result of a List Tags request. Call its Extract method to
+// interpret it as a list of tags.
+type ListTagsResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any ListTagsResult as a Tags Object.
+func (r ListTagsResult) Extract() (*Tags, error) {
+	var s = &Tags{}
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// ProjectTags represents a list of Tags object.
+type ProjectTags struct {
+	// Tags is the list of tags associated with the project.
+	Projects []Project `json:"projects,omitempty"`
+	// Links contains referencing links to the implied_role.
+	Links map[string]interface{} `json:"links"`
+}
+
+// ModifyTagsResLinksult is the result of a  Tags request. Call its Extract method to
+// interpret it as a project of tags.
+type ModifyTagsResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any ModifyTags as a Tags Object.
+func (r ModifyTagsResult) Extract() (*ProjectTags, error) {
+	var s = &ProjectTags{}
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// DeleteTagsResult is the result of a Delete Tags request. Call its ExtractErr method to
+// determine if the request succeeded or failed.
+type DeleteTagsResult struct {
+	gophercloud.ErrResult
+}
