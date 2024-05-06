@@ -100,7 +100,7 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 				options.cloudsyamlReader = f
 
 				if options.secureyamlReader == nil {
-					securePath := path.Join(path.Base(cloudsPath), "secure.yaml")
+					securePath := path.Join(path.Dir(cloudsPath), "secure.yaml")
 					secureF, err := os.Open(securePath)
 					if err != nil && !errors.As(err, &errNotFound) {
 						return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to open %q: %w", securePath, err)
