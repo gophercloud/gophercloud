@@ -22,7 +22,6 @@ package clouds
 import (
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -90,27 +89,22 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		}
 
 		for _, cloudsPath := range options.locations {
-			var errNotFound *os.PathError
 			f, err := os.Open(cloudsPath)
-			if err != nil && !errors.As(err, &errNotFound) {
-				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to open %q: %w", cloudsPath, err)
+			if err != nil {
+				continue
 			}
-			if err == nil {
-				defer f.Close()
-				options.cloudsyamlReader = f
+			defer f.Close()
+			options.cloudsyamlReader = f
 
-				if options.secureyamlReader == nil {
-					securePath := path.Join(path.Dir(cloudsPath), "secure.yaml")
-					secureF, err := os.Open(securePath)
-					if err != nil && !errors.As(err, &errNotFound) {
-						return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to open %q: %w", securePath, err)
-					}
-					if err == nil {
-						defer secureF.Close()
-						options.secureyamlReader = secureF
-					}
+			if options.secureyamlReader == nil {
+				securePath := path.Join(path.Dir(cloudsPath), "secure.yaml")
+				secureF, err := os.Open(securePath)
+				if err == nil {
+					defer secureF.Close()
+					options.secureyamlReader = secureF
 				}
 			}
+			break
 		}
 		if options.cloudsyamlReader == nil {
 			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("clouds file not found. Search locations were: %v", options.locations)
