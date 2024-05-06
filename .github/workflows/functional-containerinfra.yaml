@@ -27,12 +27,6 @@ jobs:
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/2023.1
               MAGNUMCLIENT_BRANCH=stable/2023.1
-          - name: "zed"
-            openstack_version: "stable/zed"
-            ubuntu_version: "20.04"
-            devstack_conf_overrides: |
-              enable_plugin magnum https://github.com/openstack/magnum stable/zed
-              MAGNUMCLIENT_BRANCH=stable/zed
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
