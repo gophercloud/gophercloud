@@ -243,3 +243,58 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// CheckTags lists tags for a project.
+func ListTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r ListTagsResult) {
+	resp, err := client.Get(ctx, listTagsURL(client, projectID), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Tags represents a list of Tags object.
+type ModifyTagsOpts struct {
+	// Tags is the list of tags associated with the project.
+	Tags []string `json:"tags,omitempty"`
+}
+
+// ModifyTagsOptsBuilder allows extensions to add additional parameters to
+// the Modify request.
+type ModifyTagsOptsBuilder interface {
+	ToModifyTagsCreateMap() (map[string]interface{}, error)
+}
+
+// ToModifyTagsCreateMap formats a ModifyTagsOpts into a Modify tags request.
+func (opts ModifyTagsOpts) ToModifyTagsCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// ModifyTags deletes all tags of a project and adds new ones.
+func ModifyTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string, opts ModifyTagsOpts) (r ModifyTagsResult) {
+
+	b, err := opts.ToModifyTagsCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, modifyTagsURL(client, projectID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteTag deletes a tag from a project.
+func DeleteTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteTagsResult) {
+	resp, err := client.Delete(ctx, deleteTagsURL(client, projectID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
