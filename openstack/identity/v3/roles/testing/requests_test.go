@@ -343,3 +343,42 @@ func TestUnassign(t *testing.T) {
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestCreateRoleInferenceRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateRoleInferenceRule(t)
+
+	actual, err := roles.CreateRoleInferenceRule(context.TODO(), client.ServiceClient(), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expectedRoleInferenceRule, *actual)
+}
+
+func TestListRoleInferenceRules(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListRoleInferenceRules(t)
+
+	actual, err := roles.ListRoleInferenceRules(context.TODO(), client.ServiceClient()).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expectedRoleInferenceRuleList, *actual)
+}
+
+func TestDeleteRoleInferenceRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteRoleInferenceRule(t)
+
+	err := roles.DeleteRoleInferenceRule(context.TODO(), client.ServiceClient(), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestGetInferenceRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetRoleInferenceRule(t)
+
+	actual, err := roles.GetRoleInferenceRule(context.TODO(), client.ServiceClient(), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expectedRoleInferenceRule, *actual)
+}

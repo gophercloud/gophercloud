@@ -210,6 +210,96 @@ const ListAssignmentsOnResourceOutput = `
 }
 `
 
+const CreateRoleInferenceRuleOutput = `
+{
+    "role_inference": {
+        "prior_role": {
+            "id": "7ceab6192ea34a548cc71b24f72e762c",
+            "links": {
+                "self": "http://example.com/identity/v3/roles/7ceab6192ea34a548cc71b24f72e762c"
+            },
+            "name": "prior role name"
+        },
+        "implies": {
+            "id": "97e2f5d38bc94842bc3da818c16762ed",
+            "links": {
+                "self": "http://example.com/identity/v3/roles/97e2f5d38bc94842bc3da818c16762ed"
+            },
+            "name": "implied role name"
+        }
+    },
+    "links": {
+        "self": "http://example.com/identity/v3/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed"
+    }
+}
+`
+
+const ListRoleInferenceRulesOutput = `
+{
+    "role_inferences": [
+        {
+            "prior_role": {
+                "id": "1acd3c5aa0e246b9a7427d252160dcd1",
+                "links": {
+                    "self": "http://example.com/identity/v3/roles/1acd3c5aa0e246b9a7427d252160dcd1"
+                },
+                "description": "My new role",
+                "name": "prior role name"
+            },
+            "implies": [
+                {
+                    "id": "3602510e2e1f499589f78a0724dcf614",
+                    "links": {
+                        "self": "http://example.com/identity/v3/roles/3602510e2e1f499589f78a0724dcf614"
+                    },
+                    "description": "My new role",
+                    "name": "implied role1 name"
+                },
+                {
+                    "id": "738289aeef684e73a987f7cf2ec6d925",
+                    "links": {
+                        "self": "http://example.com/identity/v3/roles/738289aeef684e73a987f7cf2ec6d925"
+                    },
+                    "description": "My new role",
+                    "name": "implied role2 name"
+                }
+            ]
+        },
+        {
+            "prior_role": {
+                "id": "bbf7a5098bb34407b7164eb6ff9f144e",
+                "links": {
+                    "self" : "http://example.com/identity/v3/roles/bbf7a5098bb34407b7164eb6ff9f144e"
+                },
+                "description": "My new role",
+                "name": "prior role name"
+            },
+            "implies": [
+                {
+                    "id": "872b20ad124c4c1bafaef2b1aae316ab",
+                    "links": {
+                        "self": "http://example.com/identity/v3/roles/872b20ad124c4c1bafaef2b1aae316ab"
+                    },
+                    "description": null,
+                    "name": "implied role1 name"
+                },
+                {
+                    "id": "1d865b1b2da14cb7b05254677e5f36a2",
+                    "links": {
+                        "self": "http://example.com/identity/v3/roles/1d865b1b2da14cb7b05254677e5f36a2"
+                    },
+                    "description": null,
+                    "name": "implied role2 name"
+                }
+            ]
+        }
+    ],
+    "links": {
+        "self": "http://example.com/identity/v3/role_inferences"
+    }
+}
+`
+
 // FirstRole is the first role in the List request.
 var FirstRole = roles.Role{
 	DomainID: "default",
@@ -513,4 +603,142 @@ func HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t *testing.T) {
 	}
 
 	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles", fn)
+}
+
+var expectedRoleInferenceRule = roles.RoleInferenceRule{
+	RoleInference: roles.RoleInference{
+		PriorRole: roles.PriorRole{
+			ID: "7ceab6192ea34a548cc71b24f72e762c",
+			Links: map[string]interface{}{
+				"self": "http://example.com/identity/v3/roles/7ceab6192ea34a548cc71b24f72e762c",
+			},
+			Name: "prior role name",
+		},
+		ImpliedRole: roles.ImpliedRole{
+			ID: "97e2f5d38bc94842bc3da818c16762ed",
+			Links: map[string]interface{}{
+				"self": "http://example.com/identity/v3/roles/97e2f5d38bc94842bc3da818c16762ed",
+			},
+			Name: "implied role name",
+		},
+	},
+	Links: map[string]interface{}{
+		"self": "http://example.com/identity/v3/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed",
+	},
+}
+
+func HandleCreateRoleInferenceRule(t *testing.T) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, CreateRoleInferenceRuleOutput)
+	}
+
+	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
+}
+
+var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
+	RoleInferenceRuleList: []roles.RoleInferenceRules{
+		{
+			PriorRole: roles.PriorRoleObject{
+				ID: "1acd3c5aa0e246b9a7427d252160dcd1",
+				Links: map[string]interface{}{
+					"self": "http://example.com/identity/v3/roles/1acd3c5aa0e246b9a7427d252160dcd1",
+				},
+				Name:        "prior role name",
+				Description: "My new role",
+			},
+			ImpliedRoles: []roles.ImpliedRoleObject{
+				{
+					ID: "3602510e2e1f499589f78a0724dcf614",
+					Links: map[string]interface{}{
+						"self": "http://example.com/identity/v3/roles/3602510e2e1f499589f78a0724dcf614",
+					},
+					Name:        "implied role1 name",
+					Description: "My new role",
+				},
+				{
+					ID: "738289aeef684e73a987f7cf2ec6d925",
+					Links: map[string]interface{}{
+						"self": "http://example.com/identity/v3/roles/738289aeef684e73a987f7cf2ec6d925",
+					},
+					Name:        "implied role2 name",
+					Description: "My new role",
+				},
+			},
+		},
+		{
+			PriorRole: roles.PriorRoleObject{
+				ID: "bbf7a5098bb34407b7164eb6ff9f144e",
+				Links: map[string]interface{}{
+					"self": "http://example.com/identity/v3/roles/bbf7a5098bb34407b7164eb6ff9f144e",
+				},
+				Name:        "prior role name",
+				Description: "My new role",
+			},
+			ImpliedRoles: []roles.ImpliedRoleObject{
+				{
+					ID: "872b20ad124c4c1bafaef2b1aae316ab",
+					Links: map[string]interface{}{
+						"self": "http://example.com/identity/v3/roles/872b20ad124c4c1bafaef2b1aae316ab",
+					},
+					Name:        "implied role1 name",
+					Description: "",
+				},
+				{
+					ID: "1d865b1b2da14cb7b05254677e5f36a2",
+					Links: map[string]interface{}{
+						"self": "http://example.com/identity/v3/roles/1d865b1b2da14cb7b05254677e5f36a2",
+					},
+					Name:        "implied role2 name",
+					Description: "",
+				},
+			},
+		},
+	},
+	Links: map[string]interface{}{
+		"self": "http://example.com/identity/v3/role_inferences",
+	},
+}
+
+func HandleListRoleInferenceRules(t *testing.T) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListRoleInferenceRulesOutput)
+	}
+
+	th.Mux.HandleFunc("/role_inferences", fn)
+}
+
+func HandleDeleteRoleInferenceRule(t *testing.T) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
+}
+
+func HandleGetRoleInferenceRule(t *testing.T) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, CreateRoleInferenceRuleOutput)
+	}
+
+	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
 }

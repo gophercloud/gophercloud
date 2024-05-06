@@ -227,3 +227,99 @@ type AssignmentResult struct {
 type UnassignmentResult struct {
 	gophercloud.ErrResult
 }
+
+type impliedRoleResult struct {
+	gophercloud.Result
+}
+
+// ImpliedRoleResult is the result of an PUT request. Call its Extract method to
+// interpret it as a roleInference.
+type CreateImpliedRoleResult struct {
+	impliedRoleResult
+}
+
+type GetImpliedRoleResult struct {
+	impliedRoleResult
+}
+type PriorRole struct {
+	// ID contains the ID of the role in a prior_role object.
+	ID string `json:"id,omitempty"`
+	// Name contains the name of a role in a prior_role object.
+	Name string `json:"name,omitempty"`
+	// Links contains referencing links to the  prior_role.
+	Links map[string]interface{} `json:"links"`
+}
+
+type ImpliedRole struct {
+	// ID contains the ID of the role in an implied_role object.
+	ID string `json:"id,omitempty"`
+	// Name contains the name of role  in an implied_role.
+	Name string `json:"name,omitempty"`
+	// Links contains referencing links to the implied_role.
+	Links map[string]interface{} `json:"links"`
+}
+
+type RoleInference struct {
+	// PriorRole is the role object that implies a list of implied_role objects.
+	PriorRole PriorRole `json:"prior_role"`
+	// Implies is an array of implied_role objects implied by a prior_role object.
+	ImpliedRole ImpliedRole `json:"implies"`
+}
+
+type RoleInferenceRule struct {
+	RoleInference RoleInference          `json:"role_inference"`
+	Links         map[string]interface{} `json:"links"`
+}
+
+func (r impliedRoleResult) Extract() (*RoleInferenceRule, error) {
+	var s = &RoleInferenceRule{}
+	err := r.ExtractInto(s)
+	return s, err
+}
+
+type ListImpliedRolesResult struct {
+	gophercloud.Result
+}
+
+type ImpliedRoleObject struct {
+	// ID contains the ID of the role in an implied_role object.
+	ID string `json:"id,omitempty"`
+	// Name contains the name of role  in an implied_role.
+	Name string `json:"name,omitempty"`
+	// Name contains the name of role  in an implied_role.
+	Description string `json:"description,omitempty"`
+	// Links contains referencing links to the implied_role.
+	Links map[string]interface{} `json:"links"`
+}
+
+type PriorRoleObject struct {
+	// ID contains the ID of the role in an implied_role object.
+	ID string `json:"id,omitempty"`
+	// Name contains the name of role  in an implied_role.
+	Name string `json:"name,omitempty"`
+	// Name contains the name of role  in an implied_role.
+	Description string `json:"description,omitempty"`
+	// Links contains referencing links to the implied_role.
+	Links map[string]interface{} `json:"links"`
+}
+type RoleInferenceRules struct {
+	// PriorRole is the role object that implies a list of implied_role objects.
+	PriorRole PriorRoleObject `json:"prior_role"`
+	// Implies is an array of implied_role objects implied by a prior_role object.
+	ImpliedRoles []ImpliedRoleObject `json:"implies"`
+}
+
+type RoleInferenceRuleList struct {
+	RoleInferenceRuleList []RoleInferenceRules   `json:"role_inferences"`
+	Links                 map[string]interface{} `json:"links"`
+}
+
+func (r ListImpliedRolesResult) Extract() (*RoleInferenceRuleList, error) {
+	var s = &RoleInferenceRuleList{}
+	err := r.ExtractInto(s)
+	return s, err
+}
+
+type DeleteImpliedRoleResult struct {
+	gophercloud.ErrResult
+}

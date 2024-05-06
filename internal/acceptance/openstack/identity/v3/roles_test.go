@@ -789,3 +789,51 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 }
+
+func TestCRUDRoleInferenceRule(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	priorRoleCreateOpts := roles.CreateOpts{
+		Name: "priorRole",
+		Extra: map[string]interface{}{
+			"description": "prior_role description",
+		},
+	}
+	// Create prior_role in the default domain
+	priorRole, err := CreateRole(t, client, &priorRoleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, priorRole.ID)
+	tools.PrintResource(t, priorRole)
+	tools.PrintResource(t, priorRole.Extra)
+
+	impliedRoleCreateOpts := roles.CreateOpts{
+		Name: "impliedRole",
+		Extra: map[string]interface{}{
+			"description": "implied_role description",
+		},
+	}
+	// Create implied_role in the default domain
+	impliedRole, err := CreateRole(t, client, &impliedRoleCreateOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, impliedRole.ID)
+	tools.PrintResource(t, impliedRole)
+	tools.PrintResource(t, impliedRole.Extra)
+
+	roleInferenceRule, err := roles.CreateRoleInferenceRule(context.TODO(), client, priorRole.ID, impliedRole.ID).Extract()
+	defer roles.DeleteRoleInferenceRule(context.TODO(), client, priorRole.ID, impliedRole.ID)
+
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, roleInferenceRule)
+
+	getRoleInferenceRule, err := roles.GetRoleInferenceRule(context.TODO(), client, priorRole.ID, impliedRole.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, getRoleInferenceRule)
+
+	roleInferenceRuleList, err := roles.ListRoleInferenceRules(context.TODO(), client).Extract()
+	tools.PrintResource(t, roleInferenceRuleList)
+	th.AssertNoErr(t, err)
+
+}

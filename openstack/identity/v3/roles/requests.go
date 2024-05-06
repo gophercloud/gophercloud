@@ -406,3 +406,35 @@ func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID str
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+func CreateRoleInferenceRule(ctx context.Context, client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) (r CreateImpliedRoleResult) {
+	resp, err := client.Put(ctx, createRoleInferenceRuleURL(client, priorRoleID, impliedRoleID), nil, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetRoleInferenceRule(ctx context.Context, client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) (r CreateImpliedRoleResult) {
+	resp, err := client.Get(ctx, getRoleInferenceRuleURL(client, priorRoleID, impliedRoleID), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func DeleteRoleInferenceRule(ctx context.Context, client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) (r DeleteImpliedRoleResult) {
+	resp, err := client.Delete(ctx, deleteRoleInferenceRuleURL(client, priorRoleID, impliedRoleID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func ListRoleInferenceRules(ctx context.Context, client *gophercloud.ServiceClient) (r ListImpliedRolesResult) {
+	resp, err := client.Get(ctx, listRoleInferenceRulesURL(client), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
