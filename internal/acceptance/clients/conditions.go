@@ -83,8 +83,24 @@ func RequireNovaNetwork(t *testing.T) {
 	}
 }
 
-// RequireIronicHTTPBasic will restric a test to be only run in
-// environments that have Ironic using http_basic.
+// RequireCinderNoAuth will restrict a test to be only run in environments that
+// have Cinder using noauth.
+func RequireCinderNoAuth(t *testing.T) {
+	if os.Getenv("CINDER_ENDPOINT") == "" || os.Getenv("OS_USERNAME") == "" {
+		t.Skip("this test requires Cinder using noauth, set OS_USERNAME and CINDER_ENDPOINT")
+	}
+}
+
+// RequireIronicNoAuth will restrict a test to be only run in environments that
+// have Ironic using noauth.
+func RequireIronicNoAuth(t *testing.T) {
+	if os.Getenv("IRONIC_ENDPOINT") == "" || os.Getenv("OS_USERNAME") == "" {
+		t.Skip("this test requires IRONIC using noauth, set OS_USERNAME and IRONIC_ENDPOINT")
+	}
+}
+
+// RequireIronicHTTPBasic will restrict a test to be only run in environments
+// that have Ironic using http_basic.
 func RequireIronicHTTPBasic(t *testing.T) {
 	if os.Getenv("IRONIC_ENDPOINT") == "" || os.Getenv("OS_USERNAME") == "" || os.Getenv("OS_PASSWORD") == "" {
 		t.Skip("this test requires Ironic using http_basic, set OS_USERNAME, OS_PASSWORD and IRONIC_ENDPOINT")

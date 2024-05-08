@@ -11,7 +11,6 @@ import (
 	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions/layer3"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/dns"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/floatingips"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
@@ -26,11 +25,8 @@ func TestDNSPortCRUDL(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "dns-integration").Extract()
-	if err != nil {
-		t.Skip("This test requires dns-integration Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "dns-integration")
 
 	// Create Network
 	networkDNSDomain := "local."
@@ -153,11 +149,8 @@ func TestDNSFloatingIPCRDL(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "dns-integration").Extract()
-	if err != nil {
-		t.Skip("This test requires dns-integration Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "dns-integration")
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
@@ -215,11 +208,8 @@ func TestDNSNetwork(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "dns-integration").Extract()
-	if err != nil {
-		t.Skip("This test requires dns-integration Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "dns-integration")
 
 	// Create Network
 	networkDNSDomain := "local."

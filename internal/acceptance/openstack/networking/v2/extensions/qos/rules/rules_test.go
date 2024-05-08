@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	v2 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	accpolicies "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/qos/rules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -19,11 +19,8 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
-	if err != nil {
-		t.Skip("This test requires qos Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "qos")
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
@@ -68,11 +65,8 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
-	if err != nil {
-		t.Skip("This test requires qos Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "qos")
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
@@ -117,11 +111,8 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	extension, err := extensions.Get(context.TODO(), client, "qos").Extract()
-	if err != nil {
-		t.Skip("This test requires qos Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "qos")
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
