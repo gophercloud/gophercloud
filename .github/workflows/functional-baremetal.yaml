@@ -93,10 +93,11 @@ jobs:
         with:
           go-version: '^1.23'
       - name: Run Gophercloud acceptance tests
-        run: ./script/acceptancetest
+        run: |
+          source ${{ github.workspace }}/script/stackenv
+          make acceptance-baremetal
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
-          PACKAGE: "./internal/acceptance/openstack/baremetal/..."
           OS_BRANCH: ${{ matrix.openstack_version }}
           # TODO(dtantsur): default to true when no longer supporting versions before 2024.1
           USE_SYSTEM_SCOPE: ${{ matrix.use_system_scope }}
