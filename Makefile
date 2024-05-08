@@ -38,8 +38,12 @@ coverage:
 	$(GO_TEST) -covermode count -coverprofile cover.out -coverpkg=./... ./...
 .PHONY: coverage
 
-acceptance: acceptance-baremetal acceptance-blockstorage acceptance-compute acceptance-container acceptance-containerinfra acceptance-db acceptance-dns acceptance-identity acceptance-image acceptance-keymanager acceptance-loadbalancer acceptance-messaging acceptance-networking acceptance-objectstorage acceptance-orchestration acceptance-placement acceptance-sharedfilesystems acceptance-workflow
+acceptance: acceptance-basic acceptance-baremetal acceptance-blockstorage acceptance-compute acceptance-container acceptance-containerinfra acceptance-db acceptance-dns acceptance-identity acceptance-image acceptance-keymanager acceptance-loadbalancer acceptance-messaging acceptance-networking acceptance-objectstorage acceptance-orchestration acceptance-placement acceptance-sharedfilesystems acceptance-workflow
 .PHONY: acceptance
+
+acceptance-basic:
+	$(GO_TEST) -tags "fixtures acceptance" ./internal/acceptance/openstack
+.PHONY: acceptance-basic
 
 acceptance-baremetal:
 	$(GO_TEST) -tags "fixtures acceptance" ./internal/acceptance/openstack/baremetal/...
