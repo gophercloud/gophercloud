@@ -113,6 +113,12 @@ func AuthenticateV2(ctx context.Context, client *gophercloud.ProviderClient, opt
 	return v2auth(ctx, client, "", options, eo)
 }
 
+type reauthToken struct {
+	tokens2.AuthOptionsBuilder
+}
+
+func (rt *reauthToken) CanReauth() bool { return false }
+
 func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
 	v2Client, err := NewIdentityV2(client, eo)
 	if err != nil {
@@ -143,21 +149,8 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		tac.SetThrowaway(true)
 		tac.ReauthFunc = nil
 		tac.SetTokenAndAuthResult(nil)
-		var tao tokens2.AuthOptionsBuilder
-		switch ot := options.(type) {
-		case *gophercloud.AuthOptions:
-			o := *ot
-			o.AllowReauth = false
-			tao = &o
-		case *tokens2.AuthOptions:
-			o := *ot
-			o.AllowReauth = false
-			tao = &o
-		default:
-			tao = options
-		}
 		client.ReauthFunc = func(ctx context.Context) error {
-			err := v2auth(ctx, &tac, endpoint, tao, eo)
+			err := v2auth(ctx, &tac, endpoint, &reauthToken{options}, eo)
 			if err != nil {
 				return err
 			}
