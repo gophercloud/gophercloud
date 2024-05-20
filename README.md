@@ -211,6 +211,27 @@ func main() {
 The above code sample creates a new server with the parameters, and returns a
 [`servers.Server`](https://pkg.go.dev/github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers#Server).
 
+## Supported Services
+
+|        **Service**       | **Name**         |             **Module**             | **1.x** | **2.x** |
+|:------------------------:|------------------|:----------------------------------:|:-------:|:-------:|
+|         Baremetal        |      Ironic      |        `openstack/baremetal`       |    ✔    |    ✔    |
+|  Baremetal Introspection | Ironic Inspector | `openstack/baremetalintrospection` |    ✔    |    ✔    |
+|       Block Storage      |      Cinder      |      `openstack/blockstorage`      |    ✔    |    ✔    |
+|        Clustering        |      Senlin      |       `openstack/clustering`       |    ✔    |    ✘    |
+|          Compute         |       Nova       |         `openstack/compute`        |    ✔    |    ✔    |
+|         Container        |        Zun       |        `openstack/container`       |    ✔    |    ✔    |
+| Container Infrastructure |      Magnum      |     `openstack/containerinfra`     |    ✔    |    ✔    |
+|         Database         |       Trove      |           `openstack/db`           |    ✔    |    ✔    |
+|            DNS           |     Designate    |           `openstack/dns`          |    ✔    |    ✔    |
+|         Identity         |     Keystone     |        `openstack/identity`        |    ✔    |    ✔    |
+|           Image          |      Glance      |          `openstack/image`         |    ✔    |    ✔    |
+|      Key Management      |     Barbican     |       `openstack/keymanager`       |    ✔    |    ✔    |
+|      Load Balancing      |      Octavia     |      `openstack/loadbalancer`      |    ✔    |    ✔    |
+|         Messaging        |       Zaqar      |        `openstack/messaging`       |    ✔    |    ✔    |
+|        Networking        |      Neutron     |       `openstack/networking`       |    ✔    |    ✔    |
+|      Object Storage      |       Swift      |      `openstack/objectstorage`     |    ✔    |    ✔    |
+
 ## Advanced Usage
 
 Have a look at the [FAQ](./docs/FAQ.md) for some tips on customizing the way Gophercloud works.
