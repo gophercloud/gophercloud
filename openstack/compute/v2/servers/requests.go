@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net"
 	"regexp"
 	"strings"
@@ -128,14 +129,14 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// SchedulerHintsCreateOptsBuilder builds the scheduler hints into a serializable format.
-type SchedulerHintsCreateOptsBuilder interface {
-	ToServerSchedulerHintsCreateMap() (map[string]interface{}, error)
+// SchedulerHintOptsBuilder builds the scheduler hints into a serializable format.
+type SchedulerHintOptsBuilder interface {
+	ToSchedulerHintsMap() (map[string]interface{}, error)
 }
 
-// SchedulerHints represents a set of scheduling hints that are passed to the
+// SchedulerHintOpts represents a set of scheduling hints that are passed to the
 // OpenStack scheduler.
-type SchedulerHints struct {
+type SchedulerHintOpts struct {
 	// Group specifies a Server Group to place the instance in.
 	Group string
 
@@ -164,8 +165,8 @@ type SchedulerHints struct {
 	AdditionalProperties map[string]interface{}
 }
 
-// ToServerSchedulerHintsMap builds the scheduler hints into a serializable format.
-func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interface{}, error) {
+// ToSchedulerHintsMap assembles a request body for scheduler hints.
+func (opts SchedulerHintOpts) ToSchedulerHintsMap() (map[string]interface{}, error) {
 	sh := make(map[string]interface{})
 
 	uuidRegex, _ := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
@@ -173,7 +174,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if opts.Group != "" {
 		if !uuidRegex.MatchString(opts.Group) {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.Group"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.Group"
 			err.Value = opts.Group
 			err.Info = "Group must be a UUID"
 			return nil, err
@@ -185,7 +186,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		for _, diffHost := range opts.DifferentHost {
 			if !uuidRegex.MatchString(diffHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "servers.SchedulerHints.DifferentHost"
+				err.Argument = "servers.schedulerhints.SchedulerHintOpts.DifferentHost"
 				err.Value = opts.DifferentHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -198,7 +199,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		for _, sameHost := range opts.SameHost {
 			if !uuidRegex.MatchString(sameHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "servers.SchedulerHints.SameHost"
+				err.Argument = "servers.schedulerhints.SchedulerHintOpts.SameHost"
 				err.Value = opts.SameHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -222,7 +223,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if len(opts.Query) > 0 {
 		if len(opts.Query) < 3 {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.Query"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
 			return nil, err
@@ -232,7 +233,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		b, err := json.Marshal(opts.Query)
 		if err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.Query"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
 			return nil, err
@@ -252,7 +253,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if opts.BuildNearHostIP != "" {
 		if _, _, err := net.ParseCIDR(opts.BuildNearHostIP); err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.BuildNearHostIP"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.BuildNearHostIP"
 			err.Value = opts.BuildNearHostIP
 			err.Info = "Must be a valid subnet in the form 192.168.1.1/24"
 			return nil, err
@@ -268,7 +269,11 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		}
 	}
 
-	return sh, nil
+	if len(sh) == 0 {
+		return sh, nil
+	}
+
+	return map[string]interface{}{"os:scheduler_hints": sh}, nil
 }
 
 // Network is used within CreateOpts to control a new server's network
@@ -503,9 +508,6 @@ type CreateOpts struct {
 
 	// DiskConfig [optional] controls how the created server's disk is partitioned.
 	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
-
-	// SchedulerHints provides a set of hints to the scheduler.
-	SchedulerHints SchedulerHintsCreateOptsBuilder
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
@@ -517,8 +519,6 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	delete(b, "SchedulerHints")
 
 	if opts.UserData != nil {
 		var userData string
@@ -578,32 +578,27 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	// Now we do our enveloping
 	b = map[string]interface{}{"server": b}
 
-	if opts.SchedulerHints == nil {
-		return b, nil
-	}
-
-	schedulerHints, err := opts.SchedulerHints.ToServerSchedulerHintsCreateMap()
-	if err != nil {
-		return nil, err
-	}
-
-	if len(schedulerHints) == 0 {
-		return b, nil
-	}
-
-	b["os:scheduler_hints"] = schedulerHints
-
 	return b, nil
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
-	reqBody, err := opts.ToServerCreateMap()
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
+	b, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(ctx, createURL(client), reqBody, &r.Body, &gophercloud.RequestOpts{
+
+	if hintOpts != nil {
+		sh, err := hintOpts.ToSchedulerHintsMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		maps.Copy(b, sh)
+	}
+
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

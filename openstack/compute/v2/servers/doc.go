@@ -53,59 +53,62 @@ Example to Create a Server
 		FlavorRef: "flavor-uuid",
 	}
 
-	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), computeClient, createOpts, nil).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Add a Server to a Server Group
 
-	createOpts := servers.CreateOpts{
-		Name:           "server_name",
-		ImageRef:       "image-uuid",
-		FlavorRef:      "flavor-uuid",
-		SchedulerHints: servers.SchedulerHints{
-			Group: "servergroup-uuid",
-		},
+	schedulerHintOpts := servers.SchedulerHintOpts{
+		Group: "servergroup-uuid",
 	}
 
-	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	createOpts := servers.CreateOpts{
+		Name:      "server_name",
+		ImageRef:  "image-uuid",
+		FlavorRef: "flavor-uuid",
+	}
+
+	server, err := servers.Create(context.TODO(), computeClient, createOpts, schedulerHintOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Place Server B on a Different Host than Server A
 
-	createOpts := servers.CreateOpts{
-		Name:           "server_name",
-		ImageRef:       "image-uuid",
-		FlavorRef:      "flavor-uuid",
-		SchedulerHints: servers.SchedulerHints{
-			DifferentHost: []string{
-				"server-a-uuid",
-			}
-		},
+	schedulerHintOpts := servers.SchedulerHintOpts{
+		DifferentHost: []string{
+			"server-a-uuid",
+		}
 	}
 
-	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	createOpts := servers.CreateOpts{
+		Name:      "server_b",
+		ImageRef:  "image-uuid",
+		FlavorRef: "flavor-uuid",
+	}
+
+	server, err := servers.Create(context.TODO(), computeClient, createOpts, schedulerHintOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example to Place Server B on the Same Host as Server A
 
-	createOpts := servers.CreateOpts{
-		Name:           "server_name",
-		ImageRef:       "image-uuid",
-		FlavorRef:      "flavor-uuid",
-		SchedulerHints: servers.SchedulerHints{
-			SameHost: []string{
-				"server-a-uuid",
-			}
-		},
+	schedulerHintOpts := servers.SchedulerHintOpts{
+		SameHost: []string{
+			"server-a-uuid",
+		}
 	}
 
-	server, err := servers.Create(context.TODO(), computeClient, createOpts).Extract()
+	createOpts := servers.CreateOpts{
+		Name:      "server_b",
+		ImageRef:  "image-uuid",
+		FlavorRef: "flavor-uuid",
+	}
+
+	server, err := servers.Create(context.TODO(), computeClient, createOpts, schedulerHintOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -133,7 +136,7 @@ a server without using block device mappings.
 		BlockDevice: blockDevices,
 	}
 
-	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -159,7 +162,7 @@ server will use this volume as its root disk.
 		BlockDevice: blockDevices,
 	}
 
-	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -183,7 +186,7 @@ This example will create a server with an existing volume as its root disk.
 		BlockDevice: blockDevices,
 	}
 
-	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -228,7 +231,7 @@ ephemeral disks must have an index of -1.
 		BlockDevice: blockDevices,
 	}
 
-	server, err := servers.Create(context.TODO(), client, createOpts).Extract()
+	server, err := servers.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		panic(err)
 	}

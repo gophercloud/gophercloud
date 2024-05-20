@@ -2,20 +2,22 @@ package volumes
 
 import (
 	"context"
+	"maps"
 	"regexp"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
-// CreateOptsBuilder builds the scheduler hints into a serializable format.
-type SchedulerHintsCreateOptsBuilder interface {
-	ToVolumeSchedulerHintsCreateMap() (map[string]interface{}, error)
+// SchedulerHintOptsBuilder builds the scheduler hints into a serializable format.
+type SchedulerHintOptsBuilder interface {
+	ToSchedulerHintsMap() (map[string]interface{}, error)
 }
 
-// SchedulerHints represents a set of scheduling hints that are passed to the
-// OpenStack scheduler.
-type SchedulerHints struct {
+// SchedulerHintOpts contains options for providing scheduler hints
+// when creating a Volume. This object is passed to the volumes.Create function.
+// For more information about these parameters, see the Volume object.
+type SchedulerHintOpts struct {
 	// DifferentHost will place the volume on a different back-end that does not
 	// host the given volumes.
 	DifferentHost []string
@@ -34,8 +36,8 @@ type SchedulerHints struct {
 	AdditionalProperties map[string]interface{}
 }
 
-// ToVolumeSchedulerHintsCreateMap assembles a request body for the scheduler
-func (opts SchedulerHints) ToVolumeSchedulerHintsCreateMap() (map[string]interface{}, error) {
+// ToSchedulerHintsMap assembles a request body for scheduler hints
+func (opts SchedulerHintOpts) ToSchedulerHintsMap() (map[string]interface{}, error) {
 	sh := make(map[string]interface{})
 
 	uuidRegex, _ := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
@@ -44,7 +46,7 @@ func (opts SchedulerHints) ToVolumeSchedulerHintsCreateMap() (map[string]interfa
 		for _, diffHost := range opts.DifferentHost {
 			if !uuidRegex.MatchString(diffHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "schedulerhints.SchedulerHints.DifferentHost"
+				err.Argument = "volumes.SchedulerHintOpts.DifferentHost"
 				err.Value = opts.DifferentHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -57,7 +59,7 @@ func (opts SchedulerHints) ToVolumeSchedulerHintsCreateMap() (map[string]interfa
 		for _, sameHost := range opts.SameHost {
 			if !uuidRegex.MatchString(sameHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "schedulerhints.SchedulerHints.SameHost"
+				err.Argument = "volumes.SchedulerHintOpts.SameHost"
 				err.Value = opts.SameHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -69,7 +71,7 @@ func (opts SchedulerHints) ToVolumeSchedulerHintsCreateMap() (map[string]interfa
 	if opts.LocalToInstance != "" {
 		if !uuidRegex.MatchString(opts.LocalToInstance) {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "schedulerhints.SchedulerHints.LocalToInstance"
+			err.Argument = "volumes.SchedulerHintOpts.LocalToInstance"
 			err.Value = opts.LocalToInstance
 			err.Info = "The instance must be in UUID format."
 			return nil, err
@@ -87,7 +89,11 @@ func (opts SchedulerHints) ToVolumeSchedulerHintsCreateMap() (map[string]interfa
 		}
 	}
 
-	return sh, nil
+	if len(sh) == 0 {
+		return sh, nil
+	}
+
+	return map[string]interface{}{"OS-SCH-HNT:scheduler_hints": sh}, nil
 }
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
@@ -123,52 +129,33 @@ type CreateOpts struct {
 	ImageID string `json:"imageRef,omitempty"`
 	// The associated volume type
 	VolumeType string `json:"volume_type,omitempty"`
-	// SchedulerHints provides a set of hints to the scheduler.
-	SchedulerHints SchedulerHintsCreateOptsBuilder
 }
 
 // ToVolumeCreateMap assembles a request body based on the contents of a
 // CreateOpts.
 func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
-	// We intentionally don't envelope the body here since we want to strip
-	// some fields out
-	base, err := gophercloud.BuildRequestBody(opts, "")
-	if err != nil {
-		return nil, err
-	}
-
-	delete(base, "SchedulerHints")
-
-	// Now we do our enveloping
-	base = map[string]interface{}{"volume": base}
-
-	if opts.SchedulerHints == nil {
-		return base, nil
-	}
-
-	schedulerHints, err := opts.SchedulerHints.ToVolumeSchedulerHintsCreateMap()
-	if err != nil {
-		return nil, err
-	}
-
-	if len(schedulerHints) == 0 {
-		return base, nil
-	}
-
-	base["OS-SCH-HNT:scheduler_hints"] = schedulerHints
-
-	return base, err
+	return gophercloud.BuildRequestBody(opts, "volume")
 }
 
 // Create will create a new Volume based on the values in CreateOpts. To extract
 // the Volume object from the response, call the Extract method on the
 // CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
+
+	if hintOpts != nil {
+		sh, err := hintOpts.ToSchedulerHintsMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		maps.Copy(b, sh)
+	}
+
 	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})

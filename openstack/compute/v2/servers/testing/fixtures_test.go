@@ -721,8 +721,6 @@ func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]interface{
 		return nil, err
 	}
 
-	delete(b, "SchedulerHints")
-
 	return map[string]interface{}{"server": b}, nil
 }
 
