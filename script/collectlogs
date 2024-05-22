@@ -7,6 +7,10 @@ mkdir -p "$LOG_DIR"
 sudo journalctl -o short-precise --no-pager &> "$LOG_DIR/journal.log"
 # shellcheck disable=SC2024
 sudo systemctl status "devstack@*" &> "$LOG_DIR/devstack-services.txt"
+for service in $(systemctl list-units --output json devstack@* | jq -r '.[].unit | capture("devstack@(?<svc>[a-z\\-]+).service") | '.svc'')
+do
+    journalctl -u "devstack@${service}.service" --no-tail > "${LOG_DIR}/${service}.log"
+done
 free -m > "$LOG_DIR/free.txt"
 dpkg -l > "$LOG_DIR/dpkg-l.txt"
 pip freeze > "$LOG_DIR/pip-freeze.txt"
