@@ -14,15 +14,19 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "22.04"
+            additional_services: "openstack-cli-server"
           - name: "caracal"
             openstack_version: "stable/2024.1"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
+            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Octavia and run loadbalancer acceptance tests
     steps:
@@ -35,7 +39,7 @@ jobs:
           conf_overrides: |
             enable_plugin octavia https://github.com/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://github.com/openstack/neutron ${{ matrix.openstack_version }}
-          enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos'
+          enabled_services: "octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos,${{ matrix.additional_services }}"
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
