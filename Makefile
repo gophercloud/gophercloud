@@ -33,7 +33,7 @@ coverage:
 	go test -covermode count -coverprofile cover.out -coverpkg=./... ./...
 .PHONY: coverage
 
-acceptance: acceptance-baremetal acceptance-blockstorage acceptance-compute acceptance-container acceptance-containerinfra acceptance-db acceptance-dns acceptance-identity acceptance-imageservice acceptance-keymanager acceptance-loadbalancer acceptance-messaging acceptance-networking acceptance-objectstorage acceptance-orchestration acceptance-placement acceptance-sharedfilesystems acceptance-workflow
+acceptance: acceptance-baremetal acceptance-blockstorage acceptance-compute acceptance-container acceptance-containerinfra acceptance-db acceptance-dns acceptance-identity acceptance-image acceptance-keymanager acceptance-loadbalancer acceptance-messaging acceptance-networking acceptance-objectstorage acceptance-orchestration acceptance-placement acceptance-sharedfilesystems acceptance-workflow
 .PHONY: acceptance
 
 acceptance-baremetal:
@@ -69,7 +69,7 @@ acceptance-identity:
 .PHONY: acceptance-identity
 
 acceptance-image:
-	go test -tags "fixtures acceptance" ./internal/acceptance/openstack/imageservice/...
+	go test -tags "fixtures acceptance" ./internal/acceptance/openstack/image/...
 .PHONY: acceptance-image
 
 acceptance-keymanager:
