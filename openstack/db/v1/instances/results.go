@@ -112,6 +112,9 @@ type Instance struct {
 
 	// The instance addresses
 	Addresses []Address
+
+	// Controls database service exposing.
+	Access AccessOpts
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {

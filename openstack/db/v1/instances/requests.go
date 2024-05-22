@@ -47,6 +47,22 @@ func (opts NetworkOpts) ToMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
+// AccessOpts is used within CreateOpts to control database service exposing.
+type AccessOpts struct {
+	// Whether the database service is exposed to the public.
+	// Optional.
+	IsPublic bool `json:"is_public,omitempty"`
+	// A list of IPv4, IPv6 or mix of both CIDRs that restrict access to the database service.
+	// 0.0.0.0/0 is used by default if this parameter is not provided.
+	// Optional.
+	AllowedCIDR []string `json:"allowed_cidrs,omitempty"`
+}
+
+// ToMap converts a AccessOpts to a map[string]string (for a request body).
+func (opts AccessOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
 // CreateOpts is the struct responsible for configuring a new database instance.
 type CreateOpts struct {
 	// The availability zone of the instance.
@@ -73,6 +89,8 @@ type CreateOpts struct {
 	Datastore *DatastoreOpts
 	// Networks dictates how this server will be attached to available networks.
 	Networks []NetworkOpts
+	// A access object defines how the database service is exposed. Optional.
+	Access AccessOpts `json:"access,omitempty"`
 }
 
 // ToInstanceCreateMap will render a JSON map.
@@ -136,6 +154,15 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 			}
 		}
 		instance["nics"] = networks
+	}
+
+	// Add check for opts.Access
+	if opts.Access.IsPublic || len(opts.Access.AllowedCIDR) > 0 {
+		access, err := opts.Access.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["access"] = access
 	}
 
 	volume := map[string]interface{}{

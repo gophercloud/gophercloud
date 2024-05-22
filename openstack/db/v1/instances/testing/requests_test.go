@@ -37,6 +37,10 @@ func TestCreate(t *testing.T) {
 		},
 		Size:       2,
 		VolumeType: "ssd",
+		Access: instances.AccessOpts{
+			IsPublic:    true,
+			AllowedCIDR: []string{"202.78.240.0/24"},
+		},
 	}
 
 	instance, err := instances.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
@@ -70,6 +74,10 @@ func TestCreateWithFault(t *testing.T) {
 		},
 		Size:       2,
 		VolumeType: "ssd",
+		Access: instances.AccessOpts{
+			IsPublic:    true,
+			AllowedCIDR: []string{"202.78.240.0/24"},
+		},
 	}
 
 	instance, err := instances.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
