@@ -126,7 +126,7 @@ func TestJSONRequest(t *testing.T, r *http.Request, expected string) {
 		t.Errorf("Unable to read request body: %v", err)
 	}
 
-	var actualJSON interface{}
+	var actualJSON any
 	err = json.Unmarshal(b, &actualJSON)
 	if err != nil {
 		t.Errorf("Unable to parse request body as JSON: %v", err)

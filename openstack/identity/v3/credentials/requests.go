@@ -52,7 +52,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToCredentialCreateMap() (map[string]interface{}, error)
+	ToCredentialCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a credential.
@@ -68,7 +68,7 @@ type CreateOpts struct {
 }
 
 // ToCredentialCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToCredentialCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToCredentialCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "credential")
 }
 
@@ -96,7 +96,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToCredentialsUpdateMap() (map[string]interface{}, error)
+	ToCredentialsUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents parameters to update a credential.
@@ -112,7 +112,7 @@ type UpdateOpts struct {
 }
 
 // ToUpdateCreateMap formats a UpdateOpts into an update request.
-func (opts UpdateOpts) ToCredentialsUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToCredentialsUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "credential")
 }
 

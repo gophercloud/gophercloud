@@ -110,12 +110,12 @@ const UpdateOutput = `
 // FirstService is the first service in the List request.
 var FirstService = services.Service{
 	ID: "1234",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/services/1234",
 	},
 	Type:    "identity",
 	Enabled: false,
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"name":        "service-one",
 		"description": "Service One",
 	},
@@ -124,12 +124,12 @@ var FirstService = services.Service{
 // SecondService is the second service in the List request.
 var SecondService = services.Service{
 	ID: "9876",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/services/9876",
 	},
 	Type:    "compute",
 	Enabled: false,
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"name":        "service-two",
 		"description": "Service Two",
 		"email":       "service@example.com",
@@ -139,12 +139,12 @@ var SecondService = services.Service{
 // SecondServiceUpdated is the SecondService should look after an Update.
 var SecondServiceUpdated = services.Service{
 	ID: "9876",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/services/9876",
 	},
 	Type:    "compute2",
 	Enabled: false,
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"name":        "service-two",
 		"description": "Service Two Updated",
 		"email":       "service@example.com",

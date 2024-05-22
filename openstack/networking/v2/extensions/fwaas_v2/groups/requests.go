@@ -78,7 +78,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-	ToFirewallGroupCreateMap() (map[string]interface{}, error)
+	ToFirewallGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new firewall group.
@@ -96,7 +96,7 @@ type CreateOpts struct {
 }
 
 // ToFirewallGroupCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToFirewallGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFirewallGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_group")
 }
 
@@ -116,7 +116,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type UpdateOptsBuilder interface {
-	ToFirewallGroupUpdateMap() (map[string]interface{}, error)
+	ToFirewallGroupUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating a firewall group.
@@ -131,7 +131,7 @@ type UpdateOpts struct {
 }
 
 // ToFirewallGroupUpdateMap casts a UpdateOpts struct to a map.
-func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_group")
 }
 

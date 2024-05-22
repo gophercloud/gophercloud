@@ -70,7 +70,7 @@ type Image struct {
 
 	// Properties is a set of key-value pairs, if any, that are associated with
 	// the image.
-	Properties map[string]interface{}
+	Properties map[string]any
 
 	// CreatedAt is the date when the image has been created.
 	CreatedAt time.Time `json:"created_at"`
@@ -102,9 +102,9 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	type tmp Image
 	var s struct {
 		tmp
-		SizeBytes                   interface{} `json:"size"`
-		OpenStackImageImportMethods string      `json:"openstack-image-import-methods"`
-		OpenStackImageStoreIDs      string      `json:"openstack-image-store-ids"`
+		SizeBytes                   any    `json:"size"`
+		OpenStackImageImportMethods string `json:"openstack-image-import-methods"`
+		OpenStackImageStoreIDs      string `json:"openstack-image-store-ids"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -124,12 +124,12 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	}
 
 	// Bundle all other fields into Properties
-	var result interface{}
+	var result any
 	err = json.Unmarshal(b, &result)
 	if err != nil {
 		return err
 	}
-	if resultMap, ok := result.(map[string]interface{}); ok {
+	if resultMap, ok := result.(map[string]any); ok {
 		delete(resultMap, "self")
 		delete(resultMap, "size")
 		delete(resultMap, "openstack-image-import-methods")
@@ -154,7 +154,7 @@ type commonResult struct {
 // Extract interprets any commonResult as an Image.
 func (r commonResult) Extract() (*Image, error) {
 	var s *Image
-	if v, ok := r.Body.(map[string]interface{}); ok {
+	if v, ok := r.Body.(map[string]any); ok {
 		for k, h := range r.Header {
 			if strings.ToLower(k) == "openstack-image-import-methods" {
 				for _, s := range h {

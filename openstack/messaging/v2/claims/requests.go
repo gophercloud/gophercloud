@@ -8,7 +8,7 @@ import (
 
 // CreateOptsBuilder Builder.
 type CreateOptsBuilder interface {
-	ToClaimCreateRequest() (map[string]interface{}, string, error)
+	ToClaimCreateRequest() (map[string]any, string, error)
 }
 
 // CreateOpts params to be used with Create.
@@ -26,7 +26,7 @@ type CreateOpts struct {
 
 // ToClaimCreateRequest assembles a body and URL for a Create request based on
 // the contents of a CreateOpts.
-func (opts CreateOpts) ToClaimCreateRequest() (map[string]interface{}, string, error) {
+func (opts CreateOpts) ToClaimCreateRequest() (map[string]any, string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return nil, q.String(), err
@@ -71,7 +71,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, queueName strin
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToClaimUpdateMap() (map[string]interface{}, error)
+	ToClaimUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts implements UpdateOpts.
@@ -85,7 +85,7 @@ type UpdateOpts struct {
 
 // ToClaimUpdateMap assembles a request body based on the contents of
 // UpdateOpts.
-func (opts UpdateOpts) ToClaimUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToClaimUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

@@ -55,13 +55,13 @@ type Execution struct {
 	Description string `json:"description"`
 
 	// Input contains the workflow input values.
-	Input map[string]interface{} `json:"-"`
+	Input map[string]any `json:"-"`
 
 	// Ouput contains the workflow output values.
-	Output map[string]interface{} `json:"-"`
+	Output map[string]any `json:"-"`
 
 	// Params contains workflow type specific parameters.
-	Params map[string]interface{} `json:"-"`
+	Params map[string]any `json:"-"`
 
 	// ProjectID is the project id owner of the execution.
 	ProjectID string `json:"project_id"`

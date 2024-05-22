@@ -15,9 +15,9 @@ type ShareType struct {
 	// Indicates whether a share type is publicly accessible
 	IsPublic bool `json:"os-share-type-access:is_public"`
 	// The required extra specifications for the share type
-	RequiredExtraSpecs map[string]interface{} `json:"required_extra_specs"`
+	RequiredExtraSpecs map[string]any `json:"required_extra_specs"`
 	// The extra specifications for the share type
-	ExtraSpecs map[string]interface{} `json:"extra_specs"`
+	ExtraSpecs map[string]any `json:"extra_specs"`
 }
 
 type commonResult struct {
@@ -75,7 +75,7 @@ type GetDefaultResult struct {
 
 // ExtraSpecs contains all the information associated with extra specifications
 // for an Openstack ShareType.
-type ExtraSpecs map[string]interface{}
+type ExtraSpecs map[string]any
 
 type extraSpecsResult struct {
 	gophercloud.Result

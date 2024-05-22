@@ -45,7 +45,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToFlavorCreateMap() (map[string]interface{}, error)
+	ToFlavorCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is the common options struct used in this package's Create
@@ -66,7 +66,7 @@ type CreateOpts struct {
 }
 
 // ToFlavorCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToFlavorCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFlavorCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "flavor")
 }
 
@@ -93,7 +93,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToFlavorUpdateMap() (map[string]interface{}, error)
+	ToFlavorUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts is the common options struct used in this package's Update
@@ -110,7 +110,7 @@ type UpdateOpts struct {
 }
 
 // ToFlavorUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "flavor")
 	if err != nil {
 		return nil, err

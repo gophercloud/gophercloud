@@ -103,7 +103,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToUserCreateMap() (map[string]interface{}, error)
+	ToUserCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a user.
@@ -124,24 +124,24 @@ type CreateOpts struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the user.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 
 	// Options are defined options in the API to enable certain features.
-	Options map[Option]interface{} `json:"options,omitempty"`
+	Options map[Option]any `json:"options,omitempty"`
 
 	// Password is the password of the new user.
 	Password string `json:"password,omitempty"`
 }
 
 // ToUserCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToUserCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "user")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["user"].(map[string]interface{}); ok {
+		if v, ok := b["user"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}
@@ -168,7 +168,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToUserUpdateMap() (map[string]interface{}, error)
+	ToUserUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts provides options for updating a user account.
@@ -189,24 +189,24 @@ type UpdateOpts struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the user.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 
 	// Options are defined options in the API to enable certain features.
-	Options map[Option]interface{} `json:"options,omitempty"`
+	Options map[Option]any `json:"options,omitempty"`
 
 	// Password is the password of the new user.
 	Password string `json:"password,omitempty"`
 }
 
 // ToUserUpdateMap formats a UpdateOpts into an update request.
-func (opts UpdateOpts) ToUserUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToUserUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "user")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["user"].(map[string]interface{}); ok {
+		if v, ok := b["user"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}
@@ -233,7 +233,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, userID strin
 // ChangePasswordOptsBuilder allows extensions to add additional parameters to
 // the ChangePassword request.
 type ChangePasswordOptsBuilder interface {
-	ToUserChangePasswordMap() (map[string]interface{}, error)
+	ToUserChangePasswordMap() (map[string]any, error)
 }
 
 // ChangePasswordOpts provides options for changing password for a user.
@@ -246,7 +246,7 @@ type ChangePasswordOpts struct {
 }
 
 // ToUserChangePasswordMap formats a ChangePasswordOpts into a ChangePassword request.
-func (opts ChangePasswordOpts) ToUserChangePasswordMap() (map[string]interface{}, error) {
+func (opts ChangePasswordOpts) ToUserChangePasswordMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "user")
 	if err != nil {
 		return nil, err

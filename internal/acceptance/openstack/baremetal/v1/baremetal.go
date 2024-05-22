@@ -22,7 +22,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 		Driver:        "ipmi",
 		BootInterface: "ipxe",
 		RAIDInterface: "agent",
-		DriverInfo: map[string]interface{}{
+		DriverInfo: map[string]any{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
 			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",
@@ -86,7 +86,7 @@ func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Nod
 		Driver:          "fake-hardware",
 		BootInterface:   "fake",
 		DeployInterface: "fake",
-		DriverInfo: map[string]interface{}{
+		DriverInfo: map[string]any{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
 			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",

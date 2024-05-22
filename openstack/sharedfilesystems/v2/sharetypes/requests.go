@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToShareTypeCreateMap() (map[string]interface{}, error)
+	ToShareTypeCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a ShareType. This object is
@@ -35,7 +35,7 @@ type ExtraSpecsOpts struct {
 
 // ToShareTypeCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToShareTypeCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToShareTypeCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "share_type")
 }
 
@@ -114,17 +114,17 @@ func GetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id st
 // SetExtraSpecsOptsBuilder allows extensions to add additional parameters to the
 // SetExtraSpecs request.
 type SetExtraSpecsOptsBuilder interface {
-	ToShareTypeSetExtraSpecsMap() (map[string]interface{}, error)
+	ToShareTypeSetExtraSpecsMap() (map[string]any, error)
 }
 
 type SetExtraSpecsOpts struct {
 	// A list of all extra specifications to be added to a ShareType
-	ExtraSpecs map[string]interface{} `json:"extra_specs" required:"true"`
+	ExtraSpecs map[string]any `json:"extra_specs" required:"true"`
 }
 
 // ToShareTypeSetExtraSpecsMap assembles a request body based on the contents of a
 // SetExtraSpecsOpts.
-func (opts SetExtraSpecsOpts) ToShareTypeSetExtraSpecsMap() (map[string]interface{}, error) {
+func (opts SetExtraSpecsOpts) ToShareTypeSetExtraSpecsMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -162,7 +162,7 @@ func ShowAccess(ctx context.Context, client *gophercloud.ServiceClient, id strin
 // AddAccessOptsBuilder allows extensions to add additional parameters to the
 // AddAccess
 type AddAccessOptsBuilder interface {
-	ToAddAccessMap() (map[string]interface{}, error)
+	ToAddAccessMap() (map[string]any, error)
 }
 
 type AccessOpts struct {
@@ -172,7 +172,7 @@ type AccessOpts struct {
 
 // ToAddAccessMap assembles a request body based on the contents of a
 // AccessOpts.
-func (opts AccessOpts) ToAddAccessMap() (map[string]interface{}, error) {
+func (opts AccessOpts) ToAddAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "addProjectAccess")
 }
 
@@ -195,12 +195,12 @@ func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string
 // RemoveAccessOptsBuilder allows extensions to add additional parameters to the
 // RemoveAccess
 type RemoveAccessOptsBuilder interface {
-	ToRemoveAccessMap() (map[string]interface{}, error)
+	ToRemoveAccessMap() (map[string]any, error)
 }
 
 // ToRemoveAccessMap assembles a request body based on the contents of a
 // AccessOpts.
-func (opts AccessOpts) ToRemoveAccessMap() (map[string]interface{}, error) {
+func (opts AccessOpts) ToRemoveAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "removeProjectAccess")
 }
 

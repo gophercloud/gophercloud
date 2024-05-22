@@ -53,7 +53,7 @@ func TestList(t *testing.T) {
 				Extension: common.Extension{
 					Updated:     "2013-01-20T00:00:00-00:00",
 					Name:        "Neutron Service Type Management",
-					Links:       []interface{}{},
+					Links:       []any{},
 					Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
 					Alias:       "service-type",
 					Description: "API for retrieving service providers for Neutron advanced services",

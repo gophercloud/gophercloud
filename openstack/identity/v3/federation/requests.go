@@ -17,7 +17,7 @@ func ListMappings(client *gophercloud.ServiceClient) pagination.Pager {
 // CreateMappingOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateMappingOptsBuilder interface {
-	ToMappingCreateMap() (map[string]interface{}, error)
+	ToMappingCreateMap() (map[string]any, error)
 }
 
 // UpdateMappingOpts provides options for creating a mapping.
@@ -27,7 +27,7 @@ type CreateMappingOpts struct {
 }
 
 // ToMappingCreateMap formats a CreateMappingOpts into a create request.
-func (opts CreateMappingOpts) ToMappingCreateMap() (map[string]interface{}, error) {
+func (opts CreateMappingOpts) ToMappingCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "mapping")
 }
 
@@ -55,7 +55,7 @@ func GetMapping(ctx context.Context, client *gophercloud.ServiceClient, mappingI
 // UpdateMappingOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateMappingOptsBuilder interface {
-	ToMappingUpdateMap() (map[string]interface{}, error)
+	ToMappingUpdateMap() (map[string]any, error)
 }
 
 // UpdateMappingOpts provides options for updating a mapping.
@@ -65,7 +65,7 @@ type UpdateMappingOpts struct {
 }
 
 // ToMappingUpdateMap formats a UpdateOpts into an update request.
-func (opts UpdateMappingOpts) ToMappingUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateMappingOpts) ToMappingUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "mapping")
 }
 

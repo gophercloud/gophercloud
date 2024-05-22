@@ -109,7 +109,7 @@ var Credential = credentials.Credential{
 	Type:      "ec2",
 	UserID:    userID,
 	Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://identity/v3/credentials/3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510",
 	},
 }
@@ -120,7 +120,7 @@ var FirstCredential = credentials.Credential{
 	Type:      "ec2",
 	UserID:    userID,
 	Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://identity/v3/credentials/3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510",
 	},
 }
@@ -131,7 +131,7 @@ var SecondCredential = credentials.Credential{
 	Type:      "ec2",
 	UserID:    "6f556708d04b4ea6bc72d7df2296b71a",
 	Blob:      "{\"access\":\"7da79ff0aa364e1396f067e352b9b79a\",\"secret\":\"7a18d68ba8834b799d396f3ff6f1e98c\"}",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://identity/v3/credentials/2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609",
 	},
 }
@@ -143,7 +143,7 @@ var SecondCredentialUpdated = credentials.Credential{
 	Type:      "ec2",
 	UserID:    userID,
 	Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://identity/v3/credentials/2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609",
 	},
 }

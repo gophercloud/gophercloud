@@ -9,7 +9,7 @@ import (
 
 // CreateOptsBuilder Builder.
 type CreateOptsBuilder interface {
-	ToClusterCreateMap() (map[string]interface{}, error)
+	ToClusterCreateMap() (map[string]any, error)
 }
 
 // CreateOpts params
@@ -44,7 +44,7 @@ type CreateOpts struct {
 }
 
 // ToClusterCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToClusterCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToClusterCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -125,20 +125,20 @@ const (
 )
 
 type UpdateOpts struct {
-	Op    UpdateOp    `json:"op" required:"true"`
-	Path  string      `json:"path" required:"true"`
-	Value interface{} `json:"value,omitempty"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value any      `json:"value,omitempty"`
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToClusterTemplateUpdateMap() (map[string]interface{}, error)
+	ToClusterTemplateUpdateMap() (map[string]any, error)
 }
 
 // ToClusterUpdateMap assembles a request body based on the contents of
 // UpdateOpts.
-func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]interface{}, err
 
 // Update implements cluster updated request.
 func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts []UpdateOptsBuilder) (r UpdateResult) {
-	var o []map[string]interface{}
+	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToClusterTemplateUpdateMap()
 		if err != nil {

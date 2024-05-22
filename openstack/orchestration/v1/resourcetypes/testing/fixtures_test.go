@@ -155,7 +155,7 @@ var GetSchemaExpected = resourcetypes.ResourceSchema{
 							Description: "The format of the local ephemeral block device.",
 							Constraints: []resourcetypes.ConstraintSchema{
 								{
-									AllowedValues: &[]interface{}{
+									AllowedValues: &[]any{
 										"ext3", "ext4", "xfs",
 									},
 								},
@@ -188,7 +188,7 @@ var GetSchemaExpected = resourcetypes.ResourceSchema{
 			Default:     "REBUILD",
 			Constraints: []resourcetypes.ConstraintSchema{
 				{
-					AllowedValues: &[]interface{}{
+					AllowedValues: &[]any{
 						"REBUILD", "REPLACE",
 					},
 				},

@@ -160,7 +160,7 @@ var ExpectedResources = messages.ResourceList{
 
 // FirstMessage is the first result in a List.
 var FirstMessage = messages.Message{
-	Body: map[string]interface{}{
+	Body: map[string]any{
 		"current_bytes": "0",
 		"event":         "BackupProgress",
 		"total_bytes":   "99614720",
@@ -174,7 +174,7 @@ var FirstMessage = messages.Message{
 
 // SecondMessage is the second result in a List.
 var SecondMessage = messages.Message{
-	Body: map[string]interface{}{
+	Body: map[string]any{
 		"current_bytes": "0",
 		"event":         "BackupProgress",
 		"total_bytes":   "99614720",
@@ -192,7 +192,7 @@ var ExpectedMessagesSlice = [][]messages.Message{{FirstMessage}, {SecondMessage}
 // ExpectedMessagesSet is the expected result in GetMessages
 var ExpectedMessagesSet = []messages.Message{
 	{
-		Body: map[string]interface{}{
+		Body: map[string]any{
 			"total_bytes":   "99614720",
 			"current_bytes": "0",
 			"event":         "BackupProgress",
@@ -207,7 +207,7 @@ var ExpectedMessagesSet = []messages.Message{
 
 // ExpectedPopMessage is the expected result of a Pop.
 var ExpectedPopMessage = []messages.PopMessage{{
-	Body: map[string]interface{}{
+	Body: map[string]any{
 		"current_bytes": "0",
 		"event":         "BackupProgress",
 		"total_bytes":   "99614720",

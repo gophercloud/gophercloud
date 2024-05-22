@@ -167,7 +167,7 @@ func TestNodesRAIDConfig(t *testing.T) {
 				IsRootVolume: &isTrue,
 				RAIDLevel:    nodes.RAID5,
 				Controller:   "software",
-				PhysicalDisks: []interface{}{
+				PhysicalDisks: []any{
 					map[string]string{
 						"size": "> 100",
 					},

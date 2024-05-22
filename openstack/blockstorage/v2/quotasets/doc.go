@@ -36,7 +36,7 @@ Example to Update a Quota set with volume_type quotas
 
 	updateOpts := quotasets.UpdateOpts{
 		Volumes: gophercloud.IntToPointer(100),
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"gigabytes_foo": gophercloud.IntToPointer(100),
 			"snapshots_foo": gophercloud.IntToPointer(10),
 			"volumes_foo":   gophercloud.IntToPointer(10),

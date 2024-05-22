@@ -162,7 +162,7 @@ var GetExpected = &stacks.RetrievedStack{
 	},
 	StatusReason: "Stack CREATE completed successfully",
 	Name:         "postman_stack",
-	Outputs:      []map[string]interface{}{},
+	Outputs:      []map[string]any{},
 	CreationTime: Create_time,
 	Links: []gophercloud.Link{
 		{
@@ -170,8 +170,8 @@ var GetExpected = &stacks.RetrievedStack{
 			Rel:  "self",
 		},
 	},
-	Capabilities:        []interface{}{},
-	NotificationTopics:  []interface{}{},
+	Capabilities:        []any{},
+	NotificationTopics:  []any{},
 	Status:              "CREATE_COMPLETE",
 	ID:                  "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
 	TemplateDescription: "Simple template to test heat commands",
@@ -293,8 +293,8 @@ var PreviewExpected = &stacks.PreviewedStack{
 			Rel:  "self",
 		},
 	},
-	Capabilities:        []interface{}{},
-	NotificationTopics:  []interface{}{},
+	Capabilities:        []any{},
+	NotificationTopics:  []any{},
 	ID:                  "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
 	TemplateDescription: "Simple template to test heat commands",
 }
@@ -317,21 +317,21 @@ func HandlePreviewSuccessfully(t *testing.T, output string) {
 var AbandonExpected = &stacks.AbandonedStack{
 	Status: "COMPLETE",
 	Name:   "postman_stack",
-	Template: map[string]interface{}{
+	Template: map[string]any{
 		"heat_template_version": "2013-05-23",
 		"description":           "Simple template to test heat commands",
-		"parameters": map[string]interface{}{
-			"flavor": map[string]interface{}{
+		"parameters": map[string]any{
+			"flavor": map[string]any{
 				"default": "m1.tiny",
 				"type":    "string",
 			},
 		},
-		"resources": map[string]interface{}{
-			"hello_world": map[string]interface{}{
+		"resources": map[string]any{
+			"hello_world": map[string]any{
 				"type": "OS::Nova::Server",
-				"properties": map[string]interface{}{
+				"properties": map[string]any{
 					"key_name": "heat_key",
-					"flavor": map[string]interface{}{
+					"flavor": map[string]any{
 						"get_param": "flavor",
 					},
 					"image":     "ad091b52-742f-469e-8f3c-fd81cadf0743",
@@ -342,8 +342,8 @@ var AbandonExpected = &stacks.AbandonedStack{
 	},
 	Action: "CREATE",
 	ID:     "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
-	Resources: map[string]interface{}{
-		"hello_world": map[string]interface{}{
+	Resources: map[string]any{
+		"hello_world": map[string]any{
 			"status":      "COMPLETE",
 			"name":        "hello_world",
 			"resource_id": "8a310d36-46fc-436f-8be4-37a696b8ac63",
@@ -356,13 +356,13 @@ var AbandonExpected = &stacks.AbandonedStack{
 	},
 	StackUserProjectID: "897686",
 	ProjectID:          "897686",
-	Environment: map[string]interface{}{
-		"encrypted_param_names": make([]map[string]interface{}, 0),
-		"parameter_defaults":    make(map[string]interface{}),
-		"parameters":            make(map[string]interface{}),
-		"resource_registry": map[string]interface{}{
+	Environment: map[string]any{
+		"encrypted_param_names": make([]map[string]any, 0),
+		"parameter_defaults":    make(map[string]any),
+		"parameters":            make(map[string]any),
+		"resource_registry": map[string]any{
 			"file:///Users/prat8228/go/src/github.com/rackspace/rack/my_nova.yaml": "file:///Users/prat8228/go/src/github.com/rackspace/rack/my_nova.yaml",
-			"resources": make(map[string]interface{}),
+			"resources": make(map[string]any),
 		},
 	},
 }

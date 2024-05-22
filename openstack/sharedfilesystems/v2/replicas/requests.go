@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToReplicaCreateMap() (map[string]interface{}, error)
+	ToReplicaCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains the options for create a Share Replica. This object is
@@ -32,7 +32,7 @@ type CreateOpts struct {
 
 // ToReplicaCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToReplicaCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToReplicaCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "share_replica")
 }
 
@@ -146,7 +146,7 @@ func GetExportLocation(ctx context.Context, client *gophercloud.ServiceClient, r
 // PromoteOptsBuilder allows extensions to add additional parameters to the
 // Promote request.
 type PromoteOptsBuilder interface {
-	ToReplicaPromoteMap() (map[string]interface{}, error)
+	ToReplicaPromoteMap() (map[string]any, error)
 }
 
 // PromoteOpts contains options for promoteing a Replica to active replica state.
@@ -159,7 +159,7 @@ type PromoteOpts struct {
 
 // ToReplicaPromoteMap assembles a request body based on the contents of a
 // PromoteOpts.
-func (opts PromoteOpts) ToReplicaPromoteMap() (map[string]interface{}, error) {
+func (opts PromoteOpts) ToReplicaPromoteMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "promote")
 }
 
@@ -182,7 +182,7 @@ func Promote(ctx context.Context, client *gophercloud.ServiceClient, id string, 
 // Resync a replica with its active mirror. ResyncResult contains only the error.
 // To extract it, call the ExtractErr method on the ResyncResult.
 func Resync(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResyncResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"resync": nil}, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"resync": nil}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -192,7 +192,7 @@ func Resync(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 // ResetStatusOptsBuilder allows extensions to add additional parameters to the
 // ResetStatus request.
 type ResetStatusOptsBuilder interface {
-	ToReplicaResetStatusMap() (map[string]interface{}, error)
+	ToReplicaResetStatusMap() (map[string]any, error)
 }
 
 // ResetStatusOpts contain options for updating a Share Replica status. This object is passed
@@ -205,7 +205,7 @@ type ResetStatusOpts struct {
 
 // ToReplicaResetStatusMap assembles a request body based on the contents of an
 // ResetStatusOpts.
-func (opts ResetStatusOpts) ToReplicaResetStatusMap() (map[string]interface{}, error) {
+func (opts ResetStatusOpts) ToReplicaResetStatusMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "reset_status")
 }
 
@@ -228,7 +228,7 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // ResetStateOptsBuilder allows extensions to add additional parameters to the
 // ResetState request.
 type ResetStateOptsBuilder interface {
-	ToReplicaResetStateMap() (map[string]interface{}, error)
+	ToReplicaResetStateMap() (map[string]any, error)
 }
 
 // ResetStateOpts contain options for updating a Share Replica state. This object is passed
@@ -241,7 +241,7 @@ type ResetStateOpts struct {
 
 // ToReplicaResetStateMap assembles a request body based on the contents of an
 // ResetStateOpts.
-func (opts ResetStateOpts) ToReplicaResetStateMap() (map[string]interface{}, error) {
+func (opts ResetStateOpts) ToReplicaResetStateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "reset_replica_state")
 }
 
@@ -265,7 +265,7 @@ func ResetState(ctx context.Context, client *gophercloud.ServiceClient, id strin
 // contains only the error. To extract it, call the ExtractErr method on the
 // ForceDeleteResult. Administrator only.
 func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"force_delete": nil}, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"force_delete": nil}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

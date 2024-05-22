@@ -16,7 +16,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID s
 // ValidateOptsBuilder describes struct types that can be accepted by the Validate call.
 // The ValidateOpts struct in this package does.
 type ValidateOptsBuilder interface {
-	ToStackTemplateValidateMap() (map[string]interface{}, error)
+	ToStackTemplateValidateMap() (map[string]any, error)
 }
 
 // ValidateOpts specifies the template validation parameters.
@@ -26,7 +26,7 @@ type ValidateOpts struct {
 }
 
 // ToStackTemplateValidateMap assembles a request body based on the contents of a ValidateOpts.
-func (opts ValidateOpts) ToStackTemplateValidateMap() (map[string]interface{}, error) {
+func (opts ValidateOpts) ToStackTemplateValidateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

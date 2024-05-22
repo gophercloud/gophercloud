@@ -98,7 +98,7 @@ func TestCreateNode(t *testing.T) {
 		Name:          "foo",
 		Driver:        "ipmi",
 		BootInterface: "pxe",
-		DriverInfo: map[string]interface{}{
+		DriverInfo: map[string]any{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
 			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",
@@ -146,7 +146,7 @@ func TestUpdateNode(t *testing.T) {
 		nodes.UpdateOperation{
 			Op:   nodes.ReplaceOp,
 			Path: "/properties",
-			Value: map[string]interface{}{
+			Value: map[string]any{
 				"root_gb": 25,
 			},
 		},
@@ -270,8 +270,8 @@ func TestNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
 				Interface: nodes.InterfaceDeploy,
 				Step:      "inject_files",
 				Priority:  50,
-				Args: map[string]interface{}{
-					"files": []interface{}{},
+				Args: map[string]any{
+					"files": []any{},
 				},
 			},
 		},
@@ -308,7 +308,7 @@ func TestNodeChangeProvisionStateClean(t *testing.T) {
 			{
 				Interface: nodes.InterfaceDeploy,
 				Step:      "upgrade_firmware",
-				Args: map[string]interface{}{
+				Args: map[string]any{
 					"force": "True",
 				},
 			},
@@ -330,7 +330,7 @@ func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 			{
 				Interface: nodes.InterfaceDeploy,
 				Step:      "upgrade_firmware",
-				Args: map[string]interface{}{
+				Args: map[string]any{
 					"force": "True",
 				},
 			},
@@ -349,7 +349,7 @@ func TestCleanStepRequiresInterface(t *testing.T) {
 		CleanSteps: []nodes.CleanStep{
 			{
 				Step: "upgrade_firmware",
-				Args: map[string]interface{}{
+				Args: map[string]any{
 					"force": "True",
 				},
 			},
@@ -368,7 +368,7 @@ func TestCleanStepRequiresStep(t *testing.T) {
 		CleanSteps: []nodes.CleanStep{
 			{
 				Interface: nodes.InterfaceDeploy,
-				Args: map[string]interface{}{
+				Args: map[string]any{
 					"force": "True",
 				},
 			},
@@ -392,7 +392,7 @@ func TestNodeChangeProvisionStateService(t *testing.T) {
 			{
 				Interface: nodes.InterfaceBIOS,
 				Step:      "apply_configuration",
-				Args: map[string]interface{}{
+				Args: map[string]any{
 					"settings": []string{},
 				},
 			},
@@ -483,12 +483,12 @@ func TestToRAIDConfigMap(t *testing.T) {
 	cases := []struct {
 		name     string
 		opts     nodes.RAIDConfigOpts
-		expected map[string]interface{}
+		expected map[string]any
 	}{
 		{
 			name: "LogicalDisks is empty",
 			opts: nodes.RAIDConfigOpts{},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"logical_disks": nil,
 			},
 		},
@@ -497,7 +497,7 @@ func TestToRAIDConfigMap(t *testing.T) {
 			opts: nodes.RAIDConfigOpts{
 				LogicalDisks: nil,
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"logical_disks": nil,
 			},
 		},
@@ -508,17 +508,17 @@ func TestToRAIDConfigMap(t *testing.T) {
 					{
 						RAIDLevel:     "0",
 						VolumeName:    "root",
-						PhysicalDisks: []interface{}{"6I:1:5", "6I:1:6", "6I:1:7"},
+						PhysicalDisks: []any{"6I:1:5", "6I:1:6", "6I:1:7"},
 					},
 				},
 			},
-			expected: map[string]interface{}{
-				"logical_disks": []map[string]interface{}{
+			expected: map[string]any{
+				"logical_disks": []map[string]any{
 					{
 						"raid_level":     "0",
 						"size_gb":        "MAX",
 						"volume_name":    "root",
-						"physical_disks": []interface{}{"6I:1:5", "6I:1:6", "6I:1:7"},
+						"physical_disks": []any{"6I:1:5", "6I:1:6", "6I:1:7"},
 					},
 				},
 			},
@@ -531,7 +531,7 @@ func TestToRAIDConfigMap(t *testing.T) {
 						RAIDLevel:  "0",
 						VolumeName: "root",
 						Controller: "software",
-						PhysicalDisks: []interface{}{
+						PhysicalDisks: []any{
 							map[string]string{
 								"size": "> 100",
 							},
@@ -542,18 +542,18 @@ func TestToRAIDConfigMap(t *testing.T) {
 					},
 				},
 			},
-			expected: map[string]interface{}{
-				"logical_disks": []map[string]interface{}{
+			expected: map[string]any{
+				"logical_disks": []map[string]any{
 					{
 						"raid_level":  "0",
 						"size_gb":     "MAX",
 						"volume_name": "root",
 						"controller":  "software",
-						"physical_disks": []interface{}{
-							map[string]interface{}{
+						"physical_disks": []any{
+							map[string]any{
 								"size": "> 100",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"size": "> 100",
 							},
 						},

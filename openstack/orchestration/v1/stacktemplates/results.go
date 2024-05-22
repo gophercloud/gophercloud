@@ -25,9 +25,9 @@ func (r GetResult) Extract() ([]byte, error) {
 
 // ValidatedTemplate represents the parsed object returned from a Validate request.
 type ValidatedTemplate struct {
-	Description     string                 `json:"Description"`
-	Parameters      map[string]interface{} `json:"Parameters"`
-	ParameterGroups map[string]interface{} `json:"ParameterGroups"`
+	Description     string         `json:"Description"`
+	Parameters      map[string]any `json:"Parameters"`
+	ParameterGroups map[string]any `json:"ParameterGroups"`
 }
 
 // ValidateResult represents the result of a Validate operation.

@@ -194,7 +194,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToNodeCreateMap() (map[string]interface{}, error)
+	ToNodeCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies node creation parameters.
@@ -220,13 +220,13 @@ type CreateOpts struct {
 
 	// All the metadata required by the driver to manage this Node. List of fields varies between drivers, and can
 	// be retrieved from the /v1/drivers/<DRIVER_NAME>/properties resource.
-	DriverInfo map[string]interface{} `json:"driver_info,omitempty"`
+	DriverInfo map[string]any `json:"driver_info,omitempty"`
 
 	// name of the driver used to manage this Node.
 	Driver string `json:"driver,omitempty"`
 
 	// A set of one or more arbitrary metadata key and value pairs.
-	Extra map[string]interface{} `json:"extra,omitempty"`
+	Extra map[string]any `json:"extra,omitempty"`
 
 	// The firmware interface for a node, e.g. "redfish"
 	FirmwareInterface string `json:"firmware_interface,omitempty"`
@@ -248,7 +248,7 @@ type CreateOpts struct {
 
 	// Physical characteristics of this Node. Populated during inspection, if performed. Can be edited via the REST
 	// API at any time.
-	Properties map[string]interface{} `json:"properties,omitempty"`
+	Properties map[string]any `json:"properties,omitempty"`
 
 	// Interface used for configuring RAID on this node, e.g. “no-raid”.
 	RAIDInterface string `json:"raid_interface,omitempty"`
@@ -273,11 +273,11 @@ type CreateOpts struct {
 	Owner string `json:"owner,omitempty"`
 
 	// Static network configuration to use during deployment and cleaning.
-	NetworkData map[string]interface{} `json:"network_data,omitempty"`
+	NetworkData map[string]any `json:"network_data,omitempty"`
 }
 
 // ToNodeCreateMap assembles a request body based on the contents of a CreateOpts.
-func (opts CreateOpts) ToNodeCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToNodeCreateMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -300,7 +300,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 type Patch interface {
-	ToNodeUpdateMap() (map[string]interface{}, error)
+	ToNodeUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts is a slice of Patches used to update a node
@@ -315,18 +315,18 @@ const (
 )
 
 type UpdateOperation struct {
-	Op    UpdateOp    `json:"op" required:"true"`
-	Path  string      `json:"path" required:"true"`
-	Value interface{} `json:"value,omitempty"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value any      `json:"value,omitempty"`
 }
 
-func (opts UpdateOperation) ToNodeUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOperation) ToNodeUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // Update requests that a node be updated
 func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
-	body := make([]map[string]interface{}, len(opts))
+	body := make([]map[string]any, len(opts))
 	for i, patch := range opts {
 		result, err := patch.ToNodeUpdateMap()
 		if err != nil {
@@ -378,11 +378,11 @@ type BootDeviceOpts struct {
 // BootDeviceOptsBuilder allows extensions to add additional parameters to the
 // SetBootDevice request.
 type BootDeviceOptsBuilder interface {
-	ToBootDeviceMap() (map[string]interface{}, error)
+	ToBootDeviceMap() (map[string]any, error)
 }
 
 // ToBootDeviceSetMap assembles a request body based on the contents of a BootDeviceOpts.
-func (opts BootDeviceOpts) ToBootDeviceMap() (map[string]interface{}, error) {
+func (opts BootDeviceOpts) ToBootDeviceMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -441,9 +441,9 @@ const (
 // the value for ‘args’ is a keyword variable argument dictionary that is passed to the cleaning step
 // method.
 type CleanStep struct {
-	Interface StepInterface          `json:"interface" required:"true"`
-	Step      string                 `json:"step" required:"true"`
-	Args      map[string]interface{} `json:"args,omitempty"`
+	Interface StepInterface  `json:"interface" required:"true"`
+	Step      string         `json:"step" required:"true"`
+	Args      map[string]any `json:"args,omitempty"`
 }
 
 // A service step looks the same as a cleaning step.
@@ -453,31 +453,31 @@ type ServiceStep = CleanStep
 // The value for ‘args’ is a keyword variable argument dictionary that is passed to the deploy step
 // method. Priority is a numeric priority at which the step is running.
 type DeployStep struct {
-	Interface StepInterface          `json:"interface" required:"true"`
-	Step      string                 `json:"step" required:"true"`
-	Args      map[string]interface{} `json:"args" required:"true"`
-	Priority  int                    `json:"priority" required:"true"`
+	Interface StepInterface  `json:"interface" required:"true"`
+	Step      string         `json:"step" required:"true"`
+	Args      map[string]any `json:"args" required:"true"`
+	Priority  int            `json:"priority" required:"true"`
 }
 
 // ProvisionStateOptsBuilder allows extensions to add additional parameters to the
 // ChangeProvisionState request.
 type ProvisionStateOptsBuilder interface {
-	ToProvisionStateMap() (map[string]interface{}, error)
+	ToProvisionStateMap() (map[string]any, error)
 }
 
 // Starting with Ironic API version 1.56, a configdrive may be a JSON object with structured data.
 // Prior to this version, it must be a base64-encoded, gzipped ISO9660 image.
 type ConfigDrive struct {
-	MetaData    map[string]interface{} `json:"meta_data,omitempty"`
-	NetworkData map[string]interface{} `json:"network_data,omitempty"`
-	UserData    interface{}            `json:"user_data,omitempty"`
+	MetaData    map[string]any `json:"meta_data,omitempty"`
+	NetworkData map[string]any `json:"network_data,omitempty"`
+	UserData    any            `json:"user_data,omitempty"`
 }
 
 // ProvisionStateOpts for a request to change a node's provision state. A config drive should be base64-encoded
 // gzipped ISO9660 image. Deploy steps are supported starting with API 1.69.
 type ProvisionStateOpts struct {
 	Target         TargetProvisionState `json:"target" required:"true"`
-	ConfigDrive    interface{}          `json:"configdrive,omitempty"`
+	ConfigDrive    any                  `json:"configdrive,omitempty"`
 	CleanSteps     []CleanStep          `json:"clean_steps,omitempty"`
 	DeploySteps    []DeployStep         `json:"deploy_steps,omitempty"`
 	ServiceSteps   []ServiceStep        `json:"service_steps,omitempty"`
@@ -485,7 +485,7 @@ type ProvisionStateOpts struct {
 }
 
 // ToProvisionStateMap assembles a request body based on the contents of a CreateOpts.
-func (opts ProvisionStateOpts) ToProvisionStateMap() (map[string]interface{}, error) {
+func (opts ProvisionStateOpts) ToProvisionStateMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -523,7 +523,7 @@ const (
 
 // PowerStateOptsBuilder allows extensions to add additional parameters to the ChangePowerState request.
 type PowerStateOptsBuilder interface {
-	ToPowerStateMap() (map[string]interface{}, error)
+	ToPowerStateMap() (map[string]any, error)
 }
 
 // PowerStateOpts for a request to change a node's power state.
@@ -533,7 +533,7 @@ type PowerStateOpts struct {
 }
 
 // ToPowerStateMap assembles a request body based on the contents of a PowerStateOpts.
-func (opts PowerStateOpts) ToPowerStateMap() (map[string]interface{}, error) {
+func (opts PowerStateOpts) ToPowerStateMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -564,7 +564,7 @@ type RAIDConfigOpts struct {
 
 // RAIDConfigOptsBuilder allows extensions to modify a set RAID config request.
 type RAIDConfigOptsBuilder interface {
-	ToRAIDConfigMap() (map[string]interface{}, error)
+	ToRAIDConfigMap() (map[string]any, error)
 }
 
 // RAIDLevel type is used to specify the RAID level for a logical disk.
@@ -629,18 +629,18 @@ type LogicalDisk struct {
 	Controller string `json:"controller,omitempty"`
 
 	// A list of physical disks to use as read by the RAID interface.
-	PhysicalDisks []interface{} `json:"physical_disks,omitempty"`
+	PhysicalDisks []any `json:"physical_disks,omitempty"`
 }
 
-func (opts RAIDConfigOpts) ToRAIDConfigMap() (map[string]interface{}, error) {
+func (opts RAIDConfigOpts) ToRAIDConfigMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
 
 	if body["logical_disks"] != nil {
-		for _, v := range body["logical_disks"].([]interface{}) {
-			if logicalDisk, ok := v.(map[string]interface{}); ok {
+		for _, v := range body["logical_disks"].([]any) {
+			if logicalDisk, ok := v.(map[string]any); ok {
 				if logicalDisk["size_gb"] == nil {
 					logicalDisk["size_gb"] = "MAX"
 				}
@@ -762,7 +762,7 @@ type GetSubscriptionOpts struct {
 }
 
 // ToGetSubscriptionMap assembles a query based on the contents of CallVendorPassthruOpts and a request body based on the contents of a GetSubscriptionOpts
-func ToGetSubscriptionMap(method CallVendorPassthruOpts, opts GetSubscriptionOpts) (string, map[string]interface{}, error) {
+func ToGetSubscriptionMap(method CallVendorPassthruOpts, opts GetSubscriptionOpts) (string, map[string]any, error) {
 	q, err := gophercloud.BuildQueryString(method)
 	if err != nil {
 		return q.String(), nil, err
@@ -797,7 +797,7 @@ type DeleteSubscriptionOpts struct {
 }
 
 // ToDeleteSubscriptionMap assembles a query based on the contents of CallVendorPassthruOpts and a request body based on the contents of a DeleteSubscriptionOpts
-func ToDeleteSubscriptionMap(method CallVendorPassthruOpts, opts DeleteSubscriptionOpts) (string, map[string]interface{}, error) {
+func ToDeleteSubscriptionMap(method CallVendorPassthruOpts, opts DeleteSubscriptionOpts) (string, map[string]any, error) {
 	q, err := gophercloud.BuildQueryString(method)
 	if err != nil {
 		return q.String(), nil, err
@@ -835,7 +835,7 @@ type CreateSubscriptionOpts struct {
 }
 
 // ToCreateSubscriptionMap assembles a query based on the contents of CallVendorPassthruOpts and a request body based on the contents of a CreateSubscriptionOpts
-func ToCreateSubscriptionMap(method CallVendorPassthruOpts, opts CreateSubscriptionOpts) (string, map[string]interface{}, error) {
+func ToCreateSubscriptionMap(method CallVendorPassthruOpts, opts CreateSubscriptionOpts) (string, map[string]any, error) {
 	q, err := gophercloud.BuildQueryString(method)
 	if err != nil {
 		return q.String(), nil, err
@@ -869,11 +869,11 @@ type MaintenanceOpts struct {
 
 // MaintenanceOptsBuilder allows extensions to add additional parameters to the SetMaintenance request.
 type MaintenanceOptsBuilder interface {
-	ToMaintenanceMap() (map[string]interface{}, error)
+	ToMaintenanceMap() (map[string]any, error)
 }
 
 // ToMaintenanceMap assembles a request body based on the contents of a MaintenanceOpts.
-func (opts MaintenanceOpts) ToMaintenanceMap() (map[string]interface{}, error) {
+func (opts MaintenanceOpts) ToMaintenanceMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -948,10 +948,10 @@ type AttachVirtualMediaOpts struct {
 }
 
 type AttachVirtualMediaOptsBuilder interface {
-	ToAttachVirtualMediaMap() (map[string]interface{}, error)
+	ToAttachVirtualMediaMap() (map[string]any, error)
 }
 
-func (opts AttachVirtualMediaOpts) ToAttachVirtualMediaMap() (map[string]interface{}, error) {
+func (opts AttachVirtualMediaOpts) ToAttachVirtualMediaMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

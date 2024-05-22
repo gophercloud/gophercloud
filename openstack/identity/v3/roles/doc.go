@@ -27,7 +27,7 @@ Example to Create a Role
 	createOpts := roles.CreateOpts{
 		Name:             "read-only-admin",
 		DomainID:         "default",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "this role grants read-only privilege cross tenant",
 		}
 	}

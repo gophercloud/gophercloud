@@ -23,7 +23,7 @@ var (
 		Status:         "attaching",
 		AttachedAt:     attachedAt,
 		DetachedAt:     detachedAt,
-		ConnectionInfo: map[string]interface{}{},
+		ConnectionInfo: map[string]any{},
 	}
 )
 

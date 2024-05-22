@@ -69,7 +69,7 @@ func TestCreate(t *testing.T) {
 		},
 		Description: "example description",
 		Name:        "example-configuration-name",
-		Values: map[string]interface{}{
+		Values: map[string]any{
 			"collation_server": "latin1_swedish_ci",
 			"connect_timeout":  120,
 		},
@@ -86,7 +86,7 @@ func TestUpdate(t *testing.T) {
 	fixture.SetupHandler(t, resURL, "PATCH", UpdateReq, "", 200)
 
 	opts := configurations.UpdateOpts{
-		Values: map[string]interface{}{
+		Values: map[string]any{
 			"connect_timeout": 300,
 		},
 	}
@@ -101,7 +101,7 @@ func TestReplace(t *testing.T) {
 	fixture.SetupHandler(t, resURL, "PUT", UpdateReq, "", 202)
 
 	opts := configurations.UpdateOpts{
-		Values: map[string]interface{}{
+		Values: map[string]any{
 			"connect_timeout": 300,
 		},
 	}

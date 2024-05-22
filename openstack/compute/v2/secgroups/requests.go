@@ -36,11 +36,11 @@ type CreateOpts struct {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToSecGroupCreateMap() (map[string]interface{}, error)
+	ToSecGroupCreateMap() (map[string]any, error)
 }
 
 // ToSecGroupCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSecGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_group")
 }
 
@@ -69,11 +69,11 @@ type UpdateOpts struct {
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToSecGroupUpdateMap() (map[string]interface{}, error)
+	ToSecGroupUpdateMap() (map[string]any, error)
 }
 
 // ToSecGroupUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_group")
 }
 
@@ -140,11 +140,11 @@ type CreateRuleOpts struct {
 // CreateRuleOptsBuilder allows extensions to add additional parameters to the
 // CreateRule request.
 type CreateRuleOptsBuilder interface {
-	ToRuleCreateMap() (map[string]interface{}, error)
+	ToRuleCreateMap() (map[string]any, error)
 }
 
 // ToRuleCreateMap builds a request body from CreateRuleOpts.
-func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_group_rule")
 }
 

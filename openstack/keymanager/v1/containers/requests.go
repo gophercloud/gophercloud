@@ -65,7 +65,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToContainerCreateMap() (map[string]interface{}, error)
+	ToContainerCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a container.
@@ -81,7 +81,7 @@ type CreateOpts struct {
 }
 
 // ToContainerCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToContainerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToContainerCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -146,7 +146,7 @@ func ListConsumers(client *gophercloud.ServiceClient, containerID string, opts L
 // CreateConsumerOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateConsumerOptsBuilder interface {
-	ToContainerConsumerCreateMap() (map[string]interface{}, error)
+	ToContainerConsumerCreateMap() (map[string]any, error)
 }
 
 // CreateConsumerOpts provides options used to create a container.
@@ -160,7 +160,7 @@ type CreateConsumerOpts struct {
 
 // ToContainerConsumerCreateMap formats a CreateConsumerOpts into a create
 // request.
-func (opts CreateConsumerOpts) ToContainerConsumerCreateMap() (map[string]interface{}, error) {
+func (opts CreateConsumerOpts) ToContainerConsumerCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -181,7 +181,7 @@ func CreateConsumer(ctx context.Context, client *gophercloud.ServiceClient, cont
 // DeleteConsumerOptsBuilder allows extensions to add additional parameters to
 // the Delete request.
 type DeleteConsumerOptsBuilder interface {
-	ToContainerConsumerDeleteMap() (map[string]interface{}, error)
+	ToContainerConsumerDeleteMap() (map[string]any, error)
 }
 
 // DeleteConsumerOpts represents options used for deleting a consumer.
@@ -195,7 +195,7 @@ type DeleteConsumerOpts struct {
 
 // ToContainerConsumerDeleteMap formats a DeleteConsumerOpts into a create
 // request.
-func (opts DeleteConsumerOpts) ToContainerConsumerDeleteMap() (map[string]interface{}, error) {
+func (opts DeleteConsumerOpts) ToContainerConsumerDeleteMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -221,12 +221,12 @@ func DeleteConsumer(ctx context.Context, client *gophercloud.ServiceClient, cont
 // SecretRefBuilder allows extensions to add additional parameters to the
 // Create request.
 type SecretRefBuilder interface {
-	ToContainerSecretRefMap() (map[string]interface{}, error)
+	ToContainerSecretRefMap() (map[string]any, error)
 }
 
 // ToContainerSecretRefMap formats a SecretRefBuilder into a create
 // request.
-func (opts SecretRef) ToContainerSecretRefMap() (map[string]interface{}, error) {
+func (opts SecretRef) ToContainerSecretRefMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

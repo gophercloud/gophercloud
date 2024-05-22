@@ -98,7 +98,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToListenerCreateMap() (map[string]interface{}, error)
+	ToListenerCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents options for creating a listener.
@@ -178,7 +178,7 @@ type CreateOpts struct {
 }
 
 // ToListenerCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToListenerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToListenerCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "listener")
 }
 
@@ -210,7 +210,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToListenerUpdateMap() (map[string]interface{}, error)
+	ToListenerUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options for updating a Listener.
@@ -263,13 +263,13 @@ type UpdateOpts struct {
 }
 
 // ToListenerUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToListenerUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToListenerUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "listener")
 	if err != nil {
 		return nil, err
 	}
 
-	if m := b["listener"].(map[string]interface{}); m["default_pool_id"] == "" {
+	if m := b["listener"].(map[string]any); m["default_pool_id"] == "" {
 		m["default_pool_id"] = nil
 	}
 

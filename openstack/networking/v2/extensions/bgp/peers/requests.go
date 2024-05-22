@@ -25,7 +25,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToPeerCreateMap() (map[string]interface{}, error)
+	ToPeerCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents options used to create a BGP Peer.
@@ -38,7 +38,7 @@ type CreateOpts struct {
 }
 
 // ToPeerCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToPeerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToPeerCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, jroot)
 }
 
@@ -64,7 +64,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, bgpPeerID string)
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToPeerUpdateMap() (map[string]interface{}, error)
+	ToPeerUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options used to update a BGP Peer.
@@ -74,7 +74,7 @@ type UpdateOpts struct {
 }
 
 // ToPeerUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToPeerUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToPeerUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, jroot)
 }
 

@@ -82,7 +82,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.HeartbeatTimestamp, time.Date(2019, 1, 9, 11, 43, 01, 0, time.UTC))
 	th.AssertEquals(t, s.StartedAt, time.Date(2018, 6, 26, 21, 46, 20, 0, time.UTC))
 	th.AssertEquals(t, s.CreatedAt, time.Date(2017, 7, 26, 23, 2, 5, 0, time.UTC))
-	th.AssertDeepEquals(t, s.Configurations, map[string]interface{}{
+	th.AssertDeepEquals(t, s.Configurations, map[string]any{
 		"ovs_hybrid_plug":            false,
 		"datapath_type":              "system",
 		"vhostuser_socket_dir":       "/var/run/openvswitch",

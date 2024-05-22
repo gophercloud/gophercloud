@@ -18,13 +18,13 @@ type PortCreateOptsExt struct {
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
-func (opts PortCreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) {
+func (opts PortCreateOptsExt) ToPortCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToPortCreateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	if opts.QoSPolicyID != "" {
 		port["qos_policy_id"] = opts.QoSPolicyID
@@ -43,13 +43,13 @@ type PortUpdateOptsExt struct {
 }
 
 // ToPortUpdateMap casts a UpdateOpts struct to a map.
-func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) {
+func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToPortUpdateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	if opts.QoSPolicyID != nil {
 		qosPolicyID := *opts.QoSPolicyID
@@ -72,13 +72,13 @@ type NetworkCreateOptsExt struct {
 }
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
-func (opts NetworkCreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
+func (opts NetworkCreateOptsExt) ToNetworkCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToNetworkCreateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	network := base["network"].(map[string]interface{})
+	network := base["network"].(map[string]any)
 
 	if opts.QoSPolicyID != "" {
 		network["qos_policy_id"] = opts.QoSPolicyID
@@ -97,13 +97,13 @@ type NetworkUpdateOptsExt struct {
 }
 
 // ToNetworkUpdateMap casts a UpdateOpts struct to a map.
-func (opts NetworkUpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, error) {
+func (opts NetworkUpdateOptsExt) ToNetworkUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToNetworkUpdateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	network := base["network"].(map[string]interface{})
+	network := base["network"].(map[string]any)
 
 	if opts.QoSPolicyID != nil {
 		qosPolicyID := *opts.QoSPolicyID
@@ -181,7 +181,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // CreateOptsBuilder allows to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToPolicyCreateMap() (map[string]interface{}, error)
+	ToPolicyCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters of a new QoS policy.
@@ -206,7 +206,7 @@ type CreateOpts struct {
 }
 
 // ToPolicyCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToPolicyCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "policy")
 }
 
@@ -227,7 +227,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToPolicyUpdateMap() (map[string]interface{}, error)
+	ToPolicyUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options used to update a QoS policy.
@@ -246,7 +246,7 @@ type UpdateOpts struct {
 }
 
 // ToPolicyUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "policy")
 }
 

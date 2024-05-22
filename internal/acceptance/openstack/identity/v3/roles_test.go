@@ -59,7 +59,7 @@ func TestRolesCRUD(t *testing.T) {
 
 	createOpts := roles.CreateOpts{
 		Name: "testrole",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "test role description",
 		},
 	}
@@ -92,7 +92,7 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	updateOpts := roles.UpdateOpts{
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "updated test role description",
 		},
 	}
@@ -114,7 +114,7 @@ func TestRolesFilterList(t *testing.T) {
 
 	createOpts := roles.CreateOpts{
 		Name: "testrole",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "test role description",
 		},
 	}
@@ -798,7 +798,7 @@ func TestCRUDRoleInferenceRule(t *testing.T) {
 
 	priorRoleCreateOpts := roles.CreateOpts{
 		Name: "priorRole",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "prior_role description",
 		},
 	}
@@ -811,7 +811,7 @@ func TestCRUDRoleInferenceRule(t *testing.T) {
 
 	impliedRoleCreateOpts := roles.CreateOpts{
 		Name: "impliedRole",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "implied_role description",
 		},
 	}

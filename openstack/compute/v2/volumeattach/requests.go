@@ -17,7 +17,7 @@ func List(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
 
 // CreateOptsBuilder allows extensions to add parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToVolumeAttachmentCreateMap() (map[string]interface{}, error)
+	ToVolumeAttachmentCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies volume attachment creation or import parameters.
@@ -39,7 +39,7 @@ type CreateOpts struct {
 }
 
 // ToVolumeAttachmentCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToVolumeAttachmentCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToVolumeAttachmentCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "volumeAttachment")
 }
 

@@ -185,7 +185,7 @@ const ListPoliciesResponse = `
 
 var Policy1 = policies.Policy{
 	Name: "bw-limiter",
-	Rules: []map[string]interface{}{
+	Rules: []map[string]any{
 		{
 			"type":           "bandwidth_limit",
 			"max_kbps":       float64(3000),
@@ -207,7 +207,7 @@ var Policy1 = policies.Policy{
 var Policy2 = policies.Policy{
 	Name:           "no-rules",
 	Tags:           []string{},
-	Rules:          []map[string]interface{}{},
+	Rules:          []map[string]any{},
 	TenantID:       "a77cbe0998374aed9a6798ad6c61677e",
 	CreatedAt:      time.Date(2019, 6, 1, 10, 38, 58, 0, time.UTC),
 	UpdatedAt:      time.Date(2019, 6, 1, 10, 38, 58, 0, time.UTC),

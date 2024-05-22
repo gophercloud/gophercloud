@@ -98,7 +98,7 @@ func TestCreatePolicy(t *testing.T) {
 	createOpts := policies.CreateOpts{
 		Type: "application/json",
 		Blob: []byte("{'bar_user': 'role:network-user'}"),
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "policy for bar_user",
 		},
 	}
@@ -169,7 +169,7 @@ func TestUpdatePolicy(t *testing.T) {
 	HandleUpdatePolicySuccessfully(t)
 
 	updateOpts := policies.UpdateOpts{
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "updated policy for bar_user",
 		},
 	}

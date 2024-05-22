@@ -214,7 +214,7 @@ type L3Agent struct {
 
 	// Configurations is a configuration specific key/value pairs that are
 	// determined by the agent binary and type.
-	Configurations map[string]interface{} `json:"configurations"`
+	Configurations map[string]any `json:"configurations"`
 
 	// CreatedAt is a creation timestamp.
 	CreatedAt time.Time `json:"-"`
@@ -238,7 +238,7 @@ type L3Agent struct {
 	HAState string `json:"ha_state"`
 
 	// ResourceVersions is a list agent known objects and version numbers
-	ResourceVersions map[string]interface{} `json:"resource_versions"`
+	ResourceVersions map[string]any `json:"resource_versions"`
 }
 
 // UnmarshalJSON helps to convert the timestamps into the time.Time type.

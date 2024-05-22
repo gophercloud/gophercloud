@@ -34,7 +34,7 @@ func TestConfigurationsCRUD(t *testing.T) {
 	}
 	createOpts.Datastore = &datastore
 
-	values := make(map[string]interface{})
+	values := make(map[string]any)
 	values["collation_server"] = "latin1_swedish_ci"
 	createOpts.Values = values
 

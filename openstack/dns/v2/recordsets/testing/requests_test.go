@@ -75,7 +75,7 @@ func TestGet(t *testing.T) {
 
 func TestNextPageURL(t *testing.T) {
 	var page recordsets.RecordSetPage
-	var body map[string]interface{}
+	var body map[string]any
 	err := json.Unmarshal([]byte(NextPageRequest), &body)
 	if err != nil {
 		t.Fatalf("Error unmarshaling data into page body: %v", err)

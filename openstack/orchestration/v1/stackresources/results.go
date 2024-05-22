@@ -10,19 +10,19 @@ import (
 
 // Resource represents a stack resource.
 type Resource struct {
-	Attributes     map[string]interface{} `json:"attributes"`
-	CreationTime   time.Time              `json:"-"`
-	Description    string                 `json:"description"`
-	Links          []gophercloud.Link     `json:"links"`
-	LogicalID      string                 `json:"logical_resource_id"`
-	Name           string                 `json:"resource_name"`
-	ParentResource string                 `json:"parent_resource"`
-	PhysicalID     string                 `json:"physical_resource_id"`
-	RequiredBy     []interface{}          `json:"required_by"`
-	Status         string                 `json:"resource_status"`
-	StatusReason   string                 `json:"resource_status_reason"`
-	Type           string                 `json:"resource_type"`
-	UpdatedTime    time.Time              `json:"-"`
+	Attributes     map[string]any     `json:"attributes"`
+	CreationTime   time.Time          `json:"-"`
+	Description    string             `json:"description"`
+	Links          []gophercloud.Link `json:"links"`
+	LogicalID      string             `json:"logical_resource_id"`
+	Name           string             `json:"resource_name"`
+	ParentResource string             `json:"parent_resource"`
+	PhysicalID     string             `json:"physical_resource_id"`
+	RequiredBy     []any              `json:"required_by"`
+	Status         string             `json:"resource_status"`
+	StatusReason   string             `json:"resource_status_reason"`
+	Type           string             `json:"resource_type"`
+	UpdatedTime    time.Time          `json:"-"`
 }
 
 func (r *Resource) UnmarshalJSON(b []byte) error {
@@ -180,10 +180,10 @@ func ExtractResourceTypes(r pagination.Page) (ResourceTypes, error) {
 
 // TypeSchema represents a stack resource schema.
 type TypeSchema struct {
-	Attributes    map[string]interface{} `json:"attributes"`
-	Properties    map[string]interface{} `json:"properties"`
-	ResourceType  string                 `json:"resource_type"`
-	SupportStatus map[string]interface{} `json:"support_status"`
+	Attributes    map[string]any `json:"attributes"`
+	Properties    map[string]any `json:"properties"`
+	ResourceType  string         `json:"resource_type"`
+	SupportStatus map[string]any `json:"support_status"`
 }
 
 // SchemaResult represents the result of a Schema operation.

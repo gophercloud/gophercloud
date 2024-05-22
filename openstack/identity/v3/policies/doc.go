@@ -27,7 +27,7 @@ Example to Create a Policy
 	createOpts := policies.CreateOpts{
 		Type: "application/json",
 		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "policy for foobar_user",
 		},
 	}
@@ -54,7 +54,7 @@ Example to Update a Policy
 	updateOpts := policies.UpdateOpts{
 		Type: "application/json",
 		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "policy for foobar_user",
 		},
 	}

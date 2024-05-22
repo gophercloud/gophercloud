@@ -73,7 +73,7 @@ var Agent = agents.Agent{
 	Alive:           true,
 	ResourcesSynced: true,
 	Binary:          "neutron-openvswitch-agent",
-	Configurations: map[string]interface{}{
+	Configurations: map[string]any{
 		"ovs_hybrid_plug":            false,
 		"datapath_type":              "system",
 		"vhostuser_socket_dir":       "/var/run/openvswitch",
@@ -96,9 +96,9 @@ var Agent1 = agents.Agent{
 	AgentType:    "Open vSwitch agent",
 	Alive:        true,
 	Binary:       "neutron-openvswitch-agent",
-	Configurations: map[string]interface{}{
+	Configurations: map[string]any{
 		"datapath_type": "system",
-		"extensions": []interface{}{
+		"extensions": []any{
 			"qos",
 		},
 	},
@@ -117,9 +117,9 @@ var Agent2 = agents.Agent{
 	AgentType:    "Open vSwitch agent",
 	Alive:        true,
 	Binary:       "neutron-openvswitch-agent",
-	Configurations: map[string]interface{}{
+	Configurations: map[string]any{
 		"datapath_type": "system",
-		"extensions": []interface{}{
+		"extensions": []any{
 			"qos",
 		},
 	},
@@ -267,7 +267,7 @@ var BGPAgent1 = agents.Agent{
 	AgentType:    "BGP dynamic routing agent",
 	Alive:        true,
 	Binary:       "neutron-bgp-dragent",
-	Configurations: map[string]interface{}{
+	Configurations: map[string]any{
 		"advertise_routes": float64(2),
 		"bgp_peers":        float64(2),
 		"bgp_speakers":     float64(1),
@@ -285,7 +285,7 @@ var BGPAgent2 = agents.Agent{
 	AgentType:    "BGP dynamic routing agent",
 	Alive:        true,
 	Binary:       "neutron-bgp-dragent",
-	Configurations: map[string]interface{}{
+	Configurations: map[string]any{
 		"advertise_routes": float64(2),
 		"bgp_peers":        float64(2),
 		"bgp_speakers":     float64(1),

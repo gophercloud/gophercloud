@@ -65,7 +65,7 @@ type UpdateOpts struct {
 }
 
 // ToServiceUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToServiceUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToServiceUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

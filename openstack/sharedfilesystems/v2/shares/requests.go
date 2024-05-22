@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToShareCreateMap() (map[string]interface{}, error)
+	ToShareCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains the options for create a Share. This object is
@@ -52,7 +52,7 @@ type CreateOpts struct {
 
 // ToShareCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToShareCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToShareCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "share")
 }
 
@@ -198,7 +198,7 @@ func GetExportLocation(ctx context.Context, client *gophercloud.ServiceClient, s
 // GrantAccessOptsBuilder allows extensions to add additional parameters to the
 // GrantAccess request.
 type GrantAccessOptsBuilder interface {
-	ToGrantAccessMap() (map[string]interface{}, error)
+	ToGrantAccessMap() (map[string]any, error)
 }
 
 // GrantAccessOpts contains the options for creation of an GrantAccess request.
@@ -215,7 +215,7 @@ type GrantAccessOpts struct {
 
 // ToGrantAccessMap assembles a request body based on the contents of a
 // GrantAccessOpts.
-func (opts GrantAccessOpts) ToGrantAccessMap() (map[string]interface{}, error) {
+func (opts GrantAccessOpts) ToGrantAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "allow_access")
 }
 
@@ -238,7 +238,7 @@ func GrantAccess(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // RevokeAccessOptsBuilder allows extensions to add additional parameters to the
 // RevokeAccess request.
 type RevokeAccessOptsBuilder interface {
-	ToRevokeAccessMap() (map[string]interface{}, error)
+	ToRevokeAccessMap() (map[string]any, error)
 }
 
 // RevokeAccessOpts contains the options for creation of a RevokeAccess request.
@@ -250,7 +250,7 @@ type RevokeAccessOpts struct {
 
 // ToRevokeAccessMap assembles a request body based on the contents of a
 // RevokeAccessOpts.
-func (opts RevokeAccessOpts) ToRevokeAccessMap() (map[string]interface{}, error) {
+func (opts RevokeAccessOpts) ToRevokeAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "deny_access")
 }
 
@@ -276,7 +276,7 @@ func RevokeAccess(ctx context.Context, client *gophercloud.ServiceClient, id str
 // the AccessRight slice from the response, call the Extract method on the ListAccessRightsResult.
 // Client must have Microversion set; minimum supported microversion for ListAccessRights is 2.7.
 func ListAccessRights(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ListAccessRightsResult) {
-	requestBody := map[string]interface{}{"access_list": nil}
+	requestBody := map[string]any{"access_list": nil}
 	resp, err := client.Post(ctx, listAccessRightsURL(client, id), requestBody, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -287,7 +287,7 @@ func ListAccessRights(ctx context.Context, client *gophercloud.ServiceClient, id
 // ExtendOptsBuilder allows extensions to add additional parameters to the
 // Extend request.
 type ExtendOptsBuilder interface {
-	ToShareExtendMap() (map[string]interface{}, error)
+	ToShareExtendMap() (map[string]any, error)
 }
 
 // ExtendOpts contains options for extending a Share.
@@ -300,7 +300,7 @@ type ExtendOpts struct {
 
 // ToShareExtendMap assembles a request body based on the contents of a
 // ExtendOpts.
-func (opts ExtendOpts) ToShareExtendMap() (map[string]interface{}, error) {
+func (opts ExtendOpts) ToShareExtendMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "extend")
 }
 
@@ -324,7 +324,7 @@ func Extend(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // ShrinkOptsBuilder allows extensions to add additional parameters to the
 // Shrink request.
 type ShrinkOptsBuilder interface {
-	ToShareShrinkMap() (map[string]interface{}, error)
+	ToShareShrinkMap() (map[string]any, error)
 }
 
 // ShrinkOpts contains options for shrinking a Share.
@@ -337,7 +337,7 @@ type ShrinkOpts struct {
 
 // ToShareShrinkMap assembles a request body based on the contents of a
 // ShrinkOpts.
-func (opts ShrinkOpts) ToShareShrinkMap() (map[string]interface{}, error) {
+func (opts ShrinkOpts) ToShareShrinkMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "shrink")
 }
 
@@ -361,7 +361,7 @@ func Shrink(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToShareUpdateMap() (map[string]interface{}, error)
+	ToShareUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing Share. This object is passed
@@ -378,7 +378,7 @@ type UpdateOpts struct {
 
 // ToShareUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToShareUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToShareUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "share")
 }
 
@@ -422,14 +422,14 @@ type SetMetadataOpts struct {
 
 // ToSetMetadataMap assembles a request body based on the contents of an
 // SetMetadataOpts.
-func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]interface{}, error) {
+func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // SetMetadataOptsBuilder allows extensions to add additional parameters to the
 // SetMetadata request.
 type SetMetadataOptsBuilder interface {
-	ToSetMetadataMap() (map[string]interface{}, error)
+	ToSetMetadataMap() (map[string]any, error)
 }
 
 // SetMetadata sets metadata of the specified share.
@@ -459,14 +459,14 @@ type UpdateMetadataOpts struct {
 
 // ToUpdateMetadataMap assembles a request body based on the contents of an
 // UpdateMetadataOpts.
-func (opts UpdateMetadataOpts) ToUpdateMetadataMap() (map[string]interface{}, error) {
+func (opts UpdateMetadataOpts) ToUpdateMetadataMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // UpdateMetadataOptsBuilder allows extensions to add additional parameters to the
 // UpdateMetadata request.
 type UpdateMetadataOptsBuilder interface {
-	ToUpdateMetadataMap() (map[string]interface{}, error)
+	ToUpdateMetadataMap() (map[string]any, error)
 }
 
 // UpdateMetadata updates metadata of the specified share.
@@ -499,7 +499,7 @@ func DeleteMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id,
 // RevertOptsBuilder allows extensions to add additional parameters to the
 // Revert request.
 type RevertOptsBuilder interface {
-	ToShareRevertMap() (map[string]interface{}, error)
+	ToShareRevertMap() (map[string]any, error)
 }
 
 // RevertOpts contains options for reverting a Share to a snapshot.
@@ -513,7 +513,7 @@ type RevertOpts struct {
 
 // ToShareRevertMap assembles a request body based on the contents of a
 // RevertOpts.
-func (opts RevertOpts) ToShareRevertMap() (map[string]interface{}, error) {
+func (opts RevertOpts) ToShareRevertMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "revert")
 }
 
@@ -537,7 +537,7 @@ func Revert(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // ResetStatusOptsBuilder allows extensions to add additional parameters to the
 // ResetStatus request.
 type ResetStatusOptsBuilder interface {
-	ToShareResetStatusMap() (map[string]interface{}, error)
+	ToShareResetStatusMap() (map[string]any, error)
 }
 
 // ResetStatusOpts contains options for resetting a Share status.
@@ -550,7 +550,7 @@ type ResetStatusOpts struct {
 
 // ToShareResetStatusMap assembles a request body based on the contents of a
 // ResetStatusOpts.
-func (opts ResetStatusOpts) ToShareResetStatusMap() (map[string]interface{}, error) {
+func (opts ResetStatusOpts) ToShareResetStatusMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "reset_status")
 }
 
@@ -575,7 +575,7 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // To extract it, call the ExtractErr method on the ForceDeleteResult.
 // Client must have Microversion set; minimum supported microversion for ForceDelete is 2.7.
 func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"force_delete": nil,
 	}
 	resp, err := client.Post(ctx, forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
@@ -590,7 +590,7 @@ func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // To extract it, call the ExtractErr method on the UnmanageResult.
 // Client must have Microversion set; minimum supported microversion for Unmanage is 2.7.
 func Unmanage(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnmanageResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"unmanage": nil,
 	}
 	resp, err := client.Post(ctx, unmanageURL(client, id), b, nil, &gophercloud.RequestOpts{

@@ -37,10 +37,10 @@ type Task struct {
 	Status string `json:"status"`
 
 	// Input represents different parameters for the task.
-	Input map[string]interface{} `json:"input"`
+	Input map[string]any `json:"input"`
 
 	// Result represents task result details.
-	Result map[string]interface{} `json:"result"`
+	Result map[string]any `json:"result"`
 
 	// Owner is a unique identifier of the task owner.
 	Owner string `json:"owner"`

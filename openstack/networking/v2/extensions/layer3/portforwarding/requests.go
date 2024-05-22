@@ -73,12 +73,12 @@ type CreateOpts struct {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToPortForwardingCreateMap() (map[string]interface{}, error)
+	ToPortForwardingCreateMap() (map[string]any, error)
 }
 
 // ToPortForwardingCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
 // interface
-func (opts CreateOpts) ToPortForwardingCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToPortForwardingCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "port_forwarding")
 }
 
@@ -106,7 +106,7 @@ type UpdateOpts struct {
 
 // ToPortForwardingUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
 // interface
-func (opts UpdateOpts) ToPortForwardingUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToPortForwardingUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "port_forwarding")
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func (opts UpdateOpts) ToPortForwardingUpdateMap() (map[string]interface{}, erro
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToPortForwardingUpdateMap() (map[string]interface{}, error)
+	ToPortForwardingUpdateMap() (map[string]any, error)
 }
 
 // Update allows port forwarding resources to be updated.

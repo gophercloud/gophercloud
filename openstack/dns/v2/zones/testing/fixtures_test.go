@@ -110,7 +110,7 @@ var FirstZone = zones.Zone{
 	Type:        "PRIMARY",
 	Version:     1,
 	CreatedAt:   FirstZoneCreatedAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://127.0.0.1:9001/v2/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
 	},
 }
@@ -133,7 +133,7 @@ var SecondZone = zones.Zone{
 	Version:     1,
 	CreatedAt:   SecondZoneCreatedAt,
 	UpdatedAt:   SecondZoneUpdatedAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://127.0.0.1:9001/v2/zones/34c4561c-9205-4386-9df5-167436f5a222",
 	},
 }

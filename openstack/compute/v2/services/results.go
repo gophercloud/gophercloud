@@ -45,7 +45,7 @@ func (r *Service) UnmarshalJSON(b []byte) error {
 	type tmp Service
 	var s struct {
 		tmp
-		ID        interface{}                     `json:"id"`
+		ID        any                             `json:"id"`
 		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)

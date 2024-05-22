@@ -304,22 +304,22 @@ const ListRoleInferenceRulesOutput = `
 var FirstRole = roles.Role{
 	DomainID: "default",
 	ID:       "2844b2a08be147a08ef58317d6471f1f",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/roles/2844b2a08be147a08ef58317d6471f1f",
 	},
 	Name:  "admin-read-only",
-	Extra: map[string]interface{}{},
+	Extra: map[string]any{},
 }
 
 // SecondRole is the second role in the List request.
 var SecondRole = roles.Role{
 	DomainID: "1789d1",
 	ID:       "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/roles/9fe1d3",
 	},
 	Name: "support",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"description": "read-only support role",
 	},
 }
@@ -328,11 +328,11 @@ var SecondRole = roles.Role{
 var SecondRoleUpdated = roles.Role{
 	DomainID: "1789d1",
 	ID:       "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/roles/9fe1d3",
 	},
 	Name: "support",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"description": "admin read-only support role",
 	},
 }
@@ -536,11 +536,11 @@ func HandleListRoleAssignmentsWithSubtreeSuccessfully(t *testing.T) {
 // RoleOnResource is the role in the ListAssignmentsOnResource request.
 var RoleOnResource = roles.Role{
 	ID: "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/roles/9fe1d3",
 	},
 	Name: "support",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"description": "read-only support role",
 	},
 }
@@ -609,20 +609,20 @@ var expectedRoleInferenceRule = roles.RoleInferenceRule{
 	RoleInference: roles.RoleInference{
 		PriorRole: roles.PriorRole{
 			ID: "7ceab6192ea34a548cc71b24f72e762c",
-			Links: map[string]interface{}{
+			Links: map[string]any{
 				"self": "http://example.com/identity/v3/roles/7ceab6192ea34a548cc71b24f72e762c",
 			},
 			Name: "prior role name",
 		},
 		ImpliedRole: roles.ImpliedRole{
 			ID: "97e2f5d38bc94842bc3da818c16762ed",
-			Links: map[string]interface{}{
+			Links: map[string]any{
 				"self": "http://example.com/identity/v3/roles/97e2f5d38bc94842bc3da818c16762ed",
 			},
 			Name: "implied role name",
 		},
 	},
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed",
 	},
 }
@@ -646,7 +646,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 		{
 			PriorRole: roles.PriorRoleObject{
 				ID: "1acd3c5aa0e246b9a7427d252160dcd1",
-				Links: map[string]interface{}{
+				Links: map[string]any{
 					"self": "http://example.com/identity/v3/roles/1acd3c5aa0e246b9a7427d252160dcd1",
 				},
 				Name:        "prior role name",
@@ -655,7 +655,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 			ImpliedRoles: []roles.ImpliedRoleObject{
 				{
 					ID: "3602510e2e1f499589f78a0724dcf614",
-					Links: map[string]interface{}{
+					Links: map[string]any{
 						"self": "http://example.com/identity/v3/roles/3602510e2e1f499589f78a0724dcf614",
 					},
 					Name:        "implied role1 name",
@@ -663,7 +663,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 				},
 				{
 					ID: "738289aeef684e73a987f7cf2ec6d925",
-					Links: map[string]interface{}{
+					Links: map[string]any{
 						"self": "http://example.com/identity/v3/roles/738289aeef684e73a987f7cf2ec6d925",
 					},
 					Name:        "implied role2 name",
@@ -674,7 +674,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 		{
 			PriorRole: roles.PriorRoleObject{
 				ID: "bbf7a5098bb34407b7164eb6ff9f144e",
-				Links: map[string]interface{}{
+				Links: map[string]any{
 					"self": "http://example.com/identity/v3/roles/bbf7a5098bb34407b7164eb6ff9f144e",
 				},
 				Name:        "prior role name",
@@ -683,7 +683,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 			ImpliedRoles: []roles.ImpliedRoleObject{
 				{
 					ID: "872b20ad124c4c1bafaef2b1aae316ab",
-					Links: map[string]interface{}{
+					Links: map[string]any{
 						"self": "http://example.com/identity/v3/roles/872b20ad124c4c1bafaef2b1aae316ab",
 					},
 					Name:        "implied role1 name",
@@ -691,7 +691,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 				},
 				{
 					ID: "1d865b1b2da14cb7b05254677e5f36a2",
-					Links: map[string]interface{}{
+					Links: map[string]any{
 						"self": "http://example.com/identity/v3/roles/1d865b1b2da14cb7b05254677e5f36a2",
 					},
 					Name:        "implied role2 name",
@@ -700,7 +700,7 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 			},
 		},
 	},
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/role_inferences",
 	},
 }

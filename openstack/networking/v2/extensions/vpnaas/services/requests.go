@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToServiceCreateMap() (map[string]interface{}, error)
+	ToServiceCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new VPN service
@@ -40,7 +40,7 @@ type CreateOpts struct {
 }
 
 // ToServiceCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToServiceCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToServiceCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "vpnservice")
 }
 
@@ -68,7 +68,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r Del
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToServiceUpdateMap() (map[string]interface{}, error)
+	ToServiceUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating a VPN service
@@ -84,7 +84,7 @@ type UpdateOpts struct {
 }
 
 // ToServiceUpdateMap casts aa UodateOpts struct to a map.
-func (opts UpdateOpts) ToServiceUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToServiceUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "vpnservice")
 }
 

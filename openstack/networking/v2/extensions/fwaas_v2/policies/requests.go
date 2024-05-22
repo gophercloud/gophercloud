@@ -63,7 +63,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-	ToFirewallPolicyCreateMap() (map[string]interface{}, error)
+	ToFirewallPolicyCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new firewall policy.
@@ -80,7 +80,7 @@ type CreateOpts struct {
 }
 
 // ToFirewallPolicyCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToFirewallPolicyCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFirewallPolicyCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_policy")
 }
 
@@ -106,7 +106,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type UpdateOptsBuilder interface {
-	ToFirewallPolicyUpdateMap() (map[string]interface{}, error)
+	ToFirewallPolicyUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating a firewall policy.
@@ -119,7 +119,7 @@ type UpdateOpts struct {
 }
 
 // ToFirewallPolicyUpdateMap casts a CreateOpts struct to a map.
-func (opts UpdateOpts) ToFirewallPolicyUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFirewallPolicyUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_policy")
 }
 
@@ -143,7 +143,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r Del
 }
 
 type InsertRuleOptsBuilder interface {
-	ToFirewallPolicyInsertRuleMap() (map[string]interface{}, error)
+	ToFirewallPolicyInsertRuleMap() (map[string]any, error)
 }
 
 type InsertRuleOpts struct {
@@ -152,7 +152,7 @@ type InsertRuleOpts struct {
 	InsertAfter  string `json:"insert_after,omitempty" xor:"InsertBefore"`
 }
 
-func (opts InsertRuleOpts) ToFirewallPolicyInsertRuleMap() (map[string]interface{}, error) {
+func (opts InsertRuleOpts) ToFirewallPolicyInsertRuleMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -169,7 +169,7 @@ func InsertRule(ctx context.Context, c *gophercloud.ServiceClient, id string, op
 }
 
 func RemoveRule(ctx context.Context, c *gophercloud.ServiceClient, id, ruleID string) (r RemoveRuleResult) {
-	b := map[string]interface{}{"firewall_rule_id": ruleID}
+	b := map[string]any{"firewall_rule_id": ruleID}
 	_, r.Err = c.Put(ctx, removeURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

@@ -9,7 +9,7 @@ import (
 
 // CreateOptsBuilder Builder.
 type CreateOptsBuilder interface {
-	ToClusterCreateMap() (map[string]interface{}, error)
+	ToClusterCreateMap() (map[string]any, error)
 }
 
 // CreateOpts params
@@ -33,7 +33,7 @@ type CreateOpts struct {
 }
 
 // ToClusterCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToClusterCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToClusterCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -132,26 +132,26 @@ const (
 )
 
 type UpdateOpts struct {
-	Op    UpdateOp    `json:"op" required:"true"`
-	Path  string      `json:"path" required:"true"`
-	Value interface{} `json:"value,omitempty"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value any      `json:"value,omitempty"`
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToClustersUpdateMap() (map[string]interface{}, error)
+	ToClustersUpdateMap() (map[string]any, error)
 }
 
 // ToClusterUpdateMap assembles a request body based on the contents of
 // UpdateOpts.
-func (opts UpdateOpts) ToClustersUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToClustersUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // Update implements cluster updated request.
 func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts []UpdateOptsBuilder) (r UpdateResult) {
-	var o []map[string]interface{}
+	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToClustersUpdateMap()
 		if err != nil {
@@ -176,11 +176,11 @@ type UpgradeOpts struct {
 // UpgradeOptsBuilder allows extensions to add additional parameters to the
 // Upgrade request.
 type UpgradeOptsBuilder interface {
-	ToClustersUpgradeMap() (map[string]interface{}, error)
+	ToClustersUpgradeMap() (map[string]any, error)
 }
 
 // ToClustersUpgradeMap constructs a request body from UpgradeOpts.
-func (opts UpgradeOpts) ToClustersUpgradeMap() (map[string]interface{}, error) {
+func (opts UpgradeOpts) ToClustersUpgradeMap() (map[string]any, error) {
 	if opts.MaxBatchSize == nil {
 		defaultMaxBatchSize := 1
 		opts.MaxBatchSize = &defaultMaxBatchSize
@@ -206,7 +206,7 @@ func Upgrade(ctx context.Context, client *gophercloud.ServiceClient, id string, 
 // ResizeOptsBuilder allows extensions to add additional parameters to the
 // Resize request.
 type ResizeOptsBuilder interface {
-	ToClusterResizeMap() (map[string]interface{}, error)
+	ToClusterResizeMap() (map[string]any, error)
 }
 
 // ResizeOpts params
@@ -217,7 +217,7 @@ type ResizeOpts struct {
 }
 
 // ToClusterResizeMap constructs a request body from ResizeOpts.
-func (opts ResizeOpts) ToClusterResizeMap() (map[string]interface{}, error) {
+func (opts ResizeOpts) ToClusterResizeMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

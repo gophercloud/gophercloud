@@ -18,7 +18,7 @@ type Config struct {
 	Description          string
 	ID                   string
 	Name                 string
-	Values               map[string]interface{}
+	Values               map[string]any
 }
 
 func (r *Config) UnmarshalJSON(b []byte) error {

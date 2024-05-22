@@ -26,7 +26,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient) (r GetResult) {
 
 // CreateOptsBuilder allows to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToImportCreateMap() (map[string]interface{}, error)
+	ToImportCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters of a new image import.
@@ -36,12 +36,12 @@ type CreateOpts struct {
 }
 
 // ToImportCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToImportCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToImportCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
-	return map[string]interface{}{"method": b}, nil
+	return map[string]any{"method": b}, nil
 }
 
 // Create requests the creation of a new image import on the server.

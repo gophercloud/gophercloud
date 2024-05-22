@@ -28,7 +28,7 @@ func Check(ctx context.Context, client *gophercloud.ServiceClient, serverID, tag
 
 // ReplaceAllOptsBuilder allows to add additional parameters to the ReplaceAll request.
 type ReplaceAllOptsBuilder interface {
-	ToTagsReplaceAllMap() (map[string]interface{}, error)
+	ToTagsReplaceAllMap() (map[string]any, error)
 }
 
 // ReplaceAllOpts provides options used to replace Tags on a server.
@@ -37,7 +37,7 @@ type ReplaceAllOpts struct {
 }
 
 // ToTagsReplaceAllMap formats a ReplaceALlOpts into the body of the ReplaceAll request.
-func (opts ReplaceAllOpts) ToTagsReplaceAllMap() (map[string]interface{}, error) {
+func (opts ReplaceAllOpts) ToTagsReplaceAllMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

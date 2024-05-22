@@ -14,7 +14,7 @@ import (
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-	ToStackCreateMap() (map[string]interface{}, error)
+	ToStackCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is the common options struct used in this package's Create
@@ -32,7 +32,7 @@ type CreateOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]interface{} `json:"parameters,omitempty"`
+	Parameters map[string]any `json:"parameters,omitempty"`
 	// The timeout for stack creation in minutes.
 	Timeout int `json:"timeout_mins,omitempty"`
 	// A list of tags to assosciate with the Stack
@@ -40,7 +40,7 @@ type CreateOpts struct {
 }
 
 // ToStackCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToStackCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type AdoptOptsBuilder interface {
-	ToStackAdoptMap() (map[string]interface{}, error)
+	ToStackAdoptMap() (map[string]any, error)
 }
 
 // AdoptOpts is the common options struct used in this package's Adopt
@@ -128,11 +128,11 @@ type AdoptOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]interface{} `json:"parameters,omitempty"`
+	Parameters map[string]any `json:"parameters,omitempty"`
 }
 
 // ToStackAdoptMap casts a CreateOpts struct to a map.
-func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
+func (opts AdoptOpts) ToStackAdoptMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -311,13 +311,13 @@ func Find(ctx context.Context, c *gophercloud.ServiceClient, stackIdentity strin
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the Update operation in this package.
 type UpdateOptsBuilder interface {
-	ToStackUpdateMap() (map[string]interface{}, error)
+	ToStackUpdateMap() (map[string]any, error)
 }
 
 // UpdatePatchOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the UpdatePatch operation in this package
 type UpdatePatchOptsBuilder interface {
-	ToStackUpdatePatchMap() (map[string]interface{}, error)
+	ToStackUpdatePatchMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the common options struct used in this package's Update
@@ -329,7 +329,7 @@ type UpdateOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]interface{} `json:"parameters,omitempty"`
+	Parameters map[string]any `json:"parameters,omitempty"`
 	// The timeout for stack creation in minutes.
 	Timeout int `json:"timeout_mins,omitempty"`
 	// A list of tags to associate with the Stack
@@ -338,7 +338,7 @@ type UpdateOpts struct {
 
 // ToStackUpdateMap validates that a template was supplied and calls
 // the toStackUpdateMap private function.
-func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToStackUpdateMap() (map[string]any, error) {
 	if opts.TemplateOpts == nil {
 		return nil, ErrTemplateRequired{}
 	}
@@ -347,12 +347,12 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 
 // ToStackUpdatePatchMap calls the private function toStackUpdateMap
 // directly.
-func (opts UpdateOpts) ToStackUpdatePatchMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToStackUpdatePatchMap() (map[string]any, error) {
 	return toStackUpdateMap(opts)
 }
 
 // ToStackUpdateMap casts a CreateOpts struct to a map.
-func toStackUpdateMap(opts UpdateOpts) (map[string]interface{}, error) {
+func toStackUpdateMap(opts UpdateOpts) (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -437,7 +437,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackI
 // PreviewOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the Preview operation in this package.
 type PreviewOptsBuilder interface {
-	ToStackPreviewMap() (map[string]interface{}, error)
+	ToStackPreviewMap() (map[string]any, error)
 }
 
 // PreviewOpts contains the common options struct used in this package's Preview
@@ -457,11 +457,11 @@ type PreviewOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]interface{} `json:"parameters,omitempty"`
+	Parameters map[string]any `json:"parameters,omitempty"`
 }
 
 // ToStackPreviewMap casts a PreviewOpts struct to a map.
-func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
+func (opts PreviewOpts) ToStackPreviewMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

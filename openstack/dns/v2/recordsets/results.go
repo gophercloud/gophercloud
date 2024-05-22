@@ -129,7 +129,7 @@ func (r *RecordSet) UnmarshalJSON(b []byte) error {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
-		Links     map[string]interface{}          `json:"links"`
+		Links     map[string]any                  `json:"links"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {

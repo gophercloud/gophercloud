@@ -22,9 +22,9 @@ func (r commonResult) ExtractBase() (*Capsule, error) {
 }
 
 // Extract is a function that accepts a result and extracts a capsule result.
-// The result will be returned as an interface{} where it should be able to
+// The result will be returned as an any where it should be able to
 // be casted as either a Capsule or CapsuleV132.
-func (r commonResult) Extract() (interface{}, error) {
+func (r commonResult) Extract() (any, error) {
 	s, err := r.ExtractBase()
 	if err == nil {
 		return s, nil
@@ -91,7 +91,7 @@ type Capsule struct {
 
 	// Links includes HTTP references to the itself, useful for passing along to
 	// other APIs that might want a capsule reference.
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 
 	// The capsule version
 	CapsuleVersion string `json:"capsule_version"`
@@ -157,7 +157,7 @@ type Container struct {
 
 	// Links includes HTTP references to the itself, useful for passing along to
 	// other APIs that might want a capsule reference.
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 
 	// auto remove flag token for the container
 	AutoRemove bool `json:"auto_remove"`
@@ -277,7 +277,7 @@ func ExtractCapsulesBase(r pagination.Page) ([]Capsule, error) {
 // and extracts the elements into an interface.
 // This interface should be able to be casted as either a Capsule or
 // CapsuleV132 struct
-func ExtractCapsules(r pagination.Page) (interface{}, error) {
+func ExtractCapsules(r pagination.Page) (any, error) {
 	s, err := ExtractCapsulesBase(r)
 	if err == nil {
 		return s, nil

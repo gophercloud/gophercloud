@@ -22,7 +22,7 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 		WorkflowID: workflow.ID,
 		Name:       crontriggerName,
 		Pattern:    "0 0 1 1 *",
-		WorkflowInput: map[string]interface{}{
+		WorkflowInput: map[string]any{
 			"msg": "Hello World!",
 		},
 		FirstExecutionTime: &firstExecution,

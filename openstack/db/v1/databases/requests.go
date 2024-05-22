@@ -9,7 +9,7 @@ import (
 
 // CreateOptsBuilder builds create options
 type CreateOptsBuilder interface {
-	ToDBCreateMap() (map[string]interface{}, error)
+	ToDBCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is the struct responsible for configuring a database; often in
@@ -35,7 +35,7 @@ type CreateOpts struct {
 
 // ToMap is a helper function to convert individual DB create opt structures
 // into sub-maps.
-func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToMap() (map[string]any, error) {
 	if len(opts.Name) > 64 {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "databases.CreateOpts.Name"
@@ -50,8 +50,8 @@ func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
 type BatchCreateOpts []CreateOpts
 
 // ToDBCreateMap renders a JSON map for creating DBs.
-func (opts BatchCreateOpts) ToDBCreateMap() (map[string]interface{}, error) {
-	dbs := make([]map[string]interface{}, len(opts))
+func (opts BatchCreateOpts) ToDBCreateMap() (map[string]any, error) {
+	dbs := make([]map[string]any, len(opts))
 	for i, db := range opts {
 		dbMap, err := db.ToMap()
 		if err != nil {
@@ -59,7 +59,7 @@ func (opts BatchCreateOpts) ToDBCreateMap() (map[string]interface{}, error) {
 		}
 		dbs[i] = dbMap
 	}
-	return map[string]interface{}{"databases": dbs}, nil
+	return map[string]any{"databases": dbs}, nil
 }
 
 // Create will create a new database within the specified instance. If the

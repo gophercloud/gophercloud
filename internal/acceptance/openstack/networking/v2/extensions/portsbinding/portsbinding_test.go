@@ -32,7 +32,7 @@ func TestPortsbindingCRUD(t *testing.T) {
 
 	// Define a host
 	hostID := "localhost"
-	profile := map[string]interface{}{"foo": "bar"}
+	profile := map[string]any{"foo": "bar"}
 
 	// Create port
 	port, err := CreatePortsbinding(t, client, network.ID, subnet.ID, hostID, profile)
@@ -48,7 +48,7 @@ func TestPortsbindingCRUD(t *testing.T) {
 	newPortName := ""
 	newPortDescription := ""
 	newHostID := "127.0.0.1"
-	newProfile := map[string]interface{}{}
+	newProfile := map[string]any{}
 	updateOpts := ports.UpdateOpts{
 		Name:        &newPortName,
 		Description: &newPortDescription,

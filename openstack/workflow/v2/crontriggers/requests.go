@@ -14,7 +14,7 @@ import (
 
 // CreateOptsBuilder allows extension to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToCronTriggerCreateMap() (map[string]interface{}, error)
+	ToCronTriggerCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters used to create a cron trigger.
@@ -36,17 +36,17 @@ type CreateOpts struct {
 	WorkflowName string `json:"workflow_name,omitempty" or:"WorkflowID"`
 
 	// WorkflowParams defines workflow type specific parameters.
-	WorkflowParams map[string]interface{} `json:"workflow_params,omitempty"`
+	WorkflowParams map[string]any `json:"workflow_params,omitempty"`
 
 	// WorkflowInput defines workflow input values.
-	WorkflowInput map[string]interface{} `json:"workflow_input,omitempty"`
+	WorkflowInput map[string]any `json:"workflow_input,omitempty"`
 
 	// FirstExecutionTime defines the first execution time of the trigger.
 	FirstExecutionTime *time.Time `json:"-"`
 }
 
 // ToCronTriggerCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToCronTriggerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToCronTriggerCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -99,9 +99,9 @@ type ListOpts struct {
 	// WorkflowID allows to filter by workflow id.
 	WorkflowID string `q:"workflow_id"`
 	// WorkflowInput allows to filter by specific workflow inputs.
-	WorkflowInput map[string]interface{} `q:"-"`
+	WorkflowInput map[string]any `q:"-"`
 	// WorkflowParams allows to filter by specific workflow parameters.
-	WorkflowParams map[string]interface{} `q:"-"`
+	WorkflowParams map[string]any `q:"-"`
 	// Scope filters by the trigger's scope.
 	// Values can be "private" or "public".
 	Scope string `q:"scope"`
@@ -212,7 +212,7 @@ func (opts ListOpts) ToCronTriggerListQuery() (string, error) {
 	}
 	params := q.Query()
 
-	for queryParam, value := range map[string]map[string]interface{}{"workflow_params": opts.WorkflowParams, "workflow_input": opts.WorkflowInput} {
+	for queryParam, value := range map[string]map[string]any{"workflow_params": opts.WorkflowParams, "workflow_input": opts.WorkflowInput} {
 		if value != nil {
 			b, err := json.Marshal(value)
 			if err != nil {

@@ -53,7 +53,7 @@ var ExpectedCluster = clusters.Cluster{
 	FixedNetwork:       "private_network",
 	FixedSubnet:        "private_subnet",
 	HealthStatus:       "HEALTHY",
-	HealthStatusReason: map[string]interface{}{"api": "ok"},
+	HealthStatusReason: map[string]any{"api": "ok"},
 }
 
 var ExpectedCluster2 = clusters.Cluster{
@@ -88,7 +88,7 @@ var ExpectedCluster2 = clusters.Cluster{
 	FixedNetwork:       "private_network",
 	FixedSubnet:        "private_subnet",
 	HealthStatus:       "HEALTHY",
-	HealthStatusReason: map[string]interface{}{"api": "ok"},
+	HealthStatusReason: map[string]any{"api": "ok"},
 }
 
 var ExpectedClusterUUID = clusterUUID

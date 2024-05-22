@@ -17,7 +17,7 @@ import (
 // Fail - No password in JSON.
 func TestExtractPassword_no_pwd_data(t *testing.T) {
 
-	var dejson interface{}
+	var dejson any
 	err := json.Unmarshal([]byte(`{ "Crappy data": ".-.-." }`), &dejson)
 	if err != nil {
 		t.Fatalf("%s", err)
@@ -32,7 +32,7 @@ func TestExtractPassword_no_pwd_data(t *testing.T) {
 // Ok - return encrypted password when no private key is given.
 func TestExtractPassword_encrypted_pwd(t *testing.T) {
 
-	var dejson interface{}
+	var dejson any
 	sejson := []byte(`{"password":"PP8EnwPO9DhEc8+O/6CKAkPF379mKsUsfFY6yyw0734XXvKsSdV9KbiHQ2hrBvzeZxtGMrlFaikVunCRizyLLWLMuOi4hoH+qy9F9sQid61gQIGkxwDAt85d/7Eau2/KzorFnZhgxArl7IiqJ67X6xjKkR3zur+Yp3V/mtVIehpPYIaAvPbcp2t4mQXl1I9J8yrQfEZOctLL1L4heDEVXnxvNihVLK6pivlVggp6SZCtjj9cduZGrYGsxsOCso1dqJQr7GCojfwvuLOoG0OYwEGuWVTZppxWxi/q1QgeHFhGKA5QUXlz7pS71oqpjYsTeViuHnfvlqb5TVYZpQ1haw=="}`)
 
 	err := json.Unmarshal(sejson, &dejson)
@@ -86,7 +86,7 @@ KSde3I0ybDz7iS2EtceKB7m4C0slYd+oBkm4efuF00rCOKDwpFq45m0=
 		t.Fatalf("Error parsing private key: %s\n", err)
 	}
 
-	var dejson interface{}
+	var dejson any
 	sejson := []byte(`{"password":"PP8EnwPO9DhEc8+O/6CKAkPF379mKsUsfFY6yyw0734XXvKsSdV9KbiHQ2hrBvzeZxtGMrlFaikVunCRizyLLWLMuOi4hoH+qy9F9sQid61gQIGkxwDAt85d/7Eau2/KzorFnZhgxArl7IiqJ67X6xjKkR3zur+Yp3V/mtVIehpPYIaAvPbcp2t4mQXl1I9J8yrQfEZOctLL1L4heDEVXnxvNihVLK6pivlVggp6SZCtjj9cduZGrYGsxsOCso1dqJQr7GCojfwvuLOoG0OYwEGuWVTZppxWxi/q1QgeHFhGKA5QUXlz7pS71oqpjYsTeViuHnfvlqb5TVYZpQ1haw=="}`)
 
 	err = json.Unmarshal(sejson, &dejson)

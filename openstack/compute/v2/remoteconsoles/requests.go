@@ -53,7 +53,7 @@ const (
 
 // CreateOptsBuilder allows to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToRemoteConsoleCreateMap() (map[string]interface{}, error)
+	ToRemoteConsoleCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters to the Create request.
@@ -66,7 +66,7 @@ type CreateOpts struct {
 }
 
 // ToRemoteConsoleCreateMap builds a request body from the CreateOpts.
-func (opts CreateOpts) ToRemoteConsoleCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToRemoteConsoleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "remote_console")
 }
 

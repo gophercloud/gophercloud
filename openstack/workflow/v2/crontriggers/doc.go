@@ -41,10 +41,10 @@ Create a cron trigger. This example will start the workflow "echo" each day at 8
 		Pattern:             "0 8 * * *",
 		WorkflowName:        "echo",
 		RemainingExecutions: 10,
-		WorkflowParams: map[string]interface{}{
+		WorkflowParams: map[string]any{
 			"msg": "hello",
 		},
-		WorkflowInput: map[string]interface{}{
+		WorkflowInput: map[string]any{
 			"msg": "world",
 		},
 	}

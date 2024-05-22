@@ -70,17 +70,17 @@ type Project struct {
 	Tags []string `json:"tags,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the project.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 
 	// Options are defined options in the API to enable certain features.
-	Options map[Option]interface{} `json:"options,omitempty"`
+	Options map[Option]any `json:"options,omitempty"`
 }
 
 func (r *Project) UnmarshalJSON(b []byte) error {
 	type tmp Project
 	var s struct {
 		tmp
-		Extra map[string]interface{} `json:"extra"`
+		Extra map[string]any `json:"extra"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -93,12 +93,12 @@ func (r *Project) UnmarshalJSON(b []byte) error {
 	if s.Extra != nil {
 		r.Extra = s.Extra
 	} else {
-		var result interface{}
+		var result any
 		err := json.Unmarshal(b, &result)
 		if err != nil {
 			return err
 		}
-		if resultMap, ok := result.(map[string]interface{}); ok {
+		if resultMap, ok := result.(map[string]any); ok {
 			r.Extra = gophercloud.RemainingKeys(Project{}, resultMap)
 		}
 	}
@@ -179,7 +179,7 @@ type ProjectTags struct {
 	// Tags is the list of tags associated with the project.
 	Projects []Project `json:"projects,omitempty"`
 	// Links contains referencing links to the implied_role.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 // ModifyTagsResLinksult is the result of a  Tags request. Call its Extract method to

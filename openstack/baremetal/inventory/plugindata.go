@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type ExtraDataItem map[string]interface{}
+type ExtraDataItem map[string]any
 
 type ExtraDataSection map[string]ExtraDataItem
 
@@ -48,7 +48,7 @@ type LLDPTLVType struct {
 
 // UnmarshalJSON interprets an LLDP TLV [key, value] pair as an LLDPTLVType structure
 func (r *LLDPTLVType) UnmarshalJSON(data []byte) error {
-	var list []interface{}
+	var list []any
 	if err := json.Unmarshal(data, &list); err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ type ConfigurationType struct {
 	Managers []HardwareManager `json:"managers"`
 }
 
-type ParsedLLDP = map[string]interface{}
+type ParsedLLDP = map[string]any
 
 type ProcessedInterfaceType struct {
 	InterfaceType

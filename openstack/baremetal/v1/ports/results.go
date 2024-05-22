@@ -17,11 +17,11 @@ func (r portResult) Extract() (*Port, error) {
 	return &s, err
 }
 
-func (r portResult) ExtractInto(v interface{}) error {
+func (r portResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-func ExtractPortsInto(r pagination.Page, v interface{}) error {
+func ExtractPortsInto(r pagination.Page, v any) error {
 	return r.(PortPage).Result.ExtractIntoSlicePtr(v, "ports")
 }
 
@@ -45,7 +45,7 @@ type Port struct {
 	// field) and port_id (identifier of the physical port on the switch to which
 	// node’s port is connected to) fields. switch_info is an optional string
 	// field to be used to store any vendor-specific information.
-	LocalLinkConnection map[string]interface{} `json:"local_link_connection"`
+	LocalLinkConnection map[string]any `json:"local_link_connection"`
 
 	// Indicates whether PXE is enabled or disabled on the Port.
 	PXEEnabled bool `json:"pxe_enabled"`
@@ -55,10 +55,10 @@ type Port struct {
 	PhysicalNetwork string `json:"physical_network"`
 
 	// Internal metadata set and stored by the Port. This field is read-only.
-	InternalInfo map[string]interface{} `json:"internal_info"`
+	InternalInfo map[string]any `json:"internal_info"`
 
 	// A set of one or more arbitrary metadata key and value pairs.
-	Extra map[string]interface{} `json:"extra"`
+	Extra map[string]any `json:"extra"`
 
 	// The UTC date and time when the resource was created, ISO 8601 format.
 	CreatedAt time.Time `json:"created_at"`
@@ -68,7 +68,7 @@ type Port struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// A list of relative links. Includes the self and bookmark links.
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 
 	// Indicates whether the Port is a Smart NIC port.
 	IsSmartNIC bool `json:"is_smartnic"`

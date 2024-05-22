@@ -19,7 +19,7 @@ type Mapping struct {
 	ID string `json:"id"`
 
 	// Links contains referencing links to the limit.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 
 	// The list of rules used to map remote users into local users
 	Rules []MappingRule `json:"rules"`

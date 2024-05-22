@@ -109,7 +109,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToPortCreateMap() (map[string]interface{}, error)
+	ToPortCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents the attributes used when creating a new port.
@@ -119,7 +119,7 @@ type CreateOpts struct {
 	Description           string             `json:"description,omitempty"`
 	AdminStateUp          *bool              `json:"admin_state_up,omitempty"`
 	MACAddress            string             `json:"mac_address,omitempty"`
-	FixedIPs              interface{}        `json:"fixed_ips,omitempty"`
+	FixedIPs              any                `json:"fixed_ips,omitempty"`
 	DeviceID              string             `json:"device_id,omitempty"`
 	DeviceOwner           string             `json:"device_owner,omitempty"`
 	TenantID              string             `json:"tenant_id,omitempty"`
@@ -131,7 +131,7 @@ type CreateOpts struct {
 }
 
 // ToPortCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToPortCreateMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "port")
 	if err != nil {
 		return nil, err
@@ -143,13 +143,13 @@ func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
 // AddValueSpecs expands the 'value_specs' object and removes 'value_specs'
 // from the request body. It will return error if the value specs would overwrite
 // an existing field or contains forbidden keys.
-func AddValueSpecs(body map[string]interface{}) (map[string]interface{}, error) {
+func AddValueSpecs(body map[string]any) (map[string]any, error) {
 	// Banned the same as in heat. See https://github.com/openstack/heat/blob/dd7319e373b88812cb18897f742b5196a07227ea/heat/engine/resources/openstack/neutron/neutron.py#L59
 	bannedKeys := []string{"shared", "tenant_id"}
-	port := body["port"].(map[string]interface{})
+	port := body["port"].(map[string]any)
 
 	if port["value_specs"] != nil {
-		for k, v := range port["value_specs"].(map[string]interface{}) {
+		for k, v := range port["value_specs"].(map[string]any) {
 			if slices.Contains(bannedKeys, k) {
 				return nil, fmt.Errorf("forbidden key in value_specs: %s", k)
 			}
@@ -181,7 +181,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToPortUpdateMap() (map[string]interface{}, error)
+	ToPortUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents the attributes used when updating an existing port.
@@ -189,7 +189,7 @@ type UpdateOpts struct {
 	Name                  *string            `json:"name,omitempty"`
 	Description           *string            `json:"description,omitempty"`
 	AdminStateUp          *bool              `json:"admin_state_up,omitempty"`
-	FixedIPs              interface{}        `json:"fixed_ips,omitempty"`
+	FixedIPs              any                `json:"fixed_ips,omitempty"`
 	DeviceID              *string            `json:"device_id,omitempty"`
 	DeviceOwner           *string            `json:"device_owner,omitempty"`
 	SecurityGroups        *[]string          `json:"security_groups,omitempty"`
@@ -204,7 +204,7 @@ type UpdateOpts struct {
 }
 
 // ToPortUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToPortUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToPortUpdateMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "port")
 	if err != nil {
 		return nil, err

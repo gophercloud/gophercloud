@@ -37,7 +37,7 @@ type ServerGroup struct {
 
 	// Metadata includes a list of all user-specified key-value pairs attached
 	// to the Server Group.
-	Metadata map[string]interface{}
+	Metadata map[string]any
 
 	// Policy is the policy of a server group.
 	// This requires microversion 2.64 or later.

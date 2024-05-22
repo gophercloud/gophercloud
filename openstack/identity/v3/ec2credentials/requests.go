@@ -29,7 +29,7 @@ type CreateOpts struct {
 }
 
 // ToCredentialCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToCredentialCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToCredentialCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

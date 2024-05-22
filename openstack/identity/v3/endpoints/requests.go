@@ -8,7 +8,7 @@ import (
 )
 
 type CreateOptsBuilder interface {
-	ToEndpointCreateMap() (map[string]interface{}, error)
+	ToEndpointCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains the subset of Endpoint attributes that should be used
@@ -33,7 +33,7 @@ type CreateOpts struct {
 }
 
 // ToEndpointCreateMap builds a request body from the Endpoint Create options.
-func (opts CreateOpts) ToEndpointCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToEndpointCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "endpoint")
 }
 
@@ -92,7 +92,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // UpdateOptsBuilder allows extensions to add parameters to the Update request.
 type UpdateOptsBuilder interface {
-	ToEndpointUpdateMap() (map[string]interface{}, error)
+	ToEndpointUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the subset of Endpoint attributes that should be used to
@@ -117,7 +117,7 @@ type UpdateOpts struct {
 }
 
 // ToEndpointUpdateMap builds an update request body from the Update options.
-func (opts UpdateOpts) ToEndpointUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToEndpointUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "endpoint")
 }
 

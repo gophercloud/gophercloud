@@ -11,7 +11,7 @@ import (
 
 // SchedulerHintOptsBuilder builds the scheduler hints into a serializable format.
 type SchedulerHintOptsBuilder interface {
-	ToSchedulerHintsMap() (map[string]interface{}, error)
+	ToSchedulerHintsMap() (map[string]any, error)
 }
 
 // SchedulerHintOpts contains options for providing scheduler hints
@@ -33,12 +33,12 @@ type SchedulerHintOpts struct {
 	Query string
 
 	// AdditionalProperies are arbitrary key/values that are not validated by nova.
-	AdditionalProperties map[string]interface{}
+	AdditionalProperties map[string]any
 }
 
 // ToSchedulerHintsMap assembles a request body for scheduler hints
-func (opts SchedulerHintOpts) ToSchedulerHintsMap() (map[string]interface{}, error) {
-	sh := make(map[string]interface{})
+func (opts SchedulerHintOpts) ToSchedulerHintsMap() (map[string]any, error) {
+	sh := make(map[string]any)
 
 	uuidRegex, _ := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 
@@ -93,13 +93,13 @@ func (opts SchedulerHintOpts) ToSchedulerHintsMap() (map[string]interface{}, err
 		return sh, nil
 	}
 
-	return map[string]interface{}{"OS-SCH-HNT:scheduler_hints": sh}, nil
+	return map[string]any{"OS-SCH-HNT:scheduler_hints": sh}, nil
 }
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToVolumeCreateMap() (map[string]interface{}, error)
+	ToVolumeCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a Volume. This object is passed to
@@ -133,7 +133,7 @@ type CreateOpts struct {
 
 // ToVolumeCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToVolumeCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "volume")
 }
 
@@ -270,7 +270,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToVolumeUpdateMap() (map[string]interface{}, error)
+	ToVolumeUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing Volume. This object is passed
@@ -284,7 +284,7 @@ type UpdateOpts struct {
 
 // ToVolumeUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToVolumeUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToVolumeUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "volume")
 }
 
@@ -306,7 +306,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // AttachOptsBuilder allows extensions to add additional parameters to the
 // Attach request.
 type AttachOptsBuilder interface {
-	ToVolumeAttachMap() (map[string]interface{}, error)
+	ToVolumeAttachMap() (map[string]any, error)
 }
 
 // AttachMode describes the attachment mode for volumes.
@@ -335,7 +335,7 @@ type AttachOpts struct {
 
 // ToVolumeAttachMap assembles a request body based on the contents of a
 // AttachOpts.
-func (opts AttachOpts) ToVolumeAttachMap() (map[string]interface{}, error) {
+func (opts AttachOpts) ToVolumeAttachMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-attach")
 }
 
@@ -355,7 +355,7 @@ func Attach(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // BeginDetaching will mark the volume as detaching.
 func BeginDetaching(ctx context.Context, client *gophercloud.ServiceClient, id string) (r BeginDetachingResult) {
-	b := map[string]interface{}{"os-begin_detaching": make(map[string]interface{})}
+	b := map[string]any{"os-begin_detaching": make(map[string]any)}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
@@ -366,7 +366,7 @@ func BeginDetaching(ctx context.Context, client *gophercloud.ServiceClient, id s
 // DetachOptsBuilder allows extensions to add additional parameters to the
 // Detach request.
 type DetachOptsBuilder interface {
-	ToVolumeDetachMap() (map[string]interface{}, error)
+	ToVolumeDetachMap() (map[string]any, error)
 }
 
 // DetachOpts contains options for detaching a Volume.
@@ -377,7 +377,7 @@ type DetachOpts struct {
 
 // ToVolumeDetachMap assembles a request body based on the contents of a
 // DetachOpts.
-func (opts DetachOpts) ToVolumeDetachMap() (map[string]interface{}, error) {
+func (opts DetachOpts) ToVolumeDetachMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-detach")
 }
 
@@ -397,7 +397,7 @@ func Detach(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // Reserve will reserve a volume based on volume ID.
 func Reserve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ReserveResult) {
-	b := map[string]interface{}{"os-reserve": make(map[string]interface{})}
+	b := map[string]any{"os-reserve": make(map[string]any)}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
@@ -407,7 +407,7 @@ func Reserve(ctx context.Context, client *gophercloud.ServiceClient, id string) 
 
 // Unreserve will unreserve a volume based on volume ID.
 func Unreserve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnreserveResult) {
-	b := map[string]interface{}{"os-unreserve": make(map[string]interface{})}
+	b := map[string]any{"os-unreserve": make(map[string]any)}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
@@ -418,7 +418,7 @@ func Unreserve(ctx context.Context, client *gophercloud.ServiceClient, id string
 // InitializeConnectionOptsBuilder allows extensions to add additional parameters to the
 // InitializeConnection request.
 type InitializeConnectionOptsBuilder interface {
-	ToVolumeInitializeConnectionMap() (map[string]interface{}, error)
+	ToVolumeInitializeConnectionMap() (map[string]any, error)
 }
 
 // InitializeConnectionOpts hosts options for InitializeConnection.
@@ -437,9 +437,9 @@ type InitializeConnectionOpts struct {
 
 // ToVolumeInitializeConnectionMap assembles a request body based on the contents of a
 // InitializeConnectionOpts.
-func (opts InitializeConnectionOpts) ToVolumeInitializeConnectionMap() (map[string]interface{}, error) {
+func (opts InitializeConnectionOpts) ToVolumeInitializeConnectionMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "connector")
-	return map[string]interface{}{"os-initialize_connection": b}, err
+	return map[string]any{"os-initialize_connection": b}, err
 }
 
 // InitializeConnection initializes an iSCSI connection by volume ID.
@@ -459,7 +459,7 @@ func InitializeConnection(ctx context.Context, client *gophercloud.ServiceClient
 // TerminateConnectionOptsBuilder allows extensions to add additional parameters to the
 // TerminateConnection request.
 type TerminateConnectionOptsBuilder interface {
-	ToVolumeTerminateConnectionMap() (map[string]interface{}, error)
+	ToVolumeTerminateConnectionMap() (map[string]any, error)
 }
 
 // TerminateConnectionOpts hosts options for TerminateConnection.
@@ -476,9 +476,9 @@ type TerminateConnectionOpts struct {
 
 // ToVolumeTerminateConnectionMap assembles a request body based on the contents of a
 // TerminateConnectionOpts.
-func (opts TerminateConnectionOpts) ToVolumeTerminateConnectionMap() (map[string]interface{}, error) {
+func (opts TerminateConnectionOpts) ToVolumeTerminateConnectionMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "connector")
-	return map[string]interface{}{"os-terminate_connection": b}, err
+	return map[string]any{"os-terminate_connection": b}, err
 }
 
 // TerminateConnection terminates an iSCSI connection by volume ID.
@@ -498,7 +498,7 @@ func TerminateConnection(ctx context.Context, client *gophercloud.ServiceClient,
 // ExtendSizeOptsBuilder allows extensions to add additional parameters to the
 // ExtendSize request.
 type ExtendSizeOptsBuilder interface {
-	ToVolumeExtendSizeMap() (map[string]interface{}, error)
+	ToVolumeExtendSizeMap() (map[string]any, error)
 }
 
 // ExtendSizeOpts contains options for extending the size of an existing Volume.
@@ -510,7 +510,7 @@ type ExtendSizeOpts struct {
 
 // ToVolumeExtendSizeMap assembles a request body based on the contents of an
 // ExtendSizeOpts.
-func (opts ExtendSizeOpts) ToVolumeExtendSizeMap() (map[string]interface{}, error) {
+func (opts ExtendSizeOpts) ToVolumeExtendSizeMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-extend")
 }
 
@@ -532,7 +532,7 @@ func ExtendSize(ctx context.Context, client *gophercloud.ServiceClient, id strin
 // UploadImageOptsBuilder allows extensions to add additional parameters to the
 // UploadImage request.
 type UploadImageOptsBuilder interface {
-	ToVolumeUploadImageMap() (map[string]interface{}, error)
+	ToVolumeUploadImageMap() (map[string]any, error)
 }
 
 // UploadImageOpts contains options for uploading a Volume to image storage.
@@ -560,7 +560,7 @@ type UploadImageOpts struct {
 
 // ToVolumeUploadImageMap assembles a request body based on the contents of a
 // UploadImageOpts.
-func (opts UploadImageOpts) ToVolumeUploadImageMap() (map[string]interface{}, error) {
+func (opts UploadImageOpts) ToVolumeUploadImageMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-volume_upload_image")
 }
 
@@ -580,7 +580,7 @@ func UploadImage(ctx context.Context, client *gophercloud.ServiceClient, id stri
 
 // ForceDelete will delete the volume regardless of state.
 func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-force_delete": ""}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-force_delete": ""}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -588,7 +588,7 @@ func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // ImageMetadataOptsBuilder allows extensions to add additional parameters to the
 // ImageMetadataRequest request.
 type ImageMetadataOptsBuilder interface {
-	ToImageMetadataMap() (map[string]interface{}, error)
+	ToImageMetadataMap() (map[string]any, error)
 }
 
 // ImageMetadataOpts contains options for setting image metadata to a volume.
@@ -599,7 +599,7 @@ type ImageMetadataOpts struct {
 
 // ToImageMetadataMap assembles a request body based on the contents of a
 // ImageMetadataOpts.
-func (opts ImageMetadataOpts) ToImageMetadataMap() (map[string]interface{}, error) {
+func (opts ImageMetadataOpts) ToImageMetadataMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-set_image_metadata")
 }
 
@@ -625,7 +625,7 @@ type BootableOpts struct {
 
 // ToBootableMap assembles a request body based on the contents of a
 // BootableOpts.
-func (opts BootableOpts) ToBootableMap() (map[string]interface{}, error) {
+func (opts BootableOpts) ToBootableMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-set_bootable")
 }
 
@@ -655,7 +655,7 @@ const (
 // ChangeTypeOptsBuilder allows extensions to add additional parameters to the
 // ChangeType request.
 type ChangeTypeOptsBuilder interface {
-	ToVolumeChangeTypeMap() (map[string]interface{}, error)
+	ToVolumeChangeTypeMap() (map[string]any, error)
 }
 
 // ChangeTypeOpts contains options for changing the type of an existing Volume.
@@ -672,7 +672,7 @@ type ChangeTypeOpts struct {
 
 // ToVolumeChangeTypeMap assembles a request body based on the contents of an
 // ChangeTypeOpts.
-func (opts ChangeTypeOpts) ToVolumeChangeTypeMap() (map[string]interface{}, error) {
+func (opts ChangeTypeOpts) ToVolumeChangeTypeMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-retype")
 }
 
@@ -700,7 +700,7 @@ type ReImageOpts struct {
 }
 
 // ToReImageMap assembles a request body based on the contents of a ReImageOpts.
-func (opts ReImageOpts) ToReImageMap() (map[string]interface{}, error) {
+func (opts ReImageOpts) ToReImageMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-reimage")
 }
 
@@ -721,7 +721,7 @@ func ReImage(ctx context.Context, client *gophercloud.ServiceClient, id string, 
 // ResetStatusOptsBuilder allows extensions to add additional parameters to the
 // ResetStatus request.
 type ResetStatusOptsBuilder interface {
-	ToResetStatusMap() (map[string]interface{}, error)
+	ToResetStatusMap() (map[string]any, error)
 }
 
 // ResetStatusOpts contains options for resetting a Volume status.
@@ -738,7 +738,7 @@ type ResetStatusOpts struct {
 
 // ToResetStatusMap assembles a request body based on the contents of a
 // ResetStatusOpts.
-func (opts ResetStatusOpts) ToResetStatusMap() (map[string]interface{}, error) {
+func (opts ResetStatusOpts) ToResetStatusMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-reset_status")
 }
 

@@ -50,10 +50,10 @@ func TestCreateCronTrigger(t *testing.T) {
 		WorkflowID:         "604a3a1e-94e3-4066-a34a-aa56873ef236",
 		Name:               "trigger",
 		FirstExecutionTime: &firstExecution,
-		WorkflowParams: map[string]interface{}{
+		WorkflowParams: map[string]any{
 			"msg": "world",
 		},
-		WorkflowInput: map[string]interface{}{
+		WorkflowInput: map[string]any{
 			"msg": "hello",
 		},
 	}
@@ -72,10 +72,10 @@ func TestCreateCronTrigger(t *testing.T) {
 		Scope:               "private",
 		WorkflowID:          "604a3a1e-94e3-4066-a34a-aa56873ef236",
 		WorkflowName:        "workflow_echo",
-		WorkflowParams: map[string]interface{}{
+		WorkflowParams: map[string]any{
 			"msg": "world",
 		},
-		WorkflowInput: map[string]interface{}{
+		WorkflowInput: map[string]any{
 			"msg": "hello",
 		},
 		CreatedAt:          time.Date(2018, time.September, 12, 15, 48, 18, 0, time.UTC),
@@ -145,10 +145,10 @@ func TestGetCronTrigger(t *testing.T) {
 		Scope:               "private",
 		WorkflowID:          "604a3a1e-94e3-4066-a34a-aa56873ef236",
 		WorkflowName:        "workflow_echo",
-		WorkflowParams: map[string]interface{}{
+		WorkflowParams: map[string]any{
 			"msg": "world",
 		},
-		WorkflowInput: map[string]interface{}{
+		WorkflowInput: map[string]any{
 			"msg": "hello",
 		},
 		CreatedAt:          time.Date(2018, time.September, 12, 15, 48, 18, 0, time.UTC),
@@ -221,10 +221,10 @@ func TestListCronTriggers(t *testing.T) {
 				Scope:               "private",
 				WorkflowID:          "604a3a1e-94e3-4066-a34a-aa56873ef236",
 				WorkflowName:        "workflow_echo",
-				WorkflowParams: map[string]interface{}{
+				WorkflowParams: map[string]any{
 					"msg": "world",
 				},
-				WorkflowInput: map[string]interface{}{
+				WorkflowInput: map[string]any{
 					"msg": "hello",
 				},
 				CreatedAt:          time.Date(2018, time.September, 12, 15, 48, 18, 0, time.UTC),
@@ -249,7 +249,7 @@ func TestListCronTriggers(t *testing.T) {
 func TestToExecutionListQuery(t *testing.T) {
 	for expected, opts := range map[string]*crontriggers.ListOpts{
 		newValue("workflow_input", `{"msg":"Hello"}`): {
-			WorkflowInput: map[string]interface{}{
+			WorkflowInput: map[string]any{
 				"msg": "Hello",
 			},
 		},

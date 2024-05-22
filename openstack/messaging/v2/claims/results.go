@@ -38,10 +38,10 @@ type DeleteResult struct {
 }
 
 type Messages struct {
-	Age  float32                `json:"age"`
-	Href string                 `json:"href"`
-	TTL  int                    `json:"ttl"`
-	Body map[string]interface{} `json:"body"`
+	Age  float32        `json:"age"`
+	Href string         `json:"href"`
+	TTL  int            `json:"ttl"`
+	Body map[string]any `json:"body"`
 }
 
 type Claim struct {
