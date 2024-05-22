@@ -10,19 +10,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: ["master"]
-        openstack_version: ["master"]
-        ubuntu_version: ["22.04"]
         include:
+          - name: "master"
+            openstack_version: "master"
+            ubuntu_version: "22.04"
+            additional_services: "openstack-cli-server"
           - name: "caracal"
             openstack_version: "stable/2024.1"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
+            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with enabled FWaaS_v2 and run networking acceptance tests
     steps:
@@ -39,7 +43,7 @@ jobs:
             Q_ML2_PLUGIN_TYPE_DRIVERS=flat,gre,vlan,vxlan
             Q_ML2_TENANT_NETWORK_TYPE=vxlan
             Q_TUNNEL_TYPES=vxlan,gre
-          enabled_services: 'q-svc,q-agt,q-dhcp,q-l3,q-meta,q-fwaas-v2,-cinder,-horizon,-tempest,-swift,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent'
+          enabled_services: 'q-svc,q-agt,q-dhcp,q-l3,q-meta,q-fwaas-v2,-cinder,-horizon,-tempest,-swift,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent,${{ matrix.additional_services }}'
       - name: Checkout go
         uses: actions/setup-go@v5
         with:

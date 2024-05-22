@@ -10,19 +10,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: ["master"]
-        openstack_version: ["master"]
-        ubuntu_version: ["22.04"]
         include:
+          - name: "master"
+            openstack_version: "master"
+            ubuntu_version: "22.04"
+            additional_services: "openstack-cli-server"
           - name: "caracal"
             openstack_version: "stable/2024.1"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
+            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Heat and run orchestration acceptance tests
     steps:
@@ -34,7 +38,7 @@ jobs:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
-          enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
+          enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw,${{ matrix.additional_services }}'
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
