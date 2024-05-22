@@ -28,7 +28,7 @@ func TestPortForwardingList(t *testing.T) {
 
 	count := 0
 
-	portforwarding.List(fake.ServiceClient(), portforwarding.ListOpts{}, "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := portforwarding.List(fake.ServiceClient(), portforwarding.ListOpts{}, "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := portforwarding.ExtractPortForwardings(page)
 		if err != nil {
@@ -59,6 +59,7 @@ func TestPortForwardingList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

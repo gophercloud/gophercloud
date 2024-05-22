@@ -263,7 +263,7 @@ func TestTrunkTags(t *testing.T) {
 		// docs say list of tags, but it's a set e.g no duplicates
 		Tags: []string{"a", "b", "c"},
 	}
-	tags, err := attributestags.ReplaceAll(context.TODO(), client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
+	_, err = attributestags.ReplaceAll(context.TODO(), client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to set trunk tags: %v", err)
 	}
@@ -272,7 +272,7 @@ func TestTrunkTags(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to get trunk: %v", err)
 	}
-	tags = gtrunk.Tags
+	tags := gtrunk.Tags
 	sort.Strings(tags) // Ensure ordering, older OpenStack versions aren't sorted...
 	th.AssertDeepEquals(t, []string{"a", "b", "c"}, tags)
 

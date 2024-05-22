@@ -76,7 +76,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceClient()
 	count := 0
 
-	rbacpolicies.List(client, rbacpolicies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := rbacpolicies.List(client, rbacpolicies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := rbacpolicies.ExtractRBACPolicies(page)
 		if err != nil {
@@ -88,6 +88,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

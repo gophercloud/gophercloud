@@ -71,7 +71,9 @@ func TestFormValues(t *testing.T, r *http.Request, values map[string]string) {
 		want.Add(k, v)
 	}
 
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		t.Errorf("Failed to parse request form %v", r)
+	}
 	if !reflect.DeepEqual(want, r.Form) {
 		t.Errorf("Request parameters = %v, want %v", r.Form, want)
 	}

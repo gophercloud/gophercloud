@@ -115,8 +115,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 		Name:        &newPortName,
 		Description: &newPortDescription,
 	}
-	var updateOpts ports.UpdateOptsBuilder
-	updateOpts = dns.PortUpdateOptsExt{
+	updateOpts := dns.PortUpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
 		DNSName:           &newDNSName,
 	}
@@ -233,8 +232,7 @@ func TestDNSNetwork(t *testing.T) {
 		Name:        &newNetworkName,
 		Description: &newNetworkDescription,
 	}
-	var updateOpts networks.UpdateOptsBuilder
-	updateOpts = dns.NetworkUpdateOptsExt{
+	updateOpts := dns.NetworkUpdateOptsExt{
 		UpdateOptsBuilder: networkUpdateOpts,
 		DNSDomain:         &newNetworkDNSDomain,
 	}

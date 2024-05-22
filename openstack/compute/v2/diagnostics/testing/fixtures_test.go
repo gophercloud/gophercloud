@@ -16,6 +16,7 @@ func HandleDiagnosticGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"cpu0_time":173,"memory":524288}`))
+		_, err := w.Write([]byte(`{"cpu0_time":173,"memory":524288}`))
+		th.AssertNoErr(t, err)
 	})
 }

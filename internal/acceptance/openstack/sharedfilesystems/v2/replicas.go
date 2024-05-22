@@ -28,7 +28,7 @@ func CreateReplica(t *testing.T, client *gophercloud.ServiceClient, share *share
 		return nil, err
 	}
 
-	_, err = waitForReplicaStatus(t, client, replica.ID, "available")
+	err = waitForReplicaStatus(t, client, replica.ID, "available")
 	if err != nil {
 		t.Logf("Failed to get %s replica status", replica.ID)
 		DeleteReplica(t, client, replica)
@@ -49,7 +49,7 @@ func DeleteReplica(t *testing.T, client *gophercloud.ServiceClient, replica *rep
 		t.Errorf("Unable to delete replica %s: %v", replica.ID, err)
 	}
 
-	_, err = waitForReplicaStatus(t, client, replica.ID, "deleted")
+	err = waitForReplicaStatus(t, client, replica.ID, "deleted")
 	if err != nil {
 		t.Errorf("Failed to wait for 'deleted' status for %s replica: %v", replica.ID, err)
 	} else {
@@ -71,7 +71,7 @@ func ListShareReplicas(t *testing.T, client *gophercloud.ServiceClient, shareID 
 	return replicas.ExtractReplicas(pages)
 }
 
-func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) (*replicas.Replica, error) {
+func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) error {
 	var current *replicas.Replica
 
 	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
@@ -104,14 +104,14 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return current, fmt.Errorf("Replica status is '%s' and unable to get manila messages: %s", err, mErr)
+			return fmt.Errorf("Replica status is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 
-	return current, err
+	return err
 }
 
-func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state string) (*replicas.Replica, error) {
+func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state string) error {
 	var current *replicas.Replica
 
 	err := tools.WaitFor(func(ctx context.Context) (bool, error) {
@@ -136,9 +136,9 @@ func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state s
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return current, fmt.Errorf("Replica state is '%s' and unable to get manila messages: %s", err, mErr)
+			return fmt.Errorf("Replica state is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 
-	return current, err
+	return err
 }

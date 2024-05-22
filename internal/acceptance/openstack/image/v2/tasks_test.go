@@ -32,6 +32,7 @@ func TestTasksListEachPage(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 }
 
 func TestTasksListAllPages(t *testing.T) {

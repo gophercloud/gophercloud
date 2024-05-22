@@ -5,11 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
-// commonResult is the response of a base result.
-type commonResult struct {
-	gophercloud.Result
-}
-
 // CreateResult is the response of a Create operations.
 type CreateResult struct {
 	gophercloud.Result

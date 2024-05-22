@@ -159,7 +159,7 @@ func redactHeaders(headers http.Header) (processedHeaders []string) {
 		var sensitive bool
 
 		for _, redact_header := range REDACT_HEADERS {
-			if strings.ToLower(name) == strings.ToLower(redact_header) {
+			if strings.EqualFold(name, redact_header) {
 				sensitive = true
 			}
 		}

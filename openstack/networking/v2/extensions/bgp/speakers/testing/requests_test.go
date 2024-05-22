@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 		})
 	count := 0
 
-	speakers.List(fake.ServiceClient()).EachPage(
+	err := speakers.List(fake.ServiceClient()).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -42,6 +42,7 @@ func TestList(t *testing.T) {
 			th.CheckDeepEquals(t, expected, actual)
 			return true, nil
 		})
+	th.AssertNoErr(t, err)
 }
 
 func TestGet(t *testing.T) {
@@ -211,7 +212,7 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 	})
 
 	count := 0
-	speakers.GetAdvertisedRoutes(fake.ServiceClient(), bgpSpeakerID).EachPage(
+	err := speakers.GetAdvertisedRoutes(fake.ServiceClient(), bgpSpeakerID).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -223,14 +224,15 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 			}
 
 			expected := []speakers.AdvertisedRoute{
-				speakers.AdvertisedRoute{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
-				speakers.AdvertisedRoute{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
-				speakers.AdvertisedRoute{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
+				{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
+				{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
+				{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
 			}
 			th.CheckDeepEquals(t, count, 1)
 			th.CheckDeepEquals(t, expected, actual)
 			return true, nil
 		})
+	th.AssertNoErr(t, err)
 }
 
 func TestAddGatewayNetwork(t *testing.T) {

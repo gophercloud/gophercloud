@@ -97,6 +97,7 @@ func TestCertificateContainer(t *testing.T) {
 	container, err := CreateCertificateContainer(t, client, passphrase, private, certificate)
 	th.AssertNoErr(t, err)
 	containerID, err := ParseID(container.ContainerRef)
+	th.AssertNoErr(t, err)
 	defer DeleteContainer(t, client, containerID)
 }
 
@@ -141,6 +142,7 @@ func TestRSAContainer(t *testing.T) {
 	container, err := CreateRSAContainer(t, client, passphrase, private, public)
 	th.AssertNoErr(t, err)
 	containerID, err := ParseID(container.ContainerRef)
+	th.AssertNoErr(t, err)
 	defer DeleteContainer(t, client, containerID)
 }
 

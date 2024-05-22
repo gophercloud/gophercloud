@@ -97,8 +97,7 @@ func TestEC2AuthMethod(t *testing.T) {
 	newClient, err := clients.NewIdentityV3UnauthenticatedClient()
 	th.AssertNoErr(t, err)
 
-	var ec2AuthOptions tokens.AuthOptionsBuilder
-	ec2AuthOptions = &ec2tokens.AuthOptions{
+	ec2AuthOptions := &ec2tokens.AuthOptions{
 		Access: "181920",
 		Secret: "secretKey",
 	}

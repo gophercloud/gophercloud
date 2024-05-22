@@ -30,7 +30,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	agents.List(fake.ServiceClient(), agents.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := agents.List(fake.ServiceClient(), agents.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := agents.ExtractAgents(page)
 
@@ -48,6 +48,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -226,7 +227,7 @@ func TestListBGPSpeakers(t *testing.T) {
 		})
 
 	count := 0
-	agents.ListBGPSpeakers(fake.ServiceClient(), agentID).EachPage(
+	err := agents.ListBGPSpeakers(fake.ServiceClient(), agentID).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -240,6 +241,7 @@ func TestListBGPSpeakers(t *testing.T) {
 			th.AssertEquals(t, actual[0].IPVersion, 4)
 			return true, nil
 		})
+	th.AssertNoErr(t, err)
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
@@ -307,7 +309,7 @@ func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
 		})
 
 	count := 0
-	agents.ListDRAgentHostingBGPSpeakers(fake.ServiceClient(), speakerID).EachPage(
+	err := agents.ListDRAgentHostingBGPSpeakers(fake.ServiceClient(), speakerID).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -322,6 +324,7 @@ func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
 			th.CheckDeepEquals(t, expected, actual)
 			return true, nil
 		})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

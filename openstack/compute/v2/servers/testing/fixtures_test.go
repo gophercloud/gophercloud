@@ -769,7 +769,9 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -813,7 +815,9 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -966,7 +970,9 @@ func HandleServerListSimpleSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -986,7 +992,9 @@ func HandleServerListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -1124,7 +1132,8 @@ func HandleMetadatumGetSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		w.Write([]byte(`{ "meta": {"foo":"bar"}}`))
+		_, err := w.Write([]byte(`{ "meta": {"foo":"bar"}}`))
+		th.AssertNoErr(t, err)
 	})
 }
 
@@ -1141,7 +1150,8 @@ func HandleMetadatumCreateSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		w.Write([]byte(`{ "meta": {"foo":"bar"}}`))
+		_, err := w.Write([]byte(`{ "meta": {"foo":"bar"}}`))
+		th.AssertNoErr(t, err)
 	})
 }
 
@@ -1163,7 +1173,8 @@ func HandleMetadataGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{ "metadata": {"foo":"bar", "this":"that"}}`))
+		_, err := w.Write([]byte(`{ "metadata": {"foo":"bar", "this":"that"}}`))
+		th.AssertNoErr(t, err)
 	})
 }
 
@@ -1181,7 +1192,8 @@ func HandleMetadataResetSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		w.Write([]byte(`{ "metadata": {"foo":"bar", "this":"that"}}`))
+		_, err := w.Write([]byte(`{ "metadata": {"foo":"bar", "this":"that"}}`))
+		th.AssertNoErr(t, err)
 	})
 }
 
@@ -1199,7 +1211,8 @@ func HandleMetadataUpdateSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		w.Write([]byte(`{ "metadata": {"foo":"baz", "this":"those"}}`))
+		_, err := w.Write([]byte(`{ "metadata": {"foo":"baz", "this":"those"}}`))
+		th.AssertNoErr(t, err)
 	})
 }
 

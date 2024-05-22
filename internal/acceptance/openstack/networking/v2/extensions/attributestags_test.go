@@ -67,6 +67,7 @@ func TestTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, exists)
 	noexists, err := attributestags.Confirm(context.TODO(), client, "networks", network.ID, "a").Extract()
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, noexists)
 
 	// Delete all tags

@@ -271,7 +271,9 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		fmt.Fprintf(w, PoolsListBody)
 
 	})
@@ -281,7 +283,9 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		fmt.Fprintf(w, PoolsListBodyDetail)
 	})
 }

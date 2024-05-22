@@ -470,21 +470,23 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				}
 				if options.RawBody != nil {
 					if seeker, ok := options.RawBody.(io.Seeker); ok {
-						seeker.Seek(0, 0)
+						if _, err := seeker.Seek(0, 0); err != nil {
+							return nil, err
+						}
 					}
 				}
 				state.hasReauthenticated = true
 				resp, err = client.doRequest(ctx, method, url, options, state)
 				if err != nil {
-					switch err.(type) {
+					switch e := err.(type) {
 					case *ErrUnexpectedResponseCode:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err.(*ErrUnexpectedResponseCode)
-						return nil, e
+						err := &ErrErrorAfterReauthentication{}
+						err.ErrOriginal = e
+						return nil, err
 					default:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
-						return nil, e
+						err := &ErrErrorAfterReauthentication{}
+						err.ErrOriginal = e
+						return nil, err
 					}
 				}
 				return resp, nil

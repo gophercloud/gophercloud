@@ -60,6 +60,7 @@ func TestLimitsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	svList, err := services.ExtractServices(allPages)
+	th.AssertNoErr(t, err)
 	serviceID := ""
 	for _, service := range svList {
 		serviceID = service.ID

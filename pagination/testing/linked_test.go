@@ -30,7 +30,7 @@ func ExtractLinkedInts(r pagination.Page) ([]int, error) {
 	return s.Ints, err
 }
 
-func createLinked(t *testing.T) pagination.Pager {
+func createLinked() pagination.Pager {
 	testhelper.SetupHTTP()
 
 	testhelper.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +58,7 @@ func createLinked(t *testing.T) pagination.Pager {
 }
 
 func TestEnumerateLinked(t *testing.T) {
-	pager := createLinked(t)
+	pager := createLinked()
 	defer testhelper.TeardownHTTP()
 
 	callCount := 0
@@ -100,7 +100,7 @@ func TestEnumerateLinked(t *testing.T) {
 }
 
 func TestAllPagesLinked(t *testing.T) {
-	pager := createLinked(t)
+	pager := createLinked()
 	defer testhelper.TeardownHTTP()
 
 	page, err := pager.AllPages(context.TODO())

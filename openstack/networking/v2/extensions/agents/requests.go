@@ -101,7 +101,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 
 // Delete deletes a specific agent based on its ID.
 func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := c.Delete(ctx, getURL(c, id), nil)
+	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

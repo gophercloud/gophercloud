@@ -238,12 +238,8 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 
 	// detect and process a signature v2
 	if v, ok := p["SignatureVersion"]; ok && v == "2" {
-		if _, ok := c["body_hash"]; ok {
-			delete(c, "body_hash")
-		}
-		if _, ok := c["headers"]; ok {
-			delete(c, "headers")
-		}
+		delete(c, "body_hash")
+		delete(c, "headers")
 		if v, ok := p["SignatureMethod"]; ok {
 			// params is a map of strings
 			strToSign := EC2CredentialsBuildStringToSignV2(*opts)
@@ -269,12 +265,16 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 	if opts.Timestamp != nil {
 		date = *opts.Timestamp
 	}
-	if v, _ := c["body_hash"]; v == nil {
+	if v := c["body_hash"]; v == nil {
 		// when body_hash is not set, generate a random one
-		c["body_hash"] = randomBodyHash()
+		bodyHash, err := randomBodyHash()
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate random hash")
+		}
+		c["body_hash"] = bodyHash
 	}
 
-	signedHeaders, _ := h["X-Amz-SignedHeaders"]
+	signedHeaders := h["X-Amz-SignedHeaders"]
 
 	stringToSign := EC2CredentialsBuildStringToSignV4(*opts, signedHeaders, c["body_hash"].(string), date)
 	key := EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, date)
@@ -344,10 +344,12 @@ func sumHMAC256(key []byte, data []byte) []byte {
 }
 
 // randomBodyHash is a func to generate a random sha256 hexdigest.
-func randomBodyHash() string {
+func randomBodyHash() (string, error) {
 	h := make([]byte, 64)
-	rand.Read(h)
-	return hex.EncodeToString(h)
+	if _, err := rand.Read(h); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(h), nil
 }
 
 // interfaceToMap is a func used to represent a "credentials" map element as a
@@ -370,9 +372,7 @@ func interfaceToMap(c map[string]interface{}, key string) map[string]string {
 func deleteBodyElements(b map[string]interface{}, elements ...string) {
 	if c, ok := b["credentials"].(map[string]interface{}); ok {
 		for _, k := range elements {
-			if _, ok := c[k]; ok {
-				delete(c, k)
-			}
+			delete(c, k)
 		}
 	}
 }

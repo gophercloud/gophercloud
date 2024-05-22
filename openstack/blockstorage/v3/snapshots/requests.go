@@ -259,7 +259,7 @@ func UpdateStatus(ctx context.Context, client *gophercloud.ServiceClient, id str
 		return
 	}
 
-	resp, err := client.Post(ctx, resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, updateStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

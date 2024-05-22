@@ -28,6 +28,7 @@ func TestReauthAuthResultDeadlock(t *testing.T) {
 	provider.SetToken("this is not a valid token")
 
 	client, err := openstack.NewIdentityV3(provider, gophercloud.EndpointOpts{})
+	th.AssertNoErr(t, err)
 	pages, err := projects.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	_, err = projects.ExtractProjects(pages)

@@ -77,7 +77,7 @@ func TestListClusters(t *testing.T) {
 	count := 0
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	clusters.List(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := clusters.List(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := clusters.ExtractClusters(page)
 		th.AssertNoErr(t, err)
@@ -89,6 +89,7 @@ func TestListClusters(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -104,7 +105,7 @@ func TestListDetailClusters(t *testing.T) {
 	count := 0
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	clusters.ListDetail(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := clusters.ListDetail(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := clusters.ExtractClusters(page)
 		th.AssertNoErr(t, err)
@@ -116,6 +117,7 @@ func TestListDetailClusters(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -161,8 +163,7 @@ func TestUpgradeCluster(t *testing.T) {
 
 	HandleUpgradeClusterSuccessfully(t)
 
-	var opts clusters.UpgradeOptsBuilder
-	opts = clusters.UpgradeOpts{
+	opts := clusters.UpgradeOpts{
 		ClusterTemplate: "0562d357-8641-4759-8fed-8173f02c9633",
 	}
 
@@ -214,8 +215,7 @@ func TestResizeCluster(t *testing.T) {
 
 	nodeCount := 2
 
-	var opts clusters.ResizeOptsBuilder
-	opts = clusters.ResizeOpts{
+	opts := clusters.ResizeOpts{
 		NodeCount: &nodeCount,
 	}
 

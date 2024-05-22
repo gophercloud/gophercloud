@@ -66,6 +66,7 @@ func TestNetworksExternalList(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	v, err := networks.ExtractNetworks(allPages)
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(v), 0)
 }
 

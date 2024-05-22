@@ -54,7 +54,7 @@ func TestBGPPeerCRUD(t *testing.T) {
 	err = peers.Delete(context.TODO(), client, bgpPeerGot.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	bgpPeerGot, err = peers.Get(context.TODO(), client, bgpPeerGot.ID).Extract()
+	_, err = peers.Get(context.TODO(), client, bgpPeerGot.ID).Extract()
 	th.AssertErr(t, err)
 	t.Logf("BGP Peer %s deleted", bgpPeerUpdated.Name)
 }
