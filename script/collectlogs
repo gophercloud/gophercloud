@@ -2,12 +2,14 @@
 set -x
 
 LOG_DIR=${LOG_DIR:-/tmp/devstack-logs}
-mkdir -p $LOG_DIR
-sudo journalctl -o short-precise --no-pager &> $LOG_DIR/journal.log
-sudo systemctl status "devstack@*" &> $LOG_DIR/devstack-services.txt
-free -m > $LOG_DIR/free.txt
-dpkg -l > $LOG_DIR/dpkg-l.txt
-pip freeze > $LOG_DIR/pip-freeze.txt
-cp ./devstack/local.conf $LOG_DIR
-sudo find $LOG_DIR -type d -exec chmod 0755 {} \;
-sudo find $LOG_DIR -type f -exec chmod 0644 {} \;
+mkdir -p "$LOG_DIR"
+# shellcheck disable=SC2024
+sudo journalctl -o short-precise --no-pager &> "$LOG_DIR/journal.log"
+# shellcheck disable=SC2024
+sudo systemctl status "devstack@*" &> "$LOG_DIR/devstack-services.txt"
+free -m > "$LOG_DIR/free.txt"
+dpkg -l > "$LOG_DIR/dpkg-l.txt"
+pip freeze > "$LOG_DIR/pip-freeze.txt"
+cp ./devstack/local.conf "$LOG_DIR"
+sudo find "$LOG_DIR" -type d -exec chmod 0755 {} \;
+sudo find "$LOG_DIR" -type f -exec chmod 0644 {} \;
