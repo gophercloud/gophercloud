@@ -97,7 +97,7 @@ var FirstTransferAccept = transferAccepts.TransferAccept{
 	Key:                   "M2KA0Y20",
 	Status:                "COMPLETE",
 	CreatedAt:             FirstTransferAcceptCreatedAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/92236f39-0fad-4f8f-bf25-fbdf027de34d",
 		"zone": "https://127.0.0.1:9001/v2/zones/cd046f4b-f4dc-4e41-b946-1a2d32e1be40",
 	},
@@ -115,7 +115,7 @@ var SecondTransferAccept = transferAccepts.TransferAccept{
 	Key:                   "SDF32HJ1",
 	CreatedAt:             SecondTransferAcceptCreatedAt,
 	UpdatedAt:             SecondTransferAcceptUpdatedAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
 		"zone": "https://127.0.0.1:9001/v2/zones/30d67a9a-d6df-4ba7-9b55-fb49e7987f84",
 	},

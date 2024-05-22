@@ -17,7 +17,7 @@ type Domain struct {
 	ID string `json:"id"`
 
 	// Links contains referencing links to the domain.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 
 	// Name is the name of the domain.
 	Name string `json:"name"`

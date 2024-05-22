@@ -28,7 +28,7 @@ provider- or extension-specific information as well.
 type Result struct {
 	// Body is the payload of the HTTP response from the server. In most cases,
 	// this will be the deserialized JSON structure.
-	Body interface{}
+	Body any
 
 	// StatusCode is the HTTP status code of the original response. Will be
 	// one of the OkCodes defined on the gophercloud.RequestOpts that was
@@ -46,7 +46,7 @@ type Result struct {
 // ExtractInto allows users to provide an object into which `Extract` will extract
 // the `Result.Body`. This would be useful for OpenStack providers that have
 // different fields in the response object than OpenStack proper.
-func (r Result) ExtractInto(to interface{}) error {
+func (r Result) ExtractInto(to any) error {
 	if r.Err != nil {
 		return r.Err
 	}
@@ -67,12 +67,12 @@ func (r Result) ExtractInto(to interface{}) error {
 	return err
 }
 
-func (r Result) extractIntoPtr(to interface{}, label string) error {
+func (r Result) extractIntoPtr(to any, label string) error {
 	if label == "" {
 		return r.ExtractInto(&to)
 	}
 
-	var m map[string]interface{}
+	var m map[string]any
 	err := r.ExtractInto(&m)
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 			if typeOfV.NumField() > 0 && typeOfV.Field(0).Anonymous {
 				newSlice := reflect.MakeSlice(reflect.SliceOf(typeOfV), 0, 0)
 
-				if mSlice, ok := m[label].([]interface{}); ok {
+				if mSlice, ok := m[label].([]any); ok {
 					for _, v := range mSlice {
 						// For each iteration of the slice, we create a new struct.
 						// This is to work around a bug where elements of a slice
@@ -171,7 +171,7 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 }
 
 // ExtractIntoStructPtr will unmarshal the Result (r) into the provided
-// interface{} (to).
+// any (to).
 //
 // NOTE: For internal use only
 //
@@ -179,7 +179,7 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 //
 // If provided, `label` will be filtered out of the response
 // body prior to `r` being unmarshalled into `to`.
-func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
+func (r Result) ExtractIntoStructPtr(to any, label string) error {
 	if r.Err != nil {
 		return r.Err
 	}
@@ -197,7 +197,7 @@ func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
 }
 
 // ExtractIntoSlicePtr will unmarshal the Result (r) into the provided
-// interface{} (to).
+// any (to).
 //
 // NOTE: For internal use only
 //
@@ -205,7 +205,7 @@ func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
 //
 // If provided, `label` will be filtered out of the response
 // body prior to `r` being unmarshalled into `to`.
-func (r Result) ExtractIntoSlicePtr(to interface{}, label string) error {
+func (r Result) ExtractIntoSlicePtr(to any, label string) error {
 	if r.Err != nil {
 		return r.Err
 	}
@@ -267,7 +267,7 @@ type HeaderResult struct {
 
 // ExtractInto allows users to provide an object into which `Extract` will
 // extract the http.Header headers of the result.
-func (r HeaderResult) ExtractInto(to interface{}) error {
+func (r HeaderResult) ExtractInto(to any) error {
 	if r.Err != nil {
 		return r.Err
 	}

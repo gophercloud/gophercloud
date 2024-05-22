@@ -115,22 +115,22 @@ func ExtractStacks(r pagination.Page) ([]ListedStack, error) {
 
 // RetrievedStack represents the object extracted from a Get operation.
 type RetrievedStack struct {
-	Capabilities        []interface{}            `json:"capabilities"`
-	CreationTime        time.Time                `json:"-"`
-	Description         string                   `json:"description"`
-	DisableRollback     bool                     `json:"disable_rollback"`
-	ID                  string                   `json:"id"`
-	Links               []gophercloud.Link       `json:"links"`
-	NotificationTopics  []interface{}            `json:"notification_topics"`
-	Outputs             []map[string]interface{} `json:"outputs"`
-	Parameters          map[string]string        `json:"parameters"`
-	Name                string                   `json:"stack_name"`
-	Status              string                   `json:"stack_status"`
-	StatusReason        string                   `json:"stack_status_reason"`
-	Tags                []string                 `json:"tags"`
-	TemplateDescription string                   `json:"template_description"`
-	Timeout             int                      `json:"timeout_mins"`
-	UpdatedTime         time.Time                `json:"-"`
+	Capabilities        []any              `json:"capabilities"`
+	CreationTime        time.Time          `json:"-"`
+	Description         string             `json:"description"`
+	DisableRollback     bool               `json:"disable_rollback"`
+	ID                  string             `json:"id"`
+	Links               []gophercloud.Link `json:"links"`
+	NotificationTopics  []any              `json:"notification_topics"`
+	Outputs             []map[string]any   `json:"outputs"`
+	Parameters          map[string]string  `json:"parameters"`
+	Name                string             `json:"stack_name"`
+	Status              string             `json:"stack_status"`
+	StatusReason        string             `json:"stack_status_reason"`
+	Tags                []string           `json:"tags"`
+	TemplateDescription string             `json:"template_description"`
+	Timeout             int                `json:"timeout_mins"`
+	UpdatedTime         time.Time          `json:"-"`
 }
 
 func (r *RetrievedStack) UnmarshalJSON(b []byte) error {
@@ -200,16 +200,16 @@ type DeleteResult struct {
 
 // PreviewedStack represents the result of a Preview operation.
 type PreviewedStack struct {
-	Capabilities        []interface{}      `json:"capabilities"`
+	Capabilities        []any              `json:"capabilities"`
 	CreationTime        time.Time          `json:"-"`
 	Description         string             `json:"description"`
 	DisableRollback     bool               `json:"disable_rollback"`
 	ID                  string             `json:"id"`
 	Links               []gophercloud.Link `json:"links"`
 	Name                string             `json:"stack_name"`
-	NotificationTopics  []interface{}      `json:"notification_topics"`
+	NotificationTopics  []any              `json:"notification_topics"`
 	Parameters          map[string]string  `json:"parameters"`
-	Resources           []interface{}      `json:"resources"`
+	Resources           []any              `json:"resources"`
 	TemplateDescription string             `json:"template_description"`
 	Timeout             int                `json:"timeout_mins"`
 	UpdatedTime         time.Time          `json:"-"`
@@ -272,16 +272,16 @@ func (r PreviewResult) Extract() (*PreviewedStack, error) {
 
 // AbandonedStack represents the result of an Abandon operation.
 type AbandonedStack struct {
-	Status             string                 `json:"status"`
-	Name               string                 `json:"name"`
-	Template           map[string]interface{} `json:"template"`
-	Action             string                 `json:"action"`
-	ID                 string                 `json:"id"`
-	Resources          map[string]interface{} `json:"resources"`
-	Files              map[string]string      `json:"files"`
-	StackUserProjectID string                 `json:"stack_user_project_id"`
-	ProjectID          string                 `json:"project_id"`
-	Environment        map[string]interface{} `json:"environment"`
+	Status             string            `json:"status"`
+	Name               string            `json:"name"`
+	Template           map[string]any    `json:"template"`
+	Action             string            `json:"action"`
+	ID                 string            `json:"id"`
+	Resources          map[string]any    `json:"resources"`
+	Files              map[string]string `json:"files"`
+	StackUserProjectID string            `json:"stack_user_project_id"`
+	ProjectID          string            `json:"project_id"`
+	Environment        map[string]any    `json:"environment"`
 }
 
 // AbandonResult represents the result of an Abandon operation.

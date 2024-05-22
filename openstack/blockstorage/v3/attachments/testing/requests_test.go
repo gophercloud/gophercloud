@@ -46,7 +46,7 @@ func TestCreate(t *testing.T) {
 
 	options := &attachments.CreateOpts{
 		InstanceUUID: "83ec2e3b-4321-422b-8706-a84185f52a0a",
-		Connector: map[string]interface{}{
+		Connector: map[string]any{
 			"initiator":  "iqn.1993-08.org.debian: 01: cad181614cec",
 			"ip":         "192.168.1.20",
 			"platform":   "x86_64",
@@ -81,7 +81,7 @@ func TestUpdate(t *testing.T) {
 	MockUpdateResponse(t)
 
 	options := &attachments.UpdateOpts{
-		Connector: map[string]interface{}{
+		Connector: map[string]any{
 			"initiator":  "iqn.1993-08.org.debian: 01: cad181614cec",
 			"ip":         "192.168.1.20",
 			"platform":   "x86_64",

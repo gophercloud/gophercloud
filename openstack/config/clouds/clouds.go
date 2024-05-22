@@ -204,12 +204,12 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 	if err != nil {
 		return Cloud{}, err
 	}
-	var overrideInterface interface{}
+	var overrideInterface any
 	err = json.Unmarshal(overrideJson, &overrideInterface)
 	if err != nil {
 		return Cloud{}, err
 	}
-	var cloudInterface interface{}
+	var cloudInterface any
 	err = json.Unmarshal(cloudJson, &cloudInterface)
 	if err != nil {
 		return Cloud{}, err
@@ -229,10 +229,10 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 
 // merges two interfaces. In cases where a value is defined for both 'overridingInterface' and
 // 'inferiorInterface' the value in 'overridingInterface' will take precedence.
-func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interface{} {
+func mergeInterfaces(overridingInterface, inferiorInterface any) any {
 	switch overriding := overridingInterface.(type) {
-	case map[string]interface{}:
-		interfaceMap, ok := inferiorInterface.(map[string]interface{})
+	case map[string]any:
+		interfaceMap, ok := inferiorInterface.(map[string]any)
 		if !ok {
 			return overriding
 		}
@@ -243,8 +243,8 @@ func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interfa
 				overriding[k] = v
 			}
 		}
-	case []interface{}:
-		list, ok := inferiorInterface.([]interface{})
+	case []any:
+		list, ok := inferiorInterface.([]any)
 		if !ok {
 			return overriding
 		}
@@ -252,7 +252,7 @@ func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interfa
 		return append(overriding, list...)
 	case nil:
 		// mergeClouds(nil, map[string]interface{...}) -> map[string]interface{...}
-		v, ok := inferiorInterface.(map[string]interface{})
+		v, ok := inferiorInterface.(map[string]any)
 		if ok {
 			return v
 		}

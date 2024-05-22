@@ -9,7 +9,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters
 // to the Create request.
 type CreateOptsBuilder interface {
-	ToCertificateCreateMap() (map[string]interface{}, error)
+	ToCertificateCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents options used to create a certificate.
@@ -20,7 +20,7 @@ type CreateOpts struct {
 }
 
 // ToCertificateCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToCertificateCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToCertificateCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

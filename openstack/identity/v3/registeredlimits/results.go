@@ -50,7 +50,7 @@ type RegisteredLimit struct {
 	DefaultLimit int `json:"default_limit"`
 
 	// Links contains referencing links to the limit.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 // A LimitsOutput is an array of limits returned by List and BatchCreate operations

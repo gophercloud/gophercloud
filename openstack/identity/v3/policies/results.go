@@ -20,17 +20,17 @@ type Policy struct {
 	Type string `json:"type"`
 
 	// Links contains referencing links to the policy.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 
 	// Extra is a collection of miscellaneous key/values.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 func (r *Policy) UnmarshalJSON(b []byte) error {
 	type tmp Policy
 	var s struct {
 		tmp
-		Extra map[string]interface{} `json:"extra"`
+		Extra map[string]any `json:"extra"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -43,12 +43,12 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	if s.Extra != nil {
 		r.Extra = s.Extra
 	} else {
-		var result interface{}
+		var result any
 		err := json.Unmarshal(b, &result)
 		if err != nil {
 			return err
 		}
-		if resultMap, ok := result.(map[string]interface{}); ok {
+		if resultMap, ok := result.(map[string]any); ok {
 			r.Extra = gophercloud.RemainingKeys(Policy{}, resultMap)
 		}
 	}

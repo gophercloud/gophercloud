@@ -35,8 +35,8 @@ func TestAttachDetachInterface(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	var found bool
-	for _, networkAddresses := range server.Addresses[choices.NetworkName].([]interface{}) {
-		address := networkAddresses.(map[string]interface{})
+	for _, networkAddresses := range server.Addresses[choices.NetworkName].([]any) {
+		address := networkAddresses.(map[string]any)
 		if address["OS-EXT-IPS:type"] == "fixed" {
 			fixedIP := address["addr"].(string)
 

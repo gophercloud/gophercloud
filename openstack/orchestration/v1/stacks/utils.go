@@ -29,7 +29,7 @@ type TE struct {
 	// Parsed contains a parsed version of Bin. Since there are 2 different
 	// fields referring to the same value, you must be careful when accessing
 	// this filed.
-	Parsed map[string]interface{}
+	Parsed map[string]any
 	// Files contains a mapping between the urls in templates to their contents.
 	Files map[string]string
 	// fileMaps is a map used internally when determining Files.
@@ -123,22 +123,22 @@ func (t *TE) Parse() error {
 
 // igfunc is a parameter used by GetFileContents and GetRRFileContents to check
 // for valid URL's.
-type igFunc func(string, interface{}) bool
+type igFunc func(string, any) bool
 
-// convert map[interface{}]interface{} to map[string]interface{}
-func toStringKeys(m interface{}) (map[string]interface{}, error) {
+// convert map[any]any to map[string]any
+func toStringKeys(m any) (map[string]any, error) {
 	switch m.(type) {
-	case map[string]interface{}, map[interface{}]interface{}:
-		typedMap := make(map[string]interface{})
-		if _, ok := m.(map[interface{}]interface{}); ok {
-			for k, v := range m.(map[interface{}]interface{}) {
+	case map[string]any, map[any]any:
+		typedMap := make(map[string]any)
+		if _, ok := m.(map[any]any); ok {
+			for k, v := range m.(map[any]any) {
 				typedMap[k.(string)] = v
 			}
 		} else {
-			typedMap = m.(map[string]interface{})
+			typedMap = m.(map[string]any)
 		}
 		return typedMap, nil
 	default:
-		return nil, gophercloud.ErrUnexpectedType{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
+		return nil, gophercloud.ErrUnexpectedType{Expected: "map[string]any/map[any]any", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
 	}
 }

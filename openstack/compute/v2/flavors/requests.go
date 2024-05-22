@@ -99,7 +99,7 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 type CreateOptsBuilder interface {
-	ToFlavorCreateMap() (map[string]interface{}, error)
+	ToFlavorCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters used for creating a flavor.
@@ -138,7 +138,7 @@ type CreateOpts struct {
 }
 
 // ToFlavorCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToFlavorCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFlavorCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "flavor")
 }
 
@@ -157,7 +157,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 type UpdateOptsBuilder interface {
-	ToFlavorUpdateMap() (map[string]interface{}, error)
+	ToFlavorUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts specifies parameters used for updating a flavor.
@@ -169,7 +169,7 @@ type UpdateOpts struct {
 }
 
 // ToFlavorUpdateMap constructs a request body from UpdateOpts.
-func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "flavor")
 }
 
@@ -214,7 +214,7 @@ func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager
 // AddAccessOptsBuilder allows extensions to add additional parameters to the
 // AddAccess requests.
 type AddAccessOptsBuilder interface {
-	ToFlavorAddAccessMap() (map[string]interface{}, error)
+	ToFlavorAddAccessMap() (map[string]any, error)
 }
 
 // AddAccessOpts represents options for adding access to a flavor.
@@ -224,7 +224,7 @@ type AddAccessOpts struct {
 }
 
 // ToFlavorAddAccessMap constructs a request body from AddAccessOpts.
-func (opts AddAccessOpts) ToFlavorAddAccessMap() (map[string]interface{}, error) {
+func (opts AddAccessOpts) ToFlavorAddAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "addTenantAccess")
 }
 
@@ -245,7 +245,7 @@ func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string
 // RemoveAccessOptsBuilder allows extensions to add additional parameters to the
 // RemoveAccess requests.
 type RemoveAccessOptsBuilder interface {
-	ToFlavorRemoveAccessMap() (map[string]interface{}, error)
+	ToFlavorRemoveAccessMap() (map[string]any, error)
 }
 
 // RemoveAccessOpts represents options for removing access to a flavor.
@@ -255,7 +255,7 @@ type RemoveAccessOpts struct {
 }
 
 // ToFlavorRemoveAccessMap constructs a request body from RemoveAccessOpts.
-func (opts RemoveAccessOpts) ToFlavorRemoveAccessMap() (map[string]interface{}, error) {
+func (opts RemoveAccessOpts) ToFlavorRemoveAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "removeTenantAccess")
 }
 
@@ -289,7 +289,7 @@ func GetExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavor
 // CreateExtraSpecsOptsBuilder allows extensions to add additional parameters to the
 // CreateExtraSpecs requests.
 type CreateExtraSpecsOptsBuilder interface {
-	ToFlavorExtraSpecsCreateMap() (map[string]interface{}, error)
+	ToFlavorExtraSpecsCreateMap() (map[string]any, error)
 }
 
 // ExtraSpecsOpts is a map that contains key-value pairs.
@@ -297,8 +297,8 @@ type ExtraSpecsOpts map[string]string
 
 // ToFlavorExtraSpecsCreateMap assembles a body for a Create request based on
 // the contents of ExtraSpecsOpts.
-func (opts ExtraSpecsOpts) ToFlavorExtraSpecsCreateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{"extra_specs": opts}, nil
+func (opts ExtraSpecsOpts) ToFlavorExtraSpecsCreateMap() (map[string]any, error) {
+	return map[string]any{"extra_specs": opts}, nil
 }
 
 // CreateExtraSpecs will create or update the extra-specs key-value pairs for

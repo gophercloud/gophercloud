@@ -56,7 +56,7 @@ var UpdateQuotaOpts = quotasets.UpdateOpts{
 	Backups:            gophercloud.IntToPointer(2),
 	BackupGigabytes:    gophercloud.IntToPointer(300),
 	Groups:             gophercloud.IntToPointer(350),
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"volumes_foo": gophercloud.IntToPointer(100),
 	},
 }
@@ -133,7 +133,7 @@ func TestQuotasetUpdate(t *testing.T) {
 
 	// unpopulate resultQuotas.Extra as it is different per cloud and test
 	// rest of the quotaSet
-	resultQuotas.Extra = map[string]interface{}(nil)
+	resultQuotas.Extra = map[string]any(nil)
 	th.AssertDeepEquals(t, UpdatedQuotas, *resultQuotas)
 }
 

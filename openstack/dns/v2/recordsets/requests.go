@@ -67,7 +67,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, 
 // CreateOptsBuilder allows extensions to add additional attributes to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToRecordSetCreateMap() (map[string]interface{}, error)
+	ToRecordSetCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies the base attributes that may be used to create a
@@ -90,7 +90,7 @@ type CreateOpts struct {
 }
 
 // ToRecordSetCreateMap formats an CreateOpts structure into a request body.
-func (opts CreateOpts) ToRecordSetCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToRecordSetCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, zoneID strin
 // UpdateOptsBuilder allows extensions to add additional attributes to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToRecordSetUpdateMap() (map[string]interface{}, error)
+	ToRecordSetUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing
@@ -133,7 +133,7 @@ type UpdateOpts struct {
 }
 
 // ToRecordSetUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToRecordSetUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToRecordSetUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

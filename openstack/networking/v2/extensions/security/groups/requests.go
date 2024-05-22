@@ -45,7 +45,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToSecGroupCreateMap() (map[string]interface{}, error)
+	ToSecGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new security group.
@@ -66,7 +66,7 @@ type CreateOpts struct {
 }
 
 // ToSecGroupCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSecGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_group")
 }
 
@@ -86,7 +86,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToSecGroupUpdateMap() (map[string]interface{}, error)
+	ToSecGroupUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains all the values needed to update an existing security
@@ -100,7 +100,7 @@ type UpdateOpts struct {
 }
 
 // ToSecGroupUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_group")
 }
 

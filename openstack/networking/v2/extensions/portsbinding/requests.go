@@ -20,17 +20,17 @@ type CreateOptsExt struct {
 	// A dictionary that enables the application running on the specified
 	// host to pass and receive virtual network interface (VIF) port-specific
 	// information to the plug-in.
-	Profile map[string]interface{} `json:"binding:profile,omitempty"`
+	Profile map[string]any `json:"binding:profile,omitempty"`
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) {
+func (opts CreateOptsExt) ToPortCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToPortCreateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	if opts.HostID != "" {
 		port["binding:host_id"] = opts.HostID
@@ -63,17 +63,17 @@ type UpdateOptsExt struct {
 	// A dictionary that enables the application running on the specified
 	// host to pass and receive virtual network interface (VIF) port-specific
 	// information to the plug-in.
-	Profile map[string]interface{} `json:"binding:profile,omitempty"`
+	Profile map[string]any `json:"binding:profile,omitempty"`
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOptsExt) ToPortUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToPortUpdateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	if opts.HostID != nil {
 		port["binding:host_id"] = *opts.HostID

@@ -92,7 +92,7 @@ func (r *Flavor) UnmarshalJSON(b []byte) error {
 	type tmp Flavor
 	var s struct {
 		tmp
-		Swap interface{} `json:"swap"`
+		Swap any `json:"swap"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {

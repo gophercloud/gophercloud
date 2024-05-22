@@ -107,7 +107,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	defer DeleteAggregate(t, client, aggregate)
 
 	opts := aggregates.SetMetadataOpts{
-		Metadata: map[string]interface{}{"key": "value"},
+		Metadata: map[string]any{"key": "value"},
 	}
 
 	aggregateWithMetadata, err := aggregates.SetMetadata(context.TODO(), client, aggregate.ID, opts).Extract()
@@ -120,7 +120,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	}
 
 	optsToRemove := aggregates.SetMetadataOpts{
-		Metadata: map[string]interface{}{"key": nil},
+		Metadata: map[string]any{"key": nil},
 	}
 
 	aggregateWithRemovedKey, err := aggregates.SetMetadata(context.TODO(), client, aggregate.ID, optsToRemove).Extract()

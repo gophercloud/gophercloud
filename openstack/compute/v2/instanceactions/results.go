@@ -185,10 +185,10 @@ func (r InstanceActionResult) Extract() (InstanceActionDetail, error) {
 	return s, err
 }
 
-func (r InstanceActionResult) ExtractInto(v interface{}) error {
+func (r InstanceActionResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "instanceAction")
 }
 
-func ExtractInstanceActionsInto(r pagination.Page, v interface{}) error {
+func ExtractInstanceActionsInto(r pagination.Page, v any) error {
 	return r.(InstanceActionPage).Result.ExtractIntoSlicePtr(v, "instanceActions")
 }

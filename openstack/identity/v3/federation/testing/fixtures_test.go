@@ -208,7 +208,7 @@ const UpdateOutput = `
 
 var MappingACME = federation.Mapping{
 	ID: "ACME",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/OS-FEDERATION/mappings/ACME",
 	},
 	Rules: []federation.MappingRule{
@@ -243,7 +243,7 @@ var MappingACME = federation.Mapping{
 
 var MappingUpdated = federation.Mapping{
 	ID: "ACME",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/OS-FEDERATION/mappings/ACME",
 	},
 	Rules: []federation.MappingRule{

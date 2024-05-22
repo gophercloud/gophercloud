@@ -48,7 +48,7 @@ func (client *ServiceClient) ServiceURL(parts ...string) string {
 	return client.ResourceBaseURL() + strings.Join(parts, "/")
 }
 
-func (client *ServiceClient) initReqOpts(JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) {
+func (client *ServiceClient) initReqOpts(JSONBody any, JSONResponse any, opts *RequestOpts) {
 	if v, ok := (JSONBody).(io.Reader); ok {
 		opts.RawBody = v
 	} else if JSONBody != nil {
@@ -61,7 +61,7 @@ func (client *ServiceClient) initReqOpts(JSONBody interface{}, JSONResponse inte
 }
 
 // Get calls `Request` with the "GET" HTTP verb.
-func (client *ServiceClient) Get(ctx context.Context, url string, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+func (client *ServiceClient) Get(ctx context.Context, url string, JSONResponse any, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = new(RequestOpts)
 	}
@@ -70,7 +70,7 @@ func (client *ServiceClient) Get(ctx context.Context, url string, JSONResponse i
 }
 
 // Post calls `Request` with the "POST" HTTP verb.
-func (client *ServiceClient) Post(ctx context.Context, url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+func (client *ServiceClient) Post(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = new(RequestOpts)
 	}
@@ -79,7 +79,7 @@ func (client *ServiceClient) Post(ctx context.Context, url string, JSONBody inte
 }
 
 // Put calls `Request` with the "PUT" HTTP verb.
-func (client *ServiceClient) Put(ctx context.Context, url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+func (client *ServiceClient) Put(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = new(RequestOpts)
 	}
@@ -88,7 +88,7 @@ func (client *ServiceClient) Put(ctx context.Context, url string, JSONBody inter
 }
 
 // Patch calls `Request` with the "PATCH" HTTP verb.
-func (client *ServiceClient) Patch(ctx context.Context, url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+func (client *ServiceClient) Patch(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = new(RequestOpts)
 	}

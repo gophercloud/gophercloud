@@ -85,7 +85,7 @@ type TransferAccept struct {
 
 	// Links includes HTTP references to the itself, useful for passing along
 	// to other APIs that might want a server reference.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 func (r *TransferAccept) UnmarshalJSON(b []byte) error {

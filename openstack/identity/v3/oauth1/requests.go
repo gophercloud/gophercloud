@@ -72,7 +72,7 @@ type AuthOptions struct {
 
 // ToTokenV3HeadersMap builds the headers required for an OAuth1-based create
 // request.
-func (opts AuthOptions) ToTokenV3HeadersMap(headerOpts map[string]interface{}) (map[string]string, error) {
+func (opts AuthOptions) ToTokenV3HeadersMap(headerOpts map[string]any) (map[string]string, error) {
 	q, err := buildOAuth1QueryString(opts, opts.OAuthTimestamp, "")
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (opts AuthOptions) ToTokenV3HeadersMap(headerOpts map[string]interface{}) (
 
 // ToTokenV3ScopeMap allows AuthOptions to satisfy the tokens.AuthOptionsBuilder
 // interface.
-func (opts AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
+func (opts AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 	return nil, nil
 }
 
@@ -108,7 +108,7 @@ func (opts AuthOptions) CanReauth() bool {
 }
 
 // ToTokenV3CreateMap builds a create request body.
-func (opts AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error) {
+func (opts AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
 	// identityReq defines the "identity" portion of an OAuth1-based authentication
 	// create request body.
 	type identityReq struct {
@@ -143,7 +143,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts tokens.
 		return
 	}
 
-	headerOpts := map[string]interface{}{
+	headerOpts := map[string]any{
 		"method": "POST",
 		"url":    authURL(client),
 	}
@@ -165,7 +165,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts tokens.
 // CreateConsumerOptsBuilder allows extensions to add additional parameters to
 // the CreateConsumer request.
 type CreateConsumerOptsBuilder interface {
-	ToOAuth1CreateConsumerMap() (map[string]interface{}, error)
+	ToOAuth1CreateConsumerMap() (map[string]any, error)
 }
 
 // CreateConsumerOpts provides options used to create a new Consumer.
@@ -175,7 +175,7 @@ type CreateConsumerOpts struct {
 }
 
 // ToOAuth1CreateConsumerMap formats a CreateConsumerOpts into a create request.
-func (opts CreateConsumerOpts) ToOAuth1CreateConsumerMap() (map[string]interface{}, error) {
+func (opts CreateConsumerOpts) ToOAuth1CreateConsumerMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "consumer")
 }
 
@@ -222,7 +222,7 @@ type UpdateConsumerOpts struct {
 
 // ToOAuth1UpdateConsumerMap formats an UpdateConsumerOpts into a consumer update
 // request.
-func (opts UpdateConsumerOpts) ToOAuth1UpdateConsumerMap() (map[string]interface{}, error) {
+func (opts UpdateConsumerOpts) ToOAuth1UpdateConsumerMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "consumer")
 }
 
@@ -327,7 +327,7 @@ func RequestToken(ctx context.Context, client *gophercloud.ServiceClient, opts R
 // AuthorizeTokenOptsBuilder allows extensions to add additional parameters to
 // the AuthorizeToken request.
 type AuthorizeTokenOptsBuilder interface {
-	ToOAuth1AuthorizeTokenMap() (map[string]interface{}, error)
+	ToOAuth1AuthorizeTokenMap() (map[string]any, error)
 }
 
 // AuthorizeTokenOpts provides options used to authorize a request token.
@@ -343,7 +343,7 @@ type Role struct {
 
 // ToOAuth1AuthorizeTokenMap formats an AuthorizeTokenOpts into an authorize token
 // request.
-func (opts AuthorizeTokenOpts) ToOAuth1AuthorizeTokenMap() (map[string]interface{}, error) {
+func (opts AuthorizeTokenOpts) ToOAuth1AuthorizeTokenMap() (map[string]any, error) {
 	for _, r := range opts.Roles {
 		if r == (Role{}) {
 			return nil, fmt.Errorf("role must not be empty")
@@ -494,7 +494,7 @@ func GetAccessTokenRole(ctx context.Context, client *gophercloud.ServiceClient, 
 
 // buildOAuth1QueryString builds a URLEncoded parameters string specific for
 // OAuth1-based requests.
-func buildOAuth1QueryString(opts interface{}, timestamp *time.Time, callback string) (*url.URL, error) {
+func buildOAuth1QueryString(opts any, timestamp *time.Time, callback string) (*url.URL, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return nil, err

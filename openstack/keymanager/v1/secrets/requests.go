@@ -193,7 +193,7 @@ func GetPayload(ctx context.Context, client *gophercloud.ServiceClient, id strin
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToSecretCreateMap() (map[string]interface{}, error)
+	ToSecretCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a secrets.
@@ -227,7 +227,7 @@ type CreateOpts struct {
 }
 
 // ToSecretCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToSecretCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSecretCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -331,12 +331,12 @@ type MetadataOpts map[string]string
 // CreateMetadataOptsBuilder allows extensions to add additional parameters to
 // the CreateMetadata request.
 type CreateMetadataOptsBuilder interface {
-	ToMetadataCreateMap() (map[string]interface{}, error)
+	ToMetadataCreateMap() (map[string]any, error)
 }
 
 // ToMetadataCreateMap converts a MetadataOpts into a request body.
-func (opts MetadataOpts) ToMetadataCreateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{"metadata": opts}, nil
+func (opts MetadataOpts) ToMetadataCreateMap() (map[string]any, error) {
+	return map[string]any{"metadata": opts}, nil
 }
 
 // CreateMetadata will set metadata for a given secret.
@@ -369,11 +369,11 @@ type MetadatumOpts struct {
 // CreateMetadatumOptsBuilder allows extensions to add additional parameters to
 // the CreateMetadatum request.
 type CreateMetadatumOptsBuilder interface {
-	ToMetadatumCreateMap() (map[string]interface{}, error)
+	ToMetadatumCreateMap() (map[string]any, error)
 }
 
 // ToMetadatumCreateMap converts a MetadatumOpts into a request body.
-func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]interface{}, error) {
+func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -394,11 +394,11 @@ func CreateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, sec
 // UpdateMetadatumOptsBuilder allows extensions to add additional parameters to
 // the UpdateMetadatum request.
 type UpdateMetadatumOptsBuilder interface {
-	ToMetadatumUpdateMap() (map[string]interface{}, string, error)
+	ToMetadatumUpdateMap() (map[string]any, string, error)
 }
 
 // ToMetadatumUpdateMap converts a MetadataOpts into a request body.
-func (opts MetadatumOpts) ToMetadatumUpdateMap() (map[string]interface{}, string, error) {
+func (opts MetadatumOpts) ToMetadatumUpdateMap() (map[string]any, string, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	return b, opts.Key, err
 }

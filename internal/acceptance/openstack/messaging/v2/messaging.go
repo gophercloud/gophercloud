@@ -25,7 +25,7 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 		DefaultMessageTTL:          3700,
 		DeadLetterQueueMessagesTTL: 3500,
 		MaxClaimCount:              10,
-		Extra:                      map[string]interface{}{"description": "Test Queue for Gophercloud acceptance tests."},
+		Extra:                      map[string]any{"description": "Test Queue for Gophercloud acceptance tests."},
 	}
 
 	createErr := queues.Create(context.TODO(), client, createOpts).ExtractErr()
@@ -77,7 +77,7 @@ func CreateMessage(t *testing.T, client *gophercloud.ServiceClient, queueName st
 	createOpts := messages.BatchCreateOpts{
 		messages.CreateOpts{
 			TTL:  300,
-			Body: map[string]interface{}{"Key": tools.RandomString("ACPTTEST", 8)},
+			Body: map[string]any{"Key": tools.RandomString("ACPTTEST", 8)},
 		},
 	}
 

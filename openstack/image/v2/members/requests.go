@@ -26,7 +26,7 @@ More details here:
 http://developer.openstack.org/api-ref-image-v2.html#createImageMember-v2
 */
 func Create(ctx context.Context, client *gophercloud.ServiceClient, id string, member string) (r CreateResult) {
-	b := map[string]interface{}{"member": member}
+	b := map[string]any{"member": member}
 	resp, err := client.Post(ctx, createMemberURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -58,7 +58,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, imageID stri
 // UpdateOptsBuilder allows extensions to add additional attributes to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToImageMemberUpdateMap() (map[string]interface{}, error)
+	ToImageMemberUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options to an Update request.
@@ -67,8 +67,8 @@ type UpdateOpts struct {
 }
 
 // ToMemberUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToImageMemberUpdateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{
+func (opts UpdateOpts) ToImageMemberUpdateMap() (map[string]any, error) {
+	return map[string]any{
 		"status": opts.Status,
 	}, nil
 }

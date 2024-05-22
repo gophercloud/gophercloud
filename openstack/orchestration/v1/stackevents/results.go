@@ -27,7 +27,7 @@ type Event struct {
 	// The event ID.
 	ID string `json:"id"`
 	// Properties of the stack resource.
-	ResourceProperties map[string]interface{} `json:"resource_properties"`
+	ResourceProperties map[string]any `json:"resource_properties"`
 }
 
 func (r *Event) UnmarshalJSON(b []byte) error {

@@ -34,13 +34,13 @@ Example to Create Messages
 			{
 				TTL:   300,
 				Delay: 20,
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"event": "BackupStarted",
 					"backup_id": "c378813c-3f0b-11e2-ad92-7823d2b0f3ce",
 				},
 			},
 			{
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"event": "BackupProgress",
 					"current_bytes": "0",
 					"total_bytes": "99614720",

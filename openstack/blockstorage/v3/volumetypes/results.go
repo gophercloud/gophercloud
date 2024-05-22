@@ -68,12 +68,12 @@ func (r commonResult) Extract() (*VolumeType, error) {
 }
 
 // ExtractInto converts our response data into a volume type struct
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "volume_type")
 }
 
 // ExtractVolumeTypesInto similar to ExtractInto but operates on a `list` of volume types
-func ExtractVolumeTypesInto(r pagination.Page, v interface{}) error {
+func ExtractVolumeTypesInto(r pagination.Page, v any) error {
 	return r.(VolumeTypePage).Result.ExtractIntoSlicePtr(v, "volume_types")
 }
 
@@ -227,7 +227,7 @@ func (r encryptionResult) Extract() (*EncryptionType, error) {
 }
 
 // ExtractInto converts our response data into a volume type struct
-func (r encryptionResult) ExtractInto(v interface{}) error {
+func (r encryptionResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "encryption")
 }
 
@@ -288,8 +288,8 @@ type encryptionShowSpecResult struct {
 }
 
 // Extract interprets any empty interface Result as an empty interface.
-func (r encryptionShowSpecResult) Extract() (map[string]interface{}, error) {
-	var s map[string]interface{}
+func (r encryptionShowSpecResult) Extract() (map[string]any, error) {
+	var s map[string]any
 	err := r.ExtractInto(&s)
 	return s, err
 }

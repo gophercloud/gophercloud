@@ -126,14 +126,14 @@ func TestUserCRUD(t *testing.T) {
 		Description:      "test description",
 		Password:         "foobar",
 		DomainID:         "default",
-		Options: map[users.Option]interface{}{
+		Options: map[users.Option]any{
 			users.IgnorePasswordExpiry: true,
-			users.MultiFactorAuthRules: []interface{}{
+			users.MultiFactorAuthRules: []any{
 				[]string{"password", "totp"},
 				[]string{"password", "custom-auth-method"},
 			},
 		},
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "jsmith@example.com",
 		},
 	}
@@ -155,10 +155,10 @@ func TestUserCRUD(t *testing.T) {
 		Name:        name,
 		Description: &description,
 		Enabled:     &iFalse,
-		Options: map[users.Option]interface{}{
+		Options: map[users.Option]any{
 			users.MultiFactorAuthRules: nil,
 		},
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"disabled_reason": "DDOS",
 		},
 	}

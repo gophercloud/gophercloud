@@ -35,8 +35,8 @@ Example to Create a Task
 
 	createOpts := tasks.CreateOpts{
 	  Type: "import",
-	  Input: map[string]interface{}{
-	    "image_properties": map[string]interface{}{
+	  Input: map[string]any{
+	    "image_properties": map[string]any{
 	      "container_format": "bare",
 	      "disk_format":      "raw",
 	    },

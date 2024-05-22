@@ -226,7 +226,7 @@ func TestCreateSchedulerHints(t *testing.T) {
 			"8c19174f-4220-44f0-824a-cd1eeef10287",
 		},
 		LocalToInstance:      "0ffb2c1b-d621-4fc1-9ae4-88d99c088ff6",
-		AdditionalProperties: map[string]interface{}{"mark": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
+		AdditionalProperties: map[string]any{"mark": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
 	}
 	expected := `
 		{
@@ -372,7 +372,7 @@ func TestUploadImage(t *testing.T) {
 			Name:        "basic.ru-2a",
 			Description: "",
 			IsPublic:    true,
-			ExtraSpecs:  map[string]interface{}{"volume_backend_name": "basic.ru-2a"},
+			ExtraSpecs:  map[string]any{"volume_backend_name": "basic.ru-2a"},
 			QosSpecsID:  "",
 			Deleted:     false,
 			DeletedAt:   time.Time{},

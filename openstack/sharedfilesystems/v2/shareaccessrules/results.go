@@ -28,7 +28,7 @@ type ShareAccess struct {
 	// The access rule ID.
 	ID string `json:"id"`
 	// Access rule metadata.
-	Metadata map[string]interface{} `json:"metadata"`
+	Metadata map[string]any `json:"metadata"`
 }
 
 func (r *ShareAccess) UnmarshalJSON(b []byte) error {

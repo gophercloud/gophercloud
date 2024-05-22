@@ -69,7 +69,7 @@ func GetBandwidthLimitRule(ctx context.Context, c *gophercloud.ServiceClient, po
 // CreateBandwidthLimitRuleOptsBuilder allows to add additional parameters to the
 // CreateBandwidthLimitRule request.
 type CreateBandwidthLimitRuleOptsBuilder interface {
-	ToBandwidthLimitRuleCreateMap() (map[string]interface{}, error)
+	ToBandwidthLimitRuleCreateMap() (map[string]any, error)
 }
 
 // CreateBandwidthLimitRuleOpts specifies parameters of a new BandwidthLimitRule.
@@ -85,7 +85,7 @@ type CreateBandwidthLimitRuleOpts struct {
 }
 
 // ToBandwidthLimitRuleCreateMap constructs a request body from CreateBandwidthLimitRuleOpts.
-func (opts CreateBandwidthLimitRuleOpts) ToBandwidthLimitRuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateBandwidthLimitRuleOpts) ToBandwidthLimitRuleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "bandwidth_limit_rule")
 }
 
@@ -106,7 +106,7 @@ func CreateBandwidthLimitRule(ctx context.Context, client *gophercloud.ServiceCl
 // UpdateBandwidthLimitRuleOptsBuilder allows to add additional parameters to the
 // UpdateBandwidthLimitRule request.
 type UpdateBandwidthLimitRuleOptsBuilder interface {
-	ToBandwidthLimitRuleUpdateMap() (map[string]interface{}, error)
+	ToBandwidthLimitRuleUpdateMap() (map[string]any, error)
 }
 
 // UpdateBandwidthLimitRuleOpts specifies parameters for the Update call.
@@ -122,7 +122,7 @@ type UpdateBandwidthLimitRuleOpts struct {
 }
 
 // ToBandwidthLimitRuleUpdateMap constructs a request body from UpdateBandwidthLimitRuleOpts.
-func (opts UpdateBandwidthLimitRuleOpts) ToBandwidthLimitRuleUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateBandwidthLimitRuleOpts) ToBandwidthLimitRuleUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "bandwidth_limit_rule")
 }
 
@@ -207,7 +207,7 @@ func GetDSCPMarkingRule(ctx context.Context, c *gophercloud.ServiceClient, polic
 // CreateDSCPMarkingRuleOptsBuilder allows to add additional parameters to the
 // CreateDSCPMarkingRule request.
 type CreateDSCPMarkingRuleOptsBuilder interface {
-	ToDSCPMarkingRuleCreateMap() (map[string]interface{}, error)
+	ToDSCPMarkingRuleCreateMap() (map[string]any, error)
 }
 
 // CreateDSCPMarkingRuleOpts specifies parameters of a new DSCPMarkingRule.
@@ -217,7 +217,7 @@ type CreateDSCPMarkingRuleOpts struct {
 }
 
 // ToDSCPMarkingRuleCreateMap constructs a request body from CreateDSCPMarkingRuleOpts.
-func (opts CreateDSCPMarkingRuleOpts) ToDSCPMarkingRuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateDSCPMarkingRuleOpts) ToDSCPMarkingRuleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "dscp_marking_rule")
 }
 
@@ -238,7 +238,7 @@ func CreateDSCPMarkingRule(ctx context.Context, client *gophercloud.ServiceClien
 // UpdateDSCPMarkingRuleOptsBuilder allows to add additional parameters to the
 // UpdateDSCPMarkingRule request.
 type UpdateDSCPMarkingRuleOptsBuilder interface {
-	ToDSCPMarkingRuleUpdateMap() (map[string]interface{}, error)
+	ToDSCPMarkingRuleUpdateMap() (map[string]any, error)
 }
 
 // UpdateDSCPMarkingRuleOpts specifies parameters for the Update call.
@@ -248,7 +248,7 @@ type UpdateDSCPMarkingRuleOpts struct {
 }
 
 // ToDSCPMarkingRuleUpdateMap constructs a request body from UpdateDSCPMarkingRuleOpts.
-func (opts UpdateDSCPMarkingRuleOpts) ToDSCPMarkingRuleUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateDSCPMarkingRuleOpts) ToDSCPMarkingRuleUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "dscp_marking_rule")
 }
 
@@ -334,7 +334,7 @@ func GetMinimumBandwidthRule(ctx context.Context, c *gophercloud.ServiceClient, 
 // CreateMinimumBandwidthRuleOptsBuilder allows to add additional parameters to the
 // CreateMinimumBandwidthRule request.
 type CreateMinimumBandwidthRuleOptsBuilder interface {
-	ToMinimumBandwidthRuleCreateMap() (map[string]interface{}, error)
+	ToMinimumBandwidthRuleCreateMap() (map[string]any, error)
 }
 
 // CreateMinimumBandwidthRuleOpts specifies parameters of a new MinimumBandwidthRule.
@@ -347,7 +347,7 @@ type CreateMinimumBandwidthRuleOpts struct {
 }
 
 // ToMinimumBandwidthRuleCreateMap constructs a request body from CreateMinimumBandwidthRuleOpts.
-func (opts CreateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "minimum_bandwidth_rule")
 }
 
@@ -368,7 +368,7 @@ func CreateMinimumBandwidthRule(ctx context.Context, client *gophercloud.Service
 // UpdateMinimumBandwidthRuleOptsBuilder allows to add additional parameters to the
 // UpdateMinimumBandwidthRule request.
 type UpdateMinimumBandwidthRuleOptsBuilder interface {
-	ToMinimumBandwidthRuleUpdateMap() (map[string]interface{}, error)
+	ToMinimumBandwidthRuleUpdateMap() (map[string]any, error)
 }
 
 // UpdateMinimumBandwidthRuleOpts specifies parameters for the Update call.
@@ -381,7 +381,7 @@ type UpdateMinimumBandwidthRuleOpts struct {
 }
 
 // ToMinimumBandwidthRuleUpdateMap constructs a request body from UpdateMinimumBandwidthRuleOpts.
-func (opts UpdateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "minimum_bandwidth_rule")
 }
 

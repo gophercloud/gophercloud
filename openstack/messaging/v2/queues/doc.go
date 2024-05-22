@@ -34,7 +34,7 @@ Example to Create a Queue
 		DefaultMessageDelay:        25,
 		DeadLetterQueueMessageTTL:  3500,
 		MaxClaimCount:              10,
-		Extra:                      map[string]interface{}{"description": "Test queue."},
+		Extra:                      map[string]any{"description": "Test queue."},
 	}
 
 	err := queues.Create(context.TODO(), client, createOpts).ExtractErr()

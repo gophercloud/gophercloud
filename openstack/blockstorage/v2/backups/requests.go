@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToBackupCreateMap() (map[string]interface{}, error)
+	ToBackupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a Backup. This object is passed to
@@ -50,7 +50,7 @@ type CreateOpts struct {
 
 // ToBackupCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToBackupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToBackupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "backup")
 }
 
@@ -199,7 +199,7 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListDetailOptsBuilder) p
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToBackupUpdateMap() (map[string]interface{}, error)
+	ToBackupUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing Backup.
@@ -217,7 +217,7 @@ type UpdateOpts struct {
 
 // ToBackupUpdateMap assembles a request body based on the contents of
 // an UpdateOpts.
-func (opts UpdateOpts) ToBackupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToBackupUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -250,7 +250,7 @@ type RestoreOpts struct {
 
 // ToRestoreMap assembles a request body based on the contents of a
 // RestoreOpts.
-func (opts RestoreOpts) ToRestoreMap() (map[string]interface{}, error) {
+func (opts RestoreOpts) ToRestoreMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "restore")
 }
 
@@ -284,7 +284,7 @@ type ImportOpts BackupRecord
 
 // ToBackupImportMap assembles a request body based on the contents of a
 // ImportOpts.
-func (opts ImportOpts) ToBackupImportMap() (map[string]interface{}, error) {
+func (opts ImportOpts) ToBackupImportMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "backup-record")
 }
 
@@ -307,7 +307,7 @@ func Import(ctx context.Context, client *gophercloud.ServiceClient, opts ImportO
 // ResetStatusOptsBuilder allows extensions to add additional parameters to the
 // ResetStatus request.
 type ResetStatusOptsBuilder interface {
-	ToBackupResetStatusMap() (map[string]interface{}, error)
+	ToBackupResetStatusMap() (map[string]any, error)
 }
 
 // ResetStatusOpts contains options for resetting a Backup status.
@@ -320,7 +320,7 @@ type ResetStatusOpts struct {
 
 // ToBackupResetStatusMap assembles a request body based on the contents of a
 // ResetStatusOpts.
-func (opts ResetStatusOpts) ToBackupResetStatusMap() (map[string]interface{}, error) {
+func (opts ResetStatusOpts) ToBackupResetStatusMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-reset_status")
 }
 
@@ -343,7 +343,7 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // ForceDelete will delete the existing backup in any state. ForceDeleteResult contains only the error.
 // To extract it, call the ExtractErr method on the ForceDeleteResult.
 func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"os-force_delete": struct{}{},
 	}
 	resp, err := client.Post(ctx, forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{

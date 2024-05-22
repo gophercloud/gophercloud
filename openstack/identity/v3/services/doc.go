@@ -26,7 +26,7 @@ Example to Create a Service
 
 	createOpts := services.CreateOpts{
 		Type: "compute",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"name": "compute-service",
 			"description": "Compute Service",
 		},
@@ -44,7 +44,7 @@ Example to Update a Service
 	var iFalse bool = false
 	updateOpts := services.UpdateOpts{
 		Enabled: &iFalse,
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "Disabled Compute Service"
 		},
 	}

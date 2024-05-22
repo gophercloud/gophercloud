@@ -12,7 +12,7 @@ import (
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-	ToCapsuleCreateMap() (map[string]interface{}, error)
+	ToCapsuleCreateMap() (map[string]any, error)
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -40,7 +40,7 @@ type CreateOpts struct {
 
 // ToCapsuleCreateMap assembles a request body based on the contents of
 // a CreateOpts.
-func (opts CreateOpts) ToCapsuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToCapsuleCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

@@ -638,7 +638,7 @@ func TestListL3Agents(t *testing.T) {
 			ResourcesSynced:  true,
 			Binary:           "neutron-l3-agent",
 			AvailabilityZone: "nova",
-			Configurations: map[string]interface{}{
+			Configurations: map[string]any{
 				"agent_mode":                   "legacy",
 				"ex_gw_ports":                  float64(2),
 				"floating_ips":                 float64(2),
@@ -654,7 +654,7 @@ func TestListL3Agents(t *testing.T) {
 			Host:               "os-ctrl-02",
 			Topic:              "l3_agent",
 			HAState:            "standby",
-			ResourceVersions:   map[string]interface{}{},
+			ResourceVersions:   map[string]any{},
 		},
 		{
 			ID:               "4541cc6c-87bc-4cee-bad2-36ca78836c91",
@@ -665,7 +665,7 @@ func TestListL3Agents(t *testing.T) {
 			ResourcesSynced:  true,
 			Binary:           "neutron-l3-agent",
 			AvailabilityZone: "nova",
-			Configurations: map[string]interface{}{
+			Configurations: map[string]any{
 				"agent_mode":                   "legacy",
 				"ex_gw_ports":                  float64(2),
 				"floating_ips":                 float64(2),
@@ -681,7 +681,7 @@ func TestListL3Agents(t *testing.T) {
 			Host:               "os-ctrl-03",
 			Topic:              "l3_agent",
 			HAState:            "active",
-			ResourceVersions:   map[string]interface{}{},
+			ResourceVersions:   map[string]any{},
 		},
 	}
 	th.CheckDeepEquals(t, expected, actual)

@@ -83,7 +83,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToSecGroupRuleCreateMap() (map[string]interface{}, error)
+	ToSecGroupRuleCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new security group
@@ -133,7 +133,7 @@ type CreateOpts struct {
 }
 
 // ToSecGroupRuleCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_group_rule")
 }
 

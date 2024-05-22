@@ -18,7 +18,7 @@ type CreateOpts struct {
 
 // ToCreateMap assembles a request body based on the contents of a
 // TransferOpts.
-func (opts CreateOpts) ToCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "transfer")
 }
 
@@ -44,7 +44,7 @@ type AcceptOpts struct {
 
 // ToAcceptMap assembles a request body based on the contents of a
 // AcceptOpts.
-func (opts AcceptOpts) ToAcceptMap() (map[string]interface{}, error) {
+func (opts AcceptOpts) ToAcceptMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "accept")
 }
 

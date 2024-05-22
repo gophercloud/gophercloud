@@ -74,7 +74,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToGroupCreateMap() (map[string]interface{}, error)
+	ToGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a group.
@@ -89,18 +89,18 @@ type CreateOpts struct {
 	DomainID string `json:"domain_id,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the group.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 // ToGroupCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToGroupCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "group")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["group"].(map[string]interface{}); ok {
+		if v, ok := b["group"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}
@@ -127,7 +127,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToGroupUpdateMap() (map[string]interface{}, error)
+	ToGroupUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts provides options for updating a group.
@@ -142,18 +142,18 @@ type UpdateOpts struct {
 	DomainID string `json:"domain_id,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the group.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 // ToGroupUpdateMap formats a UpdateOpts into an update request.
-func (opts UpdateOpts) ToGroupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToGroupUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "group")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["group"].(map[string]interface{}); ok {
+		if v, ok := b["group"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}

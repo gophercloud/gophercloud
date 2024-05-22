@@ -48,7 +48,7 @@ func TestCreateExecution(t *testing.T) {
 
 	opts := &executions.CreateOpts{
 		WorkflowID: "6656c143-a009-4bcb-9814-cc100a20bbfa",
-		Input: map[string]interface{}{
+		Input: map[string]any{
 			"msg": "Hello",
 		},
 		Description: "description",
@@ -62,14 +62,14 @@ func TestCreateExecution(t *testing.T) {
 	expected := &executions.Execution{
 		ID:          "50bb59f1-eb77-4017-a77f-6d575b002667",
 		Description: "description",
-		Input: map[string]interface{}{
+		Input: map[string]any{
 			"msg": "Hello",
 		},
-		Params: map[string]interface{}{
+		Params: map[string]any{
 			"namespace": "",
-			"env":       map[string]interface{}{},
+			"env":       map[string]any{},
 		},
-		Output:       map[string]interface{}{},
+		Output:       map[string]any{},
 		ProjectID:    "778c0f25df0d492a9a868ee9e2fbb513",
 		State:        "SUCCESS",
 		WorkflowID:   "6656c143-a009-4bcb-9814-cc100a20bbfa",
@@ -121,14 +121,14 @@ func TestGetExecution(t *testing.T) {
 	expected := &executions.Execution{
 		ID:          "50bb59f1-eb77-4017-a77f-6d575b002667",
 		Description: "description",
-		Input: map[string]interface{}{
+		Input: map[string]any{
 			"msg": "Hello",
 		},
-		Params: map[string]interface{}{
+		Params: map[string]any{
 			"namespace": "",
-			"env":       map[string]interface{}{},
+			"env":       map[string]any{},
 		},
-		Output:       map[string]interface{}{},
+		Output:       map[string]any{},
 		ProjectID:    "778c0f25df0d492a9a868ee9e2fbb513",
 		State:        "SUCCESS",
 		WorkflowID:   "6656c143-a009-4bcb-9814-cc100a20bbfa",
@@ -207,12 +207,12 @@ func TestListExecutions(t *testing.T) {
 			{
 				ID:          "50bb59f1-eb77-4017-a77f-6d575b002667",
 				Description: "description",
-				Input: map[string]interface{}{
+				Input: map[string]any{
 					"msg": "Hello",
 				},
-				Params: map[string]interface{}{
+				Params: map[string]any{
 					"namespace": "",
-					"env":       map[string]interface{}{},
+					"env":       map[string]any{},
 				},
 				ProjectID:    "778c0f25df0d492a9a868ee9e2fbb513",
 				State:        "SUCCESS",
@@ -239,7 +239,7 @@ func TestListExecutions(t *testing.T) {
 func TestToExecutionListQuery(t *testing.T) {
 	for expected, opts := range map[string]*executions.ListOpts{
 		newValue("input", `{"msg":"Hello"}`): {
-			Input: map[string]interface{}{
+			Input: map[string]any{
 				"msg": "Hello",
 			},
 		},

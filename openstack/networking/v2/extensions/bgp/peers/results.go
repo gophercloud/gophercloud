@@ -18,7 +18,7 @@ func (r commonResult) Extract() (*BGPPeer, error) {
 	return &s, err
 }
 
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, jroot)
 }
 
@@ -71,7 +71,7 @@ func ExtractBGPPeers(r pagination.Page) ([]BGPPeer, error) {
 	return s, err
 }
 
-func ExtractBGPPeersInto(r pagination.Page, v interface{}) error {
+func ExtractBGPPeersInto(r pagination.Page, v any) error {
 	return r.(BGPPeerPage).Result.ExtractIntoSlicePtr(v, "bgp_peers")
 }
 

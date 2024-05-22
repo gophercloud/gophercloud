@@ -52,7 +52,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, transferRequest
 // CreateOptsBuilder allows extensions to add additional attributes to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToTransferRequestCreateMap() (map[string]interface{}, error)
+	ToTransferRequestCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies the attributes used to create a transfer request.
@@ -66,7 +66,7 @@ type CreateOpts struct {
 }
 
 // ToTransferRequestCreateMap formats an CreateOpts structure into a request body.
-func (opts CreateOpts) ToTransferRequestCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToTransferRequestCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, zoneID strin
 // UpdateOptsBuilder allows extensions to add additional attributes to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToTransferRequestUpdateMap() (map[string]interface{}, error)
+	ToTransferRequestUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts specifies the attributes to update a transfer request.
@@ -105,7 +105,7 @@ type UpdateOpts struct {
 }
 
 // ToTransferRequestUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToTransferRequestUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToTransferRequestUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

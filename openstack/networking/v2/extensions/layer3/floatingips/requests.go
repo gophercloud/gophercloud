@@ -65,7 +65,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToFloatingIPCreateMap() (map[string]interface{}, error)
+	ToFloatingIPCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new floating IP
@@ -84,7 +84,7 @@ type CreateOpts struct {
 
 // ToFloatingIPCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
 // interface
-func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "floatingip")
 }
 
@@ -133,7 +133,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToFloatingIPUpdateMap() (map[string]interface{}, error)
+	ToFloatingIPUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating a floating IP resource. The
@@ -148,13 +148,13 @@ type UpdateOpts struct {
 
 // ToFloatingIPUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
 // interface
-func (opts UpdateOpts) ToFloatingIPUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFloatingIPUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "floatingip")
 	if err != nil {
 		return nil, err
 	}
 
-	if m := b["floatingip"].(map[string]interface{}); m["port_id"] == "" {
+	if m := b["floatingip"].(map[string]any); m["port_id"] == "" {
 		m["port_id"] = nil
 	}
 

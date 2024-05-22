@@ -133,7 +133,7 @@ const CreateOutput = ListOutput
 // FirstLimit is the first limit in the List request.
 var FirstLimit = limits.Limit{
 	ResourceName: "volume",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://10.3.150.25/identity/v3/limits/25a04c7a065c430590881c646cdcdd58",
 	},
 	ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
@@ -147,7 +147,7 @@ var FirstLimit = limits.Limit{
 var SecondLimit = limits.Limit{
 	ResourceName: "snapshot",
 	RegionID:     "RegionOne",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://10.3.150.25/identity/v3/limits/3229b3849f584faea483d6851f7aab05",
 	},
 	ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",
@@ -160,7 +160,7 @@ var SecondLimit = limits.Limit{
 var SecondLimitUpdated = limits.Limit{
 	ResourceName: "snapshot",
 	RegionID:     "RegionOne",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://10.3.150.25/identity/v3/limits/3229b3849f584faea483d6851f7aab05",
 	},
 	ServiceID:     "9408080f1970482aa0e38bc2d4ea34b7",

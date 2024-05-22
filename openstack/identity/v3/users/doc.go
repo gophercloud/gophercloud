@@ -31,7 +31,7 @@ Example to Create a User
 		DefaultProjectID: projectID,
 		Enabled:          gophercloud.Enabled,
 		Password:         "supersecret",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "username@example.com",
 		}
 	}

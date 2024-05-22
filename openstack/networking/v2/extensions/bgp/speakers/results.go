@@ -18,7 +18,7 @@ func (r commonResult) Extract() (*BGPSpeaker, error) {
 	return &s, err
 }
 
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, jroot)
 }
 
@@ -80,10 +80,10 @@ func ExtractBGPSpeakers(r pagination.Page) ([]BGPSpeaker, error) {
 	return s, err
 }
 
-// ExtractBGPSpeakersInto accepts a Page struct and an interface{}. The former contains
+// ExtractBGPSpeakersInto accepts a Page struct and an any. The former contains
 // a list of BGPSpeaker and the later should be used to store the result that would be
 // extracted from the former.
-func ExtractBGPSpeakersInto(r pagination.Page, v interface{}) error {
+func ExtractBGPSpeakersInto(r pagination.Page, v any) error {
 	return r.(BGPSpeakerPage).Result.ExtractIntoSlicePtr(v, "bgp_speakers")
 }
 
@@ -123,7 +123,7 @@ func (r AddBGPPeerResult) Extract() (*AddBGPPeerOpts, error) {
 	return &s, err
 }
 
-func (r AddBGPPeerResult) ExtractInto(v interface{}) error {
+func (r AddBGPPeerResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
@@ -166,7 +166,7 @@ func ExtractAdvertisedRoutes(r pagination.Page) ([]AdvertisedRoute, error) {
 }
 
 // ExtractAdvertisedRoutesInto extract the advertised routes from the first param into the 2nd
-func ExtractAdvertisedRoutesInto(r pagination.Page, v interface{}) error {
+func ExtractAdvertisedRoutesInto(r pagination.Page, v any) error {
 	return r.(AdvertisedRoutePage).Result.ExtractIntoSlicePtr(v, "advertised_routes")
 }
 

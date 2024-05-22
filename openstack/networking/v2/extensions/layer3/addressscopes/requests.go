@@ -70,7 +70,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // CreateOptsBuilder allows to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToAddressScopeCreateMap() (map[string]interface{}, error)
+	ToAddressScopeCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters of a new address-scope.
@@ -92,7 +92,7 @@ type CreateOpts struct {
 }
 
 // ToAddressScopeCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToAddressScopeCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToAddressScopeCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "address_scope")
 }
 
@@ -113,7 +113,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToAddressScopeUpdateMap() (map[string]interface{}, error)
+	ToAddressScopeUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options used to update an address-scope.
@@ -126,7 +126,7 @@ type UpdateOpts struct {
 }
 
 // ToAddressScopeUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToAddressScopeUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToAddressScopeUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "address_scope")
 }
 

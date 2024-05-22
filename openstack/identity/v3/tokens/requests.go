@@ -21,9 +21,9 @@ type Scope struct {
 type AuthOptionsBuilder interface {
 	// ToTokenV3CreateMap assembles the Create request body, returning an error
 	// if parameters are missing or inconsistent.
-	ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error)
-	ToTokenV3HeadersMap(map[string]interface{}) (map[string]string, error)
-	ToTokenV3ScopeMap() (map[string]interface{}, error)
+	ToTokenV3CreateMap(map[string]any) (map[string]any, error)
+	ToTokenV3HeadersMap(map[string]any) (map[string]string, error)
+	ToTokenV3ScopeMap() (map[string]any, error)
 	CanReauth() bool
 }
 
@@ -72,7 +72,7 @@ type AuthOptions struct {
 }
 
 // ToTokenV3CreateMap builds a request body from AuthOptions.
-func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[string]interface{}, error) {
+func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]any) (map[string]any, error) {
 	gophercloudAuthOpts := gophercloud.AuthOptions{
 		Username:                    opts.Username,
 		UserID:                      opts.UserID,
@@ -91,7 +91,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 }
 
 // ToTokenV3ScopeMap builds a scope request body from AuthOptions.
-func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
+func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 	scope := gophercloud.AuthScope(opts.Scope)
 
 	gophercloudAuthOpts := gophercloud.AuthOptions{
@@ -114,7 +114,7 @@ func (opts *AuthOptions) CanReauth() bool {
 
 // ToTokenV3HeadersMap allows AuthOptions to satisfy the AuthOptionsBuilder
 // interface in the v3 tokens package.
-func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]interface{}) (map[string]string, error) {
+func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]any) (map[string]string, error) {
 	return nil, nil
 }
 

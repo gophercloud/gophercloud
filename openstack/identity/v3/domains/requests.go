@@ -61,7 +61,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToDomainCreateMap() (map[string]interface{}, error)
+	ToDomainCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a domain.
@@ -77,7 +77,7 @@ type CreateOpts struct {
 }
 
 // ToDomainCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToDomainCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToDomainCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "domain")
 }
 
@@ -105,7 +105,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, domainID str
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToDomainUpdateMap() (map[string]interface{}, error)
+	ToDomainUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents parameters to update a domain.
@@ -121,7 +121,7 @@ type UpdateOpts struct {
 }
 
 // ToUpdateCreateMap formats a UpdateOpts into an update request.
-func (opts UpdateOpts) ToDomainUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToDomainUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "domain")
 }
 

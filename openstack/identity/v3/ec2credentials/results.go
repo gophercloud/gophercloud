@@ -18,7 +18,7 @@ type Credential struct {
 	// TrustID contains an EC2 credential trust ID scope.
 	TrustID string `json:"trust_id"`
 	// Links contains referencing links to the application credential.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 type credentialResult struct {

@@ -95,12 +95,12 @@ type MarkUnhealthyOpts struct {
 // MarkUnhealthyOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the MarkUnhealthy operation in this package
 type MarkUnhealthyOptsBuilder interface {
-	ToMarkUnhealthyMap() (map[string]interface{}, error)
+	ToMarkUnhealthyMap() (map[string]any, error)
 }
 
 // ToMarkUnhealthyMap validates that a template was supplied and calls
 // the ToMarkUnhealthyMap private function.
-func (opts MarkUnhealthyOpts) ToMarkUnhealthyMap() (map[string]interface{}, error) {
+func (opts MarkUnhealthyOpts) ToMarkUnhealthyMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

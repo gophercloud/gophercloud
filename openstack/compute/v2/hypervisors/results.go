@@ -36,7 +36,7 @@ func (r *Service) UnmarshalJSON(b []byte) error {
 	type tmp Service
 	var s struct {
 		tmp
-		ID interface{} `json:"id"`
+		ID any `json:"id"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -144,11 +144,11 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	type tmp Hypervisor
 	var s struct {
 		tmp
-		ID                interface{} `json:"id"`
-		CPUInfo           interface{} `json:"cpu_info"`
-		HypervisorVersion interface{} `json:"hypervisor_version"`
-		FreeDiskGB        interface{} `json:"free_disk_gb"`
-		LocalGB           interface{} `json:"local_gb"`
+		ID                any `json:"id"`
+		CPUInfo           any `json:"cpu_info"`
+		HypervisorVersion any `json:"hypervisor_version"`
+		FreeDiskGB        any `json:"free_disk_gb"`
+		LocalGB           any `json:"local_gb"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -166,7 +166,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	switch t := s.CPUInfo.(type) {
 	case string:
 		tmpb = []byte(t)
-	case map[string]interface{}:
+	case map[string]any:
 		tmpb, err = json.Marshal(t)
 		if err != nil {
 			return err
@@ -341,7 +341,7 @@ func (r *Uptime) UnmarshalJSON(b []byte) error {
 	type tmp Uptime
 	var s struct {
 		tmp
-		ID interface{} `json:"id"`
+		ID any `json:"id"`
 	}
 
 	err := json.Unmarshal(b, &s)

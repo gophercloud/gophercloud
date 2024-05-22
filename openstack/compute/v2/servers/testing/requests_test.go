@@ -640,14 +640,14 @@ func TestCreateSchedulerHints(t *testing.T) {
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
 			"8c19174f-4220-44f0-824a-cd1eeef10287",
 		},
-		Query:      []interface{}{"=", "$free_ram_mb", "1024"},
+		Query:      []any{"=", "$free_ram_mb", "1024"},
 		TargetCell: "foobar",
 		DifferentCell: []string{
 			"bazbar",
 			"barbaz",
 		},
 		BuildNearHostIP:      "192.168.1.1/24",
-		AdditionalProperties: map[string]interface{}{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
+		AdditionalProperties: map[string]any{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
 	}
 
 	expected := `
@@ -690,14 +690,14 @@ func TestCreateComplexSchedulerHints(t *testing.T) {
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
 			"8c19174f-4220-44f0-824a-cd1eeef10287",
 		},
-		Query:      []interface{}{"and", []string{"=", "$free_ram_mb", "1024"}, []string{"=", "$free_disk_mb", "204800"}},
+		Query:      []any{"and", []string{"=", "$free_ram_mb", "1024"}, []string{"=", "$free_disk_mb", "204800"}},
 		TargetCell: "foobar",
 		DifferentCell: []string{
 			"bazbar",
 			"barbaz",
 		},
 		BuildNearHostIP:      "192.168.1.1/24",
-		AdditionalProperties: map[string]interface{}{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
+		AdditionalProperties: map[string]any{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
 	}
 
 	expected := `

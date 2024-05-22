@@ -109,12 +109,12 @@ const UpdateOutput = `
 var FirstGroup = groups.Group{
 	DomainID: "default",
 	ID:       "2844b2a08be147a08ef58317d6471f1f",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/groups/2844b2a08be147a08ef58317d6471f1f",
 	},
 	Name:        "internal support",
 	Description: "group for internal support users",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email": "support@localhost",
 	},
 }
@@ -123,12 +123,12 @@ var FirstGroup = groups.Group{
 var SecondGroup = groups.Group{
 	DomainID: "1789d1",
 	ID:       "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/groups/9fe1d3",
 	},
 	Name:        "support",
 	Description: "group for support users",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email": "support@example.com",
 	},
 }
@@ -137,12 +137,12 @@ var SecondGroup = groups.Group{
 var SecondGroupUpdated = groups.Group{
 	DomainID: "1789d1",
 	ID:       "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/groups/9fe1d3",
 	},
 	Name:        "support",
 	Description: "L2 Support Team",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email": "supportteam@example.com",
 	},
 }

@@ -56,7 +56,7 @@ func TestPartialUpdate(t *testing.T) {
 
 type ErrorUpdateOpts quotasets.UpdateOpts
 
-func (opts ErrorUpdateOpts) ToBlockStorageQuotaUpdateMap() (map[string]interface{}, error) {
+func (opts ErrorUpdateOpts) ToBlockStorageQuotaUpdateMap() (map[string]any, error) {
 	return nil, errors.New("This is an error")
 }
 

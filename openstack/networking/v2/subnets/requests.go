@@ -80,7 +80,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type CreateOptsBuilder interface {
-	ToSubnetCreateMap() (map[string]interface{}, error)
+	ToSubnetCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents the attributes used when creating a new subnet.
@@ -145,13 +145,13 @@ type CreateOpts struct {
 }
 
 // ToSubnetCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToSubnetCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSubnetCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "subnet")
 	if err != nil {
 		return nil, err
 	}
 
-	if m := b["subnet"].(map[string]interface{}); m["gateway_ip"] == "" {
+	if m := b["subnet"].(map[string]any); m["gateway_ip"] == "" {
 		m["gateway_ip"] = nil
 	}
 
@@ -175,7 +175,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToSubnetUpdateMap() (map[string]interface{}, error)
+	ToSubnetUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents the attributes used when updating an existing subnet.
@@ -214,13 +214,13 @@ type UpdateOpts struct {
 }
 
 // ToSubnetUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "subnet")
 	if err != nil {
 		return nil, err
 	}
 
-	if m := b["subnet"].(map[string]interface{}); m["gateway_ip"] == "" {
+	if m := b["subnet"].(map[string]any); m["gateway_ip"] == "" {
 		m["gateway_ip"] = nil
 	}
 

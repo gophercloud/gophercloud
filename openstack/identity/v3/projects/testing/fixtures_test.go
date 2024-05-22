@@ -184,8 +184,8 @@ var FirstProject = projects.Project{
 	ID:          "abcde",
 	Name:        "project 1",
 	ParentID:    "11111",
-	Extra: map[string]interface{}{
-		"links": map[string]interface{}{"self": "http://localhost:5000/identity/v3/projects/abcde"},
+	Extra: map[string]any{
+		"links": map[string]any{"self": "http://localhost:5000/identity/v3/projects/abcde"},
 	},
 }
 
@@ -197,8 +197,8 @@ var SecondProject = projects.Project{
 	ID:          "bcdef",
 	Name:        "project 2",
 	ParentID:    "22222",
-	Extra: map[string]interface{}{
-		"links": map[string]interface{}{"self": "http://localhost:5000/identity/v3/projects/bcdef"},
+	Extra: map[string]any{
+		"links": map[string]any{"self": "http://localhost:5000/identity/v3/projects/bcdef"},
 	},
 }
 
@@ -212,7 +212,7 @@ var RedTeam = projects.Project{
 	Name:        "Red Team",
 	ParentID:    "",
 	Tags:        []string{"Red", "Team"},
-	Extra:       map[string]interface{}{"test": "old"},
+	Extra:       map[string]any{"test": "old"},
 }
 
 // BlueTeam is a Project fixture.
@@ -224,8 +224,8 @@ var BlueTeam = projects.Project{
 	ID:          "9876",
 	Name:        "Blue Team",
 	ParentID:    "",
-	Extra:       make(map[string]interface{}),
-	Options: map[projects.Option]interface{}{
+	Extra:       make(map[string]any),
+	Options: map[projects.Option]any{
 		projects.Immutable: true,
 	},
 }
@@ -240,7 +240,7 @@ var UpdatedRedTeam = projects.Project{
 	Name:        "Bright Red Team",
 	ParentID:    "",
 	Tags:        []string{"Red"},
-	Extra:       map[string]interface{}{"test": "new"},
+	Extra:       map[string]any{"test": "new"},
 }
 
 // ExpectedAvailableProjectsSlice is the slice of projects expected to be returned
@@ -261,14 +261,14 @@ var ExpectedProjects = projects.ProjectTags{
 			DomainID:    "default",
 			Enabled:     true,
 			ID:          "3d4c2c82bd5948f0bcab0cf3a7c9b48c",
-			Extra: map[string]interface{}{"links": map[string]interface{}{
+			Extra: map[string]any{"links": map[string]any{
 				"self": "http://identity:5000/v3/projects/3d4c2c82bd5948f0bcab0cf3a7c9b48c",
 			}},
 			Name: "demo",
 			Tags: []string{"foo", "bar"},
 		},
 	},
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"next":     nil,
 		"previous": nil,
 		"self":     "http://identity:5000/v3/projects",

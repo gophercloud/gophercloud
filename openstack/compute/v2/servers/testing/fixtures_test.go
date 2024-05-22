@@ -490,9 +490,9 @@ var (
 		Status:  "ACTIVE",
 		Updated: herpTimeUpdated,
 		HostID:  "29d3c8c896a45aa4c34e52247875d7fefc3d94bbcc9f622b5d204362",
-		Addresses: map[string]interface{}{
-			"private": []interface{}{
-				map[string]interface{}{
+		Addresses: map[string]any{
+			"private": []any{
+				map[string]any{
 					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:7c:1b:2b",
 					"version":                 float64(4),
 					"addr":                    "10.0.0.32",
@@ -500,29 +500,29 @@ var (
 				},
 			},
 		},
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://104.130.131.164:8774/v2/fcad67a6189847c4aecfa3c81a05783b/servers/ef079b0c-e610-4dfb-b1aa-b49f07ac48e5",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/servers/ef079b0c-e610-4dfb-b1aa-b49f07ac48e5",
 				"rel":  "bookmark",
 			},
 		},
-		Image: map[string]interface{}{
+		Image: map[string]any{
 			"id": "f90f6034-2570-4974-8351-6b49732ef2eb",
-			"links": []interface{}{
-				map[string]interface{}{
+			"links": []any{
+				map[string]any{
 					"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
 					"rel":  "bookmark",
 				},
 			},
 		},
-		Flavor: map[string]interface{}{
+		Flavor: map[string]any{
 			"id": "1",
-			"links": []interface{}{
-				map[string]interface{}{
+			"links": []any{
+				map[string]any{
 					"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/flavors/1",
 					"rel":  "bookmark",
 				},
@@ -539,7 +539,7 @@ var (
 				ID: "2bdbc40f-a277-45d4-94ac-d9881c777d33",
 			},
 		},
-		SecurityGroups: []map[string]interface{}{
+		SecurityGroups: []map[string]any{
 			{
 				"name": "default",
 			},
@@ -567,9 +567,9 @@ var (
 		Status:  "ACTIVE",
 		Updated: derpTimeUpdated,
 		HostID:  "29d3c8c896a45aa4c34e52247875d7fefc3d94bbcc9f622b5d204362",
-		Addresses: map[string]interface{}{
-			"private": []interface{}{
-				map[string]interface{}{
+		Addresses: map[string]any{
+			"private": []any{
+				map[string]any{
 					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:9e:89:be",
 					"version":                 float64(4),
 					"addr":                    "10.0.0.31",
@@ -577,29 +577,29 @@ var (
 				},
 			},
 		},
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://104.130.131.164:8774/v2/fcad67a6189847c4aecfa3c81a05783b/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
 				"rel":  "bookmark",
 			},
 		},
-		Image: map[string]interface{}{
+		Image: map[string]any{
 			"id": "f90f6034-2570-4974-8351-6b49732ef2eb",
-			"links": []interface{}{
-				map[string]interface{}{
+			"links": []any{
+				map[string]any{
 					"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
 					"rel":  "bookmark",
 				},
 			},
 		},
-		Flavor: map[string]interface{}{
+		Flavor: map[string]any{
 			"id": "1",
-			"links": []interface{}{
-				map[string]interface{}{
+			"links": []any{
+				map[string]any{
 					"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/flavors/1",
 					"rel":  "bookmark",
 				},
@@ -612,7 +612,7 @@ var (
 		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata:        map[string]string{},
 		AttachedVolumes: []servers.AttachedVolume{},
-		SecurityGroups: []map[string]interface{}{
+		SecurityGroups: []map[string]any{
 			{
 				"name": "default",
 			},
@@ -642,9 +642,9 @@ var (
 		Status:  "ACTIVE",
 		Updated: merpTimeUpdated,
 		HostID:  "29d3c8c896a45aa4c34e52247875d7fefc3d94bbcc9f622b5d204362",
-		Addresses: map[string]interface{}{
-			"private": []interface{}{
-				map[string]interface{}{
+		Addresses: map[string]any{
+			"private": []any{
+				map[string]any{
 					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:9e:89:be",
 					"version":                 float64(4),
 					"addr":                    "10.0.0.31",
@@ -652,21 +652,21 @@ var (
 				},
 			},
 		},
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://104.130.131.164:8774/v2/fcad67a6189847c4aecfa3c81a05783b/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
 				"rel":  "bookmark",
 			},
 		},
 		Image: nil,
-		Flavor: map[string]interface{}{
+		Flavor: map[string]any{
 			"id": "1",
-			"links": []interface{}{
-				map[string]interface{}{
+			"links": []any{
+				map[string]any{
 					"href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/flavors/1",
 					"rel":  "bookmark",
 				},
@@ -679,7 +679,7 @@ var (
 		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata:        map[string]string{},
 		AttachedVolumes: []servers.AttachedVolume{},
-		SecurityGroups: []map[string]interface{}{
+		SecurityGroups: []map[string]any{
 			{
 				"name": "default",
 			},
@@ -715,13 +715,13 @@ type CreateOptsWithCustomField struct {
 	Foo string `json:"foo,omitempty"`
 }
 
-func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
 
-	return map[string]interface{}{"server": b}, nil
+	return map[string]any{"server": b}, nil
 }
 
 // HandleServerNoNetworkCreationSuccessfully sets up the test server with no

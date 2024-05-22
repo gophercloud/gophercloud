@@ -84,7 +84,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToPoolCreateMap() (map[string]interface{}, error)
+	ToPoolCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is the common options struct used in this package's Create
@@ -145,7 +145,7 @@ type CreateOpts struct {
 }
 
 // ToPoolCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToPoolCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToPoolCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "pool")
 }
 
@@ -172,7 +172,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToPoolUpdateMap() (map[string]interface{}, error)
+	ToPoolUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts is the common options struct used in this package's Update
@@ -201,7 +201,7 @@ type UpdateOpts struct {
 }
 
 // ToPoolUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToPoolUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToPoolUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "pool")
 }
 
@@ -280,7 +280,7 @@ func ListMembers(c *gophercloud.ServiceClient, poolID string, opts ListMembersOp
 // CreateMemberOptsBuilder allows extensions to add additional parameters to the
 // CreateMember request.
 type CreateMemberOptsBuilder interface {
-	ToMemberCreateMap() (map[string]interface{}, error)
+	ToMemberCreateMap() (map[string]any, error)
 }
 
 // CreateMemberOpts is the common options struct used in this package's CreateMember
@@ -330,7 +330,7 @@ type CreateMemberOpts struct {
 }
 
 // ToMemberCreateMap builds a request body from CreateMemberOpts.
-func (opts CreateMemberOpts) ToMemberCreateMap() (map[string]interface{}, error) {
+func (opts CreateMemberOpts) ToMemberCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "member")
 }
 
@@ -356,7 +356,7 @@ func GetMember(ctx context.Context, c *gophercloud.ServiceClient, poolID string,
 // UpdateMemberOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type UpdateMemberOptsBuilder interface {
-	ToMemberUpdateMap() (map[string]interface{}, error)
+	ToMemberUpdateMap() (map[string]any, error)
 }
 
 // UpdateMemberOpts is the common options struct used in this package's Update
@@ -392,7 +392,7 @@ type UpdateMemberOpts struct {
 }
 
 // ToMemberUpdateMap builds a request body from UpdateMemberOpts.
-func (opts UpdateMemberOpts) ToMemberUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateMemberOpts) ToMemberUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "member")
 }
 
@@ -412,7 +412,7 @@ func UpdateMember(ctx context.Context, c *gophercloud.ServiceClient, poolID stri
 
 // BatchUpdateMemberOptsBuilder allows extensions to add additional parameters to the BatchUpdateMembers request.
 type BatchUpdateMemberOptsBuilder interface {
-	ToBatchMemberUpdateMap() (map[string]interface{}, error)
+	ToBatchMemberUpdateMap() (map[string]any, error)
 }
 
 // BatchUpdateMemberOpts is the common options struct used in this package's BatchUpdateMembers
@@ -462,7 +462,7 @@ type BatchUpdateMemberOpts struct {
 }
 
 // ToBatchMemberUpdateMap builds a request body from BatchUpdateMemberOpts.
-func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]interface{}, error) {
+func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -477,7 +477,7 @@ func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]interface
 
 // BatchUpdateMembers updates the pool members in batch
 func BatchUpdateMembers(ctx context.Context, c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
-	members := []map[string]interface{}{}
+	members := []map[string]any{}
 	for _, opt := range opts {
 		b, err := opt.ToBatchMemberUpdateMap()
 		if err != nil {
@@ -487,7 +487,7 @@ func BatchUpdateMembers(ctx context.Context, c *gophercloud.ServiceClient, poolI
 		members = append(members, b)
 	}
 
-	b := map[string]interface{}{"members": members}
+	b := map[string]any{"members": members}
 
 	resp, err := c.Put(ctx, memberRootURL(c, poolID), b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

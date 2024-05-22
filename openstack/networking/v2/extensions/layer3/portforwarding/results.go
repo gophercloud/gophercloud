@@ -62,7 +62,7 @@ func (r commonResult) Extract() (*PortForwarding, error) {
 	return &s, err
 }
 
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "port_forwarding")
 }
 

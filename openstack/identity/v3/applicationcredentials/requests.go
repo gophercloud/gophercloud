@@ -51,7 +51,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, userID string, 
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToApplicationCredentialCreateMap() (map[string]interface{}, error)
+	ToApplicationCredentialCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create an application credential.
@@ -77,7 +77,7 @@ type CreateOpts struct {
 }
 
 // ToApplicationCredentialCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]any, error) {
 	parent := "application_credential"
 	b, err := gophercloud.BuildRequestBody(opts, parent)
 	if err != nil {
@@ -85,7 +85,7 @@ func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]interface{
 	}
 
 	if opts.ExpiresAt != nil {
-		if v, ok := b[parent].(map[string]interface{}); ok {
+		if v, ok := b[parent].(map[string]any); ok {
 			v["expires_at"] = opts.ExpiresAt.Format(gophercloud.RFC3339MilliNoZ)
 		}
 	}

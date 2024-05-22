@@ -267,8 +267,8 @@ var (
 		UUID:       "05ccda19-581b-49bf-8f5a-6ded99701d87",
 		StartedAt:  fooTimeStarted,
 		FinishedAt: fooTimeFinished,
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:5050/v1/introspection/05ccda19-581b-49bf-8f5a-6ded99701d87",
 				"rel":  "self",
 			},
@@ -284,8 +284,8 @@ var (
 		UUID:       "c244557e-899f-46fa-a1ff-5b2c6718616b",
 		StartedAt:  barTimeStarted,
 		FinishedAt: barTimeFinished,
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:5050/v1/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b",
 				"rel":  "self",
 			},
@@ -326,7 +326,7 @@ var (
 				IP:  "172.24.42.100",
 				MAC: "52:54:00:4e:3d:30",
 				PXE: true,
-				LLDPProcessed: map[string]interface{}{
+				LLDPProcessed: map[string]any{
 					"switch_chassis_id":  "11:22:33:aa:bb:cc",
 					"switch_system_name": "sw01-dist-1b-b12",
 				},
@@ -348,69 +348,69 @@ var (
 
 	IntrospectionExtraHardware = inventory.ExtraDataType{
 		CPU: inventory.ExtraDataSection{
-			"logical": map[string]interface{}{
+			"logical": map[string]any{
 				"number": float64(16),
 			},
-			"physical": map[string]interface{}{
+			"physical": map[string]any{
 				"clock": float64(2105032704),
 				"cores": float64(8),
 				"flags": "lm fpu fpu_exception wp vme de",
 			},
 		},
 		Disk: inventory.ExtraDataSection{
-			"sda": map[string]interface{}{
+			"sda": map[string]any{
 				"rotational": float64(1),
 				"vendor":     "TEST",
 			},
 		},
 		Firmware: inventory.ExtraDataSection{
-			"bios": map[string]interface{}{
+			"bios": map[string]any{
 				"date":   "01/01/1970",
 				"vendor": "test",
 			},
 		},
 		IPMI: inventory.ExtraDataSection{
-			"Fan1A RPM": map[string]interface{}{
+			"Fan1A RPM": map[string]any{
 				"unit":  "RPM",
 				"value": float64(3120),
 			},
-			"Fan1B RPM": map[string]interface{}{
+			"Fan1B RPM": map[string]any{
 				"unit":  "RPM",
 				"value": float64(2280),
 			},
 		},
 		Memory: inventory.ExtraDataSection{
-			"bank0": map[string]interface{}{
+			"bank0": map[string]any{
 				"clock":       1600000000.0,
 				"description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)",
 			},
-			"bank1": map[string]interface{}{
+			"bank1": map[string]any{
 				"clock":       1600000000.0,
 				"description": "DIMM DDR3 Synchronous Registered (Buffered) 1600 MHz (0.6 ns)",
 			},
 		},
 		Network: inventory.ExtraDataSection{
-			"em1": map[string]interface{}{
+			"em1": map[string]any{
 				"Autonegotiate": "on",
 				"loopback":      "off [fixed]",
 			},
-			"p2p1": map[string]interface{}{
+			"p2p1": map[string]any{
 				"Autonegotiate": "on",
 				"loopback":      "off [fixed]",
 			},
 		},
 		System: inventory.ExtraDataSection{
-			"ipmi": map[string]interface{}{
+			"ipmi": map[string]any{
 				"channel": float64(1),
 			},
-			"kernel": map[string]interface{}{
+			"kernel": map[string]any{
 				"arch":    "x86_64",
 				"version": "3.10.0",
 			},
-			"motherboard": map[string]interface{}{
+			"motherboard": map[string]any{
 				"vendor": "Test",
 			},
-			"product": map[string]interface{}{
+			"product": map[string]any{
 				"name":   "test",
 				"vendor": "Test",
 			},

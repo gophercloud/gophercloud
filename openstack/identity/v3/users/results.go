@@ -23,19 +23,19 @@ type User struct {
 	Enabled bool `json:"enabled"`
 
 	// Extra is a collection of miscellaneous key/values.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 
 	// ID is the unique ID of the user.
 	ID string `json:"id"`
 
 	// Links contains referencing links to the user.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 
 	// Name is the name of the user.
 	Name string `json:"name"`
 
 	// Options are a set of defined options of the user.
-	Options map[string]interface{} `json:"options"`
+	Options map[string]any `json:"options"`
 
 	// PasswordExpiresAt is the timestamp when the user's password expires.
 	PasswordExpiresAt time.Time `json:"-"`
@@ -45,7 +45,7 @@ func (r *User) UnmarshalJSON(b []byte) error {
 	type tmp User
 	var s struct {
 		tmp
-		Extra             map[string]interface{}          `json:"extra"`
+		Extra             map[string]any                  `json:"extra"`
 		PasswordExpiresAt gophercloud.JSONRFC3339MilliNoZ `json:"password_expires_at"`
 	}
 	err := json.Unmarshal(b, &s)
@@ -61,12 +61,12 @@ func (r *User) UnmarshalJSON(b []byte) error {
 	if s.Extra != nil {
 		r.Extra = s.Extra
 	} else {
-		var result interface{}
+		var result any
 		err := json.Unmarshal(b, &result)
 		if err != nil {
 			return err
 		}
-		if resultMap, ok := result.(map[string]interface{}); ok {
+		if resultMap, ok := result.(map[string]any); ok {
 			delete(resultMap, "password_expires_at")
 			r.Extra = gophercloud.RemainingKeys(User{}, resultMap)
 		}

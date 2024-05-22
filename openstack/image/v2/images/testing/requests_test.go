@@ -108,7 +108,7 @@ func TestCreateImage(t *testing.T) {
 		UpdatedAt:   lastUpdate,
 		Schema:      schema,
 		VirtualSize: 0,
-		Properties: map[string]interface{}{
+		Properties: map[string]any{
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
@@ -147,7 +147,7 @@ func TestCreateImageNulls(t *testing.T) {
 	createdDate := actualImage.CreatedAt
 	lastUpdate := actualImage.UpdatedAt
 	schema := "/v2/schemas/image"
-	properties := map[string]interface{}{
+	properties := map[string]any{
 		"architecture": "x86_64",
 	}
 	sizeBytes := int64(0)
@@ -235,7 +235,7 @@ func TestGetImage(t *testing.T) {
 		UpdatedAt:   lastUpdate,
 		Schema:      schema,
 		VirtualSize: 0,
-		Properties: map[string]interface{}{
+		Properties: map[string]any{
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
@@ -311,7 +311,7 @@ func TestUpdateImage(t *testing.T) {
 		UpdatedAt:       lastUpdate,
 		Schema:          schema,
 		VirtualSize:     0,
-		Properties: map[string]interface{}{
+		Properties: map[string]any{
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
@@ -399,7 +399,7 @@ func TestImageListByTags(t *testing.T) {
 		UpdatedAt:   lastUpdate,
 		Schema:      schema,
 		VirtualSize: 0,
-		Properties: map[string]interface{}{
+		Properties: map[string]any{
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
@@ -467,7 +467,7 @@ func TestUpdateImageProperties(t *testing.T) {
 		UpdatedAt:       lastUpdate,
 		Schema:          schema,
 		VirtualSize:     0,
-		Properties: map[string]interface{}{
+		Properties: map[string]any{
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",

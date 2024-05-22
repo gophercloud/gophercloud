@@ -55,8 +55,8 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 // ValidateExpected represents the expected object from a Validate request.
 var ValidateExpected = &stacktemplates.ValidatedTemplate{
 	Description: "Simple template to test heat commands",
-	Parameters: map[string]interface{}{
-		"flavor": map[string]interface{}{
+	Parameters: map[string]any{
+		"flavor": map[string]any{
 			"Default":     "m1.tiny",
 			"Type":        "String",
 			"NoEcho":      "false",

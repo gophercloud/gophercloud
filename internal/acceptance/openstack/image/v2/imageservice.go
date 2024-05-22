@@ -80,8 +80,8 @@ func CreateTask(t *testing.T, client *gophercloud.ServiceClient, imageURL string
 	t.Logf("Attempting to create an Image service import task with image: %s", imageURL)
 	opts := tasks.CreateOpts{
 		Type: "import",
-		Input: map[string]interface{}{
-			"image_properties": map[string]interface{}{
+		Input: map[string]any{
+			"image_properties": map[string]any{
 				"container_format": "bare",
 				"disk_format":      "raw",
 			},

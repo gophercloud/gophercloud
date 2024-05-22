@@ -18,7 +18,7 @@ type Credential struct {
 	// The ID of the project the credential was created for.
 	ProjectID string `json:"project_id"`
 	// Links contains referencing links to the credential.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 type credentialResult struct {

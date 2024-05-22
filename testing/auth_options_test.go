@@ -16,7 +16,7 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 
 	var successCases = []struct {
 		opts     gophercloud.AuthOptions
-		expected map[string]interface{}
+		expected map[string]any
 	}{
 		// System-scoped
 		{
@@ -25,8 +25,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					System: true,
 				},
 			},
-			map[string]interface{}{
-				"system": map[string]interface{}{
+			map[string]any{
+				"system": map[string]any{
 					"all": true,
 				},
 			},
@@ -38,7 +38,7 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					TrustID: "05144328-1f7d-46a9-a978-17eaad187077",
 				},
 			},
-			map[string]interface{}{
+			map[string]any{
 				"OS-TRUST:trust": map[string]string{
 					"id": "05144328-1f7d-46a9-a978-17eaad187077",
 				},
@@ -51,8 +51,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					ProjectID: projectID,
 				},
 			},
-			map[string]interface{}{
-				"project": map[string]interface{}{
+			map[string]any{
+				"project": map[string]any{
 					"id": &projectID,
 				},
 			},
@@ -65,10 +65,10 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					DomainName:  domainName,
 				},
 			},
-			map[string]interface{}{
-				"project": map[string]interface{}{
+			map[string]any{
+				"project": map[string]any{
 					"name": &projectName,
-					"domain": map[string]interface{}{
+					"domain": map[string]any{
 						"name": &domainName,
 					},
 				},
@@ -81,8 +81,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					DomainID: domainID,
 				},
 			},
-			map[string]interface{}{
-				"domain": map[string]interface{}{
+			map[string]any{
+				"domain": map[string]any{
 					"id": &domainID,
 				},
 			},
@@ -94,8 +94,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					DomainName: domainName,
 				},
 			},
-			map[string]interface{}{
-				"domain": map[string]interface{}{
+			map[string]any{
+				"domain": map[string]any{
 					"name": &domainName,
 				},
 			},
@@ -106,8 +106,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				TenantID: projectID,
 				Scope:    nil,
 			},
-			map[string]interface{}{
-				"project": map[string]interface{}{
+			map[string]any{
+				"project": map[string]any{
 					"id": &projectID,
 				},
 			},
@@ -119,10 +119,10 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				DomainName: domainName,
 				Scope:      nil,
 			},
-			map[string]interface{}{
-				"project": map[string]interface{}{
+			map[string]any{
+				"project": map[string]any{
 					"name": &projectName,
-					"domain": map[string]interface{}{
+					"domain": map[string]any{
 						"name": &domainName,
 					},
 				},

@@ -122,7 +122,7 @@ const UpdateOutput = `
 var ProdDomain = domains.Domain{
 	Enabled: true,
 	ID:      "a720688fb87f4575a4c000d818061eae",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/v3/domains/a720688fb87f4575a4c000d818061eae",
 	},
 	Name:        "ProdDomain",
@@ -133,7 +133,7 @@ var ProdDomain = domains.Domain{
 var TestDomain = domains.Domain{
 	Enabled: false,
 	ID:      "52af04aec5f84182b06959d2775d2000",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/v3/domains/52af04aec5f84182b06959d2775d2000",
 	},
 	Name:        "TestDomain",
@@ -144,7 +144,7 @@ var TestDomain = domains.Domain{
 var FirstDomain = domains.Domain{
 	Enabled: true,
 	ID:      "2844b2a08be147a08ef58317d6471f1f",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/domains/2844b2a08be147a08ef58317d6471f1f",
 	},
 	Name:        "domain one",
@@ -155,7 +155,7 @@ var FirstDomain = domains.Domain{
 var SecondDomain = domains.Domain{
 	Enabled: true,
 	ID:      "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/domains/9fe1d3",
 	},
 	Name: "domain two",
@@ -165,7 +165,7 @@ var SecondDomain = domains.Domain{
 var SecondDomainUpdated = domains.Domain{
 	Enabled: true,
 	ID:      "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/domains/9fe1d3",
 	},
 	Name:        "domain two",

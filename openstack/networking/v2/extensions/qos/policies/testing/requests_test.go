@@ -355,7 +355,7 @@ func TestGetPolicy(t *testing.T) {
 
 	th.AssertEquals(t, "bw-limiter", p.Name)
 	th.AssertDeepEquals(t, []string{}, p.Tags)
-	th.AssertDeepEquals(t, []map[string]interface{}{
+	th.AssertDeepEquals(t, []map[string]any{
 		{
 			"max_kbps":       float64(3000),
 			"direction":      "egress",

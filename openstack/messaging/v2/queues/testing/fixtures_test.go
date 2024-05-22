@@ -160,7 +160,7 @@ var FirstQueue = queues.Queue{
 		MaxClaimCount:             10,
 		MaxMessagesPostSize:       262143,
 		EnableEncryptMessages:     true,
-		Extra:                     map[string]interface{}{"description": "Test queue."},
+		Extra:                     map[string]any{"description": "Test queue."},
 	},
 }
 
@@ -175,7 +175,7 @@ var SecondQueue = queues.Queue{
 		DefaultMessageTTL:         3700,
 		MaxClaimCount:             10,
 		MaxMessagesPostSize:       262143,
-		Extra:                     map[string]interface{}{"description": "Test queue."},
+		Extra:                     map[string]any{"description": "Test queue."},
 	},
 }
 
@@ -186,7 +186,7 @@ var ExpectedQueueSlice = [][]queues.Queue{{FirstQueue}, {SecondQueue}}
 var QueueDetails = queues.QueueDetails{
 	DefaultMessageTTL:   3600,
 	MaxMessagesPostSize: 262144,
-	Extra:               map[string]interface{}{"description": "Queue used for unit testing."},
+	Extra:               map[string]any{"description": "Queue used for unit testing."},
 }
 
 // ExpectedStats is the expected result in a GetStats.

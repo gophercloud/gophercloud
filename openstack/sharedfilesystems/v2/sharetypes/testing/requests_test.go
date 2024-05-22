@@ -87,15 +87,15 @@ func TestList(t *testing.T) {
 			ID:                 "be27425c-f807-4500-a056-d00721db45cf",
 			Name:               "default",
 			IsPublic:           true,
-			ExtraSpecs:         map[string]interface{}{"snapshot_support": "True", "driver_handles_share_servers": "True"},
-			RequiredExtraSpecs: map[string]interface{}{"driver_handles_share_servers": "True"},
+			ExtraSpecs:         map[string]any{"snapshot_support": "True", "driver_handles_share_servers": "True"},
+			RequiredExtraSpecs: map[string]any{"driver_handles_share_servers": "True"},
 		},
 		{
 			ID:                 "f015bebe-c38b-4c49-8832-00143b10253b",
 			Name:               "d",
 			IsPublic:           true,
-			ExtraSpecs:         map[string]interface{}{"driver_handles_share_servers": "false", "snapshot_support": "True"},
-			RequiredExtraSpecs: map[string]interface{}{"driver_handles_share_servers": "false"},
+			ExtraSpecs:         map[string]any{"driver_handles_share_servers": "false", "snapshot_support": "True"},
+			RequiredExtraSpecs: map[string]any{"driver_handles_share_servers": "false"},
 		},
 	}
 
@@ -112,8 +112,8 @@ func TestGetDefault(t *testing.T) {
 	expected := sharetypes.ShareType{
 		ID:                 "be27425c-f807-4500-a056-d00721db45cf",
 		Name:               "default",
-		ExtraSpecs:         map[string]interface{}{"snapshot_support": "True", "driver_handles_share_servers": "True"},
-		RequiredExtraSpecs: map[string]interface{}(nil),
+		ExtraSpecs:         map[string]any{"snapshot_support": "True", "driver_handles_share_servers": "True"},
+		RequiredExtraSpecs: map[string]any(nil),
 	}
 
 	actual, err := sharetypes.GetDefault(context.TODO(), client.ServiceClient()).Extract()
@@ -144,7 +144,7 @@ func TestSetExtraSpecs(t *testing.T) {
 	MockSetExtraSpecsResponse(t)
 
 	options := &sharetypes.SetExtraSpecsOpts{
-		ExtraSpecs: map[string]interface{}{"my_key": "my_value"},
+		ExtraSpecs: map[string]any{"my_key": "my_value"},
 	}
 
 	es, err := sharetypes.SetExtraSpecs(context.TODO(), client.ServiceClient(), "shareTypeID", options).Extract()

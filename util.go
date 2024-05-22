@@ -61,8 +61,8 @@ func NormalizeURL(url string) string {
 //
 // This is useful for determining the extra fields returned in response bodies
 // for resources that can contain an arbitrary or dynamic number of fields.
-func RemainingKeys(s interface{}, m map[string]interface{}) (extras map[string]interface{}) {
-	extras = make(map[string]interface{})
+func RemainingKeys(s any, m map[string]any) (extras map[string]any) {
+	extras = make(map[string]any)
 	for k, v := range m {
 		extras[k] = v
 	}

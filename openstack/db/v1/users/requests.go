@@ -10,7 +10,7 @@ import (
 
 // CreateOptsBuilder is the top-level interface for creating JSON maps.
 type CreateOptsBuilder interface {
-	ToUserCreateMap() (map[string]interface{}, error)
+	ToUserCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is the struct responsible for configuring a new user; often in the
@@ -36,7 +36,7 @@ type CreateOpts struct {
 }
 
 // ToMap is a convenience function for creating sub-maps for individual users.
-func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToMap() (map[string]any, error) {
 	if opts.Name == "root" {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "users.CreateOpts.Name"
@@ -51,8 +51,8 @@ func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
 type BatchCreateOpts []CreateOpts
 
 // ToUserCreateMap will generate a JSON map.
-func (opts BatchCreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
-	users := make([]map[string]interface{}, len(opts))
+func (opts BatchCreateOpts) ToUserCreateMap() (map[string]any, error) {
+	users := make([]map[string]any, len(opts))
 	for i, opt := range opts {
 		user, err := opt.ToMap()
 		if err != nil {
@@ -60,7 +60,7 @@ func (opts BatchCreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
 		}
 		users[i] = user
 	}
-	return map[string]interface{}{"users": users}, nil
+	return map[string]any{"users": users}, nil
 }
 
 // Create asynchronously provisions a new user for the specified database

@@ -67,7 +67,7 @@ type AuthOptions struct {
 	// Signature can be either a []byte (encoded to base64 automatically) or
 	// a string. You can set the singature explicitly, when you already know
 	// it. In this case default Params won't be automatically set. Optional.
-	Signature interface{} `json:"signature"`
+	Signature any `json:"signature"`
 	// BodyHash is a HTTP request body sha256 hash. When nil and Signature
 	// is not set, a random hash is generated. Optional.
 	BodyHash *string `json:"body_hash"`
@@ -205,13 +205,13 @@ func EC2CredentialsBuildAuthorizationHeaderV4(opts AuthOptions, signedHeaders st
 
 // ToTokenV3ScopeMap is a dummy method to satisfy tokens.AuthOptionsBuilder
 // interface.
-func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
+func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 	return nil, nil
 }
 
 // ToTokenV3HeadersMap allows AuthOptions to satisfy the AuthOptionsBuilder
 // interface in the v3 tokens package.
-func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]interface{}) (map[string]string, error) {
+func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]any) (map[string]string, error) {
 	return nil, nil
 }
 
@@ -221,7 +221,7 @@ func (opts *AuthOptions) CanReauth() bool {
 }
 
 // ToTokenV3CreateMap formats an AuthOptions into a create request.
-func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error) {
+func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "credentials")
 	if err != nil {
 		return nil, err
@@ -232,7 +232,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 	}
 
 	// calculate signature, when it is not set
-	c, _ := b["credentials"].(map[string]interface{})
+	c, _ := b["credentials"].(map[string]any)
 	h := interfaceToMap(c, "headers")
 	p := interfaceToMap(c, "params")
 
@@ -354,10 +354,10 @@ func randomBodyHash() (string, error) {
 
 // interfaceToMap is a func used to represent a "credentials" map element as a
 // "map[string]string"
-func interfaceToMap(c map[string]interface{}, key string) map[string]string {
-	// convert map[string]interface{} to map[string]string
+func interfaceToMap(c map[string]any, key string) map[string]string {
+	// convert map[string]any to map[string]string
 	m := make(map[string]string)
-	if v, _ := c[key].(map[string]interface{}); v != nil {
+	if v, _ := c[key].(map[string]any); v != nil {
 		for k, v := range v {
 			m[k] = v.(string)
 		}
@@ -369,8 +369,8 @@ func interfaceToMap(c map[string]interface{}, key string) map[string]string {
 }
 
 // deleteBodyElements deletes map body elements
-func deleteBodyElements(b map[string]interface{}, elements ...string) {
-	if c, ok := b["credentials"].(map[string]interface{}); ok {
+func deleteBodyElements(b map[string]any, elements ...string) {
+	if c, ok := b["credentials"].(map[string]any); ok {
 		for _, k := range elements {
 			delete(c, k)
 		}

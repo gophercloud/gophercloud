@@ -41,7 +41,7 @@ Example of List Stack:
 Example to Create an Stack
 
 	// Create Template
-	t := make(map[string]interface{})
+	t := make(map[string]any)
 	f, err := os.ReadFile("template.yaml")
 	if err != nil {
 	    panic(err)
@@ -56,7 +56,7 @@ Example to Create an Stack
 	    Bin: f,
 	}
 	// Create Environment if needed
-	t_env := make(map[string]interface{})
+	t_env := make(map[string]any)
 	f_env, err := os.ReadFile("env.yaml")
 	if err != nil {
 	    panic(err)
@@ -154,7 +154,7 @@ raw_template value.
 
 Example to Update a Stack Using the Update (PUT) Method
 
-	t := make(map[string]interface{})
+	t := make(map[string]any)
 	f, err := os.ReadFile("template.yaml")
 	if err != nil {
 		panic(err)
@@ -169,7 +169,7 @@ Example to Update a Stack Using the Update (PUT) Method
 		Bin: f,
 	}
 
-	var params = make(map[string]interface{})
+	var params = make(map[string]any)
 	params["number_of_nodes"] = 2
 
 	stackName := "my_stack"
@@ -187,7 +187,7 @@ Example to Update a Stack Using the Update (PUT) Method
 
 Example to Update a Stack Using the UpdatePatch (PATCH) Method
 
-	var params = make(map[string]interface{})
+	var params = make(map[string]any)
 	params["number_of_nodes"] = 2
 
 	stackName := "my_stack"

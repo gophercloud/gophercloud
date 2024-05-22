@@ -103,7 +103,7 @@ var (
 		Traits:         []string{"foo"},
 		Extra:          map[string]string{},
 		CreatedAt:      createdAt,
-		Links:          []interface{}{map[string]interface{}{"href": "http://127.0.0.1:6385/v1/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "self"}, map[string]interface{}{"href": "http://127.0.0.1:6385/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "bookmark"}},
+		Links:          []any{map[string]any{"href": "http://127.0.0.1:6385/v1/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "self"}, map[string]any{"href": "http://127.0.0.1:6385/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "bookmark"}},
 	}
 )
 

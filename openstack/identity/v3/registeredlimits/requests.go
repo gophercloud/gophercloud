@@ -49,7 +49,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // BatchCreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type BatchCreateOptsBuilder interface {
-	ToRegisteredLimitsCreateMap() (map[string]interface{}, error)
+	ToRegisteredLimitsCreateMap() (map[string]any, error)
 }
 
 type CreateOpts struct {
@@ -73,8 +73,8 @@ type CreateOpts struct {
 type BatchCreateOpts []CreateOpts
 
 // ToRegisteredLimitsCreateMap formats a BatchCreateOpts into a create request.
-func (opts BatchCreateOpts) ToRegisteredLimitsCreateMap() (map[string]interface{}, error) {
-	registered_limits := make([]map[string]interface{}, len(opts))
+func (opts BatchCreateOpts) ToRegisteredLimitsCreateMap() (map[string]any, error) {
+	registered_limits := make([]map[string]any, len(opts))
 	for i, registered_limit := range opts {
 		registeredLimitMap, err := registered_limit.ToMap()
 		if err != nil {
@@ -82,10 +82,10 @@ func (opts BatchCreateOpts) ToRegisteredLimitsCreateMap() (map[string]interface{
 		}
 		registered_limits[i] = registeredLimitMap
 	}
-	return map[string]interface{}{"registered_limits": registered_limits}, nil
+	return map[string]any{"registered_limits": registered_limits}, nil
 }
 
-func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -113,7 +113,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, registeredLimit
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToRegisteredLimitUpdateMap() (map[string]interface{}, error)
+	ToRegisteredLimitUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents parameters to update a domain.
@@ -136,7 +136,7 @@ type UpdateOpts struct {
 }
 
 // ToRegisteredLimitUpdateMap formats UpdateOpts into an update request.
-func (opts UpdateOpts) ToRegisteredLimitUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToRegisteredLimitUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "registered_limit")
 }
 

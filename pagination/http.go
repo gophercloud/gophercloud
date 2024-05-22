@@ -20,7 +20,7 @@ type PageResult struct {
 // PageResultFrom parses an HTTP response as JSON and returns a PageResult containing the
 // results, interpreting it as JSON if the content type indicates.
 func PageResultFrom(resp *http.Response) (PageResult, error) {
-	var parsedBody interface{}
+	var parsedBody any
 
 	defer resp.Body.Close()
 	rawBody, err := io.ReadAll(resp.Body)
@@ -42,7 +42,7 @@ func PageResultFrom(resp *http.Response) (PageResult, error) {
 
 // PageResultFromParsed constructs a PageResult from an HTTP response that has already had its
 // body parsed as JSON (and closed).
-func PageResultFromParsed(resp *http.Response, body interface{}) PageResult {
+func PageResultFromParsed(resp *http.Response, body any) PageResult {
 	return PageResult{
 		Result: gophercloud.Result{
 			Body:       body,

@@ -52,7 +52,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, transferAcceptI
 // CreateOptsBuilder allows extensions to add additional attributes to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToTransferAcceptCreateMap() (map[string]interface{}, error)
+	ToTransferAcceptCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies the attributes used to create a transfer accept.
@@ -66,7 +66,7 @@ type CreateOpts struct {
 }
 
 // ToTransferAcceptCreateMap formats an CreateOpts structure into a request body.
-func (opts CreateOpts) ToTransferAcceptCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToTransferAcceptCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

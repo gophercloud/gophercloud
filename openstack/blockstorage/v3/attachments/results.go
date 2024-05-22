@@ -29,7 +29,7 @@ type Attachment struct {
 	AttachMode string `json:"attach_mode"`
 	// ConnectionInfo is the required info for a node to make a connection
 	// provided by the driver.
-	ConnectionInfo map[string]interface{} `json:"connection_info"`
+	ConnectionInfo map[string]any `json:"connection_info"`
 }
 
 // UnmarshalJSON is our unmarshalling helper
@@ -88,13 +88,13 @@ func (r commonResult) Extract() (*Attachment, error) {
 }
 
 // ExtractInto converts our response data into a attachment struct.
-func (r commonResult) ExtractInto(a interface{}) error {
+func (r commonResult) ExtractInto(a any) error {
 	return r.Result.ExtractIntoStructPtr(a, "attachment")
 }
 
 // ExtractAttachmentsInto similar to ExtractInto but operates on a List of
 // attachments.
-func ExtractAttachmentsInto(r pagination.Page, a interface{}) error {
+func ExtractAttachmentsInto(r pagination.Page, a any) error {
 	return r.(AttachmentPage).Result.ExtractIntoSlicePtr(a, "attachments")
 }
 

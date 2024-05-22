@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToAttachmentCreateMap() (map[string]interface{}, error)
+	ToAttachmentCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a Volume attachment. This object is
@@ -26,7 +26,7 @@ type CreateOpts struct {
 	InstanceUUID string `json:"instance_uuid"`
 	// Connector is an optional map containing all of the needed atachment
 	// information for exmaple initiator IQN, etc.
-	Connector map[string]interface{} `json:"connector,omitempty"`
+	Connector map[string]any `json:"connector,omitempty"`
 	// Mode is an attachment mode. Acceptable values are read-only ('ro')
 	// and read-and-write ('rw'). Available only since 3.54 microversion.
 	// For APIs from 3.27 till 3.53 use Connector["mode"] = "rw|ro".
@@ -35,7 +35,7 @@ type CreateOpts struct {
 
 // ToAttachmentCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToAttachmentCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToAttachmentCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "attachment")
 }
 
@@ -136,19 +136,19 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToAttachmentUpdateMap() (map[string]interface{}, error)
+	ToAttachmentUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing Attachment.
 // This is used to finalize an attachment that was created without a
 // connector (reserve).
 type UpdateOpts struct {
-	Connector map[string]interface{} `json:"connector"`
+	Connector map[string]any `json:"connector"`
 }
 
 // ToAttachmentUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToAttachmentUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToAttachmentUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "attachment")
 }
 
@@ -171,7 +171,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // Complete will complete an attachment for a cinder volume.
 // Available starting in the 3.44 microversion.
 func Complete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r CompleteResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"os-complete": nil,
 	}
 	resp, err := client.Post(ctx, completeURL(client, id), b, nil, &gophercloud.RequestOpts{

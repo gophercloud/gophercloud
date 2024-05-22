@@ -40,7 +40,7 @@ Create an execution
 
 	createOpts := &executions.CreateOpts{
 		WorkflowID:  "6656c143-a009-4bcb-9814-cc100a20bbfa",
-		Input: map[string]interface{}{
+		Input: map[string]any{
 			"msg": "Hello",
 		},
 		Description: "this is a description",

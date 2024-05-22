@@ -181,7 +181,7 @@ func TestUpdateStackNoTemplate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateSuccessfully(t)
 
-	parameters := make(map[string]interface{})
+	parameters := make(map[string]any)
 	parameters["flavor"] = "m1.tiny"
 
 	updateOpts := &stacks.UpdateOpts{
@@ -198,7 +198,7 @@ func TestUpdatePatchStack(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdatePatchSuccessfully(t)
 
-	parameters := make(map[string]interface{})
+	parameters := make(map[string]any)
 	parameters["flavor"] = "m1.tiny"
 
 	updateOpts := &stacks.UpdateOpts{

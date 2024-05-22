@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToTransferCreateMap() (map[string]interface{}, error)
+	ToTransferCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for a Share transfer.
@@ -24,7 +24,7 @@ type CreateOpts struct {
 
 // ToCreateMap assembles a request body based on the contents of a
 // TransferOpts.
-func (opts CreateOpts) ToTransferCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToTransferCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "transfer")
 }
 
@@ -53,7 +53,7 @@ type AcceptOpts struct {
 
 // ToAcceptMap assembles a request body based on the contents of a
 // AcceptOpts.
-func (opts AcceptOpts) ToAcceptMap() (map[string]interface{}, error) {
+func (opts AcceptOpts) ToAcceptMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "accept")
 }
 

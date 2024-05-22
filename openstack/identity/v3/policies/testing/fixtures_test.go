@@ -117,10 +117,10 @@ var FirstPolicy = policies.Policy{
 	ID:   "2844b2a08be147a08ef58317d6471f1f",
 	Blob: "'foo_user': 'role:compute-user'",
 	Type: "text/plain",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/policies/2844b2a08be147a08ef58317d6471f1f",
 	},
-	Extra: map[string]interface{}{},
+	Extra: map[string]any{},
 }
 
 // SecondPolicy is the second policy in the List request.
@@ -128,10 +128,10 @@ var SecondPolicy = policies.Policy{
 	ID:   "b49884da9d31494ea02aff38d4b4e701",
 	Blob: "{'bar_user': 'role:network-user'}",
 	Type: "application/json",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/policies/b49884da9d31494ea02aff38d4b4e701",
 	},
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"description": "policy for bar_user",
 	},
 }
@@ -141,10 +141,10 @@ var SecondPolicyUpdated = policies.Policy{
 	ID:   "b49884da9d31494ea02aff38d4b4e701",
 	Blob: "{'bar_user': 'role:network-user'}",
 	Type: "application/json",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/policies/b49884da9d31494ea02aff38d4b4e701",
 	},
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"description": "updated policy for bar_user",
 	},
 }

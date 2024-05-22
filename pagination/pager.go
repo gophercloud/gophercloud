@@ -31,7 +31,7 @@ type Page interface {
 	IsEmpty() (bool, error)
 
 	// GetBody returns the Page Body. This is used in the `AllPages` method.
-	GetBody() interface{}
+	GetBody() any
 }
 
 // Pager knows how to advance through a specific resource collection, one page at a time.
@@ -140,7 +140,7 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 		return nil, p.Err
 	}
 	// pagesSlice holds all the pages until they get converted into as Page Body.
-	var pagesSlice []interface{}
+	var pagesSlice []any
 	// body will contain the final concatenated Page body.
 	var body reflect.Value
 
@@ -161,21 +161,21 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 	// store the first page to avoid getting it twice
 	p.firstPage = firstPage
 
-	// Switch on the page body type. Recognized types are `map[string]interface{}`,
-	// `[]byte`, and `[]interface{}`.
+	// Switch on the page body type. Recognized types are `map[string]any`,
+	// `[]byte`, and `[]any`.
 	switch pb := firstPage.GetBody().(type) {
-	case map[string]interface{}:
-		// key is the map key for the page body if the body type is `map[string]interface{}`.
+	case map[string]any:
+		// key is the map key for the page body if the body type is `map[string]any`.
 		var key string
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(ctx, func(_ context.Context, page Page) (bool, error) {
-			b := page.GetBody().(map[string]interface{})
+			b := page.GetBody().(map[string]any)
 			for k, v := range b {
 				// If it's a linked page, we don't want the `links`, we want the other one.
 				if !strings.HasSuffix(k, "links") {
-					// check the field's type. we only want []interface{} (which is really []map[string]interface{})
+					// check the field's type. we only want []any (which is really []map[string]any)
 					switch vt := v.(type) {
-					case []interface{}:
+					case []any:
 						key = k
 						pagesSlice = append(pagesSlice, vt...)
 					}
@@ -186,7 +186,7 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 		if err != nil {
 			return nil, err
 		}
-		// Set body to value of type `map[string]interface{}`
+		// Set body to value of type `map[string]any`
 		body = reflect.MakeMap(reflect.MapOf(reflect.TypeOf(key), reflect.TypeOf(pagesSlice)))
 		body.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(pagesSlice))
 	case []byte:
@@ -213,24 +213,24 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 		// Set body to value of type `bytes`.
 		body = reflect.New(reflect.TypeOf(b)).Elem()
 		body.SetBytes(b)
-	case []interface{}:
+	case []any:
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(ctx, func(_ context.Context, page Page) (bool, error) {
-			b := page.GetBody().([]interface{})
+			b := page.GetBody().([]any)
 			pagesSlice = append(pagesSlice, b...)
 			return true, nil
 		})
 		if err != nil {
 			return nil, err
 		}
-		// Set body to value of type `[]interface{}`
+		// Set body to value of type `[]any`
 		body = reflect.MakeSlice(reflect.TypeOf(pagesSlice), len(pagesSlice), len(pagesSlice))
 		for i, s := range pagesSlice {
 			body.Index(i).Set(reflect.ValueOf(s))
 		}
 	default:
 		err := gophercloud.ErrUnexpectedType{}
-		err.Expected = "map[string]interface{}/[]byte/[]interface{}"
+		err.Expected = "map[string]any/[]byte/[]any"
 		err.Actual = fmt.Sprintf("%T", pb)
 		return nil, err
 	}

@@ -26,7 +26,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, portI
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToAttachInterfacesCreateMap() (map[string]interface{}, error)
+	ToAttachInterfacesCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters of a new interface attachment.
@@ -50,7 +50,7 @@ type CreateOpts struct {
 }
 
 // ToAttachInterfacesCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToAttachInterfacesCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToAttachInterfacesCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "interfaceAttachment")
 }
 

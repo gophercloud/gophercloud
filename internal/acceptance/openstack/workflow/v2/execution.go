@@ -22,7 +22,7 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 		WorkflowID:        workflow.ID,
 		WorkflowNamespace: workflow.Namespace,
 		Description:       executionDescription,
-		Input: map[string]interface{}{
+		Input: map[string]any{
 			"msg": "Hello World!",
 		},
 	}
