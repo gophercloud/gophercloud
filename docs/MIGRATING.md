@@ -23,7 +23,7 @@ import (
 
 ### Go version
 
-The minimum go version for Gophercloud v2 is now v1.21.6.
+The minimum go version for Gophercloud v2 is now v1.22.
 
 ### Context-awareness
 
