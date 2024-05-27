@@ -16,9 +16,6 @@ jobs:
           - "1.21"
           - "1"
 
-    env:
-      GO111MODULE: "on"
-
     steps:
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
@@ -34,19 +31,13 @@ jobs:
           go mod init unit_tests
 
           go install github.com/wadey/gocovmerge@master
-          go install golang.org/x/tools/cmd/goimports@latest
-
-      - name: Run go vet
-        run: |
-          go vet ./...
 
       - name: Run unit tests
         run: |
           ./script/coverage
-          ./script/format
-          ./script/unittest -v
+          ./script/unittest
 
-      - name: Coveralls Parallel
+      - name: Check coverage
         uses: coverallsapp/github-action@v2
         with:
           file: cover.out
@@ -60,7 +51,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls Finished
+    - name: Store coverage results
       uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true

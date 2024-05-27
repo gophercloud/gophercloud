@@ -1,42 +1,25 @@
 #!/bin/bash
 #
-set -x
-set -o pipefail
+# Run acceptance tests.
 
-source `dirname $0`/stackenv
+# We intentionally don't set '-u' (error on unbound variables) or '-e' (exit on
+# first failure) initially since DevStack is not designed to run with these
+# flags and things crash and burn *spectacularly* 🔥🔥🔥
+set -xo pipefail
+
+source $(dirname $0)/stackenv
+
+# ...but we can do it after the fact
+set -eu
 
 timeout="60m"
 failed=
 
+LOG_DIR=${LOG_DIR:-}
 if [[ -z "${LOG_DIR}" ]]; then
     echo "LOG_DIR not set, will set a temp directory"
     LOG_DIR=/tmp/devstack-logs
 fi
 mkdir -p ${LOG_DIR}
 
-if [[ -z "${ACCEPTANCE_TESTS_FILTER}" ]]; then
-    ACCEPTANCE_TESTS=$(find internal/acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq)
-else
-    ACCEPTANCE_TESTS=$(find internal/acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq | grep -P "$ACCEPTANCE_TESTS_FILTER")
-fi
-ACCEPTANCE_TESTS=($ACCEPTANCE_TESTS)
-
-if [[ -z $ACCEPTANCE_TESTS ]]; then
-    echo "No acceptance tests to run"
-    exit 0
-fi
-
-for acceptance_test in "${ACCEPTANCE_TESTS[@]}"; do
-  go test -v -timeout $timeout -tags "fixtures acceptance" ./${acceptance_test} |& tee -a ${LOG_DIR}/acceptance_tests.log
-  # Check the error code after each suite, but do not exit early if a suite failed.
-  if [[ $? != 0 ]]; then
-    failed=1
-  fi
-done
-
-# If any of the test suites failed, exit 1
-if [[ -n $failed ]]; then
-  exit 1
-fi
-
-exit 0
+go test -v -timeout $timeout -tags "fixtures acceptance" ${PACKAGE:-./internal/acceptance/openstack/...} $@ |& tee -a ${LOG_DIR}/acceptance_tests.log

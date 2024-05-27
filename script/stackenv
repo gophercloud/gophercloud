@@ -1,5 +1,7 @@
+#!/bin/bash
+#
 # Prep the testing environment by creating the required testing resources and
-# environment variables. This env is for theopenlab CI jobs, you might need
+# environment variables. This env is used for the CI jobs and you might need
 # to modify this according to your setup
 
 DEVSTACK_PATH=${DEVSTACK_PATH:-/opt/stack/new/devstack}

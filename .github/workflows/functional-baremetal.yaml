@@ -96,7 +96,7 @@ jobs:
         run: ./script/acceptancetest
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
-          ACCEPTANCE_TESTS_FILTER: '^.*baremetal(.(?!noauth).*)?$'
+          PACKAGE: "./internal/acceptance/openstack/baremetal/..."
           OS_BRANCH: ${{ matrix.openstack_version }}
           # TODO(dtantsur): default to "all" when no longer supporting versions before 2024.1
           OS_SYSTEM_SCOPE: ${{ matrix.os_system_scope }}

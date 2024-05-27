@@ -1,5 +1,10 @@
 #!/bin/bash
-set -x
+#
+# Collect logs after an integration test failure.
+
+# We intentionally don't set '-e' (exit on first failure) since we don't want
+# to fail on these diagnostic steps
+set -uxo pipefail
 
 LOG_DIR=${LOG_DIR:-/tmp/devstack-logs}
 mkdir -p "$LOG_DIR"
