@@ -1,8 +1,8 @@
-## v2.0.0-beta.1
+## v2.0.0 (2024-05-27)
 
-BREAKING CHANGES:
+MAIN BREAKING CHANGES:
 
-* **The minimum required Go version is now v1.21.6.**
+* **Gophercloud now requires Go v1.22.**
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Gophercloud now escapes container and object names in all `objects` and `containers` functions. If you were previously escaping names (with, for example: `url.PathEscape` or `url.QueryEscape`), then you should REMOVE that and pass the intended names to Gophercloud directly.
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) The `containers.ListOpts#Full` and `objects.ListOpts#Full` properties are REMOVED from the Gophercloud API. The reason for that is: plaintext listing is unfixably wrong and won't handle special characters reliably (i.e. `\n`).
 * [GH-2821](https://github.com/gophercloud/gophercloud/pull/2821) Empty container names, container names containing a slash (`/`), and empty object names are now rejected in Gophercloud before any call to Swift.
@@ -16,6 +16,7 @@ BREAKING CHANGES:
 * [GH-2665](https://github.com/gophercloud/gophercloud/pull/2665) Cinder: Remove multiatttach request parameter
 * [GH-2936](https://github.com/gophercloud/gophercloud/pull/2936) Make Gophercloud context-aware: all function signatures triggering an HTTP call now accept a context.Context for tracing and cancellation
 * [GH-2970](https://github.com/gophercloud/gophercloud/pull/2970) Remove context from the Provider client
+* [GH-2904](https://github.com/gophercloud/gophercloud/pull/2904) Remove error code types
 
 New features and improvements:
 
@@ -40,7 +41,33 @@ New features and improvements:
 * [GH-2883](https://github.com/gophercloud/gophercloud/pull/2883) Context-aware methods to ProviderClient and ServiceClient
 * [GH-2892](https://github.com/gophercloud/gophercloud/pull/2892) Authenticate with a clouds.yaml
 
-## v1.9.0 (2024-02-02)
+## v1.12.0 (2024-05-27)
+
+* [GH-2979](https://github.com/gophercloud/gophercloud/pull/2979) [v1] CI backports
+* [GH-2985](https://github.com/gophercloud/gophercloud/pull/2985) [v1] baremetal: fix handling of the "fields" query argument
+* [GH-2989](https://github.com/gophercloud/gophercloud/pull/2989) [v1] [CI] Fix portbiding tests
+* [GH-2992](https://github.com/gophercloud/gophercloud/pull/2992) [v1] [CI] Fix portbiding tests
+* [GH-2993](https://github.com/gophercloud/gophercloud/pull/2993) [v1] build(deps): bump EmilienM/devstack-action from 0.14 to 0.15
+* [GH-2998](https://github.com/gophercloud/gophercloud/pull/2998) [v1] testhelper: mark all helpers with t.Helper
+* [GH-3043](https://github.com/gophercloud/gophercloud/pull/3043) [v1] CI: remove Zed from testing coverage
+
+## v1.11.0 (2024-03-07)
+
+This version reverts the inclusion of Context in the v1 branch. This inclusion
+didn't add much value because no packages were using it; on the other hand, it
+introduced a bug when using the Context property of the Provider client.
+
+## v1.10.0 (2024-02-27) **RETRACTED**: see https://github.com/gophercloud/gophercloud/issues/2969
+
+* [GH-2893](https://github.com/gophercloud/gophercloud/pull/2893) [v1] authentication: Add WithContext functions
+* [GH-2894](https://github.com/gophercloud/gophercloud/pull/2894) [v1] pager: Add WithContext functions
+* [GH-2899](https://github.com/gophercloud/gophercloud/pull/2899) [v1] Authenticate with a clouds.yaml
+* [GH-2917](https://github.com/gophercloud/gophercloud/pull/2917) [v1] Add ParseOption type to made clouds.Parse() more usable for optional With* funcs
+* [GH-2924](https://github.com/gophercloud/gophercloud/pull/2924) [v1] build(deps): bump EmilienM/devstack-action from 0.11 to 0.14
+* [GH-2933](https://github.com/gophercloud/gophercloud/pull/2933) [v1]  Fix AllowReauth reauthentication
+* [GH-2950](https://github.com/gophercloud/gophercloud/pull/2950) [v1] compute: Use volumeID, not attachmentID for volume attachments
+
+## v1.9.0 (2024-02-02) **RETRACTED**: see https://github.com/gophercloud/gophercloud/issues/2969
 
 New features and improvements:
 
