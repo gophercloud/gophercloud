@@ -7,6 +7,25 @@
 DEVSTACK_PATH=${DEVSTACK_PATH:-/opt/stack/new/devstack}
 pushd $DEVSTACK_PATH
 source openrc admin admin
+
+if [[ "${USE_SYSTEM_SCOPE:-}" == "true" ]]; then
+    # use system-scoped tokens
+    echo export OS_SYSTEM_SCOPE=all >> openrc
+fi
+# TODO: This should only be set when using project-scoped tokens (and we should
+# unsetting things like OS_PROJECT_NAME and OS_PROJECT_DOMAIN_ID when not using
+# these) but our tests require both which means we need to export both. This
+# causes OSC to (correctly) fail since keystoneauth (which is handling
+# authentication for OSC and most other clients) can't tell if we want project-
+# or system-scoped tokens. As such, post running this script, the 'openrc' file
+# will no longer be usable with OSC or other clients.
+#
+# The long-term fix for this likely involves a mechanism to switch between
+# different sets of auth info on a test-by-test basis. Achieving this almost
+# certainly means switching our tests to use clouds.yaml with well-known cloud
+# names rather than openrc file currently used.
+echo export OS_DOMAIN_ID=default >> openrc
+
 openstack flavor create m1.acctest --id 99 --ram 512 --disk 10 --vcpu 1 --ephemeral 10
 openstack flavor create m1.resize --id 98 --ram 512 --disk 11 --vcpu 1 --ephemeral 10
 openstack keypair create magnum
@@ -28,12 +47,7 @@ echo export OS_EXTGW_ID="$_EXTGW_ID" >> openrc
 echo export OS_POOL_NAME="public" >> openrc
 echo export OS_FLAVOR_ID=99 >> openrc
 echo export OS_FLAVOR_ID_RESIZE=98 >> openrc
-echo export OS_DOMAIN_ID=default >> openrc
 echo export OS_MAGNUM_IMAGE_ID="$_MAGNUM_IMAGE_ID" >> openrc
 echo export OS_MAGNUM_KEYPAIR=magnum >> openrc
 source openrc admin admin
-if [[ "${OS_SYSTEM_SCOPE:-}" == "all" ]]; then
-    unset PROJECT_NAME
-    unset TENANT_NAME
-fi
 popd

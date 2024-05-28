@@ -15,24 +15,24 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "22.04"
             # NOTE(dtantsur): this forces running tests with a system scope
-            # token, which is required for certain actions. Use "all" on
-            # versions starting with 2024.1.
-            os_system_scope: "all"
+            # token, which is required for certain actions. Use it on versions
+            # starting with 2024.1.
+            use_system_scope: true
             additional_services: "openstack-cli-server"
           - name: "caracal"
             openstack_version: "stable/2024.1"
             ubuntu_version: "22.04"
-            os_system_scope: "all"
+            use_system_scope: true
             additional_services: ""
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
-            os_system_scope: ""
+            use_system_scope: false
             additional_services: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
-            os_system_scope: ""
+            use_system_scope: false
             additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Ironic and run baremetal acceptance tests
@@ -98,8 +98,8 @@ jobs:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
           PACKAGE: "./internal/acceptance/openstack/baremetal/..."
           OS_BRANCH: ${{ matrix.openstack_version }}
-          # TODO(dtantsur): default to "all" when no longer supporting versions before 2024.1
-          OS_SYSTEM_SCOPE: ${{ matrix.os_system_scope }}
+          # TODO(dtantsur): default to true when no longer supporting versions before 2024.1
+          USE_SYSTEM_SCOPE: ${{ matrix.use_system_scope }}
       - name: Generate logs on failure
         run: ./script/collectlogs
         if: failure()
