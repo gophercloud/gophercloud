@@ -25,6 +25,10 @@ lint:
 		golangci/golangci-lint:$(GOLANGCI_LINT_VERSION) golangci-lint run
 .PHONY: lint
 
+format:
+	gofmt -w -s $(shell pwd)
+.PHONY: format
+
 unit:
 	go test ./...
 .PHONY: unit
