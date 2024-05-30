@@ -12,24 +12,24 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	tokens_testing "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens/testing"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
 func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON string) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       testhelper.Endpoint(),
+		Endpoint:       th.Endpoint(),
 	}
 
-	testhelper.Mux.HandleFunc("/ec2tokens", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "Content-Type", "application/json")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestJSONRequest(t, r, requestJSON)
+	th.Mux.HandleFunc("/ec2tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, tokens_testing.TokenOutput)
@@ -40,8 +40,8 @@ func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON stri
 	}
 
 	actual, err := ec2tokens.Create(context.TODO(), &client, &options).Extract()
-	testhelper.AssertNoErr(t, err)
-	testhelper.CheckDeepEquals(t, expected, actual)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestCreateV2(t *testing.T) {
@@ -224,7 +224,7 @@ func TestEC2CredentialsBuildCanonicalQueryStringV2(t *testing.T) {
 		"Value":  "bar",
 	}
 	expected := "Action=foo&Value=bar"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalQueryStringV2(params))
+	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalQueryStringV2(params))
 }
 
 func TestEC2CredentialsBuildStringToSignV2(t *testing.T) {
@@ -238,7 +238,7 @@ func TestEC2CredentialsBuildStringToSignV2(t *testing.T) {
 		},
 	}
 	expected := []byte("GET\nlocalhost\n/\nAction=foo&Value=bar")
-	testhelper.CheckDeepEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts))
+	th.CheckDeepEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts))
 }
 
 func TestEC2CredentialsBuildCanonicalQueryStringV4(t *testing.T) {
@@ -247,8 +247,8 @@ func TestEC2CredentialsBuildCanonicalQueryStringV4(t *testing.T) {
 		"Value":  "bar",
 	}
 	expected := "Action=foo&Value=bar"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalQueryStringV4("foo", params))
-	testhelper.CheckEquals(t, "", ec2tokens.EC2CredentialsBuildCanonicalQueryStringV4("POST", params))
+	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalQueryStringV4("foo", params))
+	th.CheckEquals(t, "", ec2tokens.EC2CredentialsBuildCanonicalQueryStringV4("POST", params))
 }
 
 func TestEC2CredentialsBuildCanonicalHeadersV4(t *testing.T) {
@@ -258,12 +258,12 @@ func TestEC2CredentialsBuildCanonicalHeadersV4(t *testing.T) {
 	}
 	signedHeaders := "foo;baz"
 	expected := "foo:bar\nbaz:qux\n"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalHeadersV4(headers, signedHeaders))
+	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalHeadersV4(headers, signedHeaders))
 }
 
 func TestEC2CredentialsBuildSignatureKeyV4(t *testing.T) {
 	expected := "246626bd815b0a0cae4bedc3f4e124ca25e208cd75fd812d836aeae184de038a"
-	testhelper.CheckEquals(t, expected, hex.EncodeToString((ec2tokens.EC2CredentialsBuildSignatureKeyV4("foo", "bar", "baz", time.Time{}))))
+	th.CheckEquals(t, expected, hex.EncodeToString((ec2tokens.EC2CredentialsBuildSignatureKeyV4("foo", "bar", "baz", time.Time{}))))
 }
 
 func TestEC2CredentialsBuildSignatureV4(t *testing.T) {
@@ -284,5 +284,5 @@ func TestEC2CredentialsBuildSignatureV4(t *testing.T) {
 	stringToSign := ec2tokens.EC2CredentialsBuildStringToSignV4(opts, "host", "foo", date)
 	key := ec2tokens.EC2CredentialsBuildSignatureKeyV4("", "", "", date)
 
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(key, stringToSign))
+	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(key, stringToSign))
 }

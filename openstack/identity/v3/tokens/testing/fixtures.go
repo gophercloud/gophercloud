@@ -8,7 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 const testTokenID = "130f6c17-420e-4a0b-97b0-0c9cf2a05f30"
@@ -310,7 +310,7 @@ func getGetResult(t *testing.T) tokens.GetResult {
 		"X-Subject-Token": []string{testTokenID},
 	}
 	err := json.Unmarshal([]byte(TokenOutput), &result.Body)
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 	return result
 }
 
@@ -320,6 +320,6 @@ func getGetDomainResult(t *testing.T) tokens.GetResult {
 		"X-Subject-Token": []string{testTokenID},
 	}
 	err := json.Unmarshal([]byte(DomainToken), &result.Body)
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 	return result
 }
