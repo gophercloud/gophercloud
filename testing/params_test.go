@@ -2,7 +2,6 @@ package testing
 
 import (
 	"net/url"
-	"reflect"
 	"testing"
 	"time"
 
@@ -255,7 +254,7 @@ func TestBuildRequestBody(t *testing.T) {
 
 	for _, failCase := range failCases {
 		_, err := gophercloud.BuildRequestBody(failCase.opts, "auth")
-		th.AssertDeepEquals(t, reflect.TypeOf(failCase.expected), reflect.TypeOf(err))
+		th.AssertTypeEquals(t, failCase.expected, err)
 	}
 
 	createdAt := time.Date(2018, 1, 4, 10, 00, 12, 0, time.UTC)

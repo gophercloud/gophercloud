@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -199,6 +198,6 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 	}
 	for _, failCase := range failCases {
 		_, err := failCase.opts.ToTokenV3ScopeMap()
-		th.AssertDeepEquals(t, reflect.TypeOf(failCase.expected), reflect.TypeOf(err))
+		th.AssertTypeEquals(t, failCase.expected, err)
 	}
 }
