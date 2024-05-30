@@ -14,11 +14,12 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 	domainName := "Default"
 
 	var successCases = []struct {
+		name     string
 		opts     gophercloud.AuthOptions
 		expected map[string]any
 	}{
-		// System-scoped
 		{
+			"System-scoped",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					System: true,
@@ -30,8 +31,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Trust-scoped
 		{
+			"Trust-scoped",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					TrustID: "05144328-1f7d-46a9-a978-17eaad187077",
@@ -43,8 +44,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Project-scoped (ID)
 		{
+			"Project-scoped (ID)",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					ProjectID: projectID,
@@ -56,8 +57,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Project-scoped (name)
 		{
+			"Project-scoped (name)",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					ProjectName: projectName,
@@ -73,8 +74,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Domain-scoped (ID)
 		{
+			"Domain-scoped (ID)",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					DomainID: domainID,
@@ -86,8 +87,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Domain-scoped (name)
 		{
+			"Domain-scoped (name)",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					DomainName: domainName,
@@ -99,8 +100,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Empty with project fallback (ID)
 		{
+			"Empty with project fallback (ID)",
 			gophercloud.AuthOptions{
 				TenantID: projectID,
 				Scope:    nil,
@@ -111,8 +112,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Empty with project fallback (name)
 		{
+			"Empty with project fallback (name)",
 			gophercloud.AuthOptions{
 				TenantName: projectName,
 				DomainName: domainName,
@@ -127,8 +128,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 				},
 			},
 		},
-		// Empty without fallback
 		{
+			"Empty without fallback",
 			gophercloud.AuthOptions{
 				Scope: nil,
 			},
@@ -136,17 +137,20 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 		},
 	}
 	for _, successCase := range successCases {
-		actual, err := successCase.opts.ToTokenV3ScopeMap()
-		th.AssertNoErr(t, err)
-		th.AssertDeepEquals(t, successCase.expected, actual)
+		t.Run(successCase.name, func(t *testing.T) {
+			actual, err := successCase.opts.ToTokenV3ScopeMap()
+			th.AssertNoErr(t, err)
+			th.AssertDeepEquals(t, successCase.expected, actual)
+		})
 	}
 
 	var failCases = []struct {
+		name     string
 		opts     gophercloud.AuthOptions
 		expected error
 	}{
-		// Project-scoped with name but missing domain ID/name
 		{
+			"Project-scoped with name but missing domain ID/name",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					ProjectName: "admin",
@@ -154,8 +158,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 			},
 			gophercloud.ErrScopeDomainIDOrDomainName{},
 		},
-		// Project-scoped with both project name and project ID
 		{
+			"Project-scoped with both project name and project ID",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					ProjectName: "admin",
@@ -165,8 +169,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 			},
 			gophercloud.ErrScopeProjectIDOrProjectName{},
 		},
-		// Project-scoped with name and unnecessary domain ID
 		{
+			"Project-scoped with name and unnecessary domain ID",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					ProjectID: "685038cd-3c25-4faf-8f9b-78c18e503190",
@@ -175,8 +179,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 			},
 			gophercloud.ErrScopeProjectIDAlone{},
 		},
-		// Project-scoped with name and unnecessary domain name
 		{
+			"Project-scoped with name and unnecessary domain name",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					ProjectID:  "685038cd-3c25-4faf-8f9b-78c18e503190",
@@ -185,8 +189,8 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 			},
 			gophercloud.ErrScopeProjectIDAlone{},
 		},
-		// Domain-scoped with both domain name and domain ID
 		{
+			"Domain-scoped with both domain name and domain ID",
 			gophercloud.AuthOptions{
 				Scope: &gophercloud.AuthScope{
 					DomainID:   "e4b515b8-e453-49d8-9cce-4bec244fa84e",
@@ -197,7 +201,9 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 		},
 	}
 	for _, failCase := range failCases {
-		_, err := failCase.opts.ToTokenV3ScopeMap()
-		th.AssertTypeEquals(t, failCase.expected, err)
+		t.Run(failCase.name, func(t *testing.T) {
+			_, err := failCase.opts.ToTokenV3ScopeMap()
+			th.AssertTypeEquals(t, failCase.expected, err)
+		})
 	}
 }
