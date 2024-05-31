@@ -16,6 +16,8 @@ import (
 )
 
 func TestOAuth1CRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
