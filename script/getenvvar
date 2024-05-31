@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+"""
+Set environment variables required for the CI jobs by inspection of the
+clouds.yaml file. This is useful where you only have this file.
+
+To set variables:
+
+    $ eval $(./script/getenvvar)
+
+To unset them:
+
+    $ unset $(compgen -v | grep OS_)
+"""
+
+import argparse
+from pathlib import Path
+import sys
+
+import yaml
+
+p = Path('~/.config/openstack/clouds.yaml').expanduser()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    'cloud',
+    help="Cloud to export credentials for",
+)
+
+args = parser.parse_args()
+
+with p.open() as fh:
+    data = yaml.safe_load(fh)
+
+if args.cloud not in data.get('clouds', {}) or {}:
+    print(f'Could not find cloud {args.cloud} in {str(p)}', file=sys.stderr)
+    sys.exit(1)
+
+cloud = data['clouds'][args.cloud]
+
+if 'auth' not in cloud:
+    print(f'Missing auth section for cloud {cloud}', file=sys.stderr)
+    sys.exit(1)
+
+auth = cloud['auth']
+
+if 'username' not in auth or 'password' not in auth:
+    print('Only password authentication supported', file=sys.stderr)
+    sys.exit(1)
+
+# FIXME: This should work but does not, since the check for auth credentials
+# is just 'OS_USERNAME == admin'
+
+# user_id = auth.get('user_id')
+# project_id = auth.get('project_id')
+# if not user_id or not project_id:
+#     import openstack
+#     conn = openstack.connect(args.cloud)
+#     auth_ref = conn.config.get_auth().get_auth_ref(conn.session)
+#
+#     if not user_id:
+#         user_id = auth_ref.user_id
+#
+#     if not project_id:
+#         project_id = auth_ref.project_id
+#
+# result = f"""
+# unset OS_CLOUD
+# export OS_AUTH_URL={auth['auth_url']}
+# export OS_USERID={user_id}
+# export OS_PASSWORD={auth['password']}
+# export OS_PROJECT_ID={project_id}
+# export OS_REGION_NAME={cloud['region_name']}
+# """.strip()
+
+result = f"""
+unset OS_CLOUD
+export OS_AUTH_URL={auth['auth_url']}
+export OS_USERNAME={auth['username']}
+export OS_PASSWORD={auth['password']}
+export OS_PROJECT_NAME={auth['project_name']}
+export OS_DOMAIN_ID={auth['user_domain_id']}
+export OS_REGION_NAME={cloud['region_name']}
+"""
+
+print(result)
