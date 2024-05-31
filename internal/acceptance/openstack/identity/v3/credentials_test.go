@@ -24,10 +24,10 @@ func TestCredentialsCRUD(t *testing.T) {
 
 	authOptions := tokens.AuthOptions{
 		Username:   ao.Username,
+		UserID:     ao.UserID,
 		Password:   ao.Password,
 		DomainName: ao.DomainName,
 		DomainID:   ao.DomainID,
-		// We need a scope to get the token roles list
 		Scope: tokens.Scope{
 			ProjectID:   ao.TenantID,
 			ProjectName: ao.TenantName,
@@ -101,10 +101,10 @@ func TestCredentialsValidateS3(t *testing.T) {
 
 	authOptions := tokens.AuthOptions{
 		Username:   ao.Username,
+		UserID:     ao.UserID,
 		Password:   ao.Password,
 		DomainName: ao.DomainName,
 		DomainID:   ao.DomainID,
-		// We need a scope to get the token roles list
 		Scope: tokens.Scope{
 			ProjectID:   ao.TenantID,
 			ProjectName: ao.TenantName,
