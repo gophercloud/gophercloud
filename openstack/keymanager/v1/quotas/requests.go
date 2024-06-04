@@ -64,19 +64,19 @@ type UpdateOptsBuilder interface {
 // UpdateOpts represents options used to update the key manager Quotas.
 type UpdateOpts struct {
 	// Secrets represents the number of secrets. A "-1" value means no limit.
-	Secrets *int `json:"secrets"`
+	Secrets *int `json:"secrets,omitempty"`
 
 	// Orders represents the number of orders. A "-1" value means no limit.
-	Orders *int `json:"orders"`
+	Orders *int `json:"orders,omitempty"`
 
 	// Containers represents the number of containers. A "-1" value means no limit.
-	Containers *int `json:"containers"`
+	Containers *int `json:"containers,omitempty"`
 
 	// Consumers represents the number of consumers. A "-1" value means no limit.
-	Consumers *int `json:"consumers"`
+	Consumers *int `json:"consumers,omitempty"`
 
 	// CAS represents the number of cas. A "-1" value means no limit.
-	CAS *int `json:"cas"`
+	CAS *int `json:"cas,omitempty"`
 }
 
 // ToQuotaUpdateMap builds a request body from UpdateOpts.
