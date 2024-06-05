@@ -138,7 +138,7 @@ type CreateOpts struct {
 	//
 	// This is only possible to use when creating a fully populated
 	// Loadbalancer.
-	Monitor *monitors.CreateOpts `json:"healthmonitor,omitempty"`
+	Monitor monitors.CreateOptsBuilder `json:"healthmonitor,omitempty"`
 
 	// Tags is a set of resource tags. New in version 2.5
 	Tags []string `json:"tags,omitempty"`
@@ -476,7 +476,7 @@ func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]any, erro
 }
 
 // BatchUpdateMembers updates the pool members in batch
-func BatchUpdateMembers(ctx context.Context, c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
+func BatchUpdateMembers[T BatchUpdateMemberOptsBuilder](ctx context.Context, c *gophercloud.ServiceClient, poolID string, opts []T) (r UpdateMembersResult) {
 	members := []map[string]any{}
 	for _, opt := range opts {
 		b, err := opt.ToBatchMemberUpdateMap()

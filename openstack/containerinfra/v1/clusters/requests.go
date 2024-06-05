@@ -150,7 +150,7 @@ func (opts UpdateOpts) ToClustersUpdateMap() (map[string]any, error) {
 }
 
 // Update implements cluster updated request.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts []UpdateOptsBuilder) (r UpdateResult) {
+func Update[T UpdateOptsBuilder](ctx context.Context, client *gophercloud.ServiceClient, id string, opts []T) (r UpdateResult) {
 	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToClustersUpdateMap()
