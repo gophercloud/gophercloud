@@ -143,7 +143,7 @@ func (opts UpdateOpts) ToResourceUpdateMap() (map[string]any, error) {
 // one UpdateOpts can be passed at a time.
 // Use the Extract method of the returned UpdateResult to extract the
 // updated node group from the result.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []UpdateOptsBuilder) (r UpdateResult) {
+func Update[T UpdateOptsBuilder](ctx context.Context, client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []T) (r UpdateResult) {
 	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToResourceUpdateMap()

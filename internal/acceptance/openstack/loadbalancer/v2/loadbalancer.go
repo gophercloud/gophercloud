@@ -200,13 +200,15 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 				Description: poolDescription,
 				Protocol:    pools.ProtocolHTTP,
 				LBMethod:    pools.LBMethodLeastConnections,
-				Members: []pools.CreateMemberOpts{{
-					Name:         memberName,
-					ProtocolPort: memberPort,
-					Weight:       &memberWeight,
-					Address:      "1.2.3.4",
-					SubnetID:     subnetID,
-				}},
+				Members: []pools.CreateMemberOptsBuilder{
+					pools.CreateMemberOpts{
+						Name:         memberName,
+						ProtocolPort: memberPort,
+						Weight:       &memberWeight,
+						Address:      "1.2.3.4",
+						SubnetID:     subnetID,
+					},
+				},
 				Monitor: &monitors.CreateOpts{
 					Delay:          10,
 					Timeout:        5,

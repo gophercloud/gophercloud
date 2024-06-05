@@ -197,25 +197,47 @@ func TestCreateNodeGroupBadSizes(t *testing.T) {
 
 // TestUpdateNodeGroupSuccess updates a node group successfully.
 func TestUpdateNodeGroupSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	t.Run("with opts struct", func(t *testing.T) {
+		th.SetupHTTP()
+		defer th.TeardownHTTP()
 
-	handleUpdateNodeGroupSuccess(t)
+		handleUpdateNodeGroupSuccess(t)
 
-	sc := fake.ServiceClient()
-	sc.Endpoint = sc.Endpoint + "v1/"
+		sc := fake.ServiceClient()
+		sc.Endpoint = sc.Endpoint + "v1/"
 
-	updateOpts := []nodegroups.UpdateOptsBuilder{
-		nodegroups.UpdateOpts{
+		updateOpts := []nodegroups.UpdateOpts{{
 			Op:    nodegroups.ReplaceOp,
 			Path:  "/max_node_count",
 			Value: 3,
-		},
-	}
+		}}
 
-	ng, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
-	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, expectedUpdatedNodeGroup, *ng)
+		ng, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, expectedUpdatedNodeGroup, *ng)
+	})
+
+	t.Run("with opts interface", func(t *testing.T) {
+		th.SetupHTTP()
+		defer th.TeardownHTTP()
+
+		handleUpdateNodeGroupSuccess(t)
+
+		sc := fake.ServiceClient()
+		sc.Endpoint = sc.Endpoint + "v1/"
+
+		updateOpts := []nodegroups.UpdateOptsBuilder{
+			nodegroups.UpdateOpts{
+				Op:    nodegroups.ReplaceOp,
+				Path:  "/max_node_count",
+				Value: 3,
+			},
+		}
+
+		ng, err := nodegroups.Update(context.TODO(), sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, expectedUpdatedNodeGroup, *ng)
+	})
 }
 
 // TestUpdateNodeGroupInternal tries to update an internal

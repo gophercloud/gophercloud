@@ -132,6 +132,21 @@ The `objectstorage/v1/objects.Copy#Destination` field must be in the form
 `/container/object`. The function will reject a destination path if it doesn't
 start with a slash (`/`).
 
+### Load balancer pools
+
+`(pools.CreateOpts).Members` and `(pools.CreateOpts).Monitor` are now
+interfaces (`pools.CreateMemberOptsBuilder` and `monitors.CreateOptsBuilder`)
+rather than concrete types. When including `Members`, the `CreateOpts` literal
+must now include explicit types:
+
+```go
+opts := pools.CreateOpts{
+    Members: []pools.CreateMemberOptsBuilder{
+        pools.MemberOpts{Name: "lb-member-1"},
+    }
+}
+```
+
 ### Removed services and extensions
 
 Support for services that are no longer supported upstream has been removed.
