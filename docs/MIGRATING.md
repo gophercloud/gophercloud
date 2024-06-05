@@ -29,14 +29,16 @@ The minimum go version for Gophercloud v2 is now v1.22.
 
 Gophercloud is now context aware, for tracing and cancellation. All function
 signatures triggering an HTTP call now take a `context.Context` as their first
-argument. 
+argument.
 
 While you previously called:
+
 ```go
 myServer, err := servers.Get(client, server.ID)
 ```
 
 You now need to pass it a context, for example:
+
 ```go
 ctx := context.TODO()
 myServer, err := servers.Get(ctx, client, server.ID)
@@ -53,12 +55,273 @@ err = attachments.WaitForStatus(client, attachment.ID, "attached", 60)
 ```
 
 Must be changed to use a context with timeout. For example:
+
 ```go
 ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
 defer cancel()
 
 err = attachments.WaitForStatus(ctx, client, attachment.ID, "attached")
 ```
+
+### Removal of `extensions` modules
+
+A number of services previously supported API extensions but have long since
+switched to using microversions to allow API changes. This is now reflected
+in Gophercloud v2 and the contents of the follow modules have been largely
+migrated:
+
+- `openstack/blockstorage/extensions`
+- `openstack/compute/v2/extensions`
+- `openstack/identity/v2/extensions`
+- `openstack/identity/v3/extensions`
+
+The replacement for these depends on the type of the former extension. For
+extensions that added wholly new APIs, these APIs have been moved into the
+main module for the corresponding service. These are:
+
+- `openstack/blockstorage/extensions/availabilityzones`
+
+  Moved to `openstack/blockstorage/v2/availabilityzones` and
+  `openstack/blockstorage/v3/availabilityzones`.
+
+- `openstack/blockstorage/extensions/backups`
+
+  Moved to `openstack/blockstorage/v2/backups` and
+  `openstack/blockstorage/v3/backups`.
+
+- `openstack/blockstorage/extensions/limits`
+
+  Moved to `openstack/blockstorage/v2/limits` and
+  `openstack/blockstorage/v3/limits`.
+
+- `openstack/blockstorage/extensions/quotasets`
+
+  Moved to `openstack/blockstorage/v2/quotasets` and
+  `openstack/blockstorage/v3/quotasets`.
+
+- `openstack/blockstorage/extensions/schedulerstats`
+
+  Moved to `openstack/blockstorage/v2/schedulerstats` and
+  `openstack/blockstorage/v3/schedulerstats`.
+
+- `openstack/blockstorage/extensions/services`
+
+  Moved to `openstack/blockstorage/v2/services` and
+  `openstack/blockstorage/v3/services`.
+
+- `openstack/blockstorage/extensions/volumetransfers`
+
+  Moved to `openstack/blockstorage/v2/transfers` and
+  `openstack/blockstorage/v3/transfers`.
+
+- `openstack/compute/v2/extensions/aggregates`
+
+  Moved to `openstack/compute/v2/aggregates`.
+
+- `openstack/compute/v2/extensions/attachinterfaces`
+
+  Moved to `openstack/compute/v2/attachinterfaces`.
+
+- `openstack/compute/v2/extensions/diagnostics`
+
+  Moved to `openstack/compute/v2/diagnostics`.
+
+- `openstack/compute/v2/extensions/hypervisors`
+
+  Moved to `openstack/compute/v2/hypervisors`.
+
+- `openstack/compute/v2/extensions/instanceactions`
+
+  Moved to `openstack/compute/v2/instanceactions`.
+
+- `openstack/compute/v2/extensions/keypairs`
+
+  Moved to `openstack/compute/v2/keypairs`.
+
+- `openstack/compute/v2/extensions/quotasets`
+
+  Moved to `openstack/compute/v2/quotasets`.
+
+- `openstack/compute/v2/extensions/remoteconsoles`
+
+  Moved to `openstack/compute/v2/remoteconsoles`.
+
+- `openstack/compute/v2/extensions/secgroups`
+
+  Moved to `openstack/compute/v2/secgroups`.
+
+- `openstack/compute/v2/extensions/servergroups`
+
+  Moved to `openstack/compute/v2/servergroups`.
+
+- `openstack/compute/v2/extensions/services`
+
+  Moved to `openstack/compute/v2/services`.
+
+- `openstack/compute/v2/extensions/tags`
+
+  Moved to `openstack/compute/v2/tags`.
+
+- `openstack/compute/v2/extensions/usage`
+
+  Moved to `openstack/compute/v2/usage`.
+
+- `openstack/compute/v2/extensions/volumeattach`
+
+  Moved to `openstack/compute/v2/volumeattach`.
+
+- `openstack/identity/v2/extensions/admin/roles`
+
+  Moved to `openstack/identity/v2/roles`.
+
+- `openstack/identity/v3/extensions/ec2credentials`
+
+  Moved to `openstack/identity/v3/ec2credentials`.
+
+- `openstack/identity/v3/extensions/ec2tokens`
+
+  Moved to `openstack/identity/v3/ec2tokens`.
+
+- `openstack/identity/v3/extensions/federation`
+
+  Moved to `openstack/identity/v3/federation`
+
+- `openstack/identity/v3/extensions/oauth1`.
+
+  Moved to `openstack/identity/v3/oauth1`
+
+- `openstack/identity/v3/extensions/projectendpoints`
+
+  Moved to `openstack/identity/v3/projectendpoints`.
+
+For extensions that modified existing APIs, these modifications have been
+folded into the modified APIs. These are:
+
+- `openstack/blockstorage/extensions/schedulerhints`
+
+  `SchedulerHintOpts` has been renamed to `SchedulerHints` and moved to
+  `openstack/blockstorage/v2/volumes` and `openstack/blockstorage/v3/volumes`.
+  This is now a required argument of `volumes.Create` for both modules.
+
+- `openstack/blockstorage/extensions/volumeactions`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/blockstorage/v2/volumes` and `openstack/blockstorage/v3/volumes`.
+
+- `openstack/blockstorage/extensions/volumehost`
+
+  The `VolumeHostExt` struct has been removed and a `Host` field added to the
+  `Volume` struct in `openstack/blockstorage/v2/volumes` and
+  `openstack/blockstorage/v3/volumes`.
+
+- `openstack/blockstorage/extensions/volumetenants`
+
+  The `VolumeTenantExt` struct has been removed and a `TenantID` field added to
+  the `Volume` struct in `openstack/blockstorage/v2/volumes` and
+  `openstack/blockstorage/v3/volumes`.
+
+- `openstack/compute/v2/extensions/bootfromvolume`
+
+  The `CreateOptsExt` struct has been removed and a `BlockDevice` field added
+  to the `CreateOpts` struct in `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/diskconfig`
+
+  The `CreateOptsExt` struct has been removed and a `DiskConfig` field added to
+  the `CreateOpts` struct in `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/evacuate`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/extendedserverattributes`
+
+  The `ServerAttributesExt` struct has been removed and all fields added to the
+  `Server` struct in `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/extendedstatus`
+
+  The `ServerExtendedStatusExt` struct has been removed and all fields added to
+  the `Server` struct in `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/injectnetworkinfo`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/lockunlock`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/migrate`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/pauseunpause`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/rescueunrescue`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/resetnetwork`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/resetstate`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/schedulerhints`
+
+  `SchedulerHintOpts` has been moved to `openstack/compute/v2/servers` and
+  renamed to `SchedulerHints`. This is now a required argument of
+  `servers.Create`.
+
+- `openstack/compute/v2/extensions/serverusage`
+
+  The `serverusage` struct has been removed and all fields added to the
+  `Server` struct in `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/shelveunshelve`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/startstop`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+- `openstack/compute/v2/extensions/suspendresume`
+
+  All functions and supporting structs and interfaces have been moved to
+  `openstack/compute/v2/servers`.
+
+Finally, for extensions that added new APIs *and* modified existing APIs, the
+new APIs are moved into the main module of the corresponding service while the
+modifications are folded into the modified APIs. These are:
+
+- `openstack/compute/v2/extensions/availabilityzones`
+
+  The `ServerAvailabilityZoneExt` struct has been removed and a
+  `AvailabilityZone` field added to the `Server` struct in
+  `openstack/compute/v2/servers`. Everything else is moved moved to
+  `openstack/compute/v2/availabilityzones`.
+
+- `openstack/identity/v3/extensions/trusts`
+
+  The `AuthOptsExt` struct has been removed and a `TrustID` field added to the
+  `Scope` struct in `openstack/identity/v3/tokens`. Everything else is moved
+  moved to `openstack/identity/v3/trusts`.
 
 ### Type changes
 
@@ -68,7 +331,8 @@ rather than a slice of `BatchUpdateMemberOpts`.
 `blockstorage/v3/volumes/CreateOpts.Multiattach` is removed. Use a volume type
 with `multiattach` capability instead.
 
-The following structs are no longer comparable due to the addition of a non comparable field:
+The following structs are no longer comparable due to the addition of a non-comparable field:
+
 - `compute/v2/flavors/Flavor`
 - `loadbalancer/v2/l7policies/CreateRuleOpts`
 - `loadbalancer/v2/l7policies/UpdateOpts`
@@ -103,6 +367,7 @@ includes `BootInfoType`, `CPUType`, `LLDPTLVType`, `InterfaceType`,
 `NUMARAM`.
 
 Additionally, a few of these types were renamed in the process:
+
 - `ExtraHardwareDataType` became `ExtraDataType`
 - `ExtraHardwareData` became `ExtraDataItem`
 - `ExtraHardwareDataSection` became `ExtraHardwareDataSection`
@@ -138,6 +403,7 @@ Support for services that are no longer supported upstream has been removed.
 Users that still rely on theses old services should continue using Gophercloud v1.
 
 - Cinder (Blockstorage) v1
-- Neutron (Networking) LBaaS and LBaaS v2 extensions. They have been replaced by Octavia.
-- Neutron (Networking) FWaaS extension.
-- Poppy (CDNaaS).
+- Neutron (Networking) LBaaS and LBaaS v2 extensions
+- Neutron (Networking) FWaaS extension
+- Poppy (CDNaaS) service
+- Senlin (Clustering) service
