@@ -143,6 +143,7 @@ Support for services that are no longer supported upstream has been removed.
 Users that still rely on theses old services should continue using Gophercloud v1.
 
 - Cinder (Blockstorage) v1
-- Neutron (Networking) LBaaS and LBaaS v2 extensions. They have been replaced by Octavia.
-- Neutron (Networking) FWaaS extension.
-- Poppy (CDNaaS).
+- Neutron (Networking) LBaaS and LBaaS v2 extensions
+- Neutron (Networking) FWaaS extension
+- Poppy (CDNaaS) service
+- Senlin (Clustering) service
