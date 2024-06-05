@@ -29,14 +29,16 @@ The minimum go version for Gophercloud v2 is now v1.22.
 
 Gophercloud is now context aware, for tracing and cancellation. All function
 signatures triggering an HTTP call now take a `context.Context` as their first
-argument. 
+argument.
 
 While you previously called:
+
 ```go
 myServer, err := servers.Get(client, server.ID)
 ```
 
 You now need to pass it a context, for example:
+
 ```go
 ctx := context.TODO()
 myServer, err := servers.Get(ctx, client, server.ID)
@@ -53,6 +55,7 @@ err = attachments.WaitForStatus(client, attachment.ID, "attached", 60)
 ```
 
 Must be changed to use a context with timeout. For example:
+
 ```go
 ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
 defer cancel()
@@ -68,7 +71,8 @@ rather than a slice of `BatchUpdateMemberOpts`.
 `blockstorage/v3/volumes/CreateOpts.Multiattach` is removed. Use a volume type
 with `multiattach` capability instead.
 
-The following structs are no longer comparable due to the addition of a non comparable field:
+The following structs are no longer comparable due to the addition of a non-comparable field:
+
 - `compute/v2/flavors/Flavor`
 - `loadbalancer/v2/l7policies/CreateRuleOpts`
 - `loadbalancer/v2/l7policies/UpdateOpts`
@@ -103,6 +107,7 @@ includes `BootInfoType`, `CPUType`, `LLDPTLVType`, `InterfaceType`,
 `NUMARAM`.
 
 Additionally, a few of these types were renamed in the process:
+
 - `ExtraHardwareDataType` became `ExtraDataType`
 - `ExtraHardwareData` became `ExtraDataItem`
 - `ExtraHardwareDataSection` became `ExtraHardwareDataSection`
