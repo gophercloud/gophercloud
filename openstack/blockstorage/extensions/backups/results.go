@@ -67,6 +67,9 @@ type Backup struct {
 	// AvailabilityZone is the Availability Zone of the backup.
 	// This requires microversion 3.51 or later.
 	AvailabilityZone *string `json:"availability_zone"`
+
+	// Tenant is the ID of the project that owns the backup.
+	TenantID string `json:"project_id"`
 }
 
 // CreateResult contains the response body and error from a Create request.
