@@ -86,17 +86,33 @@ server, err := servers.Get(ctx, client, serverID).Extract()
 
 // before
 if _, ok := err.(gophercloud.ErrDefault404); ok {
-  handleServerNotFound()
+	handleServerNotFound()
 }
 
 // after
 if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
-  handleServerNotFound()
+	handleServerNotFound()
 }
 ```
 
 Furthermore, the error messages returned by ErrUnexpectedResponseCode now include less newlines than before.
 If you match on error messages using regexes, please double-check your regexes.
+
+#### With gophercloud/utils
+
+If using the `utils` library, note that the `IDFromName` functions return
+`ErrResourceNotFound` rather than `ErrUnexpectedResponseCode`. In that
+scenario, type assertions for a "not found" error are still necessary:
+
+```Go
+func IsNotFound(err error) bool {
+	if _, ok := err.(gophercloud.ErrResourceNotFound); ok { // <-- this
+		return true
+	}
+
+	return gophercloud.ResponseCodeIs(err, http.StatusNotFound)
+}
+```
 
 ### Removal of `extensions` modules
 
