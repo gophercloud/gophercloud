@@ -53,7 +53,8 @@ func TestList(t *testing.T) {
                 "external_fixed_ips": [
                     {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
                     {"ip_address": "198.51.100.33", "subnet_id": "1d699529-bdfd-43f8-bcaa-bff00c547af2"}
-                ]
+                ],
+                "qos_policy_id": "6601bae5-f15a-4687-8be9-ddec9a2f8a8b"
             },
             "name": "gateway",
             "admin_state_up": true,
@@ -103,6 +104,7 @@ func TestList(t *testing.T) {
 						{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
 						{IPAddress: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
 					},
+					QoSPolicyID: "6601bae5-f15a-4687-8be9-ddec9a2f8a8b",
 				},
 				AdminStateUp: true,
 				Distributed:  false,
@@ -141,7 +143,8 @@ func TestCreate(t *testing.T) {
          "network_id":"8ca37218-28ff-41cb-9b10-039601ea7e6b",
          "external_fixed_ips": [
              {"subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
-         ]
+         ],
+         "qos_policy_id": "6601bae5-f15a-4687-8be9-ddec9a2f8a8b"
 	  },
 	  "availability_zone_hints": ["zone1", "zone2"]
    }
@@ -160,7 +163,8 @@ func TestCreate(t *testing.T) {
             "enable_snat": false,
             "external_fixed_ips": [
                 {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
-            ]
+            ],
+            "qos_policy_id": "6601bae5-f15a-4687-8be9-ddec9a2f8a8b"
         },
         "name": "foo_router",
         "admin_state_up": false,
@@ -175,6 +179,7 @@ func TestCreate(t *testing.T) {
 
 	asu := false
 	enableSNAT := false
+	qosID := "6601bae5-f15a-4687-8be9-ddec9a2f8a8b"
 	efi := []routers.ExternalFixedIP{
 		{
 			SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def",
@@ -184,6 +189,7 @@ func TestCreate(t *testing.T) {
 		NetworkID:        "8ca37218-28ff-41cb-9b10-039601ea7e6b",
 		EnableSNAT:       &enableSNAT,
 		ExternalFixedIPs: efi,
+		QoSPolicyID:      qosID,
 	}
 	options := routers.CreateOpts{
 		Name:                  "foo_router",
@@ -224,7 +230,8 @@ func TestGet(t *testing.T) {
             "network_id": "85d76829-6415-48ff-9c63-5c5ca8c61ac6",
             "external_fixed_ips": [
                 {"ip_address": "198.51.100.33", "subnet_id": "1d699529-bdfd-43f8-bcaa-bff00c547af2"}
-            ]
+            ],
+            "qos_policy_id": "6601bae5-f15a-4687-8be9-ddec9a2f8a8b"
         },
         "routes": [
             {
@@ -252,6 +259,7 @@ func TestGet(t *testing.T) {
 		ExternalFixedIPs: []routers.ExternalFixedIP{
 			{IPAddress: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
 		},
+		QoSPolicyID: "6601bae5-f15a-4687-8be9-ddec9a2f8a8b",
 	})
 	th.AssertEquals(t, n.Name, "router1")
 	th.AssertEquals(t, n.AdminStateUp, true)
@@ -275,7 +283,8 @@ func TestUpdate(t *testing.T) {
     "router": {
 			"name": "new_name",
         "external_gateway_info": {
-            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b"
+            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+            "qos_policy_id": "01ba32e5-f15a-4687-8be9-ddec92a2f8a8"
 		},
         "routes": [
             {
@@ -298,7 +307,8 @@ func TestUpdate(t *testing.T) {
             "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
             "external_fixed_ips": [
                 {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
-            ]
+            ],
+            "qos_policy_id": "01ba32e5-f15a-4687-8be9-ddec92a2f8a8"
         },
         "name": "new_name",
         "admin_state_up": true,
@@ -316,7 +326,10 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	gwi := routers.GatewayInfo{NetworkID: "8ca37218-28ff-41cb-9b10-039601ea7e6b"}
+	gwi := routers.GatewayInfo{
+		NetworkID:   "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+		QoSPolicyID: "01ba32e5-f15a-4687-8be9-ddec92a2f8a8",
+	}
 	r := []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}
 	options := routers.UpdateOpts{Name: "new_name", GatewayInfo: &gwi, Routes: &r}
 
