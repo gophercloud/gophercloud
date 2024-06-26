@@ -21,6 +21,18 @@ import (
 )
 ```
 
+If using [gophercloud/utils](https://github.com/gophercloud/utils), you will
+also need to update those imports:
+
+```diff
+import (
+-	"github.com/gophercloud/gophercloud"
+-	serverutils "github.com/gophercloud/utils/openstack/compute/v2/servers"
++	"github.com/gophercloud/gophercloud/v2"
++	serverutils "github.com/gophercloud/utils/v2/openstack/compute/v2/servers"
+)
+```
+
 ### Go version
 
 The minimum go version for Gophercloud v2 is now v1.22.
