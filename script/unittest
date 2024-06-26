@@ -1,9 +1,21 @@
 #!/bin/bash
 #
-# Run the unit tests.
+# Run the unit tests with optional coverage enabled.
 
 set -euxo pipefail
 
+USE_COVERAGE=${USE_COVERAGE:-}
+
+args=""
+if [[ -n $USE_COVERAGE ]]; then
+    args="-covermode atomic -coverprofile cover.out -coverpkg $(go list)"
+fi
+
+# This is rather crude but we want to ensure we never run integration tests
+# as part of this script and users could have forgotten they'd set e.g.
+# '-tags=acceptance'
+unset GOFLAGS
+
 # Do extra rounds of testing to help identify reauth concurrency issues.
-# All other packages are tested in the `coverage` tests.
-go test -v -race -count=5 ./testing $@
+# shellcheck disable=SC2068,SC2086
+go test -v -race -count=5 $args ./... $@
