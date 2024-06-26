@@ -63,6 +63,29 @@ defer cancel()
 err = attachments.WaitForStatus(ctx, client, attachment.ID, "attached")
 ```
 
+### Error handling
+
+The error types for specific response codes (`ErrDefault400`, `ErrDefault401`, etc.) have been removed.
+All unexpected response codes will now return `ErrUnexpectedResponseCode` instead.
+For quickly checking whether a request resulted in a specific response code, use the new `ResponseCodeIs` function:
+
+```go
+server, err := servers.Get(ctx, client, serverID).Extract()
+
+// before
+if _, ok := err.(gophercloud.ErrDefault404); ok {
+  handleServerNotFound()
+}
+
+// after
+if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
+  handleServerNotFound()
+}
+```
+
+Furthermore, the error messages returned by ErrUnexpectedResponseCode now include less newlines than before.
+If you match on error messages using regexes, please double-check your regexes.
+
 ### Removal of `extensions` modules
 
 A number of services previously supported API extensions but have long since
