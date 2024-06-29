@@ -65,7 +65,7 @@ type UnassignOpts struct {
 
 // Assign is the operation responsible for assigning an inherited role
 // to a user/group on a project/domain.
-func Assign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
+func Assign(ctx context.Context, client gophercloud.Client, roleID string, opts AssignOpts) (r AssignmentResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -103,7 +103,7 @@ func Assign(ctx context.Context, client *gophercloud.ServiceClient, roleID strin
 
 // Validate is the operation responsible for validating an inherited role
 // of a user/group on a project/domain.
-func Validate(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts ValidateOpts) (r ValidateResult) {
+func Validate(ctx context.Context, client gophercloud.Client, roleID string, opts ValidateOpts) (r ValidateResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -141,7 +141,7 @@ func Validate(ctx context.Context, client *gophercloud.ServiceClient, roleID str
 
 // Unassign is the operation responsible for unassigning an inherited
 // role to a user/group on a project/domain.
-func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
+func Unassign(ctx context.Context, client gophercloud.Client, roleID string, opts UnassignOpts) (r UnassignmentResult) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {

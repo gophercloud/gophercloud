@@ -45,7 +45,7 @@ func (opts ListOpts) ToResourceProviderListQuery() (string, error) {
 }
 
 // List makes a request against the API to list resource providers.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := resourceProvidersListURL(client)
 
 	if opts != nil {
@@ -87,7 +87,7 @@ func (opts CreateOpts) ToResourceProviderCreateMap() (map[string]any, error) {
 }
 
 // Create makes a request against the API to create a resource provider
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToResourceProviderCreateMap()
 	if err != nil {
 		r.Err = err
@@ -102,14 +102,14 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete accepts a unique ID and deletes the resource provider associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, resourceProviderID string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, resourceProviderID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves a specific resource provider based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, resourceProviderID string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, resourceProviderID string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -138,7 +138,7 @@ func (opts UpdateOpts) ToResourceProviderUpdateMap() (map[string]any, error) {
 }
 
 // Update makes a request against the API to create a resource provider
-func Update(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, resourceProviderID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToResourceProviderUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -152,25 +152,25 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, resourceProv
 	return
 }
 
-func GetUsages(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetUsagesResult) {
+func GetUsages(ctx context.Context, client gophercloud.Client, resourceProviderID string) (r GetUsagesResult) {
 	resp, err := client.Get(ctx, getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func GetInventories(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetInventoriesResult) {
+func GetInventories(ctx context.Context, client gophercloud.Client, resourceProviderID string) (r GetInventoriesResult) {
 	resp, err := client.Get(ctx, getResourceProviderInventoriesURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func GetAllocations(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetAllocationsResult) {
+func GetAllocations(ctx context.Context, client gophercloud.Client, resourceProviderID string) (r GetAllocationsResult) {
 	resp, err := client.Get(ctx, getResourceProviderAllocationsURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func GetTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetTraitsResult) {
+func GetTraits(ctx context.Context, client gophercloud.Client, resourceProviderID string) (r GetTraitsResult) {
 	resp, err := client.Get(ctx, getResourceProviderTraitsURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

@@ -14,8 +14,8 @@ type EndpointOpts struct {
 	IronicInspectorUserPassword string
 }
 
-func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	sc := new(gophercloud.ServiceClient)
+func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (gophercloud.Client, error) {
+	sc := new(gophercloud.Client)
 	if eo.IronicInspectorEndpoint == "" {
 		return nil, fmt.Errorf("IronicInspectorEndpoint is required")
 	}
@@ -33,7 +33,7 @@ func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophe
 
 // NewBareMetalIntrospectionHTTPBasic creates a ServiceClient that may be used to access a
 // "http_basic" bare metal introspection service.
-func NewBareMetalIntrospectionHTTPBasic(eo EndpointOpts) (*gophercloud.ServiceClient, error) {
+func NewBareMetalIntrospectionHTTPBasic(eo EndpointOpts) (gophercloud.Client, error) {
 	sc, err := initClientOpts(&gophercloud.ProviderClient{}, eo)
 	if err != nil {
 		return nil, err

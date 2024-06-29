@@ -40,7 +40,7 @@ func (opts ListOpts) ToContainerListParams() (string, error) {
 // List is a function that retrieves containers associated with the account as
 // well as account metadata. It returns a pager which can be iterated with the
 // EachPage function.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	headers := map[string]string{"Accept": "application/json", "Content-Type": "application/json"}
 
 	url := listURL(c)
@@ -98,7 +98,7 @@ func (opts CreateOpts) ToContainerCreateMap() (map[string]string, error) {
 }
 
 // Create is a function that creates a new container.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, containerName string, opts CreateOptsBuilder) (r CreateResult) {
 	url, err := createURL(c, containerName)
 	if err != nil {
 		r.Err = err
@@ -124,7 +124,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, containerName str
 }
 
 // BulkDelete is a function that bulk deletes containers.
-func BulkDelete(ctx context.Context, c *gophercloud.ServiceClient, containers []string) (r BulkDeleteResult) {
+func BulkDelete(ctx context.Context, c gophercloud.Client, containers []string) (r BulkDeleteResult) {
 	var body bytes.Buffer
 
 	for i := range containers {
@@ -148,7 +148,7 @@ func BulkDelete(ctx context.Context, c *gophercloud.ServiceClient, containers []
 }
 
 // Delete is a function that deletes a container.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, containerName string) (r DeleteResult) {
 	url, err := deleteURL(c, containerName)
 	if err != nil {
 		r.Err = err
@@ -205,7 +205,7 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes a container's
 // metadata.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, containerName string, opts UpdateOptsBuilder) (r UpdateResult) {
 	url, err := updateURL(c, containerName)
 	if err != nil {
 		r.Err = err
@@ -250,7 +250,7 @@ func (opts GetOpts) ToContainerGetMap() (map[string]string, error) {
 // Get is a function that retrieves the metadata of a container. To extract just
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, containerName string, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, containerName string, opts GetOptsBuilder) (r GetResult) {
 	url, err := getURL(c, containerName)
 	if err != nil {
 		r.Err = err

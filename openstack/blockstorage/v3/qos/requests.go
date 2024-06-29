@@ -60,7 +60,7 @@ func (opts CreateOpts) ToQoSCreateMap() (map[string]any, error) {
 // Create will create a new QoS based on the values in CreateOpts. To extract
 // the QoS object from the response, call the Extract method on the
 // CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToQoSCreateMap()
 	if err != nil {
 		r.Err = err
@@ -93,7 +93,7 @@ func (opts DeleteOpts) ToQoSDeleteQuery() (string, error) {
 }
 
 // Delete will delete the existing QoS with the provided ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, id)
 	if opts != nil {
 		query, err := opts.ToQoSDeleteQuery()
@@ -132,7 +132,7 @@ func (opts ListOpts) ToQoSListQuery() (string, error) {
 // List instructs OpenStack to provide a list of QoS.
 // You may provide criteria by which List curtails its results for easier
 // processing.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToQoSListQuery()
@@ -148,7 +148,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // Get retrieves details of a single qos. Use Extract to convert its
 // result into a QoS.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -199,7 +199,7 @@ func (opts UpdateOpts) ToQoSUpdateMap() (map[string]any, error) {
 // Update will update an existing QoS based on the values in UpdateOpts.
 // To extract the QoS object from the response, call the Extract method
 // on the UpdateResult.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r updateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r updateResult) {
 	b, err := opts.ToQoSUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -228,7 +228,7 @@ func (opts DeleteKeysOpts) ToDeleteKeysCreateMap() (map[string]any, error) {
 }
 
 // DeleteKeys will delete the keys/specs from the specified QoS
-func DeleteKeys(ctx context.Context, client *gophercloud.ServiceClient, qosID string, opts DeleteKeysOptsBuilder) (r DeleteResult) {
+func DeleteKeys(ctx context.Context, client gophercloud.Client, qosID string, opts DeleteKeysOptsBuilder) (r DeleteResult) {
 	b, err := opts.ToDeleteKeysCreateMap()
 	if err != nil {
 		r.Err = err
@@ -260,7 +260,7 @@ func (opts AssociateOpts) ToQosAssociateQuery() (string, error) {
 }
 
 // Associate will associate a qos with a volute type
-func Associate(ctx context.Context, client *gophercloud.ServiceClient, qosID string, opts AssociateOptsBuilder) (r AssociateResult) {
+func Associate(ctx context.Context, client gophercloud.Client, qosID string, opts AssociateOptsBuilder) (r AssociateResult) {
 	url := associateURL(client, qosID)
 	query, err := opts.ToQosAssociateQuery()
 	if err != nil {
@@ -295,7 +295,7 @@ func (opts DisassociateOpts) ToQosDisassociateQuery() (string, error) {
 }
 
 // Disassociate will disassociate a qos from a volute type
-func Disassociate(ctx context.Context, client *gophercloud.ServiceClient, qosID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
+func Disassociate(ctx context.Context, client gophercloud.Client, qosID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
 	url := disassociateURL(client, qosID)
 	query, err := opts.ToQosDisassociateQuery()
 	if err != nil {
@@ -312,7 +312,7 @@ func Disassociate(ctx context.Context, client *gophercloud.ServiceClient, qosID 
 }
 
 // DisassociateAll will disassociate a qos from all volute types
-func DisassociateAll(ctx context.Context, client *gophercloud.ServiceClient, qosID string) (r DisassociateAllResult) {
+func DisassociateAll(ctx context.Context, client gophercloud.Client, qosID string) (r DisassociateAllResult) {
 	resp, err := client.Get(ctx, disassociateAllURL(client, qosID), nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
@@ -321,7 +321,7 @@ func DisassociateAll(ctx context.Context, client *gophercloud.ServiceClient, qos
 }
 
 // ListAssociations retrieves the associations of a QoS.
-func ListAssociations(client *gophercloud.ServiceClient, qosID string) pagination.Pager {
+func ListAssociations(client gophercloud.Client, qosID string) pagination.Pager {
 	url := listAssociationsURL(client, qosID)
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {

@@ -71,7 +71,7 @@ func (opts CreateOpts) ToRemoteConsoleCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new remote console on the specified server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, serverID string, opts CreateOptsBuilder) (r CreateResult) {
 	reqBody, err := opts.ToRemoteConsoleCreateMap()
 	if err != nil {
 		r.Err = err

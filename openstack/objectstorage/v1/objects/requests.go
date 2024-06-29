@@ -74,7 +74,7 @@ func (opts ListOpts) ToObjectListParams() (string, error) {
 // the details for the container. To extract only the object information or names,
 // pass the ListResult response to the ExtractInfo or ExtractNames function,
 // respectively.
-func List(c *gophercloud.ServiceClient, containerName string, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, containerName string, opts ListOptsBuilder) pagination.Pager {
 	url, err := listURL(c, containerName)
 	if err != nil {
 		return pagination.Pager{Err: err}
@@ -141,7 +141,7 @@ func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, er
 // Download is a function that retrieves the content and metadata for an object.
 // To extract just the content, call the DownloadResult method ExtractContent,
 // after checking DownloadResult's Err field.
-func Download(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts DownloadOptsBuilder) (r DownloadResult) {
+func Download(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts DownloadOptsBuilder) (r DownloadResult) {
 	url, err := downloadURL(c, containerName, objectName)
 	if err != nil {
 		r.Err = err
@@ -253,7 +253,7 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 
 // Create is a function that creates a new object or replaces an existing
 // object.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts CreateOptsBuilder) (r CreateResult) {
 	url, err := createURL(c, containerName, objectName)
 	if err != nil {
 		r.Err = err
@@ -330,7 +330,7 @@ func (opts CopyOpts) ToObjectCopyQuery() (string, error) {
 }
 
 // Copy is a function that copies one object to another.
-func Copy(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts CopyOptsBuilder) (r CopyResult) {
+func Copy(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts CopyOptsBuilder) (r CopyResult) {
 	h := make(map[string]string)
 	headers, err := opts.ToObjectCopyMap()
 	if err != nil {
@@ -402,7 +402,7 @@ func (opts DeleteOpts) ToObjectDeleteQuery() (string, error) {
 }
 
 // Delete is a function that deletes an object.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url, err := deleteURL(c, containerName, objectName)
 	if err != nil {
 		r.Err = err
@@ -452,7 +452,7 @@ func (opts GetOpts) ToObjectGetParams() (map[string]string, string, error) {
 // Get is a function that retrieves the metadata of an object. To extract just
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts GetOptsBuilder) (r GetResult) {
 	url, err := getURL(c, containerName, objectName)
 	if err != nil {
 		r.Err = err
@@ -516,7 +516,7 @@ func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 }
 
 // Update is a function that creates, updates, or deletes an object's metadata.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts UpdateOptsBuilder) (r UpdateResult) {
 	url, err := updateURL(c, containerName, objectName)
 	if err != nil {
 		r.Err = err
@@ -591,7 +591,7 @@ type CreateTempURLOpts struct {
 // CreateTempURL is a function for creating a temporary URL for an object. It
 // allows users to have "GET" or "POST" access to a particular tenant's object
 // for a limited amount of time.
-func CreateTempURL(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts CreateTempURLOpts) (string, error) {
+func CreateTempURL(ctx context.Context, c gophercloud.Client, containerName, objectName string, opts CreateTempURLOpts) (string, error) {
 	url, err := getURL(c, containerName, objectName)
 	if err != nil {
 		return "", err
@@ -662,7 +662,7 @@ func CreateTempURL(ctx context.Context, c *gophercloud.ServiceClient, containerN
 // See:
 // * https://github.com/openstack/swift/blob/6d3d4197151f44bf28b51257c1a4c5d33411dcae/etc/proxy-server.conf-sample#L1029-L1034
 // * https://github.com/openstack/swift/blob/e8cecf7fcc1630ee83b08f9a73e1e59c07f8d372/swift/common/middleware/bulk.py#L309
-func BulkDelete(ctx context.Context, c *gophercloud.ServiceClient, container string, objects []string) (r BulkDeleteResult) {
+func BulkDelete(ctx context.Context, c gophercloud.Client, container string, objects []string) (r BulkDeleteResult) {
 	if err := v1.CheckContainerName(container); err != nil {
 		r.Err = err
 		return

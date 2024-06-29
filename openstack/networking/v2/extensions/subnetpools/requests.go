@@ -56,7 +56,7 @@ func (opts ListOpts) ToSubnetPoolListQuery() (string, error) {
 //
 // Default policy settings return only the subnetpools owned by the project
 // of the user submitting the request, unless the user has the administrative role.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToSubnetPoolListQuery()
@@ -71,7 +71,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific subnetpool based on its ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -138,7 +138,7 @@ func (opts CreateOpts) ToSubnetPoolCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new subnetpool on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSubnetPoolCreateMap()
 	if err != nil {
 		r.Err = err
@@ -210,7 +210,7 @@ func (opts UpdateOpts) ToSubnetPoolUpdateMap() (map[string]any, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing subnetpool using the
 // values provided.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, subnetPoolID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSubnetPoolUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -224,7 +224,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID stri
 }
 
 // Delete accepts a unique ID and deletes the subnetpool associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

@@ -31,7 +31,7 @@ type ListOpts struct {
 // List returns a Pager which allows you to iterate over a collection of
 // security groups. It accepts a ListOpts struct, which allows you to filter
 // and sort the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
+func List(c gophercloud.Client, opts ListOpts) pagination.Pager {
 	q, err := gophercloud.BuildQueryString(&opts)
 	if err != nil {
 		return pagination.Pager{Err: err}
@@ -72,7 +72,7 @@ func (opts CreateOpts) ToSecGroupCreateMap() (map[string]any, error) {
 
 // Create is an operation which provisions a new security group with default
 // security group rules for the IPv4 and IPv6 ether types.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSecGroupCreateMap()
 	if err != nil {
 		r.Err = err
@@ -105,7 +105,7 @@ func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]any, error) {
 }
 
 // Update is an operation which updates an existing security group.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSecGroupUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -120,7 +120,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 }
 
 // Get retrieves a particular security group based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -128,7 +128,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 
 // Delete will permanently delete a particular security group based on its
 // unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

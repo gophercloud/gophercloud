@@ -41,7 +41,7 @@ func (opts CreateOpts) ToSnapshotCreateMap() (map[string]any, error) {
 // Create will create a new Snapshot based on the values in CreateOpts. To extract
 // the Snapshot object from the response, call the Extract method on the
 // CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSnapshotCreateMap()
 	if err != nil {
 		r.Err = err
@@ -98,7 +98,7 @@ func (opts ListOpts) ToSnapshotListQuery() (string, error) {
 }
 
 // ListDetail returns []Snapshot optionally limited by the conditions provided in ListOpts.
-func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func ListDetail(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToSnapshotListQuery()
@@ -116,14 +116,14 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 // Delete will delete an existing Snapshot with the given UUID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get will get a single snapshot with given UUID
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -153,7 +153,7 @@ func (opts UpdateOpts) ToSnapshotUpdateMap() (map[string]any, error) {
 
 // Update will update the Snapshot with provided information. To extract the updated
 // Snapshot from the response, call the Extract method on the UpdateResult.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSnapshotUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -190,7 +190,7 @@ func (opts ResetStatusOpts) ToSnapshotResetStatusMap() (map[string]any, error) {
 
 // ResetStatus will reset the existing snapshot status. ResetStatusResult contains only the error.
 // To extract it, call the ExtractErr method on the ResetStatusResult.
-func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+func ResetStatus(ctx context.Context, client gophercloud.Client, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
 	b, err := opts.ToSnapshotResetStatusMap()
 	if err != nil {
 		r.Err = err
@@ -206,7 +206,7 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 
 // ForceDelete will delete the existing snapshot in any state. ForceDeleteResult contains only the error.
 // To extract it, call the ExtractErr method on the ForceDeleteResult.
-func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+func ForceDelete(ctx context.Context, client gophercloud.Client, id string) (r ForceDeleteResult) {
 	b := map[string]any{
 		"force_delete": nil,
 	}

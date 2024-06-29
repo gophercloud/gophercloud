@@ -11,7 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func getClient(microVersion string) *gophercloud.ServiceClient {
+func getClient(microVersion string) gophercloud.Client {
 	c := client.ServiceClient()
 	c.Type = "sharev2"
 	c.Microversion = microVersion

@@ -7,21 +7,21 @@ import (
 )
 
 // Get returns public data about a previously created QuotaSet.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, tenantID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, tenantID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, tenantID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetDetail returns detailed public data about a previously created QuotaSet.
-func GetDetail(ctx context.Context, client *gophercloud.ServiceClient, tenantID string) (r GetDetailResult) {
+func GetDetail(ctx context.Context, client gophercloud.Client, tenantID string) (r GetDetailResult) {
 	resp, err := client.Get(ctx, getDetailURL(client, tenantID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Updates the quotas for the given tenantID and returns the new QuotaSet.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, tenantID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, tenantID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	reqBody, err := opts.ToComputeQuotaUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -34,7 +34,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, tenantID str
 }
 
 // Resets the quotas for the given tenant to their default values.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, tenantID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, tenantID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, tenantID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

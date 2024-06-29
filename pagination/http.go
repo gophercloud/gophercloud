@@ -54,7 +54,7 @@ func PageResultFromParsed(resp *http.Response, body any) PageResult {
 }
 
 // Request performs an HTTP request and extracts the http.Response from the result.
-func Request(ctx context.Context, client *gophercloud.ServiceClient, headers map[string]string, url string) (*http.Response, error) {
+func Request(ctx context.Context, client gophercloud.Client, headers map[string]string, url string) (*http.Response, error) {
 	return client.Get(ctx, url, nil, &gophercloud.RequestOpts{
 		MoreHeaders:      headers,
 		OkCodes:          []int{200, 204, 300},

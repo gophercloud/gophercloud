@@ -71,7 +71,7 @@ func (opts ListOpts) ToTaskListQuery() (string, error) {
 }
 
 // List returns a Pager which allows you to iterate over a collection of the tasks.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToTaskListQuery()
@@ -91,7 +91,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific Image service task based on its ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, taskID string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, taskID string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, taskID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -118,7 +118,7 @@ func (opts CreateOpts) ToTaskCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new Image service task on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTaskCreateMap()
 	if err != nil {
 		r.Err = err

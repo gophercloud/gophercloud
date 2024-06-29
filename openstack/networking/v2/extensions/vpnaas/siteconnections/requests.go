@@ -121,7 +121,7 @@ func (opts CreateOpts) ToConnectionCreateMap() (map[string]any, error) {
 
 // Create accepts a CreateOpts struct and uses the values to create a new
 // IPSec site connection.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToConnectionCreateMap()
 	if err != nil {
 		r.Err = err
@@ -134,14 +134,14 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 
 // Delete will permanently delete a particular IPSec site connection based on its
 // unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves a particular IPSec site connection based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -184,7 +184,7 @@ func (opts ListOpts) ToConnectionListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // IPSec site connections. It accepts a ListOpts struct, which allows you to filter
 // and sort the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToConnectionListQuery()
@@ -234,7 +234,7 @@ func (opts UpdateOpts) ToConnectionUpdateMap() (map[string]any, error) {
 }
 
 // Update allows IPSec site connections to be updated.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToConnectionUpdateMap()
 	if err != nil {
 		r.Err = err

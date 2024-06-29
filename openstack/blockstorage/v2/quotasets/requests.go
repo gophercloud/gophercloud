@@ -8,21 +8,21 @@ import (
 )
 
 // Get returns public data about a previously created QuotaSet.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, projectID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, projectID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetDefaults returns public data about the project's default block storage quotas.
-func GetDefaults(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetResult) {
+func GetDefaults(ctx context.Context, client gophercloud.Client, projectID string) (r GetResult) {
 	resp, err := client.Get(ctx, getDefaultsURL(client, projectID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetUsage returns detailed public data about a previously created QuotaSet.
-func GetUsage(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetUsageResult) {
+func GetUsage(ctx context.Context, client gophercloud.Client, projectID string) (r GetUsageResult) {
 	u := fmt.Sprintf("%s?usage=true", getURL(client, projectID))
 	resp, err := client.Get(ctx, u, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -30,7 +30,7 @@ func GetUsage(ctx context.Context, client *gophercloud.ServiceClient, projectID 
 }
 
 // Updates the quotas for the given projectID and returns the new QuotaSet.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToBlockStorageQuotaUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -108,7 +108,7 @@ type UpdateOpts struct {
 }
 
 // Resets the quotas for the given tenant to their default values.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, projectID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, projectID), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

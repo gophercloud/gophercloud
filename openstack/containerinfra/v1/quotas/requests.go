@@ -24,7 +24,7 @@ func (opts CreateOpts) ToQuotaCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new quota.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToQuotaCreateMap()
 	if err != nil {
 		r.Err = err

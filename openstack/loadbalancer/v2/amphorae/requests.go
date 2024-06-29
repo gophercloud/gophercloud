@@ -40,7 +40,7 @@ func (opts ListOpts) ToAmphoraListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // amphorae. It accepts a ListOpts struct, which allows you to filter
 // and sort the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToAmphoraListQuery()
@@ -55,14 +55,14 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a particular amphora based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Failover performs a failover of an amphora.
-func Failover(ctx context.Context, c *gophercloud.ServiceClient, id string) (r FailoverResult) {
+func Failover(ctx context.Context, c gophercloud.Client, id string) (r FailoverResult) {
 	resp, err := c.Put(ctx, failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})

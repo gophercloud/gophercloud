@@ -72,7 +72,7 @@ func (opts ListOpts) ToProjectListQuery() (string, error) {
 }
 
 // List enumerates the Projects to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToProjectListQuery()
@@ -87,7 +87,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // ListAvailable enumerates the Projects which are available to a specific user.
-func ListAvailable(client *gophercloud.ServiceClient) pagination.Pager {
+func ListAvailable(client gophercloud.Client) pagination.Pager {
 	url := listAvailableURL(client)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return ProjectPage{pagination.LinkedPageBase{PageResult: r}}
@@ -95,7 +95,7 @@ func ListAvailable(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieves details on a single project, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -157,7 +157,7 @@ func (opts CreateOpts) ToProjectCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new Project.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToProjectCreateMap()
 	if err != nil {
 		r.Err = err
@@ -169,7 +169,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete deletes a project.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, projectID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, projectID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -231,7 +231,7 @@ func (opts UpdateOpts) ToProjectUpdateMap() (map[string]any, error) {
 }
 
 // Update modifies the attributes of a project.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToProjectUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -245,7 +245,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // CheckTags lists tags for a project.
-func ListTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r ListTagsResult) {
+func ListTags(ctx context.Context, client gophercloud.Client, projectID string) (r ListTagsResult) {
 	resp, err := client.Get(ctx, listTagsURL(client, projectID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -276,7 +276,7 @@ func (opts ModifyTagsOpts) ToModifyTagsCreateMap() (map[string]any, error) {
 }
 
 // ModifyTags deletes all tags of a project and adds new ones.
-func ModifyTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string, opts ModifyTagsOpts) (r ModifyTagsResult) {
+func ModifyTags(ctx context.Context, client gophercloud.Client, projectID string, opts ModifyTagsOpts) (r ModifyTagsResult) {
 
 	b, err := opts.ToModifyTagsCreateMap()
 	if err != nil {
@@ -291,7 +291,7 @@ func ModifyTags(ctx context.Context, client *gophercloud.ServiceClient, projectI
 }
 
 // DeleteTag deletes a tag from a project.
-func DeleteTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteTagsResult) {
+func DeleteTags(ctx context.Context, client gophercloud.Client, projectID string) (r DeleteTagsResult) {
 	resp, err := client.Delete(ctx, deleteTagsURL(client, projectID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})

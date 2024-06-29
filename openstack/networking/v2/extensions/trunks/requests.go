@@ -32,7 +32,7 @@ func (opts CreateOpts) ToTrunkCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "trunk")
 }
 
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	body, err := opts.ToTrunkCreateMap()
 	if err != nil {
 		r.Err = err
@@ -45,7 +45,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Delete accepts a unique ID and deletes the trunk associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -93,7 +93,7 @@ func (opts ListOpts) ToTrunkListQuery() (string, error) {
 // Default policy settings return only those trunks that are owned by the tenant
 // who submits the request, unless the request is submitted by a user with
 // administrative rights.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToTrunkListQuery()
@@ -108,7 +108,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific trunk based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -128,7 +128,7 @@ func (opts UpdateOpts) ToTrunkUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "trunk")
 }
 
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	body, err := opts.ToTrunkUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -141,7 +141,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 	return
 }
 
-func GetSubports(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetSubportsResult) {
+func GetSubports(ctx context.Context, c gophercloud.Client, id string) (r GetSubportsResult) {
 	resp, err := c.Get(ctx, getSubportsURL(c, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -161,7 +161,7 @@ func (opts AddSubportsOpts) ToTrunkAddSubportsMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func AddSubports(ctx context.Context, c *gophercloud.ServiceClient, id string, opts AddSubportsOptsBuilder) (r UpdateSubportsResult) {
+func AddSubports(ctx context.Context, c gophercloud.Client, id string, opts AddSubportsOptsBuilder) (r UpdateSubportsResult) {
 	body, err := opts.ToTrunkAddSubportsMap()
 	if err != nil {
 		r.Err = err
@@ -190,7 +190,7 @@ func (opts RemoveSubportsOpts) ToTrunkRemoveSubportsMap() (map[string]any, error
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func RemoveSubports(ctx context.Context, c *gophercloud.ServiceClient, id string, opts RemoveSubportsOptsBuilder) (r UpdateSubportsResult) {
+func RemoveSubports(ctx context.Context, c gophercloud.Client, id string, opts RemoveSubportsOptsBuilder) (r UpdateSubportsResult) {
 	body, err := opts.ToTrunkRemoveSubportsMap()
 	if err != nil {
 		r.Err = err

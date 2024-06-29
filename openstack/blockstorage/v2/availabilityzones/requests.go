@@ -6,7 +6,7 @@ import (
 )
 
 // List will return the existing availability zones.
-func List(client *gophercloud.ServiceClient) pagination.Pager {
+func List(client gophercloud.Client) pagination.Pager {
 	return pagination.NewPager(client, listURL(client), func(r pagination.PageResult) pagination.Page {
 		return AvailabilityZonePage{pagination.SinglePageBase(r)}
 	})

@@ -7,13 +7,13 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
-func getURL(c *gophercloud.ServiceClient, version string) string {
+func getURL(c gophercloud.Client, version string) string {
 	baseEndpoint, _ := utils.BaseEndpoint(c.Endpoint)
 	endpoint := strings.TrimRight(baseEndpoint, "/") + "/" + strings.TrimRight(version, "/") + "/"
 	return endpoint
 }
 
-func listURL(c *gophercloud.ServiceClient) string {
+func listURL(c gophercloud.Client) string {
 	baseEndpoint, _ := utils.BaseEndpoint(c.Endpoint)
 	endpoint := strings.TrimRight(baseEndpoint, "/") + "/"
 	return endpoint

@@ -7,7 +7,7 @@ import (
 )
 
 // Get returns load balancer Quotas for a project.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, projectID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, projectID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -50,7 +50,7 @@ func (opts UpdateOpts) ToQuotaUpdateMap() (map[string]any, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing load balancer Quotas using the
 // values provided.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, projectID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToQuotaUpdateMap()
 	if err != nil {
 		r.Err = err

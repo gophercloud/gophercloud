@@ -6,7 +6,7 @@ import (
 )
 
 // List lists all the Cinder API versions available to end-users.
-func List(c *gophercloud.ServiceClient) pagination.Pager {
+func List(c gophercloud.Client) pagination.Pager {
 	return pagination.NewPager(c, listURL(c), func(r pagination.PageResult) pagination.Page {
 		return APIVersionPage{pagination.SinglePageBase(r)}
 	})

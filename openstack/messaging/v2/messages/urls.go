@@ -11,27 +11,27 @@ const (
 	apiName    = "queues"
 )
 
-func createURL(client *gophercloud.ServiceClient, queueName string) string {
+func createURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "messages")
 }
 
-func listURL(client *gophercloud.ServiceClient, queueName string) string {
+func listURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "messages")
 }
 
-func getURL(client *gophercloud.ServiceClient, queueName string) string {
+func getURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "messages")
 }
 
-func deleteURL(client *gophercloud.ServiceClient, queueName string) string {
+func deleteURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "messages")
 }
 
-func DeleteMessageURL(client *gophercloud.ServiceClient, queueName string, messageID string) string {
+func DeleteMessageURL(client gophercloud.Client, queueName string, messageID string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "messages", messageID)
 }
 
-func messageURL(client *gophercloud.ServiceClient, queueName string, messageID string) string {
+func messageURL(client gophercloud.Client, queueName string, messageID string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "messages", messageID)
 }
 

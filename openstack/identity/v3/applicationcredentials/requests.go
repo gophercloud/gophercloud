@@ -27,7 +27,7 @@ func (opts ListOpts) ToApplicationCredentialListQuery() (string, error) {
 }
 
 // List enumerates the ApplicationCredentials to which the current token has access.
-func List(client *gophercloud.ServiceClient, userID string, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, userID string, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client, userID)
 	if opts != nil {
 		query, err := opts.ToApplicationCredentialListQuery()
@@ -42,7 +42,7 @@ func List(client *gophercloud.ServiceClient, userID string, opts ListOptsBuilder
 }
 
 // Get retrieves details on a single user, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, userID string, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, userID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -94,7 +94,7 @@ func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]any, error
 }
 
 // Create creates a new ApplicationCredential.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, userID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, userID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToApplicationCredentialCreateMap()
 	if err != nil {
 		r.Err = err
@@ -108,14 +108,14 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, userID strin
 }
 
 // Delete deletes an application credential.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, userID string, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, userID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListAccessRules enumerates the AccessRules to which the current user has access.
-func ListAccessRules(client *gophercloud.ServiceClient, userID string) pagination.Pager {
+func ListAccessRules(client gophercloud.Client, userID string) pagination.Pager {
 	url := listAccessRulesURL(client, userID)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return AccessRulePage{pagination.LinkedPageBase{PageResult: r}}
@@ -123,14 +123,14 @@ func ListAccessRules(client *gophercloud.ServiceClient, userID string) paginatio
 }
 
 // GetAccessRule retrieves details on a single access rule by ID.
-func GetAccessRule(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetAccessRuleResult) {
+func GetAccessRule(ctx context.Context, client gophercloud.Client, userID string, id string) (r GetAccessRuleResult) {
 	resp, err := client.Get(ctx, getAccessRuleURL(client, userID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // DeleteAccessRule deletes an access rule.
-func DeleteAccessRule(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
+func DeleteAccessRule(ctx context.Context, client gophercloud.Client, userID string, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteAccessRuleURL(client, userID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

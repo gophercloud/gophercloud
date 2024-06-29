@@ -99,7 +99,7 @@ func (opts CreateOpts) ToL7PolicyCreateMap() (map[string]any, error) {
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new l7policy.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToL7PolicyCreateMap()
 	if err != nil {
 		r.Err = err
@@ -147,7 +147,7 @@ func (opts ListOpts) ToL7PolicyListQuery() (string, error) {
 //
 // Default policy settings return only those l7policies that are owned by the
 // project who submits the request, unless an admin user submits the request.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToL7PolicyListQuery()
@@ -162,14 +162,14 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a particular l7policy based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete will permanently delete a particular l7policy based on its unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -250,7 +250,7 @@ func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]any, error) {
 }
 
 // Update allows l7policy to be updated.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToL7PolicyUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -300,7 +300,7 @@ func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]any, error) {
 }
 
 // CreateRule will create and associate a Rule with a particular L7Policy.
-func CreateRule(ctx context.Context, c *gophercloud.ServiceClient, policyID string, opts CreateRuleOpts) (r CreateRuleResult) {
+func CreateRule(ctx context.Context, c gophercloud.Client, policyID string, opts CreateRuleOpts) (r CreateRuleResult) {
 	b, err := opts.ToRuleCreateMap()
 	if err != nil {
 		r.Err = err
@@ -346,7 +346,7 @@ func (opts ListRulesOpts) ToRulesListQuery() (string, error) {
 //
 // Default policy settings return only those rules that are owned by the
 // project who submits the request, unless an admin user submits the request.
-func ListRules(c *gophercloud.ServiceClient, policyID string, opts ListRulesOptsBuilder) pagination.Pager {
+func ListRules(c gophercloud.Client, policyID string, opts ListRulesOptsBuilder) pagination.Pager {
 	url := ruleRootURL(c, policyID)
 	if opts != nil {
 		query, err := opts.ToRulesListQuery()
@@ -361,14 +361,14 @@ func ListRules(c *gophercloud.ServiceClient, policyID string, opts ListRulesOpts
 }
 
 // GetRule retrieves a particular L7Policy Rule based on its unique ID.
-func GetRule(ctx context.Context, c *gophercloud.ServiceClient, policyID string, ruleID string) (r GetRuleResult) {
+func GetRule(ctx context.Context, c gophercloud.Client, policyID string, ruleID string) (r GetRuleResult) {
 	resp, err := c.Get(ctx, ruleResourceURL(c, policyID, ruleID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // DeleteRule will remove a Rule from a particular L7Policy.
-func DeleteRule(ctx context.Context, c *gophercloud.ServiceClient, policyID string, ruleID string) (r DeleteRuleResult) {
+func DeleteRule(ctx context.Context, c gophercloud.Client, policyID string, ruleID string) (r DeleteRuleResult) {
 	resp, err := c.Delete(ctx, ruleResourceURL(c, policyID, ruleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -421,7 +421,7 @@ func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]any, error) {
 }
 
 // UpdateRule allows Rule to be updated.
-func UpdateRule(ctx context.Context, c *gophercloud.ServiceClient, policyID string, ruleID string, opts UpdateRuleOptsBuilder) (r UpdateRuleResult) {
+func UpdateRule(ctx context.Context, c gophercloud.Client, policyID string, ruleID string, opts UpdateRuleOptsBuilder) (r UpdateRuleResult) {
 	b, err := opts.ToRuleUpdateMap()
 	if err != nil {
 		r.Err = err

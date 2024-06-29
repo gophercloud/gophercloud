@@ -8,7 +8,7 @@ import (
 )
 
 // Upload uploads an image file.
-func Upload(ctx context.Context, client *gophercloud.ServiceClient, id string, data io.Reader) (r UploadResult) {
+func Upload(ctx context.Context, client gophercloud.Client, id string, data io.Reader) (r UploadResult) {
 	resp, err := client.Put(ctx, uploadURL(client, id), data, nil, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{"Content-Type": "application/octet-stream"},
 		OkCodes:     []int{204},
@@ -20,7 +20,7 @@ func Upload(ctx context.Context, client *gophercloud.ServiceClient, id string, d
 // Stage performs PUT call on the existing image object in the Image service with
 // the provided file.
 // Existing image object must be in the "queued" status.
-func Stage(ctx context.Context, client *gophercloud.ServiceClient, id string, data io.Reader) (r StageResult) {
+func Stage(ctx context.Context, client gophercloud.Client, id string, data io.Reader) (r StageResult) {
 	resp, err := client.Put(ctx, stageURL(client, id), data, nil, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{"Content-Type": "application/octet-stream"},
 		OkCodes:     []int{204},
@@ -30,7 +30,7 @@ func Stage(ctx context.Context, client *gophercloud.ServiceClient, id string, da
 }
 
 // Download retrieves an image.
-func Download(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DownloadResult) {
+func Download(ctx context.Context, client gophercloud.Client, id string) (r DownloadResult) {
 	resp, err := client.Get(ctx, downloadURL(client, id), nil, &gophercloud.RequestOpts{
 		KeepResponseBody: true,
 	})

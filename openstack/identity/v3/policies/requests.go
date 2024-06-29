@@ -50,7 +50,7 @@ func (opts ListOpts) ToPolicyListQuery() (string, error) {
 }
 
 // List enumerates the policies to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToPolicyListQuery()
@@ -111,7 +111,7 @@ func (opts CreateOpts) ToPolicyCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new Policy.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToPolicyCreateMap()
 	if err != nil {
 		r.Err = err
@@ -125,7 +125,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Get retrieves details on a single policy, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, policyID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, policyID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, policyID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -179,7 +179,7 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]any, error) {
 }
 
 // Update updates an existing Role.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, policyID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, policyID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToPolicyUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -193,7 +193,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, policyID str
 }
 
 // Delete deletes a policy.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, policyID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, policyID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

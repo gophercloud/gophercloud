@@ -42,7 +42,7 @@ func (opts ListOpts) ToNetworkIPAvailabilityListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // networkipavailabilities. It accepts a ListOpts struct, which allows you to
 // filter the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToNetworkIPAvailabilityListQuery()
@@ -57,7 +57,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific NetworkIPAvailability based on its ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
