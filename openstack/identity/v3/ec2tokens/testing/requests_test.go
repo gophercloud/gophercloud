@@ -20,7 +20,7 @@ func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON stri
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ServiceClient{
+	client := gophercloud.Client{
 		ProviderClient: &gophercloud.ProviderClient{},
 		Endpoint:       testhelper.Endpoint(),
 	}

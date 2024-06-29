@@ -7,29 +7,29 @@ import (
 	v1 "github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1"
 )
 
-func listURL(c *gophercloud.ServiceClient) string {
+func listURL(c gophercloud.Client) string {
 	return c.Endpoint
 }
 
-func createURL(c *gophercloud.ServiceClient, container string) (string, error) {
+func createURL(c gophercloud.Client, container string) (string, error) {
 	if err := v1.CheckContainerName(container); err != nil {
 		return "", err
 	}
 	return c.ServiceURL(url.PathEscape(container)), nil
 }
 
-func getURL(c *gophercloud.ServiceClient, container string) (string, error) {
+func getURL(c gophercloud.Client, container string) (string, error) {
 	return createURL(c, container)
 }
 
-func deleteURL(c *gophercloud.ServiceClient, container string) (string, error) {
+func deleteURL(c gophercloud.Client, container string) (string, error) {
 	return createURL(c, container)
 }
 
-func updateURL(c *gophercloud.ServiceClient, container string) (string, error) {
+func updateURL(c gophercloud.Client, container string) (string, error) {
 	return createURL(c, container)
 }
 
-func bulkDeleteURL(c *gophercloud.ServiceClient) string {
+func bulkDeleteURL(c gophercloud.Client) string {
 	return c.Endpoint + "?bulk-delete=true"
 }

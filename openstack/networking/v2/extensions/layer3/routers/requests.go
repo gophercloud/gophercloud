@@ -37,7 +37,7 @@ type ListOpts struct {
 //
 // Default policy settings return only those routers that are owned by the
 // tenant who submits the request, unless an admin user submits the request.
-func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
+func List(c gophercloud.Client, opts ListOpts) pagination.Pager {
 	q, err := gophercloud.BuildQueryString(&opts)
 	if err != nil {
 		return pagination.Pager{Err: err}
@@ -80,7 +80,7 @@ func (opts CreateOpts) ToRouterCreateMap() (map[string]any, error) {
 // GatewayInfo struct. The external gateway for the router must be plugged into
 // an external network (it is external if its `router:external' field is set to
 // true).
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRouterCreateMap()
 	if err != nil {
 		r.Err = err
@@ -92,7 +92,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Get retrieves a particular router based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -124,7 +124,7 @@ func (opts UpdateOpts) ToRouterUpdateMap() (map[string]any, error) {
 // external gateway for a router, see Create. This operation does not enable
 // the update of router interfaces. To do this, use the AddInterface and
 // RemoveInterface functions.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRouterUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -138,7 +138,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 }
 
 // Delete will permanently delete a particular router based on its unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -182,7 +182,7 @@ func (opts AddInterfaceOpts) ToRouterAddInterfaceMap() (map[string]any, error) {
 // identifier of a new port created by this operation. After the operation
 // completes, the device ID of the port is set to the router ID, and the
 // device owner attribute is set to `network:router_interface'.
-func AddInterface(ctx context.Context, c *gophercloud.ServiceClient, id string, opts AddInterfaceOptsBuilder) (r InterfaceResult) {
+func AddInterface(ctx context.Context, c gophercloud.Client, id string, opts AddInterfaceOptsBuilder) (r InterfaceResult) {
 	b, err := opts.ToRouterAddInterfaceMap()
 	if err != nil {
 		r.Err = err
@@ -227,7 +227,7 @@ func (opts RemoveInterfaceOpts) ToRouterRemoveInterfaceMap() (map[string]any, er
 // visible to you, the operation will fail and a 404 Not Found error will be
 // returned. After this operation completes, the port connecting the router
 // with the subnet is removed from the subnet for the network.
-func RemoveInterface(ctx context.Context, c *gophercloud.ServiceClient, id string, opts RemoveInterfaceOptsBuilder) (r InterfaceResult) {
+func RemoveInterface(ctx context.Context, c gophercloud.Client, id string, opts RemoveInterfaceOptsBuilder) (r InterfaceResult) {
 	b, err := opts.ToRouterRemoveInterfaceMap()
 	if err != nil {
 		r.Err = err
@@ -241,7 +241,7 @@ func RemoveInterface(ctx context.Context, c *gophercloud.ServiceClient, id strin
 }
 
 // ListL3Agents returns a list of l3-agents scheduled for a specific router.
-func ListL3Agents(c *gophercloud.ServiceClient, id string) (result pagination.Pager) {
+func ListL3Agents(c gophercloud.Client, id string) (result pagination.Pager) {
 	return pagination.NewPager(c, listl3AgentsURL(c, id), func(r pagination.PageResult) pagination.Page {
 		return ListL3AgentsPage{pagination.SinglePageBase(r)}
 	})

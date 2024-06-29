@@ -123,7 +123,7 @@ type SupportedMicroversions struct {
 }
 
 // GetSupportedMicroversions returns the minimum and maximum microversion that is supported by the ServiceClient Endpoint.
-func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceClient) (SupportedMicroversions, error) {
+func GetSupportedMicroversions(ctx context.Context, client gophercloud.Client) (SupportedMicroversions, error) {
 	type valueResp struct {
 		ID         string `json:"id"`
 		Status     string `json:"status"`
@@ -179,7 +179,7 @@ func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceC
 
 // RequireMicroversion checks that the required microversion is supported and
 // returns a ServiceClient with the microversion set.
-func RequireMicroversion(ctx context.Context, client gophercloud.ServiceClient, required string) (gophercloud.ServiceClient, error) {
+func RequireMicroversion(ctx context.Context, client gophercloud.Client, required string) (gophercloud.ServiceClient, error) {
 	supportedMicroversions, err := GetSupportedMicroversions(ctx, &client)
 	if err != nil {
 		return client, fmt.Errorf("unable to determine supported microversions: %w", err)

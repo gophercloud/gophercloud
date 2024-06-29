@@ -28,7 +28,7 @@ func (opts ListOpts) ToFlavorProfileListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // FlavorProfiles. It accepts a ListOpts struct, which allows you to filter
 // and sort the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToFlavorProfileListQuery()
@@ -68,7 +68,7 @@ func (opts CreateOpts) ToFlavorProfileCreateMap() (map[string]any, error) {
 
 // Create is and operation which add a new FlavorProfile into the database.
 // CreateResult will be returned.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFlavorProfileCreateMap()
 	if err != nil {
 		r.Err = err
@@ -80,7 +80,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Get retrieves a particular FlavorProfile based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -117,7 +117,7 @@ func (opts UpdateOpts) ToFlavorProfileUpdateMap() (map[string]any, error) {
 
 // Update is an operation which modifies the attributes of the specified
 // FlavorProfile.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToFlavorProfileUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -132,7 +132,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 
 // Delete will permanently delete a particular FlavorProfile based on its
 // unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

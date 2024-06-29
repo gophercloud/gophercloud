@@ -48,7 +48,7 @@ func (opts ListOpts) ToFloatingIPListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // floating IP resources. It accepts a ListOpts struct, which allows you to
 // filter and sort the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToFloatingIPListQuery()
@@ -112,7 +112,7 @@ func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]any, error) {
 // operation will fail and return a 400 error code. If the PortID and FixedIP
 // are already associated with another resource, the operation will fail and
 // returns a 409 error code.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFloatingIPCreateMap()
 	if err != nil {
 		r.Err = err
@@ -124,7 +124,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Get retrieves a particular floating IP resource based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -165,7 +165,7 @@ func (opts UpdateOpts) ToFloatingIPUpdateMap() (map[string]any, error) {
 // "update" a floating IP is to associate it with a new internal port, or
 // disassociated it from all ports. See UpdateOpts for instructions of how to
 // do this.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFloatingIPUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -181,7 +181,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 // Delete will permanently delete a particular floating IP resource. Please
 // ensure this is what you want - you can also disassociate the IP from existing
 // internal ports.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

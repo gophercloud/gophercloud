@@ -7,6 +7,6 @@ const (
 	resourcePath = "providers"
 )
 
-func rootURL(c *gophercloud.ServiceClient) string {
+func rootURL(c gophercloud.Client) string {
 	return c.ServiceURL(rootPath, resourcePath)
 }

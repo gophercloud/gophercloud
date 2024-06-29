@@ -2,22 +2,22 @@ package tenants
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func listURL(client *gophercloud.ServiceClient) string {
+func listURL(client gophercloud.Client) string {
 	return client.ServiceURL("tenants")
 }
 
-func getURL(client *gophercloud.ServiceClient, tenantID string) string {
+func getURL(client gophercloud.Client, tenantID string) string {
 	return client.ServiceURL("tenants", tenantID)
 }
 
-func createURL(client *gophercloud.ServiceClient) string {
+func createURL(client gophercloud.Client) string {
 	return client.ServiceURL("tenants")
 }
 
-func deleteURL(client *gophercloud.ServiceClient, tenantID string) string {
+func deleteURL(client gophercloud.Client, tenantID string) string {
 	return client.ServiceURL("tenants", tenantID)
 }
 
-func updateURL(client *gophercloud.ServiceClient, tenantID string) string {
+func updateURL(client gophercloud.Client, tenantID string) string {
 	return client.ServiceURL("tenants", tenantID)
 }

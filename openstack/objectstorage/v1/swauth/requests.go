@@ -49,15 +49,15 @@ func Auth(ctx context.Context, c *gophercloud.ProviderClient, opts AuthOptsBuild
 	return r
 }
 
-// NewObjectStorageV1 creates a Swauth-authenticated *gophercloud.ServiceClient
+// NewObjectStorageV1 creates a Swauth-authenticated gophercloud.Client
 // client that can issue ObjectStorage-based API calls.
-func NewObjectStorageV1(ctx context.Context, pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gophercloud.ServiceClient, error) {
+func NewObjectStorageV1(ctx context.Context, pc *gophercloud.ProviderClient, authOpts AuthOpts) (gophercloud.Client, error) {
 	auth, err := Auth(ctx, pc, authOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
 
-	swiftClient := &gophercloud.ServiceClient{
+	swiftClient := &gophercloud.Client{
 		ProviderClient: pc,
 		Endpoint:       gophercloud.NormalizeURL(auth.StorageURL),
 	}

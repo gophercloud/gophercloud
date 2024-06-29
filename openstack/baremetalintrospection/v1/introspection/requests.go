@@ -32,7 +32,7 @@ func (opts ListIntrospectionsOpts) ToIntrospectionsListQuery() (string, error) {
 }
 
 // ListIntrospections makes a request against the Inspector API to list the current introspections.
-func ListIntrospections(client *gophercloud.ServiceClient, opts ListIntrospectionsOptsBuilder) pagination.Pager {
+func ListIntrospections(client gophercloud.Client, opts ListIntrospectionsOptsBuilder) pagination.Pager {
 	url := listIntrospectionsURL(client)
 	if opts != nil {
 		query, err := opts.ToIntrospectionsListQuery()
@@ -49,7 +49,7 @@ func ListIntrospections(client *gophercloud.ServiceClient, opts ListIntrospectio
 
 // GetIntrospectionStatus makes a request against the Inspector API to get the
 // status of a single introspection.
-func GetIntrospectionStatus(ctx context.Context, client *gophercloud.ServiceClient, nodeID string) (r GetIntrospectionStatusResult) {
+func GetIntrospectionStatus(ctx context.Context, client gophercloud.Client, nodeID string) (r GetIntrospectionStatusResult) {
 	resp, err := client.Get(ctx, introspectionURL(client, nodeID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -77,7 +77,7 @@ func (opts StartOpts) ToStartIntrospectionQuery() (string, error) {
 
 // StartIntrospection initiate hardware introspection for node NodeID .
 // All power management configuration for this node needs to be done prior to calling the endpoint.
-func StartIntrospection(ctx context.Context, client *gophercloud.ServiceClient, nodeID string, opts StartOptsBuilder) (r StartResult) {
+func StartIntrospection(ctx context.Context, client gophercloud.Client, nodeID string, opts StartOptsBuilder) (r StartResult) {
 	_, err := opts.ToStartIntrospectionQuery()
 	if err != nil {
 		r.Err = err
@@ -92,7 +92,7 @@ func StartIntrospection(ctx context.Context, client *gophercloud.ServiceClient, 
 }
 
 // AbortIntrospection abort running introspection.
-func AbortIntrospection(ctx context.Context, client *gophercloud.ServiceClient, nodeID string) (r AbortResult) {
+func AbortIntrospection(ctx context.Context, client gophercloud.Client, nodeID string) (r AbortResult) {
 	resp, err := client.Post(ctx, abortIntrospectionURL(client, nodeID), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
@@ -101,7 +101,7 @@ func AbortIntrospection(ctx context.Context, client *gophercloud.ServiceClient, 
 }
 
 // GetIntrospectionData return stored data from successful introspection.
-func GetIntrospectionData(ctx context.Context, client *gophercloud.ServiceClient, nodeID string) (r DataResult) {
+func GetIntrospectionData(ctx context.Context, client gophercloud.Client, nodeID string) (r DataResult) {
 	resp, err := client.Get(ctx, introspectionDataURL(client, nodeID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -111,7 +111,7 @@ func GetIntrospectionData(ctx context.Context, client *gophercloud.ServiceClient
 
 // ReApplyIntrospection triggers introspection on stored unprocessed data.
 // No data is allowed to be sent along with the request.
-func ReApplyIntrospection(ctx context.Context, client *gophercloud.ServiceClient, nodeID string) (r ApplyDataResult) {
+func ReApplyIntrospection(ctx context.Context, client gophercloud.Client, nodeID string) (r ApplyDataResult) {
 	resp, err := client.Post(ctx, introspectionUnprocessedDataURL(client, nodeID), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})

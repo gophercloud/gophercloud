@@ -39,7 +39,7 @@ func (opts ListOpts) ToPortForwardingListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // Port Forwarding resources. It accepts a ListOpts struct, which allows you to
 // filter and sort the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder, id string) pagination.Pager {
 	url := portForwardingUrl(c, id)
 	if opts != nil {
 		query, err := opts.ToPortForwardingListQuery()
@@ -54,7 +54,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) paginat
 }
 
 // Get retrieves a particular port forwarding resource based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, floatingIpId string, pfId string) (r GetResult) {
 	resp, err := c.Get(ctx, singlePortForwardingUrl(c, floatingIpId, pfId), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -84,7 +84,7 @@ func (opts CreateOpts) ToPortForwardingCreateMap() (map[string]any, error) {
 
 // Create accepts a CreateOpts struct and uses the values provided to create a
 // new port forwarding for an existing floating IP.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, floatingIpId string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, floatingIpId string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToPortForwardingCreateMap()
 	if err != nil {
 		r.Err = err
@@ -122,7 +122,7 @@ type UpdateOptsBuilder interface {
 }
 
 // Update allows port forwarding resources to be updated.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, fipID string, pfID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, fipID string, pfID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToPortForwardingUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -136,7 +136,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, fipID string, pfI
 }
 
 // Delete will permanently delete a particular port forwarding for a given floating ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, floatingIpId string, pfId string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, singlePortForwardingUrl(c, floatingIpId, pfId), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

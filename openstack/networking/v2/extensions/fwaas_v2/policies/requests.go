@@ -44,7 +44,7 @@ func (opts ListOpts) ToPolicyListQuery() (string, error) {
 //
 // Default policy settings return only those firewall policies that are owned by the
 // tenant who submits the request, unless an admin user submits the request.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToPolicyListQuery()
@@ -85,7 +85,7 @@ func (opts CreateOpts) ToFirewallPolicyCreateMap() (map[string]any, error) {
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall policy
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFirewallPolicyCreateMap()
 	if err != nil {
 		r.Err = err
@@ -96,7 +96,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Get retrieves a particular firewall policy based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	_, r.Err = c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	return
 }
@@ -124,7 +124,7 @@ func (opts UpdateOpts) ToFirewallPolicyUpdateMap() (map[string]any, error) {
 }
 
 // Update allows firewall policies to be updated.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFirewallPolicyUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -137,7 +137,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 }
 
 // Delete will permanently delete a particular firewall policy based on its unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(ctx, resourceURL(c, id), nil)
 	return
 }
@@ -156,7 +156,7 @@ func (opts InsertRuleOpts) ToFirewallPolicyInsertRuleMap() (map[string]any, erro
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func InsertRule(ctx context.Context, c *gophercloud.ServiceClient, id string, opts InsertRuleOptsBuilder) (r InsertRuleResult) {
+func InsertRule(ctx context.Context, c gophercloud.Client, id string, opts InsertRuleOptsBuilder) (r InsertRuleResult) {
 	b, err := opts.ToFirewallPolicyInsertRuleMap()
 	if err != nil {
 		r.Err = err
@@ -168,7 +168,7 @@ func InsertRule(ctx context.Context, c *gophercloud.ServiceClient, id string, op
 	return
 }
 
-func RemoveRule(ctx context.Context, c *gophercloud.ServiceClient, id, ruleID string) (r RemoveRuleResult) {
+func RemoveRule(ctx context.Context, c gophercloud.Client, id, ruleID string) (r RemoveRuleResult) {
 	b := map[string]any{"firewall_rule_id": ruleID}
 	_, r.Err = c.Put(ctx, removeURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},

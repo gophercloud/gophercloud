@@ -6,30 +6,30 @@ import (
 
 var apiName = "clustertemplates"
 
-func commonURL(client *gophercloud.ServiceClient) string {
+func commonURL(client gophercloud.Client) string {
 	return client.ServiceURL(apiName)
 }
 
-func idURL(client *gophercloud.ServiceClient, id string) string {
+func idURL(client gophercloud.Client, id string) string {
 	return client.ServiceURL(apiName, id)
 }
 
-func createURL(client *gophercloud.ServiceClient) string {
+func createURL(client gophercloud.Client) string {
 	return commonURL(client)
 }
 
-func deleteURL(client *gophercloud.ServiceClient, id string) string {
+func deleteURL(client gophercloud.Client, id string) string {
 	return idURL(client, id)
 }
 
-func listURL(client *gophercloud.ServiceClient) string {
+func listURL(client gophercloud.Client) string {
 	return commonURL(client)
 }
 
-func getURL(client *gophercloud.ServiceClient, id string) string {
+func getURL(client gophercloud.Client, id string) string {
 	return idURL(client, id)
 }
 
-func updateURL(client *gophercloud.ServiceClient, id string) string {
+func updateURL(client gophercloud.Client, id string) string {
 	return idURL(client, id)
 }

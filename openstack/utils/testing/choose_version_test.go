@@ -311,7 +311,7 @@ func TestGetSupportedVersions(t *testing.T) {
 			IdentityEndpoint: testhelper.Endpoint() + "v2.0/",
 		}
 
-		client := &gophercloud.ServiceClient{
+		client := &gophercloud.Client{
 			ProviderClient: c,
 			Endpoint:       test.Endpoint,
 		}
