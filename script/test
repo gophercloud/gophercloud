@@ -1,7 +1,0 @@
-#!/bin/bash
-#
-# Run all the tests.
-
-set -euxo pipefail
-
-go test -v -tags 'acceptance fixtures' ./... $@
