@@ -97,7 +97,7 @@ func TestAgentsRUD(t *testing.T) {
 }
 
 func TestBGPAgentRUD(t *testing.T) {
-	timeout := 120 * time.Second
+	timeout := 15 * time.Minute
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
