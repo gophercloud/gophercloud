@@ -357,8 +357,8 @@ folded into the modified APIs. These are:
   All functions and supporting structs and interfaces have been moved to
   `openstack/compute/v2/servers`.
 
-Finally, for extensions that added new APIs *and* modified existing APIs, the
-new APIs are moved into the main module of the corresponding service while the
+For extensions that added new APIs *and* modified existing APIs, the new APIs
+are moved into the main module of the corresponding service while the
 modifications are folded into the modified APIs. These are:
 
 - `openstack/compute/v2/extensions/availabilityzones`
@@ -373,6 +373,34 @@ modifications are folded into the modified APIs. These are:
   The `AuthOptsExt` struct has been removed and a `TrustID` field added to the
   `Scope` struct in `openstack/identity/v3/tokens`. Everything else is moved
   moved to `openstack/identity/v3/trusts`.
+
+Finally, for extensions that are deprecated and have been removed in a
+microversion, the APIs were removed entirely. These are:
+
+- `openstack/compute/v2/extensions/defsecrules`
+
+  This was a proxy for the Networking service, Neutron. Use
+  `openstack/networking/v2/extensions/security/groups` instead.
+
+- `openstack/compute/v2/extensions/floatingips`
+
+  This was a proxy for the Networking service, Neutron. Use
+  `openstack/networking/v2/extensions/layer3/floatingips` instead.
+
+- `openstack/compute/v2/extensions/images`
+
+  This was a proxy for the Image service, Glance. Use
+  `openstack/image/v2/images` instead.
+
+- `openstack/compute/v2/extensions/networks`
+
+  This was a proxy for the Networking service, Neutron. Use
+  `openstack/networking/v2/networks` instead.
+
+- `openstack/compute/v2/extensions/tenantnetworks`
+
+  This was a proxy for the Networking service, Neutron. Use
+  `openstack/networking/v2/networks` instead.
 
 ### Type changes
 
