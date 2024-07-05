@@ -481,8 +481,11 @@ start with a slash (`/`).
 Support for services that are no longer supported upstream has been removed.
 Users that still rely on theses old services should continue using Gophercloud v1.
 
-- Cinder (Blockstorage) v1
+- Cinder (Blockstorage) v1 (`openstack/blockstorage/v1`)
 - Neutron (Networking) LBaaS and LBaaS v2 extensions
+  (`openstack/networking/v2/extensions/lbaas`,
+  `openstack/networking/v2/extensions/lbaas_v2`)
 - Neutron (Networking) FWaaS extension
-- Poppy (CDNaaS) service
-- Senlin (Clustering) service
+  (`openstack/networking/v2/extensions/fwaas`)
+- Poppy (CDNaaS) service (`openstack/cdn`)
+- Senlin (Clustering) service (`openstack/clustering`)
