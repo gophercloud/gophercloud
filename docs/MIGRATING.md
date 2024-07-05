@@ -189,6 +189,10 @@ main module for the corresponding service. These are:
 
   Moved to `openstack/compute/v2/keypairs`.
 
+- `openstack/compute/v2/extensions/limits`
+
+  Moved to `openstack/compute/v2/limits`.
+
 - `openstack/compute/v2/extensions/quotasets`
 
   Moved to `openstack/compute/v2/quotasets`.
