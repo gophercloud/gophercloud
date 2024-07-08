@@ -254,7 +254,7 @@ folded into the modified APIs. These are:
 
 - `openstack/blockstorage/extensions/schedulerhints`
 
-  `SchedulerHintOpts` has been renamed to `SchedulerHints` and moved to
+  `SchedulerHints` has been renamed to `SchedulerHintOpts` and moved to
   `openstack/blockstorage/v2/volumes` and `openstack/blockstorage/v3/volumes`.
   This is now a required argument of `volumes.Create` for both modules.
 
@@ -337,8 +337,8 @@ folded into the modified APIs. These are:
 
 - `openstack/compute/v2/extensions/schedulerhints`
 
-  `SchedulerHintOpts` has been moved to `openstack/compute/v2/servers` and
-  renamed to `SchedulerHints`. This is now a required argument of
+  `SchedulerHints` has been moved to `openstack/compute/v2/servers` and
+  renamed to `SchedulerHintOpts`. This is now a required argument of
   `servers.Create`.
 
 - `openstack/compute/v2/extensions/serverusage`
