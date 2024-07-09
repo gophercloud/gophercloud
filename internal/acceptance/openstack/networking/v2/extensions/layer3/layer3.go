@@ -73,7 +73,9 @@ func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 
 	fixedIP := portFixedIPs[0]
 	internalIP := fixedIP.IPAddress
+	pfDescription := "Test description"
 	createOpts := &portforwarding.CreateOpts{
+		Description:       pfDescription,
 		Protocol:          "tcp",
 		InternalPort:      25,
 		ExternalPort:      2230,

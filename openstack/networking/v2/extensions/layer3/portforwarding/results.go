@@ -9,6 +9,10 @@ type PortForwarding struct {
 	// The ID of the floating IP port forwarding
 	ID string `json:"id"`
 
+	// A text describing the rule, which helps users to manage/find easily
+	// theirs rules.
+	Description string `json:"description"`
+
 	// The ID of the Neutron port associated to the floating IP port forwarding.
 	InternalPortID string `json:"internal_port_id"`
 
