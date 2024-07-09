@@ -56,6 +56,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	pf, err := CreatePortForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, pf.Description, "Test description")
 	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
 
@@ -63,6 +64,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	updateOpts := portforwarding.UpdateOpts{
+		Description:  new(string),
 		Protocol:     "udp",
 		InternalPort: 30,
 		ExternalPort: 678,
@@ -73,6 +75,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	newPf, err = portforwarding.Get(context.TODO(), client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newPf.Description, "")
 
 	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
