@@ -51,12 +51,15 @@ func (opts ListOpts) ToSecGroupListQuery() (string, error) {
 // security group rules. It accepts a ListOpts struct, which allows you to filter
 // and sort the returned collection for greater efficiency.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	q, err := opts.ToSecGroupListQuery()
-	if err != nil {
-		return pagination.Pager{Err: err}
+	url := rootURL(c)
+	if opts != nil {
+		query, err := opts.ToSecGroupListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
 	}
-	u := rootURL(c) + q
-	return pagination.NewPager(c, u, func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return SecGroupRulePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
