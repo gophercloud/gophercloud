@@ -108,6 +108,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	var gatewayIP = "192.168.199.1"
+	var dnsPublishFixedIP = true
 	opts := subnets.CreateOpts{
 		NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22",
 		IPVersion: 4,
@@ -120,6 +121,7 @@ func TestCreate(t *testing.T) {
 			},
 		},
 		DNSNameservers: []string{"foo"},
+		DNSPublishFixedIP: &dnsPublishFixedIP,
 		ServiceTypes:   []string{"network:routed"},
 		HostRoutes: []subnets.HostRoute{
 			{NextHop: "bar"},
@@ -130,6 +132,7 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "")
+	th.AssertEquals(t, s.DNSPublishFixedIP, true)
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
@@ -320,6 +323,7 @@ func TestCreateWithNoCIDR(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "")
+	th.AssertEquals(t, s.DNSPublishFixedIP, true)
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
@@ -369,6 +373,7 @@ func TestCreateWithPrefixlen(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "")
+	th.AssertEquals(t, s.DNSPublishFixedIP, true)	
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
