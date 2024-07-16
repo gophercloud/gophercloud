@@ -35,8 +35,8 @@ echo export OS_DOMAIN_ID=default >> openrc
 
 _FLAVOR_ID=99
 _FLAVOR_ALT_ID=98
-openstack flavor create m1.acctest --id "$_FLAVOR_ID" --ram 512 --disk 10 --vcpu 1 --ephemeral 10
-openstack flavor create m1.resize --id "$_FLAVOR_ALT_ID" --ram 512 --disk 11 --vcpu 1 --ephemeral 10
+openstack flavor create m1.acctest --id "$_FLAVOR_ID" --ram 256 --disk 10 --vcpu 1 --ephemeral 10
+openstack flavor create m1.resize --id "$_FLAVOR_ALT_ID" --ram 256 --disk 11 --vcpu 1 --ephemeral 10
 openstack keypair create magnum
 _NETWORK_ID=$(openstack network show private -c id -f value)
 _SUBNET_ID=$(openstack subnet show private-subnet -c id -f value)
