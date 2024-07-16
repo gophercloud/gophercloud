@@ -67,5 +67,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: functional-networking-${{ matrix.name }}
+          name: functional-networking-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
