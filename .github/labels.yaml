@@ -1,6 +1,9 @@
 - color: '30ABB9'
   description: This PR will be backported to v1
   name: backport-v1
+- color: 'E99695'
+  description: This PR will be backported to v2
+  name: backport-v2
 - color: '0366d6'
   description: Pull requests that update a dependency file
   name: dependencies
