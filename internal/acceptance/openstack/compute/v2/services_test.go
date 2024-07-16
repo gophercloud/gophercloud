@@ -67,6 +67,7 @@ func TestServicesListWithOpts(t *testing.T) {
 
 func TestServicesUpdate(t *testing.T) {
 	clients.RequireAdmin(t)
+	t.Skip("We need to have more than one compute node for this to not conflict")
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
