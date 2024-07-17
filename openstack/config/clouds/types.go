@@ -123,6 +123,9 @@ type AuthInfo struct {
 	// been specified and a domain is required for scope.
 	DefaultDomain string `yaml:"default_domain,omitempty" json:"default_domain,omitempty"`
 
+	// TrustID is the ID of the trust to use as a trustee.
+	TrustID string `yaml:"trust_id,omitempty" json:"trust_id,omitempty"`
+
 	// AllowReauth should be set to true if you grant permission for Gophercloud to
 	// cache your credentials in memory, and to allow Gophercloud to attempt to
 	// re-authenticate automatically if/when your token expires.  If you set it to

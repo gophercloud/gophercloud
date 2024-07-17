@@ -148,6 +148,13 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 
 	endpointType := coalesce(options.endpointType, cloud.EndpointType, cloud.Interface)
 
+	var scope *gophercloud.AuthScope
+	if trustID := cloud.AuthInfo.TrustID; trustID != "" {
+		scope = &gophercloud.AuthScope{
+			TrustID: trustID,
+		}
+	}
+
 	return gophercloud.AuthOptions{
 			IdentityEndpoint:            coalesce(options.authURL, cloud.AuthInfo.AuthURL),
 			Username:                    coalesce(options.username, cloud.AuthInfo.Username),
@@ -158,7 +165,7 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			TenantID:                    coalesce(options.projectID, cloud.AuthInfo.ProjectID),
 			TenantName:                  coalesce(options.projectName, cloud.AuthInfo.ProjectName),
 			TokenID:                     coalesce(options.token, cloud.AuthInfo.Token),
-			Scope:                       options.scope,
+			Scope:                       coalesce(options.scope, scope),
 			ApplicationCredentialID:     coalesce(options.applicationCredentialID, cloud.AuthInfo.ApplicationCredentialID),
 			ApplicationCredentialName:   coalesce(options.applicationCredentialName, cloud.AuthInfo.ApplicationCredentialName),
 			ApplicationCredentialSecret: coalesce(options.applicationCredentialSecret, cloud.AuthInfo.ApplicationCredentialSecret),
@@ -182,15 +189,16 @@ func computeAvailability(endpointType string) gophercloud.Availability {
 	return gophercloud.AvailabilityPublic
 }
 
-// coalesce returns the first argument that is not the empty string, or the
-// empty string.
-func coalesce(items ...string) string {
+// coalesce returns the first argument that is not the zero value for its type,
+// or the zero value for its type.
+func coalesce[T comparable](items ...T) T {
+	var t T
 	for _, item := range items {
-		if item != "" {
+		if item != t {
 			return item
 		}
 	}
-	return ""
+	return t
 }
 
 // mergeClouds merges two Clouds recursively (the AuthInfo also gets merged).
