@@ -10,10 +10,10 @@ import (
 )
 
 func TestCreateQuota(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleCreateQuotaSuccessfully(t)
+	HandleCreateQuotaSuccessfully(t, fakeServer)
 
 	opts := quotas.CreateOpts{
 		ProjectID: "aa5436ab58144c768ca4e9d2e9f5c3b2",
@@ -21,7 +21,7 @@ func TestCreateQuota(t *testing.T) {
 		HardLimit: 10,
 	}
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	res := quotas.Create(context.TODO(), sc, opts)

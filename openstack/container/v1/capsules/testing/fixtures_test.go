@@ -622,8 +622,8 @@ func GetFakeCapsuleV132() capsules.CapsuleV132 {
 }
 
 // HandleCapsuleGetOldTimeSuccessfully test setup
-func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleGetOldTimeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -634,8 +634,8 @@ func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
 }
 
 // HandleCapsuleGetNewTimeSuccessfully test setup
-func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleGetNewTimeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -647,8 +647,8 @@ func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
 
 // HandleCapsuleCreateSuccessfully creates an HTTP handler at `/capsules` on the test handler mux
 // that responds with a `Create` response.
-func HandleCapsuleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -658,8 +658,8 @@ func HandleCapsuleCreateSuccessfully(t *testing.T) {
 }
 
 // HandleCapsuleListSuccessfully test setup
-func HandleCapsuleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -670,8 +670,8 @@ func HandleCapsuleListSuccessfully(t *testing.T) {
 }
 
 // HandleCapsuleV132ListSuccessfully test setup
-func HandleCapsuleV132ListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleV132ListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -681,8 +681,8 @@ func HandleCapsuleV132ListSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleCapsuleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/963a239d-3946-452b-be5a-055eab65a421", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/963a239d-3946-452b-be5a-055eab65a421", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)

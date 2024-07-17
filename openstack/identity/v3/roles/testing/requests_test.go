@@ -11,12 +11,12 @@ import (
 )
 
 func TestListRoles(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRolesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRolesSuccessfully(t, fakeServer)
 
 	count := 0
-	err := roles.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := roles.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -31,11 +31,11 @@ func TestListRoles(t *testing.T) {
 }
 
 func TestListRolesAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRolesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRolesSuccessfully(t, fakeServer)
 
-	allPages, err := roles.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := roles.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -76,20 +76,20 @@ func TestListUsersFiltersCheck(t *testing.T) {
 }
 
 func TestGetRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetRoleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetRoleSuccessfully(t, fakeServer)
 
-	actual, err := roles.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := roles.Get(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
 
 func TestCreateRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateRoleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateRoleSuccessfully(t, fakeServer)
 
 	createOpts := roles.CreateOpts{
 		Name:     "support",
@@ -99,15 +99,15 @@ func TestCreateRole(t *testing.T) {
 		},
 	}
 
-	actual, err := roles.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := roles.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
 
 func TestUpdateRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateRoleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateRoleSuccessfully(t, fakeServer)
 
 	updateOpts := roles.UpdateOpts{
 		Extra: map[string]any{
@@ -115,27 +115,27 @@ func TestUpdateRole(t *testing.T) {
 		},
 	}
 
-	actual, err := roles.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := roles.Update(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRoleUpdated, *actual)
 }
 
 func TestDeleteRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteRoleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteRoleSuccessfully(t, fakeServer)
 
-	res := roles.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
+	res := roles.Delete(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestListAssignmentsSinglePage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRoleAssignmentsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRoleAssignmentsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := roles.ListAssignments(client.ServiceClient(), roles.ListAssignmentsOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := roles.ListAssignments(client.ServiceClient(fakeServer), roles.ListAssignmentsOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
 		th.AssertNoErr(t, err)
@@ -149,9 +149,9 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 }
 
 func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRoleAssignmentsWithNamesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRoleAssignmentsWithNamesSuccessfully(t, fakeServer)
 
 	var includeNames = true
 	listOpts := roles.ListAssignmentsOpts{
@@ -159,7 +159,7 @@ func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
 	}
 
 	count := 0
-	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := roles.ListAssignments(client.ServiceClient(fakeServer), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
 		th.AssertNoErr(t, err)
@@ -173,9 +173,9 @@ func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
 }
 
 func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRoleAssignmentsWithSubtreeSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRoleAssignmentsWithSubtreeSuccessfully(t, fakeServer)
 
 	var includeSubtree = true
 	listOpts := roles.ListAssignmentsOpts{
@@ -183,7 +183,7 @@ func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
 	}
 
 	count := 0
-	err := roles.ListAssignments(client.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := roles.ListAssignments(client.ServiceClient(fakeServer), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
 		th.AssertNoErr(t, err)
@@ -197,12 +197,12 @@ func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
 }
 
 func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAssignmentsOnResourceSuccessfully_ProjectsUsers(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAssignmentsOnResourceSuccessfully_ProjectsUsers(t, fakeServer)
 
 	count := 0
-	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(fakeServer), roles.ListAssignmentsOnResourceOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -219,12 +219,12 @@ func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
 }
 
 func TestListAssignmentsOnResource_DomainsUsers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAssignmentsOnResourceSuccessfully_DomainsUsers(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAssignmentsOnResourceSuccessfully_DomainsUsers(t, fakeServer)
 
 	count := 0
-	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(fakeServer), roles.ListAssignmentsOnResourceOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -241,12 +241,12 @@ func TestListAssignmentsOnResource_DomainsUsers(t *testing.T) {
 }
 
 func TestListAssignmentsOnResource_ProjectsGroups(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAssignmentsOnResourceSuccessfully_ProjectsGroups(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAssignmentsOnResourceSuccessfully_ProjectsGroups(t, fakeServer)
 
 	count := 0
-	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(fakeServer), roles.ListAssignmentsOnResourceOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -263,12 +263,12 @@ func TestListAssignmentsOnResource_ProjectsGroups(t *testing.T) {
 }
 
 func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t, fakeServer)
 
 	count := 0
-	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(fakeServer), roles.ListAssignmentsOnResourceOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -285,29 +285,29 @@ func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
 }
 
 func TestAssign(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAssignSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAssignSuccessfully(t, fakeServer)
 
-	err := roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err := roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Assign(context.TODO(), client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
@@ -315,29 +315,29 @@ func TestAssign(t *testing.T) {
 }
 
 func TestUnassign(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUnassignSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUnassignSuccessfully(t, fakeServer)
 
-	err := roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err := roles.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.UnassignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err = roles.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.UnassignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err = roles.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.UnassignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+	err = roles.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.UnassignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
@@ -345,40 +345,40 @@ func TestUnassign(t *testing.T) {
 }
 
 func TestCreateRoleInferenceRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateRoleInferenceRule(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateRoleInferenceRule(t, fakeServer)
 
-	actual, err := roles.CreateRoleInferenceRule(context.TODO(), client.ServiceClient(), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").Extract()
+	actual, err := roles.CreateRoleInferenceRule(context.TODO(), client.ServiceClient(fakeServer), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expectedRoleInferenceRule, *actual)
 }
 
 func TestListRoleInferenceRules(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRoleInferenceRules(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRoleInferenceRules(t, fakeServer)
 
-	actual, err := roles.ListRoleInferenceRules(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := roles.ListRoleInferenceRules(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expectedRoleInferenceRuleList, *actual)
 }
 
 func TestDeleteRoleInferenceRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteRoleInferenceRule(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteRoleInferenceRule(t, fakeServer)
 
-	err := roles.DeleteRoleInferenceRule(context.TODO(), client.ServiceClient(), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").ExtractErr()
+	err := roles.DeleteRoleInferenceRule(context.TODO(), client.ServiceClient(fakeServer), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetInferenceRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetRoleInferenceRule(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetRoleInferenceRule(t, fakeServer)
 
-	actual, err := roles.GetRoleInferenceRule(context.TODO(), client.ServiceClient(), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").Extract()
+	actual, err := roles.GetRoleInferenceRule(context.TODO(), client.ServiceClient(fakeServer), "7ceab6192ea34a548cc71b24f72e762c", "97e2f5d38bc94842bc3da818c16762ed").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expectedRoleInferenceRule, *actual)
 }

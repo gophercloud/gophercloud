@@ -175,8 +175,8 @@ var ExpectedLimitsSlice = []limits.Limit{FirstLimit, SecondLimit}
 
 // HandleGetEnforcementModelSuccessfully creates an HTTP handler at `/limits/model` on the
 // test handler mux that responds with a enforcement model.
-func HandleGetEnforcementModelSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/limits/model", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetEnforcementModelSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/limits/model", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -189,8 +189,8 @@ func HandleGetEnforcementModelSuccessfully(t *testing.T) {
 
 // HandleListLimitsSuccessfully creates an HTTP handler at `/limits` on the
 // test handler mux that responds with a list of two limits.
-func HandleListLimitsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/limits", func(w http.ResponseWriter, r *http.Request) {
+func HandleListLimitsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/limits", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -203,8 +203,8 @@ func HandleListLimitsSuccessfully(t *testing.T) {
 
 // HandleCreateLimitSuccessfully creates an HTTP handler at `/limits` on the
 // test handler mux that tests limit creation.
-func HandleCreateLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/limits", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/limits", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -216,8 +216,8 @@ func HandleCreateLimitSuccessfully(t *testing.T) {
 
 // HandleGetLimitSuccessfully creates an HTTP handler at `/limits` on the
 // test handler mux that responds with a single limit.
-func HandleGetLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/limits/25a04c7a065c430590881c646cdcdd58", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/limits/25a04c7a065c430590881c646cdcdd58", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -230,8 +230,8 @@ func HandleGetLimitSuccessfully(t *testing.T) {
 
 // HandleUpdateLimitSuccessfully creates an HTTP handler at `/limits` on the
 // test handler mux that tests limit update.
-func HandleUpdateLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)
@@ -243,8 +243,8 @@ func HandleUpdateLimitSuccessfully(t *testing.T) {
 
 // HandleDeleteLimitSuccessfully creates an HTTP handler at `/limits` on the
 // test handler mux that tests limit deletion.
-func HandleDeleteLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

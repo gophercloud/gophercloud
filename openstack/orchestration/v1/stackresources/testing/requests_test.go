@@ -12,11 +12,11 @@ import (
 )
 
 func TestFindResources(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFindSuccessfully(t, FindOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFindSuccessfully(t, fakeServer, FindOutput)
 
-	actual, err := stackresources.Find(context.TODO(), client.ServiceClient(), "hello_world").Extract()
+	actual, err := stackresources.Find(context.TODO(), client.ServiceClient(fakeServer), "hello_world").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := FindExpected
@@ -24,12 +24,12 @@ func TestFindResources(t *testing.T) {
 }
 
 func TestListResources(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t, ListOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer, ListOutput)
 
 	count := 0
-	err := stackresources.List(client.ServiceClient(), "hello_world", "49181cd6-169a-4130-9455-31185bbfc5bf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := stackresources.List(client.ServiceClient(fakeServer), "hello_world", "49181cd6-169a-4130-9455-31185bbfc5bf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := stackresources.ExtractResources(page)
 		th.AssertNoErr(t, err)
@@ -43,11 +43,11 @@ func TestListResources(t *testing.T) {
 }
 
 func TestGetResource(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t, GetOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer, GetOutput)
 
-	actual, err := stackresources.Get(context.TODO(), client.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
+	actual, err := stackresources.Get(context.TODO(), client.ServiceClient(fakeServer), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -55,11 +55,11 @@ func TestGetResource(t *testing.T) {
 }
 
 func TestResourceMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMetadataSuccessfully(t, MetadataOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMetadataSuccessfully(t, fakeServer, MetadataOutput)
 
-	actual, err := stackresources.Metadata(context.TODO(), client.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
+	actual, err := stackresources.Metadata(context.TODO(), client.ServiceClient(fakeServer), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := MetadataExpected
@@ -67,12 +67,12 @@ func TestResourceMetadata(t *testing.T) {
 }
 
 func TestListResourceTypes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTypesSuccessfully(t, ListTypesOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTypesSuccessfully(t, fakeServer, ListTypesOutput)
 
 	count := 0
-	err := stackresources.ListTypes(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := stackresources.ListTypes(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := stackresources.ExtractResourceTypes(page)
 		th.AssertNoErr(t, err)
@@ -89,11 +89,11 @@ func TestListResourceTypes(t *testing.T) {
 }
 
 func TestGetResourceSchema(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSchemaSuccessfully(t, GetSchemaOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSchemaSuccessfully(t, fakeServer, GetSchemaOutput)
 
-	actual, err := stackresources.Schema(context.TODO(), client.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	actual, err := stackresources.Schema(context.TODO(), client.ServiceClient(fakeServer), "OS::Heat::AResourceName").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetSchemaExpected
@@ -101,11 +101,11 @@ func TestGetResourceSchema(t *testing.T) {
 }
 
 func TestGetResourceTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetTemplateSuccessfully(t, GetTemplateOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetTemplateSuccessfully(t, fakeServer, GetTemplateOutput)
 
-	actual, err := stackresources.Template(context.TODO(), client.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	actual, err := stackresources.Template(context.TODO(), client.ServiceClient(fakeServer), "OS::Heat::AResourceName").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetTemplateExpected
@@ -113,14 +113,14 @@ func TestGetResourceTemplate(t *testing.T) {
 }
 
 func TestMarkUnhealthyResource(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMarkUnhealthySuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMarkUnhealthySuccessfully(t, fakeServer)
 
 	markUnhealthyOpts := &stackresources.MarkUnhealthyOpts{
 		MarkUnhealthy:        true,
 		ResourceStatusReason: "Kubelet.Ready is Unknown more than 10 mins.",
 	}
-	err := stackresources.MarkUnhealthy(context.TODO(), client.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance", markUnhealthyOpts).ExtractErr()
+	err := stackresources.MarkUnhealthy(context.TODO(), client.ServiceClient(fakeServer), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance", markUnhealthyOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

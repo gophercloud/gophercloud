@@ -11,12 +11,12 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	count := 0
-	err := servergroups.List(client.ServiceClient(), &servergroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := servergroups.List(client.ServiceClient(fakeServer), &servergroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := servergroups.ExtractServerGroups(page)
 		th.AssertNoErr(t, err)
@@ -29,11 +29,11 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 
-	actual, err := servergroups.Create(context.TODO(), client.ServiceClient(), servergroups.CreateOpts{
+	actual, err := servergroups.Create(context.TODO(), client.ServiceClient(fakeServer), servergroups.CreateOpts{
 		Name:     "test",
 		Policies: []string{"anti-affinity"},
 	}).Extract()
@@ -42,11 +42,11 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateMicroversion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateMicroversionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateMicroversionSuccessfully(t, fakeServer)
 
-	result := servergroups.Create(context.TODO(), client.ServiceClient(), servergroups.CreateOpts{
+	result := servergroups.Create(context.TODO(), client.ServiceClient(fakeServer), servergroups.CreateOpts{
 		Name:   "test",
 		Policy: policy,
 		Rules:  ExpectedServerGroupCreateMicroversion.Rules,
@@ -58,30 +58,30 @@ func TestCreateMicroversion(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
-	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
+	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(fakeServer), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &ExpectedServerGroupGet, actual)
 }
 
 func TestGetMicroversion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetMicroversionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetMicroversionSuccessfully(t, fakeServer)
 
-	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
+	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(fakeServer), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &ExpectedServerGroupGetMicroversion, actual)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
-	err := servergroups.Delete(context.TODO(), client.ServiceClient(), "616fb98f-46ca-475e-917e-2563e5a8cd19").ExtractErr()
+	err := servergroups.Delete(context.TODO(), client.ServiceClient(fakeServer), "616fb98f-46ca-475e-917e-2563e5a8cd19").ExtractErr()
 	th.AssertNoErr(t, err)
 }

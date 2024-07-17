@@ -12,10 +12,10 @@ import (
 )
 
 func TestListRuleTypes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -25,7 +25,7 @@ func TestListRuleTypes(t *testing.T) {
 		fmt.Fprint(w, ListRuleTypesResponse)
 	})
 
-	page, err := ruletypes.ListRuleTypes(client.ServiceClient()).AllPages(context.TODO())
+	page, err := ruletypes.ListRuleTypes(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	if err != nil {
 		t.Errorf("Failed to list rule types pages: %v", err)
 		return
@@ -42,10 +42,10 @@ func TestListRuleTypes(t *testing.T) {
 }
 
 func TestGetRuleType(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/qos/rule-types/bandwidth_limit", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/qos/rule-types/bandwidth_limit", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -56,7 +56,7 @@ func TestGetRuleType(t *testing.T) {
 		th.AssertNoErr(t, err)
 	})
 
-	r, err := ruletypes.GetRuleType(context.TODO(), client.ServiceClient(), "bandwidth_limit").Extract()
+	r, err := ruletypes.GetRuleType(context.TODO(), client.ServiceClient(fakeServer), "bandwidth_limit").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "bandwidth_limit", r.Type)

@@ -153,8 +153,8 @@ var ExpectedCredentialsSlice = []credentials.Credential{FirstCredential, SecondC
 
 // HandleListCredentialsSuccessfully creates an HTTP handler at `/credentials` on the
 // test handler mux that responds with a list of two credentials.
-func HandleListCredentialsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/credentials", func(w http.ResponseWriter, r *http.Request) {
+func HandleListCredentialsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/credentials", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -167,8 +167,8 @@ func HandleListCredentialsSuccessfully(t *testing.T) {
 
 // HandleGetCredentialSuccessfully creates an HTTP handler at `/credentials` on the
 // test handler mux that responds with a single credential.
-func HandleGetCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/credentials/3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/credentials/3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -181,8 +181,8 @@ func HandleGetCredentialSuccessfully(t *testing.T) {
 
 // HandleCreateCredentialSuccessfully creates an HTTP handler at `/credentials` on the
 // test handler mux that tests credential creation.
-func HandleCreateCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/credentials", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/credentials", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -194,8 +194,8 @@ func HandleCreateCredentialSuccessfully(t *testing.T) {
 
 // HandleDeleteCredentialSuccessfully creates an HTTP handler at `/credentials` on the
 // test handler mux that tests credential deletion.
-func HandleDeleteCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/credentials/3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/credentials/3d3367228f9c7665266604462ec60029bcd83ad89614021a80b2eb879c572510", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -205,8 +205,8 @@ func HandleDeleteCredentialSuccessfully(t *testing.T) {
 
 // HandleUpdateCredentialsSuccessfully creates an HTTP handler at `/credentials` on the
 // test handler mux that tests credentials update.
-func HandleUpdateCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/credentials/2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/credentials/2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)

@@ -139,8 +139,8 @@ var AcceptResponse = sharetransfers.Transfer{
 	},
 }
 
-func HandleCreateTransfer(t *testing.T) {
-	th.Mux.HandleFunc("/share-transfers", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateTransfer(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-transfers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -151,8 +151,8 @@ func HandleCreateTransfer(t *testing.T) {
 	})
 }
 
-func HandleAcceptTransfer(t *testing.T) {
-	th.Mux.HandleFunc("/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f/accept", func(w http.ResponseWriter, r *http.Request) {
+func HandleAcceptTransfer(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f/accept", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -162,8 +162,8 @@ func HandleAcceptTransfer(t *testing.T) {
 	})
 }
 
-func HandleDeleteTransfer(t *testing.T) {
-	th.Mux.HandleFunc("/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteTransfer(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -171,8 +171,8 @@ func HandleDeleteTransfer(t *testing.T) {
 	})
 }
 
-func HandleListTransfers(t *testing.T) {
-	th.Mux.HandleFunc("/share-transfers", func(w http.ResponseWriter, r *http.Request) {
+func HandleListTransfers(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-transfers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -183,8 +183,8 @@ func HandleListTransfers(t *testing.T) {
 	})
 }
 
-func HandleListTransfersDetail(t *testing.T) {
-	th.Mux.HandleFunc("/share-transfers/detail", func(w http.ResponseWriter, r *http.Request) {
+func HandleListTransfersDetail(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-transfers/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -195,8 +195,8 @@ func HandleListTransfersDetail(t *testing.T) {
 	})
 }
 
-func HandleGetTransfer(t *testing.T) {
-	th.Mux.HandleFunc("/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetTransfer(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-transfers/b8913bfd-a4d3-4ec5-bd8b-fe2dbeef9f4f", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")

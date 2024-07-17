@@ -10,8 +10,8 @@ import (
 
 // HandleGetAccountSuccessfully creates an HTTP handler at `/` on the test handler mux that
 // responds with a `Get` response.
-func HandleGetAccountSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetAccountSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -29,8 +29,8 @@ func HandleGetAccountSuccessfully(t *testing.T) {
 
 // HandleGetAccountNoQuotaSuccessfully creates an HTTP handler at `/` on the
 // test handler mux that responds with a `Get` response.
-func HandleGetAccountNoQuotaSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetAccountNoQuotaSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -46,8 +46,8 @@ func HandleGetAccountNoQuotaSuccessfully(t *testing.T) {
 
 // HandleUpdateAccountSuccessfully creates an HTTP handler at `/` on the test handler mux that
 // responds with a `Update` response.
-func HandleUpdateAccountSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateAccountSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "X-Account-Meta-Gophercloud-Test", "accounts")

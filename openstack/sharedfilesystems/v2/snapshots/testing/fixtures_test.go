@@ -50,8 +50,8 @@ var createResponse = `{
 }`
 
 // MockCreateResponse creates a mock response
-func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint, func(w http.ResponseWriter, r *http.Request) {
+func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -64,8 +64,8 @@ func MockCreateResponse(t *testing.T) {
 }
 
 // MockDeleteResponse creates a mock delete response
-func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
+func MockDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
@@ -105,8 +105,8 @@ var updateResponse = `{
 	}
 }`
 
-func MockUpdateResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
+func MockUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -145,8 +145,8 @@ var getResponse = `{
 }`
 
 // MockGetResponse creates a mock get response
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
@@ -185,8 +185,8 @@ var listDetailResponse = `{
 var listDetailEmptyResponse = `{"snapshots": []}`
 
 // MockListDetailResponse creates a mock detailed-list response
-func MockListDetailResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
+func MockListDetailResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -214,8 +214,8 @@ var resetStatusRequest = `{
         }`
 
 // MockResetStatusResponse creates a mock reset status snapshot response
-func MockResetStatusResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID+"/action", func(w http.ResponseWriter, r *http.Request) {
+func MockResetStatusResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -231,8 +231,8 @@ var forceDeleteRequest = `{
         }`
 
 // MockForceDeleteResponse creates a mock force delete snapshot response
-func MockForceDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID+"/action", func(w http.ResponseWriter, r *http.Request) {
+func MockForceDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")

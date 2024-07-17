@@ -12,12 +12,12 @@ import (
 )
 
 func TestListFlavorProfiles(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorProfileListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorProfileListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := flavorprofiles.List(fake.ServiceClient(), flavorprofiles.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := flavorprofiles.List(fake.ServiceClient(fakeServer), flavorprofiles.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavorprofiles.ExtractFlavorProfiles(page)
@@ -42,11 +42,11 @@ func TestListFlavorProfiles(t *testing.T) {
 }
 
 func TestListAllFlavorProfiles(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorProfileListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorProfileListSuccessfully(t, fakeServer)
 
-	allPages, err := flavorprofiles.List(fake.ServiceClient(), flavorprofiles.ListOpts{}).AllPages(context.TODO())
+	allPages, err := flavorprofiles.List(fake.ServiceClient(fakeServer), flavorprofiles.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := flavorprofiles.ExtractFlavorProfiles(allPages)
 	th.AssertNoErr(t, err)
@@ -55,11 +55,11 @@ func TestListAllFlavorProfiles(t *testing.T) {
 }
 
 func TestCreateFlavorProfile(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorProfileCreationSuccessfully(t, SingleFlavorProfileBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorProfileCreationSuccessfully(t, fakeServer, SingleFlavorProfileBody)
 
-	actual, err := flavorprofiles.Create(context.TODO(), fake.ServiceClient(), flavorprofiles.CreateOpts{
+	actual, err := flavorprofiles.Create(context.TODO(), fake.ServiceClient(fakeServer), flavorprofiles.CreateOpts{
 		Name:         "amphora-test",
 		ProviderName: "amphora",
 		FlavorData:   "{\"loadbalancer_topology\": \"ACTIVE_STANDBY\"}",
@@ -70,21 +70,21 @@ func TestCreateFlavorProfile(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := flavorprofiles.Create(context.TODO(), fake.ServiceClient(), flavorprofiles.CreateOpts{})
+	res := flavorprofiles.Create(context.TODO(), fake.ServiceClient(fakeServer), flavorprofiles.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestGetFlavorProfiles(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorProfileGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorProfileGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := flavorprofiles.Get(context.TODO(), client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -94,20 +94,20 @@ func TestGetFlavorProfiles(t *testing.T) {
 }
 
 func TestDeleteFlavorProfile(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorProfileDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorProfileDeletionSuccessfully(t, fakeServer)
 
-	res := flavorprofiles.Delete(context.TODO(), fake.ServiceClient(), "dcd65be5-f117-4260-ab3d-b32cc5bd1272")
+	res := flavorprofiles.Delete(context.TODO(), fake.ServiceClient(fakeServer), "dcd65be5-f117-4260-ab3d-b32cc5bd1272")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateFlavorProfile(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorProfileUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorProfileUpdateSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := flavorprofiles.Update(context.TODO(), client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272", flavorprofiles.UpdateOpts{
 		Name:         "amphora-test-updated",
 		ProviderName: "amphora",

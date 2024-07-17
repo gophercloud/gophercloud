@@ -11,9 +11,9 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	listOpts := queues.ListOpts{
 		Limit:     1,
@@ -21,7 +21,7 @@ func TestList(t *testing.T) {
 	}
 
 	count := 0
-	err := queues.List(client.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := queues.List(client.ServiceClient(fakeServer), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := queues.ExtractQueues(page)
 		th.AssertNoErr(t, err)
 		countField, err := page.(queues.QueuePage).GetCount()
@@ -39,9 +39,9 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 	var enableEncrypted *bool = new(bool)
 
 	createOpts := queues.CreateOpts{
@@ -56,14 +56,14 @@ func TestCreate(t *testing.T) {
 		Extra:                      map[string]any{"description": "Queue for unit testing."},
 	}
 
-	err := queues.Create(context.TODO(), client.ServiceClient(), createOpts).ExtractErr()
+	err := queues.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSuccessfully(t, fakeServer)
 
 	updateOpts := queues.BatchUpdateOpts{
 		queues.UpdateOpts{
@@ -76,44 +76,44 @@ func TestUpdate(t *testing.T) {
 		Extra: map[string]any{"description": "Update queue description"},
 	}
 
-	actual, err := queues.Update(context.TODO(), client.ServiceClient(), QueueName, updateOpts).Extract()
+	actual, err := queues.Update(context.TODO(), client.ServiceClient(fakeServer), QueueName, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, updatedQueueResult, actual)
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
-	actual, err := queues.Get(context.TODO(), client.ServiceClient(), QueueName).Extract()
+	actual, err := queues.Get(context.TODO(), client.ServiceClient(fakeServer), QueueName).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, QueueDetails, actual)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
-	err := queues.Delete(context.TODO(), client.ServiceClient(), QueueName).ExtractErr()
+	err := queues.Delete(context.TODO(), client.ServiceClient(fakeServer), QueueName).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetStat(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetStatsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetStatsSuccessfully(t, fakeServer)
 
-	actual, err := queues.GetStats(context.TODO(), client.ServiceClient(), QueueName).Extract()
+	actual, err := queues.GetStats(context.TODO(), client.ServiceClient(fakeServer), QueueName).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedStats, actual)
 }
 
 func TestShare(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleShareSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleShareSuccessfully(t, fakeServer)
 
 	shareOpts := queues.ShareOpts{
 		Paths:   []queues.SharePath{queues.PathMessages, queues.PathClaims, queues.PathSubscriptions},
@@ -121,20 +121,20 @@ func TestShare(t *testing.T) {
 		Expires: "2016-09-01T00:00:00",
 	}
 
-	actual, err := queues.Share(context.TODO(), client.ServiceClient(), QueueName, shareOpts).Extract()
+	actual, err := queues.Share(context.TODO(), client.ServiceClient(fakeServer), QueueName, shareOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedShare, actual)
 }
 
 func TestPurge(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePurgeSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePurgeSuccessfully(t, fakeServer)
 
 	purgeOpts := queues.PurgeOpts{
 		ResourceTypes: []queues.PurgeResource{queues.ResourceMessages, queues.ResourceSubscriptions},
 	}
 
-	err := queues.Purge(context.TODO(), client.ServiceClient(), QueueName, purgeOpts).ExtractErr()
+	err := queues.Purge(context.TODO(), client.ServiceClient(fakeServer), QueueName, purgeOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

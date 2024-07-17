@@ -27,12 +27,12 @@ var (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _baseURL, "GET", "", ListConfigsJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, _baseURL, "GET", "", ListConfigsJSON, 200)
 
 	count := 0
-	err := configurations.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := configurations.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := configurations.ExtractConfigs(page)
 		th.AssertNoErr(t, err)
@@ -48,19 +48,19 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "GET", "", GetConfigJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, resURL, "GET", "", GetConfigJSON, 200)
 
-	config, err := configurations.Get(context.TODO(), client.ServiceClient(), configID).Extract()
+	config, err := configurations.Get(context.TODO(), client.ServiceClient(fakeServer), configID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleConfig, config)
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _baseURL, "POST", CreateReq, CreateConfigJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, _baseURL, "POST", CreateReq, CreateConfigJSON, 200)
 
 	opts := configurations.CreateOpts{
 		Datastore: &configurations.DatastoreOpts{
@@ -75,15 +75,15 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	config, err := configurations.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	config, err := configurations.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleConfigWithValues, config)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "PATCH", UpdateReq, "", 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, resURL, "PATCH", UpdateReq, "", 200)
 
 	opts := configurations.UpdateOpts{
 		Values: map[string]any{
@@ -91,14 +91,14 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	err := configurations.Update(context.TODO(), client.ServiceClient(), configID, opts).ExtractErr()
+	err := configurations.Update(context.TODO(), client.ServiceClient(fakeServer), configID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestReplace(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "PUT", UpdateReq, "", 202)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, resURL, "PUT", UpdateReq, "", 202)
 
 	opts := configurations.UpdateOpts{
 		Values: map[string]any{
@@ -106,23 +106,23 @@ func TestReplace(t *testing.T) {
 		},
 	}
 
-	err := configurations.Replace(context.TODO(), client.ServiceClient(), configID, opts).ExtractErr()
+	err := configurations.Replace(context.TODO(), client.ServiceClient(fakeServer), configID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "DELETE", "", "", 202)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, resURL, "DELETE", "", "", 202)
 
-	err := configurations.Delete(context.TODO(), client.ServiceClient(), configID).ExtractErr()
+	err := configurations.Delete(context.TODO(), client.ServiceClient(fakeServer), configID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestListInstances(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL+"/instances", "GET", "", ListInstancesJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, resURL+"/instances", "GET", "", ListInstancesJSON, 200)
 
 	expectedInstance := instances.Instance{
 		ID:   "d4603f69-ec7e-4e9b-803f-600b9205576f",
@@ -130,7 +130,7 @@ func TestListInstances(t *testing.T) {
 	}
 
 	pages := 0
-	err := configurations.ListInstances(client.ServiceClient(), configID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := configurations.ListInstances(client.ServiceClient(fakeServer), configID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := instances.ExtractInstances(page)
@@ -148,12 +148,12 @@ func TestListInstances(t *testing.T) {
 }
 
 func TestListDSParams(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, dsParamListURL, "GET", "", ListParamsJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, dsParamListURL, "GET", "", ListParamsJSON, 200)
 
 	pages := 0
-	err := configurations.ListDatastoreParams(client.ServiceClient(), dsID, versionID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := configurations.ListDatastoreParams(client.ServiceClient(fakeServer), dsID, versionID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := configurations.ExtractParams(page)
@@ -178,11 +178,11 @@ func TestListDSParams(t *testing.T) {
 }
 
 func TestGetDSParam(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, dsParamGetURL, "GET", "", GetParamJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, dsParamGetURL, "GET", "", GetParamJSON, 200)
 
-	param, err := configurations.GetDatastoreParam(context.TODO(), client.ServiceClient(), dsID, versionID, paramID).Extract()
+	param, err := configurations.GetDatastoreParam(context.TODO(), client.ServiceClient(fakeServer), dsID, versionID, paramID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &configurations.Param{
@@ -193,12 +193,12 @@ func TestGetDSParam(t *testing.T) {
 }
 
 func TestListGlobalParams(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, globalParamListURL, "GET", "", ListParamsJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, globalParamListURL, "GET", "", ListParamsJSON, 200)
 
 	pages := 0
-	err := configurations.ListGlobalParams(client.ServiceClient(), versionID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := configurations.ListGlobalParams(client.ServiceClient(fakeServer), versionID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := configurations.ExtractParams(page)
@@ -223,11 +223,11 @@ func TestListGlobalParams(t *testing.T) {
 }
 
 func TestGetGlobalParam(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, globalParamGetURL, "GET", "", GetParamJSON, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, globalParamGetURL, "GET", "", GetParamJSON, 200)
 
-	param, err := configurations.GetGlobalParam(context.TODO(), client.ServiceClient(), versionID, paramID).Extract()
+	param, err := configurations.GetGlobalParam(context.TODO(), client.ServiceClient(fakeServer), versionID, paramID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &configurations.Param{

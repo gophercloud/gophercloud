@@ -11,12 +11,12 @@ import (
 )
 
 func TestListAmphorae(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAmphoraListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAmphoraListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := amphorae.List(fake.ServiceClient(), amphorae.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := amphorae.List(fake.ServiceClient(fakeServer), amphorae.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := amphorae.ExtractAmphorae(page)
@@ -39,11 +39,11 @@ func TestListAmphorae(t *testing.T) {
 }
 
 func TestListAllAmphorae(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAmphoraListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAmphoraListSuccessfully(t, fakeServer)
 
-	allPages, err := amphorae.List(fake.ServiceClient(), amphorae.ListOpts{}).AllPages(context.TODO())
+	allPages, err := amphorae.List(fake.ServiceClient(fakeServer), amphorae.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := amphorae.ExtractAmphorae(allPages)
 	th.AssertNoErr(t, err)
@@ -52,11 +52,11 @@ func TestListAllAmphorae(t *testing.T) {
 }
 
 func TestGetAmphora(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAmphoraGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAmphoraGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := amphorae.Get(context.TODO(), client, "45f40289-0551-483a-b089-47214bc2a8a4").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -66,10 +66,10 @@ func TestGetAmphora(t *testing.T) {
 }
 
 func TestFailoverAmphora(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAmphoraFailoverSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAmphoraFailoverSuccessfully(t, fakeServer)
 
-	res := amphorae.Failover(context.TODO(), fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	res := amphorae.Failover(context.TODO(), fake.ServiceClient(fakeServer), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
 	th.AssertNoErr(t, res.Err)
 }

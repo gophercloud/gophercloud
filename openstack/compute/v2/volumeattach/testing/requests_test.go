@@ -44,15 +44,15 @@ var CreatedVolumeAttachment = volumeattach.VolumeAttachment{
 }
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleListSuccessfully(t)
+	HandleListSuccessfully(t, fakeServer)
 
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
 	count := 0
-	err := volumeattach.List(client.ServiceClient(), serverID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := volumeattach.List(client.ServiceClient(fakeServer), serverID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := volumeattach.ExtractVolumeAttachments(page)
 		th.AssertNoErr(t, err)
@@ -65,14 +65,14 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleCreateSuccessfully(t)
+	HandleCreateSuccessfully(t, fakeServer)
 
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	actual, err := volumeattach.Create(context.TODO(), client.ServiceClient(), serverID, volumeattach.CreateOpts{
+	actual, err := volumeattach.Create(context.TODO(), client.ServiceClient(fakeServer), serverID, volumeattach.CreateOpts{
 		Device:              "/dev/vdc",
 		VolumeID:            "a26887c6-c47b-4654-abb5-dfadf7d3f804",
 		Tag:                 iTag,
@@ -83,28 +83,28 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetSuccessfully(t)
+	HandleGetSuccessfully(t, fakeServer)
 
 	aID := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	actual, err := volumeattach.Get(context.TODO(), client.ServiceClient(), serverID, aID).Extract()
+	actual, err := volumeattach.Get(context.TODO(), client.ServiceClient(fakeServer), serverID, aID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SecondVolumeAttachment, actual)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleDeleteSuccessfully(t)
+	HandleDeleteSuccessfully(t, fakeServer)
 
 	aID := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	err := volumeattach.Delete(context.TODO(), client.ServiceClient(), serverID, aID).ExtractErr()
+	err := volumeattach.Delete(context.TODO(), client.ServiceClient(fakeServer), serverID, aID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

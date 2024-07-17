@@ -10,12 +10,12 @@ import (
 )
 
 func TestListAPIVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allVersions, err := apiversions.List(client.ServiceClient()).AllPages(context.TODO())
+	allVersions, err := apiversions.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := apiversions.ExtractAPIVersions(allVersions)
@@ -25,23 +25,23 @@ func TestListAPIVersions(t *testing.T) {
 }
 
 func TestGetAPIVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v2.1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(fakeServer), "v2.1").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, NovaAPIVersion21Result, *actual)
 }
 
 func TestGetMultipleAPIVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetMultipleResponses(t)
+	MockGetMultipleResponses(t, fakeServer)
 
-	_, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v3").Extract()
+	_, err := apiversions.Get(context.TODO(), client.ServiceClient(fakeServer), "v3").Extract()
 	th.AssertEquals(t, err.Error(), "Unable to find requested API version")
 }

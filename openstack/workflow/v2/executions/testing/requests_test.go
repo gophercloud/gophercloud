@@ -16,10 +16,10 @@ import (
 )
 
 func TestCreateExecution(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/executions", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/executions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusCreated)
@@ -54,7 +54,7 @@ func TestCreateExecution(t *testing.T) {
 		Description: "description",
 	}
 
-	actual, err := executions.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	actual, err := executions.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create execution: %v", err)
 	}
@@ -84,10 +84,10 @@ func TestCreateExecution(t *testing.T) {
 }
 
 func TestGetExecution(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/executions/50bb59f1-eb77-4017-a77f-6d575b002667", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/executions/50bb59f1-eb77-4017-a77f-6d575b002667", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-token", client.TokenID)
 
@@ -113,7 +113,7 @@ func TestGetExecution(t *testing.T) {
 		`)
 	})
 
-	actual, err := executions.Get(context.TODO(), client.ServiceClient(), "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
+	actual, err := executions.Get(context.TODO(), client.ServiceClient(fakeServer), "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get execution: %v", err)
 	}
@@ -143,21 +143,21 @@ func TestGetExecution(t *testing.T) {
 }
 
 func TestDeleteExecution(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/executions/1", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/executions/1", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
-	res := executions.Delete(context.TODO(), client.ServiceClient(), "1")
+	res := executions.Delete(context.TODO(), client.ServiceClient(fakeServer), "1")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestListExecutions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/executions", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/executions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -187,7 +187,7 @@ func TestListExecutions(t *testing.T) {
 					}
 				],
 				"next": "%s/executions?marker=50bb59f1-eb77-4017-a77f-6d575b002667"
-			}`, th.Server.URL)
+			}`, fakeServer.Server.URL)
 		case "50bb59f1-eb77-4017-a77f-6d575b002667":
 			fmt.Fprint(w, `{ "executions": [] }`)
 		default:
@@ -196,7 +196,7 @@ func TestListExecutions(t *testing.T) {
 	})
 	pages := 0
 	// Get all executions
-	err := executions.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := executions.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := executions.ExtractExecutions(page)
 		if err != nil {

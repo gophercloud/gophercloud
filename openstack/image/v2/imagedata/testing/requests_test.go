@@ -12,14 +12,14 @@ import (
 )
 
 func TestUpload(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandlePutImageDataSuccessfully(t)
+	HandlePutImageDataSuccessfully(t, fakeServer)
 
 	err := imagedata.Upload(
 		context.TODO(),
-		client.ServiceClient(),
+		client.ServiceClient(fakeServer),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24})).ExtractErr()
 
@@ -27,14 +27,14 @@ func TestUpload(t *testing.T) {
 }
 
 func TestStage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleStageImageDataSuccessfully(t)
+	HandleStageImageDataSuccessfully(t, fakeServer)
 
 	err := imagedata.Stage(
 		context.TODO(),
-		client.ServiceClient(),
+		client.ServiceClient(fakeServer),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24})).ExtractErr()
 
@@ -88,12 +88,12 @@ func (rs *RS) Seek(offset int64, whence int) (int64, error) {
 }
 
 func TestDownload(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetImageDataSuccessfully(t)
+	HandleGetImageDataSuccessfully(t, fakeServer)
 
-	rdr, err := imagedata.Download(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
+	rdr, err := imagedata.Download(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
 	th.AssertNoErr(t, err)
 
 	defer rdr.Close()

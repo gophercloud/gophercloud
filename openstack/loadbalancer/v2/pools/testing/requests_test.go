@@ -11,12 +11,12 @@ import (
 )
 
 func TestListPools(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := pools.List(fake.ServiceClient(), pools.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := pools.List(fake.ServiceClient(fakeServer), pools.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := pools.ExtractPools(page)
@@ -41,11 +41,11 @@ func TestListPools(t *testing.T) {
 }
 
 func TestListAllPools(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolListSuccessfully(t, fakeServer)
 
-	allPages, err := pools.List(fake.ServiceClient(), pools.ListOpts{}).AllPages(context.TODO())
+	allPages, err := pools.List(fake.ServiceClient(fakeServer), pools.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := pools.ExtractPools(allPages)
 	th.AssertNoErr(t, err)
@@ -54,11 +54,11 @@ func TestListAllPools(t *testing.T) {
 }
 
 func TestCreatePool(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolCreationSuccessfully(t, SinglePoolBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolCreationSuccessfully(t, fakeServer, SinglePoolBody)
 
-	actual, err := pools.Create(context.TODO(), fake.ServiceClient(), pools.CreateOpts{
+	actual, err := pools.Create(context.TODO(), fake.ServiceClient(fakeServer), pools.CreateOpts{
 		LBMethod:       pools.LBMethodRoundRobin,
 		Protocol:       "HTTP",
 		Name:           "Example pool",
@@ -71,11 +71,11 @@ func TestCreatePool(t *testing.T) {
 }
 
 func TestGetPool(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := pools.Get(context.TODO(), client, "c3741b06-df4d-4715-b142-276b6bce75ab").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -85,20 +85,20 @@ func TestGetPool(t *testing.T) {
 }
 
 func TestDeletePool(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolDeletionSuccessfully(t, fakeServer)
 
-	res := pools.Delete(context.TODO(), fake.ServiceClient(), "c3741b06-df4d-4715-b142-276b6bce75ab")
+	res := pools.Delete(context.TODO(), fake.ServiceClient(fakeServer), "c3741b06-df4d-4715-b142-276b6bce75ab")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdatePool(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolUpdateSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	name := "NewPoolName"
 	actual, err := pools.Update(context.TODO(), client, "c3741b06-df4d-4715-b142-276b6bce75ab", pools.UpdateOpts{
 		Name:     &name,
@@ -112,14 +112,14 @@ func TestUpdatePool(t *testing.T) {
 }
 
 func TestRequiredPoolCreateOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := pools.Create(context.TODO(), fake.ServiceClient(), pools.CreateOpts{})
+	res := pools.Create(context.TODO(), fake.ServiceClient(fakeServer), pools.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = pools.Create(context.TODO(), fake.ServiceClient(), pools.CreateOpts{
+	res = pools.Create(context.TODO(), fake.ServiceClient(fakeServer), pools.CreateOpts{
 		LBMethod:       pools.LBMethod("invalid"),
 		Protocol:       pools.ProtocolHTTPS,
 		LoadbalancerID: "69055154-f603-4a28-8951-7cc2d9e54a9a",
@@ -128,7 +128,7 @@ func TestRequiredPoolCreateOpts(t *testing.T) {
 		t.Fatalf("Expected error, but got none")
 	}
 
-	res = pools.Create(context.TODO(), fake.ServiceClient(), pools.CreateOpts{
+	res = pools.Create(context.TODO(), fake.ServiceClient(fakeServer), pools.CreateOpts{
 		LBMethod:       pools.LBMethodRoundRobin,
 		Protocol:       pools.Protocol("invalid"),
 		LoadbalancerID: "69055154-f603-4a28-8951-7cc2d9e54a9a",
@@ -137,7 +137,7 @@ func TestRequiredPoolCreateOpts(t *testing.T) {
 		t.Fatalf("Expected error, but got none")
 	}
 
-	res = pools.Create(context.TODO(), fake.ServiceClient(), pools.CreateOpts{
+	res = pools.Create(context.TODO(), fake.ServiceClient(fakeServer), pools.CreateOpts{
 		LBMethod: pools.LBMethodRoundRobin,
 		Protocol: pools.ProtocolHTTPS,
 	})
@@ -147,12 +147,12 @@ func TestRequiredPoolCreateOpts(t *testing.T) {
 }
 
 func TestListMembers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMemberListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMemberListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := pools.ListMembers(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", pools.ListMembersOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := pools.ListMembers(fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", pools.ListMembersOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := pools.ExtractMembers(page)
@@ -177,11 +177,11 @@ func TestListMembers(t *testing.T) {
 }
 
 func TestListAllMembers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMemberListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMemberListSuccessfully(t, fakeServer)
 
-	allPages, err := pools.ListMembers(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", pools.ListMembersOpts{}).AllPages(context.TODO())
+	allPages, err := pools.ListMembers(fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", pools.ListMembersOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := pools.ExtractMembers(allPages)
 	th.AssertNoErr(t, err)
@@ -190,12 +190,12 @@ func TestListAllMembers(t *testing.T) {
 }
 
 func TestCreateMember(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMemberCreationSuccessfully(t, SingleMemberBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMemberCreationSuccessfully(t, fakeServer, SingleMemberBody)
 
 	weight := 10
-	actual, err := pools.CreateMember(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{
+	actual, err := pools.CreateMember(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{
 		Name:         "db",
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
 		ProjectID:    "2ffc6e22aae24e4795f87155d24c896f",
@@ -209,33 +209,33 @@ func TestCreateMember(t *testing.T) {
 }
 
 func TestRequiredMemberCreateOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := pools.CreateMember(context.TODO(), fake.ServiceClient(), "", pools.CreateMemberOpts{})
+	res := pools.CreateMember(context.TODO(), fake.ServiceClient(fakeServer), "", pools.CreateMemberOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = pools.CreateMember(context.TODO(), fake.ServiceClient(), "", pools.CreateMemberOpts{Address: "1.2.3.4", ProtocolPort: 80})
+	res = pools.CreateMember(context.TODO(), fake.ServiceClient(fakeServer), "", pools.CreateMemberOpts{Address: "1.2.3.4", ProtocolPort: 80})
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
-	res = pools.CreateMember(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{ProtocolPort: 80})
+	res = pools.CreateMember(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{ProtocolPort: 80})
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
-	res = pools.CreateMember(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{Address: "1.2.3.4"})
+	res = pools.CreateMember(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{Address: "1.2.3.4"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
 }
 
 func TestGetMember(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMemberGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMemberGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := pools.GetMember(context.TODO(), client, "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -245,21 +245,21 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestDeleteMember(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMemberDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMemberDeletionSuccessfully(t, fakeServer)
 
-	res := pools.DeleteMember(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf")
+	res := pools.DeleteMember(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateMember(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMemberUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMemberUpdateSuccessfully(t, fakeServer)
 
 	weight := 4
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	name := "newMemberName"
 	actual, err := pools.UpdateMember(context.TODO(), client, "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf", pools.UpdateMemberOpts{
 		Name:   &name,
@@ -273,9 +273,9 @@ func TestUpdateMember(t *testing.T) {
 }
 
 func TestBatchUpdateMembers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleMembersUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleMembersUpdateSuccessfully(t, fakeServer)
 
 	name_1 := "web-server-1"
 	weight_1 := 20
@@ -299,25 +299,25 @@ func TestBatchUpdateMembers(t *testing.T) {
 	}
 	members := []pools.BatchUpdateMemberOpts{member1, member2}
 
-	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", members)
+	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", members)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestEmptyBatchUpdateMembers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleEmptyMembersUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleEmptyMembersUpdateSuccessfully(t, fakeServer)
 
-	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{})
+	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{})
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestRequiredBatchUpdateMemberOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	name := "web-server-1"
-	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
+	res := pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
 		{
 			Name: &name,
 		},
@@ -326,7 +326,7 @@ func TestRequiredBatchUpdateMemberOpts(t *testing.T) {
 		t.Fatalf("Expected error, but got none")
 	}
 
-	res = pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
+	res = pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
 		{
 			Address: "192.0.2.17",
 			Name:    &name,
@@ -336,7 +336,7 @@ func TestRequiredBatchUpdateMemberOpts(t *testing.T) {
 		t.Fatalf("Expected error, but got none")
 	}
 
-	res = pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
+	res = pools.BatchUpdateMembers(context.TODO(), fake.ServiceClient(fakeServer), "332abe93-f488-41ba-870b-2ac66be7f853", []pools.BatchUpdateMemberOpts{
 		{
 			ProtocolPort: 80,
 			Name:         &name,

@@ -154,8 +154,8 @@ var ExpectedPoliciesSlice = []policies.Policy{FirstPolicy, SecondPolicy}
 
 // HandleListPoliciesSuccessfully creates an HTTP handler at `/policies` on the
 // test handler mux that responds with a list of two policies.
-func HandleListPoliciesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
+func HandleListPoliciesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -175,8 +175,8 @@ func HandleListPoliciesSuccessfully(t *testing.T) {
 
 // HandleCreatePolicySuccessfully creates an HTTP handler at `/policies` on the
 // test handler mux that tests policy creation.
-func HandleCreatePolicySuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreatePolicySuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -188,8 +188,8 @@ func HandleCreatePolicySuccessfully(t *testing.T) {
 
 // HandleGetPolicySuccessfully creates an HTTP handler at `/policies` on the
 // test handler mux that responds with a single policy.
-func HandleGetPolicySuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/policies/b49884da9d31494ea02aff38d4b4e701",
+func HandleGetPolicySuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/policies/b49884da9d31494ea02aff38d4b4e701",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "Accept", "application/json")
@@ -204,8 +204,8 @@ func HandleGetPolicySuccessfully(t *testing.T) {
 
 // HandleUpdatePolicySuccessfully creates an HTTP handler at `/policies` on the
 // test handler mux that tests role update.
-func HandleUpdatePolicySuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/policies/b49884da9d31494ea02aff38d4b4e701",
+func HandleUpdatePolicySuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/policies/b49884da9d31494ea02aff38d4b4e701",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -219,8 +219,8 @@ func HandleUpdatePolicySuccessfully(t *testing.T) {
 
 // HandleDeletePolicySuccessfully creates an HTTP handler at `/policies` on the
 // test handler mux that tests policy deletion.
-func HandleDeletePolicySuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/policies/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeletePolicySuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/policies/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

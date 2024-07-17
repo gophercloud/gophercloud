@@ -22,8 +22,8 @@ var CreateResponse = fmt.Sprintf(`
    "id": 26
 }`, projectID)
 
-func HandleCreateQuotaSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/quotas", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateQuotaSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/quotas", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

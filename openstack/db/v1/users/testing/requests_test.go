@@ -12,9 +12,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreate(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreate(t, fakeServer)
 
 	opts := users.BatchCreateOpts{
 		{
@@ -34,14 +34,14 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	res := users.Create(context.TODO(), client.ServiceClient(), instanceID, opts)
+	res := users.Create(context.TODO(), client.ServiceClient(fakeServer), instanceID, opts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUserList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleList(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleList(t, fakeServer)
 
 	expectedUsers := []users.User{
 		{
@@ -60,7 +60,7 @@ func TestUserList(t *testing.T) {
 	}
 
 	pages := 0
-	err := users.List(client.ServiceClient(), instanceID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := users.List(client.ServiceClient(fakeServer), instanceID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := users.ExtractUsers(page)
@@ -77,10 +77,10 @@ func TestUserList(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDelete(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDelete(t, fakeServer)
 
-	res := users.Delete(context.TODO(), client.ServiceClient(), instanceID, "{userName}")
+	res := users.Delete(context.TODO(), client.ServiceClient(fakeServer), instanceID, "{userName}")
 	th.AssertNoErr(t, res.Err)
 }

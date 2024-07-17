@@ -44,34 +44,35 @@ func TestGetHTTPClient(t *testing.T) {
 // Implement a fakeclient that can be used to mock out HTTP requests
 type fakeClient struct {
 	BaseClient Client
+	FakeServer th.FakeServer
 }
 
 // this client's Get method first changes the URL given to point to
 // testhelper's (th) endpoints. This is done because the http Mux does not seem
 // to work for fqdns with the `file` scheme
 func (c fakeClient) Get(url string) (*http.Response, error) {
-	newurl := strings.Replace(url, "file://", th.Endpoint(), 1)
+	newurl := strings.Replace(url, "file://", c.FakeServer.Endpoint(), 1)
 	return c.BaseClient.Get(newurl)
 }
 
 // test the fetch function
 func TestFetch(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
 	fakeURL := strings.Join([]string{baseurl, "file.yaml"}, "/")
 	urlparsed, err := url.Parse(fakeURL)
 	th.AssertNoErr(t, err)
 
-	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		w.Header().Set("Content-Type", "application/jason")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "Fee-fi-fo-fum")
 	})
 
-	client := fakeClient{BaseClient: getHTTPClient()}
+	client := fakeClient{BaseClient: getHTTPClient(), FakeServer: fakeServer}
 	te := TE{
 		URL:    "file.yaml",
 		client: client,

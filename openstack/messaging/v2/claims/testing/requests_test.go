@@ -10,9 +10,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 
 	createOpts := claims.CreateOpts{
 		TTL:   3600,
@@ -20,15 +20,15 @@ func TestCreate(t *testing.T) {
 		Limit: 10,
 	}
 
-	actual, err := claims.Create(context.TODO(), client.ServiceClient(), QueueName, createOpts).Extract()
+	actual, err := claims.Create(context.TODO(), client.ServiceClient(fakeServer), QueueName, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, CreatedClaim, actual)
 }
 
 func TestCreateNoContent(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateNoContent(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateNoContent(t, fakeServer)
 
 	createOpts := claims.CreateOpts{
 		TTL:   3600,
@@ -36,41 +36,41 @@ func TestCreateNoContent(t *testing.T) {
 		Limit: 10,
 	}
 
-	actual, err := claims.Create(context.TODO(), client.ServiceClient(), QueueName, createOpts).Extract()
+	actual, err := claims.Create(context.TODO(), client.ServiceClient(fakeServer), QueueName, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	var expected []claims.Messages
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
-	actual, err := claims.Get(context.TODO(), client.ServiceClient(), QueueName, ClaimID).Extract()
+	actual, err := claims.Get(context.TODO(), client.ServiceClient(fakeServer), QueueName, ClaimID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstClaim, actual)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSuccessfully(t, fakeServer)
 
 	updateOpts := claims.UpdateOpts{
 		Grace: 1600,
 		TTL:   1200,
 	}
 
-	err := claims.Update(context.TODO(), client.ServiceClient(), QueueName, ClaimID, updateOpts).ExtractErr()
+	err := claims.Update(context.TODO(), client.ServiceClient(fakeServer), QueueName, ClaimID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
-	err := claims.Delete(context.TODO(), client.ServiceClient(), QueueName, ClaimID).ExtractErr()
+	err := claims.Delete(context.TODO(), client.ServiceClient(fakeServer), QueueName, ClaimID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

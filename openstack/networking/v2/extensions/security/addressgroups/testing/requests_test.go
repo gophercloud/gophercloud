@@ -13,10 +13,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := addressgroups.List(fake.ServiceClient(), addressgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := addressgroups.List(fake.ServiceClient(fakeServer), addressgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := addressgroups.ExtractGroups(page)
 		if err != nil {
@@ -60,10 +60,10 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -82,22 +82,25 @@ func TestCreate(t *testing.T) {
 			"132.168.4.12/24",
 		},
 	}
-	_, err := addressgroups.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	_, err := addressgroups.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	_, err := addressgroups.Create(context.TODO(), fake.ServiceClient(), addressgroups.CreateOpts{Name: "ADDR_GP_1"}).Extract()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	_, err := addressgroups.Create(context.TODO(), fake.ServiceClient(fakeServer), addressgroups.CreateOpts{Name: "ADDR_GP_1"}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -107,7 +110,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, AddressGroupGetResponse)
 	})
 
-	sr, err := addressgroups.Get(context.TODO(), fake.ServiceClient(), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0").Extract()
+	sr, err := addressgroups.Get(context.TODO(), fake.ServiceClient(fakeServer), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "", sr.Description)
 	th.AssertEquals(t, "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", sr.ID)
@@ -117,10 +120,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0",
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -140,7 +143,7 @@ func TestUpdate(t *testing.T) {
 		Name:        &name,
 		Description: &description,
 	}
-	ag, err := addressgroups.Update(context.TODO(), fake.ServiceClient(), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", opts).Extract()
+	ag, err := addressgroups.Update(context.TODO(), fake.ServiceClient(fakeServer), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, []string{"192.168.4.1/32"}, ag.Addresses)
@@ -151,10 +154,10 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestAddAddresses(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0/add_addresses",
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0/add_addresses",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -171,7 +174,7 @@ func TestAddAddresses(t *testing.T) {
 	opts := addressgroups.UpdateAddressesOpts{
 		Addresses: []string{"192.168.4.1/32"},
 	}
-	ag, err := addressgroups.AddAddresses(context.TODO(), fake.ServiceClient(), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", opts).Extract()
+	ag, err := addressgroups.AddAddresses(context.TODO(), fake.ServiceClient(fakeServer), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, []string{"132.168.4.12/24", "192.168.4.1/32"}, ag.Addresses)
@@ -180,10 +183,10 @@ func TestAddAddresses(t *testing.T) {
 }
 
 func TestRemoveAddresses(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0/remove_addresses",
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups/8722e0e0-9cc9-4490-9660-8c9a5732fbb0/remove_addresses",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -200,7 +203,7 @@ func TestRemoveAddresses(t *testing.T) {
 	opts := addressgroups.UpdateAddressesOpts{
 		Addresses: []string{"192.168.4.1/32"},
 	}
-	ag, err := addressgroups.RemoveAddresses(context.TODO(), fake.ServiceClient(), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", opts).Extract()
+	ag, err := addressgroups.RemoveAddresses(context.TODO(), fake.ServiceClient(fakeServer), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, []string{"132.168.4.12/24"}, ag.Addresses)
@@ -209,16 +212,16 @@ func TestRemoveAddresses(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-groups/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-groups/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := addressgroups.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").ExtractErr()
+	err := addressgroups.Delete(context.TODO(), fake.ServiceClient(fakeServer), "4ec89087-d057-4e2c-911f-60a3b47ee304").ExtractErr()
 	th.AssertNoErr(t, err)
 }

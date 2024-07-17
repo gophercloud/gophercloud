@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/fixture"
 )
 
@@ -43,10 +44,10 @@ var (
 	getFlavorResp   = fmt.Sprintf(`{"flavor": %s}`, flavor1)
 )
 
-func HandleList(t *testing.T) {
-	fixture.SetupHandler(t, _baseURL, "GET", "", listFlavorsResp, 200)
+func HandleList(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, _baseURL, "GET", "", listFlavorsResp, 200)
 }
 
-func HandleGet(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "GET", "", getFlavorResp, 200)
+func HandleGet(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "GET", "", getFlavorResp, 200)
 }

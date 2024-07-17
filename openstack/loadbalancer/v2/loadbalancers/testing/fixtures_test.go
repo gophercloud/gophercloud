@@ -441,8 +441,8 @@ var (
 )
 
 // HandleLoadbalancerListSuccessfully sets up the test server to respond to a loadbalancer List request.
-func HandleLoadbalancerListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -464,8 +464,8 @@ func HandleLoadbalancerListSuccessfully(t *testing.T) {
 
 // HandleFullyPopulatedLoadbalancerCreationSuccessfully sets up the test server to respond to a
 // fully populated loadbalancer creation request with a given response.
-func HandleFullyPopulatedLoadbalancerCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func HandleFullyPopulatedLoadbalancerCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -539,8 +539,8 @@ func HandleFullyPopulatedLoadbalancerCreationSuccessfully(t *testing.T, response
 
 // HandleLoadbalancerCreationSuccessfully sets up the test server to respond to a loadbalancer creation request
 // with a given response.
-func HandleLoadbalancerCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -564,8 +564,8 @@ func HandleLoadbalancerCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandleLoadbalancerGetSuccessfully sets up the test server to respond to a loadbalancer Get request.
-func HandleLoadbalancerGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -575,8 +575,8 @@ func HandleLoadbalancerGetSuccessfully(t *testing.T) {
 }
 
 // HandleLoadbalancerGetStatusesTree sets up the test server to respond to a loadbalancer Get statuses tree request.
-func HandleLoadbalancerGetStatusesTree(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/status", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerGetStatusesTree(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/status", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -586,8 +586,8 @@ func HandleLoadbalancerGetStatusesTree(t *testing.T) {
 }
 
 // HandleLoadbalancerDeletionSuccessfully sets up the test server to respond to a loadbalancer deletion request.
-func HandleLoadbalancerDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -596,8 +596,8 @@ func HandleLoadbalancerDeletionSuccessfully(t *testing.T) {
 }
 
 // HandleLoadbalancerUpdateSuccessfully sets up the test server to respond to a loadbalancer Update request.
-func HandleLoadbalancerUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -614,8 +614,8 @@ func HandleLoadbalancerUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleLoadbalancerGetStatsTree sets up the test server to respond to a loadbalancer Get stats tree request.
-func HandleLoadbalancerGetStatsTree(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/stats", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerGetStatsTree(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/stats", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -625,8 +625,8 @@ func HandleLoadbalancerGetStatsTree(t *testing.T) {
 }
 
 // HandleLoadbalancerFailoverSuccessfully sets up the test server to respond to a loadbalancer failover request.
-func HandleLoadbalancerFailoverSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/failover", func(w http.ResponseWriter, r *http.Request) {
+func HandleLoadbalancerFailoverSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/failover", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

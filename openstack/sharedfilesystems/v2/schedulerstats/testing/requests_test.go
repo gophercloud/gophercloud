@@ -11,12 +11,12 @@ import (
 )
 
 func TestListPoolsDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePoolsListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePoolsListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := schedulerstats.List(client.ServiceClient(), schedulerstats.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := schedulerstats.List(client.ServiceClient(fakeServer), schedulerstats.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := schedulerstats.ExtractPools(page)
@@ -40,7 +40,7 @@ func TestListPoolsDetail(t *testing.T) {
 	}
 
 	pages = 0
-	err = schedulerstats.ListDetail(client.ServiceClient(), schedulerstats.ListDetailOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err = schedulerstats.ListDetail(client.ServiceClient(fakeServer), schedulerstats.ListDetailOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := schedulerstats.ExtractPools(page)

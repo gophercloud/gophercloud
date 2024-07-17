@@ -90,8 +90,8 @@ var (
 	}
 )
 
-func HandleFlavorListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
+func HandleFlavorListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -111,8 +111,8 @@ func HandleFlavorListSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleFlavorCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
+func HandleFlavorCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -130,8 +130,8 @@ func HandleFlavorCreationSuccessfully(t *testing.T, response string) {
 	})
 }
 
-func HandleFlavorGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/flavors/5548c807-e6e8-43d7-9ea4-b38d34dd74a0", func(w http.ResponseWriter, r *http.Request) {
+func HandleFlavorGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/flavors/5548c807-e6e8-43d7-9ea4-b38d34dd74a0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -140,8 +140,8 @@ func HandleFlavorGetSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleFlavorDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/flavors/5548c807-e6e8-43d7-9ea4-b38d34dd74a0", func(w http.ResponseWriter, r *http.Request) {
+func HandleFlavorDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/flavors/5548c807-e6e8-43d7-9ea4-b38d34dd74a0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -149,8 +149,8 @@ func HandleFlavorDeletionSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleFlavorUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/flavors/5548c807-e6e8-43d7-9ea4-b38d34dd74a0", func(w http.ResponseWriter, r *http.Request) {
+func HandleFlavorUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/flavors/5548c807-e6e8-43d7-9ea4-b38d34dd74a0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

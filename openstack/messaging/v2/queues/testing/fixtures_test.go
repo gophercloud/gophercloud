@@ -215,8 +215,8 @@ var ExpectedShare = queues.QueueShare{
 }
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2/queues",
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2/queues",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -236,8 +236,8 @@ func HandleListSuccessfully(t *testing.T) {
 }
 
 // HandleCreateSuccessfully configures the test server to respond to a Create request.
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -248,8 +248,8 @@ func HandleCreateSuccessfully(t *testing.T) {
 }
 
 // HandleUpdateSuccessfully configures the test server to respond to an Update request.
-func HandleUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -261,8 +261,8 @@ func HandleUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request.
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -273,8 +273,8 @@ func HandleGetSuccessfully(t *testing.T) {
 }
 
 // HandleDeleteSuccessfully configures the test server to respond to a Delete request.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -283,8 +283,8 @@ func HandleDeleteSuccessfully(t *testing.T) {
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request.
-func HandleGetStatsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/stats", QueueName),
+func HandleGetStatsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/stats", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -295,8 +295,8 @@ func HandleGetStatsSuccessfully(t *testing.T) {
 }
 
 // HandleShareSuccessfully configures the test server to respond to a Share request.
-func HandleShareSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/share", QueueName),
+func HandleShareSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/share", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -308,8 +308,8 @@ func HandleShareSuccessfully(t *testing.T) {
 }
 
 // HandlePurgeSuccessfully configures the test server to respond to a Purge request.
-func HandlePurgeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/purge", QueueName),
+func HandlePurgeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/purge", QueueName),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

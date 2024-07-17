@@ -14,10 +14,10 @@ import (
 )
 
 func TestListFlavors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -74,7 +74,7 @@ func TestListFlavors(t *testing.T) {
 							}
 						]
 					}
-				`, th.Server.URL)
+				`, fakeServer.Server.URL)
 		case "2":
 			fmt.Fprint(w, `{ "flavors": [] }`)
 		default:
@@ -84,7 +84,7 @@ func TestListFlavors(t *testing.T) {
 
 	pages := 0
 	// Get public and private flavors
-	err := flavors.ListDetail(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := flavors.ListDetail(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavors.ExtractFlavors(page)
@@ -113,10 +113,10 @@ func TestListFlavors(t *testing.T) {
 }
 
 func TestGetFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -140,7 +140,7 @@ func TestGetFlavor(t *testing.T) {
 		`)
 	})
 
-	actual, err := flavors.Get(context.TODO(), client.ServiceClient(), "12345").Extract()
+	actual, err := flavors.Get(context.TODO(), client.ServiceClient(fakeServer), "12345").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor: %v", err)
 	}
@@ -162,10 +162,10 @@ func TestGetFlavor(t *testing.T) {
 }
 
 func TestCreateFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -196,7 +196,7 @@ func TestCreateFlavor(t *testing.T) {
 		RxTxFactor:  1.0,
 		Description: "foo",
 	}
-	actual, err := flavors.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	actual, err := flavors.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create flavor: %v", err)
 	}
@@ -217,10 +217,10 @@ func TestCreateFlavor(t *testing.T) {
 }
 
 func TestUpdateFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -244,7 +244,7 @@ func TestUpdateFlavor(t *testing.T) {
 	opts := &flavors.UpdateOpts{
 		Description: "foo",
 	}
-	actual, err := flavors.Update(context.TODO(), client.ServiceClient(), "12345678", opts).Extract()
+	actual, err := flavors.Update(context.TODO(), client.ServiceClient(fakeServer), "12345678", opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update flavor: %v", err)
 	}
@@ -266,25 +266,25 @@ func TestUpdateFlavor(t *testing.T) {
 }
 
 func TestDeleteFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := flavors.Delete(context.TODO(), client.ServiceClient(), "12345678")
+	res := flavors.Delete(context.TODO(), client.ServiceClient(fakeServer), "12345678")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestFlavorAccessesList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/12345678/os-flavor-access", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/12345678/os-flavor-access", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -307,7 +307,7 @@ func TestFlavorAccessesList(t *testing.T) {
 		},
 	}
 
-	allPages, err := flavors.ListAccesses(client.ServiceClient(), "12345678").AllPages(context.TODO())
+	allPages, err := flavors.ListAccesses(client.ServiceClient(fakeServer), "12345678").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := flavors.ExtractAccesses(allPages)
@@ -319,10 +319,10 @@ func TestFlavorAccessesList(t *testing.T) {
 }
 
 func TestFlavorAccessAdd(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "accept", "application/json")
@@ -359,7 +359,7 @@ func TestFlavorAccessAdd(t *testing.T) {
 		Tenant: "2f954bcf047c4ee9b09a37d49ae6db54",
 	}
 
-	actual, err := flavors.AddAccess(context.TODO(), client.ServiceClient(), "12345678", addAccessOpts).Extract()
+	actual, err := flavors.AddAccess(context.TODO(), client.ServiceClient(fakeServer), "12345678", addAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -368,10 +368,10 @@ func TestFlavorAccessAdd(t *testing.T) {
 }
 
 func TestFlavorAccessRemove(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "accept", "application/json")
@@ -397,7 +397,7 @@ func TestFlavorAccessRemove(t *testing.T) {
 		Tenant: "2f954bcf047c4ee9b09a37d49ae6db54",
 	}
 
-	actual, err := flavors.RemoveAccess(context.TODO(), client.ServiceClient(), "12345678", removeAccessOpts).Extract()
+	actual, err := flavors.RemoveAccess(context.TODO(), client.ServiceClient(fakeServer), "12345678", removeAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -406,61 +406,61 @@ func TestFlavorAccessRemove(t *testing.T) {
 }
 
 func TestFlavorExtraSpecsList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecsListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecsListSuccessfully(t, fakeServer)
 
 	expected := ExtraSpecs
-	actual, err := flavors.ListExtraSpecs(context.TODO(), client.ServiceClient(), "1").Extract()
+	actual, err := flavors.ListExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "1").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestFlavorExtraSpecGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecGetSuccessfully(t, fakeServer)
 
 	expected := ExtraSpec
-	actual, err := flavors.GetExtraSpec(context.TODO(), client.ServiceClient(), "1", "hw:cpu_policy").Extract()
+	actual, err := flavors.GetExtraSpec(context.TODO(), client.ServiceClient(fakeServer), "1", "hw:cpu_policy").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestFlavorExtraSpecsCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecsCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecsCreateSuccessfully(t, fakeServer)
 
 	createOpts := flavors.ExtraSpecsOpts{
 		"hw:cpu_policy":        "CPU-POLICY",
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
 	}
 	expected := ExtraSpecs
-	actual, err := flavors.CreateExtraSpecs(context.TODO(), client.ServiceClient(), "1", createOpts).Extract()
+	actual, err := flavors.CreateExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "1", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestFlavorExtraSpecUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecUpdateSuccessfully(t, fakeServer)
 
 	updateOpts := flavors.ExtraSpecsOpts{
 		"hw:cpu_policy": "CPU-POLICY-2",
 	}
 	expected := UpdatedExtraSpec
-	actual, err := flavors.UpdateExtraSpec(context.TODO(), client.ServiceClient(), "1", updateOpts).Extract()
+	actual, err := flavors.UpdateExtraSpec(context.TODO(), client.ServiceClient(fakeServer), "1", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestFlavorExtraSpecDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecDeleteSuccessfully(t, fakeServer)
 
-	res := flavors.DeleteExtraSpec(context.TODO(), client.ServiceClient(), "1", "hw:cpu_policy")
+	res := flavors.DeleteExtraSpec(context.TODO(), client.ServiceClient(fakeServer), "1", "hw:cpu_policy")
 	th.AssertNoErr(t, res.Err)
 }
