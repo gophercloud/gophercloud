@@ -142,8 +142,8 @@ const TokenGetResponse = `
 
 // HandleTokenPost expects a POST against a /tokens handler, ensures that the request body has been
 // constructed properly given certain auth options, and returns the result.
-func HandleTokenPost(t *testing.T, requestJSON string) {
-	th.Mux.HandleFunc("/tokens", func(w http.ResponseWriter, r *http.Request) {
+func HandleTokenPost(t *testing.T, fakeServer th.FakeServer, requestJSON string) {
+	fakeServer.Mux.HandleFunc("/tokens", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -158,8 +158,8 @@ func HandleTokenPost(t *testing.T, requestJSON string) {
 
 // HandleTokenGet expects a Get against a /tokens handler, ensures that the request body has been
 // constructed properly given certain auth options, and returns the result.
-func HandleTokenGet(t *testing.T, token string) {
-	th.Mux.HandleFunc("/tokens/"+token, func(w http.ResponseWriter, r *http.Request) {
+func HandleTokenGet(t *testing.T, fakeServer th.FakeServer, token string) {
+	fakeServer.Mux.HandleFunc("/tokens/"+token, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

@@ -13,10 +13,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/bgp-speakers",
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -27,7 +27,7 @@ func TestList(t *testing.T) {
 		})
 	count := 0
 
-	err := speakers.List(fake.ServiceClient()).EachPage(
+	err := speakers.List(fake.ServiceClient(fakeServer)).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -45,11 +45,11 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -57,16 +57,16 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, GetBGPSpeakerResult)
 	})
 
-	s, err := speakers.Get(context.TODO(), fake.ServiceClient(), bgpSpeakerID).Extract()
+	s, err := speakers.Get(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, *s, BGPSpeaker1)
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/bgp-speakers", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -85,7 +85,7 @@ func TestCreate(t *testing.T) {
 		LocalAS:                       "2000",
 		Networks:                      []string{},
 	}
-	r, err := speakers.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	r, err := speakers.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.Name, opts.Name)
 	th.AssertEquals(t, r.LocalAS, 2000)
@@ -96,11 +96,11 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -109,16 +109,16 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := speakers.Delete(context.TODO(), fake.ServiceClient(), bgpSpeakerID).ExtractErr()
+	err := speakers.Delete(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -146,7 +146,7 @@ func TestUpdate(t *testing.T) {
 		AdvertiseFloatingIPHostRoutes: true,
 	}
 
-	r, err := speakers.Update(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).Extract()
+	r, err := speakers.Update(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.Name, opts.Name)
 	th.AssertEquals(t, r.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
@@ -154,12 +154,12 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestAddBGPPeer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
 	bgpPeerID := "f5884c7c-71d5-43a3-88b4-1742e97674aa"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/add_bgp_peer", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/add_bgp_peer", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -172,18 +172,18 @@ func TestAddBGPPeer(t *testing.T) {
 	})
 
 	opts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeerID}
-	r, err := speakers.AddBGPPeer(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).Extract()
+	r, err := speakers.AddBGPPeer(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpPeerID, r.BGPPeerID)
 }
 
 func TestRemoveBGPPeer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
 	bgpPeerID := "f5884c7c-71d5-43a3-88b4-1742e97674aa"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/remove_bgp_peer", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/remove_bgp_peer", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -193,16 +193,16 @@ func TestRemoveBGPPeer(t *testing.T) {
 	})
 
 	opts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeerID}
-	err := speakers.RemoveBGPPeer(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
+	err := speakers.RemoveBGPPeer(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetAdvertisedRoutes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/get_advertised_routes", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/get_advertised_routes", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -211,7 +211,7 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 	})
 
 	count := 0
-	err := speakers.GetAdvertisedRoutes(fake.ServiceClient(), bgpSpeakerID).EachPage(
+	err := speakers.GetAdvertisedRoutes(fake.ServiceClient(fakeServer), bgpSpeakerID).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -235,12 +235,12 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 }
 
 func TestAddGatewayNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
 	networkID := "ac13bb26-6219-49c3-a880-08847f6830b7"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/add_gateway_network", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/add_gateway_network", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -253,18 +253,18 @@ func TestAddGatewayNetwork(t *testing.T) {
 	})
 
 	opts := speakers.AddGatewayNetworkOpts{NetworkID: networkID}
-	r, err := speakers.AddGatewayNetwork(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).Extract()
+	r, err := speakers.AddGatewayNetwork(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.NetworkID, networkID)
 }
 
 func TestRemoveGatewayNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
 	networkID := "ac13bb26-6219-49c3-a880-08847f6830b7"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/remove_gateway_network", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/remove_gateway_network", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -277,6 +277,6 @@ func TestRemoveGatewayNetwork(t *testing.T) {
 	})
 
 	opts := speakers.RemoveGatewayNetworkOpts{NetworkID: networkID}
-	err := speakers.RemoveGatewayNetwork(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
+	err := speakers.RemoveGatewayNetwork(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

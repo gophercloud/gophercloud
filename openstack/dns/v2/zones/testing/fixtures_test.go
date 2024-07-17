@@ -143,8 +143,8 @@ var SecondZone = zones.Zone{
 var ExpectedZonesSlice = []zones.Zone{FirstZone, SecondZone}
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -154,8 +154,8 @@ func HandleListSuccessfully(t *testing.T) {
 }
 
 // HandleGetSuccessfully configures the test server to respond to a List request.
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -204,8 +204,8 @@ const CreateZoneResponse = `
 var CreatedZone = FirstZone
 
 // HandleZoneCreationSuccessfully configures the test server to respond to a Create request.
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateZoneRequest)
@@ -250,8 +250,8 @@ const UpdateZoneResponse = `
 `
 
 // HandleZoneUpdateSuccessfully configures the test server to respond to an Update request.
-func HandleUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -289,8 +289,8 @@ const DeleteZoneResponse = `
 `
 
 // HandleZoneDeleteSuccessfully configures the test server to respond to an Delete request.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

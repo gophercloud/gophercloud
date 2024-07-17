@@ -16,8 +16,8 @@ var AuthResult = swauth.AuthResult{
 }
 
 // HandleAuthSuccessfully configures the test server to respond to an Auth request.
-func HandleAuthSuccessfully(t *testing.T, authOpts swauth.AuthOpts) {
-	th.Mux.HandleFunc("/auth/v1.0", func(w http.ResponseWriter, r *http.Request) {
+func HandleAuthSuccessfully(t *testing.T, fakeServer th.FakeServer, authOpts swauth.AuthOpts) {
+	fakeServer.Mux.HandleFunc("/auth/v1.0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-User", authOpts.User)
 		th.TestHeader(t, r, "X-Auth-Key", authOpts.Key)

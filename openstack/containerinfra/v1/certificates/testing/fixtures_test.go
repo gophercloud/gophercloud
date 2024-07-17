@@ -67,8 +67,8 @@ var ExpectedCreateCertificateResponse = certificates.Certificate{
 	},
 }
 
-func HandleGetCertificateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetCertificateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -83,8 +83,8 @@ func HandleGetCertificateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleCreateCertificateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/certificates/", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateCertificateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/certificates/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -99,8 +99,8 @@ func HandleCreateCertificateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleUpdateCertificateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72",
+func HandleUpdateCertificateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

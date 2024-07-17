@@ -14,10 +14,10 @@ import (
 )
 
 func TestCreateSuccessful(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -47,7 +47,7 @@ func TestCreateSuccessful(t *testing.T) {
 		}`)
 	})
 
-	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(), endpoints.CreateOpts{
+	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(fakeServer), endpoints.CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
 		Name:         "the-endiest-of-points",
 		Region:       "underground",
@@ -70,10 +70,10 @@ func TestCreateSuccessful(t *testing.T) {
 }
 
 func TestListEndpoints(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -113,7 +113,7 @@ func TestListEndpoints(t *testing.T) {
 	})
 
 	count := 0
-	err := endpoints.List(client.ServiceClient(), endpoints.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := endpoints.List(client.ServiceClient(fakeServer), endpoints.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := endpoints.ExtractEndpoints(page)
 		if err != nil {
@@ -149,10 +149,10 @@ func TestListEndpoints(t *testing.T) {
 }
 
 func TestGetEndpoint(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -172,7 +172,7 @@ func TestGetEndpoint(t *testing.T) {
 		}`)
 	})
 
-	actual, err := endpoints.Get(context.TODO(), client.ServiceClient(), "12").Extract()
+	actual, err := endpoints.Get(context.TODO(), client.ServiceClient(fakeServer), "12").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Get: %v", err)
 	}
@@ -190,10 +190,10 @@ func TestGetEndpoint(t *testing.T) {
 }
 
 func TestUpdateEndpoint(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -219,7 +219,7 @@ func TestUpdateEndpoint(t *testing.T) {
 		}`)
 	})
 
-	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(), "12", endpoints.UpdateOpts{
+	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(fakeServer), "12", endpoints.UpdateOpts{
 		Name:   "renamed",
 		Region: "somewhere-else",
 	}).Extract()
@@ -240,16 +240,16 @@ func TestUpdateEndpoint(t *testing.T) {
 }
 
 func TestDeleteEndpoint(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/endpoints/34", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/endpoints/34", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := endpoints.Delete(context.TODO(), client.ServiceClient(), "34")
+	res := endpoints.Delete(context.TODO(), client.ServiceClient(fakeServer), "34")
 	th.AssertNoErr(t, res.Err)
 }

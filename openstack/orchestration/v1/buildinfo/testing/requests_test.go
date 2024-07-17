@@ -10,11 +10,11 @@ import (
 )
 
 func TestGetTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t, GetOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer, GetOutput)
 
-	actual, err := buildinfo.Get(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := buildinfo.Get(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected

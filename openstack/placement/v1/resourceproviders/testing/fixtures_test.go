@@ -268,8 +268,8 @@ var ExpectedTraits = resourceproviders.ResourceProviderTraits{
 	},
 }
 
-func HandleResourceProviderList(t *testing.T) {
-	th.Mux.HandleFunc("/resource_providers",
+func HandleResourceProviderList(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -281,8 +281,8 @@ func HandleResourceProviderList(t *testing.T) {
 		})
 }
 
-func HandleResourceProviderCreate(t *testing.T) {
-	th.Mux.HandleFunc("/resource_providers", func(w http.ResponseWriter, r *http.Request) {
+func HandleResourceProviderCreate(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -293,8 +293,8 @@ func HandleResourceProviderCreate(t *testing.T) {
 	})
 }
 
-func HandleResourceProviderGet(t *testing.T) {
-	th.Mux.HandleFunc("/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e", func(w http.ResponseWriter, r *http.Request) {
+func HandleResourceProviderGet(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -305,16 +305,16 @@ func HandleResourceProviderGet(t *testing.T) {
 	})
 }
 
-func HandleResourceProviderDelete(t *testing.T) {
-	th.Mux.HandleFunc("/resource_providers/b99b3ab4-3aa6-4fba-b827-69b88b9c544a", func(w http.ResponseWriter, r *http.Request) {
+func HandleResourceProviderDelete(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers/b99b3ab4-3aa6-4fba-b827-69b88b9c544a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
-func HandleResourceProviderUpdate(t *testing.T) {
-	th.Mux.HandleFunc("/resource_providers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+func HandleResourceProviderUpdate(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -328,10 +328,10 @@ func HandleResourceProviderUpdate(t *testing.T) {
 	})
 }
 
-func HandleResourceProviderGetUsages(t *testing.T) {
+func HandleResourceProviderGetUsages(t *testing.T, fakeServer th.FakeServer) {
 	usageTestUrl := fmt.Sprintf("/resource_providers/%s/usages", ResourceProviderTestID)
 
-	th.Mux.HandleFunc(usageTestUrl,
+	fakeServer.Mux.HandleFunc(usageTestUrl,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -343,10 +343,10 @@ func HandleResourceProviderGetUsages(t *testing.T) {
 		})
 }
 
-func HandleResourceProviderGetInventories(t *testing.T) {
+func HandleResourceProviderGetInventories(t *testing.T, fakeServer th.FakeServer) {
 	inventoriesTestUrl := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
 
-	th.Mux.HandleFunc(inventoriesTestUrl,
+	fakeServer.Mux.HandleFunc(inventoriesTestUrl,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -358,10 +358,10 @@ func HandleResourceProviderGetInventories(t *testing.T) {
 		})
 }
 
-func HandleResourceProviderGetAllocations(t *testing.T) {
+func HandleResourceProviderGetAllocations(t *testing.T, fakeServer th.FakeServer) {
 	allocationsTestUrl := fmt.Sprintf("/resource_providers/%s/allocations", ResourceProviderTestID)
 
-	th.Mux.HandleFunc(allocationsTestUrl,
+	fakeServer.Mux.HandleFunc(allocationsTestUrl,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -373,10 +373,10 @@ func HandleResourceProviderGetAllocations(t *testing.T) {
 		})
 }
 
-func HandleResourceProviderGetTraits(t *testing.T) {
+func HandleResourceProviderGetTraits(t *testing.T, fakeServer th.FakeServer) {
 	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
 
-	th.Mux.HandleFunc(traitsTestUrl,
+	fakeServer.Mux.HandleFunc(traitsTestUrl,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

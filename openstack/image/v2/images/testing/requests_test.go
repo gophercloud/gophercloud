@@ -12,14 +12,14 @@ import (
 )
 
 func TestListImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageListSuccessfully(t)
+	HandleImageListSuccessfully(t, fakeServer)
 
 	t.Logf("Id\tName\tOwner\tChecksum\tSizeBytes")
 
-	pager := images.List(client.ServiceClient(), images.ListOpts{Limit: 1})
+	pager := images.List(client.ServiceClient(fakeServer), images.ListOpts{Limit: 1})
 	t.Logf("Pager state %v", pager)
 	count, pages := 0, 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -45,12 +45,12 @@ func TestListImage(t *testing.T) {
 }
 
 func TestAllPagesImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageListSuccessfully(t)
+	HandleImageListSuccessfully(t, fakeServer)
 
-	pages, err := images.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	pages, err := images.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	images, err := images.ExtractImages(pages)
 	th.AssertNoErr(t, err)
@@ -58,15 +58,15 @@ func TestAllPagesImage(t *testing.T) {
 }
 
 func TestCreateImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageCreationSuccessfully(t)
+	HandleImageCreationSuccessfully(t, fakeServer)
 
 	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
 	name := "Ubuntu 12.10"
 
-	actualImage, err := images.Create(context.TODO(), client.ServiceClient(), images.CreateOpts{
+	actualImage, err := images.Create(context.TODO(), client.ServiceClient(fakeServer), images.CreateOpts{
 		ID:   id,
 		Name: name,
 		Properties: map[string]string{
@@ -119,15 +119,15 @@ func TestCreateImage(t *testing.T) {
 }
 
 func TestCreateImageNulls(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageCreationSuccessfullyNulls(t)
+	HandleImageCreationSuccessfullyNulls(t, fakeServer)
 
 	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
 	name := "Ubuntu 12.10"
 
-	actualImage, err := images.Create(context.TODO(), client.ServiceClient(), images.CreateOpts{
+	actualImage, err := images.Create(context.TODO(), client.ServiceClient(fakeServer), images.CreateOpts{
 		ID:   id,
 		Name: name,
 		Tags: []string{"ubuntu", "quantal"},
@@ -188,12 +188,12 @@ func TestCreateImageNulls(t *testing.T) {
 }
 
 func TestGetImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageGetSuccessfully(t)
+	HandleImageGetSuccessfully(t, fakeServer)
 
-	actualImage, err := images.Get(context.TODO(), client.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
+	actualImage, err := images.Get(context.TODO(), client.ServiceClient(fakeServer), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -246,22 +246,22 @@ func TestGetImage(t *testing.T) {
 }
 
 func TestDeleteImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageDeleteSuccessfully(t)
+	HandleImageDeleteSuccessfully(t, fakeServer)
 
-	result := images.Delete(context.TODO(), client.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
+	result := images.Delete(context.TODO(), client.ServiceClient(fakeServer), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
 	th.AssertNoErr(t, result.Err)
 }
 
 func TestUpdateImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageUpdateSuccessfully(t)
+	HandleImageUpdateSuccessfully(t, fakeServer)
 
-	actualImage, err := images.Update(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+	actualImage, err := images.Update(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.ReplaceImageName{NewName: "Fedora 17"},
 		images.ReplaceImageTags{NewTags: []string{"fedora", "beefy"}},
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
@@ -342,10 +342,10 @@ func TestImageDateQuery(t *testing.T) {
 }
 
 func TestImageListByTags(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageListByTagsSuccessfully(t)
+	HandleImageListByTagsSuccessfully(t, fakeServer)
 
 	listOpts := images.ListOpts{
 		Tags: []string{"foo", "bar"},
@@ -356,7 +356,7 @@ func TestImageListByTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedQueryString, actualQueryString)
 
-	pages, err := images.List(client.ServiceClient(), listOpts).AllPages(context.TODO())
+	pages, err := images.List(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allImages, err := images.ExtractImages(pages)
 	th.AssertNoErr(t, err)
@@ -410,12 +410,12 @@ func TestImageListByTags(t *testing.T) {
 }
 
 func TestUpdateImageProperties(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageUpdatePropertiesSuccessfully(t)
+	HandleImageUpdatePropertiesSuccessfully(t, fakeServer)
 
-	actualImage, err := images.Update(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+	actualImage, err := images.Update(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.UpdateImageProperty{
 			Op:    images.AddOp,
 			Name:  "hw_disk_bus",

@@ -194,8 +194,8 @@ var (
 	backupURL, _ = json.Marshal(backupImport)
 )
 
-func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
+func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -208,7 +208,7 @@ func MockListResponse(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, ListResponse, th.Server.URL)
+			fmt.Fprintf(w, ListResponse, fakeServer.Server.URL)
 		case "1":
 			fmt.Fprint(w, `{"backups": []}`)
 		default:
@@ -217,8 +217,8 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
-func MockListDetailResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/detail", func(w http.ResponseWriter, r *http.Request) {
+func MockListDetailResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -231,7 +231,7 @@ func MockListDetailResponse(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, ListDetailResponse, th.Server.URL)
+			fmt.Fprintf(w, ListDetailResponse, fakeServer.Server.URL)
 		case "1":
 			fmt.Fprint(w, `{"backups": []}`)
 		default:
@@ -240,8 +240,8 @@ func MockListDetailResponse(t *testing.T) {
 	})
 }
 
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -251,8 +251,8 @@ func MockGetResponse(t *testing.T) {
 	})
 }
 
-func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
+func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -266,8 +266,8 @@ func MockCreateResponse(t *testing.T) {
 	})
 }
 
-func MockRestoreResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/restore", func(w http.ResponseWriter, r *http.Request) {
+func MockRestoreResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/restore", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -281,16 +281,16 @@ func MockRestoreResponse(t *testing.T) {
 	})
 }
 
-func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+func MockDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
-func MockExportResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/export_record", func(w http.ResponseWriter, r *http.Request) {
+func MockExportResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/export_record", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -302,8 +302,8 @@ func MockExportResponse(t *testing.T) {
 	})
 }
 
-func MockImportResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/import_record", func(w http.ResponseWriter, r *http.Request) {
+func MockImportResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/import_record", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -318,8 +318,8 @@ func MockImportResponse(t *testing.T) {
 }
 
 // MockResetStatusResponse provides mock response for reset backup status API call
-func MockResetStatusResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
+func MockResetStatusResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -330,8 +330,8 @@ func MockResetStatusResponse(t *testing.T) {
 }
 
 // MockForceDeleteResponse provides mock response for force delete backup API call
-func MockForceDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
+func MockForceDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")

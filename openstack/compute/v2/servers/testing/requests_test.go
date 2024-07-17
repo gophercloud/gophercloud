@@ -15,12 +15,12 @@ import (
 )
 
 func TestListServers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := servers.List(client.ServiceClient(), servers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := servers.ExtractServers(page)
@@ -46,11 +46,11 @@ func TestListServers(t *testing.T) {
 }
 
 func TestListAllServers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerListSimpleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerListSimpleSuccessfully(t, fakeServer)
 
-	allPages, err := servers.ListSimple(client.ServiceClient(), servers.ListOpts{}).AllPages(context.TODO())
+	allPages, err := servers.ListSimple(client.ServiceClient(fakeServer), servers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := servers.ExtractServers(allPages)
 	th.AssertNoErr(t, err)
@@ -59,11 +59,11 @@ func TestListAllServers(t *testing.T) {
 }
 
 func TestListAllServersWithExtensions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerListSuccessfully(t, fakeServer)
 
-	allPages, err := servers.List(client.ServiceClient(), servers.ListOpts{}).AllPages(context.TODO())
+	allPages, err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	var actual []servers.Server
@@ -78,11 +78,11 @@ func TestListAllServersWithExtensions(t *testing.T) {
 }
 
 func TestCreateServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerCreationSuccessfully(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerCreationSuccessfully(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -93,11 +93,11 @@ func TestCreateServer(t *testing.T) {
 }
 
 func TestCreateServerNoNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerNoNetworkCreationSuccessfully(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerNoNetworkCreationSuccessfully(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -109,11 +109,11 @@ func TestCreateServerNoNetwork(t *testing.T) {
 }
 
 func TestCreateServers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServersCreationSuccessfully(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServersCreationSuccessfully(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -126,11 +126,11 @@ func TestCreateServers(t *testing.T) {
 }
 
 func TestCreateServerWithCustomField(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerCreationWithCustomFieldSuccessfully(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerCreationWithCustomFieldSuccessfully(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), CreateOptsWithCustomField{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), CreateOptsWithCustomField{
 		CreateOpts: servers.CreateOpts{
 			Name:      "derp",
 			ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
@@ -144,11 +144,11 @@ func TestCreateServerWithCustomField(t *testing.T) {
 }
 
 func TestCreateServerWithMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerCreationWithMetadata(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerCreationWithMetadata(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -162,11 +162,11 @@ func TestCreateServerWithMetadata(t *testing.T) {
 }
 
 func TestCreateServerWithUserdataString(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerCreationWithUserdata(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerCreationWithUserdata(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -178,13 +178,13 @@ func TestCreateServerWithUserdataString(t *testing.T) {
 }
 
 func TestCreateServerWithUserdataEncoded(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerCreationWithUserdata(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerCreationWithUserdata(t, fakeServer, SingleServerBody)
 
 	encoded := base64.StdEncoding.EncodeToString([]byte("userdata string"))
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -196,11 +196,11 @@ func TestCreateServerWithUserdataEncoded(t *testing.T) {
 }
 
 func TestCreateServerWithHostname(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerCreationWithHostname(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerCreationWithHostname(t, fakeServer, SingleServerBody)
 
-	actual, err := servers.Create(context.TODO(), client.ServiceClient(), servers.CreateOpts{
+	actual, err := servers.Create(context.TODO(), client.ServiceClient(fakeServer), servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
@@ -731,29 +731,29 @@ func TestCreateComplexSchedulerHints(t *testing.T) {
 }
 
 func TestDeleteServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerDeletionSuccessfully(t, fakeServer)
 
-	res := servers.Delete(context.TODO(), client.ServiceClient(), "asdfasdfasdf")
+	res := servers.Delete(context.TODO(), client.ServiceClient(fakeServer), "asdfasdfasdf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestForceDeleteServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerForceDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerForceDeletionSuccessfully(t, fakeServer)
 
-	res := servers.ForceDelete(context.TODO(), client.ServiceClient(), "asdfasdfasdf")
+	res := servers.ForceDelete(context.TODO(), client.ServiceClient(fakeServer), "asdfasdfasdf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerGetSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	actual, err := servers.Get(context.TODO(), client, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -763,11 +763,11 @@ func TestGetServer(t *testing.T) {
 }
 
 func TestGetFaultyServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerGetFaultSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerGetFaultSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	actual, err := servers.Get(context.TODO(), client, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -780,15 +780,15 @@ func TestGetFaultyServer(t *testing.T) {
 }
 
 func TestGetServerWithExtensions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerGetSuccessfully(t, fakeServer)
 
 	var s struct {
 		servers.Server
 	}
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	err := servers.Get(context.TODO(), client, "1234asdf").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "nova", s.AvailabilityZone)
@@ -804,11 +804,11 @@ func TestGetServerWithExtensions(t *testing.T) {
 }
 
 func TestUpdateServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerUpdateSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	actual, err := servers.Update(context.TODO(), client, "1234asdf", servers.UpdateOpts{Name: ptr.To("new-name")}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
@@ -818,52 +818,52 @@ func TestUpdateServer(t *testing.T) {
 }
 
 func TestChangeServerAdminPassword(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAdminPasswordChangeSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAdminPasswordChangeSuccessfully(t, fakeServer)
 
-	res := servers.ChangeAdminPassword(context.TODO(), client.ServiceClient(), "1234asdf", "new-password")
+	res := servers.ChangeAdminPassword(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", "new-password")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestShowConsoleOutput(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleShowConsoleOutputSuccessfully(t, ConsoleOutputBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleShowConsoleOutputSuccessfully(t, fakeServer, ConsoleOutputBody)
 
 	outputOpts := &servers.ShowConsoleOutputOpts{
 		Length: 50,
 	}
-	actual, err := servers.ShowConsoleOutput(context.TODO(), client.ServiceClient(), "1234asdf", outputOpts).Extract()
+	actual, err := servers.ShowConsoleOutput(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", outputOpts).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertByteArrayEquals(t, []byte(ConsoleOutput), []byte(actual))
 }
 
 func TestGetPassword(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePasswordGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePasswordGetSuccessfully(t, fakeServer)
 
-	res := servers.GetPassword(context.TODO(), client.ServiceClient(), "1234asdf")
+	res := servers.GetPassword(context.TODO(), client.ServiceClient(fakeServer), "1234asdf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestRebootServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRebootSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRebootSuccessfully(t, fakeServer)
 
-	res := servers.Reboot(context.TODO(), client.ServiceClient(), "1234asdf", servers.RebootOpts{
+	res := servers.Reboot(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", servers.RebootOpts{
 		Type: servers.SoftReboot,
 	})
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestRebuildServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRebuildSuccessfully(t, SingleServerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRebuildSuccessfully(t, fakeServer, SingleServerBody)
 
 	opts := servers.RebuildOpts{
 		Name:       "new-name",
@@ -872,7 +872,7 @@ func TestRebuildServer(t *testing.T) {
 		AccessIPv4: "1.2.3.4",
 	}
 
-	actual, err := servers.Rebuild(context.TODO(), client.ServiceClient(), "1234asdf", opts).Extract()
+	actual, err := servers.Rebuild(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -902,10 +902,10 @@ func TestRebuildServerWithDiskConfig(t *testing.T) {
 }
 
 func TestResizeServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "resize": { "flavorRef": "2" } }`)
@@ -913,7 +913,7 @@ func TestResizeServer(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := servers.Resize(context.TODO(), client.ServiceClient(), "1234asdf", servers.ResizeOpts{FlavorRef: "2"})
+	res := servers.Resize(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", servers.ResizeOpts{FlavorRef: "2"})
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -937,10 +937,10 @@ func TestResizeServerWithDiskConfig(t *testing.T) {
 }
 
 func TestConfirmResize(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "confirmResize": null }`)
@@ -948,15 +948,15 @@ func TestConfirmResize(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := servers.ConfirmResize(context.TODO(), client.ServiceClient(), "1234asdf")
+	res := servers.ConfirmResize(context.TODO(), client.ServiceClient(fakeServer), "1234asdf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestRevertResize(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "revertResize": null }`)
@@ -964,64 +964,64 @@ func TestRevertResize(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := servers.RevertResize(context.TODO(), client.ServiceClient(), "1234asdf")
+	res := servers.RevertResize(context.TODO(), client.ServiceClient(fakeServer), "1234asdf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetMetadatum(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleMetadatumGetSuccessfully(t)
+	HandleMetadatumGetSuccessfully(t, fakeServer)
 
 	expected := map[string]string{"foo": "bar"}
-	actual, err := servers.Metadatum(context.TODO(), client.ServiceClient(), "1234asdf", "foo").Extract()
+	actual, err := servers.Metadatum(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", "foo").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestCreateMetadatum(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleMetadatumCreateSuccessfully(t)
+	HandleMetadatumCreateSuccessfully(t, fakeServer)
 
 	expected := map[string]string{"foo": "bar"}
-	actual, err := servers.CreateMetadatum(context.TODO(), client.ServiceClient(), "1234asdf", servers.MetadatumOpts{"foo": "bar"}).Extract()
+	actual, err := servers.CreateMetadatum(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", servers.MetadatumOpts{"foo": "bar"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestDeleteMetadatum(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleMetadatumDeleteSuccessfully(t)
+	HandleMetadatumDeleteSuccessfully(t, fakeServer)
 
-	err := servers.DeleteMetadatum(context.TODO(), client.ServiceClient(), "1234asdf", "foo").ExtractErr()
+	err := servers.DeleteMetadatum(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleMetadataGetSuccessfully(t)
+	HandleMetadataGetSuccessfully(t, fakeServer)
 
 	expected := map[string]string{"foo": "bar", "this": "that"}
-	actual, err := servers.Metadata(context.TODO(), client.ServiceClient(), "1234asdf").Extract()
+	actual, err := servers.Metadata(context.TODO(), client.ServiceClient(fakeServer), "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestResetMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleMetadataResetSuccessfully(t)
+	HandleMetadataResetSuccessfully(t, fakeServer)
 
 	expected := map[string]string{"foo": "bar", "this": "that"}
-	actual, err := servers.ResetMetadata(context.TODO(), client.ServiceClient(), "1234asdf", servers.MetadataOpts{
+	actual, err := servers.ResetMetadata(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", servers.MetadataOpts{
 		"foo":  "bar",
 		"this": "that",
 	}).Extract()
@@ -1030,13 +1030,13 @@ func TestResetMetadata(t *testing.T) {
 }
 
 func TestUpdateMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleMetadataUpdateSuccessfully(t)
+	HandleMetadataUpdateSuccessfully(t, fakeServer)
 
 	expected := map[string]string{"foo": "baz", "this": "those"}
-	actual, err := servers.UpdateMetadata(context.TODO(), client.ServiceClient(), "1234asdf", servers.MetadataOpts{
+	actual, err := servers.UpdateMetadata(context.TODO(), client.ServiceClient(fakeServer), "1234asdf", servers.MetadataOpts{
 		"foo":  "baz",
 		"this": "those",
 	}).Extract()
@@ -1045,13 +1045,13 @@ func TestUpdateMetadata(t *testing.T) {
 }
 
 func TestListAddresses(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAddressListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAddressListSuccessfully(t, fakeServer)
 
 	expected := ListAddressesExpected
 	pages := 0
-	err := servers.ListAddresses(client.ServiceClient(), "asdfasdfasdf").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := servers.ListAddresses(client.ServiceClient(fakeServer), "asdfasdfasdf").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := servers.ExtractAddresses(page)
@@ -1069,13 +1069,13 @@ func TestListAddresses(t *testing.T) {
 }
 
 func TestListAddressesByNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNetworkAddressListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNetworkAddressListSuccessfully(t, fakeServer)
 
 	expected := ListNetworkAddressesExpected
 	pages := 0
-	err := servers.ListAddressesByNetwork(client.ServiceClient(), "asdfasdfasdf", "public").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := servers.ListAddressesByNetwork(client.ServiceClient(fakeServer), "asdfasdfasdf", "public").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := servers.ExtractNetworkAddresses(page)
@@ -1093,11 +1093,11 @@ func TestListAddressesByNetwork(t *testing.T) {
 }
 
 func TestCreateServerImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateServerImageSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateServerImageSuccessfully(t, fakeServer)
 
-	_, err := servers.CreateImage(context.TODO(), client.ServiceClient(), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
+	_, err := servers.CreateImage(context.TODO(), client.ServiceClient(fakeServer), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
 	th.AssertNoErr(t, err)
 }
 
@@ -1137,11 +1137,11 @@ func TestMarshalPersonality(t *testing.T) {
 }
 
 func TestCreateServerWithTags(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerWithTagsCreationSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerWithTagsCreationSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	c.Microversion = "2.52"
 
 	tags := []string{"foo", "bar"}

@@ -170,8 +170,8 @@ var ExpectedServerGroupCreateMicroversion = servergroups.ServerGroup{
 }
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -182,8 +182,8 @@ func HandleListSuccessfully(t *testing.T) {
 
 // HandleGetSuccessfully configures the test server to respond to a Get request
 // for an existing server group
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -194,8 +194,8 @@ func HandleGetSuccessfully(t *testing.T) {
 
 // HandleGetMicroversionSuccessfully configures the test server to respond to a Get request
 // for an existing server group with microversion set to 2.64
-func HandleGetMicroversionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetMicroversionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -206,8 +206,8 @@ func HandleGetMicroversionSuccessfully(t *testing.T) {
 
 // HandleCreateSuccessfully configures the test server to respond to a Create request
 // for a new server group
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
@@ -228,8 +228,8 @@ func HandleCreateSuccessfully(t *testing.T) {
 
 // HandleCreateMicroversionSuccessfully configures the test server to respond to a Create request
 // for a new server group with microversion set to 2.64
-func HandleCreateMicroversionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateMicroversionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
@@ -251,8 +251,8 @@ func HandleCreateMicroversionSuccessfully(t *testing.T) {
 
 // HandleDeleteSuccessfully configures the test server to respond to a Delete request for a
 // an existing server group
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups/616fb98f-46ca-475e-917e-2563e5a8cd19", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups/616fb98f-46ca-475e-917e-2563e5a8cd19", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

@@ -10,9 +10,9 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGet(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGet(t, fakeServer)
 
 	expectedQuotas := []quotas.QuotaDetail{
 		{Resource: "instances", Limit: 15, InUse: 5, Reserved: 0},
@@ -20,7 +20,7 @@ func TestGet(t *testing.T) {
 		{Resource: "volumes", Limit: 40, InUse: 1, Reserved: 0},
 	}
 
-	actual, err := quotas.Get(context.TODO(), client.ServiceClient(), "e131f89a-c1d8-11ef-bfaa-370c246e2439").Extract()
+	actual, err := quotas.Get(context.TODO(), client.ServiceClient(fakeServer), "e131f89a-c1d8-11ef-bfaa-370c246e2439").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expectedQuotas, actual)
 }

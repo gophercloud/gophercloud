@@ -135,8 +135,8 @@ var ExpectedOrdersSlice = []orders.Order{FirstOrder, SecondOrder}
 
 // HandleListOrdersSuccessfully creates an HTTP handler at `/orders` on the
 // test handler mux that responds with a list of two orders.
-func HandleListOrdersSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/orders", func(w http.ResponseWriter, r *http.Request) {
+func HandleListOrdersSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/orders", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -149,8 +149,8 @@ func HandleListOrdersSuccessfully(t *testing.T) {
 
 // HandleGetOrderSuccessfully creates an HTTP handler at `/orders` on the
 // test handler mux that responds with a single resource.
-func HandleGetOrderSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/orders/46f73695-82bb-447a-bf96-6635f0fb0ce7", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetOrderSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/orders/46f73695-82bb-447a-bf96-6635f0fb0ce7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -163,8 +163,8 @@ func HandleGetOrderSuccessfully(t *testing.T) {
 
 // HandleCreateOrderSuccessfully creates an HTTP handler at `/orders` on the
 // test handler mux that tests resource creation.
-func HandleCreateOrderSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/orders", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateOrderSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/orders", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -176,8 +176,8 @@ func HandleCreateOrderSuccessfully(t *testing.T) {
 
 // HandleDeleteOrderSuccessfully creates an HTTP handler at `/orders` on the
 // test handler mux that tests resource deletion.
-func HandleDeleteOrderSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/orders/46f73695-82bb-447a-bf96-6635f0fb0ce7", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteOrderSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/orders/46f73695-82bb-447a-bf96-6635f0fb0ce7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

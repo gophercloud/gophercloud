@@ -33,11 +33,10 @@ func ExtractSingleInts(r pagination.Page) ([]int, error) {
 	return s.Ints, err
 }
 
-func setupSinglePaged() pagination.Pager {
-	th.SetupHTTP()
-	client := client.ServiceClient()
+func setupSinglePaged(fakeServer th.FakeServer) pagination.Pager {
+	client := client.ServiceClient(fakeServer)
 
-	th.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `{ "ints": [1, 2, 3] }`)
 	})
@@ -46,13 +45,15 @@ func setupSinglePaged() pagination.Pager {
 		return SinglePageResult{pagination.SinglePageBase(r)}
 	}
 
-	return pagination.NewPager(client, th.Server.URL+"/only", createPage)
+	return pagination.NewPager(client, fakeServer.Server.URL+"/only", createPage)
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {
 	callCount := 0
-	pager := setupSinglePaged()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	pager := setupSinglePaged(fakeServer)
 
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		callCount++
@@ -68,8 +69,10 @@ func TestEnumerateSinglePaged(t *testing.T) {
 }
 
 func TestAllPagesSingle(t *testing.T) {
-	pager := setupSinglePaged()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	pager := setupSinglePaged(fakeServer)
 
 	page, err := pager.AllPages(context.TODO())
 	th.AssertNoErr(t, err)

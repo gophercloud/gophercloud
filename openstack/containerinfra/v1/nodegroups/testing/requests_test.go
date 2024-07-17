@@ -13,12 +13,12 @@ import (
 
 // TestGetNodeGroupSuccess gets a node group successfully.
 func TestGetNodeGroupSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleGetNodeGroupSuccess(t)
+	handleGetNodeGroupSuccess(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	ng, err := nodegroups.Get(context.TODO(), sc, clusterUUID, nodeGroup1UUID).Extract()
@@ -29,12 +29,12 @@ func TestGetNodeGroupSuccess(t *testing.T) {
 
 // TestGetNodeGroupNotFound tries to get a node group which does not exist.
 func TestGetNodeGroupNotFound(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleGetNodeGroupNotFound(t)
+	handleGetNodeGroupNotFound(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.Get(context.TODO(), sc, clusterUUID, badNodeGroupUUID).Extract()
@@ -44,12 +44,12 @@ func TestGetNodeGroupNotFound(t *testing.T) {
 // TestGetNodeGroupClusterNotFound tries to get a node group in
 // a cluster which does not exist.
 func TestGetNodeGroupClusterNotFound(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleGetNodeGroupClusterNotFound(t)
+	handleGetNodeGroupClusterNotFound(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.Get(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).Extract()
@@ -58,12 +58,12 @@ func TestGetNodeGroupClusterNotFound(t *testing.T) {
 
 // TestListNodeGroupsSuccess lists the node groups of a cluster successfully.
 func TestListNodeGroupsSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleListNodeGroupsSuccess(t)
+	handleListNodeGroupsSuccess(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	ngPages, err := nodegroups.List(sc, clusterUUID, nodegroups.ListOpts{}).AllPages(context.TODO())
@@ -80,12 +80,12 @@ func TestListNodeGroupsSuccess(t *testing.T) {
 // with each returned page limited to one node group and
 // also giving a URL to get the next page.
 func TestListNodeGroupsLimitSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleListNodeGroupsLimitSuccess(t)
+	handleListNodeGroupsLimitSuccess(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	listOpts := nodegroups.ListOpts{Limit: 1}
@@ -102,12 +102,12 @@ func TestListNodeGroupsLimitSuccess(t *testing.T) {
 // TestListNodeGroupsClusterNotFound tries to list node groups
 // of a cluster which does not exist.
 func TestListNodeGroupsClusterNotFound(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleListNodeGroupsClusterNotFound(t)
+	handleListNodeGroupsClusterNotFound(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.List(sc, clusterUUID, nodegroups.ListOpts{}).AllPages(context.TODO())
@@ -116,12 +116,12 @@ func TestListNodeGroupsClusterNotFound(t *testing.T) {
 
 // TestCreateNodeGroupSuccess creates a node group successfully.
 func TestCreateNodeGroupSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleCreateNodeGroupSuccess(t)
+	handleCreateNodeGroupSuccess(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
@@ -137,12 +137,12 @@ func TestCreateNodeGroupSuccess(t *testing.T) {
 // TestCreateNodeGroupDuplicate creates a node group with
 // the same name as an existing one.
 func TestCreateNodeGroupDuplicate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleCreateNodeGroupDuplicate(t)
+	handleCreateNodeGroupDuplicate(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
@@ -156,12 +156,12 @@ func TestCreateNodeGroupDuplicate(t *testing.T) {
 // TestCreateNodeGroupMaster creates a node group with
 // role=master which is not allowed.
 func TestCreateNodeGroupMaster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleCreateNodeGroupMaster(t)
+	handleCreateNodeGroupMaster(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
@@ -176,12 +176,12 @@ func TestCreateNodeGroupMaster(t *testing.T) {
 // TestCreateNodeGroupBadSizes creates a node group with
 // min_nodes greater than max_nodes.
 func TestCreateNodeGroupBadSizes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleCreateNodeGroupBadSizes(t)
+	handleCreateNodeGroupBadSizes(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	maxNodes := 3
@@ -197,12 +197,12 @@ func TestCreateNodeGroupBadSizes(t *testing.T) {
 
 // TestUpdateNodeGroupSuccess updates a node group successfully.
 func TestUpdateNodeGroupSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleUpdateNodeGroupSuccess(t)
+	handleUpdateNodeGroupSuccess(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -221,12 +221,12 @@ func TestUpdateNodeGroupSuccess(t *testing.T) {
 // TestUpdateNodeGroupInternal tries to update an internal
 // property of the node group.
 func TestUpdateNodeGroupInternal(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleUpdateNodeGroupInternal(t)
+	handleUpdateNodeGroupInternal(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -244,12 +244,12 @@ func TestUpdateNodeGroupInternal(t *testing.T) {
 // TestUpdateNodeGroupBadField tries to update a
 // field of the node group that does not exist.
 func TestUpdateNodeGroupBadField(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleUpdateNodeGroupBadField(t)
+	handleUpdateNodeGroupBadField(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -267,12 +267,12 @@ func TestUpdateNodeGroupBadField(t *testing.T) {
 // TestUpdateNodeGroupBadMin tries to set a minimum node count
 // greater than the current node count
 func TestUpdateNodeGroupBadMin(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleUpdateNodeGroupBadMin(t)
+	handleUpdateNodeGroupBadMin(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -289,12 +289,12 @@ func TestUpdateNodeGroupBadMin(t *testing.T) {
 
 // TestDeleteNodeGroupSuccess deletes a node group successfully.
 func TestDeleteNodeGroupSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleDeleteNodeGroupSuccess(t)
+	handleDeleteNodeGroupSuccess(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()
@@ -303,12 +303,12 @@ func TestDeleteNodeGroupSuccess(t *testing.T) {
 
 // TestDeleteNodeGroupNotFound tries to delete a node group that does not exist.
 func TestDeleteNodeGroupNotFound(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleDeleteNodeGroupNotFound(t)
+	handleDeleteNodeGroupNotFound(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, badNodeGroupUUID).ExtractErr()
@@ -317,12 +317,12 @@ func TestDeleteNodeGroupNotFound(t *testing.T) {
 
 // TestDeleteNodeGroupClusterNotFound tries to delete a node group in a cluster that does not exist.
 func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleDeleteNodeGroupClusterNotFound(t)
+	handleDeleteNodeGroupClusterNotFound(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
@@ -331,12 +331,12 @@ func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
 
 // TestDeleteNodeGroupDefault tries to delete a protected default node group.
 func TestDeleteNodeGroupDefault(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	handleDeleteNodeGroupDefault(t)
+	handleDeleteNodeGroupDefault(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()

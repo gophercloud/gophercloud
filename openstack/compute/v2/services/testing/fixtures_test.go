@@ -253,8 +253,8 @@ var FakeServiceUpdateBody = services.Service{
 
 // HandleListPre253Successfully configures the test server to respond to a List
 // request to a Compute server API pre 2.53 microversion release.
-func HandleListPre253Successfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-services", func(w http.ResponseWriter, r *http.Request) {
+func HandleListPre253Successfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-services", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -265,8 +265,8 @@ func HandleListPre253Successfully(t *testing.T) {
 
 // HandleListSuccessfully configures the test server to respond to a List
 // request to a Compute server with Pike+ release.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-services", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-services", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -277,8 +277,8 @@ func HandleListSuccessfully(t *testing.T) {
 
 // HandleUpdateSuccessfully configures the test server to respond to a Update
 // request to a Compute server with Pike+ release.
-func HandleUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -291,8 +291,8 @@ func HandleUpdateSuccessfully(t *testing.T) {
 
 // HandleDeleteSuccessfully configures the test server to respond to a Delete
 // request to a Compute server with Pike+ release.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)

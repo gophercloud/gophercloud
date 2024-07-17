@@ -17,7 +17,7 @@ type imageEntry struct {
 }
 
 // HandleImageListSuccessfully test setup
-func HandleImageListSuccessfully(t *testing.T) {
+func HandleImageListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 
 	images := make([]imageEntry, 3)
 
@@ -99,7 +99,7 @@ func HandleImageListSuccessfully(t *testing.T) {
             "hw_scsi_model": "virtio-scsi"
         }`}
 
-	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -160,8 +160,8 @@ func HandleImageListSuccessfully(t *testing.T) {
 }
 
 // HandleImageCreationSuccessfully test setup
-func HandleImageCreationSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageCreationSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -206,8 +206,8 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 
 // HandleImageCreationSuccessfullyNulls test setup
 // JSON null values could be also returned according to behaviour https://bugs.launchpad.net/glance/+bug/1481512
-func HandleImageCreationSuccessfullyNulls(t *testing.T) {
-	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageCreationSuccessfullyNulls(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -251,8 +251,8 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 }
 
 // HandleImageGetSuccessfully test setup
-func HandleImageGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -287,8 +287,8 @@ func HandleImageGetSuccessfully(t *testing.T) {
 }
 
 // HandleImageDeleteSuccessfully test setup
-func HandleImageDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -297,8 +297,8 @@ func HandleImageDeleteSuccessfully(t *testing.T) {
 }
 
 // HandleImageUpdateSuccessfully setup
-func HandleImageUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -380,8 +380,8 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleImageListByTagsSuccessfully tests a list operation with tags.
-func HandleImageListByTagsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageListByTagsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -422,8 +422,8 @@ func HandleImageListByTagsSuccessfully(t *testing.T) {
 }
 
 // HandleImageUpdatePropertiesSuccessfully setup
-func HandleImageUpdatePropertiesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
+func HandleImageUpdatePropertiesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

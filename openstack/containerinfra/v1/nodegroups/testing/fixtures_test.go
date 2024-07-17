@@ -125,8 +125,8 @@ var expectedUpdatedNodeGroup = nodegroups.NodeGroup{
 	UpdatedAt:     nodeGroup2Updated,
 }
 
-func handleGetNodeGroupSuccess(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup1UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleGetNodeGroupSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup1UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -137,8 +137,8 @@ func handleGetNodeGroupSuccess(t *testing.T) {
 	})
 }
 
-func handleGetNodeGroupNotFound(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
+func handleGetNodeGroupNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -149,8 +149,8 @@ func handleGetNodeGroupNotFound(t *testing.T) {
 	})
 }
 
-func handleGetNodeGroupClusterNotFound(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
+func handleGetNodeGroupClusterNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -161,8 +161,8 @@ func handleGetNodeGroupClusterNotFound(t *testing.T) {
 	})
 }
 
-func handleListNodeGroupsSuccess(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleListNodeGroupsSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -173,8 +173,8 @@ func handleListNodeGroupsSuccess(t *testing.T) {
 	})
 }
 
-func handleListNodeGroupsLimitSuccess(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleListNodeGroupsLimitSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -187,12 +187,12 @@ func handleListNodeGroupsLimitSuccess(t *testing.T) {
 		if marker, ok := r.Form["marker"]; !ok {
 			// No marker, this is the first request.
 			th.TestFormValues(t, r, map[string]string{"limit": "1"})
-			fmt.Fprintf(w, nodeGroupListLimitResponse1, th.Endpoint())
+			fmt.Fprintf(w, nodeGroupListLimitResponse1, fakeServer.Endpoint())
 		} else {
 			switch marker[0] {
 			case nodeGroup1UUID:
 				// Marker is the UUID of the first node group, return the second.
-				fmt.Fprintf(w, nodeGroupListLimitResponse2, th.Endpoint())
+				fmt.Fprintf(w, nodeGroupListLimitResponse2, fakeServer.Endpoint())
 			case nodeGroup2UUID:
 				// Marker is the UUID of the second node group, there are no more to return.
 				fmt.Fprint(w, nodeGroupListLimitResponse3)
@@ -201,8 +201,8 @@ func handleListNodeGroupsLimitSuccess(t *testing.T) {
 	})
 }
 
-func handleListNodeGroupsClusterNotFound(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleListNodeGroupsClusterNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -213,8 +213,8 @@ func handleListNodeGroupsClusterNotFound(t *testing.T) {
 	})
 }
 
-func handleCreateNodeGroupSuccess(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleCreateNodeGroupSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -225,8 +225,8 @@ func handleCreateNodeGroupSuccess(t *testing.T) {
 	})
 }
 
-func handleCreateNodeGroupDuplicate(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleCreateNodeGroupDuplicate(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -237,8 +237,8 @@ func handleCreateNodeGroupDuplicate(t *testing.T) {
 	})
 }
 
-func handleCreateNodeGroupMaster(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleCreateNodeGroupMaster(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -249,8 +249,8 @@ func handleCreateNodeGroupMaster(t *testing.T) {
 	})
 }
 
-func handleCreateNodeGroupBadSizes(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+func handleCreateNodeGroupBadSizes(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -261,8 +261,8 @@ func handleCreateNodeGroupBadSizes(t *testing.T) {
 	})
 }
 
-func handleUpdateNodeGroupSuccess(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleUpdateNodeGroupSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -273,8 +273,8 @@ func handleUpdateNodeGroupSuccess(t *testing.T) {
 	})
 }
 
-func handleUpdateNodeGroupInternal(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleUpdateNodeGroupInternal(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -285,8 +285,8 @@ func handleUpdateNodeGroupInternal(t *testing.T) {
 	})
 }
 
-func handleUpdateNodeGroupBadField(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleUpdateNodeGroupBadField(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -297,8 +297,8 @@ func handleUpdateNodeGroupBadField(t *testing.T) {
 	})
 }
 
-func handleUpdateNodeGroupBadMin(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleUpdateNodeGroupBadMin(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -309,8 +309,8 @@ func handleUpdateNodeGroupBadMin(t *testing.T) {
 	})
 }
 
-func handleDeleteNodeGroupSuccess(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleDeleteNodeGroupSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -318,8 +318,8 @@ func handleDeleteNodeGroupSuccess(t *testing.T) {
 	})
 }
 
-func handleDeleteNodeGroupNotFound(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
+func handleDeleteNodeGroupNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -330,8 +330,8 @@ func handleDeleteNodeGroupNotFound(t *testing.T) {
 	})
 }
 
-func handleDeleteNodeGroupClusterNotFound(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
+func handleDeleteNodeGroupClusterNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -342,8 +342,8 @@ func handleDeleteNodeGroupClusterNotFound(t *testing.T) {
 	})
 }
 
-func handleDeleteNodeGroupDefault(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+func handleDeleteNodeGroupDefault(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

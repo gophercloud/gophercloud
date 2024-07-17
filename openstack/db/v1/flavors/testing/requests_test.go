@@ -12,12 +12,12 @@ import (
 )
 
 func TestListFlavors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleList(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleList(t, fakeServer)
 
 	pages := 0
-	err := flavors.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := flavors.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavors.ExtractFlavors(page)
@@ -87,11 +87,11 @@ func TestListFlavors(t *testing.T) {
 }
 
 func TestGetFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGet(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGet(t, fakeServer)
 
-	actual, err := flavors.Get(context.TODO(), client.ServiceClient(), flavorID).Extract()
+	actual, err := flavors.Get(context.TODO(), client.ServiceClient(fakeServer), flavorID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &flavors.Flavor{

@@ -12,10 +12,10 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/info/import", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/info/import", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -30,7 +30,7 @@ func TestGet(t *testing.T) {
 		string(imageimport.WebDownloadMethod),
 	}
 
-	s, err := imageimport.Get(context.TODO(), client.ServiceClient()).Extract()
+	s, err := imageimport.Get(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ImportMethods.Description, "Import methods available.")
@@ -39,10 +39,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/import", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/import", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, ImportCreateRequest)
@@ -56,6 +56,6 @@ func TestCreate(t *testing.T) {
 		Name: imageimport.WebDownloadMethod,
 		URI:  "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img",
 	}
-	err := imageimport.Create(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
+	err := imageimport.Create(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

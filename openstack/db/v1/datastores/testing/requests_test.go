@@ -12,13 +12,13 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, "/datastores", "GET", "", ListDSResp, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, "/datastores", "GET", "", ListDSResp, 200)
 
 	pages := 0
 
-	err := datastores.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := datastores.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := datastores.ExtractDatastores(page)
@@ -36,23 +36,23 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, "/datastores/{dsID}", "GET", "", GetDSResp, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, "/datastores/{dsID}", "GET", "", GetDSResp, 200)
 
-	ds, err := datastores.Get(context.TODO(), client.ServiceClient(), "{dsID}").Extract()
+	ds, err := datastores.Get(context.TODO(), client.ServiceClient(fakeServer), "{dsID}").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleDatastore, ds)
 }
 
 func TestListVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, "/datastores/{dsID}/versions", "GET", "", ListVersionsResp, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, "/datastores/{dsID}/versions", "GET", "", ListVersionsResp, 200)
 
 	pages := 0
 
-	err := datastores.ListVersions(client.ServiceClient(), "{dsID}").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := datastores.ListVersions(client.ServiceClient(fakeServer), "{dsID}").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := datastores.ExtractVersions(page)
@@ -70,11 +70,11 @@ func TestListVersions(t *testing.T) {
 }
 
 func TestGetVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, "/datastores/{dsID}/versions/{versionID}", "GET", "", GetVersionResp, 200)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, "/datastores/{dsID}/versions/{versionID}", "GET", "", GetVersionResp, 200)
 
-	ds, err := datastores.GetVersion(context.TODO(), client.ServiceClient(), "{dsID}", "{versionID}").Extract()
+	ds, err := datastores.GetVersion(context.TODO(), client.ServiceClient(fakeServer), "{dsID}", "{versionID}").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleVersion1, ds)
 }

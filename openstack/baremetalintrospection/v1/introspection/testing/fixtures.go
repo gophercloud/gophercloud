@@ -454,8 +454,8 @@ var (
 )
 
 // HandleListIntrospectionsSuccessfully sets up the test server to respond to a server ListIntrospections request.
-func HandleListIntrospectionsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/introspection", func(w http.ResponseWriter, r *http.Request) {
+func HandleListIntrospectionsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/introspection", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -479,8 +479,8 @@ func HandleListIntrospectionsSuccessfully(t *testing.T) {
 }
 
 // HandleGetIntrospectionStatusSuccessfully sets up the test server to respond to a GetIntrospectionStatus request.
-func HandleGetIntrospectionStatusSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetIntrospectionStatusSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -489,8 +489,8 @@ func HandleGetIntrospectionStatusSuccessfully(t *testing.T) {
 }
 
 // HandleStartIntrospectionSuccessfully sets up the test server to respond to a StartIntrospection request.
-func HandleStartIntrospectionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b", func(w http.ResponseWriter, r *http.Request) {
+func HandleStartIntrospectionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
@@ -498,8 +498,8 @@ func HandleStartIntrospectionSuccessfully(t *testing.T) {
 }
 
 // HandleAbortIntrospectionSuccessfully sets up the test server to respond to an AbortIntrospection request.
-func HandleAbortIntrospectionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b/abort", func(w http.ResponseWriter, r *http.Request) {
+func HandleAbortIntrospectionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b/abort", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
@@ -507,8 +507,8 @@ func HandleAbortIntrospectionSuccessfully(t *testing.T) {
 }
 
 // HandleGetIntrospectionDataSuccessfully sets up the test server to respond to a GetIntrospectionData request.
-func HandleGetIntrospectionDataSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b/data", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetIntrospectionDataSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b/data", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -518,8 +518,8 @@ func HandleGetIntrospectionDataSuccessfully(t *testing.T) {
 }
 
 // HandleReApplyIntrospectionSuccessfully sets up the test server to respond to a ReApplyIntrospection request.
-func HandleReApplyIntrospectionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b/data/unprocessed", func(w http.ResponseWriter, r *http.Request) {
+func HandleReApplyIntrospectionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/introspection/c244557e-899f-46fa-a1ff-5b2c6718616b/data/unprocessed", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)

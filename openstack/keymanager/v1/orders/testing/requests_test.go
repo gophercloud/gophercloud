@@ -11,12 +11,12 @@ import (
 )
 
 func TestListOrders(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListOrdersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListOrdersSuccessfully(t, fakeServer)
 
 	count := 0
-	err := orders.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := orders.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := orders.ExtractOrders(page)
@@ -31,11 +31,11 @@ func TestListOrders(t *testing.T) {
 }
 
 func TestListOrdersAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListOrdersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListOrdersSuccessfully(t, fakeServer)
 
-	allPages, err := orders.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := orders.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := orders.ExtractOrders(allPages)
 	th.AssertNoErr(t, err)
@@ -43,19 +43,19 @@ func TestListOrdersAllPages(t *testing.T) {
 }
 
 func TestGetOrder(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetOrderSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetOrderSuccessfully(t, fakeServer)
 
-	actual, err := orders.Get(context.TODO(), client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
+	actual, err := orders.Get(context.TODO(), client.ServiceClient(fakeServer), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
 
 func TestCreateOrder(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateOrderSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateOrderSuccessfully(t, fakeServer)
 
 	createOpts := orders.CreateOpts{
 		Type: orders.KeyOrder,
@@ -67,16 +67,16 @@ func TestCreateOrder(t *testing.T) {
 		},
 	}
 
-	actual, err := orders.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := orders.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
 
 func TestDeleteOrder(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteOrderSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteOrderSuccessfully(t, fakeServer)
 
-	res := orders.Delete(context.TODO(), client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7")
+	res := orders.Delete(context.TODO(), client.ServiceClient(fakeServer), "46f73695-82bb-447a-bf96-6635f0fb0ce7")
 	th.AssertNoErr(t, res.Err)
 }

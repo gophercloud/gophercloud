@@ -11,11 +11,11 @@ import (
 )
 
 func TestCreateL7Policy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyCreationSuccessfully(t, SingleL7PolicyBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyCreationSuccessfully(t, fakeServer, SingleL7PolicyBody)
 
-	actual, err := l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{
+	actual, err := l7policies.Create(context.TODO(), fake.ServiceClient(fakeServer), l7policies.CreateOpts{
 		Name:        "redirect-example.com",
 		ListenerID:  "023f2e34-7806-443b-bfae-16c324569a3d",
 		Action:      l7policies.ActionRedirectToURL,
@@ -27,17 +27,17 @@ func TestCreateL7Policy(t *testing.T) {
 }
 
 func TestRequiredL7PolicyCreateOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	// no param specified.
-	res := l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{})
+	res := l7policies.Create(context.TODO(), fake.ServiceClient(fakeServer), l7policies.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 
 	// Action is invalid.
-	res = l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{
+	res = l7policies.Create(context.TODO(), fake.ServiceClient(fakeServer), l7policies.CreateOpts{
 		ListenerID: "023f2e34-7806-443b-bfae-16c324569a3d",
 		Action:     l7policies.Action("invalid"),
 	})
@@ -47,12 +47,12 @@ func TestRequiredL7PolicyCreateOpts(t *testing.T) {
 }
 
 func TestListL7Policies(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := l7policies.List(fake.ServiceClient(fakeServer), l7policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := l7policies.ExtractL7Policies(page)
@@ -77,11 +77,11 @@ func TestListL7Policies(t *testing.T) {
 }
 
 func TestListAllL7Policies(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyListSuccessfully(t, fakeServer)
 
-	allPages, err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).AllPages(context.TODO())
+	allPages, err := l7policies.List(fake.ServiceClient(fakeServer), l7policies.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := l7policies.ExtractL7Policies(allPages)
 	th.AssertNoErr(t, err)
@@ -90,11 +90,11 @@ func TestListAllL7Policies(t *testing.T) {
 }
 
 func TestGetL7Policy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := l7policies.Get(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -104,20 +104,20 @@ func TestGetL7Policy(t *testing.T) {
 }
 
 func TestDeleteL7Policy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyDeletionSuccessfully(t, fakeServer)
 
-	res := l7policies.Delete(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd")
+	res := l7policies.Delete(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateL7Policy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyUpdateSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	newName := "NewL7PolicyName"
 	redirectURL := "http://www.new-example.com"
 	actual, err := l7policies.Update(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
@@ -134,11 +134,11 @@ func TestUpdateL7Policy(t *testing.T) {
 }
 
 func TestUpdateL7PolicyNullRedirectURL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleL7PolicyUpdateNullRedirectURLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleL7PolicyUpdateNullRedirectURLSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	newName := "NewL7PolicyName"
 	redirectURL := ""
 	actual, err := l7policies.Update(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
@@ -154,10 +154,10 @@ func TestUpdateL7PolicyNullRedirectURL(t *testing.T) {
 }
 
 func TestUpdateL7PolicyWithInvalidOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := l7policies.Update(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.UpdateOpts{
+	res := l7policies.Update(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.UpdateOpts{
 		Action: l7policies.Action("invalid"),
 	})
 	if res.Err == nil {
@@ -166,11 +166,11 @@ func TestUpdateL7PolicyWithInvalidOpts(t *testing.T) {
 }
 
 func TestCreateRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRuleCreationSuccessfully(t, SingleRuleBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRuleCreationSuccessfully(t, fakeServer, SingleRuleBody)
 
-	actual, err := l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	actual, err := l7policies.CreateRule(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images*",
@@ -181,20 +181,20 @@ func TestCreateRule(t *testing.T) {
 }
 
 func TestRequiredRuleCreateOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "", l7policies.CreateRuleOpts{})
+	res := l7policies.CreateRule(context.TODO(), fake.ServiceClient(fakeServer), "", l7policies.CreateRuleOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType: l7policies.TypePath,
 	})
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
-	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType:    l7policies.RuleType("invalid"),
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images*",
@@ -202,7 +202,7 @@ func TestRequiredRuleCreateOpts(t *testing.T) {
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
-	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+	res = l7policies.CreateRule(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareType("invalid"),
 		Value:       "/images*",
@@ -213,12 +213,12 @@ func TestRequiredRuleCreateOpts(t *testing.T) {
 }
 
 func TestListRules(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRuleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRuleListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := l7policies.ListRules(fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := l7policies.ExtractRules(page)
@@ -243,11 +243,11 @@ func TestListRules(t *testing.T) {
 }
 
 func TestListAllRules(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRuleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRuleListSuccessfully(t, fakeServer)
 
-	allPages, err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).AllPages(context.TODO())
+	allPages, err := l7policies.ListRules(fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := l7policies.ExtractRules(allPages)
@@ -257,11 +257,11 @@ func TestListAllRules(t *testing.T) {
 }
 
 func TestGetRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRuleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRuleGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := l7policies.GetRule(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -271,20 +271,20 @@ func TestGetRule(t *testing.T) {
 }
 
 func TestDeleteRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRuleDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRuleDeletionSuccessfully(t, fakeServer)
 
-	res := l7policies.DeleteRule(context.TODO(), fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c")
+	res := l7policies.DeleteRule(context.TODO(), fake.ServiceClient(fakeServer), "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRuleUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRuleUpdateSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	invert := false
 	key := ""
 	actual, err := l7policies.UpdateRule(context.TODO(), client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c", l7policies.UpdateRuleOpts{
@@ -302,17 +302,17 @@ func TestUpdateRule(t *testing.T) {
 }
 
 func TestUpdateRuleWithInvalidOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := l7policies.UpdateRule(context.TODO(), fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
+	res := l7policies.UpdateRule(context.TODO(), fake.ServiceClient(fakeServer), "", "", l7policies.UpdateRuleOpts{
 		RuleType: l7policies.RuleType("invalid"),
 	})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 
-	res = l7policies.UpdateRule(context.TODO(), fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
+	res = l7policies.UpdateRule(context.TODO(), fake.ServiceClient(fakeServer), "", "", l7policies.UpdateRuleOpts{
 		CompareType: l7policies.CompareType("invalid"),
 	})
 	if res.Err == nil {

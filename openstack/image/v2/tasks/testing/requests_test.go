@@ -14,10 +14,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := tasks.List(client.ServiceClient(), tasks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := tasks.List(client.ServiceClient(fakeServer), tasks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := tasks.ExtractTasks(page)
 		if err != nil {
@@ -54,10 +54,10 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/tasks/1252f636-1246-4319-bfba-c47cde0efbe0", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/tasks/1252f636-1246-4319-bfba-c47cde0efbe0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -67,7 +67,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, TasksGetResult)
 	})
 
-	s, err := tasks.Get(context.TODO(), client.ServiceClient(), "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
+	s, err := tasks.Get(context.TODO(), client.ServiceClient(fakeServer), "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))
@@ -91,10 +91,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, TaskCreateRequest)
@@ -116,7 +116,7 @@ func TestCreate(t *testing.T) {
 			"import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
 		},
 	}
-	s, err := tasks.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	s, err := tasks.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))

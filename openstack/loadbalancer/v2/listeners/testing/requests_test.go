@@ -12,12 +12,12 @@ import (
 )
 
 func TestListListeners(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := listeners.List(fake.ServiceClient(), listeners.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := listeners.List(fake.ServiceClient(fakeServer), listeners.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := listeners.ExtractListeners(page)
@@ -42,11 +42,11 @@ func TestListListeners(t *testing.T) {
 }
 
 func TestListAllListeners(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerListSuccessfully(t, fakeServer)
 
-	allPages, err := listeners.List(fake.ServiceClient(), listeners.ListOpts{}).AllPages(context.TODO())
+	allPages, err := listeners.List(fake.ServiceClient(fakeServer), listeners.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := listeners.ExtractListeners(allPages)
 	th.AssertNoErr(t, err)
@@ -55,11 +55,11 @@ func TestListAllListeners(t *testing.T) {
 }
 
 func TestCreateListener(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerCreationSuccessfully(t, SingleListenerBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerCreationSuccessfully(t, fakeServer, SingleListenerBody)
 
-	actual, err := listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{
+	actual, err := listeners.Create(context.TODO(), fake.ServiceClient(fakeServer), listeners.CreateOpts{
 		Protocol:               "TCP",
 		Name:                   "db",
 		LoadbalancerID:         "79e05663-7f03-45d2-a092-8b94062f22ab",
@@ -77,37 +77,37 @@ func TestCreateListener(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	res := listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{})
+	res := listeners.Create(context.TODO(), fake.ServiceClient(fakeServer), listeners.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo"})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(fakeServer), listeners.CreateOpts{Name: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar"})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(fakeServer), listeners.CreateOpts{Name: "foo", ProjectID: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar"})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(fakeServer), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar", ProtocolPort: 80})
+	res = listeners.Create(context.TODO(), fake.ServiceClient(fakeServer), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar", ProtocolPort: 80})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestGetListener(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := listeners.Get(context.TODO(), client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -117,20 +117,20 @@ func TestGetListener(t *testing.T) {
 }
 
 func TestDeleteListener(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerDeletionSuccessfully(t, fakeServer)
 
-	res := listeners.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := listeners.Delete(context.TODO(), fake.ServiceClient(fakeServer), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateListener(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerUpdateSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	i1001 := 1001
 	i181000 := 181000
 	name := "NewListenerName"
@@ -159,11 +159,11 @@ func TestUpdateListener(t *testing.T) {
 }
 
 func TestGetListenerStatsTree(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListenerGetStatsTree(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListenerGetStatsTree(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := listeners.GetStats(context.TODO(), client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)

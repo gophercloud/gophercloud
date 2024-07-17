@@ -11,13 +11,13 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleInstanceActionListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleInstanceActionListSuccessfully(t, fakeServer)
 
 	expected := ListExpected
 	pages := 0
-	err := instanceactions.List(client.ServiceClient(), "asdfasdfasdf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := instanceactions.List(client.ServiceClient(fakeServer), "asdfasdfasdf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := instanceactions.ExtractInstanceActions(page)
@@ -35,11 +35,11 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleInstanceActionGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleInstanceActionGetSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	actual, err := instanceactions.Get(context.TODO(), client, "asdfasdfasdf", "okzeorkmkfs").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)

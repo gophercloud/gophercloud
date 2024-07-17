@@ -11,12 +11,12 @@ import (
 )
 
 func TestListDetailPorts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortListDetailSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortListDetailSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := ports.ListDetail(client.ServiceClient(), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := ports.ListDetail(client.ServiceClient(fakeServer), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ports.ExtractPorts(page)
@@ -41,12 +41,12 @@ func TestListDetailPorts(t *testing.T) {
 }
 
 func TestListPorts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := ports.List(client.ServiceClient(), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := ports.List(client.ServiceClient(fakeServer), ports.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ports.ExtractPorts(page)
@@ -86,12 +86,12 @@ func TestListOpts(t *testing.T) {
 }
 
 func TestCreatePort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortCreationSuccessfully(t, SinglePortBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortCreationSuccessfully(t, fakeServer, SinglePortBody)
 
 	iTrue := true
-	actual, err := ports.Create(context.TODO(), client.ServiceClient(), ports.CreateOpts{
+	actual, err := ports.Create(context.TODO(), client.ServiceClient(fakeServer), ports.CreateOpts{
 		NodeUUID:   "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
 		Address:    "52:54:00:4d:87:e6",
 		PXEEnabled: &iTrue,
@@ -102,20 +102,20 @@ func TestCreatePort(t *testing.T) {
 }
 
 func TestDeletePort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortDeletionSuccessfully(t, fakeServer)
 
-	res := ports.Delete(context.TODO(), client.ServiceClient(), "3abe3f36-9708-4e9f-b07e-0f898061d3a7")
+	res := ports.Delete(context.TODO(), client.ServiceClient(fakeServer), "3abe3f36-9708-4e9f-b07e-0f898061d3a7")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetPort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortGetSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := ports.Get(context.TODO(), c, "f2845e11-dbd4-4728-a8c0-30d19f48924a").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -125,11 +125,11 @@ func TestGetPort(t *testing.T) {
 }
 
 func TestUpdatePort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortUpdateSuccessfully(t, SinglePortBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortUpdateSuccessfully(t, fakeServer, SinglePortBody)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := ports.Update(context.TODO(), c, "f2845e11-dbd4-4728-a8c0-30d19f48924a", ports.UpdateOpts{
 		ports.UpdateOperation{
 			Op:    ports.ReplaceOp,

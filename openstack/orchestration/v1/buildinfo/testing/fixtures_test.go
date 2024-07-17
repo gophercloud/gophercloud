@@ -33,8 +33,8 @@ const GetOutput = `
 
 // HandleGetSuccessfully creates an HTTP handler at `/build_info`
 // on the test handler mux that responds with a `Get` response.
-func HandleGetSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/build_info", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/build_info", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

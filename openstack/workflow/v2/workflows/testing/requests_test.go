@@ -17,8 +17,8 @@ import (
 )
 
 func TestCreateWorkflow(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	definition := `---
 version: '2.0'
@@ -33,7 +33,7 @@ workflow_echo:
 		test:
         	action: std.echo output="<% $.msg %>"`
 
-	th.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "text/plain")
@@ -70,7 +70,7 @@ workflow_echo:
 		Definition: strings.NewReader(definition),
 	}
 
-	actual, err := workflows.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	actual, err := workflows.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create workflow: %v", err)
 	}
@@ -97,24 +97,24 @@ workflow_echo:
 }
 
 func TestDeleteWorkflow(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/workflows/604a3a1e-94e3-4066-a34a-aa56873ef236", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/workflows/604a3a1e-94e3-4066-a34a-aa56873ef236", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := workflows.Delete(context.TODO(), client.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
+	res := workflows.Delete(context.TODO(), client.ServiceClient(fakeServer), "604a3a1e-94e3-4066-a34a-aa56873ef236")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetWorkflow(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/workflows/1", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/workflows/1", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -133,7 +133,7 @@ func TestGetWorkflow(t *testing.T) {
 			}
 		`)
 	})
-	actual, err := workflows.Get(context.TODO(), client.ServiceClient(), "1").Extract()
+	actual, err := workflows.Get(context.TODO(), client.ServiceClient(fakeServer), "1").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get workflow: %v", err)
 	}
@@ -157,9 +157,9 @@ func TestGetWorkflow(t *testing.T) {
 }
 
 func TestListWorkflows(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -185,7 +185,7 @@ func TestListWorkflows(t *testing.T) {
 						"updated_at": "2018-09-12 15:48:17"
 					}
 				]
-			}`, th.Server.URL)
+			}`, fakeServer.Server.URL)
 		case "604a3a1e-94e3-4066-a34a-aa56873ef236":
 			fmt.Fprint(w, `{ "workflows": [] }`)
 		default:
@@ -194,7 +194,7 @@ func TestListWorkflows(t *testing.T) {
 	})
 	pages := 0
 	// Get all workflows
-	err := workflows.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := workflows.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := workflows.ExtractWorkflows(page)
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/fixture"
 )
 
@@ -24,14 +25,14 @@ var (
 	listResp   = fmt.Sprintf(`{"users":[%s, %s]}`, fmt.Sprintf(user1, ""), fmt.Sprintf(user2, ""))
 )
 
-func HandleCreate(t *testing.T) {
-	fixture.SetupHandler(t, _rootURL, "POST", createReq, "", 202)
+func HandleCreate(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, _rootURL, "POST", createReq, "", 202)
 }
 
-func HandleList(t *testing.T) {
-	fixture.SetupHandler(t, _rootURL, "GET", "", listResp, 200)
+func HandleList(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, _rootURL, "GET", "", listResp, 200)
 }
 
-func HandleDelete(t *testing.T) {
-	fixture.SetupHandler(t, _rootURL+"/{userName}", "DELETE", "", "", 202)
+func HandleDelete(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, _rootURL+"/{userName}", "DELETE", "", "", 202)
 }

@@ -192,8 +192,8 @@ var (
 
 // HandlePortGroupListSuccessfully sets up the test server to respond to a
 // portgroup List request.
-func HandlePortGroupListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/portgroups", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortGroupListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/portgroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -217,8 +217,8 @@ func HandlePortGroupListSuccessfully(t *testing.T) {
 
 // HandlePortGroupCreationSuccessfully sets up the test server to respond to a PortGroup creation request
 // with a given response.
-func HandlePortGroupCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/portgroups", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortGroupCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/portgroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -247,8 +247,8 @@ func HandlePortGroupCreationSuccessfully(t *testing.T, response string) {
 
 // HandlePortGroupDeletionSuccessfully sets up the test server to respond to a
 // portgroup Deletion (DELETE) request for PortGroup2.
-func HandlePortGroupDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/portgroups/d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796",
+func HandlePortGroupDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/portgroups/d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -258,8 +258,8 @@ func HandlePortGroupDeletionSuccessfully(t *testing.T) {
 
 // HandlePortGroupGetSuccessfully sets up the test server to respond to a
 // portgroup Get request for PortGroup1.
-func HandlePortGroupGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/portgroups/d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796",
+func HandlePortGroupGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/portgroups/d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

@@ -75,8 +75,8 @@ var FilteredListExpected = []resourcetypes.ResourceTypeSummary{
 
 // HandleListSuccessfully creates an HTTP handler at `/resource_types`
 // on the test handler mux that responds with a `List` response.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/resource_types",
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_types",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -324,8 +324,8 @@ const GetSchemaOutput = `
 // HandleGetSchemaSuccessfully creates an HTTP handler at
 // `/resource_types/OS::Test::TestServer` on the test handler mux that
 // responds with a `GetSchema` response.
-func HandleGetSchemaSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/resource_types/OS::Test::TestServer",
+func HandleGetSchemaSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_types/OS::Test::TestServer",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -370,8 +370,8 @@ const GenerateTemplateOutput = `
 // HandleGenerateTemplateSuccessfully creates an HTTP handler at
 // `/resource_types/OS::Heat::None/template` on the test handler mux that
 // responds with a template.
-func HandleGenerateTemplateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/resource_types/OS::Heat::None/template",
+func HandleGenerateTemplateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_types/OS::Heat::None/template",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

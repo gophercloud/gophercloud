@@ -10,11 +10,11 @@ import (
 )
 
 func TestGetTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t, GetOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer, GetOutput)
 
-	actual, err := stacktemplates.Get(context.TODO(), client.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
+	actual, err := stacktemplates.Get(context.TODO(), client.ServiceClient(fakeServer), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -22,9 +22,9 @@ func TestGetTemplate(t *testing.T) {
 }
 
 func TestValidateTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleValidateSuccessfully(t, ValidateOutput)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleValidateSuccessfully(t, fakeServer, ValidateOutput)
 
 	opts := stacktemplates.ValidateOpts{
 		Template: `{
@@ -51,7 +51,7 @@ func TestValidateTemplate(t *testing.T) {
 		  }
 		}`,
 	}
-	actual, err := stacktemplates.Validate(context.TODO(), client.ServiceClient(), opts).Extract()
+	actual, err := stacktemplates.Validate(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := ValidateExpected

@@ -11,10 +11,10 @@ import (
 )
 
 func TestCreateClusterTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleCreateClusterTemplateSuccessfully(t)
+	HandleCreateClusterTemplateSuccessfully(t, fakeServer)
 
 	boolFalse := false
 	boolTrue := true
@@ -46,7 +46,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 		Hidden:              &boolTrue,
 	}
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clustertemplates.Create(context.TODO(), sc, opts)
 	th.AssertNoErr(t, res.Err)
@@ -62,12 +62,12 @@ func TestCreateClusterTemplate(t *testing.T) {
 }
 
 func TestDeleteClusterTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleDeleteClusterSuccessfully(t)
+	HandleDeleteClusterSuccessfully(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clustertemplates.Delete(context.TODO(), sc, "6dc6d336e3fc4c0a951b5698cd1236ee")
 	th.AssertNoErr(t, res.Err)
@@ -76,14 +76,14 @@ func TestDeleteClusterTemplate(t *testing.T) {
 }
 
 func TestListClusterTemplates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleListClusterTemplateSuccessfully(t)
+	HandleListClusterTemplateSuccessfully(t, fakeServer)
 
 	count := 0
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	err := clustertemplates.List(sc, clustertemplates.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
@@ -104,12 +104,12 @@ func TestListClusterTemplates(t *testing.T) {
 }
 
 func TestGetClusterTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetClusterTemplateSuccessfully(t)
+	HandleGetClusterTemplateSuccessfully(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clustertemplates.Get(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
 	th.AssertNoErr(t, err)
@@ -118,12 +118,12 @@ func TestGetClusterTemplate(t *testing.T) {
 }
 
 func TestGetClusterTemplateEmptyTime(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetClusterTemplateEmptyTimeSuccessfully(t)
+	HandleGetClusterTemplateEmptyTimeSuccessfully(t, fakeServer)
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clustertemplates.Get(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
 	th.AssertNoErr(t, err)
@@ -132,10 +132,10 @@ func TestGetClusterTemplateEmptyTime(t *testing.T) {
 }
 
 func TestUpdateClusterTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleUpdateClusterTemplateSuccessfully(t)
+	HandleUpdateClusterTemplateSuccessfully(t, fakeServer)
 
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
@@ -150,7 +150,7 @@ func TestUpdateClusterTemplate(t *testing.T) {
 		},
 	}
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts)
 	th.AssertNoErr(t, res.Err)
@@ -162,10 +162,10 @@ func TestUpdateClusterTemplate(t *testing.T) {
 }
 
 func TestUpdateClusterTemplateEmptyTime(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleUpdateClusterTemplateEmptyTimeSuccessfully(t)
+	HandleUpdateClusterTemplateEmptyTimeSuccessfully(t, fakeServer)
 
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
@@ -180,7 +180,7 @@ func TestUpdateClusterTemplateEmptyTime(t *testing.T) {
 		},
 	}
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -188,10 +188,10 @@ func TestUpdateClusterTemplateEmptyTime(t *testing.T) {
 }
 
 func TestUpdateClusterTemplateInvalidUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleUpdateClusterTemplateInvalidUpdate(t)
+	HandleUpdateClusterTemplateInvalidUpdate(t, fakeServer)
 
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
@@ -208,7 +208,7 @@ func TestUpdateClusterTemplateInvalidUpdate(t *testing.T) {
 		},
 	}
 
-	sc := client.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	_, err := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
 	th.AssertEquals(t, true, err != nil)

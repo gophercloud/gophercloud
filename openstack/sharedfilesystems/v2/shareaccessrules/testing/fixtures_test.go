@@ -33,8 +33,8 @@ var getResponse = `{
     }
 }`
 
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc(shareAccessRulesEndpoint+"/"+shareAccessRuleID, func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(shareAccessRulesEndpoint+"/"+shareAccessRuleID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
