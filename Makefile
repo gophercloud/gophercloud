@@ -10,15 +10,18 @@ else
 	RUNNER=podman
 endif
 
-# if the golangci-lint steps fails with the following error message:
+# if the golangci-lint steps fails with one of the following error messages:
 #
 #   directory prefix . does not contain main module or its selected dependencies
+#
+#   failed to initialize build cache at /root/.cache/golangci-lint: mkdir /root/.cache/golangci-lint: permission denied
 #
 # you probably have to fix the SELinux security context for root directory plus your cache
 #
 #   chcon -Rt svirt_sandbox_file_t .
 #   chcon -Rt svirt_sandbox_file_t ~/.cache/golangci-lint
 lint:
+	mkdir -p ~/.cache/golangci-lint/$(GOLANGCI_LINT_VERSION)
 	$(RUNNER) run -t --rm \
 		-v $(shell pwd):/app \
 		-v ~/.cache/golangci-lint/$(GOLANGCI_LINT_VERSION):/root/.cache \
