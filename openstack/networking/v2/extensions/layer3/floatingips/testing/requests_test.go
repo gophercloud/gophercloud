@@ -101,7 +101,10 @@ func TestInvalidNextPageURLs(t *testing.T) {
 	th.AssertErr(t, err)
 }
 
-func TestRequiredFieldsForCreate(t *testing.T) {
+func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res1 := floatingips.Create(context.TODO(), fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: ""})
 	if res1.Err == nil {
 		t.Fatalf("Expected error, got none")

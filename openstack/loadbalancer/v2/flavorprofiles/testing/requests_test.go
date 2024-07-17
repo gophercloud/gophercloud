@@ -70,6 +70,9 @@ func TestCreateFlavorProfile(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := flavorprofiles.Create(context.TODO(), fake.ServiceClient(), flavorprofiles.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")

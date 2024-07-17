@@ -393,6 +393,9 @@ func TestCreateWithPrefixlen(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := subnets.Create(context.TODO(), fake.ServiceClient(), subnets.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")

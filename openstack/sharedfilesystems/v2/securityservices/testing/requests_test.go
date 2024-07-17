@@ -39,7 +39,10 @@ func TestCreate(t *testing.T) {
 }
 
 // Verifies that a security service cannot be created without a type
-func TestCreateFails(t *testing.T) {
+func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	options := &securityservices.CreateOpts{
 		Name:        "SecServ1",
 		Description: "Creating my first Security Service",

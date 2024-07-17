@@ -27,6 +27,9 @@ func TestCreateL7Policy(t *testing.T) {
 }
 
 func TestRequiredL7PolicyCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	// no param specified.
 	res := l7policies.Create(context.TODO(), fake.ServiceClient(), l7policies.CreateOpts{})
 	if res.Err == nil {

@@ -112,6 +112,9 @@ func TestUpdatePool(t *testing.T) {
 }
 
 func TestRequiredPoolCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := pools.Create(context.TODO(), fake.ServiceClient(), pools.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
@@ -206,6 +209,9 @@ func TestCreateMember(t *testing.T) {
 }
 
 func TestRequiredMemberCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := pools.CreateMember(context.TODO(), fake.ServiceClient(), "", pools.CreateMemberOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
