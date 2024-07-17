@@ -9,6 +9,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // MarkerPager sample and test cases.
@@ -58,7 +59,7 @@ func createMarkerPaged(t *testing.T) pagination.Pager {
 		}
 	})
 
-	client := createClient()
+	client := client.ServiceClient()
 
 	createPage := func(r pagination.PageResult) pagination.Page {
 		p := MarkerPageResult{pagination.MarkerPageBase{PageResult: r}}

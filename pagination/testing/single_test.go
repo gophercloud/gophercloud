@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // SinglePage sample and test cases.
@@ -34,7 +35,7 @@ func ExtractSingleInts(r pagination.Page) ([]int, error) {
 
 func setupSinglePaged() pagination.Pager {
 	th.SetupHTTP()
-	client := createClient()
+	client := client.ServiceClient()
 
 	th.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
