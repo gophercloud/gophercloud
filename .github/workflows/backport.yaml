@@ -33,9 +33,7 @@ jobs:
       - name: Backporting
         if: >
           contains(github.event.pull_request.labels.*.name, 'semver:patch')
-          || contains(github.event.pull_request.labels.*.name, 'semver:minor')
           || contains(github.event.label.name, 'semver:patch')
-          || contains(github.event.label.name, 'semver:minor')
         uses: kiegroup/git-backporting@cb3473d7c9de66cb7bec188f08538e134cdc4bc0
         with:
           target-branch: v1
@@ -57,14 +55,16 @@ jobs:
       - name: Report an error if backport unsupported labels
         if: >
           contains(github.event.pull_request.labels.*.name, 'semver:major')
+          || contains(github.event.pull_request.labels.*.name, 'semver:minor')
           || contains(github.event.pull_request.labels.*.name, 'semver:unknown')
           || contains(github.event.label.name, 'semver:major')
+          || contains(github.event.label.name, 'semver:minor')
           || contains(github.event.label.name, 'semver:unknown')
         uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
         with:
           message: |
-            Labels `semver-major` or `semver-unknown` can not trigger backports.
-            The PR has to be labeled `semver-patch` or `semver-minor`.
+            Labels `semver-major`, `semver-minor` and `semver-unknown` block
+            backports to the legacy branch `v1`.
 
   backport_v2:
     name: "Backport to v2"
@@ -122,5 +122,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
         with:
           message: |
-            Labels `semver-major` or `semver-unknown` can not trigger backports.
-            The PR has to be labeled `semver-patch` or `semver-minor`.
+            Labels `semver-major` and `semver-unknown` block backports to the
+            stable branch `v2`.
