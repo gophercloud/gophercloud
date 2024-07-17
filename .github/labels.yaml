@@ -25,3 +25,6 @@
 - color: 'EC0101'
   description: Unable to figure out the semver type
   name: semver:unknown
+- color: 'D73A4A'
+  description: Do not merge
+  name: hold
