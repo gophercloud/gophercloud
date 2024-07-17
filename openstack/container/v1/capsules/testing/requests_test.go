@@ -22,16 +22,17 @@ func TestGetCapsule_OldTime(t *testing.T) {
 	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:26+00:00")
 	startedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:26+00:00")
 
-	ExpectedCapsule.CreatedAt = createdAt
-	ExpectedCapsule.UpdatedAt = updatedAt
-	ExpectedCapsule.Containers[0].CreatedAt = createdAt
-	ExpectedCapsule.Containers[0].UpdatedAt = updatedAt
-	ExpectedCapsule.Containers[0].StartedAt = startedAt
+	ec := GetFakeCapsule()
+	ec.CreatedAt = createdAt
+	ec.UpdatedAt = updatedAt
+	ec.Containers[0].CreatedAt = createdAt
+	ec.Containers[0].UpdatedAt = updatedAt
+	ec.Containers[0].StartedAt = startedAt
 
-	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
+	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ec.UUID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
+	th.AssertDeepEquals(t, &ec, actualCapsule)
 }
 
 func TestGetCapsule_NewTime(t *testing.T) {
@@ -40,20 +41,12 @@ func TestGetCapsule_NewTime(t *testing.T) {
 
 	HandleCapsuleGetNewTimeSuccessfully(t)
 
-	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
-	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
-	startedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
+	ec := GetFakeCapsule()
 
-	ExpectedCapsule.CreatedAt = createdAt
-	ExpectedCapsule.UpdatedAt = updatedAt
-	ExpectedCapsule.Containers[0].CreatedAt = createdAt
-	ExpectedCapsule.Containers[0].UpdatedAt = updatedAt
-	ExpectedCapsule.Containers[0].StartedAt = startedAt
-
-	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
+	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ec.UUID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
+	th.AssertDeepEquals(t, &ec, actualCapsule)
 }
 
 func TestCreateCapsule(t *testing.T) {
@@ -61,16 +54,17 @@ func TestCreateCapsule(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCapsuleCreateSuccessfully(t)
 
+	ec := GetFakeCapsule()
+
 	template := new(capsules.Template)
 	template.Bin = []byte(ValidJSONTemplate)
-
 	createOpts := capsules.CreateOpts{
 		TemplateOpts: template,
 	}
 	actualCapsule, err := capsules.Create(context.TODO(), fakeclient.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
+	th.AssertDeepEquals(t, &ec, actualCapsule)
 }
 
 func TestListCapsule(t *testing.T) {
@@ -82,8 +76,7 @@ func TestListCapsule(t *testing.T) {
 	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+00:00")
 	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+01:00")
 
-	ec := ExpectedCapsule
-
+	ec := GetFakeCapsule()
 	ec.CreatedAt = createdAt
 	ec.UpdatedAt = updatedAt
 	ec.Containers = nil
@@ -120,8 +113,7 @@ func TestListCapsuleV132(t *testing.T) {
 	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
 	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
 
-	ec := ExpectedCapsuleV132
-
+	ec := GetFakeCapsuleV132()
 	ec.CreatedAt = createdAt
 	ec.UpdatedAt = updatedAt
 	ec.Containers = nil

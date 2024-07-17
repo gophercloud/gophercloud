@@ -20,7 +20,7 @@ func TestList(t *testing.T) {
 		count++
 		actual, err := servergroups.ExtractServerGroups(page)
 		th.AssertNoErr(t, err)
-		th.CheckDeepEquals(t, ExpectedServerGroupSlice, actual)
+		th.CheckDeepEquals(t, ExpectedServerGroupList, actual)
 
 		return true, nil
 	})
@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 		Policies: []string{"anti-affinity"},
 	}).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &CreatedServerGroup, actual)
+	th.CheckDeepEquals(t, &ExpectedServerGroupCreate, actual)
 }
 
 func TestCreateMicroversion(t *testing.T) {
@@ -46,23 +46,15 @@ func TestCreateMicroversion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateMicroversionSuccessfully(t)
 
-	policy := "anti-affinity"
-	rules := servergroups.Rules{
-		MaxServerPerHost: 3,
-	}
-	CreatedServerGroup.Policy = &policy
-	CreatedServerGroup.Rules = &rules
-
 	result := servergroups.Create(context.TODO(), client.ServiceClient(), servergroups.CreateOpts{
-		Name:     "test",
-		Policies: []string{"anti-affinity"},
-		Policy:   policy,
-		Rules:    &rules,
+		Name:   "test",
+		Policy: policy,
+		Rules:  ExpectedServerGroupCreateMicroversion.Rules,
 	})
 
 	actual, err := result.Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &CreatedServerGroup, actual)
+	th.CheckDeepEquals(t, &ExpectedServerGroupCreateMicroversion, actual)
 }
 
 func TestGet(t *testing.T) {
@@ -72,7 +64,7 @@ func TestGet(t *testing.T) {
 
 	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstServerGroup, actual)
+	th.CheckDeepEquals(t, &ExpectedServerGroupGet, actual)
 }
 
 func TestGetMicroversion(t *testing.T) {
@@ -80,19 +72,9 @@ func TestGetMicroversion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetMicroversionSuccessfully(t)
 
-	policy := "anti-affinity"
-	rules := servergroups.Rules{
-		MaxServerPerHost: 3,
-	}
-	FirstServerGroup.Policy = &policy
-	FirstServerGroup.Rules = &rules
-
-	result := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0")
-
-	// Extract basic fields.
-	actual, err := result.Extract()
+	actual, err := servergroups.Get(context.TODO(), client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstServerGroup, actual)
+	th.CheckDeepEquals(t, &ExpectedServerGroupGetMicroversion, actual)
 }
 
 func TestDelete(t *testing.T) {
