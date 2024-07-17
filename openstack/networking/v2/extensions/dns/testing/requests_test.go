@@ -174,6 +174,9 @@ func TestPortCreate(t *testing.T) {
 }
 
 func TestPortRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := ports.Create(context.TODO(), fake.ServiceClient(), dns.PortCreateOptsExt{CreateOptsBuilder: ports.CreateOpts{}})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")

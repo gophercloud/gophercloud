@@ -77,6 +77,9 @@ func TestCreateListener(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := listeners.Create(context.TODO(), fake.ServiceClient(), listeners.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")

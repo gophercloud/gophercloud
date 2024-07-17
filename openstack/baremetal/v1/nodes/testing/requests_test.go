@@ -159,6 +159,9 @@ func TestUpdateNode(t *testing.T) {
 }
 
 func TestUpdateRequiredOp(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	c := client.ServiceClient()
 	_, err := nodes.Update(context.TODO(), c, "1234asdf", nodes.UpdateOpts{
 		nodes.UpdateOperation{
@@ -174,6 +177,9 @@ func TestUpdateRequiredOp(t *testing.T) {
 }
 
 func TestUpdateRequiredPath(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	c := client.ServiceClient()
 	_, err := nodes.Update(context.TODO(), c, "1234asdf", nodes.UpdateOpts{
 		nodes.UpdateOperation{
@@ -283,7 +289,6 @@ func TestNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
 func TestHandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	HandleNodeChangeProvisionStateConfigDrive(t)
 
 	c := client.ServiceClient()
@@ -343,6 +348,9 @@ func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 }
 
 func TestCleanStepRequiresInterface(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	c := client.ServiceClient()
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetClean,
@@ -362,6 +370,9 @@ func TestCleanStepRequiresInterface(t *testing.T) {
 }
 
 func TestCleanStepRequiresStep(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	c := client.ServiceClient()
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetClean,

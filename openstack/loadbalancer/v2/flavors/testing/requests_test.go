@@ -135,6 +135,9 @@ func TestCreateFlavorDisabled(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")

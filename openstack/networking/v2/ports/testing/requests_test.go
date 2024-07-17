@@ -463,6 +463,9 @@ func TestCreateWithInvalidValueSpecs(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	res := ports.Create(context.TODO(), fake.ServiceClient(), ports.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")

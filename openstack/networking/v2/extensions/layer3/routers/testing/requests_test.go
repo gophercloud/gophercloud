@@ -502,6 +502,9 @@ func TestAddInterface(t *testing.T) {
 }
 
 func TestAddInterfaceRequiredOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	_, err := routers.AddInterface(context.TODO(), fake.ServiceClient(), "foo", routers.AddInterfaceOpts{}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")

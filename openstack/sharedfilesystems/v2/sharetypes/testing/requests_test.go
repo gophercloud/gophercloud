@@ -37,7 +37,10 @@ func TestCreate(t *testing.T) {
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
-func TestCreateFails(t *testing.T) {
+func TestRequiredCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
 	options := &sharetypes.CreateOpts{
 		Name: "my_new_share_type",
 	}
