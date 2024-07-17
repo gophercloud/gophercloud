@@ -57,9 +57,6 @@ const GetOutputMicroversion = `
     "server_group": {
         "id": "616fb98f-46ca-475e-917e-2563e5a8cd19",
         "name": "test",
-        "policies": [
-            "anti-affinity"
-        ],
         "policy": "anti-affinity",
         "rules": {
           "max_server_per_host": 3
@@ -91,9 +88,6 @@ const CreateOutputMicroversion = `
     "server_group": {
         "id": "616fb98f-46ca-475e-917e-2563e5a8cd19",
         "name": "test",
-        "policies": [
-            "anti-affinity"
-        ],
         "policy": "anti-affinity",
         "rules": {
           "max_server_per_host": 3
@@ -104,8 +98,10 @@ const CreateOutputMicroversion = `
 }
 `
 
-// FirstServerGroup is the first result in ListOutput.
-var FirstServerGroup = servergroups.ServerGroup{
+var policy = "anti-affinity"
+
+// ExpectedServerGroupGet is parsed result from GetOutput.
+var ExpectedServerGroupGet = servergroups.ServerGroup{
 	ID:   "616fb98f-46ca-475e-917e-2563e5a8cd19",
 	Name: "test",
 	Policies: []string{
@@ -115,27 +111,59 @@ var FirstServerGroup = servergroups.ServerGroup{
 	Metadata: map[string]any{},
 }
 
-// SecondServerGroup is the second result in ListOutput.
-var SecondServerGroup = servergroups.ServerGroup{
-	ID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
-	Name: "test2",
-	Policies: []string{
-		"affinity",
+// ExpectedServerGroupGet is parsed result from GetOutputMicroversion.
+var ExpectedServerGroupGetMicroversion = servergroups.ServerGroup{
+	ID:     "616fb98f-46ca-475e-917e-2563e5a8cd19",
+	Name:   "test",
+	Policy: &policy,
+	Rules: &servergroups.Rules{
+		MaxServerPerHost: 3,
 	},
 	Members:  []string{},
 	Metadata: map[string]any{},
 }
 
-// ExpectedServerGroupSlice is the slice of results that should be parsed
+// ExpectedServerGroupList is the slice of results that should be parsed
 // from ListOutput, in the expected order.
-var ExpectedServerGroupSlice = []servergroups.ServerGroup{FirstServerGroup, SecondServerGroup}
+var ExpectedServerGroupList = []servergroups.ServerGroup{
+	{
+		ID:   "616fb98f-46ca-475e-917e-2563e5a8cd19",
+		Name: "test",
+		Policies: []string{
+			"anti-affinity",
+		},
+		Members:  []string{},
+		Metadata: map[string]any{},
+	},
+	{
+		ID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
+		Name: "test2",
+		Policies: []string{
+			"affinity",
+		},
+		Members:  []string{},
+		Metadata: map[string]any{},
+	},
+}
 
-// CreatedServerGroup is the parsed result from CreateOutput.
-var CreatedServerGroup = servergroups.ServerGroup{
+// ExpectedServerGroupCreate is the parsed result from CreateOutput.
+var ExpectedServerGroupCreate = servergroups.ServerGroup{
 	ID:   "616fb98f-46ca-475e-917e-2563e5a8cd19",
 	Name: "test",
 	Policies: []string{
 		"anti-affinity",
+	},
+	Members:  []string{},
+	Metadata: map[string]any{},
+}
+
+// CreatedServerGroup is the parsed result from CreateOutputMicroversion.
+var ExpectedServerGroupCreateMicroversion = servergroups.ServerGroup{
+	ID:     "616fb98f-46ca-475e-917e-2563e5a8cd19",
+	Name:   "test",
+	Policy: &policy,
+	Rules: &servergroups.Rules{
+		MaxServerPerHost: 3,
 	},
 	Members:  []string{},
 	Metadata: map[string]any{},
@@ -208,9 +236,6 @@ func HandleCreateMicroversionSuccessfully(t *testing.T) {
 {
     "server_group": {
         "name": "test",
-        "policies": [
-            "anti-affinity"
-        ],
         "policy": "anti-affinity",
         "rules": {
             "max_server_per_host": 3
