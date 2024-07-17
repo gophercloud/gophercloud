@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/hypervisors"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
@@ -644,7 +643,7 @@ func HandleHypervisorListSuccessfully(t *testing.T) {
 		switch r.URL.Query().Get("marker") {
 		case "":
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, HypervisorListBodyPage1, testhelper.Server.URL)
+			fmt.Fprintf(w, HypervisorListBodyPage1, th.Server.URL)
 		case "c48f6247-abe4-4a24-824e-ea39e108874f":
 			w.Header().Add("Content-Type", "application/json")
 			fmt.Fprint(w, HypervisorListBodyPage2)
