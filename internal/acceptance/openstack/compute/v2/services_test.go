@@ -101,7 +101,7 @@ func TestServicesUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	for _, service := range allServices {
-		th.AssertEquals(t, services.ServiceDisabled, service.Status)
+		th.AssertEquals(t, "disabled", service.Status)
 	}
 
 	// reenable all services
@@ -129,6 +129,6 @@ func TestServicesUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	for _, service := range allServices {
-		th.AssertEquals(t, services.ServiceEnabled, service.Status)
+		th.AssertEquals(t, "enabled", service.Status)
 	}
 }
