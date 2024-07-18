@@ -2,8 +2,11 @@ name: Ready
 on:
   pull_request_target:
     types:
-      - opened
       - labeled
+      - opened
+      - reopened
+      - synchronize
+      - unlabeled
 
 jobs:
   hold:
