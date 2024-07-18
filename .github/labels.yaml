@@ -1,0 +1,27 @@
+- color: '30ABB9'
+  description: This PR will be backported to v1
+  name: backport-v1
+- color: 'E99695'
+  description: This PR will be backported to v2
+  name: backport-v2
+- color: '0366d6'
+  description: Pull requests that update a dependency file
+  name: dependencies
+- color: '000000'
+  description: Pull requests that update GitHub Actions code
+  name: github_actions
+- color: 'BCF611'
+  description: A good issue for first-time contributors
+  name: good first issue
+- color: '9E1957'
+  description: Breaking change
+  name: semver:major
+- color: 'FBCA04'
+  description: Backwards-compatible change
+  name: semver:minor
+- color: '6E7624'
+  description: No API change
+  name: semver:patch
+- color: 'D73A4A'
+  description: Do not merge
+  name: hold
