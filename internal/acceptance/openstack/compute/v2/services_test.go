@@ -120,4 +120,15 @@ func TestServicesUpdate(t *testing.T) {
 
 		th.AssertEquals(t, updated.ID, service.ID)
 	}
+
+	// verify all services are enabled
+	allPages, err = services.List(client, listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allServices, err = services.ExtractServices(allPages)
+	th.AssertNoErr(t, err)
+
+	for _, service := range allServices {
+		th.AssertEquals(t, services.ServiceEnabled, service.Status)
+	}
 }
