@@ -33,7 +33,7 @@ func TestServicesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestServicesListWithOpts(t *testing.T) {
@@ -55,14 +55,14 @@ func TestServicesListWithOpts(t *testing.T) {
 	var found bool
 	for _, service := range allServices {
 		tools.PrintResource(t, service)
-		th.AssertEquals(t, service.Binary, "nova-scheduler")
+		th.AssertEquals(t, "nova-scheduler", service.Binary)
 
 		if service.Binary == "nova-scheduler" {
 			found = true
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestServicesUpdate(t *testing.T) {
@@ -101,7 +101,7 @@ func TestServicesUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	for _, service := range allServices {
-		th.AssertEquals(t, service.Status, "disabled")
+		th.AssertEquals(t, services.ServiceDisabled, service.Status)
 	}
 
 	// reenable all services
