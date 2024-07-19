@@ -4,12 +4,6 @@
 - color: 'E99695'
   description: This PR will be backported to v2
   name: backport-v2
-- color: '0366d6'
-  description: Pull requests that update a dependency file
-  name: dependencies
-- color: '000000'
-  description: Pull requests that update GitHub Actions code
-  name: github_actions
 - color: 'BCF611'
   description: A good issue for first-time contributors
   name: good first issue
@@ -28,3 +22,92 @@
 - color: 'F9D0C4'
   description: Additional information requested
   name: needinfo
+
+- color: '30ABB9'
+  description: This PR targets v1
+  name: v1
+- color: 'E99695'
+  description: This PR targets v2
+  name: v2
+
+- color: '000000'
+  description: This PR updates dependencies
+  name: edit:dependencies
+- color: '000000'
+  description: This PR updates GitHub Actions code
+  name: edit:actions
+- color: '000000'
+  description: This PR updates common Gophercloud code
+  name: edit:gophercloud
+- color: '000000'
+  description: This PR updates common OpenStack code
+  name: edit:openstack
+- color: '000000'
+  description: This PR updates baremetal code
+  name: edit:baremetal
+- color: '000000'
+  description: This PR updates baremetalintrospection code
+  name: edit:baremetalintrospection
+- color: '000000'
+  description: This PR updates blockstorage code
+  name: edit:blockstorage
+- color: '000000'
+  description: This PR updates common code
+  name: edit:common
+- color: '000000'
+  description: This PR updates compute code
+  name: edit:compute
+- color: '000000'
+  description: This PR updates config code
+  name: edit:config
+- color: '000000'
+  description: This PR updates container code
+  name: edit:container
+- color: '000000'
+  description: This PR updates containerinfra code
+  name: edit:containerinfra
+- color: '000000'
+  description: This PR updates db code
+  name: edit:db
+- color: '000000'
+  description: This PR updates dns code
+  name: edit:dns
+- color: '000000'
+  description: This PR updates identity code
+  name: edit:identity
+- color: '000000'
+  description: This PR updates image code
+  name: edit:image
+- color: '000000'
+  description: This PR updates keymanager code
+  name: edit:keymanager
+- color: '000000'
+  description: This PR updates loadbalancer code
+  name: edit:loadbalancer
+- color: '000000'
+  description: This PR updates messaging code
+  name: edit:messaging
+- color: '000000'
+  description: This PR updates networking code
+  name: edit:networking
+- color: '000000'
+  description: This PR updates objectstorage code
+  name: edit:objectstorage
+- color: '000000'
+  description: This PR updates orchestration code
+  name: edit:orchestration
+- color: '000000'
+  description: This PR updates placement code
+  name: edit:placement
+- color: '000000'
+  description: This PR updates sharedfilesystems code
+  name: edit:sharedfilesystems
+- color: '000000'
+  description: This PR updates testing code
+  name: edit:testing
+- color: '000000'
+  description: This PR updates utils code
+  name: edit:utils
+- color: '000000'
+  description: This PR updates workflow code
+  name: edit:workflow
