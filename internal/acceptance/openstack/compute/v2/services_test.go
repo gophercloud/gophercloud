@@ -5,6 +5,7 @@ package v2
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -131,4 +132,7 @@ func TestServicesUpdate(t *testing.T) {
 	for _, service := range allServices {
 		th.AssertEquals(t, "enabled", service.Status)
 	}
+
+	// Just checking if compute eventually becomes available
+	time.Sleep(5 * time.Second)
 }
