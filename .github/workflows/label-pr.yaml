@@ -1,4 +1,4 @@
-name: Add semver labels
+name: Label PR
 on:
   pull_request_target:
     types:
@@ -7,7 +7,7 @@ on:
       - reopened
 
 jobs:
-  go-apidiff:
+  semver:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -77,3 +77,11 @@ jobs:
         NUMBER: ${{ github.event.pull_request.number }}
         BODY: >
           Failed to assess the semver bump. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+  edits:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/labeler@v5

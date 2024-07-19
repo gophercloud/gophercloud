@@ -1,0 +1,144 @@
+edit:dependencies:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'go.mod'
+    - 'go.sum'
+    - '.github/dependabot.yml'
+edit:actions:
+- changed-files:
+  - any-glob-to-any-file:
+    - '.github/**'
+edit:gophercloud:
+- changed-files:
+  - any-glob-to-any-file:
+    - '*.go'
+    - 'testing/**'
+    - 'pagination/**'
+edit:openstack:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/*'
+    - 'openstack/testing/**'
+edit:baremetal:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/baremetal/**'
+    - 'internal/acceptance/openstack/baremetal/**'
+edit:baremetalintrospection:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/baremetalintrospection/**'
+edit:blockstorage:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/blockstorage/**'
+    - 'internal/acceptance/openstack/blockstorage/**'
+edit:common:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/common/**'
+edit:compute:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/compute/**'
+    - 'internal/acceptance/openstack/compute/**'
+edit:config:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/config/**'
+edit:container:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/container/**'
+    - 'internal/acceptance/openstack/container/**'
+edit:containerinfra:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/containerinfra/**'
+    - 'internal/acceptance/openstack/containerinfra/**'
+edit:db:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/db/**'
+    - 'internal/acceptance/openstack/db/**'
+edit:dns:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/dns/**'
+    - 'internal/acceptance/openstack/dns/**'
+edit:identity:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/identity/**'
+    - 'internal/acceptance/openstack/identity/**'
+edit:image:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/image/**'
+    - 'internal/acceptance/openstack/image/**'
+edit:keymanager:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/keymanager/**'
+    - 'internal/acceptance/openstack/keymanager/**'
+edit:loadbalancer:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/loadbalancer/**'
+    - 'internal/acceptance/openstack/loadbalancer/**'
+edit:messaging:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/messaging/**'
+    - 'internal/acceptance/openstack/messaging/**'
+edit:networking:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/networking/**'
+    - 'internal/acceptance/openstack/networking/**'
+edit:objectstorage:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/objectstorage/**'
+    - 'internal/acceptance/openstack/objectstorage/**'
+edit:orchestration:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/orchestration/**'
+    - 'internal/acceptance/openstack/orchestration/**'
+edit:placement:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/placement/**'
+    - 'internal/acceptance/openstack/placement/**'
+edit:sharedfilesystems:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/sharedfilesystems/**'
+    - 'internal/acceptance/openstack/sharedfilesystems/**'
+edit:testinfra:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'testhelper/**'
+    - 'internal/acceptance/*'
+    - 'internal/acceptance/openstack/*'
+    - 'internal/acceptance/clients/**'
+    - 'internal/acceptance/tools/**'
+    - '.github/workflows/functional-*.yaml'
+    - '.github/workflows/unit.yaml'
+    - '.github/workflows/lint.yaml'
+    - 'script/**'
+edit:utils:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/utils/**'
+edit:workflow:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/workflow/**'
+    - 'internal/acceptance/openstack/workflow/**'
+
+v1:
+- base-branch: 'v1'
+v2:
+- base-branch: 'v2'
