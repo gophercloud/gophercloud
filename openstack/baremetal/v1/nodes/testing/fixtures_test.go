@@ -149,6 +149,8 @@ const NodeListDetailBody = `
       "provision_updated_at": "2019-02-15T17:21:29+00:00",
       "raid_config": {},
       "raid_interface": "no-raid",
+      "retired": false,
+      "retired_reason": "No longer needed",
       "rescue_interface": "no-rescue",
       "reservation": null,
       "resource_class": null,
@@ -247,6 +249,8 @@ const NodeListDetailBody = `
       "provision_updated_at": null,
       "raid_config": {},
       "raid_interface": "no-raid",
+      "retired": false,
+      "retired_reason": "No longer needed",
       "rescue_interface": "no-rescue",
       "reservation": null,
       "resource_class": null,
@@ -345,6 +349,8 @@ const NodeListDetailBody = `
       "provision_updated_at": null,
       "raid_config": {},
       "raid_interface": "no-raid",
+      "retired": false,
+      "retired_reason": "No longer needed",
       "rescue_interface": "no-rescue",
       "reservation": null,
       "resource_class": null,
@@ -456,6 +462,8 @@ const SingleNodeBody = `
   "provision_updated_at": "2019-02-15T17:21:29+00:00",
   "raid_config": {},
   "raid_interface": "no-raid",
+  "retired": false,
+  "retired_reason": "No longer needed",
   "rescue_interface": "no-rescue",
   "reservation": null,
   "resource_class": null,
@@ -855,7 +863,7 @@ const NodeFirmwareListBody = `
 {
   "firmware": [
    {
-      "created_at": "2023-10-03T18:30:00+00:00", 
+      "created_at": "2023-10-03T18:30:00+00:00",
       "updated_at": null,
       "component": "bios",
       "initial_version": "U30 v2.36 (07/16/2020)",
@@ -864,10 +872,10 @@ const NodeFirmwareListBody = `
    },
    {
       "created_at": "2023-10-03T18:30:00+00:00",
-      "updated_at": "2023-10-03T18:45:54+00:00", 
-      "component": "bmc",  
-      "initial_version": "iLO 5 v2.78", 
-      "current_version": "iLO 5 v2.81", 
+      "updated_at": "2023-10-03T18:45:54+00:00",
+      "component": "bmc",
+      "initial_version": "iLO 5 v2.78",
+      "current_version": "iLO 5 v2.81",
       "last_version_flashed": "iLO 5 v2.81"
    }
    ]
@@ -949,6 +957,8 @@ var (
 		CreatedAt:           createdAtFoo,
 		UpdatedAt:           updatedAt,
 		ProvisionUpdatedAt:  provisonUpdatedAt,
+		Retired:             false,
+		RetiredReason:       "No longer needed",
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
@@ -1058,6 +1068,8 @@ var (
 		UpdatedAt:            updatedAt,
 		InspectionStartedAt:  &InspectionStartedAt,
 		InspectionFinishedAt: &InspectionFinishedAt,
+		Retired:              false,
+		RetiredReason:        "No longer needed",
 	}
 
 	NodeBaz = nodes.Node{
@@ -1105,6 +1117,8 @@ var (
 		ProtectedReason:      "",
 		CreatedAt:            createdAtBaz,
 		UpdatedAt:            updatedAt,
+		Retired:              false,
+		RetiredReason:        "No longer needed",
 	}
 
 	ConfigDriveMap = nodes.ConfigDrive{
