@@ -50,7 +50,7 @@ const (
 	Unrescuing   ProvisionState = "unrescuing"
 	Servicing    ProvisionState = "servicing"
 	ServiceWait  ProvisionState = "service wait"
-	ServiceFail  ProvisionState = "service fail"
+	ServiceFail  ProvisionState = "service failed"
 	ServiceHold  ProvisionState = "service hold"
 )
 
