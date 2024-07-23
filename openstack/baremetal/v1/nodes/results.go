@@ -261,6 +261,13 @@ type Node struct {
 
 	// The UTC date and time when the last inspection was finished, ISO 8601 format. May be “null” if inspection hasn't been finished yet.
 	InspectionFinishedAt *time.Time `json:"inspection_finished_at"`
+
+	// Whether the node is retired. A Node tagged as retired will prevent any further
+	// scheduling of instances, but will still allow for other operations, such as cleaning, to happen
+	Retired bool `json:"retired"`
+
+	// Reason the node is marked as retired.
+	RetiredReason string `json:"retired_reason"`
 }
 
 // NodePage abstracts the raw results of making a List() request against
