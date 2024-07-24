@@ -109,6 +109,9 @@ func (r commonResult) Extract() (*SecGroupRule, error) {
 		SecGroupRule *SecGroupRule `json:"security_group_rule"`
 	}
 	err := r.ExtractInto(&s)
+	if err == nil && len(s.SecGroupRule.Protocol) == 0 {
+		s.SecGroupRule.Protocol = string(ProtocolAny)
+	}
 	return s.SecGroupRule, err
 }
 
