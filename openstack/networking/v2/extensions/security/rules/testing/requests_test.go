@@ -216,7 +216,7 @@ func TestCreateAnyProtocol(t *testing.T) {
 		PortRangeMin:  80,
 		EtherType:     rules.EtherType4,
 		PortRangeMax:  80,
-		Protocol:      "any",
+		Protocol:      rules.ProtocolAny,
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}

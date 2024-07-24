@@ -146,7 +146,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 		return
 	}
 	if m, mOk := b["security_group_rule"].(map[string]any); mOk {
-		if p, ok := m["protocol"]; ok && p == "any" {
+		if p, ok := m["protocol"]; ok && p == string(ProtocolAny) {
 			m["protocol"] = nil
 		}
 	}
