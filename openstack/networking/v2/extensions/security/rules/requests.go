@@ -145,6 +145,11 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 		r.Err = err
 		return
 	}
+	if m, mOk := b["security_group_rule"].(map[string]any); mOk {
+		if p, ok := m["protocol"]; ok && p == "any" {
+			m["protocol"] = nil
+		}
+	}
 	resp, err := c.Post(ctx, rootURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
