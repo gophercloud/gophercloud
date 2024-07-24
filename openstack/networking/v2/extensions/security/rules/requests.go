@@ -134,7 +134,16 @@ type CreateOpts struct {
 
 // ToSecGroupRuleCreateMap builds a request body from CreateOpts.
 func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]any, error) {
-	return gophercloud.BuildRequestBody(opts, "security_group_rule")
+	b, err := gophercloud.BuildRequestBody(opts, "security_group_rule")
+	if err != nil {
+		return nil, err
+	}
+	if m, mOk := b["security_group_rule"].(map[string]any); mOk {
+		if p, ok := m["protocol"]; ok && p == string(ProtocolAny) {
+			m["protocol"] = nil
+		}
+	}
+	return b, err
 }
 
 // Create is an operation which adds a new security group rule and associates it
@@ -144,11 +153,6 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 	if err != nil {
 		r.Err = err
 		return
-	}
-	if m, mOk := b["security_group_rule"].(map[string]any); mOk {
-		if p, ok := m["protocol"]; ok && p == string(ProtocolAny) {
-			m["protocol"] = nil
-		}
 	}
 	resp, err := c.Post(ctx, rootURL(c), b, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
