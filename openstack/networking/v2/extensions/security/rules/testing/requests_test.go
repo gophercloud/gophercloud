@@ -181,7 +181,6 @@ func TestCreateAnyProtocol(t *testing.T) {
         "port_range_min": 80,
         "ethertype": "IPv4",
         "port_range_max": 80,
-        "protocol": null,
         "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
         "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a"
     }
@@ -200,7 +199,6 @@ func TestCreateAnyProtocol(t *testing.T) {
         "id": "2bc0accf-312e-429a-956e-e4407625eb62",
         "port_range_max": 80,
         "port_range_min": 80,
-        "protocol": null,
         "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
         "remote_ip_prefix": null,
         "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a",
