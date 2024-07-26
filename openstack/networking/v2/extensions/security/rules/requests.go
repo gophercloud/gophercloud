@@ -2,6 +2,7 @@ package rules
 
 import (
 	"context"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
