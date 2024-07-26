@@ -239,10 +239,12 @@ func TestGetImage(t *testing.T) {
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
+			"properties":        "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
 		},
 	}
 
-	th.AssertDeepEquals(t, &expectedImage, actualImage)
+	th.AssertDeepEquals(t, expectedImage, *actualImage)
+	th.AssertEquals(t, "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}", actualImage.Properties["properties"])
 }
 
 func TestDeleteImage(t *testing.T) {
