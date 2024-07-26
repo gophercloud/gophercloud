@@ -239,6 +239,7 @@ func TestGetImage(t *testing.T) {
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
+			"properties":        "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
 		},
 	}
 
