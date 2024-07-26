@@ -2,8 +2,6 @@ package rules
 
 import (
 	"context"
-	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/fwaas_v2/rules"
-
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -78,7 +76,7 @@ const (
 	ProtocolUDP       RuleProtocol  = "udp"
 	ProtocolUDPLite   RuleProtocol  = "udplite"
 	ProtocolVRRP      RuleProtocol  = "vrrp"
-	ProtocolAny       RuleProtocol  = "any"
+	ProtocolAny       RuleProtocol  = ""
 )
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
@@ -135,14 +133,7 @@ type CreateOpts struct {
 
 // ToSecGroupRuleCreateMap builds a request body from CreateOpts.
 func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]any, error) {
-	b, err := gophercloud.BuildRequestBody(opts, "security_group_rule")
-	if err != nil {
-		return nil, err
-	}
-	if m := b["security_group_rule"].(map[string]any); m["protocol"] == string(rules.ProtocolAny) {
-		m["protocol"] = nil
-	}
-	return b, err
+	return gophercloud.BuildRequestBody(opts, "security_group_rule")
 }
 
 // Create is an operation which adds a new security group rule and associates it
