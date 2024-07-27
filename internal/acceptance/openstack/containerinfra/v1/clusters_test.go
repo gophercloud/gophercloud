@@ -63,6 +63,7 @@ func TestClustersCRUD(t *testing.T) {
 	newCluster, err := clusters.Get(context.TODO(), client, clusterID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.UUID, clusterID)
+	th.AssertEquals(t, newCluster.MasterLBEnabled, false)
 
 	allPagesDetail, err := clusters.ListDetail(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
