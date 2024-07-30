@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -70,7 +71,7 @@ type Image struct {
 
 	// Properties is a set of key-value pairs, if any, that are associated with
 	// the image.
-	Properties map[string]any
+	Properties map[string]any `json:"-"`
 
 	// CreatedAt is the date when the image has been created.
 	CreatedAt time.Time `json:"created_at"`
@@ -102,6 +103,7 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	type tmp Image
 	var s struct {
 		tmp
+		Hidden                      any    `json:"os_hidden"`
 		SizeBytes                   any    `json:"size"`
 		OpenStackImageImportMethods string `json:"openstack-image-import-methods"`
 		OpenStackImageStoreIDs      string `json:"openstack-image-store-ids"`
@@ -123,6 +125,20 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
 	}
 
+	switch t := s.Hidden.(type) {
+	case nil:
+		r.Hidden = false
+	case bool:
+		r.Hidden = t
+	case string:
+		r.Hidden, err = strconv.ParseBool(t)
+		if err != nil {
+			return fmt.Errorf("Failed to parse Hidden %q: %v", t, err)
+		}
+	default:
+		return fmt.Errorf("Unknown type for Hidden: %v (value: %v)", reflect.TypeOf(t), t)
+	}
+
 	// Bundle all other fields into Properties
 	var result any
 	err = json.Unmarshal(b, &result)
@@ -131,10 +147,14 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	}
 	if resultMap, ok := result.(map[string]any); ok {
 		delete(resultMap, "self")
+		delete(resultMap, "os_hidden")
 		delete(resultMap, "size")
 		delete(resultMap, "openstack-image-import-methods")
 		delete(resultMap, "openstack-image-store-ids")
 		r.Properties = gophercloud.RemainingKeys(Image{}, resultMap)
+		if m, ok := resultMap["properties"]; ok {
+			r.Properties["properties"] = m
+		}
 	}
 
 	if v := strings.FieldsFunc(strings.TrimSpace(s.OpenStackImageImportMethods), splitFunc); len(v) > 0 {
