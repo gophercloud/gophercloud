@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // MarkerPager sample and test cases.
@@ -37,9 +37,9 @@ func (r MarkerPageResult) LastMarker() (string, error) {
 }
 
 func createMarkerPaged(t *testing.T) pagination.Pager {
-	testhelper.SetupHTTP()
+	th.SetupHTTP()
 
-	testhelper.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
 		}
@@ -66,7 +66,7 @@ func createMarkerPaged(t *testing.T) pagination.Pager {
 		return p
 	}
 
-	return pagination.NewPager(client, testhelper.Server.URL+"/page", createPage)
+	return pagination.NewPager(client, th.Server.URL+"/page", createPage)
 }
 
 func ExtractMarkerStrings(page pagination.Page) ([]string, error) {
@@ -83,7 +83,7 @@ func ExtractMarkerStrings(page pagination.Page) ([]string, error) {
 
 func TestEnumerateMarker(t *testing.T) {
 	pager := createMarkerPaged(t)
-	defer testhelper.TeardownHTTP()
+	defer th.TeardownHTTP()
 
 	callCount := 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -107,24 +107,24 @@ func TestEnumerateMarker(t *testing.T) {
 			return false, nil
 		}
 
-		testhelper.CheckDeepEquals(t, expected, actual)
+		th.CheckDeepEquals(t, expected, actual)
 
 		callCount++
 		return true, nil
 	})
-	testhelper.AssertNoErr(t, err)
-	testhelper.AssertEquals(t, callCount, 3)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, callCount, 3)
 }
 
 func TestAllPagesMarker(t *testing.T) {
 	pager := createMarkerPaged(t)
-	defer testhelper.TeardownHTTP()
+	defer th.TeardownHTTP()
 
 	page, err := pager.AllPages(context.TODO())
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	expected := []string{"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii"}
 	actual, err := ExtractMarkerStrings(page)
-	testhelper.AssertNoErr(t, err)
-	testhelper.CheckDeepEquals(t, expected, actual)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
 }
