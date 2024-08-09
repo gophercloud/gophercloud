@@ -298,3 +298,30 @@ func DeleteTags(ctx context.Context, client *gophercloud.ServiceClient, projectI
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// CheckTag checks if a a tag exists in a project.
+func CheckTag(ctx context.Context, client *gophercloud.ServiceClient, projectID string, tag string) (r CheckTagResult) {
+	resp, err := client.Get(ctx, getTagURL(client, projectID, tag), nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// AddTag adds a tag to a project.
+func AddTag(ctx context.Context, client *gophercloud.ServiceClient, projectID string, tag string) (r AddTagResult) {
+	resp, err := client.Put(ctx, addTagURL(client, projectID, tag), nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteTag deletes a tag from a project.
+func DeleteTag(ctx context.Context, client *gophercloud.ServiceClient, projectID string, tag string) (r DeleteTagResult) {
+	resp, err := client.Delete(ctx, deleteTagURL(client, projectID, tag), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
