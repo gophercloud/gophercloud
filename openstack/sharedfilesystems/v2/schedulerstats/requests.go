@@ -14,17 +14,15 @@ type ListOptsBuilder interface {
 // ListOpts controls the view of data returned (e.g globally or per project).
 type ListOpts struct {
 	// The pool name for the back end.
-	ProjectID string `json:"project_id,omitempty"`
-	// The pool name for the back end.
-	PoolName string `json:"pool_name"`
+	PoolName string `q:"pool"`
 	// The host name for the back end.
-	HostName string `json:"host_name"`
+	HostName string `q:"host"`
 	// The name of the back end.
-	BackendName string `json:"backend_name"`
+	BackendName string `q:"backend"`
 	// The capabilities for the storage back end.
-	Capabilities string `json:"capabilities"`
+	Capabilities string `q:"capabilities"`
 	// The share type name or UUID. Allows filtering back end pools based on the extra-specs in the share type.
-	ShareType string `json:"share_type,omitempty"`
+	ShareType string `q:"share_type"`
 }
 
 // ToPoolsListQuery formats a ListOpts into a query string.
@@ -57,17 +55,15 @@ type ListDetailOptsBuilder interface {
 // ListOpts controls the view of data returned (e.g globally or per project).
 type ListDetailOpts struct {
 	// The pool name for the back end.
-	ProjectID string `json:"project_id,omitempty"`
-	// The pool name for the back end.
-	PoolName string `json:"pool_name"`
+	PoolName string `q:"pool"`
 	// The host name for the back end.
-	HostName string `json:"host_name"`
+	HostName string `q:"host"`
 	// The name of the back end.
-	BackendName string `json:"backend_name"`
+	BackendName string `q:"backend"`
 	// The capabilities for the storage back end.
-	Capabilities string `json:"capabilities"`
+	Capabilities string `q:"capabilities"`
 	// The share type name or UUID. Allows filtering back end pools based on the extra-specs in the share type.
-	ShareType string `json:"share_type,omitempty"`
+	ShareType string `q:"share_type"`
 }
 
 // ToPoolsListQuery formats a ListDetailOpts into a query string.
