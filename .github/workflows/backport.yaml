@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Generate a token from the gophercloud-backport-bot github-app
         id: generate_token
-        uses: getsentry/action-github-app-token@d4b5da6c5e37703f8c3b3e43abb5705b46e159cc
+        uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
         with:
           app_id: ${{ secrets.BACKPORT_APP_ID }}
           private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
@@ -84,7 +84,7 @@ jobs:
     steps:
       - name: Generate a token from the gophercloud-backport-bot github-app
         id: generate_token
-        uses: getsentry/action-github-app-token@d4b5da6c5e37703f8c3b3e43abb5705b46e159cc
+        uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
         with:
           app_id: ${{ secrets.BACKPORT_APP_ID }}
           private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
