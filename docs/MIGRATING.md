@@ -519,7 +519,7 @@ blockstorageversion=v3
 
 openstack='github.com/gophercloud/gophercloud/openstack'
 openstack_utils='github.com/gophercloud/utils/openstack'
-find . -type f -name '*.go' -exec sed -i '
+find . -type f -name '*.go' -not -path "*/vendor/*" -exec sed -i '
     /^import ($/,/^)$/ {
 
         # 1: These packages have been removed and their functionality moved into the main module for the corresponding service.
@@ -611,8 +611,19 @@ find . -type f -name '*.go' -exec sed -i '
         # 8: Rename identifiers that were changed in v2
         s#\(\(volumes\|servers\)\.SchedulerHint\)s#\2.SchedulerHintOpts#g
 
-        # 9: Tentatively replace error handling for 404s
+        # 9: Tentatively replace error handling
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault400); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusBadRequest) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault401); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusUnauthorized) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault403); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusForbidden) {#g
         s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault404); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusNotFound) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault405); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusMethodNotAllowed) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault408); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusRequestTimeout) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault409); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusConflict) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault429); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusTooManyRequests) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault500); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusInternalServerError) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault502); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusBadGateway) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault503); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusServiceUnavailable) {#g
+        s#\(\t\+\)if _, ok := err.(gophercloud.ErrDefault504); \(!\?\)ok {#\1if \2gophercloud.ResponseCodeIs(err, http.StatusGatewayTimeout) {#g
     }
     ' {} \;
 
