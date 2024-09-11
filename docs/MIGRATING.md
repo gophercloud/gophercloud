@@ -519,7 +519,7 @@ blockstorageversion=v3
 
 openstack='github.com/gophercloud/gophercloud/openstack'
 openstack_utils='github.com/gophercloud/utils/openstack'
-find . -type f -name '*.go' -exec sed -i '
+find . -type f -name '*.go' -not -path "*/vendor/*" -exec sed -i '
     /^import ($/,/^)$/ {
 
         # 1: These packages have been removed and their functionality moved into the main module for the corresponding service.
