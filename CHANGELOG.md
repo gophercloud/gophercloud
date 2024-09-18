@@ -1,3 +1,7 @@
+## v2.1.1 (2024-09-18)
+
+* [GH-3161](https://github.com/gophercloud/gophercloud/pull/3161) [v2] fix: create security group rule with any protocol
+
 ## v2.1.0 (2024-07-24)
 
 * [GH-3078](https://github.com/gophercloud/gophercloud/pull/3078) [networking]: add BGP VPNs support
