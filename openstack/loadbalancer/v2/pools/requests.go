@@ -8,6 +8,17 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
+// Type TLSVersion represents a tls version
+type TLSVersion string
+
+const (
+	TLSVersionSSLv3   TLSVersion = "SSLv3"
+	TLSVersionTLSv1   TLSVersion = "TLSv1"
+	TLSVersionTLSv1_1 TLSVersion = "TLSv1.1"
+	TLSVersionTLSv1_2 TLSVersion = "TLSv1.2"
+	TLSVersionTLSv1_3 TLSVersion = "TLSv1.3"
+)
+
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -151,7 +162,7 @@ type CreateOpts struct {
 
 	// A list of TLS protocol versions. Available versions: SSLv3, TLSv1,
 	// TLSv1.1, TLSv1.2, TLSv1.3. Available from microversion 2.17.
-	TLSVersions []string `json:"tls_versions,omitempty"`
+	TLSVersions []TLSVersion `json:"tls_versions,omitempty"`
 
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
@@ -256,7 +267,7 @@ type UpdateOpts struct {
 
 	// A list of TLS protocol versions. Available versions: SSLv3, TLSv1,
 	// TLSv1.1, TLSv1.2, TLSv1.3. Available from microversion 2.17.
-	TLSVersions *[]string `json:"tls_versions,omitempty"`
+	TLSVersions *[]TLSVersion `json:"tls_versions,omitempty"`
 
 	// Tags is a set of resource tags. New in version 2.5
 	Tags *[]string `json:"tags,omitempty"`
@@ -264,7 +275,29 @@ type UpdateOpts struct {
 
 // ToPoolUpdateMap builds a request body from UpdateOpts.
 func (opts UpdateOpts) ToPoolUpdateMap() (map[string]any, error) {
-	return gophercloud.BuildRequestBody(opts, "pool")
+	b, err := gophercloud.BuildRequestBody(opts, "pool")
+	if err != nil {
+		return nil, err
+	}
+
+	m := b["pool"].(map[string]any)
+
+	// allow to unset session_persistence on empty SessionPersistence struct
+	if opts.Persistence != nil && *opts.Persistence == (SessionPersistence{}) {
+		m["session_persistence"] = nil
+	}
+
+	// allow to unset alpn_protocols on empty slice
+	if opts.ALPNProtocols != nil && len(*opts.ALPNProtocols) == 0 {
+		m["alpn_protocols"] = nil
+	}
+
+	// allow to unset tls_versions on empty slice
+	if opts.TLSVersions != nil && len(*opts.TLSVersions) == 0 {
+		m["tls_versions"] = nil
+	}
+
+	return b, nil
 }
 
 // Update allows pools to be updated.
