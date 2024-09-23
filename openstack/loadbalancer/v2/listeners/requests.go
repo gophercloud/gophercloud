@@ -37,6 +37,15 @@ const (
 	TLSVersionTLSv1_3 TLSVersion = "TLSv1.3"
 )
 
+// ClientAuthentication represents the TLS client authentication mode.
+type ClientAuthentication string
+
+const (
+	ClientAuthenticationNone      ClientAuthentication = "NONE"
+	ClientAuthenticationOptional  ClientAuthentication = "OPTIONAL"
+	ClientAuthenticationMandatory ClientAuthentication = "MANDATORY"
+)
+
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -176,7 +185,7 @@ type CreateOpts struct {
 
 	// The TLS client authentication mode. One of the options NONE,
 	// OPTIONAL or MANDATORY. Available from microversion 2.8.
-	ClientAuthentication string `json:"client_authentication,omitempty"`
+	ClientAuthentication ClientAuthentication `json:"client_authentication,omitempty"`
 
 	// The ref of the key manager service secret containing a PEM format
 	// client CA certificate bundle for TERMINATED_HTTPS listeners.
@@ -301,7 +310,7 @@ type UpdateOpts struct {
 
 	// The TLS client authentication mode. One of the options NONE,
 	// OPTIONAL or MANDATORY. Available from microversion 2.8.
-	ClientAuthentication *string `json:"client_authentication,omitempty"`
+	ClientAuthentication *ClientAuthentication `json:"client_authentication,omitempty"`
 
 	// The ref of the key manager service secret containing a PEM format
 	// client CA certificate bundle for TERMINATED_HTTPS listeners.
@@ -349,8 +358,21 @@ func (opts UpdateOpts) ToListenerUpdateMap() (map[string]any, error) {
 		return nil, err
 	}
 
-	if m := b["listener"].(map[string]any); m["default_pool_id"] == "" {
+	m := b["listener"].(map[string]any)
+
+	// allow to unset default_pool_id on empty string
+	if m["default_pool_id"] == "" {
 		m["default_pool_id"] = nil
+	}
+
+	// allow to unset alpn_protocols on empty slice
+	if opts.ALPNProtocols != nil && len(*opts.ALPNProtocols) == 0 {
+		m["alpn_protocols"] = nil
+	}
+
+	// allow to unset tls_versions on empty slice
+	if opts.TLSVersions != nil && len(*opts.TLSVersions) == 0 {
+		m["tls_versions"] = nil
 	}
 
 	return b, nil
