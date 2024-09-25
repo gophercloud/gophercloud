@@ -14,11 +14,11 @@ type ListOptsBuilder interface {
 // ListOpts controls the view of data returned (e.g globally or per project).
 type ListOpts struct {
 	// The pool name for the back end.
-	PoolName string `q:"pool"`
+	Pool string `q:"pool"`
 	// The host name for the back end.
-	HostName string `q:"host"`
+	Host string `q:"host"`
 	// The name of the back end.
-	BackendName string `q:"backend"`
+	Backend string `q:"backend"`
 	// The capabilities for the storage back end.
 	Capabilities string `q:"capabilities"`
 	// The share type name or UUID. Allows filtering back end pools based on the extra-specs in the share type.
