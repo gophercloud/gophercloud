@@ -418,6 +418,8 @@ type ReplicateOpts struct {
 	ReplicaCount int `json:"replica_count,omitempty"`
 	// Specifies how the database service is exposed
 	Access *AccessOpts `json:"access,omitempty"`
+	// Specifies the availability zone of the instance. Optional
+	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
 }
 
 // ToMap converts a ReplicateOpts to a map[string]string (for a request body)
@@ -458,6 +460,10 @@ func (opts ReplicateOpts) ToMap() (map[string]interface{}, error) {
 	}
 
 	instance["replica_count"] = opts.ReplicaCount
+
+	if opts.AvailabilityZone != "" {
+		instance["availability_zone"] = opts.AvailabilityZone
+	}
 
 	if opts.Access != nil {
 		access, err := opts.Access.ToMap()
@@ -511,6 +517,8 @@ type RestoreOpts struct {
 	ReplicaCount int `json:"replica_count,omitempty"`
 	// Specifies how the database service is exposed
 	Access *AccessOpts `json:"access,omitempty"`
+	// Specifies the availability zone of the instance. Optional
+	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
 }
 
 // ToMap converts a RestoreOpts to a map[string]string (for a request body)
@@ -581,6 +589,10 @@ func (opts RestoreOpts) ToMap() (map[string]interface{}, error) {
 
 	instance["volume"] = volume
 	instance["replica_count"] = opts.ReplicaCount
+
+	if opts.AvailabilityZone != "" {
+		instance["availability_zone"] = opts.AvailabilityZone
+	}
 
 	if opts.Access != nil {
 		access, err := opts.Access.ToMap()
