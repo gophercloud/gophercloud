@@ -46,34 +46,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// ListDetailOptsBuilder allows extensions to add additional parameters to the
-// ListDetail request.
-type ListDetailOptsBuilder interface {
-	ToPoolsListQuery() (string, error)
-}
-
-// ListOpts controls the view of data returned (e.g globally or per project).
-type ListDetailOpts struct {
-	// The pool name for the back end.
-	PoolName string `q:"pool"`
-	// The host name for the back end.
-	HostName string `q:"host"`
-	// The name of the back end.
-	BackendName string `q:"backend"`
-	// The capabilities for the storage back end.
-	Capabilities string `q:"capabilities"`
-	// The share type name or UUID. Allows filtering back end pools based on the extra-specs in the share type.
-	ShareType string `q:"share_type"`
-}
-
-// ToPoolsListQuery formats a ListDetailOpts into a query string.
-func (opts ListDetailOpts) ToPoolsListQuery() (string, error) {
-	q, err := gophercloud.BuildQueryString(opts)
-	return q.String(), err
-}
-
 // ListDetail makes a request against the API to list detailed pool information.
-func ListDetail(client *gophercloud.ServiceClient, opts ListDetailOptsBuilder) pagination.Pager {
+func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := poolsListDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToPoolsListQuery()
