@@ -22,6 +22,9 @@
 - color: 'F9D0C4'
   description: Additional information requested
   name: needinfo
+- color: 'FEF2C0'
+  description: This PR lacks tests before it can be merged
+  name: just-needs-tests
 
 - color: '30ABB9'
   description: This PR targets v1
