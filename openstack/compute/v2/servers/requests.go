@@ -641,13 +641,13 @@ type UpdateOpts struct {
 	// Name changes the displayed name of the server.
 	// The server host name will *not* change.
 	// Server names are not constrained to be unique, even within the same tenant.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// AccessIPv4 provides a new IPv4 address for the instance.
-	AccessIPv4 string `json:"accessIPv4,omitempty"`
+	AccessIPv4 *string `json:"accessIPv4,omitempty"`
 
 	// AccessIPv6 provides a new IPv6 address for the instance.
-	AccessIPv6 string `json:"accessIPv6,omitempty"`
+	AccessIPv6 *string `json:"accessIPv6,omitempty"`
 }
 
 // ToServerUpdateMap formats an UpdateOpts structure into a request body.

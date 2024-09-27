@@ -66,13 +66,13 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int
 
 type UpdateOpts struct {
 	// The name of the host aggregate.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// The availability zone of the host aggregate.
 	// You should use a custom availability zone rather than
 	// the default returned by the os-availability-zone API.
 	// The availability zone must not include ‘:’ in its name.
-	AvailabilityZone string `json:"availability_zone,omitempty"`
+	AvailabilityZone *string `json:"availability_zone,omitempty"`
 }
 
 func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]any, error) {

@@ -100,13 +100,13 @@ type UpdateOptsBuilder interface {
 // operation.
 type UpdateOpts struct {
 	// Human-readable name for the Loadbalancer. Does not have to be unique.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// Providing the name of the provider supported by the Octavia installation.
-	ProviderName string `json:"provider_name,omitempty"`
+	ProviderName *string `json:"provider_name,omitempty"`
 
 	// Providing the json string containing the flavor metadata.
-	FlavorData string `json:"flavor_data,omitempty"`
+	FlavorData *string `json:"flavor_data,omitempty"`
 }
 
 // ToFlavorProfileUpdateMap builds a request body from UpdateOpts.

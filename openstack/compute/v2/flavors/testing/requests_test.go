@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -242,7 +243,7 @@ func TestUpdateFlavor(t *testing.T) {
 	})
 
 	opts := &flavors.UpdateOpts{
-		Description: "foo",
+		Description: ptr.To("foo"),
 	}
 	actual, err := flavors.Update(context.TODO(), fake.ServiceClient(), "12345678", opts).Extract()
 	if err != nil {
