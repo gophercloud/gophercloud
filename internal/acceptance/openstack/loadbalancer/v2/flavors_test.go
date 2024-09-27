@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavors"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -54,13 +55,13 @@ func TestFlavorsCRUD(t *testing.T) {
 	th.AssertEquals(t, flavor.FlavorProfileId, flavorProfile.ID)
 
 	flavorUpdateOpts := flavors.UpdateOpts{
-		Name: tools.RandomString("TESTACCTUP-", 8),
+		Name: ptr.To(tools.RandomString("TESTACCTUP-", 8)),
 	}
 
 	flavorUpdated, err := flavors.Update(context.TODO(), lbClient, flavor.ID, flavorUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, flavorUpdateOpts.Name, flavorUpdated.Name)
+	th.AssertEquals(t, *flavorUpdateOpts.Name, flavorUpdated.Name)
 
 	t.Logf("Successfully updated flavor %s", flavorUpdated.Name)
 }
