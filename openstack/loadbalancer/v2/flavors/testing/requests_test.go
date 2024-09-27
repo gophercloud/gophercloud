@@ -110,7 +110,7 @@ func TestCreateFlavor(t *testing.T) {
 	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
-		Enabled:         true,
+		Enabled:         ptr.To(false),
 		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}).Extract()
 	th.AssertNoErr(t, err)
