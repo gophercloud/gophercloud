@@ -44,6 +44,18 @@ const SingleFlavorBody = `
 }
 `
 
+const SingleFlavorDisabledBody = `
+{
+	"flavor": {
+		"id": "5548c807-e6e8-43d7-9ea4-b38d34dd74a0",
+		"name": "Basic",
+		"description": "A basic standalone Octavia load balancer.",
+		"enabled": false,
+		"flavor_profile_id": "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1"
+	}
+}
+`
+
 const PostUpdateFlavorBody = `
 {
 	"flavor": {
@@ -78,6 +90,14 @@ var (
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
 		Enabled:         true,
+		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
+	}
+
+	FlavorDisabled = flavors.Flavor{
+		ID:              "5548c807-e6e8-43d7-9ea4-b38d34dd74a0",
+		Name:            "Basic",
+		Description:     "A basic standalone Octavia load balancer.",
+		Enabled:         false,
 		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}
 
@@ -120,6 +140,25 @@ func HandleFlavorCreationSuccessfully(t *testing.T, response string) {
 				"name": "Basic",
 				"description": "A basic standalone Octavia load balancer.",
 				"enabled": true,
+				"flavor_profile_id": "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
+func HandleFlavorCreationSuccessfullyDisabled(t *testing.T, response string) {
+	th.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"flavor": {
+				"name": "Basic",
+				"description": "A basic standalone Octavia load balancer.",
+				"enabled": false,
 				"flavor_profile_id": "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1"
 			}
 		}`)

@@ -68,7 +68,7 @@ type CreateOpts struct {
 	FlavorProfileId string `json:"flavor_profile_id" required:"true"`
 
 	// If the resource is available for use. The default is True.
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 }
 
 // ToFlavorCreateMap builds a request body from CreateOpts.

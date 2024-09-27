@@ -110,12 +110,28 @@ func TestCreateFlavor(t *testing.T) {
 	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
-		Enabled:         true,
+		Enabled:         ptr.To(true),
 		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, FlavorDb, *actual)
+}
+
+func TestCreateFlavorDisabled(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleFlavorCreationSuccessfullyDisabled(t, SingleFlavorDisabledBody)
+
+	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{
+		Name:            "Basic",
+		Description:     "A basic standalone Octavia load balancer.",
+		Enabled:         ptr.To(false),
+		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, FlavorDisabled, *actual)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
