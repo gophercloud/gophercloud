@@ -35,6 +35,10 @@ type ServiceClient struct {
 	MoreHeaders map[string]string
 }
 
+func (client ServiceClient) EndpointURL() string {
+	return client.Endpoint
+}
+
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
 func (client *ServiceClient) ResourceBaseURL() string {
 	if client.ResourceBase != "" {
