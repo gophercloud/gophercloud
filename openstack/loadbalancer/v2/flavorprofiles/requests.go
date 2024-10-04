@@ -15,6 +15,10 @@ type ListOptsBuilder interface {
 
 // ListOpts allows to manage the output of the request.
 type ListOpts struct {
+	// The name of the flavor profile to filter by.
+	Name string `q:"name"`
+	// The provider name of the flavor profile to filter by.
+	ProviderName string `q:"provider_name"`
 	// The fields that you want the server to return
 	Fields []string `q:"fields"`
 }
