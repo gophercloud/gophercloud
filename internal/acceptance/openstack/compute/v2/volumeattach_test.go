@@ -35,5 +35,5 @@ func TestVolumeAttachAttachment(t *testing.T) {
 
 	tools.PrintResource(t, volumeAttachment)
 
-	th.AssertEquals(t, volumeAttachment.ServerID, server.ID)
+	th.AssertEquals(t, server.ID, volumeAttachment.ServerID)
 }

@@ -31,7 +31,7 @@ func TestQuotasetGet(t *testing.T) {
 
 	tools.PrintResource(t, quotaSet)
 
-	th.AssertEquals(t, quotaSet.FixedIPs, -1)
+	th.AssertEquals(t, -1, quotaSet.FixedIPs)
 }
 
 func getProjectID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
