@@ -22,7 +22,7 @@ func TestLimits(t *testing.T) {
 
 	tools.PrintResource(t, limits)
 
-	th.AssertEquals(t, limits.Absolute.MaxPersonalitySize, 10240)
+	th.AssertEquals(t, 10240, limits.Absolute.MaxPersonalitySize)
 }
 
 func TestLimitsForTenant(t *testing.T) {
@@ -47,5 +47,5 @@ func TestLimitsForTenant(t *testing.T) {
 
 	tools.PrintResource(t, limits)
 
-	th.AssertEquals(t, limits.Absolute.MaxPersonalitySize, 10240)
+	th.AssertEquals(t, 10240, limits.Absolute.MaxPersonalitySize)
 }

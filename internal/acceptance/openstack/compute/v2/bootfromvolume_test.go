@@ -39,7 +39,7 @@ func TestBootFromImage(t *testing.T) {
 
 	tools.PrintResource(t, server)
 
-	th.AssertEquals(t, server.Image["id"], choices.ImageID)
+	th.AssertEquals(t, choices.ImageID, server.Image["id"])
 }
 
 func TestBootFromNewVolume(t *testing.T) {
@@ -80,13 +80,13 @@ func TestBootFromNewVolume(t *testing.T) {
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
 	attachmentTag := *attachments[0].Tag
-	th.AssertEquals(t, attachmentTag, tagName)
+	th.AssertEquals(t, tagName, attachmentTag)
 
 	if server.Image != nil {
 		t.Fatalf("server image should be nil")
 	}
 
-	th.AssertEquals(t, len(attachments), 1)
+	th.AssertEquals(t, 1, len(attachments))
 
 	// TODO: volumes_attached extension
 }
@@ -131,8 +131,8 @@ func TestBootFromExistingVolume(t *testing.T) {
 		t.Fatalf("server image should be nil")
 	}
 
-	th.AssertEquals(t, len(attachments), 1)
-	th.AssertEquals(t, attachments[0].VolumeID, volume.ID)
+	th.AssertEquals(t, 1, len(attachments))
+	th.AssertEquals(t, volume.ID, attachments[0].VolumeID)
 	// TODO: volumes_attached extension
 }
 
@@ -218,8 +218,8 @@ func TestAttachNewVolume(t *testing.T) {
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
 
-	th.AssertEquals(t, server.Image["id"], choices.ImageID)
-	th.AssertEquals(t, len(attachments), 1)
+	th.AssertEquals(t, choices.ImageID, server.Image["id"])
+	th.AssertEquals(t, 1, len(attachments))
 
 	// TODO: volumes_attached extension
 }
@@ -269,9 +269,9 @@ func TestAttachExistingVolume(t *testing.T) {
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
 
-	th.AssertEquals(t, server.Image["id"], choices.ImageID)
-	th.AssertEquals(t, len(attachments), 1)
-	th.AssertEquals(t, attachments[0].VolumeID, volume.ID)
+	th.AssertEquals(t, choices.ImageID, server.Image["id"])
+	th.AssertEquals(t, 1, len(attachments))
+	th.AssertEquals(t, volume.ID, attachments[0].VolumeID)
 
 	// TODO: volumes_attached extension
 }

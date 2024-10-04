@@ -41,7 +41,7 @@ func TestServergroupsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestServergroupsAffinityPolicy(t *testing.T) {
@@ -100,5 +100,5 @@ func TestServergroupsMicroversionCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
