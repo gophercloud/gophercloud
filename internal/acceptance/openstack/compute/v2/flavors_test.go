@@ -35,7 +35,7 @@ func TestFlavorsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestFlavorsAccessTypeList(t *testing.T) {
@@ -74,7 +74,7 @@ func TestFlavorsGet(t *testing.T) {
 
 	tools.PrintResource(t, flavor)
 
-	th.AssertEquals(t, flavor.ID, choices.FlavorID)
+	th.AssertEquals(t, choices.FlavorID, flavor.ID)
 }
 
 func TestFlavorExtraSpecsGet(t *testing.T) {
@@ -103,9 +103,9 @@ func TestFlavorExtraSpecsGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, flavor)
-	th.AssertEquals(t, len(flavor.ExtraSpecs), 2)
-	th.AssertEquals(t, flavor.ExtraSpecs["hw:cpu_policy"], "CPU-POLICY")
-	th.AssertEquals(t, flavor.ExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY")
+	th.AssertEquals(t, 2, len(flavor.ExtraSpecs))
+	th.AssertEquals(t, "CPU-POLICY", flavor.ExtraSpecs["hw:cpu_policy"])
+	th.AssertEquals(t, "CPU-THREAD-POLICY", flavor.ExtraSpecs["hw:cpu_thread_policy"])
 }
 
 func TestFlavorsCreateDelete(t *testing.T) {
@@ -140,7 +140,7 @@ func TestFlavorsCreateUpdateDelete(t *testing.T) {
 
 	flavor, err = flavors.Update(context.TODO(), client, flavor.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, flavor.Description, newFlavorDescription)
+	th.AssertEquals(t, newFlavorDescription, flavor.Description)
 
 	tools.PrintResource(t, flavor)
 }
@@ -161,7 +161,7 @@ func TestFlavorsAccessesList(t *testing.T) {
 	allAccesses, err := flavors.ExtractAccesses(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allAccesses), 0)
+	th.AssertEquals(t, 0, len(allAccesses))
 }
 
 func TestFlavorsAccessCRUD(t *testing.T) {
@@ -188,9 +188,9 @@ func TestFlavorsAccessCRUD(t *testing.T) {
 	accessList, err := flavors.AddAccess(context.TODO(), client, flavor.ID, addAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(accessList), 1)
-	th.AssertEquals(t, accessList[0].TenantID, project.ID)
-	th.AssertEquals(t, accessList[0].FlavorID, flavor.ID)
+	th.AssertEquals(t, 1, len(accessList))
+	th.AssertEquals(t, project.ID, accessList[0].TenantID)
+	th.AssertEquals(t, flavor.ID, accessList[0].FlavorID)
 
 	for _, access := range accessList {
 		tools.PrintResource(t, access)
@@ -203,7 +203,7 @@ func TestFlavorsAccessCRUD(t *testing.T) {
 	accessList, err = flavors.RemoveAccess(context.TODO(), client, flavor.ID, removeAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(accessList), 0)
+	th.AssertEquals(t, 0, len(accessList))
 }
 
 func TestFlavorsExtraSpecsCRUD(t *testing.T) {
@@ -225,9 +225,9 @@ func TestFlavorsExtraSpecsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, createdExtraSpecs)
 
-	th.AssertEquals(t, len(createdExtraSpecs), 2)
-	th.AssertEquals(t, createdExtraSpecs["hw:cpu_policy"], "CPU-POLICY")
-	th.AssertEquals(t, createdExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY")
+	th.AssertEquals(t, 2, len(createdExtraSpecs))
+	th.AssertEquals(t, "CPU-POLICY", createdExtraSpecs["hw:cpu_policy"])
+	th.AssertEquals(t, "CPU-THREAD-POLICY", createdExtraSpecs["hw:cpu_thread_policy"])
 
 	err = flavors.DeleteExtraSpec(context.TODO(), client, flavor.ID, "hw:cpu_policy").ExtractErr()
 	th.AssertNoErr(t, err)
@@ -245,13 +245,13 @@ func TestFlavorsExtraSpecsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, allExtraSpecs)
 
-	th.AssertEquals(t, len(allExtraSpecs), 1)
-	th.AssertEquals(t, allExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY-BETTER")
+	th.AssertEquals(t, 1, len(allExtraSpecs))
+	th.AssertEquals(t, "CPU-THREAD-POLICY-BETTER", allExtraSpecs["hw:cpu_thread_policy"])
 
 	spec, err := flavors.GetExtraSpec(context.TODO(), client, flavor.ID, "hw:cpu_thread_policy").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, spec)
 
-	th.AssertEquals(t, spec["hw:cpu_thread_policy"], "CPU-THREAD-POLICY-BETTER")
+	th.AssertEquals(t, "CPU-THREAD-POLICY-BETTER", spec["hw:cpu_thread_policy"])
 }

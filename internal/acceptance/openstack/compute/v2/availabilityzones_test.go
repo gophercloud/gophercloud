@@ -31,7 +31,7 @@ func TestAvailabilityZonesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestAvailabilityZonesListDetail(t *testing.T) {
@@ -55,5 +55,5 @@ func TestAvailabilityZonesListDetail(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }

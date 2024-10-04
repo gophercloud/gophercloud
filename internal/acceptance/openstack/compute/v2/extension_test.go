@@ -31,7 +31,7 @@ func TestExtensionsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestExtensionsGet(t *testing.T) {
@@ -43,5 +43,5 @@ func TestExtensionsGet(t *testing.T) {
 
 	tools.PrintResource(t, extension)
 
-	th.AssertEquals(t, extension.Name, "AdminActions")
+	th.AssertEquals(t, "AdminActions", extension.Name)
 }
