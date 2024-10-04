@@ -69,7 +69,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a particular firewall group based on its unique ID.
 func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = c.Get(ctx, resourceURL(c, id), &r.Body, nil)
+	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -107,7 +108,8 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(ctx, rootURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, rootURL(c), b, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -142,9 +144,10 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -165,9 +168,10 @@ func RemoveIngressPolicy(ctx context.Context, c *gophercloud.ServiceClient, id s
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -181,14 +185,16 @@ func RemoveEgressPolicy(ctx context.Context, c *gophercloud.ServiceClient, id st
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete will permanently delete a particular firewall group based on its unique ID.
 func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = c.Delete(ctx, resourceURL(c, id), nil)
+	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
