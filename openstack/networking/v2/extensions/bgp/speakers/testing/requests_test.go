@@ -3,7 +3,6 @@ package testing
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"testing"
 
@@ -195,7 +194,7 @@ func TestRemoveBGPPeer(t *testing.T) {
 
 	opts := speakers.RemoveBGPPeerOpts{BGPPeerID: bgpPeerID}
 	err := speakers.RemoveBGPPeer(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
-	th.AssertEquals(t, err, io.EOF)
+	th.AssertNoErr(t, err)
 }
 
 func TestGetAdvertisedRoutes(t *testing.T) {
@@ -279,5 +278,5 @@ func TestRemoveGatewayNetwork(t *testing.T) {
 
 	opts := speakers.RemoveGatewayNetworkOpts{NetworkID: networkID}
 	err := speakers.RemoveGatewayNetwork(context.TODO(), fake.ServiceClient(), bgpSpeakerID, opts).ExtractErr()
-	th.AssertEquals(t, err, io.EOF)
+	th.AssertNoErr(t, err)
 }
