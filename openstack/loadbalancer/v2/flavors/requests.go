@@ -18,7 +18,7 @@ type ListOpts struct {
 	// The name of the flavor to filter by.
 	Name string `q:"name"`
 	// The flavor profile id to filter by.
-	FlavorProfileId string `q:"flavor_profile_id"`
+	FlavorProfileID string `q:"flavor_profile_id"`
 	// The enabled status of the flavor to filter by.
 	Enabled *bool `q:"enabled"`
 	// The fields that you want the server to return
