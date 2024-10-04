@@ -18,7 +18,7 @@ const (
 )
 
 // Get retrieves Import API information data.
-func Get(ctx context.Context, c *gophercloud.ServiceClient) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client) (r GetResult) {
 	resp, err := c.Get(ctx, infoURL(c), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -45,7 +45,7 @@ func (opts CreateOpts) ToImportCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new image import on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, imageID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, imageID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToImportCreateMap()
 	if err != nil {
 		r.Err = err

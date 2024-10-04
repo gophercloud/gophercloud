@@ -32,12 +32,12 @@ func ExtractExtensions(page pagination.Page) ([]Extension, error) {
 }
 
 // Get retrieves information for a specific extension using its alias.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, alias string) GetResult {
+func Get(ctx context.Context, c gophercloud.Client, alias string) GetResult {
 	return GetResult{common.Get(ctx, c, alias)}
 }
 
 // List returns a Pager which allows you to iterate over the full collection of extensions.
 // It does not accept query parameters.
-func List(c *gophercloud.ServiceClient) pagination.Pager {
+func List(c gophercloud.Client) pagination.Pager {
 	return common.List(c)
 }

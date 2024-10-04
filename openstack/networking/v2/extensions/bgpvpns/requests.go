@@ -34,7 +34,7 @@ func (opts ListOpts) ToBGPVPNListQuery() (string, error) {
 }
 
 // List the BGP VPNs
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	query, err := opts.ToBGPVPNListQuery()
 	if err != nil {
@@ -49,7 +49,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieve the specific BGP VPN by its uuid
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -81,7 +81,7 @@ func (opts CreateOpts) ToBGPVPNCreateMap() (map[string]any, error) {
 }
 
 // Create a BGP VPN
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToBGPVPNCreateMap()
 	if err != nil {
 		r.Err = err
@@ -93,7 +93,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) 
 }
 
 // Delete accepts a unique ID and deletes the BGP VPN associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -121,7 +121,7 @@ func (opts UpdateOpts) ToBGPVPNUpdateMap() (map[string]any, error) {
 }
 
 // Update accept a BGP VPN ID and an UpdateOpts and update the BGP VPN
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToBGPVPNUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -160,7 +160,7 @@ func (opts ListNetworkAssociationsOpts) ToNetworkAssociationsListQuery() (string
 
 // ListNetworkAssociations pages over the network associations of a specified
 // BGP VPN.
-func ListNetworkAssociations(c *gophercloud.ServiceClient, id string, opts ListNetworkAssociationsOptsBuilder) pagination.Pager {
+func ListNetworkAssociations(c gophercloud.Client, id string, opts ListNetworkAssociationsOptsBuilder) pagination.Pager {
 	url := listNetworkAssociationsURL(c, id)
 	query, err := opts.ToNetworkAssociationsListQuery()
 	if err != nil {
@@ -196,7 +196,7 @@ func (opts CreateNetworkAssociationOpts) ToNetworkAssociationCreateMap() (map[st
 
 // CreateNetworkAssociation creates a new network association for a specified
 // BGP VPN.
-func CreateNetworkAssociation(ctx context.Context, client *gophercloud.ServiceClient, id string, opts CreateNetworkAssociationOptsBuilder) (r CreateNetworkAssociationResult) {
+func CreateNetworkAssociation(ctx context.Context, client gophercloud.Client, id string, opts CreateNetworkAssociationOptsBuilder) (r CreateNetworkAssociationResult) {
 	b, err := opts.ToNetworkAssociationCreateMap()
 	if err != nil {
 		r.Err = err
@@ -209,7 +209,7 @@ func CreateNetworkAssociation(ctx context.Context, client *gophercloud.ServiceCl
 
 // GetNetworkAssociation retrieves a specific network association by BGP VPN id
 // and network association id.
-func GetNetworkAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVpnID string, id string) (r GetNetworkAssociationResult) {
+func GetNetworkAssociation(ctx context.Context, c gophercloud.Client, bgpVpnID string, id string) (r GetNetworkAssociationResult) {
 	resp, err := c.Get(ctx, getNetworkAssociationURL(c, bgpVpnID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -217,7 +217,7 @@ func GetNetworkAssociation(ctx context.Context, c *gophercloud.ServiceClient, bg
 
 // DeleteNetworkAssociation deletes a specific network association by BGP VPN id
 // and network association id.
-func DeleteNetworkAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVpnID string, id string) (r DeleteNetworkAssociationResult) {
+func DeleteNetworkAssociation(ctx context.Context, c gophercloud.Client, bgpVpnID string, id string) (r DeleteNetworkAssociationResult) {
 	resp, err := c.Delete(ctx, deleteNetworkAssociationURL(c, bgpVpnID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -249,7 +249,7 @@ func (opts ListRouterAssociationsOpts) ToRouterAssociationsListQuery() (string, 
 
 // ListRouterAssociations pages over the router associations of a specified
 // BGP VPN.
-func ListRouterAssociations(c *gophercloud.ServiceClient, id string, opts ListRouterAssociationsOptsBuilder) pagination.Pager {
+func ListRouterAssociations(c gophercloud.Client, id string, opts ListRouterAssociationsOptsBuilder) pagination.Pager {
 	url := listRouterAssociationsURL(c, id)
 	query, err := opts.ToRouterAssociationsListQuery()
 	if err != nil {
@@ -286,7 +286,7 @@ func (opts CreateRouterAssociationOpts) ToRouterAssociationCreateMap() (map[stri
 
 // CreateRouterAssociation creates a new router association for a specified
 // BGP VPN.
-func CreateRouterAssociation(ctx context.Context, client *gophercloud.ServiceClient, id string, opts CreateRouterAssociationOptsBuilder) (r CreateRouterAssociationResult) {
+func CreateRouterAssociation(ctx context.Context, client gophercloud.Client, id string, opts CreateRouterAssociationOptsBuilder) (r CreateRouterAssociationResult) {
 	b, err := opts.ToRouterAssociationCreateMap()
 	if err != nil {
 		r.Err = err
@@ -299,7 +299,7 @@ func CreateRouterAssociation(ctx context.Context, client *gophercloud.ServiceCli
 
 // GetRouterAssociation retrieves a specific router association by BGP VPN id
 // and router association id.
-func GetRouterAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVpnID string, id string) (r GetRouterAssociationResult) {
+func GetRouterAssociation(ctx context.Context, c gophercloud.Client, bgpVpnID string, id string) (r GetRouterAssociationResult) {
 	resp, err := c.Get(ctx, getRouterAssociationURL(c, bgpVpnID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -307,7 +307,7 @@ func GetRouterAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgp
 
 // DeleteRouterAssociation deletes a specific router association by BGP VPN id
 // and router association id.
-func DeleteRouterAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVpnID string, id string) (r DeleteRouterAssociationResult) {
+func DeleteRouterAssociation(ctx context.Context, c gophercloud.Client, bgpVpnID string, id string) (r DeleteRouterAssociationResult) {
 	resp, err := c.Delete(ctx, deleteRouterAssociationURL(c, bgpVpnID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -332,7 +332,7 @@ func (opts UpdateRouterAssociationOpts) ToRouterAssociationUpdateMap() (map[stri
 }
 
 // UpdateRouterAssociation updates a router association for a specified BGP VPN.
-func UpdateRouterAssociation(ctx context.Context, client *gophercloud.ServiceClient, bgpVpnID string, id string, opts UpdateRouterAssociationOptsBuilder) (r UpdateRouterAssociationResult) {
+func UpdateRouterAssociation(ctx context.Context, client gophercloud.Client, bgpVpnID string, id string, opts UpdateRouterAssociationOptsBuilder) (r UpdateRouterAssociationResult) {
 	b, err := opts.ToRouterAssociationUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -371,7 +371,7 @@ func (opts ListPortAssociationsOpts) ToPortAssociationsListQuery() (string, erro
 
 // ListPortAssociations pages over the port associations of a specified
 // BGP VPN.
-func ListPortAssociations(c *gophercloud.ServiceClient, id string, opts ListPortAssociationsOptsBuilder) pagination.Pager {
+func ListPortAssociations(c gophercloud.Client, id string, opts ListPortAssociationsOptsBuilder) pagination.Pager {
 	url := listPortAssociationsURL(c, id)
 	query, err := opts.ToPortAssociationsListQuery()
 	if err != nil {
@@ -417,7 +417,7 @@ func (opts CreatePortAssociationOpts) ToPortAssociationCreateMap() (map[string]i
 
 // CreatePortAssociation creates a new port association for a specified
 // BGP VPN.
-func CreatePortAssociation(ctx context.Context, client *gophercloud.ServiceClient, id string, opts CreatePortAssociationOptsBuilder) (r CreatePortAssociationResult) {
+func CreatePortAssociation(ctx context.Context, client gophercloud.Client, id string, opts CreatePortAssociationOptsBuilder) (r CreatePortAssociationResult) {
 	b, err := opts.ToPortAssociationCreateMap()
 	if err != nil {
 		r.Err = err
@@ -430,7 +430,7 @@ func CreatePortAssociation(ctx context.Context, client *gophercloud.ServiceClien
 
 // GetPortAssociation retrieves a specific port association by BGP VPN id
 // and port association id.
-func GetPortAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVpnID string, id string) (r GetPortAssociationResult) {
+func GetPortAssociation(ctx context.Context, c gophercloud.Client, bgpVpnID string, id string) (r GetPortAssociationResult) {
 	resp, err := c.Get(ctx, getPortAssociationURL(c, bgpVpnID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -438,7 +438,7 @@ func GetPortAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVp
 
 // DeletePortAssociation deletes a specific port association by BGP VPN id
 // and port association id.
-func DeletePortAssociation(ctx context.Context, c *gophercloud.ServiceClient, bgpVpnID string, id string) (r DeletePortAssociationResult) {
+func DeletePortAssociation(ctx context.Context, c gophercloud.Client, bgpVpnID string, id string) (r DeletePortAssociationResult) {
 	resp, err := c.Delete(ctx, deletePortAssociationURL(c, bgpVpnID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -464,7 +464,7 @@ func (opts UpdatePortAssociationOpts) ToPortAssociationUpdateMap() (map[string]i
 }
 
 // UpdatePortAssociation updates a port association for a specified BGP VPN.
-func UpdatePortAssociation(ctx context.Context, client *gophercloud.ServiceClient, bgpVpnID string, id string, opts UpdatePortAssociationOptsBuilder) (r UpdatePortAssociationResult) {
+func UpdatePortAssociation(ctx context.Context, client gophercloud.Client, bgpVpnID string, id string, opts UpdatePortAssociationOptsBuilder) (r UpdatePortAssociationResult) {
 	b, err := opts.ToPortAssociationUpdateMap()
 	if err != nil {
 		r.Err = err

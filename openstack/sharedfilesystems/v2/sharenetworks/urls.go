@@ -2,30 +2,30 @@ package sharenetworks
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func createURL(c *gophercloud.ServiceClient) string {
+func createURL(c gophercloud.Client) string {
 	return c.ServiceURL("share-networks")
 }
 
-func deleteURL(c *gophercloud.ServiceClient, id string) string {
+func deleteURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("share-networks", id)
 }
 
-func listDetailURL(c *gophercloud.ServiceClient) string {
+func listDetailURL(c gophercloud.Client) string {
 	return c.ServiceURL("share-networks", "detail")
 }
 
-func getURL(c *gophercloud.ServiceClient, id string) string {
+func getURL(c gophercloud.Client, id string) string {
 	return deleteURL(c, id)
 }
 
-func updateURL(c *gophercloud.ServiceClient, id string) string {
+func updateURL(c gophercloud.Client, id string) string {
 	return deleteURL(c, id)
 }
 
-func addSecurityServiceURL(c *gophercloud.ServiceClient, id string) string {
+func addSecurityServiceURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("share-networks", id, "action")
 }
 
-func removeSecurityServiceURL(c *gophercloud.ServiceClient, id string) string {
+func removeSecurityServiceURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("share-networks", id, "action")
 }

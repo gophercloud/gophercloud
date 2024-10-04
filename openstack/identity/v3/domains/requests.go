@@ -29,7 +29,7 @@ func (opts ListOpts) ToDomainListQuery() (string, error) {
 }
 
 // List enumerates the domains to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToDomainListQuery()
@@ -44,7 +44,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // ListAvailable enumerates the domains which are available to a specific user.
-func ListAvailable(client *gophercloud.ServiceClient) pagination.Pager {
+func ListAvailable(client gophercloud.Client) pagination.Pager {
 	url := listAvailableURL(client)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return DomainPage{pagination.LinkedPageBase{PageResult: r}}
@@ -52,7 +52,7 @@ func ListAvailable(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieves details on a single domain, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -82,7 +82,7 @@ func (opts CreateOpts) ToDomainCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new Domain.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToDomainCreateMap()
 	if err != nil {
 		r.Err = err
@@ -96,7 +96,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete deletes a domain.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, domainID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, domainID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, domainID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -126,7 +126,7 @@ func (opts UpdateOpts) ToDomainUpdateMap() (map[string]any, error) {
 }
 
 // Update modifies the attributes of a domain.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToDomainUpdateMap()
 	if err != nil {
 		r.Err = err

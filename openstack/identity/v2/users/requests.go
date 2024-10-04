@@ -8,7 +8,7 @@ import (
 )
 
 // List lists the existing users.
-func List(client *gophercloud.ServiceClient) pagination.Pager {
+func List(client gophercloud.Client) pagination.Pager {
 	return pagination.NewPager(client, rootURL(client), func(r pagination.PageResult) pagination.Page {
 		return UserPage{pagination.SinglePageBase(r)}
 	})
@@ -55,7 +55,7 @@ func (opts CreateOpts) ToUserCreateMap() (map[string]any, error) {
 }
 
 // Create is the operation responsible for creating new users.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToUserCreateMap()
 	if err != nil {
 		r.Err = err
@@ -69,7 +69,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Get requests details on a single user, either by ID or Name.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, ResourceURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -91,7 +91,7 @@ func (opts UpdateOpts) ToUserUpdateMap() (map[string]any, error) {
 }
 
 // Update is the operation responsible for updating exist users by their ID.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToUserUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -105,14 +105,14 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Delete is the operation responsible for permanently deleting a User.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, ResourceURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListRoles lists the existing roles that can be assigned to users.
-func ListRoles(client *gophercloud.ServiceClient, tenantID, userID string) pagination.Pager {
+func ListRoles(client gophercloud.Client, tenantID, userID string) pagination.Pager {
 	return pagination.NewPager(client, listRolesURL(client, tenantID, userID), func(r pagination.PageResult) pagination.Page {
 		return RolePage{pagination.SinglePageBase(r)}
 	})

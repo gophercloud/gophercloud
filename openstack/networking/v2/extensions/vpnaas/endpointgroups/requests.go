@@ -52,7 +52,7 @@ func (opts CreateOpts) ToEndpointGroupCreateMap() (map[string]any, error) {
 
 // Create accepts a CreateOpts struct and uses the values to create a new
 // endpoint group.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToEndpointGroupCreateMap()
 	if err != nil {
 		r.Err = err
@@ -64,7 +64,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Get retrieves a particular endpoint group based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -96,7 +96,7 @@ func (opts ListOpts) ToEndpointGroupListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // Endpoint groups. It accepts a ListOpts struct, which allows you to filter
 // the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToEndpointGroupListQuery()
@@ -112,7 +112,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Delete will permanently delete a particular endpoint group based on its
 // unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -136,7 +136,7 @@ func (opts UpdateOpts) ToEndpointGroupUpdateMap() (map[string]any, error) {
 }
 
 // Update allows endpoint groups to be updated.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToEndpointGroupUpdateMap()
 	if err != nil {
 		r.Err = err

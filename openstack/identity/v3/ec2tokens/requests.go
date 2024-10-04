@@ -289,7 +289,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, err
 }
 
 // Create authenticates and either generates a new token from EC2 credentials
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
 	b, err := opts.ToTokenV3CreateMap(nil)
 	if err != nil {
 		r.Err = err
@@ -309,7 +309,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthO
 
 // ValidateS3Token authenticates an S3 request using EC2 credentials. Doesn't
 // generate a new token ID, but returns a tokens.CreateResult.
-func ValidateS3Token(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+func ValidateS3Token(ctx context.Context, c gophercloud.Client, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
 	b, err := opts.ToTokenV3CreateMap(nil)
 	if err != nil {
 		r.Err = err

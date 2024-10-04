@@ -36,7 +36,7 @@ func (opts CreateOpts) ToVolumeTypeCreateMap() (map[string]any, error) {
 // Create will create a new Volume Type based on the values in CreateOpts. To extract
 // the Volume Type object from the response, call the Extract method on the
 // CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeTypeCreateMap()
 	if err != nil {
 		r.Err = err
@@ -50,7 +50,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete will delete the existing Volume Type with the provided ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -58,7 +58,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 
 // Get retrieves the Volume Type with the provided ID. To extract the Volume Type object
 // from the response, call the Extract method on the GetResult.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -91,7 +91,7 @@ func (opts ListOpts) ToVolumeTypeListQuery() (string, error) {
 }
 
 // List returns Volume types.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 
 	if opts != nil {
@@ -130,7 +130,7 @@ func (opts UpdateOpts) ToVolumeTypeUpdateMap() (map[string]any, error) {
 
 // Update will update the Volume Type with provided information. To extract the updated
 // Volume Type from the response, call the Extract method on the UpdateResult.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToVolumeTypeUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -144,14 +144,14 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // ListExtraSpecs requests all the extra-specs for the given volume type ID.
-func ListExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, volumeTypeID string) (r ListExtraSpecsResult) {
+func ListExtraSpecs(ctx context.Context, client gophercloud.Client, volumeTypeID string) (r ListExtraSpecsResult) {
 	resp, err := client.Get(ctx, extraSpecsListURL(client, volumeTypeID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetExtraSpec requests an extra-spec specified by key for the given volume type ID
-func GetExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, volumeTypeID string, key string) (r GetExtraSpecResult) {
+func GetExtraSpec(ctx context.Context, client gophercloud.Client, volumeTypeID string, key string) (r GetExtraSpecResult) {
 	resp, err := client.Get(ctx, extraSpecsGetURL(client, volumeTypeID, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -174,7 +174,7 @@ func (opts ExtraSpecsOpts) ToVolumeTypeExtraSpecsCreateMap() (map[string]any, er
 
 // CreateExtraSpecs will create or update the extra-specs key-value pairs for
 // the specified volume type.
-func CreateExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, volumeTypeID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
+func CreateExtraSpecs(ctx context.Context, client gophercloud.Client, volumeTypeID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
 	b, err := opts.ToVolumeTypeExtraSpecsCreateMap()
 	if err != nil {
 		r.Err = err
@@ -213,7 +213,7 @@ func (opts ExtraSpecsOpts) ToVolumeTypeExtraSpecUpdateMap() (map[string]string, 
 
 // UpdateExtraSpec will updates the value of the specified volume type's extra spec
 // for the key in opts.
-func UpdateExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, volumeTypeID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
+func UpdateExtraSpec(ctx context.Context, client gophercloud.Client, volumeTypeID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
 	b, key, err := opts.ToVolumeTypeExtraSpecUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -228,7 +228,7 @@ func UpdateExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, vol
 
 // DeleteExtraSpec will delete the key-value pair with the given key for the given
 // volume type ID.
-func DeleteExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, volumeTypeID, key string) (r DeleteExtraSpecResult) {
+func DeleteExtraSpec(ctx context.Context, client gophercloud.Client, volumeTypeID, key string) (r DeleteExtraSpecResult) {
 	resp, err := client.Delete(ctx, extraSpecDeleteURL(client, volumeTypeID, key), &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
@@ -237,7 +237,7 @@ func DeleteExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, vol
 }
 
 // ListAccesses retrieves the tenants which have access to a volume type.
-func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager {
+func ListAccesses(client gophercloud.Client, id string) pagination.Pager {
 	url := accessURL(client, id)
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -263,7 +263,7 @@ func (opts AddAccessOpts) ToVolumeTypeAddAccessMap() (map[string]any, error) {
 }
 
 // AddAccess grants a tenant/project access to a volume type.
-func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+func AddAccess(ctx context.Context, client gophercloud.Client, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
 	b, err := opts.ToVolumeTypeAddAccessMap()
 	if err != nil {
 		r.Err = err
@@ -294,7 +294,7 @@ func (opts RemoveAccessOpts) ToVolumeTypeRemoveAccessMap() (map[string]any, erro
 }
 
 // RemoveAccess removes/revokes a tenant/project access to a volume type.
-func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+func RemoveAccess(ctx context.Context, client gophercloud.Client, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
 	b, err := opts.ToVolumeTypeRemoveAccessMap()
 	if err != nil {
 		r.Err = err
@@ -336,7 +336,7 @@ func (opts CreateEncryptionOpts) ToEncryptionCreateMap() (map[string]any, error)
 // CreateEncryption will creates an Encryption Type object based on the CreateEncryptionOpts.
 // To extract the Encryption Type object from the response, call the Extract method on the
 // EncryptionCreateResult.
-func CreateEncryption(ctx context.Context, client *gophercloud.ServiceClient, id string, opts CreateEncryptionOptsBuilder) (r CreateEncryptionResult) {
+func CreateEncryption(ctx context.Context, client gophercloud.Client, id string, opts CreateEncryptionOptsBuilder) (r CreateEncryptionResult) {
 	b, err := opts.ToEncryptionCreateMap()
 	if err != nil {
 		r.Err = err
@@ -350,21 +350,21 @@ func CreateEncryption(ctx context.Context, client *gophercloud.ServiceClient, id
 }
 
 // Delete will delete an encryption type for an existing Volume Type with the provided ID.
-func DeleteEncryption(ctx context.Context, client *gophercloud.ServiceClient, id, encryptionID string) (r DeleteEncryptionResult) {
+func DeleteEncryption(ctx context.Context, client gophercloud.Client, id, encryptionID string) (r DeleteEncryptionResult) {
 	resp, err := client.Delete(ctx, deleteEncryptionURL(client, id, encryptionID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetEncryption retrieves the encryption type for an existing VolumeType with the provided ID.
-func GetEncryption(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetEncryptionResult) {
+func GetEncryption(ctx context.Context, client gophercloud.Client, id string) (r GetEncryptionResult) {
 	resp, err := client.Get(ctx, getEncryptionURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetEncryptionSpecs retrieves the encryption type specs for an existing VolumeType with the provided ID.
-func GetEncryptionSpec(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r GetEncryptionSpecResult) {
+func GetEncryptionSpec(ctx context.Context, client gophercloud.Client, id, key string) (r GetEncryptionSpecResult) {
 	resp, err := client.Get(ctx, getEncryptionSpecURL(client, id, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -399,7 +399,7 @@ func (opts UpdateEncryptionOpts) ToUpdateEncryptionMap() (map[string]any, error)
 // Update will update an existing encryption for a Volume Type based on the values in UpdateEncryptionOpts.
 // To extract the UpdateEncryption Type object from the response, call the Extract method on the
 // UpdateEncryptionResult.
-func UpdateEncryption(ctx context.Context, client *gophercloud.ServiceClient, id, encryptionID string, opts UpdateEncryptionOptsBuilder) (r UpdateEncryptionResult) {
+func UpdateEncryption(ctx context.Context, client gophercloud.Client, id, encryptionID string, opts UpdateEncryptionOptsBuilder) (r UpdateEncryptionResult) {
 	b, err := opts.ToUpdateEncryptionMap()
 	if err != nil {
 		r.Err = err

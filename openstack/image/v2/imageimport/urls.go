@@ -8,10 +8,10 @@ const (
 	resourcePath = "import"
 )
 
-func infoURL(c *gophercloud.ServiceClient) string {
+func infoURL(c gophercloud.Client) string {
 	return c.ServiceURL(infoPath, resourcePath)
 }
 
-func importURL(c *gophercloud.ServiceClient, imageID string) string {
+func importURL(c gophercloud.Client, imageID string) string {
 	return c.ServiceURL(rootPath, imageID, resourcePath)
 }

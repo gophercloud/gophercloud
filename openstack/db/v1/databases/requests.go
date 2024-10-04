@@ -64,7 +64,7 @@ func (opts BatchCreateOpts) ToDBCreateMap() (map[string]any, error) {
 
 // Create will create a new database within the specified instance. If the
 // specified instance does not exist, a 404 error will be returned.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, instanceID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, instanceID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToDBCreateMap()
 	if err != nil {
 		r.Err = err
@@ -78,7 +78,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, instanceID s
 // List will list all of the databases for a specified instance. Note: this
 // operation will only return user-defined databases; it will exclude system
 // databases like "mysql", "information_schema", "lost+found" etc.
-func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager {
+func List(client gophercloud.Client, instanceID string) pagination.Pager {
 	return pagination.NewPager(client, baseURL(client, instanceID), func(r pagination.PageResult) pagination.Page {
 		return DBPage{pagination.LinkedPageBase{PageResult: r}}
 	})
@@ -86,7 +86,7 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 
 // Delete will permanently delete the database within a specified instance.
 // All contained data inside the database will also be permanently deleted.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, instanceID, dbName string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, instanceID, dbName string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, dbURL(client, instanceID, dbName), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

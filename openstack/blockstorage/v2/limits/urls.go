@@ -6,6 +6,6 @@ import (
 
 const resourcePath = "limits"
 
-func getURL(c *gophercloud.ServiceClient) string {
+func getURL(c gophercloud.Client) string {
 	return c.ServiceURL(resourcePath)
 }

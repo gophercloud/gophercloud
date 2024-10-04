@@ -2,10 +2,10 @@ package acls
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func containerURL(client *gophercloud.ServiceClient, containerID string) string {
+func containerURL(client gophercloud.Client, containerID string) string {
 	return client.ServiceURL("containers", containerID, "acl")
 }
 
-func secretURL(client *gophercloud.ServiceClient, secretID string) string {
+func secretURL(client gophercloud.Client, secretID string) string {
 	return client.ServiceURL("secrets", secretID, "acl")
 }

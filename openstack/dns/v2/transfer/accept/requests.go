@@ -28,7 +28,7 @@ func (opts ListOpts) ToTransferAcceptListQuery() (string, error) {
 }
 
 // List implements a transfer accept List request.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := baseURL(client)
 	if opts != nil {
 		query, err := opts.ToTransferAcceptListQuery()
@@ -43,7 +43,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns information about a transfer accept, given its ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, transferAcceptID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, transferAcceptID string) (r GetResult) {
 	resp, err := client.Get(ctx, resourceURL(client, transferAcceptID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -75,7 +75,7 @@ func (opts CreateOpts) ToTransferAcceptCreateMap() (map[string]any, error) {
 }
 
 // Create implements a transfer accept create request.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTransferAcceptCreateMap()
 	if err != nil {
 		r.Err = err

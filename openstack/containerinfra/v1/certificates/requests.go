@@ -25,7 +25,7 @@ func (opts CreateOpts) ToCertificateCreateMap() (map[string]any, error) {
 }
 
 // Get makes a request against the API to get details for a certificate.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, clusterID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, clusterID string) (r GetResult) {
 	url := getURL(client, clusterID)
 	resp, err := client.Get(ctx, url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
@@ -35,7 +35,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, clusterID strin
 }
 
 // Create requests the creation of a new certificate.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToCertificateCreateMap()
 	if err != nil {
 		r.Err = err
@@ -49,7 +49,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Update will rotate the CA certificate for a cluster
-func Update(ctx context.Context, client *gophercloud.ServiceClient, clusterID string) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, clusterID string) (r UpdateResult) {
 	resp, err := client.Patch(ctx, updateURL(client, clusterID), nil, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})

@@ -29,7 +29,7 @@ func (opts ListOpts) ToProviderListQuery() (string, error) {
 //
 // Default policy settings return only those providers that are owned by
 // the project who submits the request, unless an admin user submits the request.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToProviderListQuery()

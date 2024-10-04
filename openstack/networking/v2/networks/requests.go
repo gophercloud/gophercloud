@@ -47,7 +47,7 @@ func (opts ListOpts) ToNetworkListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // networks. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToNetworkListQuery()
@@ -62,7 +62,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific network based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -97,7 +97,7 @@ func (opts CreateOpts) ToNetworkCreateMap() (map[string]any, error) {
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToNetworkCreateMap()
 	if err != nil {
 		r.Err = err
@@ -134,7 +134,7 @@ func (opts UpdateOpts) ToNetworkUpdateMap() (map[string]any, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, networkID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToNetworkUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -159,7 +159,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, networkID string,
 }
 
 // Delete accepts a unique ID and deletes the network associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, networkID string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, networkID string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, networkID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

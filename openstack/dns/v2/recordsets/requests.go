@@ -43,7 +43,7 @@ func (opts ListOpts) ToRecordSetListQuery() (string, error) {
 }
 
 // ListByZone implements the recordset list request.
-func ListByZone(client *gophercloud.ServiceClient, zoneID string, opts ListOptsBuilder) pagination.Pager {
+func ListByZone(client gophercloud.Client, zoneID string, opts ListOptsBuilder) pagination.Pager {
 	url := baseURL(client, zoneID)
 	if opts != nil {
 		query, err := opts.ToRecordSetListQuery()
@@ -58,7 +58,7 @@ func ListByZone(client *gophercloud.ServiceClient, zoneID string, opts ListOptsB
 }
 
 // Get implements the recordset Get request.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, rrsetID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, zoneID string, rrsetID string) (r GetResult) {
 	resp, err := client.Get(ctx, rrsetURL(client, zoneID, rrsetID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -100,7 +100,7 @@ func (opts CreateOpts) ToRecordSetCreateMap() (map[string]any, error) {
 }
 
 // Create creates a recordset in a given zone.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRecordSetCreateMap()
 	if err != nil {
 		r.Err = err
@@ -156,7 +156,7 @@ func (opts UpdateOpts) ToRecordSetUpdateMap() (map[string]any, error) {
 }
 
 // Update updates a recordset in a given zone
-func Update(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, rrsetID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, zoneID string, rrsetID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRecordSetUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -170,7 +170,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, zoneID strin
 }
 
 // Delete removes an existing RecordSet.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, rrsetID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, zoneID string, rrsetID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, rrsetURL(client, zoneID, rrsetID), &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})

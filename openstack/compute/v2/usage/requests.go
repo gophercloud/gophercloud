@@ -53,7 +53,7 @@ func (opts SingleTenantOpts) ToUsageSingleTenantQuery() (string, error) {
 }
 
 // SingleTenant returns usage data about a single tenant.
-func SingleTenant(client *gophercloud.ServiceClient, tenantID string, opts SingleTenantOptsBuilder) pagination.Pager {
+func SingleTenant(client gophercloud.Client, tenantID string, opts SingleTenantOptsBuilder) pagination.Pager {
 	url := getTenantURL(client, tenantID)
 	if opts != nil {
 		query, err := opts.ToUsageSingleTenantQuery()
@@ -119,7 +119,7 @@ func (opts AllTenantsOpts) ToUsageAllTenantsQuery() (string, error) {
 }
 
 // AllTenants returns usage data about all tenants.
-func AllTenants(client *gophercloud.ServiceClient, opts AllTenantsOptsBuilder) pagination.Pager {
+func AllTenants(client gophercloud.Client, opts AllTenantsOptsBuilder) pagination.Pager {
 	url := allTenantsURL(client)
 	if opts != nil {
 		query, err := opts.ToUsageAllTenantsQuery()

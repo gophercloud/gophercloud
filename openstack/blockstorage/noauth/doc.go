@@ -1,5 +1,5 @@
 /*
-Package noauth creates a "noauth" *gophercloud.ServiceClient for use in Cinder
+Package noauth creates a "noauth" gophercloud.Client for use in Cinder
 environments configured with the noauth authentication middleware.
 
 Example of Creating a noauth Service Client

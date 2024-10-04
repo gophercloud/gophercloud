@@ -28,7 +28,7 @@ func (opts ListOpts) ToStoragePoolsListQuery() (string, error) {
 }
 
 // List makes a request against the API to list storage pool information.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := storagePoolsListURL(client)
 	if opts != nil {
 		query, err := opts.ToStoragePoolsListQuery()

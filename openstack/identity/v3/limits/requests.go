@@ -8,7 +8,7 @@ import (
 )
 
 // Get retrieves details on a single limit, by ID.
-func GetEnforcementModel(ctx context.Context, client *gophercloud.ServiceClient) (r EnforcementModelResult) {
+func GetEnforcementModel(ctx context.Context, client gophercloud.Client) (r EnforcementModelResult) {
 	resp, err := client.Get(ctx, enforcementModelURL(client), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -45,7 +45,7 @@ func (opts ListOpts) ToLimitListQuery() (string, error) {
 }
 
 // List enumerates the limits.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(client)
 	if opts != nil {
 		query, err := opts.ToLimitListQuery()
@@ -109,7 +109,7 @@ func (opts CreateOpts) ToMap() (map[string]any, error) {
 }
 
 // BatchCreate creates new Limits.
-func BatchCreate(ctx context.Context, client *gophercloud.ServiceClient, opts BatchCreateOptsBuilder) (r CreateResult) {
+func BatchCreate(ctx context.Context, client gophercloud.Client, opts BatchCreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToLimitsCreateMap()
 	if err != nil {
 		r.Err = err
@@ -123,7 +123,7 @@ func BatchCreate(ctx context.Context, client *gophercloud.ServiceClient, opts Ba
 }
 
 // Get retrieves details on a single limit, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, limitID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, limitID string) (r GetResult) {
 	resp, err := client.Get(ctx, resourceURL(client, limitID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -150,7 +150,7 @@ func (opts UpdateOpts) ToLimitUpdateMap() (map[string]any, error) {
 }
 
 // Update modifies the attributes of a limit.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToLimitUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -164,7 +164,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Delete deletes a limit.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, limitID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, limitID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, resourceURL(client, limitID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

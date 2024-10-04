@@ -34,7 +34,7 @@ func (opts ListOpts) ToPoolsListQuery() (string, error) {
 }
 
 // List makes a request against the API to list pool information.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := poolsListURL(client)
 	if opts != nil {
 		query, err := opts.ToPoolsListQuery()
@@ -77,7 +77,7 @@ func (opts ListDetailOpts) ToPoolsListQuery() (string, error) {
 }
 
 // ListDetail makes a request against the API to list detailed pool information.
-func ListDetail(client *gophercloud.ServiceClient, opts ListDetailOptsBuilder) pagination.Pager {
+func ListDetail(client gophercloud.Client, opts ListDetailOptsBuilder) pagination.Pager {
 	url := poolsListDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToPoolsListQuery()

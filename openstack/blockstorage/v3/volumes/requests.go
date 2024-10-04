@@ -143,7 +143,7 @@ func (opts CreateOpts) ToVolumeCreateMap() (map[string]any, error) {
 // Create will create a new Volume based on the values in CreateOpts. To extract
 // the Volume object from the response, call the Extract method on the
 // CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeCreateMap()
 	if err != nil {
 		r.Err = err
@@ -186,7 +186,7 @@ func (opts DeleteOpts) ToVolumeDeleteQuery() (string, error) {
 }
 
 // Delete will delete the existing Volume with the provided ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, id)
 	if opts != nil {
 		query, err := opts.ToVolumeDeleteQuery()
@@ -203,7 +203,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // Get retrieves the Volume with the provided ID. To extract the Volume object
 // from the response, call the Extract method on the GetResult.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -258,7 +258,7 @@ func (opts ListOpts) ToVolumeListQuery() (string, error) {
 }
 
 // List returns Volumes optionally limited by the conditions provided in ListOpts.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToVolumeListQuery()
@@ -296,7 +296,7 @@ func (opts UpdateOpts) ToVolumeUpdateMap() (map[string]any, error) {
 
 // Update will update the Volume with provided information. To extract the updated
 // Volume from the response, call the Extract method on the UpdateResult.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToVolumeUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -346,7 +346,7 @@ func (opts AttachOpts) ToVolumeAttachMap() (map[string]any, error) {
 }
 
 // Attach will attach a volume based on the values in AttachOpts.
-func Attach(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AttachOptsBuilder) (r AttachResult) {
+func Attach(ctx context.Context, client gophercloud.Client, id string, opts AttachOptsBuilder) (r AttachResult) {
 	b, err := opts.ToVolumeAttachMap()
 	if err != nil {
 		r.Err = err
@@ -360,7 +360,7 @@ func Attach(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // BeginDetaching will mark the volume as detaching.
-func BeginDetaching(ctx context.Context, client *gophercloud.ServiceClient, id string) (r BeginDetachingResult) {
+func BeginDetaching(ctx context.Context, client gophercloud.Client, id string) (r BeginDetachingResult) {
 	b := map[string]any{"os-begin_detaching": make(map[string]any)}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
@@ -388,7 +388,7 @@ func (opts DetachOpts) ToVolumeDetachMap() (map[string]any, error) {
 }
 
 // Detach will detach a volume based on volume ID.
-func Detach(ctx context.Context, client *gophercloud.ServiceClient, id string, opts DetachOptsBuilder) (r DetachResult) {
+func Detach(ctx context.Context, client gophercloud.Client, id string, opts DetachOptsBuilder) (r DetachResult) {
 	b, err := opts.ToVolumeDetachMap()
 	if err != nil {
 		r.Err = err
@@ -402,7 +402,7 @@ func Detach(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Reserve will reserve a volume based on volume ID.
-func Reserve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ReserveResult) {
+func Reserve(ctx context.Context, client gophercloud.Client, id string) (r ReserveResult) {
 	b := map[string]any{"os-reserve": make(map[string]any)}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
@@ -412,7 +412,7 @@ func Reserve(ctx context.Context, client *gophercloud.ServiceClient, id string) 
 }
 
 // Unreserve will unreserve a volume based on volume ID.
-func Unreserve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnreserveResult) {
+func Unreserve(ctx context.Context, client gophercloud.Client, id string) (r UnreserveResult) {
 	b := map[string]any{"os-unreserve": make(map[string]any)}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
@@ -449,7 +449,7 @@ func (opts InitializeConnectionOpts) ToVolumeInitializeConnectionMap() (map[stri
 }
 
 // InitializeConnection initializes an iSCSI connection by volume ID.
-func InitializeConnection(ctx context.Context, client *gophercloud.ServiceClient, id string, opts InitializeConnectionOptsBuilder) (r InitializeConnectionResult) {
+func InitializeConnection(ctx context.Context, client gophercloud.Client, id string, opts InitializeConnectionOptsBuilder) (r InitializeConnectionResult) {
 	b, err := opts.ToVolumeInitializeConnectionMap()
 	if err != nil {
 		r.Err = err
@@ -488,7 +488,7 @@ func (opts TerminateConnectionOpts) ToVolumeTerminateConnectionMap() (map[string
 }
 
 // TerminateConnection terminates an iSCSI connection by volume ID.
-func TerminateConnection(ctx context.Context, client *gophercloud.ServiceClient, id string, opts TerminateConnectionOptsBuilder) (r TerminateConnectionResult) {
+func TerminateConnection(ctx context.Context, client gophercloud.Client, id string, opts TerminateConnectionOptsBuilder) (r TerminateConnectionResult) {
 	b, err := opts.ToVolumeTerminateConnectionMap()
 	if err != nil {
 		r.Err = err
@@ -522,7 +522,7 @@ func (opts ExtendSizeOpts) ToVolumeExtendSizeMap() (map[string]any, error) {
 
 // ExtendSize will extend the size of the volume based on the provided information.
 // This operation does not return a response body.
-func ExtendSize(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ExtendSizeOptsBuilder) (r ExtendSizeResult) {
+func ExtendSize(ctx context.Context, client gophercloud.Client, id string, opts ExtendSizeOptsBuilder) (r ExtendSizeResult) {
 	b, err := opts.ToVolumeExtendSizeMap()
 	if err != nil {
 		r.Err = err
@@ -571,7 +571,7 @@ func (opts UploadImageOpts) ToVolumeUploadImageMap() (map[string]any, error) {
 }
 
 // UploadImage will upload an image based on the values in UploadImageOptsBuilder.
-func UploadImage(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UploadImageOptsBuilder) (r UploadImageResult) {
+func UploadImage(ctx context.Context, client gophercloud.Client, id string, opts UploadImageOptsBuilder) (r UploadImageResult) {
 	b, err := opts.ToVolumeUploadImageMap()
 	if err != nil {
 		r.Err = err
@@ -585,7 +585,7 @@ func UploadImage(ctx context.Context, client *gophercloud.ServiceClient, id stri
 }
 
 // ForceDelete will delete the volume regardless of state.
-func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+func ForceDelete(ctx context.Context, client gophercloud.Client, id string) (r ForceDeleteResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-force_delete": ""}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -610,7 +610,7 @@ func (opts ImageMetadataOpts) ToImageMetadataMap() (map[string]any, error) {
 }
 
 // SetImageMetadata will set image metadata on a volume based on the values in ImageMetadataOptsBuilder.
-func SetImageMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ImageMetadataOptsBuilder) (r SetImageMetadataResult) {
+func SetImageMetadata(ctx context.Context, client gophercloud.Client, id string, opts ImageMetadataOptsBuilder) (r SetImageMetadataResult) {
 	b, err := opts.ToImageMetadataMap()
 	if err != nil {
 		r.Err = err
@@ -636,7 +636,7 @@ func (opts BootableOpts) ToBootableMap() (map[string]any, error) {
 }
 
 // SetBootable will set bootable status on a volume based on the values in BootableOpts
-func SetBootable(ctx context.Context, client *gophercloud.ServiceClient, id string, opts BootableOpts) (r SetBootableResult) {
+func SetBootable(ctx context.Context, client gophercloud.Client, id string, opts BootableOpts) (r SetBootableResult) {
 	b, err := opts.ToBootableMap()
 	if err != nil {
 		r.Err = err
@@ -684,7 +684,7 @@ func (opts ChangeTypeOpts) ToVolumeChangeTypeMap() (map[string]any, error) {
 
 // ChangeType will change the volume type of the volume based on the provided information.
 // This operation does not return a response body.
-func ChangeType(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ChangeTypeOptsBuilder) (r ChangeTypeResult) {
+func ChangeType(ctx context.Context, client gophercloud.Client, id string, opts ChangeTypeOptsBuilder) (r ChangeTypeResult) {
 	b, err := opts.ToVolumeChangeTypeMap()
 	if err != nil {
 		r.Err = err
@@ -711,7 +711,7 @@ func (opts ReImageOpts) ToReImageMap() (map[string]any, error) {
 }
 
 // ReImage will re-image a volume based on the values in ReImageOpts
-func ReImage(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ReImageOpts) (r ReImageResult) {
+func ReImage(ctx context.Context, client gophercloud.Client, id string, opts ReImageOpts) (r ReImageResult) {
 	b, err := opts.ToReImageMap()
 	if err != nil {
 		r.Err = err
@@ -750,7 +750,7 @@ func (opts ResetStatusOpts) ToResetStatusMap() (map[string]any, error) {
 
 // ResetStatus will reset the existing volume status. ResetStatusResult contains only the error.
 // To extract it, call the ExtractErr method on the ResetStatusResult.
-func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+func ResetStatus(ctx context.Context, client gophercloud.Client, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
 	b, err := opts.ToResetStatusMap()
 	if err != nil {
 		r.Err = err

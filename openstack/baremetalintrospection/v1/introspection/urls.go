@@ -2,22 +2,22 @@ package introspection
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func listIntrospectionsURL(client *gophercloud.ServiceClient) string {
+func listIntrospectionsURL(client gophercloud.Client) string {
 	return client.ServiceURL("introspection")
 }
 
-func introspectionURL(client *gophercloud.ServiceClient, nodeID string) string {
+func introspectionURL(client gophercloud.Client, nodeID string) string {
 	return client.ServiceURL("introspection", nodeID)
 }
 
-func abortIntrospectionURL(client *gophercloud.ServiceClient, nodeID string) string {
+func abortIntrospectionURL(client gophercloud.Client, nodeID string) string {
 	return client.ServiceURL("introspection", nodeID, "abort")
 }
 
-func introspectionDataURL(client *gophercloud.ServiceClient, nodeID string) string {
+func introspectionDataURL(client gophercloud.Client, nodeID string) string {
 	return client.ServiceURL("introspection", nodeID, "data")
 }
 
-func introspectionUnprocessedDataURL(client *gophercloud.ServiceClient, nodeID string) string {
+func introspectionUnprocessedDataURL(client gophercloud.Client, nodeID string) string {
 	return client.ServiceURL("introspection", nodeID, "data", "unprocessed")
 }

@@ -10,23 +10,23 @@ import (
 
 const resourcePath = "tasks"
 
-func rootURL(c *gophercloud.ServiceClient) string {
+func rootURL(c gophercloud.Client) string {
 	return c.ServiceURL(resourcePath)
 }
 
-func resourceURL(c *gophercloud.ServiceClient, taskID string) string {
+func resourceURL(c gophercloud.Client, taskID string) string {
 	return c.ServiceURL(resourcePath, taskID)
 }
 
-func listURL(c *gophercloud.ServiceClient) string {
+func listURL(c gophercloud.Client) string {
 	return rootURL(c)
 }
 
-func getURL(c *gophercloud.ServiceClient, taskID string) string {
+func getURL(c gophercloud.Client, taskID string) string {
 	return resourceURL(c, taskID)
 }
 
-func createURL(c *gophercloud.ServiceClient) string {
+func createURL(c gophercloud.Client) string {
 	return rootURL(c)
 }
 

@@ -8,7 +8,7 @@ import (
 )
 
 // List the bgp speakers
-func List(c *gophercloud.ServiceClient) pagination.Pager {
+func List(c gophercloud.Client) pagination.Pager {
 	url := listURL(c)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return BGPSpeakerPage{pagination.SinglePageBase(r)}
@@ -16,7 +16,7 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieve the specific bgp speaker by its uuid
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -43,7 +43,7 @@ func (opts CreateOpts) ToSpeakerCreateMap() (map[string]any, error) {
 }
 
 // Create accepts a CreateOpts and create a BGP Speaker.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToSpeakerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -55,7 +55,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) 
 }
 
 // Delete accepts a unique ID and deletes the bgp speaker associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, speakerID string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, speakerID string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, speakerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -80,7 +80,7 @@ type UpdateOptsBuilder interface {
 }
 
 // Update accepts a UpdateOpts and update the BGP Speaker.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, speakerID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, speakerID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSpeakerUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -109,7 +109,7 @@ func (opts AddBGPPeerOpts) ToBGPSpeakerAddBGPPeerMap() (map[string]any, error) {
 }
 
 // AddBGPPeer add the BGP peer to the speaker a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_bgp_peer
-func AddBGPPeer(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddBGPPeerOptsBuilder) (r AddBGPPeerResult) {
+func AddBGPPeer(ctx context.Context, c gophercloud.Client, bgpSpeakerID string, opts AddBGPPeerOptsBuilder) (r AddBGPPeerResult) {
 	b, err := opts.ToBGPSpeakerAddBGPPeerMap()
 	if err != nil {
 		r.Err = err
@@ -136,7 +136,7 @@ func (opts RemoveBGPPeerOpts) ToBGPSpeakerRemoveBGPPeerMap() (map[string]any, er
 }
 
 // RemoveBGPPeer remove the BGP peer from the speaker, a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_bgp_peer
-func RemoveBGPPeer(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveBGPPeerOptsBuilder) (r RemoveBGPPeerResult) {
+func RemoveBGPPeer(ctx context.Context, c gophercloud.Client, bgpSpeakerID string, opts RemoveBGPPeerOptsBuilder) (r RemoveBGPPeerResult) {
 	b, err := opts.ToBGPSpeakerRemoveBGPPeerMap()
 	if err != nil {
 		r.Err = err
@@ -150,7 +150,7 @@ func RemoveBGPPeer(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeaker
 }
 
 // GetAdvertisedRoutes a.k.a. GET /v2.0/bgp-speakers/{bgp-speaker-id}/get_advertised_routes
-func GetAdvertisedRoutes(c *gophercloud.ServiceClient, bgpSpeakerID string) pagination.Pager {
+func GetAdvertisedRoutes(c gophercloud.Client, bgpSpeakerID string) pagination.Pager {
 	url := getAdvertisedRoutesURL(c, bgpSpeakerID)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return AdvertisedRoutePage{pagination.SinglePageBase(r)}
@@ -174,7 +174,7 @@ func (opts AddGatewayNetworkOpts) ToBGPSpeakerAddGatewayNetworkMap() (map[string
 }
 
 // AddGatewayNetwork a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_gateway_network
-func AddGatewayNetwork(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddGatewayNetworkOptsBuilder) (r AddGatewayNetworkResult) {
+func AddGatewayNetwork(ctx context.Context, c gophercloud.Client, bgpSpeakerID string, opts AddGatewayNetworkOptsBuilder) (r AddGatewayNetworkResult) {
 	b, err := opts.ToBGPSpeakerAddGatewayNetworkMap()
 	if err != nil {
 		r.Err = err
@@ -201,7 +201,7 @@ func (opts RemoveGatewayNetworkOpts) ToBGPSpeakerRemoveGatewayNetworkMap() (map[
 }
 
 // RemoveGatewayNetwork a.k.a. PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove_gateway_network
-func RemoveGatewayNetwork(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveGatewayNetworkOptsBuilder) (r RemoveGatewayNetworkResult) {
+func RemoveGatewayNetwork(ctx context.Context, c gophercloud.Client, bgpSpeakerID string, opts RemoveGatewayNetworkOptsBuilder) (r RemoveGatewayNetworkResult) {
 	b, err := opts.ToBGPSpeakerRemoveGatewayNetworkMap()
 	if err != nil {
 		r.Err = err

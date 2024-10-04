@@ -11,39 +11,39 @@ const (
 	apiName    = "queues"
 )
 
-func commonURL(client *gophercloud.ServiceClient) string {
+func commonURL(client gophercloud.Client) string {
 	return client.ServiceURL(apiVersion, apiName)
 }
 
-func createURL(client *gophercloud.ServiceClient, queueName string) string {
+func createURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName)
 }
 
-func listURL(client *gophercloud.ServiceClient) string {
+func listURL(client gophercloud.Client) string {
 	return commonURL(client)
 }
 
-func updateURL(client *gophercloud.ServiceClient, queueName string) string {
+func updateURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName)
 }
 
-func getURL(client *gophercloud.ServiceClient, queueName string) string {
+func getURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName)
 }
 
-func deleteURL(client *gophercloud.ServiceClient, queueName string) string {
+func deleteURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName)
 }
 
-func statURL(client *gophercloud.ServiceClient, queueName string) string {
+func statURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "stats")
 }
 
-func shareURL(client *gophercloud.ServiceClient, queueName string) string {
+func shareURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "share")
 }
 
-func purgeURL(client *gophercloud.ServiceClient, queueName string) string {
+func purgeURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "purge")
 }
 

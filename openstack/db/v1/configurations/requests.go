@@ -9,7 +9,7 @@ import (
 )
 
 // List will list all of the available configurations.
-func List(client *gophercloud.ServiceClient) pagination.Pager {
+func List(client gophercloud.Client) pagination.Pager {
 	return pagination.NewPager(client, baseURL(client), func(r pagination.PageResult) pagination.Page {
 		return ConfigPage{pagination.SinglePageBase(r)}
 	})
@@ -49,7 +49,7 @@ func (opts CreateOpts) ToConfigCreateMap() (map[string]any, error) {
 }
 
 // Create will create a new configuration group.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToConfigCreateMap()
 	if err != nil {
 		r.Err = err
@@ -61,7 +61,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Get will retrieve the details for a specified configuration group.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, configID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, configID string) (r GetResult) {
 	resp, err := client.Get(ctx, resourceURL(client, configID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -95,7 +95,7 @@ func (opts UpdateOpts) ToConfigUpdateMap() (map[string]any, error) {
 // Update will modify an existing configuration group by performing a merge
 // between new and existing values. If the key already exists, the new value
 // will overwrite. All other keys will remain unaffected.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, configID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, configID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToConfigUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -109,7 +109,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, configID str
 // Replace will modify an existing configuration group by overwriting the
 // entire parameter group with the new values provided. Any existing keys not
 // included in UpdateOptsBuilder will be deleted.
-func Replace(ctx context.Context, client *gophercloud.ServiceClient, configID string, opts UpdateOptsBuilder) (r ReplaceResult) {
+func Replace(ctx context.Context, client gophercloud.Client, configID string, opts UpdateOptsBuilder) (r ReplaceResult) {
 	b, err := opts.ToConfigUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -123,7 +123,7 @@ func Replace(ctx context.Context, client *gophercloud.ServiceClient, configID st
 // Delete will permanently delete a configuration group. Please note that
 // config groups cannot be deleted whilst still attached to running instances -
 // you must detach and then delete them.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, configID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, configID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, resourceURL(client, configID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -131,7 +131,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, configID str
 
 // ListInstances will list all the instances associated with a particular
 // configuration group.
-func ListInstances(client *gophercloud.ServiceClient, configID string) pagination.Pager {
+func ListInstances(client gophercloud.Client, configID string) pagination.Pager {
 	return pagination.NewPager(client, instancesURL(client, configID), func(r pagination.PageResult) pagination.Page {
 		return instances.InstancePage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}}
 	})
@@ -142,7 +142,7 @@ func ListInstances(client *gophercloud.ServiceClient, configID string) paginatio
 // For example, if you are wondering how you can configure a MySQL 5.6 instance,
 // you can use this operation (you will need to retrieve the MySQL datastore ID
 // by using the datastores API).
-func ListDatastoreParams(client *gophercloud.ServiceClient, datastoreID, versionID string) pagination.Pager {
+func ListDatastoreParams(client gophercloud.Client, datastoreID, versionID string) pagination.Pager {
 	return pagination.NewPager(client, listDSParamsURL(client, datastoreID, versionID), func(r pagination.PageResult) pagination.Page {
 		return ParamPage{pagination.SinglePageBase(r)}
 	})
@@ -153,7 +153,7 @@ func ListDatastoreParams(client *gophercloud.ServiceClient, datastoreID, version
 // "innodb_file_per_table" configuration param for MySQL datastores. You will
 // need the param's ID first, which can be attained by using the ListDatastoreParams
 // operation.
-func GetDatastoreParam(ctx context.Context, client *gophercloud.ServiceClient, datastoreID, versionID, paramID string) (r ParamResult) {
+func GetDatastoreParam(ctx context.Context, client gophercloud.Client, datastoreID, versionID, paramID string) (r ParamResult) {
 	resp, err := client.Get(ctx, getDSParamURL(client, datastoreID, versionID, paramID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -161,7 +161,7 @@ func GetDatastoreParam(ctx context.Context, client *gophercloud.ServiceClient, d
 
 // ListGlobalParams is similar to ListDatastoreParams but does not require a
 // DatastoreID.
-func ListGlobalParams(client *gophercloud.ServiceClient, versionID string) pagination.Pager {
+func ListGlobalParams(client gophercloud.Client, versionID string) pagination.Pager {
 	return pagination.NewPager(client, listGlobalParamsURL(client, versionID), func(r pagination.PageResult) pagination.Page {
 		return ParamPage{pagination.SinglePageBase(r)}
 	})
@@ -169,7 +169,7 @@ func ListGlobalParams(client *gophercloud.ServiceClient, versionID string) pagin
 
 // GetGlobalParam is similar to GetDatastoreParam but does not require a
 // DatastoreID.
-func GetGlobalParam(ctx context.Context, client *gophercloud.ServiceClient, versionID, paramID string) (r ParamResult) {
+func GetGlobalParam(ctx context.Context, client gophercloud.Client, versionID, paramID string) (r ParamResult) {
 	resp, err := client.Get(ctx, getGlobalParamURL(client, versionID, paramID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

@@ -25,7 +25,7 @@ func (opts GetOpts) ToLimitsQuery() (string, error) {
 }
 
 // Get returns the limits about the currently scoped tenant.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(client)
 	if opts != nil {
 		query, err := opts.ToLimitsQuery()

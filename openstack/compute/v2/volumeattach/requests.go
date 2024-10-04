@@ -9,7 +9,7 @@ import (
 
 // List returns a Pager that allows you to iterate over a collection of
 // VolumeAttachments.
-func List(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
+func List(client gophercloud.Client, serverID string) pagination.Pager {
 	return pagination.NewPager(client, listURL(client, serverID), func(r pagination.PageResult) pagination.Page {
 		return VolumeAttachmentPage{pagination.SinglePageBase(r)}
 	})
@@ -44,7 +44,7 @@ func (opts CreateOpts) ToVolumeAttachmentCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new volume attachment on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, serverID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToVolumeAttachmentCreateMap()
 	if err != nil {
 		r.Err = err
@@ -58,7 +58,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID str
 }
 
 // Get returns public data about a previously created VolumeAttachment.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, volumeID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, serverID, volumeID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, serverID, volumeID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -66,7 +66,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, volum
 
 // Delete requests the deletion of a previous stored VolumeAttachment from
 // the server.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, serverID, volumeID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, serverID, volumeID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, serverID, volumeID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

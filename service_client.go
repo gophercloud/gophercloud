@@ -7,6 +7,21 @@ import (
 	"strings"
 )
 
+type Client interface {
+	Request(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error)
+
+	Get(ctx context.Context, url string, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Post(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Put(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Patch(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Delete(ctx context.Context, url string, opts *RequestOpts) (*http.Response, error)
+	Head(ctx context.Context, url string, opts *RequestOpts) (*http.Response, error)
+
+	ResourceBaseURL() string
+	EndpointURL() string
+	ServiceURL(parts ...string) string
+}
+
 // ServiceClient stores details required to interact with a specific service API implemented by a provider.
 // Generally, you'll acquire these by calling the appropriate `New` method on a ProviderClient.
 type ServiceClient struct {

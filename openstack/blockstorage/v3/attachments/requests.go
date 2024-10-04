@@ -42,7 +42,7 @@ func (opts CreateOpts) ToAttachmentCreateMap() (map[string]any, error) {
 // Create will create a new Attachment based on the values in CreateOpts. To
 // extract the Attachment object from the response, call the Extract method on
 // the CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToAttachmentCreateMap()
 	if err != nil {
 		r.Err = err
@@ -56,7 +56,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete will delete the existing Attachment with the provided ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -66,7 +66,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 
 // Get retrieves the Attachment with the provided ID. To extract the Attachment
 // object from the response, call the Extract method on the GetResult.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -118,7 +118,7 @@ func (opts ListOpts) ToAttachmentListQuery() (string, error) {
 
 // List returns Attachments optionally limited by the conditions provided in
 // ListOpts.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToAttachmentListQuery()
@@ -155,7 +155,7 @@ func (opts UpdateOpts) ToAttachmentUpdateMap() (map[string]any, error) {
 // Update will update the Attachment with provided information. To extract the
 // updated Attachment from the response, call the Extract method on the
 // UpdateResult.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToAttachmentUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -170,7 +170,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // Complete will complete an attachment for a cinder volume.
 // Available starting in the 3.44 microversion.
-func Complete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r CompleteResult) {
+func Complete(ctx context.Context, client gophercloud.Client, id string) (r CompleteResult) {
 	b := map[string]any{
 		"os-complete": nil,
 	}

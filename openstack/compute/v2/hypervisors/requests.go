@@ -42,7 +42,7 @@ func (opts ListOpts) ToHypervisorListQuery() (string, error) {
 }
 
 // List makes a request against the API to list hypervisors.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := hypervisorsListDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToHypervisorListQuery()
@@ -58,7 +58,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Statistics makes a request against the API to get hypervisors statistics.
-func GetStatistics(ctx context.Context, client *gophercloud.ServiceClient) (r StatisticsResult) {
+func GetStatistics(ctx context.Context, client gophercloud.Client) (r StatisticsResult) {
 	resp, err := client.Get(ctx, hypervisorsStatisticsURL(client), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -67,7 +67,7 @@ func GetStatistics(ctx context.Context, client *gophercloud.ServiceClient) (r St
 }
 
 // Get makes a request against the API to get details for specific hypervisor.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, hypervisorID string) (r HypervisorResult) {
+func Get(ctx context.Context, client gophercloud.Client, hypervisorID string) (r HypervisorResult) {
 	resp, err := client.Get(ctx, hypervisorsGetURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -76,7 +76,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, hypervisorID st
 }
 
 // GetUptime makes a request against the API to get uptime for specific hypervisor.
-func GetUptime(ctx context.Context, client *gophercloud.ServiceClient, hypervisorID string) (r UptimeResult) {
+func GetUptime(ctx context.Context, client gophercloud.Client, hypervisorID string) (r UptimeResult) {
 	resp, err := client.Get(ctx, hypervisorsUptimeURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

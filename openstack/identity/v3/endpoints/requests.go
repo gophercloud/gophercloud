@@ -38,7 +38,7 @@ func (opts CreateOpts) ToEndpointCreateMap() (map[string]any, error) {
 }
 
 // Create inserts a new Endpoint into the service catalog.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToEndpointCreateMap()
 	if err != nil {
 		r.Err = err
@@ -76,7 +76,7 @@ func (opts ListOpts) ToEndpointListParams() (string, error) {
 
 // List enumerates endpoints in a paginated collection, optionally filtered
 // by ListOpts criteria.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	u := listURL(client)
 	if opts != nil {
 		q, err := gophercloud.BuildQueryString(opts)
@@ -122,7 +122,7 @@ func (opts UpdateOpts) ToEndpointUpdateMap() (map[string]any, error) {
 }
 
 // Update changes an existing endpoint with new data.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, endpointID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, endpointID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToEndpointUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -134,7 +134,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, endpointID s
 }
 
 // Delete removes an endpoint from the service catalog.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, endpointID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, endpointID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, endpointURL(client, endpointID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
