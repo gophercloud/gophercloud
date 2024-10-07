@@ -27,7 +27,9 @@ func TestList(t *testing.T) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-			r.ParseForm()
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("Failed to parse request form %v", err)
+			}
 			th.AssertDeepEquals(t, r.Form["fields"], fields)
 			th.AssertDeepEquals(t, r.Form["project_id"], filterProjectID)
 
@@ -177,7 +179,9 @@ func TestListNetworkAssociations(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		th.AssertDeepEquals(t, fields, r.Form["fields"])
 
 		w.Header().Add("Content-Type", "application/json")
@@ -278,7 +282,9 @@ func TestListRouterAssociations(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		th.AssertDeepEquals(t, fields, r.Form["fields"])
 
 		w.Header().Add("Content-Type", "application/json")
@@ -404,7 +410,9 @@ func TestListPortAssociations(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		th.AssertDeepEquals(t, fields, r.Form["fields"])
 
 		w.Header().Add("Content-Type", "application/json")
