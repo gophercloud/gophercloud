@@ -40,6 +40,8 @@ type CreateOpts struct {
 	SnapshotID string `json:"snapshot_id,omitempty"`
 	// Determines whether or not the share is public
 	IsPublic *bool `json:"is_public,omitempty"`
+	// The UUID of the share group. Available starting from the microversion 2.31
+	ShareGroupID string `json:"share_group_id,omitempty"`
 	// Key value pairs of user defined metadata
 	Metadata map[string]string `json:"metadata,omitempty"`
 	// The UUID of the share network to which the share belongs to
