@@ -135,7 +135,7 @@ func TestFlavorsCreateUpdateDelete(t *testing.T) {
 
 	newFlavorDescription := "This is the new description"
 	updateOpts := flavors.UpdateOpts{
-		Description: newFlavorDescription,
+		Description: &newFlavorDescription,
 	}
 
 	flavor, err = flavors.Update(context.TODO(), client, flavor.ID, updateOpts).Extract()

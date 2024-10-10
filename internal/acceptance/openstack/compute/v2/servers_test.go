@@ -133,7 +133,7 @@ func TestServersUpdate(t *testing.T) {
 	t.Logf("Attempting to rename the server to %s.", alternateName)
 
 	updateOpts := servers.UpdateOpts{
-		Name: alternateName,
+		Name: &alternateName,
 	}
 
 	updated, err := servers.Update(context.TODO(), client, server.ID, updateOpts).Extract()

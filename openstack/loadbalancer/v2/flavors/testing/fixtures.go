@@ -119,7 +119,7 @@ func HandleFlavorCreationSuccessfully(t *testing.T, response string) {
 			"flavor": {
 				"name": "Basic",
 				"description": "A basic standalone Octavia load balancer.",
-				"enabled": true,
+				"enabled": false,
 				"flavor_profile_id": "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1"
 			}
 		}`)

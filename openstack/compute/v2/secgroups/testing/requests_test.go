@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/secgroups"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -116,10 +117,9 @@ func TestUpdate(t *testing.T) {
 
 	mockUpdateGroupResponse(t, groupID)
 
-	description := "new_desc"
 	opts := secgroups.UpdateOpts{
-		Name:        "new_name",
-		Description: &description,
+		Name:        ptr.To("new_name"),
+		Description: ptr.To("new_desc"),
 	}
 
 	group, err := secgroups.Update(context.TODO(), client.ServiceClient(), groupID, opts).Extract()
