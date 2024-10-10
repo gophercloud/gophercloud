@@ -1,5 +1,7 @@
 package gophercloud
 
+import "slices"
+
 // Availability indicates to whom a specific service endpoint is accessible:
 // the internet at large, internal networks only, or only to administrators.
 // Different identity services use different terminology for these. Identity v2
@@ -21,6 +23,31 @@ const (
 	// the cluster's internal network.
 	AvailabilityInternal Availability = "internal"
 )
+
+// ServiceTypeAliases contains a mapping of service types to any aliases, as
+// defined by the OpenStack Service Types Authority. Only service types that
+// we support are included.
+var ServiceTypeAliases = map[string][]string{
+	"application-container":               {"container"},
+	"baremetal":                           {"bare-metal"},
+	"baremetal-introspection":             {},
+	"block-storage":                       {"block-store", "volume", "volumev2", "volumev3"},
+	"compute":                             {},
+	"container-infrastructure-management": {"container-infrastructure", "container-infra"},
+	"database":                            {},
+	"dns":                                 {},
+	"identity":                            {},
+	"image":                               {},
+	"key-manager":                         {},
+	"load-balancer":                       {},
+	"message":                             {"messaging"},
+	"networking":                          {},
+	"object-store":                        {},
+	"orchestration":                       {},
+	"placement":                           {},
+	"shared-file-system":                  {"sharev2", "share"},
+	"workflow":                            {"workflowv2"},
+}
 
 // EndpointOpts specifies search criteria used by queries against an
 // OpenStack service catalog. The options must contain enough information to
@@ -80,6 +107,24 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 	}
 	if eo.Availability == "" {
 		eo.Availability = AvailabilityPublic
+	}
+	if len(eo.Aliases) == 0 {
+		if aliases, ok := ServiceTypeAliases[eo.Type]; ok {
+			// happy path: user requested a service type by its official name
+			eo.Aliases = aliases
+		} else {
+			// unhappy path: user requested a service type by its alias or an
+			// invalid/unsupported service type
+			// TODO(stephenfin): This should probably be an error in v3
+			for t, aliases := range ServiceTypeAliases {
+				if slices.Contains(aliases, eo.Type) {
+					// we intentionally override the service type, even if it
+					// was explicitly requested by the user
+					eo.Type = t
+					eo.Aliases = aliases
+				}
+			}
+		}
 	}
 }
 
