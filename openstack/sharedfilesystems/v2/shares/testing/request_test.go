@@ -16,13 +16,23 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := &shares.CreateOpts{Size: 1, Name: "my_test_share", ShareProto: "NFS"}
+	options := &shares.CreateOpts{
+		Size:       1,
+		Name:       "my_test_share",
+		ShareProto: "NFS",
+		SchedulerHints: &shares.SchedulerHints{
+			SameHost:      "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
+			DifferentHost: "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
+		},
+	}
 	n, err := shares.Create(context.TODO(), client.ServiceClient(), options).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "my_test_share")
 	th.AssertEquals(t, n.Size, 1)
 	th.AssertEquals(t, n.ShareProto, "NFS")
+	th.AssertEquals(t, n.Metadata["__affinity_same_host"], "e268f4aa-d571-43dd-9ab3-f49ad06ffaef")
+	th.AssertEquals(t, n.Metadata["__affinity_different_host"], "e268f4aa-d571-43dd-9ab3-f49ad06ffaef")
 }
 
 func TestUpdate(t *testing.T) {
