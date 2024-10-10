@@ -41,7 +41,7 @@ func (opts ListOpts) ToContainerListQuery() (string, error) {
 }
 
 // List retrieves a list of containers.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToContainerListQuery()
@@ -56,7 +56,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details of a container.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -86,7 +86,7 @@ func (opts CreateOpts) ToContainerCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new container.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToContainerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -100,7 +100,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete deletes a container.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -129,7 +129,7 @@ func (opts ListOpts) ToContainerListConsumersQuery() (string, error) {
 }
 
 // ListConsumers retrieves a list of consumers from a container.
-func ListConsumers(client *gophercloud.ServiceClient, containerID string, opts ListConsumersOptsBuilder) pagination.Pager {
+func ListConsumers(client gophercloud.Client, containerID string, opts ListConsumersOptsBuilder) pagination.Pager {
 	url := listConsumersURL(client, containerID)
 	if opts != nil {
 		query, err := opts.ToContainerListConsumersQuery()
@@ -165,7 +165,7 @@ func (opts CreateConsumerOpts) ToContainerConsumerCreateMap() (map[string]any, e
 }
 
 // CreateConsumer creates a new consumer.
-func CreateConsumer(ctx context.Context, client *gophercloud.ServiceClient, containerID string, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
+func CreateConsumer(ctx context.Context, client gophercloud.Client, containerID string, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
 	b, err := opts.ToContainerConsumerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -200,7 +200,7 @@ func (opts DeleteConsumerOpts) ToContainerConsumerDeleteMap() (map[string]any, e
 }
 
 // DeleteConsumer deletes a consumer.
-func DeleteConsumer(ctx context.Context, client *gophercloud.ServiceClient, containerID string, opts DeleteConsumerOptsBuilder) (r DeleteConsumerResult) {
+func DeleteConsumer(ctx context.Context, client gophercloud.Client, containerID string, opts DeleteConsumerOptsBuilder) (r DeleteConsumerResult) {
 	url := deleteConsumerURL(client, containerID)
 
 	b, err := opts.ToContainerConsumerDeleteMap()
@@ -231,7 +231,7 @@ func (opts SecretRef) ToContainerSecretRefMap() (map[string]any, error) {
 }
 
 // CreateSecret creates a new consumer.
-func CreateSecretRef(ctx context.Context, client *gophercloud.ServiceClient, containerID string, opts SecretRefBuilder) (r CreateSecretRefResult) {
+func CreateSecretRef(ctx context.Context, client gophercloud.Client, containerID string, opts SecretRefBuilder) (r CreateSecretRefResult) {
 	b, err := opts.ToContainerSecretRefMap()
 	if err != nil {
 		r.Err = err
@@ -245,7 +245,7 @@ func CreateSecretRef(ctx context.Context, client *gophercloud.ServiceClient, con
 }
 
 // DeleteSecret deletes a consumer.
-func DeleteSecretRef(ctx context.Context, client *gophercloud.ServiceClient, containerID string, opts SecretRefBuilder) (r DeleteSecretRefResult) {
+func DeleteSecretRef(ctx context.Context, client gophercloud.Client, containerID string, opts SecretRefBuilder) (r DeleteSecretRefResult) {
 	url := deleteSecretRefURL(client, containerID)
 
 	b, err := opts.ToContainerSecretRefMap()

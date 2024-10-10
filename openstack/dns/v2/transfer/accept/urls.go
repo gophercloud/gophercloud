@@ -8,10 +8,10 @@ const (
 	resourcePath = "transfer_accepts"
 )
 
-func baseURL(c *gophercloud.ServiceClient) string {
+func baseURL(c gophercloud.Client) string {
 	return c.ServiceURL(rootPath, tasksPath, resourcePath)
 }
 
-func resourceURL(c *gophercloud.ServiceClient, transferAcceptID string) string {
+func resourceURL(c gophercloud.Client, transferAcceptID string) string {
 	return c.ServiceURL(rootPath, tasksPath, resourcePath, transferAcceptID)
 }

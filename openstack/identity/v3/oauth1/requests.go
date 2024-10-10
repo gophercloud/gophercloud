@@ -136,7 +136,7 @@ func (opts AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, erro
 
 // Create authenticates and either generates a new OpenStack token
 // from an OAuth1 token.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
 	b, err := opts.ToTokenV3CreateMap(nil)
 	if err != nil {
 		r.Err = err
@@ -180,7 +180,7 @@ func (opts CreateConsumerOpts) ToOAuth1CreateConsumerMap() (map[string]any, erro
 }
 
 // CreateConsumer creates a new Consumer.
-func CreateConsumer(ctx context.Context, client *gophercloud.ServiceClient, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
+func CreateConsumer(ctx context.Context, client gophercloud.Client, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
 	b, err := opts.ToOAuth1CreateConsumerMap()
 	if err != nil {
 		r.Err = err
@@ -194,21 +194,21 @@ func CreateConsumer(ctx context.Context, client *gophercloud.ServiceClient, opts
 }
 
 // DeleteConsumer deletes a Consumer.
-func DeleteConsumer(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteConsumerResult) {
+func DeleteConsumer(ctx context.Context, client gophercloud.Client, id string) (r DeleteConsumerResult) {
 	resp, err := client.Delete(ctx, consumerURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // List enumerates Consumers.
-func ListConsumers(client *gophercloud.ServiceClient) pagination.Pager {
+func ListConsumers(client gophercloud.Client) pagination.Pager {
 	return pagination.NewPager(client, consumersURL(client), func(r pagination.PageResult) pagination.Page {
 		return ConsumersPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
 // GetConsumer retrieves details on a single Consumer by ID.
-func GetConsumer(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetConsumerResult) {
+func GetConsumer(ctx context.Context, client gophercloud.Client, id string) (r GetConsumerResult) {
 	resp, err := client.Get(ctx, consumerURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -227,7 +227,7 @@ func (opts UpdateConsumerOpts) ToOAuth1UpdateConsumerMap() (map[string]any, erro
 }
 
 // UpdateConsumer updates an existing Consumer.
-func UpdateConsumer(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateConsumerOpts) (r UpdateConsumerResult) {
+func UpdateConsumer(ctx context.Context, client gophercloud.Client, id string, opts UpdateConsumerOpts) (r UpdateConsumerResult) {
 	b, err := opts.ToOAuth1UpdateConsumerMap()
 	if err != nil {
 		r.Err = err
@@ -299,7 +299,7 @@ func (opts RequestTokenOpts) ToOAuth1RequestTokenHeaders(method, u string) (map[
 }
 
 // RequestToken requests an unauthorized OAuth1 Token.
-func RequestToken(ctx context.Context, client *gophercloud.ServiceClient, opts RequestTokenOptsBuilder) (r TokenResult) {
+func RequestToken(ctx context.Context, client gophercloud.Client, opts RequestTokenOptsBuilder) (r TokenResult) {
 	h, err := opts.ToOAuth1RequestTokenHeaders("POST", requestTokenURL(client))
 	if err != nil {
 		r.Err = err
@@ -353,7 +353,7 @@ func (opts AuthorizeTokenOpts) ToOAuth1AuthorizeTokenMap() (map[string]any, erro
 }
 
 // AuthorizeToken authorizes an unauthorized consumer token.
-func AuthorizeToken(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AuthorizeTokenOptsBuilder) (r AuthorizeTokenResult) {
+func AuthorizeToken(ctx context.Context, client gophercloud.Client, id string, opts AuthorizeTokenOptsBuilder) (r AuthorizeTokenResult) {
 	b, err := opts.ToOAuth1AuthorizeTokenMap()
 	if err != nil {
 		r.Err = err
@@ -427,7 +427,7 @@ func (opts CreateAccessTokenOpts) ToOAuth1CreateAccessTokenHeaders(method, u str
 }
 
 // CreateAccessToken creates a new OAuth1 Access Token
-func CreateAccessToken(ctx context.Context, client *gophercloud.ServiceClient, opts CreateAccessTokenOptsBuilder) (r TokenResult) {
+func CreateAccessToken(ctx context.Context, client gophercloud.Client, opts CreateAccessTokenOptsBuilder) (r TokenResult) {
 	h, err := opts.ToOAuth1CreateAccessTokenHeaders("POST", createAccessTokenURL(client))
 	if err != nil {
 		r.Err = err
@@ -453,21 +453,21 @@ func CreateAccessToken(ctx context.Context, client *gophercloud.ServiceClient, o
 }
 
 // GetAccessToken retrieves details on a single OAuth1 access token by an ID.
-func GetAccessToken(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r GetAccessTokenResult) {
+func GetAccessToken(ctx context.Context, client gophercloud.Client, userID string, id string) (r GetAccessTokenResult) {
 	resp, err := client.Get(ctx, userAccessTokenURL(client, userID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // RevokeAccessToken revokes an OAuth1 access token.
-func RevokeAccessToken(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string) (r RevokeAccessTokenResult) {
+func RevokeAccessToken(ctx context.Context, client gophercloud.Client, userID string, id string) (r RevokeAccessTokenResult) {
 	resp, err := client.Delete(ctx, userAccessTokenURL(client, userID, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListAccessTokens enumerates authorized access tokens.
-func ListAccessTokens(client *gophercloud.ServiceClient, userID string) pagination.Pager {
+func ListAccessTokens(client gophercloud.Client, userID string) pagination.Pager {
 	url := userAccessTokensURL(client, userID)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return AccessTokensPage{pagination.LinkedPageBase{PageResult: r}}
@@ -475,7 +475,7 @@ func ListAccessTokens(client *gophercloud.ServiceClient, userID string) paginati
 }
 
 // ListAccessTokenRoles enumerates authorized access token roles.
-func ListAccessTokenRoles(client *gophercloud.ServiceClient, userID string, id string) pagination.Pager {
+func ListAccessTokenRoles(client gophercloud.Client, userID string, id string) pagination.Pager {
 	url := userAccessTokenRolesURL(client, userID, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return AccessTokenRolesPage{pagination.LinkedPageBase{PageResult: r}}
@@ -484,7 +484,7 @@ func ListAccessTokenRoles(client *gophercloud.ServiceClient, userID string, id s
 
 // GetAccessTokenRole retrieves details on a single OAuth1 access token role by
 // an ID.
-func GetAccessTokenRole(ctx context.Context, client *gophercloud.ServiceClient, userID string, id string, roleID string) (r GetAccessTokenRoleResult) {
+func GetAccessTokenRole(ctx context.Context, client gophercloud.Client, userID string, id string, roleID string) (r GetAccessTokenRoleResult) {
 	resp, err := client.Get(ctx, userAccessTokenRoleURL(client, userID, id, roleID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

@@ -2,17 +2,17 @@ package attachinterfaces
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func listInterfaceURL(client *gophercloud.ServiceClient, serverID string) string {
+func listInterfaceURL(client gophercloud.Client, serverID string) string {
 	return client.ServiceURL("servers", serverID, "os-interface")
 }
 
-func getInterfaceURL(client *gophercloud.ServiceClient, serverID, portID string) string {
+func getInterfaceURL(client gophercloud.Client, serverID, portID string) string {
 	return client.ServiceURL("servers", serverID, "os-interface", portID)
 }
 
-func createInterfaceURL(client *gophercloud.ServiceClient, serverID string) string {
+func createInterfaceURL(client gophercloud.Client, serverID string) string {
 	return client.ServiceURL("servers", serverID, "os-interface")
 }
-func deleteInterfaceURL(client *gophercloud.ServiceClient, serverID, portID string) string {
+func deleteInterfaceURL(client gophercloud.Client, serverID, portID string) string {
 	return client.ServiceURL("servers", serverID, "os-interface", portID)
 }

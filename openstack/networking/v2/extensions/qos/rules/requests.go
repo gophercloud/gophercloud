@@ -44,7 +44,7 @@ func (opts BandwidthLimitRulesListOpts) ToBandwidthLimitRulesListQuery() (string
 // ListBandwidthLimitRules returns a Pager which allows you to iterate over a collection of
 // BandwidthLimitRules. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func ListBandwidthLimitRules(c *gophercloud.ServiceClient, policyID string, opts BandwidthLimitRulesListOptsBuilder) pagination.Pager {
+func ListBandwidthLimitRules(c gophercloud.Client, policyID string, opts BandwidthLimitRulesListOptsBuilder) pagination.Pager {
 	url := listBandwidthLimitRulesURL(c, policyID)
 	if opts != nil {
 		query, err := opts.ToBandwidthLimitRulesListQuery()
@@ -60,7 +60,7 @@ func ListBandwidthLimitRules(c *gophercloud.ServiceClient, policyID string, opts
 }
 
 // GetBandwidthLimitRule retrieves a specific BandwidthLimitRule based on its ID.
-func GetBandwidthLimitRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r GetBandwidthLimitRuleResult) {
+func GetBandwidthLimitRule(ctx context.Context, c gophercloud.Client, policyID, ruleID string) (r GetBandwidthLimitRuleResult) {
 	resp, err := c.Get(ctx, getBandwidthLimitRuleURL(c, policyID, ruleID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -90,7 +90,7 @@ func (opts CreateBandwidthLimitRuleOpts) ToBandwidthLimitRuleCreateMap() (map[st
 }
 
 // CreateBandwidthLimitRule requests the creation of a new BandwidthLimitRule on the server.
-func CreateBandwidthLimitRule(ctx context.Context, client *gophercloud.ServiceClient, policyID string, opts CreateBandwidthLimitRuleOptsBuilder) (r CreateBandwidthLimitRuleResult) {
+func CreateBandwidthLimitRule(ctx context.Context, client gophercloud.Client, policyID string, opts CreateBandwidthLimitRuleOptsBuilder) (r CreateBandwidthLimitRuleResult) {
 	b, err := opts.ToBandwidthLimitRuleCreateMap()
 	if err != nil {
 		r.Err = err
@@ -127,7 +127,7 @@ func (opts UpdateBandwidthLimitRuleOpts) ToBandwidthLimitRuleUpdateMap() (map[st
 }
 
 // UpdateBandwidthLimitRule requests the creation of a new BandwidthLimitRule on the server.
-func UpdateBandwidthLimitRule(ctx context.Context, client *gophercloud.ServiceClient, policyID, ruleID string, opts UpdateBandwidthLimitRuleOptsBuilder) (r UpdateBandwidthLimitRuleResult) {
+func UpdateBandwidthLimitRule(ctx context.Context, client gophercloud.Client, policyID, ruleID string, opts UpdateBandwidthLimitRuleOptsBuilder) (r UpdateBandwidthLimitRuleResult) {
 	b, err := opts.ToBandwidthLimitRuleUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -141,7 +141,7 @@ func UpdateBandwidthLimitRule(ctx context.Context, client *gophercloud.ServiceCl
 }
 
 // Delete accepts policy and rule ID and deletes the BandwidthLimitRule associated with them.
-func DeleteBandwidthLimitRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteBandwidthLimitRuleResult) {
+func DeleteBandwidthLimitRule(ctx context.Context, c gophercloud.Client, policyID, ruleID string) (r DeleteBandwidthLimitRuleResult) {
 	resp, err := c.Delete(ctx, deleteBandwidthLimitRuleURL(c, policyID, ruleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -182,7 +182,7 @@ func (opts DSCPMarkingRulesListOpts) ToDSCPMarkingRulesListQuery() (string, erro
 // ListDSCPMarkingRules returns a Pager which allows you to iterate over a collection of
 // DSCPMarkingRules. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DSCPMarkingRulesListOptsBuilder) pagination.Pager {
+func ListDSCPMarkingRules(c gophercloud.Client, policyID string, opts DSCPMarkingRulesListOptsBuilder) pagination.Pager {
 	url := listDSCPMarkingRulesURL(c, policyID)
 	if opts != nil {
 		query, err := opts.ToDSCPMarkingRulesListQuery()
@@ -198,7 +198,7 @@ func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DS
 }
 
 // GetDSCPMarkingRule retrieves a specific DSCPMarkingRule based on its ID.
-func GetDSCPMarkingRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r GetDSCPMarkingRuleResult) {
+func GetDSCPMarkingRule(ctx context.Context, c gophercloud.Client, policyID, ruleID string) (r GetDSCPMarkingRuleResult) {
 	resp, err := c.Get(ctx, getDSCPMarkingRuleURL(c, policyID, ruleID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -222,7 +222,7 @@ func (opts CreateDSCPMarkingRuleOpts) ToDSCPMarkingRuleCreateMap() (map[string]a
 }
 
 // CreateDSCPMarkingRule requests the creation of a new DSCPMarkingRule on the server.
-func CreateDSCPMarkingRule(ctx context.Context, client *gophercloud.ServiceClient, policyID string, opts CreateDSCPMarkingRuleOptsBuilder) (r CreateDSCPMarkingRuleResult) {
+func CreateDSCPMarkingRule(ctx context.Context, client gophercloud.Client, policyID string, opts CreateDSCPMarkingRuleOptsBuilder) (r CreateDSCPMarkingRuleResult) {
 	b, err := opts.ToDSCPMarkingRuleCreateMap()
 	if err != nil {
 		r.Err = err
@@ -253,7 +253,7 @@ func (opts UpdateDSCPMarkingRuleOpts) ToDSCPMarkingRuleUpdateMap() (map[string]a
 }
 
 // UpdateDSCPMarkingRule requests the creation of a new DSCPMarkingRule on the server.
-func UpdateDSCPMarkingRule(ctx context.Context, client *gophercloud.ServiceClient, policyID, ruleID string, opts UpdateDSCPMarkingRuleOptsBuilder) (r UpdateDSCPMarkingRuleResult) {
+func UpdateDSCPMarkingRule(ctx context.Context, client gophercloud.Client, policyID, ruleID string, opts UpdateDSCPMarkingRuleOptsBuilder) (r UpdateDSCPMarkingRuleResult) {
 	b, err := opts.ToDSCPMarkingRuleUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -267,7 +267,7 @@ func UpdateDSCPMarkingRule(ctx context.Context, client *gophercloud.ServiceClien
 }
 
 // DeleteDSCPMarkingRule accepts policy and rule ID and deletes the DSCPMarkingRule associated with them.
-func DeleteDSCPMarkingRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteDSCPMarkingRuleResult) {
+func DeleteDSCPMarkingRule(ctx context.Context, c gophercloud.Client, policyID, ruleID string) (r DeleteDSCPMarkingRuleResult) {
 	resp, err := c.Delete(ctx, deleteDSCPMarkingRuleURL(c, policyID, ruleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -309,7 +309,7 @@ func (opts MinimumBandwidthRulesListOpts) ToMinimumBandwidthRulesListQuery() (st
 // ListMinimumBandwidthRules returns a Pager which allows you to iterate over a collection of
 // MinimumBandwidthRules. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func ListMinimumBandwidthRules(c *gophercloud.ServiceClient, policyID string, opts MinimumBandwidthRulesListOptsBuilder) pagination.Pager {
+func ListMinimumBandwidthRules(c gophercloud.Client, policyID string, opts MinimumBandwidthRulesListOptsBuilder) pagination.Pager {
 	url := listMinimumBandwidthRulesURL(c, policyID)
 	if opts != nil {
 		query, err := opts.ToMinimumBandwidthRulesListQuery()
@@ -325,7 +325,7 @@ func ListMinimumBandwidthRules(c *gophercloud.ServiceClient, policyID string, op
 }
 
 // GetMinimumBandwidthRule retrieves a specific MinimumBandwidthRule based on its ID.
-func GetMinimumBandwidthRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r GetMinimumBandwidthRuleResult) {
+func GetMinimumBandwidthRule(ctx context.Context, c gophercloud.Client, policyID, ruleID string) (r GetMinimumBandwidthRuleResult) {
 	resp, err := c.Get(ctx, getMinimumBandwidthRuleURL(c, policyID, ruleID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -352,7 +352,7 @@ func (opts CreateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleCreateMap() (ma
 }
 
 // CreateMinimumBandwidthRule requests the creation of a new MinimumBandwidthRule on the server.
-func CreateMinimumBandwidthRule(ctx context.Context, client *gophercloud.ServiceClient, policyID string, opts CreateMinimumBandwidthRuleOptsBuilder) (r CreateMinimumBandwidthRuleResult) {
+func CreateMinimumBandwidthRule(ctx context.Context, client gophercloud.Client, policyID string, opts CreateMinimumBandwidthRuleOptsBuilder) (r CreateMinimumBandwidthRuleResult) {
 	b, err := opts.ToMinimumBandwidthRuleCreateMap()
 	if err != nil {
 		r.Err = err
@@ -386,7 +386,7 @@ func (opts UpdateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleUpdateMap() (ma
 }
 
 // UpdateMinimumBandwidthRule requests the creation of a new MinimumBandwidthRule on the server.
-func UpdateMinimumBandwidthRule(ctx context.Context, client *gophercloud.ServiceClient, policyID, ruleID string, opts UpdateMinimumBandwidthRuleOptsBuilder) (r UpdateMinimumBandwidthRuleResult) {
+func UpdateMinimumBandwidthRule(ctx context.Context, client gophercloud.Client, policyID, ruleID string, opts UpdateMinimumBandwidthRuleOptsBuilder) (r UpdateMinimumBandwidthRuleResult) {
 	b, err := opts.ToMinimumBandwidthRuleUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -400,7 +400,7 @@ func UpdateMinimumBandwidthRule(ctx context.Context, client *gophercloud.Service
 }
 
 // DeleteMinimumBandwidthRule accepts policy and rule ID and deletes the MinimumBandwidthRule associated with them.
-func DeleteMinimumBandwidthRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteMinimumBandwidthRuleResult) {
+func DeleteMinimumBandwidthRule(ctx context.Context, c gophercloud.Client, policyID, ruleID string) (r DeleteMinimumBandwidthRuleResult) {
 	resp, err := c.Delete(ctx, deleteMinimumBandwidthRuleURL(c, policyID, ruleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

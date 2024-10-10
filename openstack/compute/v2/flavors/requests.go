@@ -84,7 +84,7 @@ func (opts ListOpts) ToFlavorListQuery() (string, error) {
 // ListDetail instructs OpenStack to provide a list of flavors.
 // You may provide criteria by which List curtails its results for easier
 // processing.
-func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func ListDetail(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToFlavorListQuery()
@@ -143,7 +143,7 @@ func (opts CreateOpts) ToFlavorCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new flavor.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToFlavorCreateMap()
 	if err != nil {
 		r.Err = err
@@ -174,7 +174,7 @@ func (opts UpdateOpts) ToFlavorUpdateMap() (map[string]any, error) {
 }
 
 // Update requests the update of a new flavor.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFlavorUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -189,21 +189,21 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // Get retrieves details of a single flavor. Use Extract to convert its
 // result into a Flavor.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified flavor ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListAccesses retrieves the tenants which have access to a flavor.
-func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager {
+func ListAccesses(client gophercloud.Client, id string) pagination.Pager {
 	url := accessURL(client, id)
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -229,7 +229,7 @@ func (opts AddAccessOpts) ToFlavorAddAccessMap() (map[string]any, error) {
 }
 
 // AddAccess grants a tenant/project access to a flavor.
-func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+func AddAccess(ctx context.Context, client gophercloud.Client, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
 	b, err := opts.ToFlavorAddAccessMap()
 	if err != nil {
 		r.Err = err
@@ -260,7 +260,7 @@ func (opts RemoveAccessOpts) ToFlavorRemoveAccessMap() (map[string]any, error) {
 }
 
 // RemoveAccess removes/revokes a tenant/project access to a flavor.
-func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+func RemoveAccess(ctx context.Context, client gophercloud.Client, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
 	b, err := opts.ToFlavorRemoveAccessMap()
 	if err != nil {
 		r.Err = err
@@ -274,13 +274,13 @@ func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id str
 }
 
 // ExtraSpecs requests all the extra-specs for the given flavor ID.
-func ListExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, flavorID string) (r ListExtraSpecsResult) {
+func ListExtraSpecs(ctx context.Context, client gophercloud.Client, flavorID string) (r ListExtraSpecsResult) {
 	resp, err := client.Get(ctx, extraSpecsListURL(client, flavorID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func GetExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavorID string, key string) (r GetExtraSpecResult) {
+func GetExtraSpec(ctx context.Context, client gophercloud.Client, flavorID string, key string) (r GetExtraSpecResult) {
 	resp, err := client.Get(ctx, extraSpecsGetURL(client, flavorID, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -303,7 +303,7 @@ func (opts ExtraSpecsOpts) ToFlavorExtraSpecsCreateMap() (map[string]any, error)
 
 // CreateExtraSpecs will create or update the extra-specs key-value pairs for
 // the specified Flavor.
-func CreateExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, flavorID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
+func CreateExtraSpecs(ctx context.Context, client gophercloud.Client, flavorID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
 	b, err := opts.ToFlavorExtraSpecsCreateMap()
 	if err != nil {
 		r.Err = err
@@ -342,7 +342,7 @@ func (opts ExtraSpecsOpts) ToFlavorExtraSpecUpdateMap() (map[string]string, stri
 
 // UpdateExtraSpec will updates the value of the specified flavor's extra spec
 // for the key in opts.
-func UpdateExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavorID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
+func UpdateExtraSpec(ctx context.Context, client gophercloud.Client, flavorID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
 	b, key, err := opts.ToFlavorExtraSpecUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -357,7 +357,7 @@ func UpdateExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, fla
 
 // DeleteExtraSpec will delete the key-value pair with the given key for the given
 // flavor ID.
-func DeleteExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, flavorID, key string) (r DeleteExtraSpecResult) {
+func DeleteExtraSpec(ctx context.Context, client gophercloud.Client, flavorID, key string) (r DeleteExtraSpecResult) {
 	resp, err := client.Delete(ctx, extraSpecDeleteURL(client, flavorID, key), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

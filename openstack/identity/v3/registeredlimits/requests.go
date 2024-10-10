@@ -32,7 +32,7 @@ func (opts ListOpts) ToRegisteredLimitListQuery() (string, error) {
 }
 
 // List enumerates the registered limits.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(client)
 	if opts != nil {
 		query, err := opts.ToRegisteredLimitListQuery()
@@ -90,7 +90,7 @@ func (opts CreateOpts) ToMap() (map[string]any, error) {
 }
 
 // BatchCreate creates new Limits.
-func BatchCreate(ctx context.Context, client *gophercloud.ServiceClient, opts BatchCreateOptsBuilder) (r CreateResult) {
+func BatchCreate(ctx context.Context, client gophercloud.Client, opts BatchCreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRegisteredLimitsCreateMap()
 	if err != nil {
 		r.Err = err
@@ -104,7 +104,7 @@ func BatchCreate(ctx context.Context, client *gophercloud.ServiceClient, opts Ba
 }
 
 // Get retrieves details on a single registered_limit, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, registeredLimitID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, registeredLimitID string) (r GetResult) {
 	resp, err := client.Get(ctx, resourceURL(client, registeredLimitID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -141,7 +141,7 @@ func (opts UpdateOpts) ToRegisteredLimitUpdateMap() (map[string]any, error) {
 }
 
 // Update modifies the attributes of a registered limit.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRegisteredLimitUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -155,7 +155,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Delete deletes a registered_limit.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, registeredLimitID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, registeredLimitID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, resourceURL(client, registeredLimitID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

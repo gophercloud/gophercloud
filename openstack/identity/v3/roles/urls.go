@@ -6,50 +6,50 @@ const (
 	rolePath = "roles"
 )
 
-func listURL(client *gophercloud.ServiceClient) string {
+func listURL(client gophercloud.Client) string {
 	return client.ServiceURL(rolePath)
 }
 
-func getURL(client *gophercloud.ServiceClient, roleID string) string {
+func getURL(client gophercloud.Client, roleID string) string {
 	return client.ServiceURL(rolePath, roleID)
 }
 
-func createURL(client *gophercloud.ServiceClient) string {
+func createURL(client gophercloud.Client) string {
 	return client.ServiceURL(rolePath)
 }
 
-func updateURL(client *gophercloud.ServiceClient, roleID string) string {
+func updateURL(client gophercloud.Client, roleID string) string {
 	return client.ServiceURL(rolePath, roleID)
 }
 
-func deleteURL(client *gophercloud.ServiceClient, roleID string) string {
+func deleteURL(client gophercloud.Client, roleID string) string {
 	return client.ServiceURL(rolePath, roleID)
 }
 
-func listAssignmentsURL(client *gophercloud.ServiceClient) string {
+func listAssignmentsURL(client gophercloud.Client) string {
 	return client.ServiceURL("role_assignments")
 }
 
-func listAssignmentsOnResourceURL(client *gophercloud.ServiceClient, targetType, targetID, actorType, actorID string) string {
+func listAssignmentsOnResourceURL(client gophercloud.Client, targetType, targetID, actorType, actorID string) string {
 	return client.ServiceURL(targetType, targetID, actorType, actorID, rolePath)
 }
 
-func assignURL(client *gophercloud.ServiceClient, targetType, targetID, actorType, actorID, roleID string) string {
+func assignURL(client gophercloud.Client, targetType, targetID, actorType, actorID, roleID string) string {
 	return client.ServiceURL(targetType, targetID, actorType, actorID, rolePath, roleID)
 }
 
-func createRoleInferenceRuleURL(client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) string {
+func createRoleInferenceRuleURL(client gophercloud.Client, priorRoleID, impliedRoleID string) string {
 	return client.ServiceURL(rolePath, priorRoleID, "implies", impliedRoleID)
 }
 
-func getRoleInferenceRuleURL(client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) string {
+func getRoleInferenceRuleURL(client gophercloud.Client, priorRoleID, impliedRoleID string) string {
 	return client.ServiceURL(rolePath, priorRoleID, "implies", impliedRoleID)
 }
 
-func listRoleInferenceRulesURL(client *gophercloud.ServiceClient) string {
+func listRoleInferenceRulesURL(client gophercloud.Client) string {
 	return client.ServiceURL("role_inferences")
 }
 
-func deleteRoleInferenceRuleURL(client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) string {
+func deleteRoleInferenceRuleURL(client gophercloud.Client, priorRoleID, impliedRoleID string) string {
 	return client.ServiceURL(rolePath, priorRoleID, "implies", impliedRoleID)
 }

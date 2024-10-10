@@ -44,7 +44,7 @@ func (opts ListOpts) ToRBACPolicyListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // rbac policies. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToRBACPolicyListQuery()
@@ -60,7 +60,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific rbac policy based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -102,7 +102,7 @@ func (opts CreateOpts) ToRBACPolicyCreateMap() (map[string]any, error) {
 //
 // The tenant ID that is contained in the URI is the tenant that creates the
 // rbac-policy.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRBACPolicyCreateMap()
 	if err != nil {
 		r.Err = err
@@ -114,7 +114,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Delete accepts a unique ID and deletes the rbac-policy associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, rbacPolicyID string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, rbacPolicyID string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, rbacPolicyID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -138,7 +138,7 @@ func (opts UpdateOpts) ToRBACPolicyUpdateMap() (map[string]any, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing rbac-policy using the
 // values provided.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, rbacPolicyID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, rbacPolicyID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRBACPolicyUpdateMap()
 	if err != nil {
 		r.Err = err

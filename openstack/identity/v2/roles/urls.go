@@ -8,10 +8,10 @@ const (
 	UserPath = "users"
 )
 
-func rootURL(c *gophercloud.ServiceClient) string {
+func rootURL(c gophercloud.Client) string {
 	return c.ServiceURL(ExtPath, RolePath)
 }
 
-func userTenantRoleURL(c *gophercloud.ServiceClient, tenantID, userID, roleID string) string {
+func userTenantRoleURL(c gophercloud.Client, tenantID, userID, roleID string) string {
 	return c.ServiceURL("tenants", tenantID, UserPath, userID, RolePath, ExtPath, roleID)
 }

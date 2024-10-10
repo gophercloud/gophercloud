@@ -26,7 +26,7 @@ func (opts ListOpts) ToRegionListQuery() (string, error) {
 }
 
 // List enumerates the Regions to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToRegionListQuery()
@@ -41,7 +41,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details on a single region, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -87,7 +87,7 @@ func (opts CreateOpts) ToRegionCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new Region.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRegionCreateMap()
 	if err != nil {
 		r.Err = err
@@ -149,7 +149,7 @@ func (opts UpdateOpts) ToRegionUpdateMap() (map[string]any, error) {
 }
 
 // Update updates an existing Region.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, regionID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, regionID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRegionUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -163,7 +163,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, regionID str
 }
 
 // Delete deletes a region.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, regionID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, regionID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, regionID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
