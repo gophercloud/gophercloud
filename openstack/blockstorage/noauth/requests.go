@@ -31,7 +31,7 @@ func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, er
 	return client, nil
 }
 
-func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string) (*gophercloud.ServiceClient, error) {
+func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string, clientTypeAliases []string) (*gophercloud.ServiceClient, error) {
 	sc := new(gophercloud.ServiceClient)
 	if eo.CinderEndpoint == "" {
 		return nil, fmt.Errorf("CinderEndpoint is required")
@@ -51,10 +51,14 @@ func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientT
 
 // NewBlockStorageNoAuthV2 creates a ServiceClient that may be used to access "noauth" v2 block storage service.
 func NewBlockStorageNoAuthV2(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "volumev2")
+	// We omit volumev3 since, while a valid alias for the block-storage service,
+	// it's clearly not valid for the v2 API
+	return initClientOpts(client, eo, "block-storage", []string{"volumev2", "block-store", "volume"})
 }
 
 // NewBlockStorageNoAuthV3 creates a ServiceClient that may be used to access "noauth" v3 block storage service.
 func NewBlockStorageNoAuthV3(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "volumev3")
+	// Like above, we omit volumev2 since, while a valid alias for the block-storage
+	// service, it's clearly not valid for the v3 API
+	return initClientOpts(client, eo, "block-storage", []string{"volumev3", "block-store", "volume"})
 }
