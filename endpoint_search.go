@@ -30,14 +30,22 @@ const (
 // package, like "openstack.NewComputeV2()".
 type EndpointOpts struct {
 	// Type [required] is the service type for the client (e.g., "compute",
-	// "object-store"). Generally, this will be supplied by the service client
-	// function, but a user-given value will be honored if provided.
+	// "object-store"), as defined by the OpenStack Service Types Authority.
+	// This will generally be supplied by the service client function, but a
+	// user-given value will be honored if provided.
 	Type string
 
 	// Name [optional] is the service name for the client (e.g., "nova") as it
 	// appears in the service catalog. Services can have the same Type but a
 	// different Name, which is why both Type and Name are sometimes needed.
 	Name string
+
+	// Aliases [optional] is the set of aliases of the service type (e.g.
+	// "volumev2"/"volumev3", "volume" and "block-store" for the
+	// "block-storage" service type), as defined by the OpenStack Service Types
+	// Authority. As with Type, this will generally be supplied by the service
+	// client function, but a user-given value will be honored if provided.
+	Aliases []string
 
 	// Region [required] is the geographic region in which the endpoint resides,
 	// generally specifying which datacenter should house your resources.
@@ -73,4 +81,8 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 	if eo.Availability == "" {
 		eo.Availability = AvailabilityPublic
 	}
+}
+
+func (eo *EndpointOpts) Types() []string {
+	return append([]string{eo.Type}, eo.Aliases...)
 }
