@@ -60,7 +60,7 @@ jobs:
           || contains(github.event.label.name, 'semver:major')
           || contains(github.event.label.name, 'semver:minor')
           || contains(github.event.label.name, 'semver:unknown')
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@e2c37e53a7d2227b61585343765f73a9ca57eda9
         with:
           message: |
             Labels `semver-major`, `semver-minor` and `semver-unknown` block
@@ -119,7 +119,7 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'semver:unknown')
           || contains(github.event.label.name, 'semver:major')
           || contains(github.event.label.name, 'semver:unknown')
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@e2c37e53a7d2227b61585343765f73a9ca57eda9
         with:
           message: |
             Labels `semver-major` and `semver-unknown` block backports to the
