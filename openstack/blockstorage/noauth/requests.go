@@ -51,10 +51,10 @@ func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientT
 
 // NewBlockStorageNoAuthV2 creates a ServiceClient that may be used to access "noauth" v2 block storage service.
 func NewBlockStorageNoAuthV2(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "volumev2")
+	return initClientOpts(client, eo, "block-storage")
 }
 
 // NewBlockStorageNoAuthV3 creates a ServiceClient that may be used to access "noauth" v3 block storage service.
 func NewBlockStorageNoAuthV3(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "volumev3")
+	return initClientOpts(client, eo, "block-storage")
 }
