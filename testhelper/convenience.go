@@ -234,6 +234,16 @@ func CheckEquals(t *testing.T, expected, actual any) {
 
 // AssertDeepEquals - like Equals - performs a comparison - but on more complex
 // structures that requires deeper inspection
+func AssertTypeEquals(t *testing.T, expected, actual any) {
+	t.Helper()
+
+	if reflect.TypeOf(expected) != reflect.TypeOf(actual) {
+		logFatal(t, fmt.Sprintf("expected %s but got %s", green(expected), yellow(actual)))
+	}
+}
+
+// AssertDeepEquals - like Equals - performs a comparison - but on more complex
+// structures that requires deeper inspection
 func AssertDeepEquals(t *testing.T, expected, actual any) {
 	t.Helper()
 

@@ -7,19 +7,20 @@
 # flags and things crash and burn *spectacularly* 🔥🔥🔥
 set -xo pipefail
 
-source $(dirname $0)/stackenv
+# shellcheck disable=SC1091
+source "$(dirname "$0")/stackenv"
 
 # ...but we can do it after the fact
 set -eu
 
 timeout="60m"
-failed=
 
 LOG_DIR=${LOG_DIR:-}
 if [[ -z "${LOG_DIR}" ]]; then
     echo "LOG_DIR not set, will set a temp directory"
     LOG_DIR=/tmp/devstack-logs
 fi
-mkdir -p ${LOG_DIR}
+mkdir -p "${LOG_DIR}"
 
-go test -v -timeout $timeout -tags "fixtures acceptance" ${PACKAGE:-./internal/acceptance/openstack/...} $@ |& tee -a ${LOG_DIR}/acceptance_tests.log
+# shellcheck disable=SC2068
+go test -v -timeout $timeout -tags "fixtures acceptance" "${PACKAGE:-./internal/acceptance/openstack/...}" $@ |& tee -a "${LOG_DIR}/acceptance_tests.log"

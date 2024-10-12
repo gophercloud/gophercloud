@@ -2,7 +2,6 @@ package testing
 
 import (
 	"net/url"
-	"reflect"
 	"testing"
 	"time"
 
@@ -167,10 +166,12 @@ func TestBuildRequestBody(t *testing.T) {
 	}
 
 	var successCases = []struct {
+		name     string
 		opts     AuthOptions
 		expected map[string]any
 	}{
 		{
+			"Password",
 			AuthOptions{
 				PasswordCredentials: &PasswordCredentials{
 					Username: "me",
@@ -187,6 +188,7 @@ func TestBuildRequestBody(t *testing.T) {
 			},
 		},
 		{
+			"Token",
 			AuthOptions{
 				TokenCredentials: &TokenCredentials{
 					ID: "1234567",
@@ -203,16 +205,20 @@ func TestBuildRequestBody(t *testing.T) {
 	}
 
 	for _, successCase := range successCases {
-		actual, err := gophercloud.BuildRequestBody(successCase.opts, "auth")
-		th.AssertNoErr(t, err)
-		th.AssertDeepEquals(t, successCase.expected, actual)
+		t.Run(successCase.name, func(t *testing.T) {
+			actual, err := gophercloud.BuildRequestBody(successCase.opts, "auth")
+			th.AssertNoErr(t, err)
+			th.AssertDeepEquals(t, successCase.expected, actual)
+		})
 	}
 
 	var failCases = []struct {
+		name     string
 		opts     AuthOptions
 		expected error
 	}{
 		{
+			"Conflicting tenant name and ID",
 			AuthOptions{
 				TenantID:   "987654321",
 				TenantName: "me",
@@ -220,6 +226,7 @@ func TestBuildRequestBody(t *testing.T) {
 			gophercloud.ErrMissingInput{},
 		},
 		{
+			"Conflicting password and token auth",
 			AuthOptions{
 				TokenCredentials: &TokenCredentials{
 					ID: "1234567",
@@ -232,6 +239,7 @@ func TestBuildRequestBody(t *testing.T) {
 			gophercloud.ErrMissingInput{},
 		},
 		{
+			"Missing Username or UserID",
 			AuthOptions{
 				PasswordCredentials: &PasswordCredentials{
 					Password: "swordfish",
@@ -240,6 +248,7 @@ func TestBuildRequestBody(t *testing.T) {
 			gophercloud.ErrMissingInput{},
 		},
 		{
+			"Missing filler fields",
 			AuthOptions{
 				PasswordCredentials: &PasswordCredentials{
 					Username: "me",
@@ -254,8 +263,10 @@ func TestBuildRequestBody(t *testing.T) {
 	}
 
 	for _, failCase := range failCases {
-		_, err := gophercloud.BuildRequestBody(failCase.opts, "auth")
-		th.AssertDeepEquals(t, reflect.TypeOf(failCase.expected), reflect.TypeOf(err))
+		t.Run(failCase.name, func(t *testing.T) {
+			_, err := gophercloud.BuildRequestBody(failCase.opts, "auth")
+			th.AssertTypeEquals(t, failCase.expected, err)
+		})
 	}
 
 	createdAt := time.Date(2018, 1, 4, 10, 00, 12, 0, time.UTC)

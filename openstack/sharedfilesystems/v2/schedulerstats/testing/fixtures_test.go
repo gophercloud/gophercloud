@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/schedulerstats"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
@@ -265,9 +265,9 @@ var (
 )
 
 func HandlePoolsListSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/scheduler-stats/pools", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/scheduler-stats/pools", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 
@@ -277,9 +277,9 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, PoolsListBody)
 
 	})
-	testhelper.Mux.HandleFunc("/scheduler-stats/pools/detail", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/scheduler-stats/pools/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 
