@@ -244,6 +244,8 @@ func TestGetContainer(t *testing.T) {
 		StoragePolicy:   "test_policy",
 		Timestamp:       1471298837.95721,
 		VersionsEnabled: true,
+		SyncKey:         "272465181849",
+		SyncTo:          "anotherContainer",
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)

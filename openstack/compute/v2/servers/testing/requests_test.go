@@ -774,6 +774,7 @@ func TestGetFaultyServer(t *testing.T) {
 
 	FaultyServer := ServerDerp
 	FaultyServer.Fault = DerpFault
+	FaultyServer.Locked = nil
 	th.CheckDeepEquals(t, FaultyServer, *actual)
 }
 
@@ -1145,6 +1146,7 @@ func TestCreateServerWithTags(t *testing.T) {
 	tags := []string{"foo", "bar"}
 	ServerDerpTags := ServerDerp
 	ServerDerpTags.Tags = &tags
+	ServerDerpTags.Locked = nil
 
 	createOpts := servers.CreateOpts{
 		Name:      "derp",
