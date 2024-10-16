@@ -68,7 +68,7 @@ type CreateOpts struct {
 	FlavorProfileId string `json:"flavor_profile_id" required:"true"`
 
 	// If the resource is available for use. The default is True.
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 }
 
 // ToFlavorCreateMap builds a request body from CreateOpts.
@@ -106,13 +106,13 @@ type UpdateOptsBuilder interface {
 // operation.
 type UpdateOpts struct {
 	// Human-readable name for the Loadbalancer. Does not have to be unique.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// Human-readable description for the Flavor.
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 
 	// If the resource is available for use.
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 }
 
 // ToFlavorUpdateMap builds a request body from UpdateOpts.

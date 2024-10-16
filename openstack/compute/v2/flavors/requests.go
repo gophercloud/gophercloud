@@ -165,7 +165,7 @@ type UpdateOpts struct {
 	// Description is a free form description of the flavor. Limited to
 	// 65535 characters in length. Only printable characters are allowed.
 	// New in version 2.55
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 }
 
 // ToFlavorUpdateMap constructs a request body from UpdateOpts.

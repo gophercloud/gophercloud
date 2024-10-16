@@ -48,7 +48,7 @@ func TestSecGroupsCRUD(t *testing.T) {
 	newName := tools.RandomString("secgroup_", 4)
 	description := ""
 	updateOpts := secgroups.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &description,
 	}
 	updatedSecurityGroup, err := secgroups.Update(context.TODO(), client, securityGroup.ID, updateOpts).Extract()
