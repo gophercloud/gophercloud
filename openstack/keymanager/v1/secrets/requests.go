@@ -128,7 +128,7 @@ func (opts ListOpts) ToSecretListQuery() (string, error) {
 }
 
 // List retrieves a list of Secrets.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToSecretListQuery()
@@ -143,7 +143,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details of a secrets.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -166,7 +166,7 @@ func (opts GetPayloadOpts) ToSecretPayloadGetParams() (map[string]string, error)
 }
 
 // GetPayload retrieves the payload of a secret.
-func GetPayload(ctx context.Context, client *gophercloud.ServiceClient, id string, opts GetPayloadOptsBuilder) (r PayloadResult) {
+func GetPayload(ctx context.Context, client gophercloud.Client, id string, opts GetPayloadOptsBuilder) (r PayloadResult) {
 	h := map[string]string{"Accept": "text/plain"}
 
 	if opts != nil {
@@ -241,7 +241,7 @@ func (opts CreateOpts) ToSecretCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new secrets.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSecretCreateMap()
 	if err != nil {
 		r.Err = err
@@ -255,7 +255,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete deletes a secrets.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -291,7 +291,7 @@ func (opts UpdateOpts) ToSecretUpdateRequest() (string, map[string]string, error
 }
 
 // Update modifies the attributes of a secrets.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	url := updateURL(client, id)
 	h := make(map[string]string)
 	var b string
@@ -319,7 +319,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // GetMetadata will list metadata for a given secret.
-func GetMetadata(ctx context.Context, client *gophercloud.ServiceClient, secretID string) (r MetadataResult) {
+func GetMetadata(ctx context.Context, client gophercloud.Client, secretID string) (r MetadataResult) {
 	resp, err := client.Get(ctx, metadataURL(client, secretID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -340,7 +340,7 @@ func (opts MetadataOpts) ToMetadataCreateMap() (map[string]any, error) {
 }
 
 // CreateMetadata will set metadata for a given secret.
-func CreateMetadata(ctx context.Context, client *gophercloud.ServiceClient, secretID string, opts CreateMetadataOptsBuilder) (r MetadataCreateResult) {
+func CreateMetadata(ctx context.Context, client gophercloud.Client, secretID string, opts CreateMetadataOptsBuilder) (r MetadataCreateResult) {
 	b, err := opts.ToMetadataCreateMap()
 	if err != nil {
 		r.Err = err
@@ -354,7 +354,7 @@ func CreateMetadata(ctx context.Context, client *gophercloud.ServiceClient, secr
 }
 
 // GetMetadatum will get a single key/value metadata from a secret.
-func GetMetadatum(ctx context.Context, client *gophercloud.ServiceClient, secretID string, key string) (r MetadatumResult) {
+func GetMetadatum(ctx context.Context, client gophercloud.Client, secretID string, key string) (r MetadatumResult) {
 	resp, err := client.Get(ctx, metadatumURL(client, secretID, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -378,7 +378,7 @@ func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]any, error) {
 }
 
 // CreateMetadatum will add a single key/value metadata to a secret.
-func CreateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, secretID string, opts CreateMetadatumOptsBuilder) (r MetadatumCreateResult) {
+func CreateMetadatum(ctx context.Context, client gophercloud.Client, secretID string, opts CreateMetadatumOptsBuilder) (r MetadatumCreateResult) {
 	b, err := opts.ToMetadatumCreateMap()
 	if err != nil {
 		r.Err = err
@@ -404,7 +404,7 @@ func (opts MetadatumOpts) ToMetadatumUpdateMap() (map[string]any, string, error)
 }
 
 // UpdateMetadatum will update a single key/value metadata to a secret.
-func UpdateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, secretID string, opts UpdateMetadatumOptsBuilder) (r MetadatumResult) {
+func UpdateMetadatum(ctx context.Context, client gophercloud.Client, secretID string, opts UpdateMetadatumOptsBuilder) (r MetadatumResult) {
 	b, key, err := opts.ToMetadatumUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -418,7 +418,7 @@ func UpdateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, sec
 }
 
 // DeleteMetadatum will delete an individual metadatum from a secret.
-func DeleteMetadatum(ctx context.Context, client *gophercloud.ServiceClient, secretID string, key string) (r MetadatumDeleteResult) {
+func DeleteMetadatum(ctx context.Context, client gophercloud.Client, secretID string, key string) (r MetadatumDeleteResult) {
 	resp, err := client.Delete(ctx, metadatumURL(client, secretID, key), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

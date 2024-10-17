@@ -34,7 +34,7 @@ func (opts ListOpts) ToServiceListQuery() (string, error) {
 }
 
 // List makes a request against the API to list services.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToServiceListQuery()

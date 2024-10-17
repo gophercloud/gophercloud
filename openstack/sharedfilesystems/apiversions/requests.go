@@ -8,14 +8,14 @@ import (
 )
 
 // List lists all the API versions available to end-users.
-func List(c *gophercloud.ServiceClient) pagination.Pager {
+func List(c gophercloud.Client) pagination.Pager {
 	return pagination.NewPager(c, listURL(c), func(r pagination.PageResult) pagination.Page {
 		return APIVersionPage{pagination.SinglePageBase(r)}
 	})
 }
 
 // Get will get a specific API version, specified by major ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, v string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, v string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, v), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

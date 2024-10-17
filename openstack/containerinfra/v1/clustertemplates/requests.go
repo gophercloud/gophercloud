@@ -49,7 +49,7 @@ func (opts CreateOpts) ToClusterCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new cluster.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToClusterCreateMap()
 	if err != nil {
 		r.Err = err
@@ -63,7 +63,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete deletes the specified cluster ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -95,7 +95,7 @@ func (opts ListOpts) ToClusterTemplateListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // cluster-templates. It accepts a ListOptsBuilder, which allows you to sort
 // the returned collection for greater efficiency.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToClusterTemplateListQuery()
@@ -110,7 +110,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves a specific cluster-template based on its unique ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -148,7 +148,7 @@ func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]any, error) {
 }
 
 // Update implements cluster updated request.
-func Update[T UpdateOptsBuilder](ctx context.Context, client *gophercloud.ServiceClient, id string, opts []T) (r UpdateResult) {
+func Update[T UpdateOptsBuilder](ctx context.Context, client gophercloud.Client, id string, opts []T) (r UpdateResult) {
 	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToClusterTemplateUpdateMap()

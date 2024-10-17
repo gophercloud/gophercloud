@@ -2,18 +2,18 @@ package hypervisors
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func hypervisorsListDetailURL(c *gophercloud.ServiceClient) string {
+func hypervisorsListDetailURL(c gophercloud.Client) string {
 	return c.ServiceURL("os-hypervisors", "detail")
 }
 
-func hypervisorsStatisticsURL(c *gophercloud.ServiceClient) string {
+func hypervisorsStatisticsURL(c gophercloud.Client) string {
 	return c.ServiceURL("os-hypervisors", "statistics")
 }
 
-func hypervisorsGetURL(c *gophercloud.ServiceClient, hypervisorID string) string {
+func hypervisorsGetURL(c gophercloud.Client, hypervisorID string) string {
 	return c.ServiceURL("os-hypervisors", hypervisorID)
 }
 
-func hypervisorsUptimeURL(c *gophercloud.ServiceClient, hypervisorID string) string {
+func hypervisorsUptimeURL(c gophercloud.Client, hypervisorID string) string {
 	return c.ServiceURL("os-hypervisors", hypervisorID, "uptime")
 }

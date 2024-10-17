@@ -50,7 +50,7 @@ func (opts CreateOpts) ToExecutionCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new execution.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToExecutionCreateMap()
 	if err != nil {
 		r.Err = err
@@ -64,14 +64,14 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 
 // Get retrieves details of a single execution.
 // Use ExtractExecution to convert its result into an Execution.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified execution.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -226,7 +226,7 @@ func (opts ListOpts) ToExecutionListQuery() (string, error) {
 
 // List performs a call to list executions.
 // You may provide options to filter the executions.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToExecutionListQuery()

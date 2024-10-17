@@ -53,7 +53,7 @@ func (opts ListOpts) ToKeyPairListQuery() (string, error) {
 }
 
 // List returns a Pager that allows you to iterate over a collection of KeyPairs.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToKeyPairListQuery()
@@ -99,7 +99,7 @@ func (opts CreateOpts) ToKeyPairCreateMap() (map[string]any, error) {
 
 // Create requests the creation of a new KeyPair on the server, or to import a
 // pre-existing keypair.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToKeyPairCreateMap()
 	if err != nil {
 		r.Err = err
@@ -132,7 +132,7 @@ func (opts GetOpts) ToKeyPairGetQuery() (string, error) {
 }
 
 // Get returns public data about a previously uploaded KeyPair.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, name string, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(client, name)
 	if opts != nil {
 		query, err := opts.ToKeyPairGetQuery()
@@ -168,7 +168,7 @@ func (opts DeleteOpts) ToKeyPairDeleteQuery() (string, error) {
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, name string, opts DeleteOptsBuilder) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, name string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, name)
 	if opts != nil {
 		query, err := opts.ToKeyPairDeleteQuery()
