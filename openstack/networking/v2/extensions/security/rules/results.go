@@ -44,6 +44,10 @@ type SecGroupRule struct {
 	// "tcp", "udp", "icmp" or an empty string.
 	Protocol string
 
+	// The remote address group ID to be associated with this security group rule.
+	// You can specify either RemoteAddressGroupID, RemoteGroupID, or RemoteIPPrefix
+	RemoteAddressGroupID string `json:"remote_address_group_id"`
+
 	// The remote group ID to be associated with this security group rule. You
 	// can specify either RemoteGroupID or RemoteIPPrefix.
 	RemoteGroupID string `json:"remote_group_id"`
