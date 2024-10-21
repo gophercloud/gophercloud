@@ -176,8 +176,8 @@ func TestCheckTag(t *testing.T) {
 
 	projectID := "966b3c7d36a24facaf20b7e458bf2192"
 	tag := "atag"
-	res := projects.CheckTag(context.TODO(), client.ServiceClient(), projectID, tag)
-	th.AssertNoErr(t, res.Err)
+	err := projects.CheckTag(context.TODO(), client.ServiceClient(), projectID, tag).ExtractErr()
+	th.AssertNoErr(t, err)
 }
 
 func TestAddTag(t *testing.T) {
@@ -187,8 +187,8 @@ func TestAddTag(t *testing.T) {
 
 	projectID := "966b3c7d36a24facaf20b7e458bf2192"
 	tag := "atag"
-	res := projects.AddTag(context.TODO(), client.ServiceClient(), projectID, tag)
-	th.AssertNoErr(t, res.Err)
+	err := projects.AddTag(context.TODO(), client.ServiceClient(), projectID, tag).ExtractErr()
+	th.AssertNoErr(t, err)
 }
 
 func TestDeleteTag(t *testing.T) {
@@ -198,6 +198,6 @@ func TestDeleteTag(t *testing.T) {
 
 	projectID := "966b3c7d36a24facaf20b7e458bf2192"
 	tag := "atag"
-	res := projects.DeleteTag(context.TODO(), client.ServiceClient(), projectID, tag)
-	th.AssertNoErr(t, res.Err)
+	err := projects.DeleteTag(context.TODO(), client.ServiceClient(), projectID, tag).ExtractErr()
+	th.AssertNoErr(t, err)
 }

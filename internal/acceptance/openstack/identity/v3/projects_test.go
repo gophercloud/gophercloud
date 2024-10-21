@@ -412,4 +412,8 @@ func TestTagCRUD(t *testing.T) {
 
 	err = projects.DeleteTag(context.TODO(), client, projectMain.ID, "Tag1").ExtractErr()
 	th.AssertNoErr(t, err)
+
+	err = projects.CheckTag(context.TODO(), client, projectMain.ID, "Tag1").ExtractErr()
+
+	th.AssertNoErr(t, err)
 }

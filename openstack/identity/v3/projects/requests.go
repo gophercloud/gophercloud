@@ -290,7 +290,7 @@ func ModifyTags(ctx context.Context, client *gophercloud.ServiceClient, projectI
 	return
 }
 
-// DeleteTag deletes a tag from a project.
+// DeleteTag deletes all tags from a project.
 func DeleteTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteTagsResult) {
 	resp, err := client.Delete(ctx, deleteTagsURL(client, projectID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
@@ -302,7 +302,7 @@ func DeleteTags(ctx context.Context, client *gophercloud.ServiceClient, projectI
 // CheckTag checks if a a tag exists in a project.
 func CheckTag(ctx context.Context, client *gophercloud.ServiceClient, projectID string, tag string) (r CheckTagResult) {
 	resp, err := client.Get(ctx, getTagURL(client, projectID, tag), nil, &gophercloud.RequestOpts{
-		OkCodes: []int{204},
+		OkCodes: []int{204, 404},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

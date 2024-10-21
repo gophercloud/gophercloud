@@ -201,14 +201,14 @@ type DeleteTagsResult struct {
 	gophercloud.ErrResult
 }
 
-// GetProjectTag is the result of a Get tag request. Call its Extract method to
+// CheckProjectTag is the result of a CheckTag request. Call its Extract method to
 // interpret it.
 type CheckTagResult struct {
 	gophercloud.ErrResult
 }
 
-// AddProjectTagResult is the result of a Delete request. Call its ExtractErr method to
-// determine if the request succeeded or failed.
+// AddTagResult is the result of an AddTag request. Call its ExtractErr method to
+// determine whether the request succeeded or failed.
 type AddTagResult struct {
 	gophercloud.ErrResult
 }
