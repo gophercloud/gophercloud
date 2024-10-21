@@ -83,7 +83,7 @@ var FirstTransferRequest = transferRequests.TransferRequest{
 	Description:     "This is a first example zone transfer request.",
 	Status:          "ACTIVE",
 	CreatedAt:       FirstTransferRequestCreatedAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
 	},
 }
@@ -102,7 +102,7 @@ var SecondTransferRequest = transferRequests.TransferRequest{
 	Status:          "ACTIVE",
 	CreatedAt:       SecondTransferRequestCreatedAt,
 	UpdatedAt:       SecondTransferRequestUpdatedAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/34c4561c-9205-4386-9df5-167436f5a222",
 	},
 }

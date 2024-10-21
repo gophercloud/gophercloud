@@ -19,7 +19,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToSecurityServiceCreateMap() (map[string]interface{}, error)
+	ToSecurityServiceCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a SecurityService. This object is
@@ -48,7 +48,7 @@ type CreateOpts struct {
 
 // ToSecurityServicesCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToSecurityServiceCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSecurityServiceCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_service")
 }
 
@@ -139,7 +139,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToSecurityServiceUpdateMap() (map[string]interface{}, error)
+	ToSecurityServiceUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing SecurityService. This object is passed
@@ -168,7 +168,7 @@ type UpdateOpts struct {
 
 // ToSecurityServiceUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToSecurityServiceUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToSecurityServiceUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "security_service")
 }
 

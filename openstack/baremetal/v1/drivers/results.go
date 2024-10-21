@@ -16,11 +16,11 @@ func (r driverResult) Extract() (*Driver, error) {
 	return &s, err
 }
 
-func (r driverResult) ExtractInto(v interface{}) error {
+func (r driverResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-func ExtractDriversInto(r pagination.Page, v interface{}) error {
+func ExtractDriversInto(r pagination.Page, v any) error {
 	return r.(DriverPage).Result.ExtractIntoSlicePtr(v, "drivers")
 }
 
@@ -127,10 +127,10 @@ type Driver struct {
 	EnabledVendorInterfaces []string `json:"enabled_vendor_interfaces"`
 
 	//A list of relative links. Includes the self and bookmark links.
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 
 	// A list of links to driver properties.
-	Properties []interface{} `json:"properties"`
+	Properties []any `json:"properties"`
 }
 
 // DriverPage abstracts the raw results of making a ListDrivers() request
@@ -177,7 +177,7 @@ type GetDriverResult struct {
 }
 
 // DriverProperties represents driver properties in the OpenStack Bare Metal API.
-type DriverProperties map[string]interface{}
+type DriverProperties map[string]any
 
 // Extract interprets any GetPropertiesResult as DriverProperties, if possible.
 func (r GetPropertiesResult) Extract() (*DriverProperties, error) {
@@ -193,7 +193,7 @@ type GetPropertiesResult struct {
 }
 
 // DiskProperties represents driver disk properties in the OpenStack Bare Metal API.
-type DiskProperties map[string]interface{}
+type DiskProperties map[string]any
 
 // Extract interprets any GetDiskPropertiesResult as DiskProperties, if possible.
 func (r GetDiskPropertiesResult) Extract() (*DiskProperties, error) {

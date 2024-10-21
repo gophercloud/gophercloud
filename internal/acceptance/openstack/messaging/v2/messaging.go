@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/messages"
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/queues"
 	"github.com/gophercloud/gophercloud/v2/pagination"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
@@ -24,7 +25,7 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 		DefaultMessageTTL:          3700,
 		DeadLetterQueueMessagesTTL: 3500,
 		MaxClaimCount:              10,
-		Extra:                      map[string]interface{}{"description": "Test Queue for Gophercloud acceptance tests."},
+		Extra:                      map[string]any{"description": "Test Queue for Gophercloud acceptance tests."},
 	}
 
 	createErr := queues.Create(context.TODO(), client, createOpts).ExtractErr()
@@ -32,7 +33,8 @@ func CreateQueue(t *testing.T, client *gophercloud.ServiceClient) (string, error
 		t.Fatalf("Unable to create Queue: %v", createErr)
 	}
 
-	GetQueue(t, client, queueName)
+	_, err := GetQueue(t, client, queueName)
+	th.AssertNoErr(t, err)
 
 	t.Logf("Created Queue: %s", queueName)
 	return queueName, nil
@@ -75,7 +77,7 @@ func CreateMessage(t *testing.T, client *gophercloud.ServiceClient, queueName st
 	createOpts := messages.BatchCreateOpts{
 		messages.CreateOpts{
 			TTL:  300,
-			Body: map[string]interface{}{"Key": tools.RandomString("ACPTTEST", 8)},
+			Body: map[string]any{"Key": tools.RandomString("ACPTTEST", 8)},
 		},
 	}
 

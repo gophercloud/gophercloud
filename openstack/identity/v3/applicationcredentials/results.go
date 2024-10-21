@@ -56,7 +56,7 @@ type ApplicationCredential struct {
 	// A list of access rules objects.
 	AccessRules []AccessRule `json:"access_rules,omitempty"`
 	// Links contains referencing links to the application credential.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 func (r *ApplicationCredential) UnmarshalJSON(b []byte) error {

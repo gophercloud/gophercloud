@@ -229,22 +229,22 @@ var (
 		Name:  "agent_ipmitool",
 		Type:  "classic",
 		Hosts: []string{"897ab1dad809"},
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/v1/drivers/agent_ipmitool",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/drivers/agent_ipmitool",
 				"rel":  "bookmark",
 			},
 		},
-		Properties: []interface{}{
-			map[string]interface{}{
+		Properties: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/v1/drivers/agent_ipmitool/properties",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/drivers/agent_ipmitool/properties",
 				"rel":  "bookmark",
 			},
@@ -255,22 +255,22 @@ var (
 		Name:  "fake",
 		Type:  "classic",
 		Hosts: []string{"897ab1dad809"},
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/v1/drivers/fake",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/drivers/fake",
 				"rel":  "bookmark",
 			},
 		},
-		Properties: []interface{}{
-			map[string]interface{}{
+		Properties: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/v1/drivers/fake/properties",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/drivers/fake/properties",
 				"rel":  "bookmark",
 			},
@@ -307,22 +307,22 @@ var (
 		EnabledRaidInterfaces:       []string{"no-raid", "agent"},
 		EnabledStorageInterfaces:    []string{"noop"},
 		EnabledVendorInterfaces:     []string{"no-vendor"},
-		Links: []interface{}{
-			map[string]interface{}{
+		Links: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/v1/drivers/ipmi",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/drivers/ipmi",
 				"rel":  "bookmark",
 			},
 		},
-		Properties: []interface{}{
-			map[string]interface{}{
+		Properties: []any{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/v1/drivers/ipmi/properties",
 				"rel":  "self",
 			},
-			map[string]interface{}{
+			map[string]any{
 				"href": "http://127.0.0.1:6385/drivers/ipmi/properties",
 				"rel":  "bookmark",
 			},
@@ -373,7 +373,9 @@ func HandleListDriversSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		fmt.Fprintf(w, ListDriversBody)
 	})

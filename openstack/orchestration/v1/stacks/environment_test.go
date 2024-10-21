@@ -49,7 +49,7 @@ func TestEnvironmentParsing(t *testing.T) {
 func TestIgnoreIfEnvironment(t *testing.T) {
 	var keyValueTests = []struct {
 		key   string
-		value interface{}
+		value any
 		out   bool
 	}{
 		{"base_url", "afksdf", true},
@@ -153,11 +153,11 @@ service_db:
 		"my_db.yaml":  fakeDBURL,
 	}
 
-	expectedParsed := map[string]interface{}{
-		"resource_registry": map[string]interface{}{
+	expectedParsed := map[string]any{
+		"resource_registry": map[string]any{
 			"My::WP::Server": fakeEnvURL,
-			"resources": map[string]interface{}{
-				"my_db_server": map[string]interface{}{
+			"resources": map[string]any{
+				"my_db_server": map[string]any{
 					"OS::DBInstance": fakeDBURL,
 				},
 			},

@@ -58,7 +58,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToQueueCreateMap() (map[string]interface{}, error)
+	ToQueueCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies the queue creation parameters.
@@ -97,11 +97,11 @@ type CreateOpts struct {
 	EnableEncryptMessages *bool `json:"_enable_encrypt_messages,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the queue.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 // ToQueueCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToQueueCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToQueueCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // update request.
 type UpdateOptsBuilder interface {
-	ToQueueUpdateMap() ([]map[string]interface{}, error)
+	ToQueueUpdateMap() ([]map[string]any, error)
 }
 
 // BatchUpdateOpts is an array of UpdateOpts.
@@ -145,9 +145,9 @@ type BatchUpdateOpts []UpdateOpts
 
 // UpdateOpts is the struct responsible for updating a property of a queue.
 type UpdateOpts struct {
-	Op    UpdateOp    `json:"op" required:"true"`
-	Path  string      `json:"path" required:"true"`
-	Value interface{} `json:"value" required:"true"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value any      `json:"value" required:"true"`
 }
 
 type UpdateOp string
@@ -159,8 +159,8 @@ const (
 )
 
 // ToQueueUpdateMap constructs a request body from UpdateOpts.
-func (opts BatchUpdateOpts) ToQueueUpdateMap() ([]map[string]interface{}, error) {
-	queuesUpdates := make([]map[string]interface{}, len(opts))
+func (opts BatchUpdateOpts) ToQueueUpdateMap() ([]map[string]any, error) {
+	queuesUpdates := make([]map[string]any, len(opts))
 	for i, queue := range opts {
 		queueMap, err := queue.ToMap()
 		if err != nil {
@@ -172,7 +172,7 @@ func (opts BatchUpdateOpts) ToQueueUpdateMap() ([]map[string]interface{}, error)
 }
 
 // ToMap constructs a request body from UpdateOpts.
-func (opts UpdateOpts) ToMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -241,11 +241,11 @@ type ShareOpts struct {
 // ShareOptsBuilder allows extensions to add additional attributes to the
 // Share request.
 type ShareOptsBuilder interface {
-	ToQueueShareMap() (map[string]interface{}, error)
+	ToQueueShareMap() (map[string]any, error)
 }
 
 // ToShareQueueMap formats a ShareOpts structure into a request body.
-func (opts ShareOpts) ToQueueShareMap() (map[string]interface{}, error) {
+func (opts ShareOpts) ToQueueShareMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -282,11 +282,11 @@ type PurgeOpts struct {
 // PurgeOptsBuilder allows extensions to add additional attributes to the
 // Purge request.
 type PurgeOptsBuilder interface {
-	ToQueuePurgeMap() (map[string]interface{}, error)
+	ToQueuePurgeMap() (map[string]any, error)
 }
 
 // ToPurgeQueueMap formats a PurgeOpts structure into a request body
-func (opts PurgeOpts) ToQueuePurgeMap() (map[string]interface{}, error) {
+func (opts PurgeOpts) ToQueuePurgeMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

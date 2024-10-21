@@ -50,10 +50,11 @@ var ExpectedCluster = clusters.Cluster{
 	UpdatedAt:          time.Date(2016, 8, 29, 6, 53, 24, 0, time.UTC),
 	UUID:               clusterUUID,
 	FloatingIPEnabled:  true,
+	MasterLBEnabled:    true,
 	FixedNetwork:       "private_network",
 	FixedSubnet:        "private_subnet",
 	HealthStatus:       "HEALTHY",
-	HealthStatusReason: map[string]interface{}{"api": "ok"},
+	HealthStatusReason: map[string]any{"api": "ok"},
 }
 
 var ExpectedCluster2 = clusters.Cluster{
@@ -85,10 +86,11 @@ var ExpectedCluster2 = clusters.Cluster{
 	UpdatedAt:          time.Date(2016, 8, 29, 6, 53, 24, 0, time.UTC),
 	UUID:               clusterUUID2,
 	FloatingIPEnabled:  true,
+	MasterLBEnabled:    true,
 	FixedNetwork:       "private_network",
 	FixedSubnet:        "private_subnet",
 	HealthStatus:       "HEALTHY",
-	HealthStatusReason: map[string]interface{}{"api": "ok"},
+	HealthStatusReason: map[string]any{"api": "ok"},
 }
 
 var ExpectedClusterUUID = clusterUUID
@@ -152,6 +154,7 @@ var ClusterGetResponse = fmt.Sprintf(`
 		"create_timeout":60,
 		"name":"k8s",
 		"floating_ip_enabled": true,
+		"master_lb_enabled": true,
 		"fixed_network": "private_network",
 		"fixed_subnet": "private_subnet",
 		"health_status": "HEALTHY",
@@ -194,6 +197,7 @@ var ClusterListResponse = fmt.Sprintf(`
 			"updated_at":"2016-08-29T06:53:24+00:00",
 			"uuid":"%s",
 			"floating_ip_enabled": true,
+			"master_lb_enabled": true,
 			"fixed_network": "private_network",
 			"fixed_subnet": "private_subnet",
 			"health_status": "HEALTHY",
@@ -232,6 +236,7 @@ var ClusterListResponse = fmt.Sprintf(`
 			"updated_at":null,
 			"uuid":"%s",
 			"floating_ip_enabled": true,
+			"master_lb_enabled": true,
 			"fixed_network": "private_network",
 			"fixed_subnet": "private_subnet",
 			"health_status": "HEALTHY",

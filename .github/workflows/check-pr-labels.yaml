@@ -1,0 +1,21 @@
+name: Ready
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - opened
+      - reopened
+      - synchronize
+      - unlabeled
+
+jobs:
+  hold:
+    if: github.event.pull_request.merged == false
+    runs-on: ubuntu-latest
+    steps:
+      - if: >
+          contains(github.event.pull_request.labels.*.name, 'hold')
+        run: 'false'
+      - if: >
+          !contains(github.event.pull_request.labels.*.name, 'hold')
+        run: 'true'

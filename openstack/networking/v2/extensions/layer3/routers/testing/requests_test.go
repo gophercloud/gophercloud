@@ -70,7 +70,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	routers.List(fake.ServiceClient(), routers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := routers.List(fake.ServiceClient(), routers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := routers.ExtractRouters(page)
 		if err != nil {
@@ -119,6 +119,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -637,7 +638,7 @@ func TestListL3Agents(t *testing.T) {
 			ResourcesSynced:  true,
 			Binary:           "neutron-l3-agent",
 			AvailabilityZone: "nova",
-			Configurations: map[string]interface{}{
+			Configurations: map[string]any{
 				"agent_mode":                   "legacy",
 				"ex_gw_ports":                  float64(2),
 				"floating_ips":                 float64(2),
@@ -653,7 +654,7 @@ func TestListL3Agents(t *testing.T) {
 			Host:               "os-ctrl-02",
 			Topic:              "l3_agent",
 			HAState:            "standby",
-			ResourceVersions:   map[string]interface{}{},
+			ResourceVersions:   map[string]any{},
 		},
 		{
 			ID:               "4541cc6c-87bc-4cee-bad2-36ca78836c91",
@@ -664,7 +665,7 @@ func TestListL3Agents(t *testing.T) {
 			ResourcesSynced:  true,
 			Binary:           "neutron-l3-agent",
 			AvailabilityZone: "nova",
-			Configurations: map[string]interface{}{
+			Configurations: map[string]any{
 				"agent_mode":                   "legacy",
 				"ex_gw_ports":                  float64(2),
 				"floating_ips":                 float64(2),
@@ -680,7 +681,7 @@ func TestListL3Agents(t *testing.T) {
 			Host:               "os-ctrl-03",
 			Topic:              "l3_agent",
 			HAState:            "active",
-			ResourceVersions:   map[string]interface{}{},
+			ResourceVersions:   map[string]any{},
 		},
 	}
 	th.CheckDeepEquals(t, expected, actual)

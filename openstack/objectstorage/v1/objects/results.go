@@ -162,7 +162,7 @@ func (r *DownloadHeader) UnmarshalJSON(b []byte) error {
 		Date              gophercloud.JSONRFC1123 `json:"Date"`
 		DeleteAt          gophercloud.JSONUnix    `json:"X-Delete-At"`
 		LastModified      gophercloud.JSONRFC1123 `json:"Last-Modified"`
-		StaticLargeObject interface{}             `json:"X-Static-Large-Object"`
+		StaticLargeObject any                     `json:"X-Static-Large-Object"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -241,7 +241,7 @@ func (r *GetHeader) UnmarshalJSON(b []byte) error {
 		Date              gophercloud.JSONRFC1123 `json:"Date"`
 		DeleteAt          gophercloud.JSONUnix    `json:"X-Delete-At"`
 		LastModified      gophercloud.JSONRFC1123 `json:"Last-Modified"`
-		StaticLargeObject interface{}             `json:"X-Static-Large-Object"`
+		StaticLargeObject any                     `json:"X-Static-Large-Object"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {

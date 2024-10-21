@@ -97,7 +97,7 @@ func TestCreateGroup(t *testing.T) {
 		Name:        "support",
 		DomainID:    "1789d1",
 		Description: "group for support users",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "support@example.com",
 		},
 	}
@@ -115,7 +115,7 @@ func TestUpdateGroup(t *testing.T) {
 	var description = "L2 Support Team"
 	updateOpts := groups.UpdateOpts{
 		Description: &description,
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "supportteam@example.com",
 		},
 	}

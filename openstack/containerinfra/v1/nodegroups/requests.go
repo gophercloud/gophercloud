@@ -69,7 +69,7 @@ func List(client *gophercloud.ServiceClient, clusterID string, opts ListOptsBuil
 }
 
 type CreateOptsBuilder interface {
-	ToNodeGroupCreateMap() (map[string]interface{}, error)
+	ToNodeGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is used to set available fields upon node group creation.
@@ -93,7 +93,7 @@ type CreateOpts struct {
 	MergeLabels *bool  `json:"merge_labels,omitempty"`
 }
 
-func (opts CreateOpts) ToNodeGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToNodeGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -113,7 +113,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, clusterID st
 }
 
 type UpdateOptsBuilder interface {
-	ToResourceUpdateMap() (map[string]interface{}, error)
+	ToResourceUpdateMap() (map[string]any, error)
 }
 
 type UpdateOp string
@@ -129,12 +129,12 @@ const (
 // Valid Ops are "add", "remove", "replace"
 // Valid Paths are "/min_node_count" and "/max_node_count"
 type UpdateOpts struct {
-	Op    UpdateOp    `json:"op" required:"true"`
-	Path  string      `json:"path" required:"true"`
-	Value interface{} `json:"value,omitempty"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value any      `json:"value,omitempty"`
 }
 
-func (opts UpdateOpts) ToResourceUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToResourceUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -143,8 +143,8 @@ func (opts UpdateOpts) ToResourceUpdateMap() (map[string]interface{}, error) {
 // one UpdateOpts can be passed at a time.
 // Use the Extract method of the returned UpdateResult to extract the
 // updated node group from the result.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []UpdateOptsBuilder) (r UpdateResult) {
-	var o []map[string]interface{}
+func Update[T UpdateOptsBuilder](ctx context.Context, client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []T) (r UpdateResult) {
+	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToResourceUpdateMap()
 		if err != nil {

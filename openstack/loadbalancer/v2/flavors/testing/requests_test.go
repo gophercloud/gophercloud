@@ -2,6 +2,8 @@ package testing
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavors"
@@ -9,6 +11,7 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/testhelper"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListFlavors(t *testing.T) {
@@ -38,6 +41,50 @@ func TestListFlavors(t *testing.T) {
 
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
+	}
+}
+
+func TestListFlavorsEnabled(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	func() {
+		testCases := []string{
+			"true",
+			"false",
+			"",
+		}
+
+		cases := 0
+		th.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("Failed to parse request form %v", err)
+			}
+			enabled := r.Form.Get("enabled")
+			if enabled != testCases[cases] {
+				t.Errorf("Expected enabled=%s got %q", testCases[cases], enabled)
+			}
+			cases++
+			fmt.Fprintf(w, `{"flavorprofiles":[]}`)
+		})
+	}()
+
+	var nilBool *bool
+	enabled := true
+	filters := []*bool{
+		&enabled,
+		new(bool),
+		nilBool,
+	}
+	for _, filter := range filters {
+		allPages, err := flavors.List(fake.ServiceClient(), flavors.ListOpts{Enabled: filter}).AllPages(context.TODO())
+		th.AssertNoErr(t, err)
+		_, err = flavors.ExtractFlavors(allPages)
+		th.AssertNoErr(t, err)
 	}
 }
 

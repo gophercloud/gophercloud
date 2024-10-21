@@ -41,7 +41,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	extensions.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := extensions.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := extensions.ExtractExtensions(page)
 		if err != nil {
@@ -53,7 +53,7 @@ func TestList(t *testing.T) {
 				Extension: common.Extension{
 					Updated:     "2013-01-20T00:00:00-00:00",
 					Name:        "Neutron Service Type Management",
-					Links:       []interface{}{},
+					Links:       []any{},
 					Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
 					Alias:       "service-type",
 					Description: "API for retrieving service providers for Neutron advanced services",
@@ -65,6 +65,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

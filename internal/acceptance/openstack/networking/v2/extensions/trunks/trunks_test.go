@@ -10,7 +10,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	v2 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/attributestags"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -22,11 +21,8 @@ func TestTrunkCRUD(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
-	if err != nil {
-		t.Skip("This test requires trunk Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "trunk")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
@@ -112,11 +108,8 @@ func TestTrunkList(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
-	if err != nil {
-		t.Skip("This test requires trunk Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "trunk")
 
 	allPages, err := trunks.List(client, nil).AllPages(context.TODO())
 	if err != nil {
@@ -139,11 +132,8 @@ func TestTrunkSubportOperation(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
-	if err != nil {
-		t.Skip("This test requires trunk Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "trunk")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
@@ -227,11 +217,8 @@ func TestTrunkTags(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	extension, err := extensions.Get(context.TODO(), client, "trunk").Extract()
-	if err != nil {
-		t.Skip("This test requires trunk Neutron extension")
-	}
-	tools.PrintResource(t, extension)
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "trunk")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
@@ -276,7 +263,7 @@ func TestTrunkTags(t *testing.T) {
 		// docs say list of tags, but it's a set e.g no duplicates
 		Tags: []string{"a", "b", "c"},
 	}
-	tags, err := attributestags.ReplaceAll(context.TODO(), client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
+	_, err = attributestags.ReplaceAll(context.TODO(), client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to set trunk tags: %v", err)
 	}
@@ -285,7 +272,7 @@ func TestTrunkTags(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to get trunk: %v", err)
 	}
-	tags = gtrunk.Tags
+	tags := gtrunk.Tags
 	sort.Strings(tags) // Ensure ordering, older OpenStack versions aren't sorted...
 	th.AssertDeepEquals(t, []string{"a", "b", "c"}, tags)
 

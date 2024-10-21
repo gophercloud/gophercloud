@@ -1,0 +1,87 @@
+name: Label PR
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  semver:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Rebase the PR against origin/github.base_ref to ensure actual API compatibility
+      run: |
+        git config --global user.email "localrebase@gophercloud.io"
+        git config --global user.name "Local rebase"
+        git rebase -i origin/${{ github.base_ref }}
+      env:
+        GIT_SEQUENCE_EDITOR: '/usr/bin/true'
+
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1'
+
+    - name: Checking Go API Compatibility
+      id: go-apidiff
+      # if semver=major, this will return RC=1, so let's ignore the failure so label
+      # can be set later. We check for actual errors in the next step.
+      continue-on-error: true
+      uses: joelanford/go-apidiff@002aa613b261e8d1547b516fb71793280f05bb78
+
+    # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
+    # a failure. Instead let's just return a failure if go-apidiff failed to run.
+    - name: Return an error if Go API Compatibility couldn't be verified
+      if: steps.go-apidiff.outcome != 'success' && steps.go-apidiff.outputs.semver-type != 'major'
+      run: exit 1
+
+    - name: Add label semver:patch
+      if: steps.go-apidiff.outputs.semver-type == 'patch'
+      run: gh pr edit "$NUMBER" --add-label "semver:patch" --remove-label "semver:major,semver:minor"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+
+    - name: Add label semver:minor
+      if: steps.go-apidiff.outputs.semver-type == 'minor'
+      run: gh pr edit "$NUMBER" --add-label "semver:minor" --remove-label "semver:major,semver:patch"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+
+    - name: Add label semver:major
+      if: steps.go-apidiff.outputs.semver-type == 'major'
+      run: gh pr edit "$NUMBER" --add-label "semver:major" --remove-label "semver:minor,semver:patch"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+
+    - name: Report failure
+      if: failure()
+      run: |
+        gh pr edit "$NUMBER" --remove-label "semver:major,semver:minor,semver:patch"
+        gh issue comment "$NUMBER" --body "$BODY"
+        exit 1
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+        BODY: >
+          Failed to assess the semver bump. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+  edits:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/labeler@v5

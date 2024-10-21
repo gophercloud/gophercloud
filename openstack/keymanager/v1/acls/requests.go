@@ -23,7 +23,7 @@ func GetSecretACL(ctx context.Context, client *gophercloud.ServiceClient, secret
 // SetOptsBuilder allows extensions to add additional parameters to the
 // Set request.
 type SetOptsBuilder interface {
-	ToACLSetMap() (map[string]interface{}, error)
+	ToACLSetMap() (map[string]any, error)
 }
 
 // SetOpt represents options to set a particular ACL type on a resource.
@@ -42,8 +42,8 @@ type SetOpt struct {
 type SetOpts []SetOpt
 
 // ToACLSetMap formats a SetOpts into a set request.
-func (opts SetOpts) ToACLSetMap() (map[string]interface{}, error) {
-	b := make(map[string]interface{})
+func (opts SetOpts) ToACLSetMap() (map[string]any, error) {
+	b := make(map[string]any)
 	for _, v := range opts {
 		m, err := gophercloud.BuildRequestBody(v, v.Type)
 		if err != nil {

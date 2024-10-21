@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/queues"
 	"github.com/gophercloud/gophercloud/v2/pagination"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestCRUDQueues(t *testing.T) {
@@ -21,9 +22,11 @@ func TestCRUDQueues(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	createdQueue, err := queues.Get(context.TODO(), client, createdQueueName).Extract()
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, createdQueue)
 	tools.PrintResource(t, createdQueue.Extra)
@@ -48,6 +51,7 @@ func TestCRUDQueues(t *testing.T) {
 	}
 
 	updatedQueue, err := GetQueue(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updateResult)
 	tools.PrintResource(t, updatedQueue)
@@ -63,9 +67,11 @@ func TestListQueues(t *testing.T) {
 	}
 
 	firstQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, firstQueueName)
 
 	secondQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, secondQueueName)
 
 	listOpts := queues.ListOpts{
@@ -86,6 +92,7 @@ func TestListQueues(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 }
 
 func TestStatQueue(t *testing.T) {
@@ -97,6 +104,7 @@ func TestStatQueue(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	queueStats, err := queues.GetStats(context.TODO(), client, createdQueueName).Extract()
@@ -139,6 +147,7 @@ func TestPurge(t *testing.T) {
 	}
 
 	queueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, queueName)
 
 	purgeOpts := queues.PurgeOpts{

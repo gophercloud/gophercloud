@@ -12,10 +12,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-var (
-	metadata = map[string]string{"gophercloud-test": "containers"}
-)
-
 func TestContainerNames(t *testing.T) {
 	for _, tc := range [...]struct {
 		name          string

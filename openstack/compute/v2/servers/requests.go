@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net"
 	"regexp"
 	"strings"
@@ -128,14 +129,14 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// SchedulerHintsCreateOptsBuilder builds the scheduler hints into a serializable format.
-type SchedulerHintsCreateOptsBuilder interface {
-	ToServerSchedulerHintsCreateMap() (map[string]interface{}, error)
+// SchedulerHintOptsBuilder builds the scheduler hints into a serializable format.
+type SchedulerHintOptsBuilder interface {
+	ToSchedulerHintsMap() (map[string]any, error)
 }
 
-// SchedulerHints represents a set of scheduling hints that are passed to the
+// SchedulerHintOpts represents a set of scheduling hints that are passed to the
 // OpenStack scheduler.
-type SchedulerHints struct {
+type SchedulerHintOpts struct {
 	// Group specifies a Server Group to place the instance in.
 	Group string
 
@@ -149,7 +150,7 @@ type SchedulerHints struct {
 
 	// Query is a conditional statement that results in compute nodes able to
 	// host the instance.
-	Query []interface{}
+	Query []any
 
 	// TargetCell specifies a cell name where the instance will be placed.
 	TargetCell string `json:"target_cell,omitempty"`
@@ -161,19 +162,19 @@ type SchedulerHints struct {
 	BuildNearHostIP string
 
 	// AdditionalProperies are arbitrary key/values that are not validated by nova.
-	AdditionalProperties map[string]interface{}
+	AdditionalProperties map[string]any
 }
 
-// ToServerSchedulerHintsMap builds the scheduler hints into a serializable format.
-func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interface{}, error) {
-	sh := make(map[string]interface{})
+// ToSchedulerHintsMap assembles a request body for scheduler hints.
+func (opts SchedulerHintOpts) ToSchedulerHintsMap() (map[string]any, error) {
+	sh := make(map[string]any)
 
 	uuidRegex, _ := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 
 	if opts.Group != "" {
 		if !uuidRegex.MatchString(opts.Group) {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.Group"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.Group"
 			err.Value = opts.Group
 			err.Info = "Group must be a UUID"
 			return nil, err
@@ -185,7 +186,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		for _, diffHost := range opts.DifferentHost {
 			if !uuidRegex.MatchString(diffHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "servers.SchedulerHints.DifferentHost"
+				err.Argument = "servers.schedulerhints.SchedulerHintOpts.DifferentHost"
 				err.Value = opts.DifferentHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -198,7 +199,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		for _, sameHost := range opts.SameHost {
 			if !uuidRegex.MatchString(sameHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Argument = "servers.SchedulerHints.SameHost"
+				err.Argument = "servers.schedulerhints.SchedulerHintOpts.SameHost"
 				err.Value = opts.SameHost
 				err.Info = "The hosts must be in UUID format."
 				return nil, err
@@ -222,7 +223,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if len(opts.Query) > 0 {
 		if len(opts.Query) < 3 {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.Query"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
 			return nil, err
@@ -232,7 +233,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		b, err := json.Marshal(opts.Query)
 		if err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.Query"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
 			return nil, err
@@ -252,7 +253,7 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 	if opts.BuildNearHostIP != "" {
 		if _, _, err := net.ParseCIDR(opts.BuildNearHostIP); err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Argument = "servers.SchedulerHints.BuildNearHostIP"
+			err.Argument = "servers.schedulerhints.SchedulerHintOpts.BuildNearHostIP"
 			err.Value = opts.BuildNearHostIP
 			err.Info = "Must be a valid subnet in the form 192.168.1.1/24"
 			return nil, err
@@ -268,7 +269,11 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		}
 	}
 
-	return sh, nil
+	if len(sh) == 0 {
+		return sh, nil
+	}
+
+	return map[string]any{"os:scheduler_hints": sh}, nil
 }
 
 // Network is used within CreateOpts to control a new server's network
@@ -427,7 +432,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToServerCreateMap() (map[string]interface{}, error)
+	ToServerCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies server creation parameters.
@@ -459,7 +464,7 @@ type CreateOpts struct {
 	// tenant.
 	// Starting with microversion 2.37 networks can also be an "auto" or "none"
 	// string.
-	Networks interface{} `json:"-"`
+	Networks any `json:"-"`
 
 	// Metadata contains key-value pairs (up to 255 bytes each) to attach to the
 	// server.
@@ -503,22 +508,17 @@ type CreateOpts struct {
 
 	// DiskConfig [optional] controls how the created server's disk is partitioned.
 	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
-
-	// SchedulerHints provides a set of hints to the scheduler.
-	SchedulerHints SchedulerHintsCreateOptsBuilder
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToServerCreateMap() (map[string]any, error) {
 	// We intentionally don't envelope the body here since we want to strip
 	// some fields out and modify others
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
-
-	delete(b, "SchedulerHints")
 
 	if opts.UserData != nil {
 		var userData string
@@ -531,9 +531,9 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 
 	if len(opts.SecurityGroups) > 0 {
-		securityGroups := make([]map[string]interface{}, len(opts.SecurityGroups))
+		securityGroups := make([]map[string]any, len(opts.SecurityGroups))
 		for i, groupName := range opts.SecurityGroups {
-			securityGroups[i] = map[string]interface{}{"name": groupName}
+			securityGroups[i] = map[string]any{"name": groupName}
 		}
 		b["security_groups"] = securityGroups
 	}
@@ -541,9 +541,9 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	switch v := opts.Networks.(type) {
 	case []Network:
 		if len(v) > 0 {
-			networks := make([]map[string]interface{}, len(v))
+			networks := make([]map[string]any, len(v))
 			for i, net := range v {
-				networks[i] = make(map[string]interface{})
+				networks[i] = make(map[string]any)
 				if net.UUID != "" {
 					networks[i]["uuid"] = net.UUID
 				}
@@ -576,34 +576,29 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 
 	// Now we do our enveloping
-	b = map[string]interface{}{"server": b}
-
-	if opts.SchedulerHints == nil {
-		return b, nil
-	}
-
-	schedulerHints, err := opts.SchedulerHints.ToServerSchedulerHintsCreateMap()
-	if err != nil {
-		return nil, err
-	}
-
-	if len(schedulerHints) == 0 {
-		return b, nil
-	}
-
-	b["os:scheduler_hints"] = schedulerHints
+	b = map[string]any{"server": b}
 
 	return b, nil
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
-	reqBody, err := opts.ToServerCreateMap()
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
+	b, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(ctx, createURL(client), reqBody, &r.Body, &gophercloud.RequestOpts{
+
+	if hintOpts != nil {
+		sh, err := hintOpts.ToSchedulerHintsMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		maps.Copy(b, sh)
+	}
+
+	resp, err := client.Post(ctx, createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -620,7 +615,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 
 // ForceDelete forces the deletion of a server.
 func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"forceDelete": ""}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"forceDelete": ""}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -637,7 +632,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // UpdateOptsBuilder allows extensions to add additional attributes to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToServerUpdateMap() (map[string]interface{}, error)
+	ToServerUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing
@@ -656,7 +651,7 @@ type UpdateOpts struct {
 }
 
 // ToServerUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToServerUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToServerUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "server")
 }
 
@@ -677,7 +672,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // ChangeAdminPassword alters the administrator or root password for a specified
 // server.
 func ChangeAdminPassword(ctx context.Context, client *gophercloud.ServiceClient, id, newPassword string) (r ActionResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"changePassword": map[string]string{
 			"adminPass": newPassword,
 		},
@@ -702,7 +697,7 @@ const (
 // RebootOptsBuilder allows extensions to add additional parameters to the
 // reboot request.
 type RebootOptsBuilder interface {
-	ToServerRebootMap() (map[string]interface{}, error)
+	ToServerRebootMap() (map[string]any, error)
 }
 
 // RebootOpts provides options to the reboot request.
@@ -712,7 +707,7 @@ type RebootOpts struct {
 }
 
 // ToServerRebootMap builds a body for the reboot request.
-func (opts RebootOpts) ToServerRebootMap() (map[string]interface{}, error) {
+func (opts RebootOpts) ToServerRebootMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "reboot")
 }
 
@@ -745,7 +740,7 @@ func Reboot(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // RebuildOptsBuilder allows extensions to provide additional parameters to the
 // rebuild request.
 type RebuildOptsBuilder interface {
-	ToServerRebuildMap() (map[string]interface{}, error)
+	ToServerRebuildMap() (map[string]any, error)
 }
 
 // RebuildOpts represents the configuration options used in a server rebuild
@@ -779,7 +774,7 @@ type RebuildOpts struct {
 }
 
 // ToServerRebuildMap formats a RebuildOpts struct into a map for use in JSON
-func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
+func (opts RebuildOpts) ToServerRebuildMap() (map[string]any, error) {
 	if opts.DiskConfig != "" && opts.DiskConfig != Auto && opts.DiskConfig != Manual {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "servers.RebuildOpts.DiskConfig"
@@ -792,7 +787,7 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	return map[string]interface{}{"rebuild": b}, nil
+	return map[string]any{"rebuild": b}, nil
 }
 
 // Rebuild will reprovision the server according to the configuration options
@@ -811,7 +806,7 @@ func Rebuild(ctx context.Context, client *gophercloud.ServiceClient, id string, 
 // ResizeOptsBuilder allows extensions to add additional parameters to the
 // resize request.
 type ResizeOptsBuilder interface {
-	ToServerResizeMap() (map[string]interface{}, error)
+	ToServerResizeMap() (map[string]any, error)
 }
 
 // ResizeOpts represents the configuration options used to control a Resize
@@ -826,7 +821,7 @@ type ResizeOpts struct {
 
 // ToServerResizeMap formats a ResizeOpts as a map that can be used as a JSON
 // request body for the Resize request.
-func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
+func (opts ResizeOpts) ToServerResizeMap() (map[string]any, error) {
 	if opts.DiskConfig != "" && opts.DiskConfig != Auto && opts.DiskConfig != Manual {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "servers.ResizeOpts.DiskConfig"
@@ -860,7 +855,7 @@ func Resize(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // ConfirmResize confirms a previous resize operation on a server.
 // See Resize() for more details.
 func ConfirmResize(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 202, 204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -870,7 +865,7 @@ func ConfirmResize(ctx context.Context, client *gophercloud.ServiceClient, id st
 // RevertResize cancels a previous resize operation on a server.
 // See Resize() for more details.
 func RevertResize(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"revertResize": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"revertResize": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -878,7 +873,7 @@ func RevertResize(ctx context.Context, client *gophercloud.ServiceClient, id str
 // ResetMetadataOptsBuilder allows extensions to add additional parameters to
 // the Reset request.
 type ResetMetadataOptsBuilder interface {
-	ToMetadataResetMap() (map[string]interface{}, error)
+	ToMetadataResetMap() (map[string]any, error)
 }
 
 // MetadataOpts is a map that contains key-value pairs.
@@ -886,14 +881,14 @@ type MetadataOpts map[string]string
 
 // ToMetadataResetMap assembles a body for a Reset request based on the contents
 // of a MetadataOpts.
-func (opts MetadataOpts) ToMetadataResetMap() (map[string]interface{}, error) {
-	return map[string]interface{}{"metadata": opts}, nil
+func (opts MetadataOpts) ToMetadataResetMap() (map[string]any, error) {
+	return map[string]any{"metadata": opts}, nil
 }
 
 // ToMetadataUpdateMap assembles a body for an Update request based on the
 // contents of a MetadataOpts.
-func (opts MetadataOpts) ToMetadataUpdateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{"metadata": opts}, nil
+func (opts MetadataOpts) ToMetadataUpdateMap() (map[string]any, error) {
+	return map[string]any{"metadata": opts}, nil
 }
 
 // ResetMetadata will create multiple new key-value pairs for the given server
@@ -924,7 +919,7 @@ func Metadata(ctx context.Context, client *gophercloud.ServiceClient, id string)
 // UpdateMetadataOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type UpdateMetadataOptsBuilder interface {
-	ToMetadataUpdateMap() (map[string]interface{}, error)
+	ToMetadataUpdateMap() (map[string]any, error)
 }
 
 // UpdateMetadata updates (or creates) all the metadata specified by opts for
@@ -946,7 +941,7 @@ func UpdateMetadata(ctx context.Context, client *gophercloud.ServiceClient, id s
 // MetadatumOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type MetadatumOptsBuilder interface {
-	ToMetadatumCreateMap() (map[string]interface{}, string, error)
+	ToMetadatumCreateMap() (map[string]any, string, error)
 }
 
 // MetadatumOpts is a map of length one that contains a key-value pair.
@@ -954,14 +949,14 @@ type MetadatumOpts map[string]string
 
 // ToMetadatumCreateMap assembles a body for a Create request based on the
 // contents of a MetadataumOpts.
-func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]interface{}, string, error) {
+func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]any, string, error) {
 	if len(opts) != 1 {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "servers.MetadatumOpts"
 		err.Info = "Must have 1 and only 1 key-value pair"
 		return nil, "", err
 	}
-	metadatum := map[string]interface{}{"meta": opts}
+	metadatum := map[string]any{"meta": opts}
 	var key string
 	for k := range metadatum["meta"].(MetadatumOpts) {
 		key = k
@@ -1019,7 +1014,7 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 // CreateImageOptsBuilder allows extensions to add additional parameters to the
 // CreateImage request.
 type CreateImageOptsBuilder interface {
-	ToServerCreateImageMap() (map[string]interface{}, error)
+	ToServerCreateImageMap() (map[string]any, error)
 }
 
 // CreateImageOpts provides options to pass to the CreateImage request.
@@ -1034,7 +1029,7 @@ type CreateImageOpts struct {
 
 // ToServerCreateImageMap formats a CreateImageOpts structure into a request
 // body.
-func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]interface{}, error) {
+func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "createImage")
 }
 
@@ -1064,7 +1059,7 @@ func GetPassword(ctx context.Context, client *gophercloud.ServiceClient, serverI
 // ShowConsoleOutputOptsBuilder is the interface types must satisfy in order to be
 // used as ShowConsoleOutput options
 type ShowConsoleOutputOptsBuilder interface {
-	ToServerShowConsoleOutputMap() (map[string]interface{}, error)
+	ToServerShowConsoleOutputMap() (map[string]any, error)
 }
 
 // ShowConsoleOutputOpts satisfies the ShowConsoleOutputOptsBuilder
@@ -1075,7 +1070,7 @@ type ShowConsoleOutputOpts struct {
 }
 
 // ToServerShowConsoleOutputMap formats a ShowConsoleOutputOpts structure into a request body.
-func (opts ShowConsoleOutputOpts) ToServerShowConsoleOutputMap() (map[string]interface{}, error) {
+func (opts ShowConsoleOutputOpts) ToServerShowConsoleOutputMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-getConsoleOutput")
 }
 
@@ -1096,7 +1091,7 @@ func ShowConsoleOutput(ctx context.Context, client *gophercloud.ServiceClient, i
 // EvacuateOptsBuilder allows extensions to add additional parameters to the
 // the Evacuate request.
 type EvacuateOptsBuilder interface {
-	ToEvacuateMap() (map[string]interface{}, error)
+	ToEvacuateMap() (map[string]any, error)
 }
 
 // EvacuateOpts specifies Evacuate action parameters.
@@ -1112,7 +1107,7 @@ type EvacuateOpts struct {
 }
 
 // ToServerGroupCreateMap constructs a request body from CreateOpts.
-func (opts EvacuateOpts) ToEvacuateMap() (map[string]interface{}, error) {
+func (opts EvacuateOpts) ToEvacuateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "evacuate")
 }
 
@@ -1132,7 +1127,7 @@ func Evacuate(ctx context.Context, client *gophercloud.ServiceClient, id string,
 
 // InjectNetworkInfo will inject the network info into a server
 func InjectNetworkInfo(ctx context.Context, client *gophercloud.ServiceClient, id string) (r InjectNetworkResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"injectNetworkInfo": nil,
 	}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, nil)
@@ -1142,21 +1137,21 @@ func InjectNetworkInfo(ctx context.Context, client *gophercloud.ServiceClient, i
 
 // Lock is the operation responsible for locking a Compute server.
 func Lock(ctx context.Context, client *gophercloud.ServiceClient, id string) (r LockResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"lock": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"lock": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Unlock is the operation responsible for unlocking a Compute server.
 func Unlock(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnlockResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"unlock": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"unlock": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Migrate will initiate a migration of the instance to another host.
 func Migrate(ctx context.Context, client *gophercloud.ServiceClient, id string) (r MigrateResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"migrate": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"migrate": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -1164,7 +1159,7 @@ func Migrate(ctx context.Context, client *gophercloud.ServiceClient, id string) 
 // LiveMigrateOptsBuilder allows extensions to add additional parameters to the
 // LiveMigrate request.
 type LiveMigrateOptsBuilder interface {
-	ToLiveMigrateMap() (map[string]interface{}, error)
+	ToLiveMigrateMap() (map[string]any, error)
 }
 
 // LiveMigrateOpts specifies parameters of live migrate action.
@@ -1185,7 +1180,7 @@ type LiveMigrateOpts struct {
 }
 
 // ToLiveMigrateMap constructs a request body from LiveMigrateOpts.
-func (opts LiveMigrateOpts) ToLiveMigrateMap() (map[string]interface{}, error) {
+func (opts LiveMigrateOpts) ToLiveMigrateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-migrateLive")
 }
 
@@ -1203,14 +1198,14 @@ func LiveMigrate(ctx context.Context, client *gophercloud.ServiceClient, id stri
 
 // Pause is the operation responsible for pausing a Compute server.
 func Pause(ctx context.Context, client *gophercloud.ServiceClient, id string) (r PauseResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"pause": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"pause": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Unpause is the operation responsible for unpausing a Compute server.
 func Unpause(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnpauseResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"unpause": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"unpause": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -1218,7 +1213,7 @@ func Unpause(ctx context.Context, client *gophercloud.ServiceClient, id string) 
 // RescueOptsBuilder is an interface that allows extensions to override the
 // default structure of a Rescue request.
 type RescueOptsBuilder interface {
-	ToServerRescueMap() (map[string]interface{}, error)
+	ToServerRescueMap() (map[string]any, error)
 }
 
 // RescueOpts represents the configuration options used to control a Rescue
@@ -1237,7 +1232,7 @@ type RescueOpts struct {
 
 // ToServerRescueMap formats a RescueOpts as a map that can be used as a JSON
 // request body for the Rescue request.
-func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
+func (opts RescueOpts) ToServerRescueMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "rescue")
 }
 
@@ -1257,14 +1252,14 @@ func Rescue(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // Unrescue instructs the provider to return the server from RESCUE mode.
 func Unrescue(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnrescueResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"unrescue": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ResetNetwork will reset the network of a server
 func ResetNetwork(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResetNetworkResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"resetNetwork": nil,
 	}
 	resp, err := client.Post(ctx, actionURL(client, id), b, nil, nil)
@@ -1285,22 +1280,22 @@ const (
 
 // ResetState will reset the state of a server
 func ResetState(ctx context.Context, client *gophercloud.ServiceClient, id string, state ServerState) (r ResetStateResult) {
-	stateMap := map[string]interface{}{"state": state}
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-resetState": stateMap}, nil, nil)
+	stateMap := map[string]any{"state": state}
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-resetState": stateMap}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Shelve is the operation responsible for shelving a Compute server.
 func Shelve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"shelve": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"shelve": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ShelveOffload is the operation responsible for Shelve-Offload a Compute server.
 func ShelveOffload(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveOffloadResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"shelveOffload": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"shelveOffload": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -1308,7 +1303,7 @@ func ShelveOffload(ctx context.Context, client *gophercloud.ServiceClient, id st
 // UnshelveOptsBuilder allows extensions to add additional parameters to the
 // Unshelve request.
 type UnshelveOptsBuilder interface {
-	ToUnshelveMap() (map[string]interface{}, error)
+	ToUnshelveMap() (map[string]any, error)
 }
 
 // UnshelveOpts specifies parameters of shelve-offload action.
@@ -1318,7 +1313,7 @@ type UnshelveOpts struct {
 	AvailabilityZone string `json:"availability_zone,omitempty"`
 }
 
-func (opts UnshelveOpts) ToUnshelveMap() (map[string]interface{}, error) {
+func (opts UnshelveOpts) ToUnshelveMap() (map[string]any, error) {
 	// Key 'availabilty_zone' is required if the unshelve action is an object
 	// i.e {"unshelve": {}} will be rejected
 	b, err := gophercloud.BuildRequestBody(opts, "unshelve")
@@ -1326,7 +1321,7 @@ func (opts UnshelveOpts) ToUnshelveMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if _, ok := b["unshelve"].(map[string]interface{})["availability_zone"]; !ok {
+	if _, ok := b["unshelve"].(map[string]any)["availability_zone"]; !ok {
 		b["unshelve"] = nil
 	}
 
@@ -1347,28 +1342,28 @@ func Unshelve(ctx context.Context, client *gophercloud.ServiceClient, id string,
 
 // Start is the operation responsible for starting a Compute server.
 func Start(ctx context.Context, client *gophercloud.ServiceClient, id string) (r StartResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-start": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-start": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Stop is the operation responsible for stopping a Compute server.
 func Stop(ctx context.Context, client *gophercloud.ServiceClient, id string) (r StopResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"os-stop": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-stop": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Suspend is the operation responsible for suspending a Compute server.
 func Suspend(ctx context.Context, client *gophercloud.ServiceClient, id string) (r SuspendResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"suspend": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"suspend": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Resume is the operation responsible for resuming a Compute server.
 func Resume(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResumeResult) {
-	resp, err := client.Post(ctx, actionURL(client, id), map[string]interface{}{"resume": nil}, nil, nil)
+	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"resume": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -59,7 +59,7 @@ type ConstraintSchema struct {
 	Range            *MinMaxConstraint `json:"range,omitempty"`
 	Length           *MinMaxConstraint `json:"length,omitempty"`
 	Modulo           *ModuloConstraint `json:"modulo,omitempty"`
-	AllowedValues    *[]interface{}    `json:"allowed_values,omitempty"`
+	AllowedValues    *[]any            `json:"allowed_values,omitempty"`
 	AllowedPattern   *string           `json:"allowed_pattern,omitempty"`
 	CustomConstraint *string           `json:"custom_constraint,omitempty"`
 }
@@ -68,7 +68,7 @@ type ConstraintSchema struct {
 type PropertySchema struct {
 	Type          PropertyType              `json:"type"`
 	Description   string                    `json:"description,omitempty"`
-	Default       interface{}               `json:"default,omitempty"`
+	Default       any                       `json:"default,omitempty"`
 	Constraints   []ConstraintSchema        `json:"constraints,omitempty"`
 	Required      bool                      `json:"required"`
 	Immutable     bool                      `json:"immutable"`
@@ -144,7 +144,7 @@ type TemplateResult struct {
 
 // Extract returns a Template object and is called after a Template get
 // operation.
-func (r TemplateResult) Extract() (template map[string]interface{}, err error) {
+func (r TemplateResult) Extract() (template map[string]any, err error) {
 	err = r.ExtractInto(&template)
 	return
 }

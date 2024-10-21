@@ -20,7 +20,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToEndpointGroupCreateMap() (map[string]interface{}, error)
+	ToEndpointGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new endpoint group
@@ -46,7 +46,7 @@ type CreateOpts struct {
 }
 
 // ToEndpointGroupCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToEndpointGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToEndpointGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "endpoint_group")
 }
 
@@ -121,7 +121,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r Del
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToEndpointGroupUpdateMap() (map[string]interface{}, error)
+	ToEndpointGroupUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating an endpoint group.
@@ -131,7 +131,7 @@ type UpdateOpts struct {
 }
 
 // ToEndpointGroupUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOpts) ToEndpointGroupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToEndpointGroupUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "endpoint_group")
 }
 

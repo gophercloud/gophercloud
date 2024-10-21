@@ -26,7 +26,7 @@ type CreateOpts struct {
 	AvailabilityZone string `json:"availability_zone,omitempty"`
 }
 
-func (opts CreateOpts) ToAggregatesCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToAggregatesCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "aggregate")
 }
 
@@ -75,7 +75,7 @@ type UpdateOpts struct {
 	AvailabilityZone string `json:"availability_zone,omitempty"`
 }
 
-func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "aggregate")
 }
 
@@ -100,7 +100,7 @@ type AddHostOpts struct {
 	Host string `json:"host" required:"true"`
 }
 
-func (opts AddHostOpts) ToAggregatesAddHostMap() (map[string]interface{}, error) {
+func (opts AddHostOpts) ToAggregatesAddHostMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "add_host")
 }
 
@@ -125,7 +125,7 @@ type RemoveHostOpts struct {
 	Host string `json:"host" required:"true"`
 }
 
-func (opts RemoveHostOpts) ToAggregatesRemoveHostMap() (map[string]interface{}, error) {
+func (opts RemoveHostOpts) ToAggregatesRemoveHostMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "remove_host")
 }
 
@@ -146,10 +146,10 @@ func RemoveHost(ctx context.Context, client *gophercloud.ServiceClient, aggregat
 }
 
 type SetMetadataOpts struct {
-	Metadata map[string]interface{} `json:"metadata" required:"true"`
+	Metadata map[string]any `json:"metadata" required:"true"`
 }
 
-func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]interface{}, error) {
+func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "set_metadata")
 }
 

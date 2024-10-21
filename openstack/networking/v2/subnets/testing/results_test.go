@@ -39,7 +39,7 @@ func TestHostRoute(t *testing.T) {
   }}
 `)
 
-	var dejson interface{}
+	var dejson any
 	err := json.Unmarshal(sejson, &dejson)
 	if err != nil {
 		t.Fatalf("%s", err)

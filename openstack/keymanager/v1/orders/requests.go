@@ -62,7 +62,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToOrderCreateMap() (map[string]interface{}, error)
+	ToOrderCreateMap() (map[string]any, error)
 }
 
 // MetaOpts represents options used for creating an order.
@@ -96,14 +96,14 @@ type CreateOpts struct {
 }
 
 // ToOrderCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToOrderCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToOrderCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Meta.Expiration != nil {
-		meta := b["meta"].(map[string]interface{})
+		meta := b["meta"].(map[string]any)
 		meta["expiration"] = opts.Meta.Expiration.Format(gophercloud.RFC3339NoZ)
 		b["meta"] = meta
 	}

@@ -34,7 +34,7 @@ var getExpectedQuotaSet = quotasets.QuotaSet{
 	Backups:            12,
 	BackupGigabytes:    13,
 	Groups:             14,
-	Extra:              make(map[string]interface{}),
+	Extra:              make(map[string]any),
 }
 
 var getUsageExpectedJSONBody = `
@@ -111,7 +111,7 @@ var fullUpdateOpts = quotasets.UpdateOpts{
 	Backups:            gophercloud.IntToPointer(12),
 	BackupGigabytes:    gophercloud.IntToPointer(13),
 	Groups:             gophercloud.IntToPointer(14),
-	Extra:              make(map[string]interface{}),
+	Extra:              make(map[string]any),
 }
 
 var fullUpdateExpectedQuotaSet = quotasets.QuotaSet{
@@ -122,7 +122,7 @@ var fullUpdateExpectedQuotaSet = quotasets.QuotaSet{
 	Backups:            12,
 	BackupGigabytes:    13,
 	Groups:             14,
-	Extra:              make(map[string]interface{}),
+	Extra:              make(map[string]any),
 }
 
 var partialUpdateExpectedJSONBody = `
@@ -144,12 +144,12 @@ var partialUpdateOpts = quotasets.UpdateOpts{
 	PerVolumeGigabytes: gophercloud.IntToPointer(0),
 	Backups:            gophercloud.IntToPointer(0),
 	BackupGigabytes:    gophercloud.IntToPointer(0),
-	Extra:              make(map[string]interface{}),
+	Extra:              make(map[string]any),
 }
 
 var partiualUpdateExpectedQuotaSet = quotasets.QuotaSet{
 	Volumes: 200,
-	Extra:   make(map[string]interface{}),
+	Extra:   make(map[string]any),
 }
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.

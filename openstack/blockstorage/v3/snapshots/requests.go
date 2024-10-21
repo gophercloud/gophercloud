@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToSnapshotCreateMap() (map[string]interface{}, error)
+	ToSnapshotCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a Snapshot. This object is passed to
@@ -26,7 +26,7 @@ type CreateOpts struct {
 
 // ToSnapshotCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSnapshotCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "snapshot")
 }
 
@@ -125,7 +125,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToSnapshotUpdateMap() (map[string]interface{}, error)
+	ToSnapshotUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing Snapshot. This object is passed
@@ -138,7 +138,7 @@ type UpdateOpts struct {
 
 // ToSnapshotUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToSnapshotUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToSnapshotUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "snapshot")
 }
 
@@ -160,19 +160,19 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // UpdateMetadataOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateMetadataOptsBuilder interface {
-	ToSnapshotUpdateMetadataMap() (map[string]interface{}, error)
+	ToSnapshotUpdateMetadataMap() (map[string]any, error)
 }
 
 // UpdateMetadataOpts contain options for updating an existing Snapshot. This
 // object is passed to the snapshots.Update function. For more information
 // about the parameters, see the Snapshot object.
 type UpdateMetadataOpts struct {
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata,omitempty"`
 }
 
 // ToSnapshotUpdateMetadataMap assembles a request body based on the contents of
 // an UpdateMetadataOpts.
-func (opts UpdateMetadataOpts) ToSnapshotUpdateMetadataMap() (map[string]interface{}, error) {
+func (opts UpdateMetadataOpts) ToSnapshotUpdateMetadataMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -195,7 +195,7 @@ func UpdateMetadata(ctx context.Context, client *gophercloud.ServiceClient, id s
 // ResetStatusOptsBuilder allows extensions to add additional parameters to the
 // ResetStatus request.
 type ResetStatusOptsBuilder interface {
-	ToSnapshotResetStatusMap() (map[string]interface{}, error)
+	ToSnapshotResetStatusMap() (map[string]any, error)
 }
 
 // ResetStatusOpts contains options for resetting a Snapshot status.
@@ -208,7 +208,7 @@ type ResetStatusOpts struct {
 
 // ToSnapshotResetStatusMap assembles a request body based on the contents of a
 // ResetStatusOpts.
-func (opts ResetStatusOpts) ToSnapshotResetStatusMap() (map[string]interface{}, error) {
+func (opts ResetStatusOpts) ToSnapshotResetStatusMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-reset_status")
 }
 
@@ -231,7 +231,7 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // UpdateStatusOptsBuilder allows extensions to add additional parameters to the
 // UpdateStatus request.
 type UpdateStatusOptsBuilder interface {
-	ToSnapshotUpdateStatusMap() (map[string]interface{}, error)
+	ToSnapshotUpdateStatusMap() (map[string]any, error)
 }
 
 // UpdateStatusOpts contains options for resetting a Snapshot status.
@@ -246,7 +246,7 @@ type UpdateStatusOpts struct {
 
 // ToSnapshotUpdateStatusMap assembles a request body based on the contents of a
 // UpdateStatusOpts.
-func (opts UpdateStatusOpts) ToSnapshotUpdateStatusMap() (map[string]interface{}, error) {
+func (opts UpdateStatusOpts) ToSnapshotUpdateStatusMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "os-update_snapshot_status")
 }
 
@@ -259,7 +259,7 @@ func UpdateStatus(ctx context.Context, client *gophercloud.ServiceClient, id str
 		return
 	}
 
-	resp, err := client.Post(ctx, resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(ctx, updateStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -269,7 +269,7 @@ func UpdateStatus(ctx context.Context, client *gophercloud.ServiceClient, id str
 // ForceDelete will delete the existing snapshot in any state. ForceDeleteResult contains only the error.
 // To extract it, call the ExtractErr method on the ForceDeleteResult.
 func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
-	b := map[string]interface{}{
+	b := map[string]any{
 		"os-force_delete": struct{}{},
 	}
 	resp, err := client.Post(ctx, forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{

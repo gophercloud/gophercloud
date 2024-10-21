@@ -247,13 +247,13 @@ var FirstUser = users.User{
 	DomainID: "default",
 	Enabled:  true,
 	ID:       "2844b2a08be147a08ef58317d6471f1f",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f",
 	},
 	Name:              "glance",
 	PasswordExpiresAt: nilTime,
 	Description:       "some description",
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email": "glance@localhost",
 	},
 }
@@ -265,17 +265,17 @@ var SecondUser = users.User{
 	DomainID:         "1789d1",
 	Enabled:          true,
 	ID:               "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/users/9fe1d3",
 	},
 	Name:              "jsmith",
 	PasswordExpiresAt: SecondUserPasswordExpiresAt,
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email": "jsmith@example.com",
 	},
-	Options: map[string]interface{}{
+	Options: map[string]any{
 		"ignore_password_expiry": true,
-		"multi_factor_auth_rules": []interface{}{
+		"multi_factor_auth_rules": []any{
 			[]string{"password", "totp"},
 			[]string{"password", "custom-auth-method"},
 		},
@@ -287,12 +287,12 @@ var SecondUserNoOptions = users.User{
 	DomainID:         "1789d1",
 	Enabled:          true,
 	ID:               "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/users/9fe1d3",
 	},
 	Name:              "jsmith",
 	PasswordExpiresAt: SecondUserPasswordExpiresAt,
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email": "jsmith@example.com",
 	},
 }
@@ -303,16 +303,16 @@ var SecondUserUpdated = users.User{
 	DomainID:         "1789d1",
 	Enabled:          false,
 	ID:               "9fe1d3",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/users/9fe1d3",
 	},
 	Name:              "jsmith",
 	PasswordExpiresAt: SecondUserPasswordExpiresAt,
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"email":           "jsmith@example.com",
 		"disabled_reason": "DDOS",
 	},
-	Options: map[string]interface{}{
+	Options: map[string]any{
 		"ignore_password_expiry": true,
 	},
 }
@@ -324,10 +324,10 @@ var FirstGroup = groups.Group{
 	Description: "Developers cleared for work on all general projects",
 	DomainID:    "1789d1",
 	ID:          "ea167b",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/groups/ea167b",
 	},
-	Extra: map[string]interface{}{
+	Extra: map[string]any{
 		"building": "Hilltop A",
 	},
 	Name: "Developers",
@@ -337,10 +337,10 @@ var SecondGroup = groups.Group{
 	Description: "Developers cleared for work on secret projects",
 	DomainID:    "1789d1",
 	ID:          "a62db1",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://example.com/identity/v3/groups/a62db1",
 	},
-	Extra: map[string]interface{}{},
+	Extra: map[string]any{},
 	Name:  "Secure Developers",
 }
 
@@ -353,8 +353,8 @@ var FirstProject = projects.Project{
 	ID:          "abcde",
 	Name:        "project 1",
 	ParentID:    "11111",
-	Extra: map[string]interface{}{
-		"links": map[string]interface{}{"self": "http://localhost:5000/identity/v3/projects/abcde"},
+	Extra: map[string]any{
+		"links": map[string]any{"self": "http://localhost:5000/identity/v3/projects/abcde"},
 	},
 }
 
@@ -365,8 +365,8 @@ var SecondProject = projects.Project{
 	ID:          "bcdef",
 	Name:        "project 2",
 	ParentID:    "22222",
-	Extra: map[string]interface{}{
-		"links": map[string]interface{}{"self": "http://localhost:5000/identity/v3/projects/bcdef"},
+	Extra: map[string]any{
+		"links": map[string]any{"self": "http://localhost:5000/identity/v3/projects/bcdef"},
 	},
 }
 

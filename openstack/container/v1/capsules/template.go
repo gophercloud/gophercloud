@@ -13,7 +13,7 @@ type Template struct {
 	// Parsed contains a parsed version of Bin. Since there are 2 different
 	// fields referring to the same value, you must be careful when accessing
 	// this filed.
-	Parsed map[string]interface{}
+	Parsed map[string]any
 }
 
 // Parse will parse the contents and then validate. The contents MUST be either JSON or YAML.

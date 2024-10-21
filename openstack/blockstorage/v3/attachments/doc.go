@@ -54,7 +54,7 @@ Example to Get Attachment
 Example to Update Attachment
 
 	opts := &attachments.UpdateOpts{
-		Connector: map[string]interface{}{
+		Connector: map[string]any{
 			"mode": "ro",
 		}
 	}

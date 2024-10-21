@@ -8,7 +8,7 @@ type PortsBindingExt struct {
 
 	// A dictionary that enables the application to pass information about
 	// functions that the Networking API provides.
-	VIFDetails map[string]interface{} `json:"binding:vif_details"`
+	VIFDetails map[string]any `json:"binding:vif_details"`
 
 	// The VIF type for the port.
 	VIFType string `json:"binding:vif_type"`
@@ -20,5 +20,5 @@ type PortsBindingExt struct {
 	// A dictionary that enables the application running on the specified
 	// host to pass and receive virtual network interface (VIF) port-specific
 	// information to the plug-in.
-	Profile map[string]interface{} `json:"binding:profile"`
+	Profile map[string]any `json:"binding:profile"`
 }

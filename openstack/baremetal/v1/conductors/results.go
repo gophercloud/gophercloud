@@ -18,11 +18,11 @@ func (r conductorResult) Extract() (*Conductor, error) {
 	return &s, err
 }
 
-func (r conductorResult) ExtractInto(v interface{}) error {
+func (r conductorResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-func ExtractConductorInto(r pagination.Page, v interface{}) error {
+func ExtractConductorInto(r pagination.Page, v any) error {
 	return r.(ConductorPage).Result.ExtractIntoSlicePtr(v, "conductors")
 }
 

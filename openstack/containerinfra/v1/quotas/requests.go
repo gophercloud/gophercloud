@@ -8,7 +8,7 @@ import (
 
 // CreateOptsBuilder Builder.
 type CreateOptsBuilder interface {
-	ToQuotaCreateMap() (map[string]interface{}, error)
+	ToQuotaCreateMap() (map[string]any, error)
 }
 
 // CreateOpts params
@@ -19,7 +19,7 @@ type CreateOpts struct {
 }
 
 // ToQuotaCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToQuotaCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToQuotaCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

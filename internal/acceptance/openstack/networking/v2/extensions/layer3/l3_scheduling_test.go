@@ -7,9 +7,8 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
-	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
+	v2 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/agents"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/routers"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -19,18 +18,16 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	_, err = extensions.Get(context.TODO(), client, "l3_agent_scheduler").Extract()
-	if err != nil {
-		t.Skip("Extension l3_agent_scheduler not present")
-	}
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "l3_agent_scheduler")
 
-	network, err := networking.CreateNetwork(t, client)
+	network, err := v2.CreateNetwork(t, client)
 	th.AssertNoErr(t, err)
-	defer networking.DeleteNetwork(t, client, network.ID)
+	defer v2.DeleteNetwork(t, client, network.ID)
 
-	subnet, err := networking.CreateSubnet(t, client, network.ID)
+	subnet, err := v2.CreateSubnet(t, client, network.ID)
 	th.AssertNoErr(t, err)
-	defer networking.DeleteSubnet(t, client, subnet.ID)
+	defer v2.DeleteSubnet(t, client, subnet.ID)
 
 	router, err := CreateRouter(t, client, network.ID)
 	th.AssertNoErr(t, err)
@@ -57,7 +54,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 
 	containsRouterFunc := func(rs []routers.Router, routerID string) bool {
 		for _, r := range rs {
-			if r.ID == router.ID {
+			if r.ID == routerID {
 				return true
 			}
 		}

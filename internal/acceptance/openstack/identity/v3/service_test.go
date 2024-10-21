@@ -48,7 +48,7 @@ func TestServicesCRUD(t *testing.T) {
 
 	createOpts := services.CreateOpts{
 		Type: "testing",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "testservice@example.com",
 		},
 	}
@@ -63,7 +63,7 @@ func TestServicesCRUD(t *testing.T) {
 
 	updateOpts := services.UpdateOpts{
 		Type: "testing2",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "Test Users",
 			"email":       "thetestservice@example.com",
 		},

@@ -5,11 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
-// commonResult is the response of a base result.
-type commonResult struct {
-	gophercloud.Result
-}
-
 // CreateResult is the response of a Create operations.
 type CreateResult struct {
 	gophercloud.Result
@@ -43,22 +38,22 @@ type GetResult struct {
 
 // Message represents a message on a queue.
 type Message struct {
-	Body     map[string]interface{} `json:"body"`
-	Age      int                    `json:"age"`
-	Href     string                 `json:"href"`
-	ID       string                 `json:"id"`
-	TTL      int                    `json:"ttl"`
-	Checksum string                 `json:"checksum"`
+	Body     map[string]any `json:"body"`
+	Age      int            `json:"age"`
+	Href     string         `json:"href"`
+	ID       string         `json:"id"`
+	TTL      int            `json:"ttl"`
+	Checksum string         `json:"checksum"`
 }
 
 // PopMessage represents a message returned from PopMessages.
 type PopMessage struct {
-	Body       map[string]interface{} `json:"body"`
-	Age        int                    `json:"age"`
-	ID         string                 `json:"id"`
-	TTL        int                    `json:"ttl"`
-	ClaimCount int                    `json:"claim_count"`
-	ClaimID    string                 `json:"claim_id"`
+	Body       map[string]any `json:"body"`
+	Age        int            `json:"age"`
+	ID         string         `json:"id"`
+	TTL        int            `json:"ttl"`
+	ClaimCount int            `json:"claim_count"`
+	ClaimID    string         `json:"claim_id"`
 }
 
 // ResourceList represents the result of creating a message.

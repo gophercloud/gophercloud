@@ -84,7 +84,9 @@ func HandleListSuccessfully(t *testing.T) {
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			r.ParseForm()
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("Failed to parse request form %v", err)
+			}
 			var output string
 			if r.Form.Get("with_description") == "true" {
 				if r.Form.Get("name") == listFilterRegex {
@@ -153,7 +155,7 @@ var GetSchemaExpected = resourcetypes.ResourceSchema{
 							Description: "The format of the local ephemeral block device.",
 							Constraints: []resourcetypes.ConstraintSchema{
 								{
-									AllowedValues: &[]interface{}{
+									AllowedValues: &[]any{
 										"ext3", "ext4", "xfs",
 									},
 								},
@@ -186,7 +188,7 @@ var GetSchemaExpected = resourcetypes.ResourceSchema{
 			Default:     "REBUILD",
 			Constraints: []resourcetypes.ConstraintSchema{
 				{
-					AllowedValues: &[]interface{}{
+					AllowedValues: &[]any{
 						"REBUILD", "REPLACE",
 					},
 				},
@@ -376,7 +378,9 @@ func HandleGenerateTemplateSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")
-			r.ParseForm()
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("Failed to parse request form %v", err)
+			}
 			if r.Form.Get("template_type") == "hot" {
 				w.WriteHeader(http.StatusOK)
 				fmt.Fprint(w, GenerateTemplateOutput)

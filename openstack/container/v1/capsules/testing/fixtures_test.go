@@ -88,41 +88,41 @@ spec:
 `
 
 // ValidJSONTemplateParsed is the expected parsed version of ValidJSONTemplate
-var ValidJSONTemplateParsed = map[string]interface{}{
+var ValidJSONTemplateParsed = map[string]any{
 	"capsuleVersion": "beta",
 	"kind":           "capsule",
-	"metadata": map[string]interface{}{
+	"metadata": map[string]any{
 		"name": "template",
 		"labels": map[string]string{
 			"app":  "web",
 			"app1": "web1",
 		},
 	},
-	"spec": map[string]interface{}{
+	"spec": map[string]any{
 		"restartPolicy": "Always",
-		"containers": []map[string]interface{}{
+		"containers": []map[string]any{
 			{
 				"image": "ubuntu",
-				"command": []interface{}{
+				"command": []any{
 					"/bin/bash",
 				},
 				"imagePullPolicy": "ifnotpresent",
 				"workDir":         "/root",
-				"ports": []interface{}{
-					map[string]interface{}{
+				"ports": []any{
+					map[string]any{
 						"name":          "nginx-port",
 						"containerPort": float64(80),
 						"hostPort":      float64(80),
 						"protocol":      "TCP",
 					},
 				},
-				"resources": map[string]interface{}{
-					"requests": map[string]interface{}{
+				"resources": map[string]any{
+					"requests": map[string]any{
 						"cpu":    float64(1),
 						"memory": float64(1024),
 					},
 				},
-				"env": map[string]interface{}{
+				"env": map[string]any{
 					"ENV1": "/usr/local/bin",
 					"ENV2": "/usr/bin",
 				},
@@ -132,41 +132,41 @@ var ValidJSONTemplateParsed = map[string]interface{}{
 }
 
 // ValidYAMLTemplateParsed is the expected parsed version of ValidYAMLTemplate
-var ValidYAMLTemplateParsed = map[string]interface{}{
+var ValidYAMLTemplateParsed = map[string]any{
 	"capsuleVersion": "beta",
 	"kind":           "capsule",
-	"metadata": map[string]interface{}{
+	"metadata": map[string]any{
 		"name": "template",
 		"labels": map[string]string{
 			"app":  "web",
 			"app1": "web1",
 		},
 	},
-	"spec": map[interface{}]interface{}{
+	"spec": map[any]any{
 		"restartPolicy": "Always",
-		"containers": []map[interface{}]interface{}{
+		"containers": []map[any]any{
 			{
 				"image": "ubuntu",
-				"command": []interface{}{
+				"command": []any{
 					"/bin/bash",
 				},
 				"imagePullPolicy": "ifnotpresent",
 				"workDir":         "/root",
-				"ports": []interface{}{
-					map[interface{}]interface{}{
+				"ports": []any{
+					map[any]any{
 						"name":          "nginx-port",
 						"containerPort": 80,
 						"hostPort":      80,
 						"protocol":      "TCP",
 					},
 				},
-				"resources": map[interface{}]interface{}{
-					"requests": map[interface{}]interface{}{
+				"resources": map[any]any{
+					"requests": map[any]any{
 						"cpu":    1,
 						"memory": 1024,
 					},
 				},
-				"env": map[interface{}]interface{}{
+				"env": map[any]any{
 					"ENV1": "/usr/local/bin",
 					"ENV2": "/usr/bin",
 				},
@@ -517,12 +517,12 @@ var ExpectedCapsule = capsules.Capsule{
 	CPU:       float64(1),
 	Memory:    "1024M",
 	MetaName:  "test",
-	Links: []interface{}{
-		map[string]interface{}{
+	Links: []any{
+		map[string]any{
 			"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
 			"rel":  "self",
 		},
-		map[string]interface{}{
+		map[string]any{
 			"href": "http://10.10.10.10/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
 			"rel":  "bookmark",
 		},
@@ -566,12 +566,12 @@ var ExpectedCapsuleV132 = capsules.CapsuleV132{
 	CPU:       float64(1),
 	Memory:    "1024M",
 	MetaName:  "test",
-	Links: []interface{}{
-		map[string]interface{}{
+	Links: []any{
+		map[string]any{
 			"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
 			"rel":  "self",
 		},
-		map[string]interface{}{
+		map[string]any{
 			"href": "http://10.10.10.10/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
 			"rel":  "bookmark",
 		},

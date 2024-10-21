@@ -44,7 +44,7 @@ type CreateOptsExt struct {
 }
 
 // ToNetworkCreateMap adds an MTU to the base network creation options.
-func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
+func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToNetworkCreateMap()
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
 		return base, nil
 	}
 
-	networkMap := base["network"].(map[string]interface{})
+	networkMap := base["network"].(map[string]any)
 	networkMap["mtu"] = opts.MTU
 
 	return base, nil
@@ -70,7 +70,7 @@ type UpdateOptsExt struct {
 }
 
 // ToNetworkUpdateMap adds an MTU to the base network uptade options.
-func (opts UpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOptsExt) ToNetworkUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToNetworkUpdateMap()
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (opts UpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, error) {
 		return base, nil
 	}
 
-	networkMap := base["network"].(map[string]interface{})
+	networkMap := base["network"].(map[string]any)
 	networkMap["mtu"] = opts.MTU
 
 	return base, nil

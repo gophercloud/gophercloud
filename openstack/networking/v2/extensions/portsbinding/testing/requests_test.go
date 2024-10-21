@@ -92,7 +92,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.HostID, "devstack")
 	th.AssertEquals(t, s.VNICType, "normal")
 	th.AssertEquals(t, s.VIFType, "ovs")
-	th.AssertDeepEquals(t, s.VIFDetails, map[string]interface{}{"port_filter": true, "ovs_hybrid_plug": true})
+	th.AssertDeepEquals(t, s.VIFDetails, map[string]any{"port_filter": true, "ovs_hybrid_plug": true})
 }
 
 func TestCreate(t *testing.T) {

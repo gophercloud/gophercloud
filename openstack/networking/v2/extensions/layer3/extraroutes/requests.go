@@ -10,7 +10,7 @@ import (
 // OptsBuilder allows extensions to add additional parameters to the Add or
 // Remove requests.
 type OptsBuilder interface {
-	ToExtraRoutesUpdateMap() (map[string]interface{}, error)
+	ToExtraRoutesUpdateMap() (map[string]any, error)
 }
 
 // Opts contains the values needed to add or remove a list og routes on a
@@ -20,7 +20,7 @@ type Opts struct {
 }
 
 // ToExtraRoutesUpdateMap builds a body based on Opts.
-func (opts Opts) ToExtraRoutesUpdateMap() (map[string]interface{}, error) {
+func (opts Opts) ToExtraRoutesUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "router")
 }
 

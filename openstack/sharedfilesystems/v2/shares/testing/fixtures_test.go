@@ -18,7 +18,11 @@ var createRequest = `{
 		"share": {
 			"name": "my_test_share",
 			"size": 1,
-			"share_proto": "NFS"
+			"share_proto": "NFS",
+                        "scheduler_hints": {
+                            "same_host": "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
+                            "different_host": "e268f4aa-d571-43dd-9ab3-f49ad06ffaef"
+                        }
 		}
 	}`
 
@@ -61,7 +65,9 @@ var createResponse = `{
 			"is_public": true,
 			"metadata": {
 				"project": "my_app",
-				"aim": "doc"
+				"aim": "doc",
+                                "__affinity_same_host": "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
+                                "__affinity_different_host": "e268f4aa-d571-43dd-9ab3-f49ad06ffaef"
 			},
 			"id": "011d21e2-fbc3-4e4a-9993-9ea223f73264",
 			"description": "My custom share London"
@@ -265,7 +271,9 @@ func MockListDetailResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("offset")
 
 		switch marker {

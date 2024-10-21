@@ -15,6 +15,10 @@ type ListOptsBuilder interface {
 
 // ListOpts allows to manage the output of the request.
 type ListOpts struct {
+	// The name of the flavor profile to filter by.
+	Name string `q:"name"`
+	// The provider name of the flavor profile to filter by.
+	ProviderName string `q:"provider_name"`
 	// The fields that you want the server to return
 	Fields []string `q:"fields"`
 }
@@ -45,7 +49,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToFlavorProfileCreateMap() (map[string]interface{}, error)
+	ToFlavorProfileCreateMap() (map[string]any, error)
 }
 
 // CreateOpts is the common options struct used in this package's Create
@@ -62,7 +66,7 @@ type CreateOpts struct {
 }
 
 // ToFlavorProfileCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToFlavorProfileCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFlavorProfileCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "flavorprofile")
 }
 
@@ -89,7 +93,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToFlavorProfileUpdateMap() (map[string]interface{}, error)
+	ToFlavorProfileUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts is the common options struct used in this package's Update
@@ -106,7 +110,7 @@ type UpdateOpts struct {
 }
 
 // ToFlavorProfileUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToFlavorProfileUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFlavorProfileUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "flavorprofile")
 	if err != nil {
 		return nil, err

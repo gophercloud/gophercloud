@@ -39,7 +39,7 @@ func TestInstanceActions(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestInstanceActionsMicroversions(t *testing.T) {
@@ -60,6 +60,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 	}
 
 	err = servers.Reboot(context.TODO(), client, server.ID, rebootOpts).ExtractErr()
+	th.AssertNoErr(t, err)
 	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +88,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	listOpts = instanceactions.ListOpts{
 		Limit:         1,
@@ -100,5 +101,5 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 	allActions, err = instanceactions.ExtractInstanceActions(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allActions), 0)
+	th.AssertEquals(t, 0, len(allActions))
 }

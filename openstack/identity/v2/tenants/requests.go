@@ -46,12 +46,12 @@ type CreateOpts struct {
 // CreateOptsBuilder enables extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToTenantCreateMap() (map[string]interface{}, error)
+	ToTenantCreateMap() (map[string]any, error)
 }
 
 // ToTenantCreateMap assembles a request body based on the contents of
 // a CreateOpts.
-func (opts CreateOpts) ToTenantCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToTenantCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "tenant")
 }
 
@@ -79,7 +79,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToTenantUpdateMap() (map[string]interface{}, error)
+	ToTenantUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing
@@ -96,7 +96,7 @@ type UpdateOpts struct {
 }
 
 // ToTenantUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToTenantUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToTenantUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "tenant")
 }
 

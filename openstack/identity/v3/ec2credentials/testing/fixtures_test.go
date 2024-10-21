@@ -90,7 +90,7 @@ var EC2Credential = ec2credentials.Credential{
 	Access:   "f741662395b249c9b8acdebf1722c5ae",
 	Secret:   "6a61eb0296034c89b49cc51dde9b40aa",
 	TrustID:  "",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://identity:5000/v3/users/2844b2a08be147a08ef58317d6471f1f/credentials/OS-EC2/f741662395b249c9b8acdebf1722c5ae",
 	},
 }
@@ -101,7 +101,7 @@ var SecondEC2Credential = ec2credentials.Credential{
 	Access:   "ad6fc85fc2df49e6b5c23d5b5bdff980",
 	Secret:   "eb233f680a204097ac329ebe8dba6d32",
 	TrustID:  "",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://identity:5000/v3/users/2844b2a08be147a08ef58317d6471f1f/credentials/OS-EC2/ad6fc85fc2df49e6b5c23d5b5bdff980",
 	},
 }

@@ -39,7 +39,7 @@ type QuotaSet struct {
 
 	// Extra is a collection of miscellaneous key/values used to set
 	// quota per volume_type
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 // UnmarshalJSON is used on QuotaSet to unmarshal extra keys that are
@@ -48,7 +48,7 @@ func (r *QuotaSet) UnmarshalJSON(b []byte) error {
 	type tmp QuotaSet
 	var s struct {
 		tmp
-		Extra map[string]interface{} `json:"extra"`
+		Extra map[string]any `json:"extra"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -56,12 +56,12 @@ func (r *QuotaSet) UnmarshalJSON(b []byte) error {
 	}
 	*r = QuotaSet(s.tmp)
 
-	var result interface{}
+	var result any
 	err = json.Unmarshal(b, &result)
 	if err != nil {
 		return err
 	}
-	if resultMap, ok := result.(map[string]interface{}); ok {
+	if resultMap, ok := result.(map[string]any); ok {
 		r.Extra = gophercloud.RemainingKeys(QuotaSet{}, resultMap)
 	}
 

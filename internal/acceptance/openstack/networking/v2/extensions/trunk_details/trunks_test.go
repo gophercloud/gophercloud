@@ -9,7 +9,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	v2 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	v2Trunks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions/trunks"
-	"github.com/gophercloud/gophercloud/v2/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunk_details"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunks"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
@@ -27,10 +26,8 @@ func TestListPortWithSubports(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	_, err = extensions.Get(context.TODO(), client, "trunk-details").Extract()
-	if err != nil {
-		t.Skip("This test requires trunk-details Neutron extension")
-	}
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "trunk-details")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
@@ -104,6 +101,7 @@ func TestListPortWithSubports(t *testing.T) {
 
 	// Test GET port with trunk details
 	err = ports.Get(context.TODO(), client, parentPort.ID).ExtractInto(&port)
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, trunk.ID, port.TrunkDetails.TrunkID)
 	th.AssertEquals(t, 2, len(port.TrunkDetails.SubPorts))
 	th.AssertDeepEquals(t, trunk_details.Subport{

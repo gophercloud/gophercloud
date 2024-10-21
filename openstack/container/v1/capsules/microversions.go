@@ -49,7 +49,7 @@ type CapsuleV132 struct {
 
 	// Links includes HTTP references to the itself, useful for passing along to
 	// other APIs that might want a capsule reference.
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 
 	// The capsule restart policy
 	RestartPolicy map[string]string `json:"restart_policy"`

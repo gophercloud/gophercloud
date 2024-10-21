@@ -64,7 +64,7 @@ var CreatedClaim = []claims.Messages{
 		Age:  57,
 		Href: fmt.Sprintf("/v2/queues/%s/messages/51db6f78c508f17ddc924357?claim_id=%s", QueueName, ClaimID),
 		TTL:  300,
-		Body: map[string]interface{}{"event": "BackupStarted"},
+		Body: map[string]any{"event": "BackupStarted"},
 	},
 }
 
@@ -77,7 +77,7 @@ var FirstClaim = claims.Claim{
 			Age:  57,
 			Href: fmt.Sprintf("/v2/queues/%s/messages/51db6f78c508f17ddc924357?claim_id=%s", QueueName, ClaimID),
 			TTL:  300,
-			Body: map[string]interface{}{"event": "BackupStarted"},
+			Body: map[string]any{"event": "BackupStarted"},
 		},
 	},
 	TTL: 50,

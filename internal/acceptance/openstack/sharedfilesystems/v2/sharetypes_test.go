@@ -74,7 +74,7 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 	}
 
 	options := sharetypes.SetExtraSpecsOpts{
-		ExtraSpecs: map[string]interface{}{"my_new_key": "my_value"},
+		ExtraSpecs: map[string]any{"my_new_key": "my_value"},
 	}
 
 	_, err = sharetypes.SetExtraSpecs(context.TODO(), client, shareType.ID, options).Extract()

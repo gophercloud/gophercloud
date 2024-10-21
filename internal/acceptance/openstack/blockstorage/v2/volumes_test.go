@@ -277,7 +277,7 @@ func TestVolumeConns(t *testing.T) {
     cv, err := volumes.Create(client, &volumes.CreateOpts{
         Size: 1,
         Name: "blockv2-volume",
-    }).Extract()
+    }, nil).Extract()
     th.AssertNoErr(t, err)
 
     defer func() {

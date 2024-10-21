@@ -8,10 +8,6 @@ const (
 	UserPath = "users"
 )
 
-func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(ExtPath, RolePath, id)
-}
-
 func rootURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(ExtPath, RolePath)
 }

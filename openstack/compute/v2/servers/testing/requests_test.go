@@ -85,7 +85,7 @@ func TestCreateServer(t *testing.T) {
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -101,7 +101,7 @@ func TestCreateServerNoNetwork(t *testing.T) {
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
 		Networks:  "none",
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -118,7 +118,7 @@ func TestCreateServers(t *testing.T) {
 		FlavorRef: "1",
 		Min:       3,
 		Max:       3,
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -136,7 +136,7 @@ func TestCreateServerWithCustomField(t *testing.T) {
 			FlavorRef: "1",
 		},
 		Foo: "bar",
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -154,7 +154,7 @@ func TestCreateServerWithMetadata(t *testing.T) {
 		Metadata: map[string]string{
 			"abc": "def",
 		},
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -170,7 +170,7 @@ func TestCreateServerWithUserdataString(t *testing.T) {
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
 		UserData:  []byte("userdata string"),
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -188,7 +188,7 @@ func TestCreateServerWithUserdataEncoded(t *testing.T) {
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
 		UserData:  []byte(encoded),
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -204,7 +204,7 @@ func TestCreateServerWithHostname(t *testing.T) {
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
 		Hostname:  "derp.local",
-	}).Extract()
+	}, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
@@ -629,8 +629,8 @@ func TestCreateServerWithBFVAttachExistingVolumeWithTag(t *testing.T) {
 	th.CheckJSONEquals(t, ExpectedImageAndExistingVolumeWithTagRequest, actual)
 }
 
-func TestCreateServerWithSchedulerHints(t *testing.T) {
-	schedulerHints := servers.SchedulerHints{
+func TestCreateSchedulerHints(t *testing.T) {
+	opts := servers.SchedulerHintOpts{
 		Group: "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
 		DifferentHost: []string{
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
@@ -640,30 +640,18 @@ func TestCreateServerWithSchedulerHints(t *testing.T) {
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
 			"8c19174f-4220-44f0-824a-cd1eeef10287",
 		},
-		Query:      []interface{}{"=", "$free_ram_mb", "1024"},
+		Query:      []any{"=", "$free_ram_mb", "1024"},
 		TargetCell: "foobar",
 		DifferentCell: []string{
 			"bazbar",
 			"barbaz",
 		},
 		BuildNearHostIP:      "192.168.1.1/24",
-		AdditionalProperties: map[string]interface{}{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
-	}
-
-	opts := servers.CreateOpts{
-		Name:           "createdserver",
-		ImageRef:       "asdfasdfasdf",
-		FlavorRef:      "performance1-1",
-		SchedulerHints: schedulerHints,
+		AdditionalProperties: map[string]any{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
 	}
 
 	expected := `
 		{
-			"server": {
-				"name": "createdserver",
-				"imageRef": "asdfasdfasdf",
-				"flavorRef": "performance1-1"
-			},
 			"os:scheduler_hints": {
 				"group": "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
 				"different_host": [
@@ -686,13 +674,13 @@ func TestCreateServerWithSchedulerHints(t *testing.T) {
 			}
 		}
 	`
-	actual, err := opts.ToServerCreateMap()
+	actual, err := opts.ToSchedulerHintsMap()
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, expected, actual)
 }
 
-func TestCreateServerWithComplexSchedulerHints(t *testing.T) {
-	schedulerHints := servers.SchedulerHints{
+func TestCreateComplexSchedulerHints(t *testing.T) {
+	opts := servers.SchedulerHintOpts{
 		Group: "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
 		DifferentHost: []string{
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
@@ -702,30 +690,18 @@ func TestCreateServerWithComplexSchedulerHints(t *testing.T) {
 			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
 			"8c19174f-4220-44f0-824a-cd1eeef10287",
 		},
-		Query:      []interface{}{"and", []string{"=", "$free_ram_mb", "1024"}, []string{"=", "$free_disk_mb", "204800"}},
+		Query:      []any{"and", []string{"=", "$free_ram_mb", "1024"}, []string{"=", "$free_disk_mb", "204800"}},
 		TargetCell: "foobar",
 		DifferentCell: []string{
 			"bazbar",
 			"barbaz",
 		},
 		BuildNearHostIP:      "192.168.1.1/24",
-		AdditionalProperties: map[string]interface{}{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
-	}
-
-	opts := servers.CreateOpts{
-		Name:           "createdserver",
-		ImageRef:       "asdfasdfasdf",
-		FlavorRef:      "performance1-1",
-		SchedulerHints: schedulerHints,
+		AdditionalProperties: map[string]any{"reservation": "a0cf03a5-d921-4877-bb5c-86d26cf818e1"},
 	}
 
 	expected := `
 		{
-			"server": {
-				"name": "createdserver",
-				"imageRef": "asdfasdfasdf",
-				"flavorRef": "performance1-1"
-			},
 			"os:scheduler_hints": {
 				"group": "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
 				"different_host": [
@@ -748,7 +724,7 @@ func TestCreateServerWithComplexSchedulerHints(t *testing.T) {
 			}
 		}
 	`
-	actual, err := opts.ToServerCreateMap()
+	actual, err := opts.ToSchedulerHintsMap()
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, expected, actual)
 }
@@ -1176,7 +1152,7 @@ func TestCreateServerWithTags(t *testing.T) {
 		FlavorRef: "1",
 		Tags:      tags,
 	}
-	res := servers.Create(context.TODO(), c, createOpts)
+	res := servers.Create(context.TODO(), c, createOpts, nil)
 	th.AssertNoErr(t, res.Err)
 	actualServer, err := res.Extract()
 	th.AssertNoErr(t, err)

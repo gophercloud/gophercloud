@@ -153,7 +153,7 @@ var ExampleConfigWithValues = configurations.Config{
 	ID:                   "005a8bb7-a8df-40ee-b0b7-fc144641abc2",
 	Name:                 "example-configuration-name",
 	Updated:              timeVal,
-	Values: map[string]interface{}{
+	Values: map[string]any{
 		"collation_server": "latin1_swedish_ci",
 		"connect_timeout":  float64(120),
 	},

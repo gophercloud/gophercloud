@@ -96,7 +96,7 @@ type Agent struct {
 
 	// Configurations is a configuration specific key/value pairs that are
 	// determined by the agent binary and type.
-	Configurations map[string]interface{} `json:"configurations"`
+	Configurations map[string]any `json:"configurations"`
 
 	// CreatedAt is a creation timestamp.
 	CreatedAt time.Time `json:"-"`

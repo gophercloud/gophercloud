@@ -45,7 +45,7 @@ func TestServersCreateDestroy(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -93,12 +93,12 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, created)
 
-	th.AssertEquals(t, created.AvailabilityZone, "nova")
-	th.AssertEquals(t, int(created.PowerState), servers.RUNNING)
-	th.AssertEquals(t, created.TaskState, "")
-	th.AssertEquals(t, created.VmState, "active")
-	th.AssertEquals(t, created.LaunchedAt.IsZero(), false)
-	th.AssertEquals(t, created.TerminatedAt.IsZero(), true)
+	th.AssertEquals(t, "nova", created.AvailabilityZone)
+	th.AssertEquals(t, servers.RUNNING, int(created.PowerState))
+	th.AssertEquals(t, "", created.TaskState)
+	th.AssertEquals(t, "active", created.VmState)
+	th.AssertEquals(t, false, created.LaunchedAt.IsZero())
+	th.AssertEquals(t, true, created.TerminatedAt.IsZero())
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
@@ -139,7 +139,7 @@ func TestServersUpdate(t *testing.T) {
 	updated, err := servers.Update(context.TODO(), client, server.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.ID, server.ID)
+	th.AssertEquals(t, server.ID, updated.ID)
 
 	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
 		latest, err := servers.Get(ctx, client, updated.ID).Extract()
@@ -149,6 +149,7 @@ func TestServersUpdate(t *testing.T) {
 
 		return latest.Name == alternateName, nil
 	})
+	th.AssertNoErr(t, err)
 }
 
 func TestServersMetadata(t *testing.T) {
@@ -306,7 +307,7 @@ func TestServersActionRebuild(t *testing.T) {
 	rebuilt, err := servers.Rebuild(context.TODO(), client, server.ID, rebuildOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, rebuilt.ID, server.ID)
+	th.AssertEquals(t, server.ID, rebuilt.ID)
 
 	if err = WaitForComputeStatus(client, rebuilt, "REBUILD"); err != nil {
 		t.Fatal(err)
@@ -331,7 +332,8 @@ func TestServersActionResizeConfirm(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to resize server %s", server.ID)
-	ResizeServer(t, client, server)
+	err = ResizeServer(t, client, server)
+	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to confirm resize for server %s", server.ID)
 	if res := servers.ConfirmResize(context.TODO(), client, server.ID); res.Err != nil {
@@ -345,7 +347,7 @@ func TestServersActionResizeConfirm(t *testing.T) {
 	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, server.Flavor["id"], choices.FlavorIDResize)
+	th.AssertEquals(t, choices.FlavorIDResize, server.Flavor["id"])
 }
 
 func TestServersActionResizeRevert(t *testing.T) {
@@ -362,7 +364,8 @@ func TestServersActionResizeRevert(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to resize server %s", server.ID)
-	ResizeServer(t, client, server)
+	err = ResizeServer(t, client, server)
+	th.AssertNoErr(t, err)
 
 	t.Logf("Attempting to revert resize for server %s", server.ID)
 	if res := servers.RevertResize(context.TODO(), client, server.ID); res.Err != nil {
@@ -376,7 +379,7 @@ func TestServersActionResizeRevert(t *testing.T) {
 	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, server.Flavor["id"], choices.FlavorID)
+	th.AssertEquals(t, choices.FlavorID, server.Flavor["id"])
 }
 
 func TestServersActionPause(t *testing.T) {
@@ -444,7 +447,7 @@ func TestServersActionLock(t *testing.T) {
 
 	t.Logf("Attempting to delete locked server %s", server.ID)
 	err = servers.Delete(context.TODO(), client, server.ID).ExtractErr()
-	th.AssertEquals(t, err != nil, true)
+	th.AssertEquals(t, true, err != nil)
 
 	t.Logf("Attempting to unlock server %s", server.ID)
 	err = servers.Unlock(context.TODO(), client, server.ID).ExtractErr()
@@ -562,13 +565,13 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 
 	t.Logf("Server With Extended Attributes: %#v", created)
 
-	th.AssertEquals(t, *created.ReservationID != "", true)
-	th.AssertEquals(t, *created.LaunchIndex, 0)
-	th.AssertEquals(t, *created.RAMDiskID == "", true)
-	th.AssertEquals(t, *created.KernelID == "", true)
-	th.AssertEquals(t, *created.Hostname != "", true)
-	th.AssertEquals(t, *created.RootDeviceName != "", true)
-	th.AssertEquals(t, created.Userdata == nil, true)
+	th.AssertEquals(t, true, *created.ReservationID != "")
+	th.AssertEquals(t, 0, *created.LaunchIndex)
+	th.AssertEquals(t, true, *created.RAMDiskID == "")
+	th.AssertEquals(t, true, *created.KernelID == "")
+	th.AssertEquals(t, true, *created.Hostname != "")
+	th.AssertEquals(t, true, *created.RootDeviceName != "")
+	th.AssertEquals(t, true, created.Userdata == nil)
 }
 
 func TestServerNoNetworkCreateDestroy(t *testing.T) {
@@ -601,7 +604,7 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)

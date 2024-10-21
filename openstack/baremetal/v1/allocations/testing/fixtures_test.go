@@ -103,7 +103,7 @@ var (
 		Traits:         []string{"foo"},
 		Extra:          map[string]string{},
 		CreatedAt:      createdAt,
-		Links:          []interface{}{map[string]interface{}{"href": "http://127.0.0.1:6385/v1/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "self"}, map[string]interface{}{"href": "http://127.0.0.1:6385/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "bookmark"}},
+		Links:          []any{map[string]any{"href": "http://127.0.0.1:6385/v1/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "self"}, map[string]any{"href": "http://127.0.0.1:6385/allocations/5344a3e2-978a-444e-990a-cbf47c62ef88", "rel": "bookmark"}},
 	}
 )
 
@@ -113,7 +113,9 @@ func HandleAllocationListSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		marker := r.Form.Get("marker")
 		switch marker {

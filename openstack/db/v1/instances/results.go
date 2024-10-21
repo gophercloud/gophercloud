@@ -232,5 +232,5 @@ type IsRootEnabledResult struct {
 
 // Extract is used to extract the data from a IsRootEnabledResult.
 func (r IsRootEnabledResult) Extract() (bool, error) {
-	return r.Body.(map[string]interface{})["rootEnabled"] == true, r.Err
+	return r.Body.(map[string]any)["rootEnabled"] == true, r.Err
 }

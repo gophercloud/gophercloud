@@ -82,7 +82,7 @@ func TestBuildQueryString(t *testing.T) {
 	}
 	th.CheckDeepEquals(t, expected, actual)
 
-	_, err = gophercloud.BuildQueryString(map[string]interface{}{"Number": 4})
+	_, err = gophercloud.BuildQueryString(map[string]any{"Number": 4})
 	if err == nil {
 		t.Errorf("Expected error: 'Options type is not a struct'")
 	}
@@ -111,7 +111,7 @@ func TestBuildHeaders(t *testing.T) {
 		t.Errorf("Expected error: 'Required header not set'")
 	}
 
-	_, err = gophercloud.BuildHeaders(map[string]interface{}{"Number": 4})
+	_, err = gophercloud.BuildHeaders(map[string]any{"Number": 4})
 	if err == nil {
 		t.Errorf("Expected error: 'Options type is not a struct'")
 	}
@@ -168,7 +168,7 @@ func TestBuildRequestBody(t *testing.T) {
 
 	var successCases = []struct {
 		opts     AuthOptions
-		expected map[string]interface{}
+		expected map[string]any
 	}{
 		{
 			AuthOptions{
@@ -177,9 +177,9 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			map[string]interface{}{
-				"auth": map[string]interface{}{
-					"passwordCredentials": map[string]interface{}{
+			map[string]any{
+				"auth": map[string]any{
+					"passwordCredentials": map[string]any{
 						"password": "swordfish",
 						"username": "me",
 					},
@@ -192,9 +192,9 @@ func TestBuildRequestBody(t *testing.T) {
 					ID: "1234567",
 				},
 			},
-			map[string]interface{}{
-				"auth": map[string]interface{}{
-					"token": map[string]interface{}{
+			map[string]any{
+				"auth": map[string]any{
+					"token": map[string]any{
 						"id": "1234567",
 					},
 				},
@@ -267,7 +267,7 @@ func TestBuildRequestBody(t *testing.T) {
 		CreatedAt: &createdAt,
 	}
 
-	expectedComplexFields := map[string]interface{}{
+	expectedComplexFields := map[string]any{
 		"username": "jdoe",
 	}
 

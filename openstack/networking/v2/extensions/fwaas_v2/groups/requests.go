@@ -69,7 +69,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a particular firewall group based on its unique ID.
 func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = c.Get(ctx, resourceURL(c, id), &r.Body, nil)
+	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -78,7 +79,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-	ToFirewallGroupCreateMap() (map[string]interface{}, error)
+	ToFirewallGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains all the values needed to create a new firewall group.
@@ -96,7 +97,7 @@ type CreateOpts struct {
 }
 
 // ToFirewallGroupCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToFirewallGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFirewallGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_group")
 }
 
@@ -107,7 +108,8 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(ctx, rootURL(c), b, &r.Body, nil)
+	resp, err := c.Post(ctx, rootURL(c), b, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -116,7 +118,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type UpdateOptsBuilder interface {
-	ToFirewallGroupUpdateMap() (map[string]interface{}, error)
+	ToFirewallGroupUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating a firewall group.
@@ -131,7 +133,7 @@ type UpdateOpts struct {
 }
 
 // ToFirewallGroupUpdateMap casts a UpdateOpts struct to a map.
-func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "firewall_group")
 }
 
@@ -142,9 +144,10 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -165,9 +168,10 @@ func RemoveIngressPolicy(ctx context.Context, c *gophercloud.ServiceClient, id s
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -181,14 +185,16 @@ func RemoveEgressPolicy(ctx context.Context, c *gophercloud.ServiceClient, id st
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete will permanently delete a particular firewall group based on its unique ID.
 func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = c.Delete(ctx, resourceURL(c, id), nil)
+	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

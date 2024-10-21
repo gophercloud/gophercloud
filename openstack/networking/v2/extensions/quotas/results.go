@@ -148,7 +148,7 @@ func (q *QuotaDetail) UnmarshalJSON(b []byte) error {
 	type tmp QuotaDetail
 	var s struct {
 		tmp
-		Reserved interface{} `json:"reserved"`
+		Reserved any `json:"reserved"`
 	}
 
 	err := json.Unmarshal(b, &s)

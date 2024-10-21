@@ -74,9 +74,11 @@ func TestTransferRequestAccept(t *testing.T) {
 
 	// Create transfers request to new tenant
 	transferRequest, err := CreateTransferRequest(t, client, zone, project.ID)
+	th.AssertNoErr(t, err)
 
 	// Accept Zone Transfer Request
 	transferAccept, err := CreateTransferAccept(t, client, transferRequest.ID, transferRequest.Key)
+	th.AssertNoErr(t, err)
 
 	allTransferAcceptsPages, err := transferAccepts.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)

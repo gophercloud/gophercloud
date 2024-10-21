@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToTrunkCreateMap() (map[string]interface{}, error)
+	ToTrunkCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents the attributes used when creating a new trunk.
@@ -25,7 +25,7 @@ type CreateOpts struct {
 }
 
 // ToTrunkCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToTrunkCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToTrunkCreateMap() (map[string]any, error) {
 	if opts.Subports == nil {
 		opts.Subports = []Subport{}
 	}
@@ -115,7 +115,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 }
 
 type UpdateOptsBuilder interface {
-	ToTrunkUpdateMap() (map[string]interface{}, error)
+	ToTrunkUpdateMap() (map[string]any, error)
 }
 
 type UpdateOpts struct {
@@ -124,7 +124,7 @@ type UpdateOpts struct {
 	Description  *string `json:"description,omitempty"`
 }
 
-func (opts UpdateOpts) ToTrunkUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToTrunkUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "trunk")
 }
 
@@ -154,10 +154,10 @@ type AddSubportsOpts struct {
 }
 
 type AddSubportsOptsBuilder interface {
-	ToTrunkAddSubportsMap() (map[string]interface{}, error)
+	ToTrunkAddSubportsMap() (map[string]any, error)
 }
 
-func (opts AddSubportsOpts) ToTrunkAddSubportsMap() (map[string]interface{}, error) {
+func (opts AddSubportsOpts) ToTrunkAddSubportsMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -183,10 +183,10 @@ type RemoveSubportsOpts struct {
 }
 
 type RemoveSubportsOptsBuilder interface {
-	ToTrunkRemoveSubportsMap() (map[string]interface{}, error)
+	ToTrunkRemoveSubportsMap() (map[string]any, error)
 }
 
-func (opts RemoveSubportsOpts) ToTrunkRemoveSubportsMap() (map[string]interface{}, error) {
+func (opts RemoveSubportsOpts) ToTrunkRemoveSubportsMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

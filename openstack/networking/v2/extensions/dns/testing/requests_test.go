@@ -74,8 +74,7 @@ func TestPortList(t *testing.T) {
 		},
 	}
 
-	var listOptsBuilder ports.ListOptsBuilder
-	listOptsBuilder = dns.PortListOptsExt{
+	listOptsBuilder := dns.PortListOptsExt{
 		ListOptsBuilder: ports.ListOpts{},
 		DNSName:         "test-port",
 	}

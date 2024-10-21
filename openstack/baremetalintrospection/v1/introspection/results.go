@@ -21,13 +21,13 @@ func (r introspectionResult) Extract() (*Introspection, error) {
 }
 
 // ExtractInto will extract a response body into an Introspection struct.
-func (r introspectionResult) ExtractInto(v interface{}) error {
+func (r introspectionResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
 // ExtractIntrospectionsInto will extract a collection of introspectResult pages into a
 // slice of Introspection entities.
-func ExtractIntrospectionsInto(r pagination.Page, v interface{}) error {
+func ExtractIntrospectionsInto(r pagination.Page, v any) error {
 	return r.(IntrospectionPage).Result.ExtractIntoSlicePtr(v, "introspection")
 }
 
@@ -68,7 +68,7 @@ type Introspection struct {
 	FinishedAt time.Time `json:"-"`
 
 	// Link to the introspection URL
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 }
 
 // IsEmpty returns true if a page contains no Introspection results.
@@ -182,11 +182,11 @@ type Data struct {
 // Sub Types defined under Data and deeper in the structure
 
 type BaseInterfaceType struct {
-	ClientID      string                 `json:"client_id"`
-	IP            string                 `json:"ip"`
-	MAC           string                 `json:"mac"`
-	PXE           bool                   `json:"pxe"`
-	LLDPProcessed map[string]interface{} `json:"lldp_processed"`
+	ClientID      string         `json:"client_id"`
+	IP            string         `json:"ip"`
+	MAC           string         `json:"mac"`
+	PXE           bool           `json:"pxe"`
+	LLDPProcessed map[string]any `json:"lldp_processed"`
 }
 
 // Extract interprets any IntrospectionDataResult as IntrospectionData, if possible.

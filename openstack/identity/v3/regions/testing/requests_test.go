@@ -62,7 +62,7 @@ func TestCreateRegion(t *testing.T) {
 	createOpts := regions.CreateOpts{
 		ID:          "RegionOne-West",
 		Description: "West sub-region of RegionOne",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "westsupport@example.com",
 		},
 		ParentRegionID: "RegionOne",
@@ -86,7 +86,7 @@ func TestUpdateRegion(t *testing.T) {
 			// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
 			// The following lines should be uncommented once the fix is merged.
 
-			Extra: map[string]interface{}{
+			Extra: map[string]any{
 				"email": "1stwestsupport@example.com",
 			},
 		*/

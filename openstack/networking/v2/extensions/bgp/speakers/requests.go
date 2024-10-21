@@ -34,11 +34,11 @@ type CreateOpts struct {
 
 // CreateOptsBuilder declare a function that build CreateOpts into a Create request body.
 type CreateOptsBuilder interface {
-	ToSpeakerCreateMap() (map[string]interface{}, error)
+	ToSpeakerCreateMap() (map[string]any, error)
 }
 
 // ToSpeakerCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToSpeakerCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToSpeakerCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, jroot)
 }
 
@@ -69,14 +69,14 @@ type UpdateOpts struct {
 }
 
 // ToSpeakerUpdateMap build a request body from UpdateOpts
-func (opts UpdateOpts) ToSpeakerUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToSpeakerUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, jroot)
 }
 
 // UpdateOptsBuilder allow the extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToSpeakerUpdateMap() (map[string]interface{}, error)
+	ToSpeakerUpdateMap() (map[string]any, error)
 }
 
 // Update accepts a UpdateOpts and update the BGP Speaker.
@@ -100,11 +100,11 @@ type AddBGPPeerOpts struct {
 
 // AddBGPPeerOptsBuilder declare a funtion that encode AddBGPPeerOpts into a request body
 type AddBGPPeerOptsBuilder interface {
-	ToBGPSpeakerAddBGPPeerMap() (map[string]interface{}, error)
+	ToBGPSpeakerAddBGPPeerMap() (map[string]any, error)
 }
 
 // ToBGPSpeakerAddBGPPeerMap build a request body from AddBGPPeerOpts
-func (opts AddBGPPeerOpts) ToBGPSpeakerAddBGPPeerMap() (map[string]interface{}, error) {
+func (opts AddBGPPeerOpts) ToBGPSpeakerAddBGPPeerMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -127,11 +127,11 @@ type RemoveBGPPeerOpts AddBGPPeerOpts
 
 // RemoveBGPPeerOptsBuilder declare a funtion that encode RemoveBGPPeerOpts into a request body
 type RemoveBGPPeerOptsBuilder interface {
-	ToBGPSpeakerRemoveBGPPeerMap() (map[string]interface{}, error)
+	ToBGPSpeakerRemoveBGPPeerMap() (map[string]any, error)
 }
 
 // ToBGPSpeakerRemoveBGPPeerMap build a request body from RemoveBGPPeerOpts
-func (opts RemoveBGPPeerOpts) ToBGPSpeakerRemoveBGPPeerMap() (map[string]interface{}, error) {
+func (opts RemoveBGPPeerOpts) ToBGPSpeakerRemoveBGPPeerMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -142,7 +142,7 @@ func RemoveBGPPeer(ctx context.Context, c *gophercloud.ServiceClient, bgpSpeaker
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(ctx, removeBGPPeerURL(c, bgpSpeakerID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, removeBGPPeerURL(c, bgpSpeakerID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -159,7 +159,7 @@ func GetAdvertisedRoutes(c *gophercloud.ServiceClient, bgpSpeakerID string) pagi
 
 // AddGatewayNetworkOptsBuilder declare a function that build AddGatewayNetworkOpts into a request body.
 type AddGatewayNetworkOptsBuilder interface {
-	ToBGPSpeakerAddGatewayNetworkMap() (map[string]interface{}, error)
+	ToBGPSpeakerAddGatewayNetworkMap() (map[string]any, error)
 }
 
 // AddGatewayNetworkOpts represents the data that would be PUT to the endpoint
@@ -169,7 +169,7 @@ type AddGatewayNetworkOpts struct {
 }
 
 // ToBGPSpeakerAddGatewayNetworkMap implements the function
-func (opts AddGatewayNetworkOpts) ToBGPSpeakerAddGatewayNetworkMap() (map[string]interface{}, error) {
+func (opts AddGatewayNetworkOpts) ToBGPSpeakerAddGatewayNetworkMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -189,14 +189,14 @@ func AddGatewayNetwork(ctx context.Context, c *gophercloud.ServiceClient, bgpSpe
 
 // RemoveGatewayNetworkOptsBuilder declare a function that build RemoveGatewayNetworkOpts into a request body.
 type RemoveGatewayNetworkOptsBuilder interface {
-	ToBGPSpeakerRemoveGatewayNetworkMap() (map[string]interface{}, error)
+	ToBGPSpeakerRemoveGatewayNetworkMap() (map[string]any, error)
 }
 
 // RemoveGatewayNetworkOpts represent the data that would be PUT to the endpoint
 type RemoveGatewayNetworkOpts AddGatewayNetworkOpts
 
 // ToBGPSpeakerRemoveGatewayNetworkMap implement the function
-func (opts RemoveGatewayNetworkOpts) ToBGPSpeakerRemoveGatewayNetworkMap() (map[string]interface{}, error) {
+func (opts RemoveGatewayNetworkOpts) ToBGPSpeakerRemoveGatewayNetworkMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -207,7 +207,7 @@ func RemoveGatewayNetwork(ctx context.Context, c *gophercloud.ServiceClient, bgp
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(ctx, removeGatewayNetworkURL(c, bgpSpeakerID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(ctx, removeGatewayNetworkURL(c, bgpSpeakerID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

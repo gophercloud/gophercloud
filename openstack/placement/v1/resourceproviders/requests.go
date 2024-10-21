@@ -64,7 +64,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToResourceProviderCreateMap() (map[string]interface{}, error)
+	ToResourceProviderCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents options used to create a resource provider.
@@ -77,7 +77,7 @@ type CreateOpts struct {
 }
 
 // ToResourceProviderCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToResourceProviderCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToResourceProviderCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, resourceProviderID s
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToResourceProviderUpdateMap() (map[string]interface{}, error)
+	ToResourceProviderUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options used to update a resource provider.
@@ -133,7 +133,7 @@ type UpdateOpts struct {
 }
 
 // ToResourceProviderUpdateMap constructs a request body from UpdateOpts.
-func (opts UpdateOpts) ToResourceProviderUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToResourceProviderUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

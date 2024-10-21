@@ -63,7 +63,7 @@ func TestRegionsCRUD(t *testing.T) {
 	createOpts := regions.CreateOpts{
 		ID:          "testregion",
 		Description: "Region for testing",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "testregion@example.com",
 		},
 	}
@@ -84,7 +84,7 @@ func TestRegionsCRUD(t *testing.T) {
 			// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
 			// The following lines should be uncommented once the fix is merged.
 
-			Extra: map[string]interface{}{
+			Extra: map[string]any{
 				"email": "testregionA@example.com",
 			},
 		*/

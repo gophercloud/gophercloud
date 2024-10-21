@@ -83,7 +83,7 @@ type Policy struct {
 	RevisionNumber int `json:"revision_number"`
 
 	// Rules represents QoS rules of the policy.
-	Rules []map[string]interface{} `json:"rules"`
+	Rules []map[string]any `json:"rules"`
 
 	// Tags optionally set via extensions/attributestags
 	Tags []string `json:"tags"`
@@ -126,6 +126,6 @@ func ExtractPolicies(r pagination.Page) ([]Policy, error) {
 }
 
 // ExtractPoliciesInto extracts the elements into a slice of RBAC Policy structs.
-func ExtractPolicysInto(r pagination.Page, v interface{}) error {
+func ExtractPolicysInto(r pagination.Page, v any) error {
 	return r.(PolicyPage).Result.ExtractIntoSlicePtr(v, "policies")
 }

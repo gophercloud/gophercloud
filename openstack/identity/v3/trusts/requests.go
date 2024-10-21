@@ -11,7 +11,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToTrustCreateMap() (map[string]interface{}, error)
+	ToTrustCreateMap() (map[string]any, error)
 }
 
 // CreateOpts provides options used to create a new trust.
@@ -45,7 +45,7 @@ type CreateOpts struct {
 }
 
 // ToTrustCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToTrustCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToTrustCreateMap() (map[string]any, error) {
 	parent := "trust"
 	b, err := gophercloud.BuildRequestBody(opts, parent)
 	if err != nil {
@@ -53,7 +53,7 @@ func (opts CreateOpts) ToTrustCreateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.ExpiresAt != nil {
-		if v, ok := b[parent].(map[string]interface{}); ok {
+		if v, ok := b[parent].(map[string]any); ok {
 			v["expires_at"] = opts.ExpiresAt.Format(gophercloud.RFC3339Milli)
 		}
 	}

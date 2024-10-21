@@ -14,13 +14,13 @@ type PortCreateOptsExt struct {
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
-func (opts PortCreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) {
+func (opts PortCreateOptsExt) ToPortCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToPortCreateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	if opts.PortSecurityEnabled != nil {
 		port["port_security_enabled"] = &opts.PortSecurityEnabled
@@ -38,13 +38,13 @@ type PortUpdateOptsExt struct {
 }
 
 // ToPortUpdateMap casts a UpdateOpts struct to a map.
-func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) {
+func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToPortUpdateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	if opts.PortSecurityEnabled != nil {
 		port["port_security_enabled"] = &opts.PortSecurityEnabled
@@ -63,13 +63,13 @@ type NetworkCreateOptsExt struct {
 }
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
-func (opts NetworkCreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
+func (opts NetworkCreateOptsExt) ToNetworkCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToNetworkCreateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	network := base["network"].(map[string]interface{})
+	network := base["network"].(map[string]any)
 
 	if opts.PortSecurityEnabled != nil {
 		network["port_security_enabled"] = &opts.PortSecurityEnabled
@@ -88,13 +88,13 @@ type NetworkUpdateOptsExt struct {
 }
 
 // ToNetworkUpdateMap casts a UpdateOpts struct to a map.
-func (opts NetworkUpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, error) {
+func (opts NetworkUpdateOptsExt) ToNetworkUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToNetworkUpdateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	network := base["network"].(map[string]interface{})
+	network := base["network"].(map[string]any)
 
 	if opts.PortSecurityEnabled != nil {
 		network["port_security_enabled"] = &opts.PortSecurityEnabled

@@ -241,7 +241,10 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 	if _, err := io.Copy(hash, readSeeker); err != nil {
 		return nil, nil, "", err
 	}
-	readSeeker.Seek(0, io.SeekStart)
+	_, err = readSeeker.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, nil, "", err
+	}
 
 	h["ETag"] = fmt.Sprintf("%x", hash.Sum(nil))
 
@@ -593,10 +596,7 @@ func CreateTempURL(ctx context.Context, c *gophercloud.ServiceClient, containerN
 	if err != nil {
 		return "", err
 	}
-	urlToBeSigned, err := tempURL(c, containerName, objectName)
-	if err != nil {
-		return "", err
-	}
+	urlToBeSigned := tempURL(c, containerName, objectName)
 
 	if opts.Split == "" {
 		opts.Split = "/v1/"

@@ -55,7 +55,7 @@ func List(client *gophercloud.ServiceClient, queueName string, opts ListOptsBuil
 
 // CreateOptsBuilder Builder.
 type CreateOptsBuilder interface {
-	ToMessageCreateMap() (map[string]interface{}, error)
+	ToMessageCreateMap() (map[string]any, error)
 }
 
 // BatchCreateOpts is an array of CreateOpts.
@@ -71,12 +71,12 @@ type CreateOpts struct {
 	Delay int `json:"delay,omitempty"`
 
 	// Body specifies an arbitrary document that constitutes the body of the message being sent.
-	Body map[string]interface{} `json:"body" required:"true"`
+	Body map[string]any `json:"body" required:"true"`
 }
 
 // ToMessageCreateMap constructs a request body from BatchCreateOpts.
-func (opts BatchCreateOpts) ToMessageCreateMap() (map[string]interface{}, error) {
-	messages := make([]map[string]interface{}, len(opts))
+func (opts BatchCreateOpts) ToMessageCreateMap() (map[string]any, error) {
+	messages := make([]map[string]any, len(opts))
 	for i, message := range opts {
 		messageMap, err := message.ToMap()
 		if err != nil {
@@ -84,11 +84,11 @@ func (opts BatchCreateOpts) ToMessageCreateMap() (map[string]interface{}, error)
 		}
 		messages[i] = messageMap
 	}
-	return map[string]interface{}{"messages": messages}, nil
+	return map[string]any{"messages": messages}, nil
 }
 
 // ToMap constructs a request body from UpdateOpts.
-func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

@@ -39,12 +39,12 @@ type CreateOpts CommonOpts
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToUserCreateMap() (map[string]interface{}, error)
+	ToUserCreateMap() (map[string]any, error)
 }
 
 // ToUserCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToUserCreateMap() (map[string]any, error) {
 	if opts.Name == "" && opts.Username == "" {
 		err := gophercloud.ErrMissingInput{}
 		err.Argument = "users.CreateOpts.Name/users.CreateOpts.Username"
@@ -78,7 +78,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToUserUpdateMap() (map[string]interface{}, error)
+	ToUserUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an
@@ -86,7 +86,7 @@ type UpdateOptsBuilder interface {
 type UpdateOpts CommonOpts
 
 // ToUserUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToUserUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToUserUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "user")
 }
 

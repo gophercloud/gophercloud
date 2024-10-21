@@ -13,8 +13,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-const tokenID = "blerb"
-
 func TestListFlavors(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -24,7 +22,9 @@ func TestListFlavors(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":

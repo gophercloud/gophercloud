@@ -17,7 +17,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 
 // CreateOptsBuilder is a top-level interface which renders a JSON map.
 type CreateOptsBuilder interface {
-	ToConfigCreateMap() (map[string]interface{}, error)
+	ToConfigCreateMap() (map[string]any, error)
 }
 
 // DatastoreOpts is the primary options struct for creating and modifying
@@ -36,7 +36,7 @@ type CreateOpts struct {
 	// A map of user-defined configuration settings that will define
 	// how each associated datastore works. Each key/value pair is specific to a
 	// datastore type.
-	Values map[string]interface{} `json:"values" required:"true"`
+	Values map[string]any `json:"values" required:"true"`
 	// Associates the configuration group with a particular datastore.
 	Datastore *DatastoreOpts `json:"datastore,omitempty"`
 	// A human-readable explanation for the group.
@@ -44,7 +44,7 @@ type CreateOpts struct {
 }
 
 // ToConfigCreateMap casts a CreateOpts struct into a JSON map.
-func (opts CreateOpts) ToConfigCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToConfigCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "configuration")
 }
 
@@ -70,7 +70,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, configID string
 // UpdateOptsBuilder is the top-level interface for casting update options into
 // JSON maps.
 type UpdateOptsBuilder interface {
-	ToConfigUpdateMap() (map[string]interface{}, error)
+	ToConfigUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts is the struct responsible for modifying existing configurations.
@@ -80,7 +80,7 @@ type UpdateOpts struct {
 	// A map of user-defined configuration settings that will define
 	// how each associated datastore works. Each key/value pair is specific to a
 	// datastore type.
-	Values map[string]interface{} `json:"values,omitempty"`
+	Values map[string]any `json:"values,omitempty"`
 	// Associates the configuration group with a particular datastore.
 	Datastore *DatastoreOpts `json:"datastore,omitempty"`
 	// A human-readable explanation for the group.
@@ -88,7 +88,7 @@ type UpdateOpts struct {
 }
 
 // ToConfigUpdateMap will cast an UpdateOpts struct into a JSON map.
-func (opts UpdateOpts) ToConfigUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToConfigUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "configuration")
 }
 

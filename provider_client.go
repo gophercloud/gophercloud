@@ -13,7 +13,7 @@ import (
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
 const (
-	DefaultUserAgent         = "gophercloud/v2-unreleased"
+	DefaultUserAgent         = "gophercloud/v3.0.0-UNRELEASED"
 	DefaultMaxBackoffRetries = 60
 )
 
@@ -311,13 +311,13 @@ type RequestOpts struct {
 	// JSONBody, if provided, will be encoded as JSON and used as the body of the HTTP request. The
 	// content type of the request will default to "application/json" unless overridden by MoreHeaders.
 	// It's an error to specify both a JSONBody and a RawBody.
-	JSONBody interface{}
+	JSONBody any
 	// RawBody contains an io.Reader that will be consumed by the request directly. No content-type
 	// will be set unless one is provided explicitly by MoreHeaders.
 	RawBody io.Reader
 	// JSONResponse, if provided, will be populated with the contents of the response body parsed as
 	// JSON.
-	JSONResponse interface{}
+	JSONResponse any
 	// OkCodes contains a list of numeric HTTP status codes that should be interpreted as success. If
 	// the response has a different code, an error will be returned.
 	OkCodes []int
@@ -470,21 +470,23 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 				}
 				if options.RawBody != nil {
 					if seeker, ok := options.RawBody.(io.Seeker); ok {
-						seeker.Seek(0, 0)
+						if _, err := seeker.Seek(0, 0); err != nil {
+							return nil, err
+						}
 					}
 				}
 				state.hasReauthenticated = true
 				resp, err = client.doRequest(ctx, method, url, options, state)
 				if err != nil {
-					switch err.(type) {
+					switch e := err.(type) {
 					case *ErrUnexpectedResponseCode:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err.(*ErrUnexpectedResponseCode)
-						return nil, e
+						err := &ErrErrorAfterReauthentication{}
+						err.ErrOriginal = e
+						return nil, err
 					default:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
-						return nil, e
+						err := &ErrErrorAfterReauthentication{}
+						err.ErrOriginal = e
+						return nil, err
 					}
 				}
 				return resp, nil

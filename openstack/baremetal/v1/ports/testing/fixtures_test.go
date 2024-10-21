@@ -146,12 +146,12 @@ var (
 		NodeUUID:            "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
 		Address:             "52:54:00:4d:87:e6",
 		PXEEnabled:          true,
-		LocalLinkConnection: map[string]interface{}{},
-		InternalInfo:        map[string]interface{}{},
-		Extra:               map[string]interface{}{},
+		LocalLinkConnection: map[string]any{},
+		InternalInfo:        map[string]any{},
+		Extra:               map[string]any{},
 		CreatedAt:           fooCreated,
 		UpdatedAt:           fooUpdated,
-		Links:               []interface{}{map[string]interface{}{"href": "http://192.168.0.8/baremetal/v1/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", "rel": "self"}, map[string]interface{}{"href": "http://192.168.0.8/baremetal/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", "rel": "bookmark"}},
+		Links:               []any{map[string]any{"href": "http://192.168.0.8/baremetal/v1/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", "rel": "self"}, map[string]any{"href": "http://192.168.0.8/baremetal/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", "rel": "bookmark"}},
 	}
 
 	PortBar = ports.Port{
@@ -159,12 +159,12 @@ var (
 		NodeUUID:            "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
 		Address:             "52:54:00:0a:af:d1",
 		PXEEnabled:          true,
-		LocalLinkConnection: map[string]interface{}{},
-		InternalInfo:        map[string]interface{}{},
-		Extra:               map[string]interface{}{},
+		LocalLinkConnection: map[string]any{},
+		InternalInfo:        map[string]any{},
+		Extra:               map[string]any{},
 		CreatedAt:           BarCreated,
 		UpdatedAt:           BarUpdated,
-		Links:               []interface{}{map[string]interface{}{"href": "http://192.168.0.8/baremetal/v1/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7", "rel": "self"}, map[string]interface{}{"rel": "bookmark", "href": "http://192.168.0.8/baremetal/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7"}},
+		Links:               []any{map[string]any{"href": "http://192.168.0.8/baremetal/v1/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7", "rel": "self"}, map[string]any{"rel": "bookmark", "href": "http://192.168.0.8/baremetal/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7"}},
 	}
 )
 
@@ -174,7 +174,9 @@ func HandlePortListSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		marker := r.Form.Get("marker")
 		switch marker {
@@ -195,7 +197,9 @@ func HandlePortListDetailSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		fmt.Fprintf(w, PortListDetailBody)
 	})

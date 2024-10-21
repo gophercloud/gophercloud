@@ -145,7 +145,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // CreateOptsBuilder allows extensions to add parameters to the Create request.
 type CreateOptsBuilder interface {
 	// Returns value that can be passed to json.Marshal
-	ToImageCreateMap() (map[string]interface{}, error)
+	ToImageCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents options used to create an image.
@@ -192,7 +192,7 @@ type CreateOpts struct {
 
 // ToImageCreateMap assembles a request body based on the contents of
 // a CreateOpts.
-func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToImageCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -253,7 +253,7 @@ type UpdateOptsBuilder interface {
 	// returns value implementing json.Marshaler which when marshaled matches
 	// the patch schema:
 	// http://specs.openstack.org/openstack/glance-specs/specs/api/v2/http-patch-image-api-v2.html
-	ToImageUpdateMap() ([]interface{}, error)
+	ToImageUpdateMap() ([]any, error)
 }
 
 // UpdateOpts implements UpdateOpts
@@ -261,8 +261,8 @@ type UpdateOpts []Patch
 
 // ToImageUpdateMap assembles a request body based on the contents of
 // UpdateOpts.
-func (opts UpdateOpts) ToImageUpdateMap() ([]interface{}, error) {
-	m := make([]interface{}, len(opts))
+func (opts UpdateOpts) ToImageUpdateMap() ([]any, error) {
+	m := make([]any, len(opts))
 	for i, patch := range opts {
 		patchJSON := patch.ToImagePatchMap()
 		m[i] = patchJSON
@@ -273,7 +273,7 @@ func (opts UpdateOpts) ToImageUpdateMap() ([]interface{}, error) {
 // Patch represents a single update to an existing image. Multiple updates
 // to an image can be submitted at the same time.
 type Patch interface {
-	ToImagePatchMap() map[string]interface{}
+	ToImagePatchMap() map[string]any
 }
 
 // UpdateVisibility represents an updated visibility property request.
@@ -282,8 +282,8 @@ type UpdateVisibility struct {
 }
 
 // ToImagePatchMap assembles a request body based on UpdateVisibility.
-func (r UpdateVisibility) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r UpdateVisibility) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/visibility",
 		"value": r.Visibility,
@@ -296,8 +296,8 @@ type ReplaceImageHidden struct {
 }
 
 // ToImagePatchMap assembles a request body based on ReplaceImageHidden.
-func (r ReplaceImageHidden) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageHidden) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/os_hidden",
 		"value": r.NewHidden,
@@ -310,8 +310,8 @@ type ReplaceImageName struct {
 }
 
 // ToImagePatchMap assembles a request body based on ReplaceImageName.
-func (r ReplaceImageName) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageName) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/name",
 		"value": r.NewName,
@@ -324,8 +324,8 @@ type ReplaceImageChecksum struct {
 }
 
 // ReplaceImageChecksum assembles a request body based on ReplaceImageChecksum.
-func (r ReplaceImageChecksum) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageChecksum) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/checksum",
 		"value": r.Checksum,
@@ -338,8 +338,8 @@ type ReplaceImageTags struct {
 }
 
 // ToImagePatchMap assembles a request body based on ReplaceImageTags.
-func (r ReplaceImageTags) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageTags) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/tags",
 		"value": r.NewTags,
@@ -352,8 +352,8 @@ type ReplaceImageMinDisk struct {
 }
 
 // ToImagePatchMap assembles a request body based on ReplaceImageTags.
-func (r ReplaceImageMinDisk) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageMinDisk) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/min_disk",
 		"value": r.NewMinDisk,
@@ -366,8 +366,8 @@ type ReplaceImageMinRam struct {
 }
 
 // ToImagePatchMap assembles a request body based on ReplaceImageTags.
-func (r ReplaceImageMinRam) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageMinRam) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/min_ram",
 		"value": r.NewMinRam,
@@ -380,8 +380,8 @@ type ReplaceImageProtected struct {
 }
 
 // ToImagePatchMap assembles a request body based on ReplaceImageProtected
-func (r ReplaceImageProtected) ToImagePatchMap() map[string]interface{} {
-	return map[string]interface{}{
+func (r ReplaceImageProtected) ToImagePatchMap() map[string]any {
+	return map[string]any{
 		"op":    "replace",
 		"path":  "/protected",
 		"value": r.NewProtected,
@@ -405,8 +405,8 @@ type UpdateImageProperty struct {
 }
 
 // ToImagePatchMap assembles a request body based on UpdateImageProperty.
-func (r UpdateImageProperty) ToImagePatchMap() map[string]interface{} {
-	updateMap := map[string]interface{}{
+func (r UpdateImageProperty) ToImagePatchMap() map[string]any {
+	updateMap := map[string]any{
 		"op":   r.Op,
 		"path": fmt.Sprintf("/%s", r.Name),
 	}

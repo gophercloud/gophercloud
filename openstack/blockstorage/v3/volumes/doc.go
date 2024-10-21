@@ -6,7 +6,7 @@ a time.
 
 Example of creating Volume B on a Different Host than Volume A
 
-	schedulerHints := volumes.SchedulerHints{
+	schedulerHintOpts := volumes.SchedulerHintCreateOpts{
 		DifferentHost: []string{
 			"volume-a-uuid",
 		}
@@ -15,17 +15,16 @@ Example of creating Volume B on a Different Host than Volume A
 	createOpts := volumes.CreateOpts{
 		Name:           "volume_b",
 		Size:           10,
-		SchedulerHints: schedulerHints,
 	}
 
-	volume, err := volumes.Create(context.TODO(), computeClient, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), computeClient, createOpts, schedulerHintOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 Example of creating Volume B on the Same Host as Volume A
 
-	schedulerHints := volumes.SchedulerHints{
+	schedulerHintOpts := volumes.SchedulerHintCreateOpts{
 		SameHost: []string{
 			"volume-a-uuid",
 		}
@@ -34,10 +33,9 @@ Example of creating Volume B on the Same Host as Volume A
 	createOpts := volumes.CreateOpts{
 		Name:              "volume_b",
 		Size:              10
-		SchedulerHints:    schedulerHints,
 	}
 
-	volume, err := volumes.Create(context.TODO(), computeClient, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), computeClient, createOpts, schedulerHintOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +49,7 @@ Example of creating a Volume from a Backup
 	}
 
 	client.Microversion = "3.47"
-	volume, err := volumes.Create(context.TODO(), client, options).Extract()
+	volume, err := volumes.Create(context.TODO(), client, options, nil).Extract()
 	if err != nil {
 		panic(err)
 	}

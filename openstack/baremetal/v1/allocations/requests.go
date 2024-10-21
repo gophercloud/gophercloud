@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToAllocationCreateMap() (map[string]interface{}, error)
+	ToAllocationCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies allocation creation parameters
@@ -35,7 +35,7 @@ type CreateOpts struct {
 }
 
 // ToAllocationCreateMap assembles a request body based on the contents of a CreateOpts.
-func (opts CreateOpts) ToAllocationCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToAllocationCreateMap() (map[string]any, error) {
 	body, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

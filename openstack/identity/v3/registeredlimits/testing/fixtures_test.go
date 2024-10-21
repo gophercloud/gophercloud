@@ -116,7 +116,7 @@ const CreateOutput = ListOutput
 var FirstRegisteredLimit = registeredlimits.RegisteredLimit{
 	ResourceName: "volume",
 	RegionID:     "RegionOne",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://10.3.150.25/identity/v3/registered_limits/25a04c7a065c430590881c646cdcdd58",
 	},
 	ServiceID:    "9408080f1970482aa0e38bc2d4ea34b7",
@@ -129,7 +129,7 @@ var FirstRegisteredLimit = registeredlimits.RegisteredLimit{
 var SecondRegisteredLimit = registeredlimits.RegisteredLimit{
 	ResourceName: "snapshot",
 	RegionID:     "RegionOne",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://10.3.150.25/identity/v3/registered_limits/3229b3849f584faea483d6851f7aab05",
 	},
 	ServiceID:    "9408080f1970482aa0e38bc2d4ea34b7",
@@ -141,7 +141,7 @@ var SecondRegisteredLimit = registeredlimits.RegisteredLimit{
 var UpdatedSecondRegisteredLimit = registeredlimits.RegisteredLimit{
 	ResourceName: "volumes",
 	RegionID:     "RegionOne",
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "http://10.3.150.25/identity/v3/registered_limits/3229b3849f584faea483d6851f7aab05",
 	},
 	ServiceID:    "9408080f1970482aa0e38bc2d4ea34b7",

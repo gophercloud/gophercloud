@@ -107,7 +107,7 @@ func (r commonResult) Extract() (*FloatingIP, error) {
 	return &s, err
 }
 
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "floatingip")
 }
 
@@ -176,6 +176,6 @@ func ExtractFloatingIPs(r pagination.Page) ([]FloatingIP, error) {
 	return s.FloatingIPs, err
 }
 
-func ExtractFloatingIPsInto(r pagination.Page, v interface{}) error {
+func ExtractFloatingIPsInto(r pagination.Page, v any) error {
 	return r.(FloatingIPPage).Result.ExtractIntoSlicePtr(v, "floatingips")
 }

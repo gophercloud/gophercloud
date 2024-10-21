@@ -81,7 +81,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToRBACPolicyCreateMap() (map[string]interface{}, error)
+	ToRBACPolicyCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents options used to create a rbac-policy.
@@ -93,7 +93,7 @@ type CreateOpts struct {
 }
 
 // ToRBACPolicyCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToRBACPolicyCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToRBACPolicyCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "rbac_policy")
 }
 
@@ -123,7 +123,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, rbacPolicyID stri
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToRBACPolicyUpdateMap() (map[string]interface{}, error)
+	ToRBACPolicyUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options used to update a rbac-policy.
@@ -132,7 +132,7 @@ type UpdateOpts struct {
 }
 
 // ToRBACPolicyUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToRBACPolicyUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToRBACPolicyUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "rbac_policy")
 }
 

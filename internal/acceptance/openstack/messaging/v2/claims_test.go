@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/claims"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestCRUDClaim(t *testing.T) {
@@ -20,6 +21,7 @@ func TestCRUDClaim(t *testing.T) {
 	}
 
 	createdQueueName, err := CreateQueue(t, client)
+	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, createdQueueName)
 
 	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
@@ -29,11 +31,12 @@ func TestCRUDClaim(t *testing.T) {
 		t.Fatalf("Unable to create a messaging service client: %v", err)
 	}
 	for i := 0; i < 3; i++ {
-		CreateMessage(t, client, createdQueueName)
+		_, err := CreateMessage(t, client, createdQueueName)
+		th.AssertNoErr(t, err)
 	}
 
-	clientID = "3381af92-2b9e-11e3-b191-7186130073dd"
 	claimedMessages, err := CreateClaim(t, client, createdQueueName)
+	th.AssertNoErr(t, err)
 	claimIDs, _ := ExtractIDs(claimedMessages)
 
 	tools.PrintResource(t, claimedMessages)
@@ -45,20 +48,20 @@ func TestCRUDClaim(t *testing.T) {
 
 	for _, claimID := range claimIDs {
 		t.Logf("Attempting to update claim: %s", claimID)
-		updateErr := claims.Update(context.TODO(), client, createdQueueName, claimID, updateOpts).ExtractErr()
-
-		if updateErr != nil {
+		err := claims.Update(context.TODO(), client, createdQueueName, claimID, updateOpts).ExtractErr()
+		if err != nil {
 			t.Fatalf("Unable to update claim %s: %v", claimID, err)
 		} else {
 			t.Logf("Successfully updated claim: %s", claimID)
 		}
 
-		updatedClaim, getErr := GetClaim(t, client, createdQueueName, claimID)
-		if getErr != nil {
-			t.Fatalf("Unable to retrieve claim %s: %v", claimID, getErr)
+		updatedClaim, err := GetClaim(t, client, createdQueueName, claimID)
+		if err != nil {
+			t.Fatalf("Unable to retrieve claim %s: %v", claimID, err)
 		}
 
 		tools.PrintResource(t, updatedClaim)
-		DeleteClaim(t, client, createdQueueName, claimID)
+		err = DeleteClaim(t, client, createdQueueName, claimID)
+		th.AssertNoErr(t, err)
 	}
 }

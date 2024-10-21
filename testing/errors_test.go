@@ -9,17 +9,6 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func returnsUnexpectedResp(code int) gophercloud.ErrUnexpectedResponseCode {
-	return gophercloud.ErrUnexpectedResponseCode{
-		URL:            "http://example.com",
-		Method:         "GET",
-		Expected:       []int{200},
-		Actual:         code,
-		Body:           []byte("the response body"),
-		ResponseHeader: nil,
-	}
-}
-
 func TestErrUnexpectedResponseCode(t *testing.T) {
 	err := gophercloud.ErrUnexpectedResponseCode{
 		URL:            "http://example.com",

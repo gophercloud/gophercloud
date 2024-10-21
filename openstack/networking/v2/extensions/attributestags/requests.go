@@ -9,7 +9,7 @@ import (
 // ReplaceAllOptsBuilder allows extensions to add additional parameters to
 // the ReplaceAll request.
 type ReplaceAllOptsBuilder interface {
-	ToAttributeTagsReplaceAllMap() (map[string]interface{}, error)
+	ToAttributeTagsReplaceAllMap() (map[string]any, error)
 }
 
 // ReplaceAllOpts provides options used to create Tags on a Resource
@@ -19,7 +19,7 @@ type ReplaceAllOpts struct {
 
 // ToAttributeTagsReplaceAllMap formats a ReplaceAllOpts into the body of the
 // replace request
-func (opts ReplaceAllOpts) ToAttributeTagsReplaceAllMap() (map[string]interface{}, error) {
+func (opts ReplaceAllOpts) ToAttributeTagsReplaceAllMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToConnectionCreateMap() (map[string]interface{}, error)
+	ToConnectionCreateMap() (map[string]any, error)
 }
 type Action string
 type Initiator string
@@ -115,7 +115,7 @@ type CreateOpts struct {
 }
 
 // ToConnectionCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToConnectionCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToConnectionCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "ipsec_site_connection")
 }
 
@@ -201,7 +201,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToConnectionUpdateMap() (map[string]interface{}, error)
+	ToConnectionUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains the values used when updating the DPD of an IPSec site connection
@@ -229,7 +229,7 @@ type UpdateOpts struct {
 }
 
 // ToConnectionUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOpts) ToConnectionUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToConnectionUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "ipsec_site_connection")
 }
 

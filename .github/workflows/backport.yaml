@@ -1,0 +1,126 @@
+name: Pull Request backporting
+
+on:
+  pull_request_target:
+    types:
+      - closed
+      - labeled
+
+jobs:
+  backport_v1:
+    name: "Backport to v1"
+    # Only react to merged PRs for security reasons.
+    # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
+    if: >
+      github.event.pull_request.merged
+      && (
+        github.event.action == 'closed'
+          && contains(github.event.pull_request.labels.*.name, 'backport-v1')
+        || (
+          github.event.action == 'labeled'
+          && contains(github.event.label.name, 'backport-v1')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token from the gophercloud-backport-bot github-app
+        id: generate_token
+        uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
+        with:
+          app_id: ${{ secrets.BACKPORT_APP_ID }}
+          private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
+
+      - name: Backporting
+        if: >
+          contains(github.event.pull_request.labels.*.name, 'semver:patch')
+          || contains(github.event.label.name, 'semver:patch')
+        uses: kiegroup/git-backporting@a14014e89e9bac5210298eb1c4047f037b359c97
+        with:
+          target-branch: v1
+          pull-request: ${{ github.event.pull_request.url }}
+          auth: ${{ steps.generate_token.outputs.token }}
+          no-squash: true
+          strategy-option: find-renames
+
+      - name: Report failure
+        if: failure()
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: >
+            Failed to backport PR to `v1` branch. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+      - name: Report an error if backport unsupported labels
+        if: >
+          contains(github.event.pull_request.labels.*.name, 'semver:major')
+          || contains(github.event.pull_request.labels.*.name, 'semver:minor')
+          || contains(github.event.pull_request.labels.*.name, 'semver:unknown')
+          || contains(github.event.label.name, 'semver:major')
+          || contains(github.event.label.name, 'semver:minor')
+          || contains(github.event.label.name, 'semver:unknown')
+        uses: thollander/actions-comment-pull-request@e2c37e53a7d2227b61585343765f73a9ca57eda9
+        with:
+          message: |
+            Labels `semver-major`, `semver-minor` and `semver-unknown` block
+            backports to the legacy branch `v1`.
+
+  backport_v2:
+    name: "Backport to v2"
+    # Only react to merged PRs for security reasons.
+    # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
+    if: >
+      github.event.pull_request.merged
+      && (
+        github.event.action == 'closed'
+          && contains(github.event.pull_request.labels.*.name, 'backport-v2')
+        || (
+          github.event.action == 'labeled'
+          && contains(github.event.label.name, 'backport-v2')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token from the gophercloud-backport-bot github-app
+        id: generate_token
+        uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
+        with:
+          app_id: ${{ secrets.BACKPORT_APP_ID }}
+          private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
+
+      - name: Backporting
+        if: >
+          contains(github.event.pull_request.labels.*.name, 'semver:patch')
+          || contains(github.event.pull_request.labels.*.name, 'semver:minor')
+          || contains(github.event.label.name, 'semver:patch')
+          || contains(github.event.label.name, 'semver:minor')
+        uses: kiegroup/git-backporting@a14014e89e9bac5210298eb1c4047f037b359c97
+        with:
+          target-branch: v2
+          pull-request: ${{ github.event.pull_request.url }}
+          auth: ${{ steps.generate_token.outputs.token }}
+          no-squash: true
+          strategy-option: find-renames
+
+      - name: Report failure
+        if: failure()
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: >
+            Failed to backport PR to `v2` branch. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+      - name: Report an error if backport unsupported labels
+        if: >
+          contains(github.event.pull_request.labels.*.name, 'semver:major')
+          || contains(github.event.pull_request.labels.*.name, 'semver:unknown')
+          || contains(github.event.label.name, 'semver:major')
+          || contains(github.event.label.name, 'semver:unknown')
+        uses: thollander/actions-comment-pull-request@e2c37e53a7d2227b61585343765f73a9ca57eda9
+        with:
+          message: |
+            Labels `semver-major` and `semver-unknown` block backports to the
+            stable branch `v2`.

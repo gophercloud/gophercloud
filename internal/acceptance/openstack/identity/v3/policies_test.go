@@ -38,7 +38,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	createOpts := policies.CreateOpts{
 		Type: "application/json",
 		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "policy for foobar_user",
 		},
 	}
@@ -124,7 +124,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	updateOpts := policies.UpdateOpts{
 		Type: "text/plain",
 		Blob: []byte("'foobar_user': 'role:compute-user'"),
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"description": "updated policy for foobar_user",
 		},
 	}

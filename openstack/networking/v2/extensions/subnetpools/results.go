@@ -122,9 +122,9 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 	// Support for older neutron time format
 	var s1 struct {
 		tmp
-		DefaultPrefixLen interface{} `json:"default_prefixlen"`
-		MinPrefixLen     interface{} `json:"min_prefixlen"`
-		MaxPrefixLen     interface{} `json:"max_prefixlen"`
+		DefaultPrefixLen any `json:"default_prefixlen"`
+		MinPrefixLen     any `json:"min_prefixlen"`
+		MaxPrefixLen     any `json:"max_prefixlen"`
 
 		CreatedAt gophercloud.JSONRFC3339NoZ `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339NoZ `json:"updated_at"`
@@ -176,9 +176,9 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 	// Support for newer neutron time format
 	var s2 struct {
 		tmp
-		DefaultPrefixLen interface{} `json:"default_prefixlen"`
-		MinPrefixLen     interface{} `json:"min_prefixlen"`
-		MaxPrefixLen     interface{} `json:"max_prefixlen"`
+		DefaultPrefixLen any `json:"default_prefixlen"`
+		MinPrefixLen     any `json:"min_prefixlen"`
+		MaxPrefixLen     any `json:"max_prefixlen"`
 
 		CreatedAt time.Time `json:"created_at"`
 		UpdatedAt time.Time `json:"updated_at"`

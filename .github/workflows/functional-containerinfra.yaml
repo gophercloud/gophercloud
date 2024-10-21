@@ -17,24 +17,35 @@ jobs:
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum master
               MAGNUMCLIENT_BRANCH=master
+            additional_services: "openstack-cli-server"
+          - name: "dalmatian"
+            openstack_version: "stable/2024.2"
+            ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              enable_plugin magnum https://github.com/openstack/magnum stable/2024.2
+              MAGNUMCLIENT_BRANCH=stable/2024.2
+            additional_services: "openstack-cli-server"
           - name: "caracal"
             openstack_version: "stable/2024.1"
             ubuntu_version: "22.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/2024.1
               MAGNUMCLIENT_BRANCH=stable/2024.1
+            additional_services: ""
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/2023.2
               MAGNUMCLIENT_BRANCH=stable/2023.2
+            additional_services: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/2023.1
               MAGNUMCLIENT_BRANCH=stable/2023.1
+            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Magnum and run containerinfra acceptance tests
     steps:
@@ -51,16 +62,16 @@ jobs:
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true
             ${{ matrix.devstack_conf_overrides }}
-          enabled_services: 'h-eng,h-api,h-api-cfn,h-api-cw'
+          enabled_services: "h-eng,h-api,h-api-cfn,h-api-cw,${{ matrix.additional_services }}"
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
-          go-version: '^1.20'
+          go-version: '^1.22'
       - name: Run Gophercloud acceptance tests
         run: ./script/acceptancetest
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
-          ACCEPTANCE_TESTS_FILTER: "^.*containerinfra.*$"
+          PACKAGE: "./internal/acceptance/openstack/containerinfra/..."
           OS_BRANCH: ${{ matrix.openstack_version }}
       - name: Generate logs on failure
         run: ./script/collectlogs
@@ -69,5 +80,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: functional-containerinfra-${{ matrix.name }}
+          name: functional-containerinfra-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*

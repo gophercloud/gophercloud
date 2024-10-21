@@ -53,7 +53,7 @@ func TestCreate(t *testing.T) {
 		DeadLetterQueueMessagesTTL: 3600,
 		MaxClaimCount:              10,
 		EnableEncryptMessages:      enableEncrypted,
-		Extra:                      map[string]interface{}{"description": "Queue for unit testing."},
+		Extra:                      map[string]any{"description": "Queue for unit testing."},
 	}
 
 	err := queues.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractErr()
@@ -73,7 +73,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 	updatedQueueResult := queues.QueueDetails{
-		Extra: map[string]interface{}{"description": "Update queue description"},
+		Extra: map[string]any{"description": "Update queue description"},
 	}
 
 	actual, err := queues.Update(context.TODO(), fake.ServiceClient(), QueueName, updateOpts).Extract()

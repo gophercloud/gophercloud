@@ -10,19 +10,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: ["master"]
-        openstack_version: ["master"]
-        ubuntu_version: ["22.04"]
         include:
+          - name: "master"
+            openstack_version: "master"
+            ubuntu_version: "22.04"
+            additional_services: "openstack-cli-server"
+          - name: "dalmatian"
+            openstack_version: "stable/2024.2"
+            ubuntu_version: "22.04"
+            additional_services: "openstack-cli-server"
           - name: "caracal"
             openstack_version: "stable/2024.1"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "bobcat"
             openstack_version: "stable/2023.2"
             ubuntu_version: "22.04"
+            additional_services: ""
           - name: "antelope"
             openstack_version: "stable/2023.1"
             ubuntu_version: "22.04"
+            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Octavia and run loadbalancer acceptance tests
     steps:
@@ -35,16 +43,16 @@ jobs:
           conf_overrides: |
             enable_plugin octavia https://github.com/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://github.com/openstack/neutron ${{ matrix.openstack_version }}
-          enabled_services: 'octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos'
+          enabled_services: "octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos,${{ matrix.additional_services }}"
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
-          go-version: '^1.20'
+          go-version: '^1.22'
       - name: Run Gophercloud acceptance tests
         run: ./script/acceptancetest
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
-          ACCEPTANCE_TESTS_FILTER: "^.*loadbalancer.*$"
+          PACKAGE: "./internal/acceptance/openstack/loadbalancer/..."
           OS_BRANCH: ${{ matrix.openstack_version }}
       - name: Generate logs on failure
         run: ./script/collectlogs
@@ -53,5 +61,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: functional-loadbalancer-${{ matrix.name }}
+          name: functional-loadbalancer-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*

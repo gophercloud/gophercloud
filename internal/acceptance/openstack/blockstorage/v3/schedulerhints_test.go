@@ -25,7 +25,7 @@ func TestSchedulerHints(t *testing.T) {
 		Name: volumeName,
 	}
 
-	volume1, err := volumes.Create(context.TODO(), client, createOpts).Extract()
+	volume1, err := volumes.Create(context.TODO(), client, createOpts, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
@@ -36,18 +36,17 @@ func TestSchedulerHints(t *testing.T) {
 	defer volumes.Delete(context.TODO(), client, volume1.ID, volumes.DeleteOpts{})
 
 	volumeName = tools.RandomString("ACPTTEST", 16)
-	schedulerHints := volumes.SchedulerHints{
+	createOpts = volumes.CreateOpts{
+		Size: 1,
+		Name: volumeName,
+	}
+	schedulerHintOpts := volumes.SchedulerHintOpts{
 		SameHost: []string{
 			volume1.ID,
 		},
 	}
-	createOpts = volumes.CreateOpts{
-		Size:           1,
-		Name:           volumeName,
-		SchedulerHints: schedulerHints,
-	}
 
-	volume2, err := volumes.Create(context.TODO(), client, createOpts).Extract()
+	volume2, err := volumes.Create(context.TODO(), client, createOpts, schedulerHintOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	ctx2, cancel2 := context.WithTimeout(context.TODO(), 60*time.Second)

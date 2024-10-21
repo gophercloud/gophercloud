@@ -48,7 +48,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToServerGroupCreateMap() (map[string]interface{}, error)
+	ToServerGroupCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies Server Group creation parameters.
@@ -69,7 +69,7 @@ type CreateOpts struct {
 }
 
 // ToServerGroupCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToServerGroupCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToServerGroupCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "server_group")
 }
 

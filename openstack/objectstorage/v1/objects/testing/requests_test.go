@@ -135,8 +135,9 @@ func TestDownloadReader(t *testing.T) {
 
 	// Check reader
 	buf := bytes.NewBuffer(make([]byte, 0))
-	io.CopyN(buf, response.Body, 10)
-	th.CheckEquals(t, "Successful", string(buf.Bytes()))
+	_, err := io.CopyN(buf, response.Body, 10)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "Successful", buf.String())
 }
 
 func TestDownloadExtraction(t *testing.T) {
@@ -448,7 +449,8 @@ func TestETag(t *testing.T) {
 	th.AssertEquals(t, false, ok)
 
 	hash := md5.New()
-	io.WriteString(hash, content)
+	_, err = io.WriteString(hash, content)
+	th.AssertNoErr(t, err)
 	localChecksum := fmt.Sprintf("%x", hash.Sum(nil))
 
 	createOpts = objects.CreateOpts{

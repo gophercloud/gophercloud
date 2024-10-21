@@ -19,7 +19,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	snapshots.List(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := snapshots.List(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := snapshots.ExtractSnapshots(page)
 		if err != nil {
@@ -52,6 +52,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -92,10 +93,10 @@ func TestUpdateMetadata(t *testing.T) {
 
 	MockUpdateMetadataResponse(t)
 
-	expected := map[string]interface{}{"key": "v1"}
+	expected := map[string]any{"key": "v1"}
 
 	options := &snapshots.UpdateMetadataOpts{
-		Metadata: map[string]interface{}{
+		Metadata: map[string]any{
 			"key": "v1",
 		},
 	}

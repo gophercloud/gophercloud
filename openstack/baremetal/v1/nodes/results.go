@@ -46,11 +46,11 @@ func (r ValidateResult) Extract() (*NodeValidation, error) {
 	return &s, err
 }
 
-func (r nodeResult) ExtractInto(v interface{}) error {
+func (r nodeResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-func ExtractNodesInto(r pagination.Page, v interface{}) error {
+func ExtractNodesInto(r pagination.Page, v any) error {
 	return r.(NodePage).Result.ExtractIntoSlicePtr(v, "nodes")
 }
 
@@ -144,19 +144,19 @@ type Node struct {
 
 	// The metadata required by the driver to manage this Node. List of fields varies between drivers, and can be
 	// retrieved from the /v1/drivers/<DRIVER_NAME>/properties resource.
-	DriverInfo map[string]interface{} `json:"driver_info"`
+	DriverInfo map[string]any `json:"driver_info"`
 
 	// Metadata set and stored by the Node’s driver. This field is read-only.
-	DriverInternalInfo map[string]interface{} `json:"driver_internal_info"`
+	DriverInternalInfo map[string]any `json:"driver_internal_info"`
 
 	// Characteristics of this Node. Populated by ironic-inspector during inspection. May be edited via the REST
 	// API at any time.
-	Properties map[string]interface{} `json:"properties"`
+	Properties map[string]any `json:"properties"`
 
 	// Used to customize the deployed image. May include root partition size, a base 64 encoded config drive, and other
 	// metadata. Note that this field is erased automatically when the instance is deleted (this is done by requesting
 	// the Node provision state be changed to DELETED).
-	InstanceInfo map[string]interface{} `json:"instance_info"`
+	InstanceInfo map[string]any `json:"instance_info"`
 
 	// ID of the Nova instance associated with this Node.
 	InstanceUUID string `json:"instance_uuid"`
@@ -165,26 +165,26 @@ type Node struct {
 	ChassisUUID string `json:"chassis_uuid"`
 
 	// Set of one or more arbitrary metadata key and value pairs.
-	Extra map[string]interface{} `json:"extra"`
+	Extra map[string]any `json:"extra"`
 
 	// Whether console access is enabled or disabled on this node.
 	ConsoleEnabled bool `json:"console_enabled"`
 
 	// The current RAID configuration of the node. Introduced with the cleaning feature.
-	RAIDConfig map[string]interface{} `json:"raid_config"`
+	RAIDConfig map[string]any `json:"raid_config"`
 
 	// The requested RAID configuration of the node, which will be applied when the Node next transitions
 	// through the CLEANING state. Introduced with the cleaning feature.
-	TargetRAIDConfig map[string]interface{} `json:"target_raid_config"`
+	TargetRAIDConfig map[string]any `json:"target_raid_config"`
 
 	// Current clean step. Introduced with the cleaning feature.
-	CleanStep map[string]interface{} `json:"clean_step"`
+	CleanStep map[string]any `json:"clean_step"`
 
 	// Current deploy step.
-	DeployStep map[string]interface{} `json:"deploy_step"`
+	DeployStep map[string]any `json:"deploy_step"`
 
 	// Current service step.
-	ServiceStep map[string]interface{} `json:"service_step"`
+	ServiceStep map[string]any `json:"service_step"`
 
 	// String which can be used by external schedulers to identify this Node as a unit of a specific type of resource.
 	// For more details, see: https://docs.openstack.org/ironic/latest/install/configure-nova-flavors.html
@@ -245,7 +245,7 @@ type Node struct {
 	Owner string `json:"owner"`
 
 	// Static network configuration to use during deployment and cleaning.
-	NetworkData map[string]interface{} `json:"network_data"`
+	NetworkData map[string]any `json:"network_data"`
 
 	// The UTC date and time when the resource was created, ISO 8601 format.
 	CreatedAt time.Time `json:"created_at"`
@@ -261,6 +261,13 @@ type Node struct {
 
 	// The UTC date and time when the last inspection was finished, ISO 8601 format. May be “null” if inspection hasn't been finished yet.
 	InspectionFinishedAt *time.Time `json:"inspection_finished_at"`
+
+	// Whether the node is retired. A Node tagged as retired will prevent any further
+	// scheduling of instances, but will still allow for other operations, such as cleaning, to happen
+	Retired bool `json:"retired"`
+
+	// Reason the node is marked as retired.
+	RetiredReason string `json:"retired_reason"`
 }
 
 // NodePage abstracts the raw results of making a List() request against
@@ -549,7 +556,7 @@ type PluginData struct {
 }
 
 // Interpret plugin data as a free-form mapping.
-func (pd PluginData) AsMap() (result map[string]interface{}, err error) {
+func (pd PluginData) AsMap() (result map[string]any, err error) {
 	err = json.Unmarshal(pd.RawMessage, &result)
 	return
 }

@@ -37,9 +37,9 @@ type Driver struct {
 
 // SupportedParameter represents a single set of supported parameters for a some QoS driver's .
 type SupportedParameter struct {
-	ParameterName   string      `json:"parameter_name"`
-	ParameterType   string      `json:"parameter_type"`
-	ParameterValues interface{} `json:"parameter_values"`
+	ParameterName   string `json:"parameter_name"`
+	ParameterType   string `json:"parameter_type"`
+	ParameterValues any    `json:"parameter_values"`
 }
 
 type ListRuleTypesPage struct {

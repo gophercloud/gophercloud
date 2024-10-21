@@ -62,7 +62,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // BatchCreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type BatchCreateOptsBuilder interface {
-	ToLimitsCreateMap() (map[string]interface{}, error)
+	ToLimitsCreateMap() (map[string]any, error)
 }
 
 type CreateOpts struct {
@@ -92,8 +92,8 @@ type CreateOpts struct {
 type BatchCreateOpts []CreateOpts
 
 // ToLimitsCreateMap formats a BatchCreateOpts into a create request.
-func (opts BatchCreateOpts) ToLimitsCreateMap() (map[string]interface{}, error) {
-	limits := make([]map[string]interface{}, len(opts))
+func (opts BatchCreateOpts) ToLimitsCreateMap() (map[string]any, error) {
+	limits := make([]map[string]any, len(opts))
 	for i, limit := range opts {
 		limitMap, err := limit.ToMap()
 		if err != nil {
@@ -101,10 +101,10 @@ func (opts BatchCreateOpts) ToLimitsCreateMap() (map[string]interface{}, error) 
 		}
 		limits[i] = limitMap
 	}
-	return map[string]interface{}{"limits": limits}, nil
+	return map[string]any{"limits": limits}, nil
 }
 
-func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -132,7 +132,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, limitID string)
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToLimitUpdateMap() (map[string]interface{}, error)
+	ToLimitUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents parameters to update a domain.
@@ -145,7 +145,7 @@ type UpdateOpts struct {
 }
 
 // ToLimitUpdateMap formats UpdateOpts into an update request.
-func (opts UpdateOpts) ToLimitUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToLimitUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "limit")
 }
 

@@ -8,7 +8,7 @@ import (
 )
 
 type CreateOptsBuilder interface {
-	ToQoSCreateMap() (map[string]interface{}, error)
+	ToQoSCreateMap() (map[string]any, error)
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -40,14 +40,14 @@ type CreateOpts struct {
 
 // ToQoSCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToQoSCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToQoSCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "qos_specs")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Specs != nil {
-		if v, ok := b["qos_specs"].(map[string]interface{}); ok {
+		if v, ok := b["qos_specs"].(map[string]any); ok {
 			for key, value := range opts.Specs {
 				v[key] = value
 			}
@@ -159,7 +159,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateQosSpecsOptsBuilder allows extensions to add additional parameters to the
 // CreateQosSpecs requests.
 type CreateQosSpecsOptsBuilder interface {
-	ToQosSpecsCreateMap() (map[string]interface{}, error)
+	ToQosSpecsCreateMap() (map[string]any, error)
 }
 
 // UpdateOpts contains options for creating a QoS specification.
@@ -174,19 +174,19 @@ type UpdateOpts struct {
 }
 
 type UpdateOptsBuilder interface {
-	ToQoSUpdateMap() (map[string]interface{}, error)
+	ToQoSUpdateMap() (map[string]any, error)
 }
 
 // ToQoSUpdateMap assembles a request body based on the contents of a
 // UpdateOpts.
-func (opts UpdateOpts) ToQoSUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToQoSUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "qos_specs")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Specs != nil {
-		if v, ok := b["qos_specs"].(map[string]interface{}); ok {
+		if v, ok := b["qos_specs"].(map[string]any); ok {
 			for key, value := range opts.Specs {
 				v[key] = value
 			}
@@ -215,7 +215,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // DeleteKeysOptsBuilder allows extensions to add additional parameters to the
 // CreateExtraSpecs requests.
 type DeleteKeysOptsBuilder interface {
-	ToDeleteKeysCreateMap() (map[string]interface{}, error)
+	ToDeleteKeysCreateMap() (map[string]any, error)
 }
 
 // DeleteKeysOpts is a string slice that contains keys to be deleted.
@@ -223,8 +223,8 @@ type DeleteKeysOpts []string
 
 // ToDeleteKeysCreateMap assembles a body for a Create request based on
 // the contents of ExtraSpecsOpts.
-func (opts DeleteKeysOpts) ToDeleteKeysCreateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{"keys": opts}, nil
+func (opts DeleteKeysOpts) ToDeleteKeysCreateMap() (map[string]any, error) {
+	return map[string]any{"keys": opts}, nil
 }
 
 // DeleteKeys will delete the keys/specs from the specified QoS

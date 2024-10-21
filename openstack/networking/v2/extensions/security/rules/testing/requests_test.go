@@ -57,7 +57,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	rules.List(fake.ServiceClient(), rules.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := rules.List(fake.ServiceClient(), rules.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := rules.ExtractRules(page)
 		if err != nil {
@@ -97,6 +97,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -156,6 +157,64 @@ func TestCreate(t *testing.T) {
 		EtherType:     rules.EtherType4,
 		PortRangeMax:  80,
 		Protocol:      "tcp",
+		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
+		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
+	}
+	_, err := rules.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+}
+
+func TestCreateAnyProtocol(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "security_group_rule": {
+        "description": "test description of rule",
+        "direction": "ingress",
+        "port_range_min": 80,
+        "ethertype": "IPv4",
+        "port_range_max": 80,
+        "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+        "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a"
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "security_group_rule": {
+        "description": "test description of rule",
+        "direction": "ingress",
+        "ethertype": "IPv4",
+        "id": "2bc0accf-312e-429a-956e-e4407625eb62",
+        "port_range_max": 80,
+        "port_range_min": 80,
+        "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+        "remote_ip_prefix": null,
+        "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a",
+        "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+    }
+}
+    `)
+	})
+
+	opts := rules.CreateOpts{
+		Description:   "test description of rule",
+		Direction:     "ingress",
+		PortRangeMin:  80,
+		EtherType:     rules.EtherType4,
+		PortRangeMax:  80,
+		Protocol:      rules.ProtocolAny,
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}

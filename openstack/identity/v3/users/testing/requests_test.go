@@ -101,14 +101,14 @@ func TestCreateUser(t *testing.T) {
 		Enabled:          &iTrue,
 		Password:         "secretsecret",
 		DefaultProjectID: "263fd9",
-		Options: map[users.Option]interface{}{
+		Options: map[users.Option]any{
 			users.IgnorePasswordExpiry: true,
-			users.MultiFactorAuthRules: []interface{}{
+			users.MultiFactorAuthRules: []any{
 				[]string{"password", "totp"},
 				[]string{"password", "custom-auth-method"},
 			},
 		},
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "jsmith@example.com",
 		},
 	}
@@ -130,7 +130,7 @@ func TestCreateNoOptionsUser(t *testing.T) {
 		Enabled:          &iTrue,
 		Password:         "secretsecret",
 		DefaultProjectID: "263fd9",
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"email": "jsmith@example.com",
 		},
 	}
@@ -148,10 +148,10 @@ func TestUpdateUser(t *testing.T) {
 	iFalse := false
 	updateOpts := users.UpdateOpts{
 		Enabled: &iFalse,
-		Options: map[users.Option]interface{}{
+		Options: map[users.Option]any{
 			users.MultiFactorAuthRules: nil,
 		},
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"disabled_reason": "DDOS",
 		},
 	}

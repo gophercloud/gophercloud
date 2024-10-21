@@ -19,7 +19,7 @@ func (r commonResult) Extract() (*Network, error) {
 	return &s, err
 }
 
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "network")
 }
 
@@ -172,6 +172,6 @@ func ExtractNetworks(r pagination.Page) ([]Network, error) {
 	return s, err
 }
 
-func ExtractNetworksInto(r pagination.Page, v interface{}) error {
+func ExtractNetworksInto(r pagination.Page, v any) error {
 	return r.(NetworkPage).Result.ExtractIntoSlicePtr(v, "networks")
 }

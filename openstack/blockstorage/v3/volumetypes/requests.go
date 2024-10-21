@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToVolumeTypeCreateMap() (map[string]interface{}, error)
+	ToVolumeTypeCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a Volume Type. This object is passed to
@@ -29,7 +29,7 @@ type CreateOpts struct {
 
 // ToVolumeTypeCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToVolumeTypeCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToVolumeTypeCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "volume_type")
 }
 
@@ -110,7 +110,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToVolumeTypeUpdateMap() (map[string]interface{}, error)
+	ToVolumeTypeUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing Volume Type. This object is passed
@@ -124,7 +124,7 @@ type UpdateOpts struct {
 
 // ToVolumeTypeUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToVolumeTypeUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToVolumeTypeUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "volume_type")
 }
 
@@ -160,7 +160,7 @@ func GetExtraSpec(ctx context.Context, client *gophercloud.ServiceClient, volume
 // CreateExtraSpecsOptsBuilder allows extensions to add additional parameters to the
 // CreateExtraSpecs requests.
 type CreateExtraSpecsOptsBuilder interface {
-	ToVolumeTypeExtraSpecsCreateMap() (map[string]interface{}, error)
+	ToVolumeTypeExtraSpecsCreateMap() (map[string]any, error)
 }
 
 // ExtraSpecsOpts is a map that contains key-value pairs.
@@ -168,8 +168,8 @@ type ExtraSpecsOpts map[string]string
 
 // ToVolumeTypeExtraSpecsCreateMap assembles a body for a Create request based on
 // the contents of ExtraSpecsOpts.
-func (opts ExtraSpecsOpts) ToVolumeTypeExtraSpecsCreateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{"extra_specs": opts}, nil
+func (opts ExtraSpecsOpts) ToVolumeTypeExtraSpecsCreateMap() (map[string]any, error) {
+	return map[string]any{"extra_specs": opts}, nil
 }
 
 // CreateExtraSpecs will create or update the extra-specs key-value pairs for
@@ -248,7 +248,7 @@ func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager
 // AddAccessOptsBuilder allows extensions to add additional parameters to the
 // AddAccess requests.
 type AddAccessOptsBuilder interface {
-	ToVolumeTypeAddAccessMap() (map[string]interface{}, error)
+	ToVolumeTypeAddAccessMap() (map[string]any, error)
 }
 
 // AddAccessOpts represents options for adding access to a volume type.
@@ -258,7 +258,7 @@ type AddAccessOpts struct {
 }
 
 // ToVolumeTypeAddAccessMap constructs a request body from AddAccessOpts.
-func (opts AddAccessOpts) ToVolumeTypeAddAccessMap() (map[string]interface{}, error) {
+func (opts AddAccessOpts) ToVolumeTypeAddAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "addProjectAccess")
 }
 
@@ -279,7 +279,7 @@ func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string
 // RemoveAccessOptsBuilder allows extensions to add additional parameters to the
 // RemoveAccess requests.
 type RemoveAccessOptsBuilder interface {
-	ToVolumeTypeRemoveAccessMap() (map[string]interface{}, error)
+	ToVolumeTypeRemoveAccessMap() (map[string]any, error)
 }
 
 // RemoveAccessOpts represents options for removing access to a volume type.
@@ -289,7 +289,7 @@ type RemoveAccessOpts struct {
 }
 
 // ToVolumeTypeRemoveAccessMap constructs a request body from RemoveAccessOpts.
-func (opts RemoveAccessOpts) ToVolumeTypeRemoveAccessMap() (map[string]interface{}, error) {
+func (opts RemoveAccessOpts) ToVolumeTypeRemoveAccessMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "removeProjectAccess")
 }
 
@@ -310,7 +310,7 @@ func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id str
 // CreateEncryptionOptsBuilder allows extensions to add additional parameters to the
 // Create Encryption request.
 type CreateEncryptionOptsBuilder interface {
-	ToEncryptionCreateMap() (map[string]interface{}, error)
+	ToEncryptionCreateMap() (map[string]any, error)
 }
 
 // CreateEncryptionOpts contains options for creating an Encryption Type object.
@@ -329,7 +329,7 @@ type CreateEncryptionOpts struct {
 
 // ToEncryptionCreateMap assembles a request body based on the contents of a
 // CreateEncryptionOpts.
-func (opts CreateEncryptionOpts) ToEncryptionCreateMap() (map[string]interface{}, error) {
+func (opts CreateEncryptionOpts) ToEncryptionCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "encryption")
 }
 
@@ -373,7 +373,7 @@ func GetEncryptionSpec(ctx context.Context, client *gophercloud.ServiceClient, i
 // UpdateEncryptionOptsBuilder allows extensions to add additional parameters to the
 // Update encryption request.
 type UpdateEncryptionOptsBuilder interface {
-	ToUpdateEncryptionMap() (map[string]interface{}, error)
+	ToUpdateEncryptionMap() (map[string]any, error)
 }
 
 // Update Encryption Opts contains options for creating an Update Encryption Type. This object is passed to
@@ -392,7 +392,7 @@ type UpdateEncryptionOpts struct {
 
 // ToEncryptionCreateMap assembles a request body based on the contents of a
 // UpdateEncryptionOpts.
-func (opts UpdateEncryptionOpts) ToUpdateEncryptionMap() (map[string]interface{}, error) {
+func (opts UpdateEncryptionOpts) ToUpdateEncryptionMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "encryption")
 }
 

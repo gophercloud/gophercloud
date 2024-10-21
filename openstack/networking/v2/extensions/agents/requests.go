@@ -71,7 +71,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToAgentUpdateMap() (map[string]interface{}, error)
+	ToAgentUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents the attributes used when updating an existing agent.
@@ -81,7 +81,7 @@ type UpdateOpts struct {
 }
 
 // ToAgentUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToAgentUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToAgentUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "agent")
 }
 
@@ -101,7 +101,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 
 // Delete deletes a specific agent based on its ID.
 func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := c.Delete(ctx, getURL(c, id), nil)
+	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -117,7 +117,7 @@ func ListDHCPNetworks(ctx context.Context, c *gophercloud.ServiceClient, id stri
 // ScheduleDHCPNetworkOptsBuilder allows extensions to add additional parameters
 // to the ScheduleDHCPNetwork request.
 type ScheduleDHCPNetworkOptsBuilder interface {
-	ToAgentScheduleDHCPNetworkMap() (map[string]interface{}, error)
+	ToAgentScheduleDHCPNetworkMap() (map[string]any, error)
 }
 
 // ScheduleDHCPNetworkOpts represents the attributes used when scheduling a
@@ -127,7 +127,7 @@ type ScheduleDHCPNetworkOpts struct {
 }
 
 // ToAgentScheduleDHCPNetworkMap builds a request body from ScheduleDHCPNetworkOpts.
-func (opts ScheduleDHCPNetworkOpts) ToAgentScheduleDHCPNetworkMap() (map[string]interface{}, error) {
+func (opts ScheduleDHCPNetworkOpts) ToAgentScheduleDHCPNetworkMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -163,7 +163,7 @@ func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) pagination.Pa
 
 // ScheduleBGPSpeakerOptsBuilder declare a function that build ScheduleBGPSpeakerOpts into a request body
 type ScheduleBGPSpeakerOptsBuilder interface {
-	ToAgentScheduleBGPSpeakerMap() (map[string]interface{}, error)
+	ToAgentScheduleBGPSpeakerMap() (map[string]any, error)
 }
 
 // ScheduleBGPSpeakerOpts represents the data that would be POST to the endpoint
@@ -172,7 +172,7 @@ type ScheduleBGPSpeakerOpts struct {
 }
 
 // ToAgentScheduleBGPSpeakerMap builds a request body from ScheduleBGPSpeakerOpts
-func (opts ScheduleBGPSpeakerOpts) ToAgentScheduleBGPSpeakerMap() (map[string]interface{}, error) {
+func (opts ScheduleBGPSpeakerOpts) ToAgentScheduleBGPSpeakerMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -219,7 +219,7 @@ func ListL3Routers(ctx context.Context, c *gophercloud.ServiceClient, id string)
 // ScheduleL3RouterOptsBuilder allows extensions to add additional parameters
 // to the ScheduleL3Router request.
 type ScheduleL3RouterOptsBuilder interface {
-	ToAgentScheduleL3RouterMap() (map[string]interface{}, error)
+	ToAgentScheduleL3RouterMap() (map[string]any, error)
 }
 
 // ScheduleL3RouterOpts represents the attributes used when scheduling a
@@ -229,7 +229,7 @@ type ScheduleL3RouterOpts struct {
 }
 
 // ToAgentScheduleL3RouterMap builds a request body from ScheduleL3RouterOpts.
-func (opts ScheduleL3RouterOpts) ToAgentScheduleL3RouterMap() (map[string]interface{}, error) {
+func (opts ScheduleL3RouterOpts) ToAgentScheduleL3RouterMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 

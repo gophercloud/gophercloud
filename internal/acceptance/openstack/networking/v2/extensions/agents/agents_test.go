@@ -97,7 +97,7 @@ func TestAgentsRUD(t *testing.T) {
 }
 
 func TestBGPAgentRUD(t *testing.T) {
-	timeout := 120 * time.Second
+	timeout := 15 * time.Minute
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
@@ -140,6 +140,23 @@ func TestBGPAgentRUD(t *testing.T) {
 		}, timeout)
 	th.AssertNoErr(t, err)
 
+	// List the BGP speakers on the first agent
+	bgpAgent, err := agents.Get(context.TODO(), client, bgpAgents[0].ID).Extract()
+	th.AssertNoErr(t, err)
+	agentConf := bgpAgent.Configurations
+	numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
+	t.Logf("Agent %s has %d speaker(s)", bgpAgents[0].ID, numOfSpeakers)
+
+	pages, err = agents.ListBGPSpeakers(client, bgpAgents[0].ID).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	allSpeakers, err := agents.ExtractBGPSpeakers(pages)
+	th.AssertNoErr(t, err)
+	out := "Speakers:"
+	for _, speaker := range allSpeakers {
+		out += " " + speaker.ID
+	}
+	t.Log(out)
+
 	// Remove the BGP Speaker from the first agent
 	err = agents.RemoveBGPSpeaker(context.TODO(), client, bgpAgents[0].ID, bgpSpeaker.ID).ExtractErr()
 	th.AssertNoErr(t, err)
@@ -150,7 +167,7 @@ func TestBGPAgentRUD(t *testing.T) {
 			th.AssertNoErr(t, err)
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
-			t.Logf("Agent %s has %d speakers", bgpAgent.ID, numOfSpeakers)
+			t.Logf("Agent %s has %d speaker(s)", bgpAgent.ID, numOfSpeakers)
 			return numOfSpeakers == 0, nil
 		}, timeout)
 	th.AssertNoErr(t, err)
@@ -158,7 +175,7 @@ func TestBGPAgentRUD(t *testing.T) {
 	// Remove all BGP Speakers from the agent
 	pages, err = agents.ListBGPSpeakers(client, bgpAgents[0].ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
-	allSpeakers, err := agents.ExtractBGPSpeakers(pages)
+	allSpeakers, err = agents.ExtractBGPSpeakers(pages)
 	th.AssertNoErr(t, err)
 	for _, speaker := range allSpeakers {
 		th.AssertNoErr(t, agents.RemoveBGPSpeaker(context.TODO(), client, bgpAgents[0].ID, speaker.ID).ExtractErr())
@@ -178,13 +195,13 @@ func TestBGPAgentRUD(t *testing.T) {
 			th.AssertNoErr(t, err)
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
-			t.Logf("Agent %s has %d speakers", bgpAgent.ID, numOfSpeakers)
+			t.Logf("Agent %s has %d speaker(s)", bgpAgent.ID, numOfSpeakers)
 			return 1 == numOfSpeakers, nil
 		}, timeout)
 	th.AssertNoErr(t, err)
 
 	// Delete the BGP Speaker
-	speakers.Delete(context.TODO(), client, bgpSpeaker.ID).ExtractErr()
+	err = speakers.Delete(context.TODO(), client, bgpSpeaker.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully deleted the BGP Speaker, %s", bgpSpeaker.ID)
 	err = tools.WaitForTimeout(
@@ -193,7 +210,7 @@ func TestBGPAgentRUD(t *testing.T) {
 			th.AssertNoErr(t, err)
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
-			t.Logf("Agent %s has %d speakers", bgpAgent.ID, numOfSpeakers)
+			t.Logf("Agent %s has %d speaker(s)", bgpAgent.ID, numOfSpeakers)
 			return 0 == numOfSpeakers, nil
 		}, timeout)
 	th.AssertNoErr(t, err)

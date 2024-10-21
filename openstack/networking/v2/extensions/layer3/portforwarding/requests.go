@@ -18,6 +18,7 @@ type ListOptsBuilder interface {
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
 	ID                string `q:"id"`
+	Description       string `q:"description"`
 	InternalPortID    string `q:"internal_port_id"`
 	ExternalPort      string `q:"external_port"`
 	InternalIPAddress string `q:"internal_ip_address"`
@@ -63,6 +64,7 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, floatingIpId string,
 // CreateOpts contains all the values needed to create a new port forwarding
 // resource. All attributes are required.
 type CreateOpts struct {
+	Description       string `json:"description,omitempty"`
 	InternalPortID    string `json:"internal_port_id"`
 	InternalIPAddress string `json:"internal_ip_address"`
 	InternalPort      int    `json:"internal_port"`
@@ -73,12 +75,12 @@ type CreateOpts struct {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToPortForwardingCreateMap() (map[string]interface{}, error)
+	ToPortForwardingCreateMap() (map[string]any, error)
 }
 
 // ToPortForwardingCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
 // interface
-func (opts CreateOpts) ToPortForwardingCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToPortForwardingCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "port_forwarding")
 }
 
@@ -97,28 +99,24 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, floatingIpId stri
 
 // UpdateOpts contains the values used when updating a port forwarding resource.
 type UpdateOpts struct {
-	InternalPortID    string `json:"internal_port_id,omitempty"`
-	InternalIPAddress string `json:"internal_ip_address,omitempty"`
-	InternalPort      int    `json:"internal_port,omitempty"`
-	ExternalPort      int    `json:"external_port,omitempty"`
-	Protocol          string `json:"protocol,omitempty"`
+	Description       *string `json:"description,omitempty"`
+	InternalPortID    string  `json:"internal_port_id,omitempty"`
+	InternalIPAddress string  `json:"internal_ip_address,omitempty"`
+	InternalPort      int     `json:"internal_port,omitempty"`
+	ExternalPort      int     `json:"external_port,omitempty"`
+	Protocol          string  `json:"protocol,omitempty"`
 }
 
 // ToPortForwardingUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
 // interface
-func (opts UpdateOpts) ToPortForwardingUpdateMap() (map[string]interface{}, error) {
-	b, err := gophercloud.BuildRequestBody(opts, "port_forwarding")
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
+func (opts UpdateOpts) ToPortForwardingUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "port_forwarding")
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToPortForwardingUpdateMap() (map[string]interface{}, error)
+	ToPortForwardingUpdateMap() (map[string]any, error)
 }
 
 // Update allows port forwarding resources to be updated.

@@ -42,7 +42,7 @@ type Allocation struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// A list of relative links. Includes the self and bookmark links.
-	Links []interface{} `json:"links"`
+	Links []any `json:"links"`
 }
 
 type allocationResult struct {
@@ -55,11 +55,11 @@ func (r allocationResult) Extract() (*Allocation, error) {
 	return &s, err
 }
 
-func (r allocationResult) ExtractInto(v interface{}) error {
+func (r allocationResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-func ExtractAllocationsInto(r pagination.Page, v interface{}) error {
+func ExtractAllocationsInto(r pagination.Page, v any) error {
 	return r.(AllocationPage).Result.ExtractIntoSlicePtr(v, "allocations")
 }
 

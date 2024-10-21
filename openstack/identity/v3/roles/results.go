@@ -16,20 +16,20 @@ type Role struct {
 	ID string `json:"id"`
 
 	// Links contains referencing links to the role.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 
 	// Name is the role name
 	Name string `json:"name"`
 
 	// Extra is a collection of miscellaneous key/values.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 func (r *Role) UnmarshalJSON(b []byte) error {
 	type tmp Role
 	var s struct {
 		tmp
-		Extra map[string]interface{} `json:"extra"`
+		Extra map[string]any `json:"extra"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -42,12 +42,12 @@ func (r *Role) UnmarshalJSON(b []byte) error {
 	if s.Extra != nil {
 		r.Extra = s.Extra
 	} else {
-		var result interface{}
+		var result any
 		err := json.Unmarshal(b, &result)
 		if err != nil {
 			return err
 		}
-		if resultMap, ok := result.(map[string]interface{}); ok {
+		if resultMap, ok := result.(map[string]any); ok {
 			r.Extra = gophercloud.RemainingKeys(Role{}, resultMap)
 		}
 	}
@@ -247,7 +247,7 @@ type PriorRole struct {
 	// Name contains the name of a role in a prior_role object.
 	Name string `json:"name,omitempty"`
 	// Links contains referencing links to the  prior_role.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 type ImpliedRole struct {
@@ -256,7 +256,7 @@ type ImpliedRole struct {
 	// Name contains the name of role  in an implied_role.
 	Name string `json:"name,omitempty"`
 	// Links contains referencing links to the implied_role.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 type RoleInference struct {
@@ -267,8 +267,8 @@ type RoleInference struct {
 }
 
 type RoleInferenceRule struct {
-	RoleInference RoleInference          `json:"role_inference"`
-	Links         map[string]interface{} `json:"links"`
+	RoleInference RoleInference  `json:"role_inference"`
+	Links         map[string]any `json:"links"`
 }
 
 func (r impliedRoleResult) Extract() (*RoleInferenceRule, error) {
@@ -289,7 +289,7 @@ type ImpliedRoleObject struct {
 	// Name contains the name of role  in an implied_role.
 	Description string `json:"description,omitempty"`
 	// Links contains referencing links to the implied_role.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 
 type PriorRoleObject struct {
@@ -300,7 +300,7 @@ type PriorRoleObject struct {
 	// Name contains the name of role  in an implied_role.
 	Description string `json:"description,omitempty"`
 	// Links contains referencing links to the implied_role.
-	Links map[string]interface{} `json:"links"`
+	Links map[string]any `json:"links"`
 }
 type RoleInferenceRules struct {
 	// PriorRole is the role object that implies a list of implied_role objects.
@@ -310,8 +310,8 @@ type RoleInferenceRules struct {
 }
 
 type RoleInferenceRuleList struct {
-	RoleInferenceRuleList []RoleInferenceRules   `json:"role_inferences"`
-	Links                 map[string]interface{} `json:"links"`
+	RoleInferenceRuleList []RoleInferenceRules `json:"role_inferences"`
+	Links                 map[string]any       `json:"links"`
 }
 
 func (r ListImpliedRolesResult) Extract() (*RoleInferenceRuleList, error) {

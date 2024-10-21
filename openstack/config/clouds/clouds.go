@@ -148,6 +148,13 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 
 	endpointType := coalesce(options.endpointType, cloud.EndpointType, cloud.Interface)
 
+	var scope *gophercloud.AuthScope
+	if trustID := cloud.AuthInfo.TrustID; trustID != "" {
+		scope = &gophercloud.AuthScope{
+			TrustID: trustID,
+		}
+	}
+
 	return gophercloud.AuthOptions{
 			IdentityEndpoint:            coalesce(options.authURL, cloud.AuthInfo.AuthURL),
 			Username:                    coalesce(options.username, cloud.AuthInfo.Username),
@@ -158,7 +165,7 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			TenantID:                    coalesce(options.projectID, cloud.AuthInfo.ProjectID),
 			TenantName:                  coalesce(options.projectName, cloud.AuthInfo.ProjectName),
 			TokenID:                     coalesce(options.token, cloud.AuthInfo.Token),
-			Scope:                       options.scope,
+			Scope:                       coalesce(options.scope, scope),
 			ApplicationCredentialID:     coalesce(options.applicationCredentialID, cloud.AuthInfo.ApplicationCredentialID),
 			ApplicationCredentialName:   coalesce(options.applicationCredentialName, cloud.AuthInfo.ApplicationCredentialName),
 			ApplicationCredentialSecret: coalesce(options.applicationCredentialSecret, cloud.AuthInfo.ApplicationCredentialSecret),
@@ -182,15 +189,16 @@ func computeAvailability(endpointType string) gophercloud.Availability {
 	return gophercloud.AvailabilityPublic
 }
 
-// coalesce returns the first argument that is not the empty string, or the
-// empty string.
-func coalesce(items ...string) string {
+// coalesce returns the first argument that is not the zero value for its type,
+// or the zero value for its type.
+func coalesce[T comparable](items ...T) T {
+	var t T
 	for _, item := range items {
-		if item != "" {
+		if item != t {
 			return item
 		}
 	}
-	return ""
+	return t
 }
 
 // mergeClouds merges two Clouds recursively (the AuthInfo also gets merged).
@@ -204,12 +212,12 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 	if err != nil {
 		return Cloud{}, err
 	}
-	var overrideInterface interface{}
+	var overrideInterface any
 	err = json.Unmarshal(overrideJson, &overrideInterface)
 	if err != nil {
 		return Cloud{}, err
 	}
-	var cloudInterface interface{}
+	var cloudInterface any
 	err = json.Unmarshal(cloudJson, &cloudInterface)
 	if err != nil {
 		return Cloud{}, err
@@ -217,6 +225,9 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 	var mergedCloud Cloud
 	mergedInterface := mergeInterfaces(overrideInterface, cloudInterface)
 	mergedJson, err := json.Marshal(mergedInterface)
+	if err != nil {
+		return Cloud{}, err
+	}
 	err = json.Unmarshal(mergedJson, &mergedCloud)
 	if err != nil {
 		return Cloud{}, err
@@ -226,10 +237,10 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 
 // merges two interfaces. In cases where a value is defined for both 'overridingInterface' and
 // 'inferiorInterface' the value in 'overridingInterface' will take precedence.
-func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interface{} {
+func mergeInterfaces(overridingInterface, inferiorInterface any) any {
 	switch overriding := overridingInterface.(type) {
-	case map[string]interface{}:
-		interfaceMap, ok := inferiorInterface.(map[string]interface{})
+	case map[string]any:
+		interfaceMap, ok := inferiorInterface.(map[string]any)
 		if !ok {
 			return overriding
 		}
@@ -240,8 +251,8 @@ func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interfa
 				overriding[k] = v
 			}
 		}
-	case []interface{}:
-		list, ok := inferiorInterface.([]interface{})
+	case []any:
+		list, ok := inferiorInterface.([]any)
 		if !ok {
 			return overriding
 		}
@@ -249,7 +260,7 @@ func mergeInterfaces(overridingInterface, inferiorInterface interface{}) interfa
 		return append(overriding, list...)
 	case nil:
 		// mergeClouds(nil, map[string]interface{...}) -> map[string]interface{...}
-		v, ok := inferiorInterface.(map[string]interface{})
+		v, ok := inferiorInterface.(map[string]any)
 		if ok {
 			return v
 		}

@@ -29,17 +29,17 @@ type CreateExtraDHCPOpt struct {
 }
 
 // ToPortCreateMap casts a CreateOptsExt struct to a map.
-func (opts CreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) {
+func (opts CreateOptsExt) ToPortCreateMap() (map[string]any, error) {
 	base, err := opts.CreateOptsBuilder.ToPortCreateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	// Convert opts.ExtraDHCPOpts to a slice of maps.
 	if opts.ExtraDHCPOpts != nil {
-		extraDHCPOpts := make([]map[string]interface{}, len(opts.ExtraDHCPOpts))
+		extraDHCPOpts := make([]map[string]any, len(opts.ExtraDHCPOpts))
 		for i, opt := range opts.ExtraDHCPOpts {
 			b, err := gophercloud.BuildRequestBody(opt, "")
 			if err != nil {
@@ -77,17 +77,17 @@ type UpdateExtraDHCPOpt struct {
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOptsExt) ToPortUpdateMap() (map[string]any, error) {
 	base, err := opts.UpdateOptsBuilder.ToPortUpdateMap()
 	if err != nil {
 		return nil, err
 	}
 
-	port := base["port"].(map[string]interface{})
+	port := base["port"].(map[string]any)
 
 	// Convert opts.ExtraDHCPOpts to a slice of maps.
 	if opts.ExtraDHCPOpts != nil {
-		extraDHCPOpts := make([]map[string]interface{}, len(opts.ExtraDHCPOpts))
+		extraDHCPOpts := make([]map[string]any, len(opts.ExtraDHCPOpts))
 		for i, opt := range opts.ExtraDHCPOpts {
 			b, err := gophercloud.BuildRequestBody(opt, "")
 			if err != nil {

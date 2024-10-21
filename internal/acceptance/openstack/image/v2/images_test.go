@@ -37,6 +37,7 @@ func TestImagesListEachPage(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 }
 
 func TestImagesListAllPages(t *testing.T) {

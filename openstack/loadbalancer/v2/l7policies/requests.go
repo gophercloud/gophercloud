@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToL7PolicyCreateMap() (map[string]interface{}, error)
+	ToL7PolicyCreateMap() (map[string]any, error)
 }
 
 type Action string
@@ -23,11 +23,14 @@ const (
 	ActionRedirectToURL  Action = "REDIRECT_TO_URL"
 	ActionReject         Action = "REJECT"
 
-	TypeCookie   RuleType = "COOKIE"
-	TypeFileType RuleType = "FILE_TYPE"
-	TypeHeader   RuleType = "HEADER"
-	TypeHostName RuleType = "HOST_NAME"
-	TypePath     RuleType = "PATH"
+	TypeCookie          RuleType = "COOKIE"
+	TypeFileType        RuleType = "FILE_TYPE"
+	TypeHeader          RuleType = "HEADER"
+	TypeHostName        RuleType = "HOST_NAME"
+	TypePath            RuleType = "PATH"
+	TypeSSLConnHasCert  RuleType = "SSL_CONN_HAS_CERT"
+	TypeSSLVerifyResult RuleType = "SSL_VERIFY_RESULT"
+	TypeSSLDNField      RuleType = "SSL_DN_FIELD"
 
 	CompareTypeContains  CompareType = "CONTAINS"
 	CompareTypeEndWith   CompareType = "ENDS_WITH"
@@ -91,7 +94,7 @@ type CreateOpts struct {
 }
 
 // ToL7PolicyCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToL7PolicyCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToL7PolicyCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "l7policy")
 }
 
@@ -175,7 +178,7 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r Del
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToL7PolicyUpdateMap() (map[string]interface{}, error)
+	ToL7PolicyUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts is the common options struct used in this package's Update
@@ -219,13 +222,13 @@ type UpdateOpts struct {
 }
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "l7policy")
 	if err != nil {
 		return nil, err
 	}
 
-	m := b["l7policy"].(map[string]interface{})
+	m := b["l7policy"].(map[string]any)
 
 	if m["redirect_pool_id"] == "" {
 		m["redirect_pool_id"] = nil
@@ -292,7 +295,7 @@ type CreateRuleOpts struct {
 }
 
 // ToRuleCreateMap builds a request body from CreateRuleOpts.
-func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
+func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "rule")
 }
 
@@ -373,7 +376,7 @@ func DeleteRule(ctx context.Context, c *gophercloud.ServiceClient, policyID stri
 
 // UpdateRuleOptsBuilder allows to add additional parameters to the PUT request.
 type UpdateRuleOptsBuilder interface {
-	ToRuleUpdateMap() (map[string]interface{}, error)
+	ToRuleUpdateMap() (map[string]any, error)
 }
 
 // UpdateRuleOpts is the common options struct used in this package's Update
@@ -404,13 +407,13 @@ type UpdateRuleOpts struct {
 }
 
 // ToRuleUpdateMap builds a request body from UpdateRuleOpts.
-func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "rule")
 	if err != nil {
 		return nil, err
 	}
 
-	if m := b["rule"].(map[string]interface{}); m["key"] == "" {
+	if m := b["rule"].(map[string]any); m["key"] == "" {
 		m["key"] = nil
 	}
 

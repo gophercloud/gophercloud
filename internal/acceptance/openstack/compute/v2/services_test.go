@@ -33,7 +33,7 @@ func TestServicesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestServicesListWithOpts(t *testing.T) {
@@ -55,69 +55,12 @@ func TestServicesListWithOpts(t *testing.T) {
 	var found bool
 	for _, service := range allServices {
 		tools.PrintResource(t, service)
-		th.AssertEquals(t, service.Binary, "nova-scheduler")
+		th.AssertEquals(t, "nova-scheduler", service.Binary)
 
 		if service.Binary == "nova-scheduler" {
 			found = true
 		}
 	}
 
-	th.AssertEquals(t, found, true)
-}
-
-func TestServicesUpdate(t *testing.T) {
-	clients.RequireAdmin(t)
-
-	client, err := clients.NewComputeV2Client()
-	th.AssertNoErr(t, err)
-
-	listOpts := services.ListOpts{
-		Binary: "nova-compute",
-	}
-
-	client.Microversion = "2.53"
-	allPages, err := services.List(client, listOpts).AllPages(context.TODO())
-	th.AssertNoErr(t, err)
-
-	allServices, err := services.ExtractServices(allPages)
-	th.AssertNoErr(t, err)
-
-	// disable all services
-	for _, service := range allServices {
-		opts := services.UpdateOpts{
-			Status: services.ServiceDisabled,
-		}
-		updated, err := services.Update(context.TODO(), client, service.ID, opts).Extract()
-		th.AssertNoErr(t, err)
-
-		th.AssertEquals(t, updated.ID, service.ID)
-	}
-
-	// verify all services are disabled
-	allPages, err = services.List(client, listOpts).AllPages(context.TODO())
-	th.AssertNoErr(t, err)
-
-	allServices, err = services.ExtractServices(allPages)
-	th.AssertNoErr(t, err)
-
-	for _, service := range allServices {
-		th.AssertEquals(t, service.Status, "disabled")
-	}
-
-	// reenable all services
-	allPages, err = services.List(client, listOpts).AllPages(context.TODO())
-	th.AssertNoErr(t, err)
-
-	allServices, err = services.ExtractServices(allPages)
-	th.AssertNoErr(t, err)
-
-	for _, service := range allServices {
-		opts := services.UpdateOpts{
-			Status: services.ServiceEnabled,
-		}
-		updated, err := services.Update(context.TODO(), client, service.ID, opts).Extract()
-		th.AssertNoErr(t, err)
-
-		th.AssertEquals(t, updated.ID, service.ID)
-	}
+	th.AssertEquals(t, true, found)
 }

@@ -104,7 +104,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // CreateOptsBuilder allows extensions to add additional parameters to
 // the Create request.
 type CreateOptsBuilder interface {
-	ToProjectCreateMap() (map[string]interface{}, error)
+	ToProjectCreateMap() (map[string]any, error)
 }
 
 // CreateOpts represents parameters used to create a project.
@@ -131,14 +131,14 @@ type CreateOpts struct {
 	Tags []string `json:"tags,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the project.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 
 	// Options are defined options in the API to enable certain features.
-	Options map[Option]interface{} `json:"options,omitempty"`
+	Options map[Option]any `json:"options,omitempty"`
 }
 
 // ToProjectCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToProjectCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToProjectCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "project")
 
 	if err != nil {
@@ -146,7 +146,7 @@ func (opts CreateOpts) ToProjectCreateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["project"].(map[string]interface{}); ok {
+		if v, ok := b["project"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}
@@ -178,7 +178,7 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, projectID st
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
-	ToProjectUpdateMap() (map[string]interface{}, error)
+	ToProjectUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents parameters to update a project.
@@ -205,14 +205,14 @@ type UpdateOpts struct {
 	Tags *[]string `json:"tags,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the project.
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 
 	// Options are defined options in the API to enable certain features.
-	Options map[Option]interface{} `json:"options,omitempty"`
+	Options map[Option]any `json:"options,omitempty"`
 }
 
 // ToUpdateCreateMap formats a UpdateOpts into an update request.
-func (opts UpdateOpts) ToProjectUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToProjectUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "project")
 
 	if err != nil {
@@ -220,7 +220,7 @@ func (opts UpdateOpts) ToProjectUpdateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["project"].(map[string]interface{}); ok {
+		if v, ok := b["project"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}
@@ -262,11 +262,11 @@ type ModifyTagsOpts struct {
 // ModifyTagsOptsBuilder allows extensions to add additional parameters to
 // the Modify request.
 type ModifyTagsOptsBuilder interface {
-	ToModifyTagsCreateMap() (map[string]interface{}, error)
+	ToModifyTagsCreateMap() (map[string]any, error)
 }
 
 // ToModifyTagsCreateMap formats a ModifyTagsOpts into a Modify tags request.
-func (opts ModifyTagsOpts) ToModifyTagsCreateMap() (map[string]interface{}, error) {
+func (opts ModifyTagsOpts) ToModifyTagsCreateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 
 	if err != nil {

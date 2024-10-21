@@ -218,7 +218,7 @@ func NewBlockStorageV2NoAuthClient() (*gophercloud.ServiceClient, error) {
 }
 
 // NewBlockStorageV3NoAuthClient returns a noauth *ServiceClient for
-// making calls to the OpenStack Block Storage v2 API. An error will be
+// making calls to the OpenStack Block Storage v3 API. An error will be
 // returned if client creation was not possible.
 func NewBlockStorageV3NoAuthClient() (*gophercloud.ServiceClient, error) {
 	client, err := blockstorageNoAuth.NewClient(gophercloud.AuthOptions{
@@ -564,27 +564,6 @@ func NewLoadBalancerV2Client() (*gophercloud.ServiceClient, error) {
 	client = configureDebug(client)
 
 	return openstack.NewLoadBalancerV2(client, gophercloud.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
-	})
-}
-
-// NewClusteringV1Client returns a *ServiceClient for making calls
-// to the OpenStack Clustering v1 API. An error will be returned
-// if authentication or client creation was not possible.
-func NewClusteringV1Client() (*gophercloud.ServiceClient, error) {
-	ao, err := openstack.AuthOptionsFromEnv()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
-	if err != nil {
-		return nil, err
-	}
-
-	client = configureDebug(client)
-
-	return openstack.NewClusteringV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }

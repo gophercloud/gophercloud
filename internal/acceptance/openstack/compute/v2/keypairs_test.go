@@ -15,8 +15,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const keyName = "gophercloud_test_key_pair"
-
 func TestKeyPairsParse(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
@@ -59,7 +57,7 @@ func TestKeyPairsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestKeyPairsImportPublicKey(t *testing.T) {
@@ -96,7 +94,7 @@ func TestKeyPairsServerCreateWithKey(t *testing.T) {
 	server, err = servers.Get(context.TODO(), client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, server.KeyName, keyPair.Name)
+	th.AssertEquals(t, keyPair.Name, server.KeyName)
 }
 
 func TestKeyPairsCreateDeleteByID(t *testing.T) {
@@ -148,7 +146,7 @@ func TestKeyPairsCreateDeleteByID(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	deleteOpts := keypairs.DeleteOpts{
 		UserID: user.ID,

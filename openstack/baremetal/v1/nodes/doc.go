@@ -43,7 +43,7 @@ Example to Create Node
 		Driver:        "ipmi",
 		BootInterface: "pxe",
 		Name:          "coconuts",
-		DriverInfo: map[string]interface{}{
+		DriverInfo: map[string]any{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
 			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",

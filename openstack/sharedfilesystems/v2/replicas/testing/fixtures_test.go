@@ -215,7 +215,9 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("offset")
 		shareID := r.Form.Get("share_id")
 		if shareID != "65a34695-f9e5-4eea-b48d-a0b261d82943" {
@@ -282,7 +284,9 @@ func MockListDetailResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("offset")
 		shareID := r.Form.Get("share_id")
 		if shareID != "65a34695-f9e5-4eea-b48d-a0b261d82943" {

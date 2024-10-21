@@ -10,7 +10,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToShareNetworkCreateMap() (map[string]interface{}, error)
+	ToShareNetworkCreateMap() (map[string]any, error)
 }
 
 // CreateOpts contains options for creating a ShareNetwork. This object is
@@ -31,7 +31,7 @@ type CreateOpts struct {
 
 // ToShareNetworkCreateMap assembles a request body based on the contents of a
 // CreateOpts.
-func (opts CreateOpts) ToShareNetworkCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToShareNetworkCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "share_network")
 }
 
@@ -132,7 +132,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToShareNetworkUpdateMap() (map[string]interface{}, error)
+	ToShareNetworkUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts contain options for updating an existing ShareNetwork. This object is passed
@@ -153,7 +153,7 @@ type UpdateOpts struct {
 
 // ToShareNetworkUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
-func (opts UpdateOpts) ToShareNetworkUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToShareNetworkUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "share_network")
 }
 
@@ -175,7 +175,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 // AddSecurityServiceOptsBuilder allows extensions to add additional parameters to the
 // AddSecurityService request.
 type AddSecurityServiceOptsBuilder interface {
-	ToShareNetworkAddSecurityServiceMap() (map[string]interface{}, error)
+	ToShareNetworkAddSecurityServiceMap() (map[string]any, error)
 }
 
 // AddSecurityServiceOpts contain options for adding a security service to an
@@ -187,7 +187,7 @@ type AddSecurityServiceOpts struct {
 
 // ToShareNetworkAddSecurityServiceMap assembles a request body based on the contents of an
 // AddSecurityServiceOpts.
-func (opts AddSecurityServiceOpts) ToShareNetworkAddSecurityServiceMap() (map[string]interface{}, error) {
+func (opts AddSecurityServiceOpts) ToShareNetworkAddSecurityServiceMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "add_security_service")
 }
 
@@ -209,7 +209,7 @@ func AddSecurityService(ctx context.Context, client *gophercloud.ServiceClient, 
 // RemoveSecurityServiceOptsBuilder allows extensions to add additional parameters to the
 // RemoveSecurityService request.
 type RemoveSecurityServiceOptsBuilder interface {
-	ToShareNetworkRemoveSecurityServiceMap() (map[string]interface{}, error)
+	ToShareNetworkRemoveSecurityServiceMap() (map[string]any, error)
 }
 
 // RemoveSecurityServiceOpts contain options for removing a security service from an
@@ -221,7 +221,7 @@ type RemoveSecurityServiceOpts struct {
 
 // ToShareNetworkRemoveSecurityServiceMap assembles a request body based on the contents of an
 // RemoveSecurityServiceOpts.
-func (opts RemoveSecurityServiceOpts) ToShareNetworkRemoveSecurityServiceMap() (map[string]interface{}, error) {
+func (opts RemoveSecurityServiceOpts) ToShareNetworkRemoveSecurityServiceMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "remove_security_service")
 }
 

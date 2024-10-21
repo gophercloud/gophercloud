@@ -86,7 +86,7 @@ func TestReplicaPromote(t *testing.T) {
 	// sync new replica
 	err = replicas.Resync(context.TODO(), client, created.ID).ExtractErr()
 	th.AssertNoErr(t, err)
-	_, err = waitForReplicaState(t, client, created.ID, "in_sync")
+	err = waitForReplicaState(t, client, created.ID, "in_sync")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestReplicaPromote(t *testing.T) {
 	err = replicas.Promote(context.TODO(), client, created.ID, &replicas.PromoteOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	_, err = waitForReplicaState(t, client, created.ID, "active")
+	err = waitForReplicaState(t, client, created.ID, "active")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}
@@ -117,14 +117,14 @@ func TestReplicaPromote(t *testing.T) {
 	// sync old replica
 	err = replicas.Resync(context.TODO(), client, oldReplicaID).ExtractErr()
 	th.AssertNoErr(t, err)
-	_, err = waitForReplicaState(t, client, oldReplicaID, "in_sync")
+	err = waitForReplicaState(t, client, oldReplicaID, "in_sync")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}
 	err = replicas.Promote(context.TODO(), client, oldReplicaID, &replicas.PromoteOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	_, err = waitForReplicaState(t, client, oldReplicaID, "active")
+	err = waitForReplicaState(t, client, oldReplicaID, "active")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}
@@ -262,7 +262,7 @@ func TestReplicaResetStatus(t *testing.T) {
 	}
 
 	// We need to wait till the Extend operation is done
-	_, err = waitForReplicaStatus(t, client, replica.ID, "error")
+	err = waitForReplicaStatus(t, client, replica.ID, "error")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}
@@ -300,7 +300,7 @@ func TestReplicaForceDelete(t *testing.T) {
 		t.Fatalf("Unable to force delete a replica: %v", err)
 	}
 
-	_, err = waitForReplicaStatus(t, client, replica.ID, "deleted")
+	err = waitForReplicaStatus(t, client, replica.ID, "deleted")
 	if err != nil {
 		t.Fatalf("Replica status error: %v", err)
 	}

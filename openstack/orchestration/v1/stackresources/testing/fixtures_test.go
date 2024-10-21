@@ -33,11 +33,11 @@ var FindExpected = []stackresources.Resource{
 		StatusReason: "state changed",
 		UpdatedTime:  Updated_time,
 		CreationTime: Create_time,
-		RequiredBy:   []interface{}{},
+		RequiredBy:   []any{},
 		Status:       "CREATE_IN_PROGRESS",
 		PhysicalID:   "49181cd6-169a-4130-9455-31185bbfc5bf",
 		Type:         "OS::Nova::Server",
-		Attributes:   map[string]interface{}{"SXSW": "atx"},
+		Attributes:   map[string]any{"SXSW": "atx"},
 		Description:  "Some resource",
 	},
 }
@@ -104,11 +104,11 @@ var ListExpected = []stackresources.Resource{
 		StatusReason: "state changed",
 		UpdatedTime:  Updated_time,
 		CreationTime: Create_time,
-		RequiredBy:   []interface{}{},
+		RequiredBy:   []any{},
 		Status:       "CREATE_IN_PROGRESS",
 		PhysicalID:   "49181cd6-169a-4130-9455-31185bbfc5bf",
 		Type:         "OS::Nova::Server",
-		Attributes:   map[string]interface{}{"SXSW": "atx"},
+		Attributes:   map[string]any{"SXSW": "atx"},
 		Description:  "Some resource",
 	},
 }
@@ -151,7 +151,9 @@ func HandleListSuccessfully(t *testing.T, output string) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -178,10 +180,10 @@ var GetExpected = &stackresources.Resource{
 		},
 	},
 	LogicalID:    "wordpress_instance",
-	Attributes:   map[string]interface{}{"SXSW": "atx"},
+	Attributes:   map[string]any{"SXSW": "atx"},
 	StatusReason: "state changed",
 	UpdatedTime:  Updated_time,
-	RequiredBy:   []interface{}{},
+	RequiredBy:   []any{},
 	Status:       "CREATE_COMPLETE",
 	PhysicalID:   "00e3a2fe-c65d-403c-9483-4db9930dd194",
 	Type:         "OS::Nova::Server",
@@ -313,13 +315,13 @@ func HandleListTypesSuccessfully(t *testing.T, output string) {
 
 // GetSchemaExpected represents the expected object from a Schema request.
 var GetSchemaExpected = &stackresources.TypeSchema{
-	Attributes: map[string]interface{}{
-		"an_attribute": map[string]interface{}{
+	Attributes: map[string]any{
+		"an_attribute": map[string]any{
 			"description": "An attribute description .",
 		},
 	},
-	Properties: map[string]interface{}{
-		"a_property": map[string]interface{}{
+	Properties: map[string]any{
+		"a_property": map[string]any{
 			"update_allowed": false,
 			"required":       true,
 			"type":           "string",
@@ -327,7 +329,7 @@ var GetSchemaExpected = &stackresources.TypeSchema{
 		},
 	},
 	ResourceType: "OS::Heat::AResourceName",
-	SupportStatus: map[string]interface{}{
+	SupportStatus: map[string]any{
 		"message": "A status message",
 		"status":  "SUPPORTED",
 		"version": "2014.1",

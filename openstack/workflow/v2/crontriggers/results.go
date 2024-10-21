@@ -63,10 +63,10 @@ type CronTrigger struct {
 	WorkflowName string `json:"workflow_name"`
 
 	// WorkflowInput contains the workflow input values.
-	WorkflowInput map[string]interface{} `json:"-"`
+	WorkflowInput map[string]any `json:"-"`
 
 	// WorkflowParams contains workflow type specific parameters.
-	WorkflowParams map[string]interface{} `json:"-"`
+	WorkflowParams map[string]any `json:"-"`
 
 	// CreatedAt contains the cron trigger creation date.
 	CreatedAt time.Time `json:"-"`

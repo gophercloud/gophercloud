@@ -23,7 +23,7 @@ func GetDetail(ctx context.Context, client *gophercloud.ServiceClient, projectID
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToQuotaUpdateMap() (map[string]interface{}, error)
+	ToQuotaUpdateMap() (map[string]any, error)
 }
 
 // UpdateOpts represents options used to update the Networking Quotas.
@@ -60,7 +60,7 @@ type UpdateOpts struct {
 }
 
 // ToQuotaUpdateMap builds a request body from UpdateOpts.
-func (opts UpdateOpts) ToQuotaUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToQuotaUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "quota")
 }
 

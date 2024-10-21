@@ -153,12 +153,12 @@ func (r commonResult) Extract() (*Volume, error) {
 }
 
 // ExtractInto converts our response data into a volume struct
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "volume")
 }
 
 // ExtractVolumesInto similar to ExtractInto but operates on a `list` of volumes
-func ExtractVolumesInto(r pagination.Page, v interface{}) error {
+func ExtractVolumesInto(r pagination.Page, v any) error {
 	return r.(VolumePage).Result.ExtractIntoSlicePtr(v, "volumes")
 }
 
@@ -247,11 +247,11 @@ type ExtendSizeResult struct {
 // Extract will get the connection information out of the
 // InitializeConnectionResult object.
 //
-// This will be a generic map[string]interface{} and the results will be
+// This will be a generic map[string]any and the results will be
 // dependent on the type of connection made.
-func (r InitializeConnectionResult) Extract() (map[string]interface{}, error) {
+func (r InitializeConnectionResult) Extract() (map[string]any, error) {
 	var s struct {
-		ConnectionInfo map[string]interface{} `json:"connection_info"`
+		ConnectionInfo map[string]any `json:"connection_info"`
 	}
 	err := r.ExtractInto(&s)
 	return s.ConnectionInfo, err
@@ -273,7 +273,7 @@ type ImageVolumeType struct {
 	IsPublic bool `json:"is_public"`
 
 	// Extra specifications for volume type.
-	ExtraSpecs map[string]interface{} `json:"extra_specs"`
+	ExtraSpecs map[string]any `json:"extra_specs"`
 
 	// ID of quality of service specs.
 	QosSpecsID string `json:"qos_specs_id"`

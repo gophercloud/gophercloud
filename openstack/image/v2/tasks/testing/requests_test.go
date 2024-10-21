@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	tasks.List(fakeclient.ServiceClient(), tasks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := tasks.List(fakeclient.ServiceClient(), tasks.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := tasks.ExtractTasks(page)
 		if err != nil {
@@ -46,6 +46,7 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -78,11 +79,11 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.Type, "import")
 	th.AssertEquals(t, s.ID, "1252f636-1246-4319-bfba-c47cde0efbe0")
 	th.AssertEquals(t, s.Schema, "/v2/schemas/task")
-	th.AssertDeepEquals(t, s.Result, map[string]interface{}(nil))
-	th.AssertDeepEquals(t, s.Input, map[string]interface{}{
+	th.AssertDeepEquals(t, s.Result, map[string]any(nil))
+	th.AssertDeepEquals(t, s.Input, map[string]any{
 		"import_from":        "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img",
 		"import_from_format": "raw",
-		"image_properties": map[string]interface{}{
+		"image_properties": map[string]any{
 			"container_format": "bare",
 			"disk_format":      "raw",
 		},
@@ -106,8 +107,8 @@ func TestCreate(t *testing.T) {
 
 	opts := tasks.CreateOpts{
 		Type: "import",
-		Input: map[string]interface{}{
-			"image_properties": map[string]interface{}{
+		Input: map[string]any{
+			"image_properties": map[string]any{
 				"container_format": "bare",
 				"disk_format":      "raw",
 			},
@@ -127,11 +128,11 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.Type, "import")
 	th.AssertEquals(t, s.ID, "d550c87d-86ed-430a-9895-c7a1f5ce87e9")
 	th.AssertEquals(t, s.Schema, "/v2/schemas/task")
-	th.AssertDeepEquals(t, s.Result, map[string]interface{}(nil))
-	th.AssertDeepEquals(t, s.Input, map[string]interface{}{
+	th.AssertDeepEquals(t, s.Result, map[string]any(nil))
+	th.AssertDeepEquals(t, s.Input, map[string]any{
 		"import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
 		"import_from_format": "raw",
-		"image_properties": map[string]interface{}{
+		"image_properties": map[string]any{
 			"container_format": "bare",
 			"disk_format":      "raw",
 		},

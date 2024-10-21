@@ -45,7 +45,7 @@ func TestTemplateParsing(t *testing.T) {
 func TestIgnoreIfTemplate(t *testing.T) {
 	var keyValueTests = []struct {
 		key   string
-		value interface{}
+		value any
 		out   bool
 	}{
 		{"not_get_file", "afksdf", true},
@@ -83,25 +83,25 @@ resources:
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`
 
-var myNovaExpected = map[string]interface{}{
+var myNovaExpected = map[string]any{
 	"heat_template_version": "2014-10-16",
-	"parameters": map[string]interface{}{
-		"flavor": map[string]interface{}{
+	"parameters": map[string]any{
+		"flavor": map[string]any{
 			"type":        "string",
 			"description": "Flavor for the server to be created",
 			"default":     4353,
 			"hidden":      true,
 		},
 	},
-	"resources": map[string]interface{}{
-		"test_server": map[string]interface{}{
+	"resources": map[string]any{
+		"test_server": map[string]any{
 			"type": "OS::Nova::Server",
-			"properties": map[string]interface{}{
+			"properties": map[string]any{
 				"name":   "test-server",
 				"flavor": "2 GB General Purpose v1",
 				"image":  "Debian 7 (Wheezy) (PVHVM)",
-				"networks": []interface{}{
-					map[string]interface{}{
+				"networks": []any{
+					map[string]any{
 						"uuid": "11111111-1111-1111-1111-111111111111",
 					},
 				},
@@ -130,10 +130,10 @@ resources:
 	th.AssertNoErr(t, te.getFileContents(te.Parsed, ignoreIfTemplate, true))
 
 	// Now check template and referenced file
-	expectedParsed := map[string]interface{}{
+	expectedParsed := map[string]any{
 		"heat_template_version": "2015-04-30",
-		"resources": map[string]interface{}{
-			"my_server": map[string]interface{}{
+		"resources": map[string]any{
+			"my_server": map[string]any{
 				"type": fakeURL,
 			},
 		},
@@ -176,14 +176,14 @@ resources:
 		"somefile": "Welcome!",
 	}
 	th.AssertEquals(t, expectedFiles["somefile"], te.Files[fakeURL])
-	expectedParsed := map[string]interface{}{
+	expectedParsed := map[string]any{
 		"heat_template_version": "2015-04-30",
-		"resources": map[string]interface{}{
-			"test_resource": map[string]interface{}{
+		"resources": map[string]any{
+			"test_resource": map[string]any{
 				"type": "OS::Heat::TestResource",
-				"properties": map[string]interface{}{
+				"properties": map[string]any{
 					"path": "somefile",
-					"value": map[string]interface{}{
+					"value": map[string]any{
 						"get_file": fakeURL,
 					},
 				},
@@ -215,20 +215,20 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`
-	mySubstrackExpected := map[string]interface{}{
+	mySubstrackExpected := map[string]any{
 		"heat_template_version": "2015-04-30",
-		"resources": map[string]interface{}{
-			"my_server": map[string]interface{}{
+		"resources": map[string]any{
+			"my_server": map[string]any{
 				"type": novaURL,
 			},
-			"my_backend": map[string]interface{}{
+			"my_backend": map[string]any{
 				"type": "OS::Nova::Server",
-				"properties": map[string]interface{}{
+				"properties": map[string]any{
 					"name":   "test-backend",
 					"flavor": "4 GB General Purpose v1",
 					"image":  "Debian 7 (Wheezy) (PVHVM)",
-					"networks": []interface{}{
-						map[string]interface{}{
+					"networks": []any{
+						map[string]any{
 							"uuid": "11111111-1111-1111-1111-111111111111",
 						},
 					},
@@ -250,10 +250,10 @@ resources:
 	th.AssertNoErr(t, te.Parse())
 	th.AssertNoErr(t, te.getFileContents(te.Parsed, ignoreIfTemplate, true))
 
-	expectedParsed := map[string]interface{}{
+	expectedParsed := map[string]any{
 		"heat_template_version": "2015-04-30",
-		"resources": map[string]interface{}{
-			"my_stack": map[string]interface{}{
+		"resources": map[string]any{
+			"my_stack": map[string]any{
 				"type": subStackURL,
 			},
 		},
@@ -261,7 +261,7 @@ resources:
 	th.AssertNoErr(t, te.Parse())
 	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
 
-	expectedFiles := map[string]interface{}{
+	expectedFiles := map[string]any{
 		novaURL:     myNovaExpected,
 		subStackURL: mySubstrackExpected,
 	}

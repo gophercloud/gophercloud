@@ -36,7 +36,7 @@ func (r *Service) UnmarshalJSON(b []byte) error {
 	type tmp Service
 	var s struct {
 		tmp
-		ID interface{} `json:"id"`
+		ID any `json:"id"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -144,11 +144,11 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	type tmp Hypervisor
 	var s struct {
 		tmp
-		ID                interface{} `json:"id"`
-		CPUInfo           interface{} `json:"cpu_info"`
-		HypervisorVersion interface{} `json:"hypervisor_version"`
-		FreeDiskGB        interface{} `json:"free_disk_gb"`
-		LocalGB           interface{} `json:"local_gb"`
+		ID                any `json:"id"`
+		CPUInfo           any `json:"cpu_info"`
+		HypervisorVersion any `json:"hypervisor_version"`
+		FreeDiskGB        any `json:"free_disk_gb"`
+		LocalGB           any `json:"local_gb"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -158,27 +158,31 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 
 	*r = Hypervisor(s.tmp)
 
-	// Newer versions return the CPU info as the correct type.
-	// Older versions return the CPU info as a string and need to be
-	// unmarshalled by the json parser.
-	var tmpb []byte
+	// cpu_info doesn't exist after api version 2.87,
+	// see https://docs.openstack.org/api-ref/compute/#id288
+	if s.CPUInfo != nil {
+		// api versions 2.28 to 2.87 return the CPU info as the correct type.
+		// api versions < 2.28 return the CPU info as a string and need to be
+		// unmarshalled by the json parser.
+		var tmpb []byte
 
-	switch t := s.CPUInfo.(type) {
-	case string:
-		tmpb = []byte(t)
-	case map[string]interface{}:
-		tmpb, err = json.Marshal(t)
-		if err != nil {
-			return err
+		switch t := s.CPUInfo.(type) {
+		case string:
+			tmpb = []byte(t)
+		case map[string]any:
+			tmpb, err = json.Marshal(t)
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("CPUInfo has unexpected type: %T", t)
 		}
-	default:
-		return fmt.Errorf("CPUInfo has unexpected type: %T", t)
-	}
 
-	if len(tmpb) != 0 {
-		err = json.Unmarshal(tmpb, &r.CPUInfo)
-		if err != nil {
-			return err
+		if len(tmpb) != 0 {
+			err = json.Unmarshal(tmpb, &r.CPUInfo)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -193,22 +197,28 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("Hypervisor version has unexpected type: %T", t)
 	}
 
-	switch t := s.FreeDiskGB.(type) {
-	case int:
-		r.FreeDiskGB = t
-	case float64:
-		r.FreeDiskGB = int(t)
-	default:
-		return fmt.Errorf("Free disk GB has unexpected type: %T", t)
+	// free_disk_gb doesn't exist after api version 2.87
+	if s.FreeDiskGB != nil {
+		switch t := s.FreeDiskGB.(type) {
+		case int:
+			r.FreeDiskGB = t
+		case float64:
+			r.FreeDiskGB = int(t)
+		default:
+			return fmt.Errorf("Free disk GB has unexpected type: %T", t)
+		}
 	}
 
-	switch t := s.LocalGB.(type) {
-	case int:
-		r.LocalGB = t
-	case float64:
-		r.LocalGB = int(t)
-	default:
-		return fmt.Errorf("Local GB has unexpected type: %T", t)
+	// local_gb doesn't exist after api version 2.87
+	if s.LocalGB != nil {
+		switch t := s.LocalGB.(type) {
+		case int:
+			r.LocalGB = t
+		case float64:
+			r.LocalGB = int(t)
+		default:
+			return fmt.Errorf("Local GB has unexpected type: %T", t)
+		}
 	}
 
 	// OpenStack Compute service returns ID in string representation since
@@ -341,7 +351,7 @@ func (r *Uptime) UnmarshalJSON(b []byte) error {
 	type tmp Uptime
 	var s struct {
 		tmp
-		ID interface{} `json:"id"`
+		ID any `json:"id"`
 	}
 
 	err := json.Unmarshal(b, &s)

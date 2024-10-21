@@ -155,11 +155,11 @@ func (r commonResult) Extract() (*Backup, error) {
 	return &s, err
 }
 
-func (r commonResult) ExtractInto(v interface{}) error {
+func (r commonResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "backup")
 }
 
-func ExtractBackupsInto(r pagination.Page, v interface{}) error {
+func ExtractBackupsInto(r pagination.Page, v any) error {
 	return r.(BackupPage).Result.ExtractIntoSlicePtr(v, "backups")
 }
 
@@ -188,7 +188,7 @@ func (r RestoreResult) Extract() (*Restore, error) {
 	return &s, err
 }
 
-func (r RestoreResult) ExtractInto(v interface{}) error {
+func (r RestoreResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "restore")
 }
 
@@ -213,7 +213,7 @@ func (r ExportResult) Extract() (*BackupRecord, error) {
 	return &s, err
 }
 
-func (r ExportResult) ExtractInto(v interface{}) error {
+func (r ExportResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "backup-record")
 }
 
@@ -235,7 +235,7 @@ func (r ImportResult) Extract() (*ImportResponse, error) {
 	return &s, err
 }
 
-func (r ImportResult) ExtractInto(v interface{}) error {
+func (r ImportResult) ExtractInto(v any) error {
 	return r.Result.ExtractIntoStructPtr(v, "backup")
 }
 
@@ -265,7 +265,7 @@ type ImportBackup struct {
 	Deleted             bool              `json:"deleted"`
 	DisplayName         *string           `json:"display_name"`
 	DisplayDescription  *string           `json:"display_description"`
-	DriverInfo          interface{}       `json:"driver_info"`
+	DriverInfo          any               `json:"driver_info"`
 	FailReason          *string           `json:"fail_reason"`
 	ProjectID           string            `json:"project_id"`
 	Metadata            map[string]string `json:"metadata"`

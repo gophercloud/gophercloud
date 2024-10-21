@@ -8,7 +8,7 @@ import (
 )
 
 type CreateOptsBuilder interface {
-	ToEndpointCreateMap() (map[string]interface{}, error)
+	ToEndpointCreateMap() (map[string]any, error)
 }
 
 // Create inserts a new Endpoint association to a project.

@@ -149,6 +149,8 @@ const NodeListDetailBody = `
       "provision_updated_at": "2019-02-15T17:21:29+00:00",
       "raid_config": {},
       "raid_interface": "no-raid",
+      "retired": false,
+      "retired_reason": "No longer needed",
       "rescue_interface": "no-rescue",
       "reservation": null,
       "resource_class": null,
@@ -247,6 +249,8 @@ const NodeListDetailBody = `
       "provision_updated_at": null,
       "raid_config": {},
       "raid_interface": "no-raid",
+      "retired": false,
+      "retired_reason": "No longer needed",
       "rescue_interface": "no-rescue",
       "reservation": null,
       "resource_class": null,
@@ -345,6 +349,8 @@ const NodeListDetailBody = `
       "provision_updated_at": null,
       "raid_config": {},
       "raid_interface": "no-raid",
+      "retired": false,
+      "retired_reason": "No longer needed",
       "rescue_interface": "no-rescue",
       "reservation": null,
       "resource_class": null,
@@ -456,6 +462,8 @@ const SingleNodeBody = `
   "provision_updated_at": "2019-02-15T17:21:29+00:00",
   "raid_config": {},
   "raid_interface": "no-raid",
+  "retired": false,
+  "retired_reason": "No longer needed",
   "rescue_interface": "no-rescue",
   "reservation": null,
   "resource_class": null,
@@ -855,7 +863,7 @@ const NodeFirmwareListBody = `
 {
   "firmware": [
    {
-      "created_at": "2023-10-03T18:30:00+00:00", 
+      "created_at": "2023-10-03T18:30:00+00:00",
       "updated_at": null,
       "component": "bios",
       "initial_version": "U30 v2.36 (07/16/2020)",
@@ -864,10 +872,10 @@ const NodeFirmwareListBody = `
    },
    {
       "created_at": "2023-10-03T18:30:00+00:00",
-      "updated_at": "2023-10-03T18:45:54+00:00", 
-      "component": "bmc",  
-      "initial_version": "iLO 5 v2.78", 
-      "current_version": "iLO 5 v2.81", 
+      "updated_at": "2023-10-03T18:45:54+00:00",
+      "component": "bmc",
+      "initial_version": "iLO 5 v2.78",
+      "current_version": "iLO 5 v2.81",
       "last_version_flashed": "iLO 5 v2.81"
    }
    ]
@@ -909,7 +917,7 @@ var (
 		LastError:            "",
 		Reservation:          "",
 		Driver:               "ipmi",
-		DriverInfo: map[string]interface{}{
+		DriverInfo: map[string]any{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
 			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",
@@ -917,17 +925,17 @@ var (
 			"deploy_ramdisk": "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
 			"ipmi_password":  "admin",
 		},
-		DriverInternalInfo:  map[string]interface{}{},
-		Properties:          map[string]interface{}{},
-		InstanceInfo:        map[string]interface{}{},
+		DriverInternalInfo:  map[string]any{},
+		Properties:          map[string]any{},
+		InstanceInfo:        map[string]any{},
 		InstanceUUID:        "",
 		ChassisUUID:         "",
-		Extra:               map[string]interface{}{},
+		Extra:               map[string]any{},
 		ConsoleEnabled:      false,
-		RAIDConfig:          map[string]interface{}{},
-		TargetRAIDConfig:    map[string]interface{}{},
-		CleanStep:           map[string]interface{}{},
-		DeployStep:          map[string]interface{}{},
+		RAIDConfig:          map[string]any{},
+		TargetRAIDConfig:    map[string]any{},
+		CleanStep:           map[string]any{},
+		DeployStep:          map[string]any{},
 		ResourceClass:       "",
 		BIOSInterface:       "no-bios",
 		BootInterface:       "pxe",
@@ -949,6 +957,8 @@ var (
 		CreatedAt:           createdAtFoo,
 		UpdatedAt:           updatedAt,
 		ProvisionUpdatedAt:  provisonUpdatedAt,
+		Retired:             false,
+		RetiredReason:       "No longer needed",
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
@@ -1024,18 +1034,18 @@ var (
 		LastError:            "",
 		Reservation:          "",
 		Driver:               "ipmi",
-		DriverInfo:           map[string]interface{}{},
-		DriverInternalInfo:   map[string]interface{}{},
-		Properties:           map[string]interface{}{},
-		InstanceInfo:         map[string]interface{}{},
+		DriverInfo:           map[string]any{},
+		DriverInternalInfo:   map[string]any{},
+		Properties:           map[string]any{},
+		InstanceInfo:         map[string]any{},
 		InstanceUUID:         "",
 		ChassisUUID:          "",
-		Extra:                map[string]interface{}{},
+		Extra:                map[string]any{},
 		ConsoleEnabled:       false,
-		RAIDConfig:           map[string]interface{}{},
-		TargetRAIDConfig:     map[string]interface{}{},
-		CleanStep:            map[string]interface{}{},
-		DeployStep:           map[string]interface{}{},
+		RAIDConfig:           map[string]any{},
+		TargetRAIDConfig:     map[string]any{},
+		CleanStep:            map[string]any{},
+		DeployStep:           map[string]any{},
 		ResourceClass:        "",
 		BIOSInterface:        "no-bios",
 		BootInterface:        "pxe",
@@ -1058,6 +1068,8 @@ var (
 		UpdatedAt:            updatedAt,
 		InspectionStartedAt:  &InspectionStartedAt,
 		InspectionFinishedAt: &InspectionFinishedAt,
+		Retired:              false,
+		RetiredReason:        "No longer needed",
 	}
 
 	NodeBaz = nodes.Node{
@@ -1073,18 +1085,18 @@ var (
 		LastError:            "",
 		Reservation:          "",
 		Driver:               "ipmi",
-		DriverInfo:           map[string]interface{}{},
-		DriverInternalInfo:   map[string]interface{}{},
-		Properties:           map[string]interface{}{},
-		InstanceInfo:         map[string]interface{}{},
+		DriverInfo:           map[string]any{},
+		DriverInternalInfo:   map[string]any{},
+		Properties:           map[string]any{},
+		InstanceInfo:         map[string]any{},
 		InstanceUUID:         "",
 		ChassisUUID:          "",
-		Extra:                map[string]interface{}{},
+		Extra:                map[string]any{},
 		ConsoleEnabled:       false,
-		RAIDConfig:           map[string]interface{}{},
-		TargetRAIDConfig:     map[string]interface{}{},
-		CleanStep:            map[string]interface{}{},
-		DeployStep:           map[string]interface{}{},
+		RAIDConfig:           map[string]any{},
+		TargetRAIDConfig:     map[string]any{},
+		CleanStep:            map[string]any{},
+		DeployStep:           map[string]any{},
 		ResourceClass:        "",
 		BIOSInterface:        "no-bios",
 		BootInterface:        "pxe",
@@ -1105,15 +1117,17 @@ var (
 		ProtectedReason:      "",
 		CreatedAt:            createdAtBaz,
 		UpdatedAt:            updatedAt,
+		Retired:              false,
+		RetiredReason:        "No longer needed",
 	}
 
 	ConfigDriveMap = nodes.ConfigDrive{
-		UserData: map[string]interface{}{
+		UserData: map[string]any{
 			"ignition": map[string]string{
 				"version": "2.2.0",
 			},
-			"systemd": map[string]interface{}{
-				"units": []map[string]interface{}{{
+			"systemd": map[string]any{
+				"units": []map[string]any{{
 					"name":    "example.service",
 					"enabled": true,
 				},
@@ -1290,7 +1304,9 @@ func HandleNodeListSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		marker := r.Form.Get("marker")
 		switch marker {
@@ -1311,7 +1327,9 @@ func HandleNodeListDetailSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 
 		fmt.Fprintf(w, NodeListDetailBody)
 	})

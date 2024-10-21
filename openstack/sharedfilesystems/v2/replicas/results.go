@@ -159,7 +159,7 @@ func ExtractReplicas(r pagination.Page) ([]Replica, error) {
 
 // ExtractReplicasInto similar to ExtractReplicas but operates on a `list` of
 // replicas.
-func ExtractReplicasInto(r pagination.Page, v interface{}) error {
+func ExtractReplicasInto(r pagination.Page, v any) error {
 	return r.(ReplicaPage).Result.ExtractIntoSlicePtr(v, "share_replicas")
 }
 

@@ -31,10 +31,10 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 		path = current.LinkPath
 	}
 
-	submap, ok := current.Body.(map[string]interface{})
+	submap, ok := current.Body.(map[string]any)
 	if !ok {
 		err := gophercloud.ErrUnexpectedType{}
-		err.Expected = "map[string]interface{}"
+		err.Expected = "map[string]any"
 		err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
 		return "", err
 	}
@@ -48,10 +48,10 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 		}
 
 		if len(path) > 0 {
-			submap, ok = value.(map[string]interface{})
+			submap, ok = value.(map[string]any)
 			if !ok {
 				err := gophercloud.ErrUnexpectedType{}
-				err.Expected = "map[string]interface{}"
+				err.Expected = "map[string]any"
 				err.Actual = fmt.Sprintf("%v", reflect.TypeOf(value))
 				return "", err
 			}
@@ -76,17 +76,17 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 
 // IsEmpty satisifies the IsEmpty method of the Page interface
 func (current LinkedPageBase) IsEmpty() (bool, error) {
-	if b, ok := current.Body.([]interface{}); ok {
+	if b, ok := current.Body.([]any); ok {
 		return len(b) == 0, nil
 	}
 	err := gophercloud.ErrUnexpectedType{}
-	err.Expected = "[]interface{}"
+	err.Expected = "[]any"
 	err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
 	return true, err
 }
 
 // GetBody returns the linked page's body. This method is needed to satisfy the
 // Page interface.
-func (current LinkedPageBase) GetBody() interface{} {
+func (current LinkedPageBase) GetBody() any {
 	return current.Body
 }

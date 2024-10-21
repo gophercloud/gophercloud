@@ -66,7 +66,7 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 		Description: volumeDescription,
 	}
 
-	volume, err := volumes.Create(context.TODO(), client, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		return volume, err
 	}
@@ -106,7 +106,7 @@ func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient) (*vo
 		ImageID: choices.ImageID,
 	}
 
-	volume, err := volumes.Create(context.TODO(), client, createOpts).Extract()
+	volume, err := volumes.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		return volume, err
 	}

@@ -11,8 +11,8 @@ import (
 // Names must not be URL-encoded in this case.
 //
 // See: https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html#hmac-signature-for-temporary-urls
-func tempURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
-	return c.ServiceURL(container, object), nil
+func tempURL(c *gophercloud.ServiceClient, container, object string) string {
+	return c.ServiceURL(container, object)
 }
 
 func listURL(c *gophercloud.ServiceClient, container string) (string, error) {

@@ -201,21 +201,22 @@ var ExpectedRecordSetSliceLimited = []recordsets.RecordSet{SecondRecordSet}
 
 // HandleListByZoneSuccessfully configures the test server to respond to a ListByZone request.
 func HandleListByZoneSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets",
-		func(w http.ResponseWriter, r *http.Request) {
-			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
-			w.Header().Add("Content-Type", "application/json")
-			r.ParseForm()
-			marker := r.Form.Get("marker")
-			switch marker {
-			case "f7b10e9b-0cae-4a91-b162-562bc6096648":
-				fmt.Fprintf(w, ListByZoneOutputLimited)
-			case "":
-				fmt.Fprintf(w, ListByZoneOutput)
-			}
-		})
+		w.Header().Add("Content-Type", "application/json")
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "f7b10e9b-0cae-4a91-b162-562bc6096648":
+			fmt.Fprintf(w, ListByZoneOutputLimited)
+		case "":
+			fmt.Fprintf(w, ListByZoneOutput)
+		}
+	})
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request.

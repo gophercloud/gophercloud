@@ -42,7 +42,7 @@ func (r *NetworkProviderExt) UnmarshalJSON(b []byte) error {
 	type tmp NetworkProviderExt
 	var networkProviderExt struct {
 		tmp
-		SegmentationID interface{} `json:"provider:segmentation_id"`
+		SegmentationID any `json:"provider:segmentation_id"`
 	}
 
 	if err := json.Unmarshal(b, &networkProviderExt); err != nil {

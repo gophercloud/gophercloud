@@ -112,7 +112,9 @@ func HandleListObjectsInfoSuccessfully(t *testing.T, options ...option) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -149,7 +151,9 @@ func HandleListSubdirSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -197,7 +201,8 @@ func HandleCreateTextObjectSuccessfully(t *testing.T, content string, options ..
 		th.TestBody(t, r, `Did gyre and gimble in the wabe`)
 
 		hash := md5.New()
-		io.WriteString(hash, content)
+		_, err := io.WriteString(hash, content)
+		th.AssertNoErr(t, err)
 		localChecksum := hash.Sum(nil)
 
 		w.Header().Set("ETag", fmt.Sprintf("%x", localChecksum))
@@ -216,7 +221,8 @@ func HandleCreateTextWithCacheControlSuccessfully(t *testing.T, content string) 
 		th.TestBody(t, r, `All mimsy were the borogoves`)
 
 		hash := md5.New()
-		io.WriteString(hash, content)
+		_, err := io.WriteString(hash, content)
+		th.AssertNoErr(t, err)
 		localChecksum := hash.Sum(nil)
 
 		w.Header().Set("ETag", fmt.Sprintf("%x", localChecksum))
@@ -239,7 +245,8 @@ func HandleCreateTypelessObjectSuccessfully(t *testing.T, content string) {
 		}
 
 		hash := md5.New()
-		io.WriteString(hash, content)
+		_, err := io.WriteString(hash, content)
+		th.AssertNoErr(t, err)
 		localChecksum := hash.Sum(nil)
 
 		w.Header().Set("ETag", fmt.Sprintf("%x", localChecksum))

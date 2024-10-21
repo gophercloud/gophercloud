@@ -14,7 +14,7 @@ import (
 
 // CreateOptsBuilder allows extension to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToExecutionCreateMap() (map[string]interface{}, error)
+	ToExecutionCreateMap() (map[string]any, error)
 }
 
 // CreateOpts specifies parameters used to create an execution.
@@ -35,17 +35,17 @@ type CreateOpts struct {
 	WorkflowNamespace string `json:"workflow_namespace,omitempty"`
 
 	// Input is a JSON structure containing workflow input values, serialized as string.
-	Input map[string]interface{} `json:"input,omitempty"`
+	Input map[string]any `json:"input,omitempty"`
 
 	// Params define workflow type specific parameters.
-	Params map[string]interface{} `json:"params,omitempty"`
+	Params map[string]any `json:"params,omitempty"`
 
 	// Description is the description of the workflow execution.
 	Description string `json:"description,omitempty"`
 }
 
 // ToExecutionCreateMap constructs a request body from CreateOpts.
-func (opts CreateOpts) ToExecutionCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToExecutionCreateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
@@ -91,7 +91,7 @@ type ListOpts struct {
 	// Description allows to filter by execution description.
 	Description *ListFilter `q:"-"`
 	// Params allows to filter by specific parameters.
-	Params map[string]interface{} `q:"-"`
+	Params map[string]any `q:"-"`
 	// TaskExecutionID allows to filter with a specific task execution id.
 	TaskExecutionID string `q:"task_execution_id"`
 	// RootExecutionID allows to filter with a specific root execution id.
@@ -102,9 +102,9 @@ type ListOpts struct {
 	// StateInfo allows to filter by state info.
 	StateInfo *ListFilter `q:"-"`
 	// Input allows to filter by specific input.
-	Input map[string]interface{} `q:"-"`
+	Input map[string]any `q:"-"`
 	// Output allows to filter by specific output.
-	Output map[string]interface{} `q:"-"`
+	Output map[string]any `q:"-"`
 	// CreatedAt allows to filter by execution creation date.
 	CreatedAt *ListDateFilter `q:"-"`
 	// UpdatedAt allows to filter by last execution update date.
@@ -197,7 +197,7 @@ func (opts ListOpts) ToExecutionListQuery() (string, error) {
 		params.Add("include_output", "1")
 	}
 
-	for queryParam, value := range map[string]map[string]interface{}{"params": opts.Params, "input": opts.Input, "output": opts.Output} {
+	for queryParam, value := range map[string]map[string]any{"params": opts.Params, "input": opts.Input, "output": opts.Output} {
 		if value != nil {
 			b, err := json.Marshal(value)
 			if err != nil {

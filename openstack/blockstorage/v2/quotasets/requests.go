@@ -48,19 +48,19 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, projectID st
 type UpdateOptsBuilder interface {
 	// Extra specific name to prevent collisions with interfaces for other quotas
 	// (e.g. neutron)
-	ToBlockStorageQuotaUpdateMap() (map[string]interface{}, error)
+	ToBlockStorageQuotaUpdateMap() (map[string]any, error)
 }
 
 // ToBlockStorageQuotaUpdateMap builds the update options into a serializable
 // format.
-func (opts UpdateOpts) ToBlockStorageQuotaUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToBlockStorageQuotaUpdateMap() (map[string]any, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "quota_set")
 	if err != nil {
 		return nil, err
 	}
 
 	if opts.Extra != nil {
-		if v, ok := b["quota_set"].(map[string]interface{}); ok {
+		if v, ok := b["quota_set"].(map[string]any); ok {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}
@@ -104,12 +104,12 @@ type UpdateOpts struct {
 
 	// Extra is a collection of miscellaneous key/values used to set
 	// quota per volume_type
-	Extra map[string]interface{} `json:"-"`
+	Extra map[string]any `json:"-"`
 }
 
 // Resets the quotas for the given tenant to their default values.
 func Delete(ctx context.Context, client *gophercloud.ServiceClient, projectID string) (r DeleteResult) {
-	resp, err := client.Delete(ctx, updateURL(client, projectID), &gophercloud.RequestOpts{
+	resp, err := client.Delete(ctx, deleteURL(client, projectID), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

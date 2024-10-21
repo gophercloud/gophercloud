@@ -301,7 +301,7 @@ var ApplicationCredential = applicationcredentials.ApplicationCredential{
 		},
 	},
 	ExpiresAt: nilTime,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae",
 	},
 }
@@ -320,7 +320,7 @@ var ApplicationCredentialNoSecretResponse = applicationcredentials.ApplicationCr
 		},
 	},
 	ExpiresAt: nilTime,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/c4859fb437df4b87a51a8f5adcfb0bc7",
 	},
 }
@@ -344,7 +344,7 @@ var UnrestrictedApplicationCredential = applicationcredentials.ApplicationCreden
 		},
 	},
 	ExpiresAt: ApplationCredentialExpiresAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/6b8cc7647da64166a4a3cc0c88ebbabb",
 	},
 }
@@ -363,7 +363,7 @@ var FirstApplicationCredential = applicationcredentials.ApplicationCredential{
 		},
 	},
 	ExpiresAt: nilTime,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/c4859fb437df4b87a51a8f5adcfb0bc7",
 	},
 }
@@ -386,7 +386,7 @@ var SecondApplicationCredential = applicationcredentials.ApplicationCredential{
 		},
 	},
 	ExpiresAt: ApplationCredentialExpiresAt,
-	Links: map[string]interface{}{
+	Links: map[string]any{
 		"self": "https://identity/v3/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/6b8cc7647da64166a4a3cc0c88ebbabb",
 	},
 }
