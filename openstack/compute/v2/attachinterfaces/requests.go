@@ -8,14 +8,14 @@ import (
 )
 
 // List makes a request against the nova API to list the server's interfaces.
-func List(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
+func List(client gophercloud.Client, serverID string) pagination.Pager {
 	return pagination.NewPager(client, listInterfaceURL(client, serverID), func(r pagination.PageResult) pagination.Page {
 		return InterfacePage{pagination.SinglePageBase(r)}
 	})
 }
 
 // Get requests details on a single interface attachment by the server and port IDs.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, portID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, serverID, portID string) (r GetResult) {
 	resp, err := client.Get(ctx, getInterfaceURL(client, serverID, portID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -55,7 +55,7 @@ func (opts CreateOpts) ToAttachInterfacesCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new interface attachment on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, serverID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToAttachInterfacesCreateMap()
 	if err != nil {
 		r.Err = err
@@ -70,7 +70,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID str
 
 // Delete makes a request against the nova API to detach a single interface from the server.
 // It needs server and port IDs to make a such request.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, serverID, portID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, serverID, portID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteInterfaceURL(client, serverID, portID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

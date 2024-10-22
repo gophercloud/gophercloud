@@ -8,7 +8,7 @@ import (
 )
 
 // Find retrieves stack events for the given stack name.
-func Find(ctx context.Context, c *gophercloud.ServiceClient, stackName string) (r FindResult) {
+func Find(ctx context.Context, c gophercloud.Client, stackName string) (r FindResult) {
 	resp, err := c.Get(ctx, findURL(c, stackName), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -105,7 +105,7 @@ func (opts ListOpts) ToStackEventListQuery() (string, error) {
 }
 
 // List makes a request against the API to list resources for the given stack.
-func List(client *gophercloud.ServiceClient, stackName, stackID string, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, stackName, stackID string, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client, stackName, stackID)
 	if opts != nil {
 		query, err := opts.ToStackEventListQuery()
@@ -162,7 +162,7 @@ func (opts ListResourceEventsOpts) ToResourceEventListQuery() (string, error) {
 }
 
 // ListResourceEvents makes a request against the API to list resources for the given stack.
-func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, resourceName string, opts ListResourceEventsOptsBuilder) pagination.Pager {
+func ListResourceEvents(client gophercloud.Client, stackName, stackID, resourceName string, opts ListResourceEventsOptsBuilder) pagination.Pager {
 	url := listResourceEventsURL(client, stackName, stackID, resourceName)
 	if opts != nil {
 		query, err := opts.ToResourceEventListQuery()
@@ -179,7 +179,7 @@ func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, r
 }
 
 // Get retreives data for the given stack resource.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, stackName, stackID, resourceName, eventID string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, stackName, stackID, resourceName, eventID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

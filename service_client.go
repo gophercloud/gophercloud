@@ -7,6 +7,21 @@ import (
 	"strings"
 )
 
+type Client interface {
+	Request(ctx context.Context, method, url string, options *RequestOpts) (*http.Response, error)
+
+	Get(ctx context.Context, url string, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Post(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Put(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Patch(ctx context.Context, url string, JSONBody any, JSONResponse any, opts *RequestOpts) (*http.Response, error)
+	Delete(ctx context.Context, url string, opts *RequestOpts) (*http.Response, error)
+	Head(ctx context.Context, url string, opts *RequestOpts) (*http.Response, error)
+
+	ResourceBaseURL() string
+	EndpointURL() string
+	ServiceURL(parts ...string) string
+}
+
 // ServiceClient stores details required to interact with a specific service API implemented by a provider.
 // Generally, you'll acquire these by calling the appropriate `New` method on a ProviderClient.
 type ServiceClient struct {
@@ -33,6 +48,10 @@ type ServiceClient struct {
 	// MoreHeaders allows users (or Gophercloud) to set service-wide headers on requests. Put another way,
 	// values set in this field will be set on all the HTTP requests the service client sends.
 	MoreHeaders map[string]string
+}
+
+func (client ServiceClient) EndpointURL() string {
+	return client.Endpoint
 }
 
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.

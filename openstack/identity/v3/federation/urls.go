@@ -7,10 +7,10 @@ const (
 	mappingsPath = "mappings"
 )
 
-func mappingsRootURL(c *gophercloud.ServiceClient) string {
+func mappingsRootURL(c gophercloud.Client) string {
 	return c.ServiceURL(rootPath, mappingsPath)
 }
 
-func mappingsResourceURL(c *gophercloud.ServiceClient, mappingID string) string {
+func mappingsResourceURL(c gophercloud.Client, mappingID string) string {
 	return c.ServiceURL(rootPath, mappingsPath, mappingID)
 }

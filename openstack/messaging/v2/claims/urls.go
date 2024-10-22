@@ -7,18 +7,18 @@ const (
 	apiName    = "queues"
 )
 
-func createURL(client *gophercloud.ServiceClient, queueName string) string {
+func createURL(client gophercloud.Client, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "claims")
 }
 
-func getURL(client *gophercloud.ServiceClient, queueName string, claimID string) string {
+func getURL(client gophercloud.Client, queueName string, claimID string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "claims", claimID)
 }
 
-func updateURL(client *gophercloud.ServiceClient, queueName string, claimID string) string {
+func updateURL(client gophercloud.Client, queueName string, claimID string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "claims", claimID)
 }
 
-func deleteURL(client *gophercloud.ServiceClient, queueName string, claimID string) string {
+func deleteURL(client gophercloud.Client, queueName string, claimID string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "claims", claimID)
 }

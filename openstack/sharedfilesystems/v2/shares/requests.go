@@ -80,7 +80,7 @@ func (opts CreateOpts) ToShareCreateMap() (map[string]any, error) {
 // Create will create a new Share based on the values in CreateOpts. To extract
 // the Share object from the response, call the Extract method on the
 // CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToShareCreateMap()
 	if err != nil {
 		r.Err = err
@@ -169,7 +169,7 @@ func (opts ListOpts) ToShareListQuery() (string, error) {
 }
 
 // ListDetail returns []Share optionally limited by the conditions provided in ListOpts.
-func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func ListDetail(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToShareListQuery()
@@ -187,14 +187,14 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 // Delete will delete an existing Share with the given UUID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get will get a single share with given UUID
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -202,7 +202,7 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 
 // ListExportLocations will list shareID's export locations.
 // Client must have Microversion set; minimum supported microversion for ListExportLocations is 2.9.
-func ListExportLocations(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ListExportLocationsResult) {
+func ListExportLocations(ctx context.Context, client gophercloud.Client, id string) (r ListExportLocationsResult) {
 	resp, err := client.Get(ctx, listExportLocationsURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -210,7 +210,7 @@ func ListExportLocations(ctx context.Context, client *gophercloud.ServiceClient,
 
 // GetExportLocation will get shareID's export location by an ID.
 // Client must have Microversion set; minimum supported microversion for GetExportLocation is 2.9.
-func GetExportLocation(ctx context.Context, client *gophercloud.ServiceClient, shareID string, id string) (r GetExportLocationResult) {
+func GetExportLocation(ctx context.Context, client gophercloud.Client, shareID string, id string) (r GetExportLocationResult) {
 	resp, err := client.Get(ctx, getExportLocationURL(client, shareID, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -243,7 +243,7 @@ func (opts GrantAccessOpts) ToGrantAccessMap() (map[string]any, error) {
 // GrantAccess will grant access to a Share based on the values in GrantAccessOpts. To extract
 // the GrantAccess object from the response, call the Extract method on the GrantAccessResult.
 // Client must have Microversion set; minimum supported microversion for GrantAccess is 2.7.
-func GrantAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts GrantAccessOptsBuilder) (r GrantAccessResult) {
+func GrantAccess(ctx context.Context, client gophercloud.Client, id string, opts GrantAccessOptsBuilder) (r GrantAccessResult) {
 	b, err := opts.ToGrantAccessMap()
 	if err != nil {
 		r.Err = err
@@ -279,7 +279,7 @@ func (opts RevokeAccessOpts) ToRevokeAccessMap() (map[string]any, error) {
 // RevokeAccessResult contains only the error. To extract it, call the ExtractErr method on
 // the RevokeAccessResult. Client must have Microversion set; minimum supported microversion
 // for RevokeAccess is 2.7.
-func RevokeAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RevokeAccessOptsBuilder) (r RevokeAccessResult) {
+func RevokeAccess(ctx context.Context, client gophercloud.Client, id string, opts RevokeAccessOptsBuilder) (r RevokeAccessResult) {
 	b, err := opts.ToRevokeAccessMap()
 	if err != nil {
 		r.Err = err
@@ -296,7 +296,7 @@ func RevokeAccess(ctx context.Context, client *gophercloud.ServiceClient, id str
 // ListAccessRights lists all access rules assigned to a Share based on its id. To extract
 // the AccessRight slice from the response, call the Extract method on the ListAccessRightsResult.
 // Client must have Microversion set; minimum supported microversion for ListAccessRights is 2.7.
-func ListAccessRights(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ListAccessRightsResult) {
+func ListAccessRights(ctx context.Context, client gophercloud.Client, id string) (r ListAccessRightsResult) {
 	requestBody := map[string]any{"access_list": nil}
 	resp, err := client.Post(ctx, listAccessRightsURL(client, id), requestBody, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
@@ -328,7 +328,7 @@ func (opts ExtendOpts) ToShareExtendMap() (map[string]any, error) {
 // Extend will extend the capacity of an existing share. ExtendResult contains only the error.
 // To extract it, call the ExtractErr method on the ExtendResult.
 // Client must have Microversion set; minimum supported microversion for Extend is 2.7.
-func Extend(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder) (r ExtendResult) {
+func Extend(ctx context.Context, client gophercloud.Client, id string, opts ExtendOptsBuilder) (r ExtendResult) {
 	b, err := opts.ToShareExtendMap()
 	if err != nil {
 		r.Err = err
@@ -365,7 +365,7 @@ func (opts ShrinkOpts) ToShareShrinkMap() (map[string]any, error) {
 // Shrink will shrink the capacity of an existing share. ShrinkResult contains only the error.
 // To extract it, call the ExtractErr method on the ShrinkResult.
 // Client must have Microversion set; minimum supported microversion for Shrink is 2.7.
-func Shrink(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ShrinkOptsBuilder) (r ShrinkResult) {
+func Shrink(ctx context.Context, client gophercloud.Client, id string, opts ShrinkOptsBuilder) (r ShrinkResult) {
 	b, err := opts.ToShareShrinkMap()
 	if err != nil {
 		r.Err = err
@@ -405,7 +405,7 @@ func (opts UpdateOpts) ToShareUpdateMap() (map[string]any, error) {
 
 // Update will update the Share with provided information. To extract the updated
 // Share from the response, call the Extract method on the UpdateResult.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToShareUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -420,7 +420,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // GetMetadata retrieves metadata of the specified share. To extract the retrieved
 // metadata from the response, call the Extract method on the MetadataResult.
-func GetMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string) (r MetadataResult) {
+func GetMetadata(ctx context.Context, client gophercloud.Client, id string) (r MetadataResult) {
 	resp, err := client.Get(ctx, getMetadataURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -428,7 +428,7 @@ func GetMetadata(ctx context.Context, client *gophercloud.ServiceClient, id stri
 
 // GetMetadatum retrieves a single metadata item of the specified share. To extract the retrieved
 // metadata from the response, call the Extract method on the GetMetadatumResult.
-func GetMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
+func GetMetadatum(ctx context.Context, client gophercloud.Client, id, key string) (r GetMetadatumResult) {
 	resp, err := client.Get(ctx, getMetadatumURL(client, id, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -457,7 +457,7 @@ type SetMetadataOptsBuilder interface {
 // Existing metadata items are either kept or overwritten by the metadata from the request.
 // To extract the updated metadata from the response, call the Extract
 // method on the MetadataResult.
-func SetMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts SetMetadataOptsBuilder) (r MetadataResult) {
+func SetMetadata(ctx context.Context, client gophercloud.Client, id string, opts SetMetadataOptsBuilder) (r MetadataResult) {
 	b, err := opts.ToSetMetadataMap()
 	if err != nil {
 		r.Err = err
@@ -494,7 +494,7 @@ type UpdateMetadataOptsBuilder interface {
 // All existing metadata items are discarded and replaced by the metadata from the request.
 // To extract the updated metadata from the response, call the Extract
 // method on the MetadataResult.
-func UpdateMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r MetadataResult) {
+func UpdateMetadata(ctx context.Context, client gophercloud.Client, id string, opts UpdateMetadataOptsBuilder) (r MetadataResult) {
 	b, err := opts.ToUpdateMetadataMap()
 	if err != nil {
 		r.Err = err
@@ -509,7 +509,7 @@ func UpdateMetadata(ctx context.Context, client *gophercloud.ServiceClient, id s
 }
 
 // DeleteMetadatum deletes a single key-value pair from the metadata of the specified share.
-func DeleteMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
+func DeleteMetadatum(ctx context.Context, client gophercloud.Client, id, key string) (r DeleteMetadatumResult) {
 	resp, err := client.Delete(ctx, deleteMetadatumURL(client, id, key), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -541,7 +541,7 @@ func (opts RevertOpts) ToShareRevertMap() (map[string]any, error) {
 // Revert will revert the existing share to a Snapshot. RevertResult contains only the error.
 // To extract it, call the ExtractErr method on the RevertResult.
 // Client must have Microversion set; minimum supported microversion for Revert is 2.27.
-func Revert(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RevertOptsBuilder) (r RevertResult) {
+func Revert(ctx context.Context, client gophercloud.Client, id string, opts RevertOptsBuilder) (r RevertResult) {
 	b, err := opts.ToShareRevertMap()
 	if err != nil {
 		r.Err = err
@@ -578,7 +578,7 @@ func (opts ResetStatusOpts) ToShareResetStatusMap() (map[string]any, error) {
 // ResetStatus will reset the existing share status. ResetStatusResult contains only the error.
 // To extract it, call the ExtractErr method on the ResetStatusResult.
 // Client must have Microversion set; minimum supported microversion for ResetStatus is 2.7.
-func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+func ResetStatus(ctx context.Context, client gophercloud.Client, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
 	b, err := opts.ToShareResetStatusMap()
 	if err != nil {
 		r.Err = err
@@ -595,7 +595,7 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // ForceDelete will delete the existing share in any state. ForceDeleteResult contains only the error.
 // To extract it, call the ExtractErr method on the ForceDeleteResult.
 // Client must have Microversion set; minimum supported microversion for ForceDelete is 2.7.
-func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+func ForceDelete(ctx context.Context, client gophercloud.Client, id string) (r ForceDeleteResult) {
 	b := map[string]any{
 		"force_delete": nil,
 	}
@@ -610,7 +610,7 @@ func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id stri
 // service without deleting the share. UnmanageResult contains only the error.
 // To extract it, call the ExtractErr method on the UnmanageResult.
 // Client must have Microversion set; minimum supported microversion for Unmanage is 2.7.
-func Unmanage(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnmanageResult) {
+func Unmanage(ctx context.Context, client gophercloud.Client, id string) (r UnmanageResult) {
 	b := map[string]any{
 		"unmanage": nil,
 	}

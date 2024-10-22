@@ -25,7 +25,7 @@ func (opts Opts) ToExtraRoutesUpdateMap() (map[string]any, error) {
 }
 
 // Add allows routers to be updated with a list of routes to be added.
-func Add(ctx context.Context, c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r AddResult) {
+func Add(ctx context.Context, c gophercloud.Client, id string, opts OptsBuilder) (r AddResult) {
 	b, err := opts.ToExtraRoutesUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -39,7 +39,7 @@ func Add(ctx context.Context, c *gophercloud.ServiceClient, id string, opts Opts
 }
 
 // Remove allows routers to be updated with a list of routes to be removed.
-func Remove(ctx context.Context, c *gophercloud.ServiceClient, id string, opts OptsBuilder) (r RemoveResult) {
+func Remove(ctx context.Context, c gophercloud.Client, id string, opts OptsBuilder) (r RemoveResult) {
 	b, err := opts.ToExtraRoutesUpdateMap()
 	if err != nil {
 		r.Err = err
