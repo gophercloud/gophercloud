@@ -925,23 +925,57 @@ var (
 			"deploy_ramdisk": "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
 			"ipmi_password":  "admin",
 		},
-		DriverInternalInfo:  map[string]any{},
-		Properties:          map[string]any{},
-		InstanceInfo:        map[string]any{},
-		InstanceUUID:        "",
-		ChassisUUID:         "",
-		Extra:               map[string]any{},
-		ConsoleEnabled:      false,
-		RAIDConfig:          map[string]any{},
-		TargetRAIDConfig:    map[string]any{},
-		CleanStep:           map[string]any{},
-		DeployStep:          map[string]any{},
+		DriverInternalInfo: map[string]any{},
+		Properties:         map[string]any{},
+		InstanceInfo:       map[string]any{},
+		InstanceUUID:       "",
+		ChassisUUID:        "",
+		Extra:              map[string]any{},
+		ConsoleEnabled:     false,
+		RAIDConfig:         map[string]any{},
+		TargetRAIDConfig:   map[string]any{},
+		CleanStep:          map[string]any{},
+		DeployStep:         map[string]any{},
+		Links: []nodes.Link{
+			{
+				Href: "http://ironic.example.com:6385/v1/nodes/d2630783-6ec8-4836-b556-ab427c4b581e",
+				Rel:  "self",
+			},
+			{
+				Href: "http://ironic.example.com:6385/nodes/d2630783-6ec8-4836-b556-ab427c4b581e",
+				Rel:  "bookmark",
+			},
+		},
+		Ports: []nodes.Link{
+			{
+				Href: "http://ironic.example.com:6385/v1/nodes/d2630783-6ec8-4836-b556-ab427c4b581e/ports",
+				Rel:  "self",
+			},
+			{
+				Href: "http://ironic.example.com:6385/nodes/d2630783-6ec8-4836-b556-ab427c4b581e/ports",
+				Rel:  "bookmark",
+			},
+		},
+		PortGroups: []nodes.Link{
+			{
+				Href: "http://ironic.example.com:6385/v1/nodes/d2630783-6ec8-4836-b556-ab427c4b581e/portgroups",
+				Rel:  "self",
+			},
+			{
+				Href: "http://ironic.example.com:6385/nodes/d2630783-6ec8-4836-b556-ab427c4b581e/portgroups",
+				Rel:  "bookmark"},
+		},
+		States: []nodes.Link{
+			{
+				Href: "http://ironic.example.com:6385/v1/nodes/d2630783-6ec8-4836-b556-ab427c4b581e/states",
+				Rel:  "self",
+			},
+		},
 		ResourceClass:       "",
 		BIOSInterface:       "no-bios",
 		BootInterface:       "pxe",
 		ConsoleInterface:    "no-console",
 		DeployInterface:     "iscsi",
-		FirmwareInterface:   "no-firmware",
 		InspectInterface:    "no-inspect",
 		ManagementInterface: "ipmitool",
 		NetworkInterface:    "flat",
@@ -951,14 +985,33 @@ var (
 		StorageInterface:    "noop",
 		Traits:              []string{},
 		VendorInterface:     "ipmitool",
-		ConductorGroup:      "",
-		Protected:           false,
-		ProtectedReason:     "",
-		CreatedAt:           createdAtFoo,
-		UpdatedAt:           updatedAt,
-		ProvisionUpdatedAt:  provisonUpdatedAt,
-		Retired:             false,
-		RetiredReason:       "No longer needed",
+		Volume: []nodes.Link{
+			{
+				Href: "http://ironic.example.com:6385/v1/nodes/d2630783-6ec8-4836-b556-ab427c4b581e/volume",
+				Rel:  "self",
+			},
+		},
+		ConductorGroup:       "",
+		ParentNode:           "",
+		Protected:            false,
+		ProtectedReason:      "",
+		Owner:                "",
+		Lessee:               "",
+		Shard:                "",
+		Description:          "",
+		Conductor:            "",
+		AllocationUUID:       "",
+		Retired:              false,
+		RetiredReason:        "No longer needed",
+		NetworkData:          map[string]interface{}(nil),
+		AutomatedClean:       nil,
+		ServiceStep:          map[string]interface{}(nil),
+		FirmwareInterface:    "no-firmware",
+		ProvisionUpdatedAt:   provisonUpdatedAt,
+		InspectionStartedAt:  nil,
+		InspectionFinishedAt: nil,
+		CreatedAt:            createdAtFoo,
+		UpdatedAt:            updatedAt,
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
@@ -1070,6 +1123,26 @@ var (
 		InspectionFinishedAt: &InspectionFinishedAt,
 		Retired:              false,
 		RetiredReason:        "No longer needed",
+		Links: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662", Rel: "bookmark"},
+		},
+		Ports: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/ports", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/ports", Rel: "bookmark"},
+		},
+		PortGroups: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/portgroups", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/portgroups", Rel: "bookmark"},
+		},
+		States: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/states", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/states", Rel: "bookmark"},
+		},
+		Volume: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/volume", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662/volume", Rel: "bookmark"},
+		},
 	}
 
 	NodeBaz = nodes.Node{
@@ -1119,6 +1192,26 @@ var (
 		UpdatedAt:            updatedAt,
 		Retired:              false,
 		RetiredReason:        "No longer needed",
+		Links: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474", Rel: "bookmark"},
+		},
+		Ports: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/ports", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/ports", Rel: "bookmark"},
+		},
+		PortGroups: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/portgroups", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/portgroups", Rel: "bookmark"},
+		},
+		States: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/states", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/states", Rel: "bookmark"},
+		},
+		Volume: []nodes.Link{
+			{Href: "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/volume", Rel: "self"},
+			{Href: "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474/volume", Rel: "bookmark"},
+		},
 	}
 
 	ConfigDriveMap = nodes.ConfigDrive{
