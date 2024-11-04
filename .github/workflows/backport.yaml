@@ -60,11 +60,13 @@ jobs:
           || contains(github.event.label.name, 'semver:major')
           || contains(github.event.label.name, 'semver:minor')
           || contains(github.event.label.name, 'semver:unknown')
-        uses: thollander/actions-comment-pull-request@e2c37e53a7d2227b61585343765f73a9ca57eda9
-        with:
-          message: |
-            Labels `semver-major`, `semver-minor` and `semver-unknown` block
-            backports to the legacy branch `v1`.
+        run: gh pr comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: >
+            Labels `semver-major`, `semver-minor` and `semver-unknown` block backports to the legacy branch `v1`.
 
   backport_v2:
     name: "Backport to v2"
@@ -119,8 +121,10 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'semver:unknown')
           || contains(github.event.label.name, 'semver:major')
           || contains(github.event.label.name, 'semver:unknown')
-        uses: thollander/actions-comment-pull-request@e2c37e53a7d2227b61585343765f73a9ca57eda9
-        with:
-          message: |
-            Labels `semver-major` and `semver-unknown` block backports to the
-            stable branch `v2`.
+        run: gh pr comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: >
+            Labels `semver-major` and `semver-unknown` block backports to the stable branch `v2`.
