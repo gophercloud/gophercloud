@@ -274,6 +274,10 @@ type CreateOpts struct {
 
 	// Static network configuration to use during deployment and cleaning.
 	NetworkData map[string]any `json:"network_data,omitempty"`
+
+	// Whether disable_power_off is enabled or disabled on this node.
+	// Requires microversion 1.95 or later.
+	DisablePowerOff *bool `json:"disable_power_off,omitempty"`
 }
 
 // ToNodeCreateMap assembles a request body based on the contents of a CreateOpts.
