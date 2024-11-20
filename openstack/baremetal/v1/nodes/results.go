@@ -90,12 +90,19 @@ func (r SubscriptionVendorPassthruResult) Extract() (*SubscriptionVendorPassthru
 	return &s, err
 }
 
-// Node represents a node in the OpenStack Bare Metal API.
-type Node struct {
-	// Whether automated cleaning is enabled or disabled on this node.
-	// Requires microversion 1.47 or later.
-	AutomatedClean *bool `json:"automated_clean"`
+// Link represents a hyperlink and its relationship to the current resource.
+type Link struct {
+	// Href is the URL of the related resource.
+	Href string `json:"href"`
 
+	// Rel describes the relationship of the resource to the current
+	// context (e.g., "self", "bookmark").
+	Rel string `json:"rel"`
+}
+
+// Node represents a node in the OpenStack Bare Metal API.
+// https://docs.openstack.org/api-ref/baremetal/#list-nodes-detailed
+type Node struct {
 	// UUID for the resource.
 	UUID string `json:"uuid"`
 
@@ -183,8 +190,17 @@ type Node struct {
 	// Current deploy step.
 	DeployStep map[string]any `json:"deploy_step"`
 
-	// Current service step.
-	ServiceStep map[string]any `json:"service_step"`
+	// A list of relative links. Includes the self and bookmark links.
+	Links []Link `json:"links"`
+
+	// Links to the collection of ports on this node
+	Ports []Link `json:"ports"`
+
+	// Links to the collection of portgroups on this node.
+	PortGroups []Link `json:"portgroups"`
+
+	// Links to the collection of states. Note that this resource is also used to request state transitions.
+	States []Link `json:"states"`
 
 	// String which can be used by external schedulers to identify this Node as a unit of a specific type of resource.
 	// For more details, see: https://docs.openstack.org/ironic/latest/install/configure-nova-flavors.html
@@ -201,9 +217,6 @@ type Node struct {
 
 	// Deploy interface for a node, e.g. “iscsi”.
 	DeployInterface string `json:"deploy_interface"`
-
-	// Firmware interface for a node, e.g. “redfish”.
-	FirmwareInterface string `json:"firmware_interface"`
 
 	// Interface used for node inspection, e.g. “no-inspect”.
 	InspectInterface string `json:"inspect_interface"`
@@ -232,8 +245,14 @@ type Node struct {
 	// For vendor-specific functionality on this node, e.g. “no-vendor”.
 	VendorInterface string `json:"vendor_interface"`
 
+	// Links to the volume resources.
+	Volume []Link `json:"volume"`
+
 	// Conductor group for a node. Case-insensitive string up to 255 characters, containing a-z, 0-9, _, -, and ..
 	ConductorGroup string `json:"conductor_group"`
+
+	// An optional UUID which can be used to denote the “parent” baremetal node.
+	ParentNode string `json:"parent_node"`
 
 	// The node is protected from undeploying, rebuilding and deletion.
 	Protected bool `json:"protected"`
@@ -244,14 +263,42 @@ type Node struct {
 	// A string or UUID of the tenant who owns the baremetal node.
 	Owner string `json:"owner"`
 
+	// A string or UUID of the tenant who is leasing the object.
+	Lessee string `json:"lessee"`
+
+	// A string indicating the shard this node belongs to.
+	Shard string `json:"shard"`
+
+	// Informational text about this node.
+	Description string `json:"description"`
+
+	// The conductor currently servicing a node. This field is read-only.
+	Conductor string `json:"conductor"`
+
+	// The UUID of the allocation associated with the node. If not null, will be the same as instance_uuid
+	// (the opposite is not always true). Unlike instance_uuid, this field is read-only. Please use the
+	// Allocation API to remove allocations.
+	AllocationUUID string `json:"allocation_uuid"`
+
+	// Whether the node is retired. A Node tagged as retired will prevent any further
+	// scheduling of instances, but will still allow for other operations, such as cleaning, to happen
+	Retired bool `json:"retired"`
+
+	// Reason the node is marked as retired.
+	RetiredReason string `json:"retired_reason"`
+
 	// Static network configuration to use during deployment and cleaning.
 	NetworkData map[string]any `json:"network_data"`
 
-	// The UTC date and time when the resource was created, ISO 8601 format.
-	CreatedAt time.Time `json:"created_at"`
+	// Whether automated cleaning is enabled or disabled on this node.
+	// Requires microversion 1.47 or later.
+	AutomatedClean *bool `json:"automated_clean"`
 
-	// The UTC date and time when the resource was updated, ISO 8601 format. May be “null”.
-	UpdatedAt time.Time `json:"updated_at"`
+	// Current service step.
+	ServiceStep map[string]any `json:"service_step"`
+
+	// Firmware interface for a node, e.g. “redfish”.
+	FirmwareInterface string `json:"firmware_interface"`
 
 	// The UTC date and time when the provision state was updated, ISO 8601 format. May be “null”.
 	ProvisionUpdatedAt time.Time `json:"provision_updated_at"`
@@ -262,12 +309,11 @@ type Node struct {
 	// The UTC date and time when the last inspection was finished, ISO 8601 format. May be “null” if inspection hasn't been finished yet.
 	InspectionFinishedAt *time.Time `json:"inspection_finished_at"`
 
-	// Whether the node is retired. A Node tagged as retired will prevent any further
-	// scheduling of instances, but will still allow for other operations, such as cleaning, to happen
-	Retired bool `json:"retired"`
+	// The UTC date and time when the resource was created, ISO 8601 format.
+	CreatedAt time.Time `json:"created_at"`
 
-	// Reason the node is marked as retired.
-	RetiredReason string `json:"retired_reason"`
+	// The UTC date and time when the resource was updated, ISO 8601 format. May be “null”.
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // NodePage abstracts the raw results of making a List() request against
