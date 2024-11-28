@@ -1,7 +1,7 @@
 undefine GOFLAGS
 
-GOLANGCI_LINT_VERSION?=v1.57.1
-GO_TEST?=go run gotest.tools/gotestsum@latest --format testname
+GOLANGCI_LINT_VERSION?=v1.62.2
+GO_TEST?=go run gotest.tools/gotestsum@latest --format testname --
 
 ifeq ($(shell command -v podman 2> /dev/null),)
 	RUNNER=docker
@@ -23,7 +23,7 @@ lint:
 		-v ~/.cache/golangci-lint/$(GOLANGCI_LINT_VERSION):/root/.cache \
 		-w /app \
 		-e GOFLAGS="-tags=acceptance" \
-		golangci/golangci-lint:$(GOLANGCI_LINT_VERSION) golangci-lint run
+		golangci/golangci-lint:$(GOLANGCI_LINT_VERSION) golangci-lint run -v --max-same-issues 50
 .PHONY: lint
 
 format:
