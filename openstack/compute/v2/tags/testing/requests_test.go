@@ -22,7 +22,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, TagsListResponse)
+		_, err := fmt.Fprint(w, TagsListResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -78,7 +78,7 @@ func TestReplaceAll(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, TagsReplaceAllResponse)
+		_, err := fmt.Fprint(w, TagsReplaceAllResponse)
 		th.AssertNoErr(t, err)
 	})
 

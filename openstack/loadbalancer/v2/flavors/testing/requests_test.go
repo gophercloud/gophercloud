@@ -69,7 +69,7 @@ func TestListFlavorsEnabled(t *testing.T) {
 				t.Errorf("Expected enabled=%s got %q", testCases[cases], enabled)
 			}
 			cases++
-			fmt.Fprintf(w, `{"flavorprofiles":[]}`)
+			fmt.Fprint(w, `{"flavorprofiles":[]}`)
 		})
 	}()
 

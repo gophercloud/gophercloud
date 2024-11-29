@@ -17,7 +17,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
     {
       "snapshots": [
         {
@@ -51,7 +51,7 @@ func MockGetResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "snapshot": {
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
@@ -85,7 +85,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "snapshot": {
         "volume_id": "1234",
@@ -115,7 +115,7 @@ func MockUpdateMetadataResponse(t *testing.T) {
     }
     `)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
       {
         "metadata": {
           "key": "v1"

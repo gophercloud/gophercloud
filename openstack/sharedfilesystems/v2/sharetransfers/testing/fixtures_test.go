@@ -147,7 +147,7 @@ func HandleCreateTransfer(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 }
 
@@ -179,7 +179,7 @@ func HandleListTransfers(t *testing.T) {
 		th.TestFormValues(t, r, map[string]string{"all_tenants": "true"})
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -191,7 +191,7 @@ func HandleListTransfersDetail(t *testing.T) {
 		th.TestFormValues(t, r, map[string]string{"all_tenants": "true"})
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -202,6 +202,6 @@ func HandleGetTransfer(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }

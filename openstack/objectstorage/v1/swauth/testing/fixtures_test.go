@@ -24,6 +24,6 @@ func HandleAuthSuccessfully(t *testing.T, authOpts swauth.AuthOpts) {
 
 		w.Header().Add("X-Auth-Token", AuthResult.Token)
 		w.Header().Add("X-Storage-Url", AuthResult.StorageURL)
-		fmt.Fprintf(w, "")
+		fmt.Fprint(w, "")
 	})
 }

@@ -37,7 +37,7 @@ func HandleListExtensionsSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "extensions": {
     "values": [

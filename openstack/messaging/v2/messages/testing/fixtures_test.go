@@ -229,7 +229,7 @@ func HandleCreateSuccessfully(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			fmt.Fprintf(w, CreateMessageResponse)
+			fmt.Fprint(w, CreateMessageResponse)
 		})
 }
 
@@ -245,7 +245,7 @@ func HandleListSuccessfully(t *testing.T) {
 
 			switch next {
 			case fmt.Sprintf("/v2/queues/%s/messages?limit=1", QueueName):
-				fmt.Fprintf(w, ListMessagesResponse1)
+				fmt.Fprint(w, ListMessagesResponse1)
 			case fmt.Sprintf("/v2/queues/%s/messages?marker=1", QueueName):
 				fmt.Fprint(w, ListMessagesResponse2)
 			case fmt.Sprintf("/v2/queues/%s/messages?marker=2", QueueName):
@@ -262,7 +262,7 @@ func HandleGetMessagesSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetMessagesResponse)
+			fmt.Fprint(w, GetMessagesResponse)
 		})
 }
 
@@ -274,7 +274,7 @@ func HandleGetSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetMessageResponse)
+			fmt.Fprint(w, GetMessageResponse)
 		})
 }
 
@@ -299,7 +299,7 @@ func HandlePopSuccessfully(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, PopMessageResponse)
+			fmt.Fprint(w, PopMessageResponse)
 		})
 }
 

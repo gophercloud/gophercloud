@@ -150,10 +150,10 @@ func HandleConductorListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, ConductorListBody)
+			fmt.Fprint(w, ConductorListBody)
 
 		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
-			fmt.Fprintf(w, `{ "servers": [] }`)
+			fmt.Fprint(w, `{ "servers": [] }`)
 		default:
 			t.Fatalf("/conductors invoked with unexpected marker=[%s]", marker)
 		}
@@ -170,7 +170,7 @@ func HandleConductorListDetailSuccessfully(t *testing.T) {
 			t.Errorf("Failed to parse request form %v", err)
 		}
 
-		fmt.Fprintf(w, ConductorListDetailBody)
+		fmt.Fprint(w, ConductorListDetailBody)
 	})
 }
 
@@ -180,6 +180,6 @@ func HandleConductorGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleConductorBody)
+		fmt.Fprint(w, SingleConductorBody)
 	})
 }

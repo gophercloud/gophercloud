@@ -350,7 +350,7 @@ func HandleListRolesSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -364,7 +364,7 @@ func HandleGetRoleSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -377,7 +377,7 @@ func HandleCreateRoleSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -390,7 +390,7 @@ func HandleUpdateRoleSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdateRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdateOutput)
+		fmt.Fprint(w, UpdateOutput)
 	})
 }
 
@@ -499,7 +499,7 @@ func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentOutput)
+		fmt.Fprint(w, ListAssignmentOutput)
 	})
 }
 
@@ -514,7 +514,7 @@ func HandleListRoleAssignmentsWithNamesSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentWithNamesOutput)
+		fmt.Fprint(w, ListAssignmentWithNamesOutput)
 	})
 }
 
@@ -529,7 +529,7 @@ func HandleListRoleAssignmentsWithSubtreeSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentOutput)
+		fmt.Fprint(w, ListAssignmentOutput)
 	})
 }
 
@@ -557,7 +557,7 @@ func HandleListAssignmentsOnResourceSuccessfully_ProjectsUsers(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentsOnResourceOutput)
+		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
 	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles", fn)
@@ -571,7 +571,7 @@ func HandleListAssignmentsOnResourceSuccessfully_ProjectsGroups(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentsOnResourceOutput)
+		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
 	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles", fn)
@@ -585,7 +585,7 @@ func HandleListAssignmentsOnResourceSuccessfully_DomainsUsers(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentsOnResourceOutput)
+		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
 	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles", fn)
@@ -599,7 +599,7 @@ func HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentsOnResourceOutput)
+		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
 	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles", fn)
@@ -635,7 +635,7 @@ func HandleCreateRoleInferenceRule(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateRoleInferenceRuleOutput)
+		fmt.Fprint(w, CreateRoleInferenceRuleOutput)
 	}
 
 	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
@@ -713,7 +713,7 @@ func HandleListRoleInferenceRules(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListRoleInferenceRulesOutput)
+		fmt.Fprint(w, ListRoleInferenceRulesOutput)
 	}
 
 	th.Mux.HandleFunc("/role_inferences", fn)
@@ -737,7 +737,7 @@ func HandleGetRoleInferenceRule(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, CreateRoleInferenceRuleOutput)
+		fmt.Fprint(w, CreateRoleInferenceRuleOutput)
 	}
 
 	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)

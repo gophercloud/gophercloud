@@ -1404,10 +1404,10 @@ func HandleNodeListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, NodeListBody)
+			fmt.Fprint(w, NodeListBody)
 
 		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
-			fmt.Fprintf(w, `{ "servers": [] }`)
+			fmt.Fprint(w, `{ "servers": [] }`)
 		default:
 			t.Fatalf("/nodes invoked with unexpected marker=[%s]", marker)
 		}
@@ -1424,7 +1424,7 @@ func HandleNodeListDetailSuccessfully(t *testing.T) {
 			t.Errorf("Failed to parse request form %v", err)
 		}
 
-		fmt.Fprintf(w, NodeListDetailBody)
+		fmt.Fprint(w, NodeListDetailBody)
 	})
 }
 
@@ -1451,7 +1451,7 @@ func HandleNodeCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -1471,7 +1471,7 @@ func HandleNodeGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleNodeBody)
+		fmt.Fprint(w, SingleNodeBody)
 	})
 }
 
@@ -1483,7 +1483,7 @@ func HandleNodeUpdateSuccessfully(t *testing.T, response string) {
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, `[{"op": "replace", "path": "/properties", "value": {"root_gb": 25}}]`)
 
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -1493,7 +1493,7 @@ func HandleNodeValidateSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, NodeValidationBody)
+		fmt.Fprint(w, NodeValidationBody)
 	})
 }
 
@@ -1525,7 +1525,7 @@ func HandleGetBootDeviceSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, NodeBootDeviceBody)
+		fmt.Fprint(w, NodeBootDeviceBody)
 	})
 }
 
@@ -1535,7 +1535,7 @@ func HandleGetSupportedBootDeviceSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, NodeSupportedBootDeviceBody)
+		fmt.Fprint(w, NodeSupportedBootDeviceBody)
 	})
 }
 
@@ -1667,7 +1667,7 @@ func HandleListBIOSSettingsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, NodeBIOSSettingsBody)
+		fmt.Fprint(w, NodeBIOSSettingsBody)
 	})
 }
 
@@ -1677,7 +1677,7 @@ func HandleListDetailBIOSSettingsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, NodeDetailBIOSSettingsBody)
+		fmt.Fprint(w, NodeDetailBIOSSettingsBody)
 	})
 }
 
@@ -1687,7 +1687,7 @@ func HandleGetBIOSSettingSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, NodeSingleBIOSSettingBody)
+		fmt.Fprint(w, NodeSingleBIOSSettingBody)
 	})
 }
 
@@ -1697,7 +1697,7 @@ func HandleGetVendorPassthruMethodsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, NodeVendorPassthruMethodsBody)
+		fmt.Fprint(w, NodeVendorPassthruMethodsBody)
 	})
 }
 
@@ -1708,7 +1708,7 @@ func HandleGetAllSubscriptionsVendorPassthruSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestFormValues(t, r, map[string]string{"method": "get_all_subscriptions"})
 
-		fmt.Fprintf(w, NodeGetAllSubscriptionsVnedorPassthruBody)
+		fmt.Fprint(w, NodeGetAllSubscriptionsVnedorPassthruBody)
 	})
 }
 
@@ -1724,7 +1724,7 @@ func HandleGetSubscriptionVendorPassthruSuccessfully(t *testing.T) {
 			}
 		`)
 
-		fmt.Fprintf(w, NodeGetSubscriptionVendorPassthruBody)
+		fmt.Fprint(w, NodeGetSubscriptionVendorPassthruBody)
 	})
 }
 
@@ -1744,7 +1744,7 @@ func HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t *testing.
 			}
 		`)
 
-		fmt.Fprintf(w, NodeCreateSubscriptionVendorPassthruAllParametersBody)
+		fmt.Fprint(w, NodeCreateSubscriptionVendorPassthruAllParametersBody)
 	})
 }
 
@@ -1760,7 +1760,7 @@ func HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t *tes
 			}
 		`)
 
-		fmt.Fprintf(w, NodeCreateSubscriptionVendorPassthruRequiredParametersBody)
+		fmt.Fprint(w, NodeCreateSubscriptionVendorPassthruRequiredParametersBody)
 	})
 }
 
@@ -1805,7 +1805,7 @@ func HandleGetInventorySuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, NodeInventoryBody)
+		fmt.Fprint(w, NodeInventoryBody)
 	})
 }
 
@@ -1815,7 +1815,7 @@ func HandleListFirmwareSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, NodeFirmwareListBody)
+		fmt.Fprint(w, NodeFirmwareListBody)
 	})
 }
 

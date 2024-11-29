@@ -48,7 +48,7 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -91,6 +91,6 @@ func HandleValidateSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }

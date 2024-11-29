@@ -40,7 +40,7 @@ func HandleInstanceActionListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"instanceActions": [
 				{
 					"action": "stop",
@@ -100,7 +100,7 @@ func HandleInstanceActionGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"instanceAction": 
 			{
 				"action": "stop",

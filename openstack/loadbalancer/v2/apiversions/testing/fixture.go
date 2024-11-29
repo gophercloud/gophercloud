@@ -88,6 +88,6 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, OctaviaAllAPIVersionsResponse)
+		fmt.Fprint(w, OctaviaAllAPIVersionsResponse)
 	})
 }

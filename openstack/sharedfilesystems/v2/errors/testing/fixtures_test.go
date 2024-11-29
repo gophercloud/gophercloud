@@ -37,6 +37,6 @@ func MockCreateResponse(t *testing.T) {
 		th.TestJSONRequest(t, r, createRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, createResponse)
+		fmt.Fprint(w, createResponse)
 	})
 }

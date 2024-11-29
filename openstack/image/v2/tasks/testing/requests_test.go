@@ -24,7 +24,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, TasksListResult)
+		fmt.Fprint(w, TasksListResult)
 	})
 
 	count := 0
@@ -64,7 +64,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, TasksGetResult)
+		fmt.Fprint(w, TasksGetResult)
 	})
 
 	s, err := tasks.Get(context.TODO(), fakeclient.ServiceClient(), "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
@@ -102,7 +102,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, TaskCreateResult)
+		fmt.Fprint(w, TaskCreateResult)
 	})
 
 	opts := tasks.CreateOpts{

@@ -30,7 +30,7 @@ func authTokenPost(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope
 		th.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"token": {
 				"expires_at": "2014-10-02T13:45:00.000000Z"
 			}
@@ -369,7 +369,7 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 		th.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, responseJSON)
+		fmt.Fprint(w, responseJSON)
 	})
 
 	ao := gophercloud.AuthOptions{
@@ -525,7 +525,7 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 		w.Header().Add("X-Subject-Token", "aaa111")
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"token": {
 				"expires_at": "2014-10-02T13:45:00.000000Z"
 			}
@@ -670,7 +670,7 @@ func TestGetRequest(t *testing.T) {
 		th.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{ "token": { "expires_at": "2014-08-29T13:10:01.000000Z" } }
 		`)
 	})
@@ -779,7 +779,7 @@ func TestNoTokenInResponse(t *testing.T) {
 
 	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprint(w, `{}`)
 	})
 
 	options := tokens.AuthOptions{UserID: "me", Password: "squirrel!"}

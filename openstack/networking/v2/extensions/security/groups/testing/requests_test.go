@@ -24,7 +24,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, SecurityGroupListResponse)
+		fmt.Fprint(w, SecurityGroupListResponse)
 	})
 
 	count := 0
@@ -64,7 +64,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SecurityGroupCreateResponse)
+		fmt.Fprint(w, SecurityGroupCreateResponse)
 	})
 
 	opts := groups.CreateOpts{Name: "new-webservers", Description: "security group for webservers"}
@@ -87,7 +87,7 @@ func TestUpdate(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, SecurityGroupUpdateResponse)
+			fmt.Fprint(w, SecurityGroupUpdateResponse)
 		})
 
 	opts := groups.UpdateOpts{Name: "newer-webservers"}
@@ -112,7 +112,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, SecurityGroupGetResponse)
+		fmt.Fprint(w, SecurityGroupGetResponse)
 	})
 
 	sg, err := groups.Get(context.TODO(), fake.ServiceClient(), "85cc3048-abc3-43cc-89b3-377341426ac5").Extract()

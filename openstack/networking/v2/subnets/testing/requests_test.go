@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, SubnetListResult)
+		fmt.Fprint(w, SubnetListResult)
 	})
 
 	count := 0
@@ -65,7 +65,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, SubnetGetResult)
+		fmt.Fprint(w, SubnetGetResult)
 	})
 
 	s, err := subnets.Get(context.TODO(), fake.ServiceClient(), "54d6f61d-db07-451c-9ab3-b9609b6b6f0b").Extract()
@@ -104,7 +104,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetCreateResult)
+		fmt.Fprint(w, SubnetCreateResult)
 	})
 
 	var gatewayIP = "192.168.199.1"
@@ -166,7 +166,7 @@ func TestCreateNoGateway(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetCreateWithNoGatewayResponse)
+		fmt.Fprint(w, SubnetCreateWithNoGatewayResponse)
 	})
 
 	var noGateway = ""
@@ -217,7 +217,7 @@ func TestCreateDefaultGateway(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetCreateWithDefaultGatewayResponse)
+		fmt.Fprint(w, SubnetCreateWithDefaultGatewayResponse)
 	})
 
 	opts := subnets.CreateOpts{
@@ -266,7 +266,7 @@ func TestCreateIPv6RaAddressMode(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetCreateWithIPv6RaAddressModeResponse)
+		fmt.Fprint(w, SubnetCreateWithIPv6RaAddressModeResponse)
 	})
 
 	var gatewayIP = "2001:db8:0:a::1"
@@ -307,7 +307,7 @@ func TestCreateWithNoCIDR(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetCreateResult)
+		fmt.Fprint(w, SubnetCreateResult)
 	})
 
 	opts := subnets.CreateOpts{
@@ -356,7 +356,7 @@ func TestCreateWithPrefixlen(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetCreateResult)
+		fmt.Fprint(w, SubnetCreateResult)
 	})
 
 	opts := subnets.CreateOpts{
@@ -423,7 +423,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateResponse)
+		fmt.Fprint(w, SubnetUpdateResponse)
 	})
 
 	dnsNameservers := []string{"foo"}
@@ -456,7 +456,7 @@ func TestUpdateGateway(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateGatewayResponse)
+		fmt.Fprint(w, SubnetUpdateGatewayResponse)
 	})
 
 	var gatewayIP = "10.0.0.1"
@@ -487,7 +487,7 @@ func TestUpdateRemoveGateway(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateRemoveGatewayResponse)
+		fmt.Fprint(w, SubnetUpdateRemoveGatewayResponse)
 	})
 
 	var noGateway = ""
@@ -518,7 +518,7 @@ func TestUpdateHostRoutes(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateHostRoutesResponse)
+		fmt.Fprint(w, SubnetUpdateHostRoutesResponse)
 	})
 
 	HostRoutes := []subnets.HostRoute{
@@ -555,7 +555,7 @@ func TestUpdateRemoveHostRoutes(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateRemoveHostRoutesResponse)
+		fmt.Fprint(w, SubnetUpdateRemoveHostRoutesResponse)
 	})
 
 	noHostRoutes := []subnets.HostRoute{}
@@ -584,7 +584,7 @@ func TestUpdateAllocationPool(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateAllocationPoolResponse)
+		fmt.Fprint(w, SubnetUpdateAllocationPoolResponse)
 	})
 
 	name := "my_new_subnet"
@@ -625,7 +625,7 @@ func TestUpdateRevision(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateResponse)
+		fmt.Fprint(w, SubnetUpdateResponse)
 	})
 
 	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1c", func(w http.ResponseWriter, r *http.Request) {
@@ -639,7 +639,7 @@ func TestUpdateRevision(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, SubnetUpdateResponse)
+		fmt.Fprint(w, SubnetUpdateResponse)
 	})
 
 	dnsNameservers := []string{"foo"}

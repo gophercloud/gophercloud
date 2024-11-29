@@ -107,16 +107,14 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		notDistinct = "OS_FLAVOR_ID and OS_FLAVOR_ID_RESIZE must be distinct."
 	}
 
-	if len(missing) > 0 || notDistinct != "" {
-		text := "You're missing some important setup:\n"
-		if len(missing) > 0 {
-			text += " * These environment variables must be provided: " + strings.Join(missing, ", ") + "\n"
-		}
-		if notDistinct != "" {
-			text += " * " + notDistinct + "\n"
-		}
+	if len(missing) > 0 {
+		text := "You're missing some important setup:\n * These environment variables must be provided: %s\n"
+		return nil, fmt.Errorf(text, strings.Join(missing, ", "))
+	}
 
-		return nil, fmt.Errorf(text)
+	if notDistinct != "" {
+		text := "You're missing some important setup:\n * %s\n"
+		return nil, fmt.Errorf(text, notDistinct)
 	}
 
 	return &AcceptanceTestChoices{

@@ -274,7 +274,7 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
 		}
-		fmt.Fprintf(w, PoolsListBody)
+		fmt.Fprint(w, PoolsListBody)
 
 	})
 	th.Mux.HandleFunc("/scheduler-stats/pools/detail", func(w http.ResponseWriter, r *http.Request) {
@@ -286,6 +286,6 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
 		}
-		fmt.Fprintf(w, PoolsListBodyDetail)
+		fmt.Fprint(w, PoolsListBodyDetail)
 	})
 }

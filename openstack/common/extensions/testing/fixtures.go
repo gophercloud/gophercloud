@@ -71,7 +71,7 @@ func HandleListExtensionsSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -85,6 +85,6 @@ func HandleGetExtensionSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }

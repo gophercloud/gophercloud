@@ -56,7 +56,7 @@ func HandleListContainerInfoSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `[
+			fmt.Fprint(w, `[
         {
           "count": 0,
           "bytes": 0,
@@ -69,7 +69,7 @@ func HandleListContainerInfoSuccessfully(t *testing.T) {
         }
       ]`)
 		case "janeausten":
-			fmt.Fprintf(w, `[
+			fmt.Fprint(w, `[
 				{
 					"count": 1,
 					"bytes": 14,
@@ -77,7 +77,7 @@ func HandleListContainerInfoSuccessfully(t *testing.T) {
 				}
 			]`)
 		case "marktwain":
-			fmt.Fprintf(w, `[]`)
+			fmt.Fprint(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -158,7 +158,7 @@ func HandleBulkDeleteSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, bulkDeleteResponse)
+		fmt.Fprint(w, bulkDeleteResponse)
 	})
 }
 

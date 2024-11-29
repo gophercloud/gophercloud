@@ -25,7 +25,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 
 	iTrue := true
@@ -73,7 +73,7 @@ func TestCreateNoSubports(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateNoSubportsResponse)
+		fmt.Fprint(w, CreateNoSubportsResponse)
 	})
 
 	iTrue := true
@@ -115,7 +115,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 
 	client := fake.ServiceClient()
@@ -153,7 +153,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 
 	n, err := trunks.Get(context.TODO(), fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c").Extract()
@@ -177,7 +177,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	iFalse := false
@@ -207,7 +207,7 @@ func TestGetSubports(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListSubportsResponse)
+		fmt.Fprint(w, ListSubportsResponse)
 	})
 
 	client := fake.ServiceClient()
@@ -259,7 +259,7 @@ func TestAddSubports(t *testing.T) {
 		th.TestJSONRequest(t, r, AddSubportsRequest)
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AddSubportsResponse)
+		fmt.Fprint(w, AddSubportsResponse)
 	})
 
 	client := fake.ServiceClient()
@@ -287,7 +287,7 @@ func TestRemoveSubports(t *testing.T) {
 		th.TestJSONRequest(t, r, RemoveSubportsRequest)
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, RemoveSubportsResponse)
+		fmt.Fprint(w, RemoveSubportsResponse)
 	})
 
 	client := fake.ServiceClient()

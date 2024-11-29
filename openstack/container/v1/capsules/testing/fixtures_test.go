@@ -609,7 +609,7 @@ func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, CapsuleGetBody_OldTime)
+		fmt.Fprint(w, CapsuleGetBody_OldTime)
 	})
 }
 
@@ -621,7 +621,7 @@ func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, CapsuleGetBody_NewTime)
+		fmt.Fprint(w, CapsuleGetBody_NewTime)
 	})
 }
 
@@ -633,7 +633,7 @@ func HandleCapsuleCreateSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, CapsuleGetBody_NewTime)
+		fmt.Fprint(w, CapsuleGetBody_NewTime)
 	})
 }
 
@@ -645,7 +645,7 @@ func HandleCapsuleListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, CapsuleListBody)
+		fmt.Fprint(w, CapsuleListBody)
 	})
 }
 
@@ -657,7 +657,7 @@ func HandleCapsuleV132ListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, CapsuleV132ListBody)
+		fmt.Fprint(w, CapsuleV132ListBody)
 	})
 }
 

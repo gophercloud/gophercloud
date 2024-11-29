@@ -27,7 +27,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 
 	count := 0
@@ -86,7 +86,7 @@ func TestListWithExtensions(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 
 	type portWithExt struct {
@@ -117,7 +117,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 
 	n, err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").Extract()
@@ -152,7 +152,7 @@ func TestGetWithExtensions(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 
 	var portWithExtensions struct {
@@ -181,7 +181,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 
 	asu := true
@@ -231,7 +231,7 @@ func TestCreateOmitSecurityGroups(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateOmitSecurityGroupsResponse)
+		fmt.Fprint(w, CreateOmitSecurityGroupsResponse)
 	})
 
 	asu := true
@@ -280,7 +280,7 @@ func TestCreateWithNoSecurityGroup(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateWithNoSecurityGroupsResponse)
+		fmt.Fprint(w, CreateWithNoSecurityGroupsResponse)
 	})
 
 	asu := true
@@ -329,7 +329,7 @@ func TestCreateWithPropagateUplinkStatus(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreatePropagateUplinkStatusResponse)
+		fmt.Fprint(w, CreatePropagateUplinkStatusResponse)
 	})
 
 	asu := true
@@ -374,7 +374,7 @@ func TestCreateWithValueSpecs(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateValueSpecResponse)
+		fmt.Fprint(w, CreateValueSpecResponse)
 	})
 
 	asu := true
@@ -427,7 +427,7 @@ func TestCreateWithInvalidValueSpecs(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateValueSpecResponse)
+		fmt.Fprint(w, CreateValueSpecResponse)
 	})
 
 	asu := true
@@ -483,7 +483,7 @@ func TestCreatePortSecurity(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreatePortSecurityResponse)
+		fmt.Fprint(w, CreatePortSecurityResponse)
 	})
 
 	var portWithExt struct {
@@ -531,7 +531,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	name := "new_port_name"
@@ -573,7 +573,7 @@ func TestUpdateOmitSecurityGroups(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateOmitSecurityGroupsResponse)
+		fmt.Fprint(w, UpdateOmitSecurityGroupsResponse)
 	})
 
 	name := "new_port_name"
@@ -614,7 +614,7 @@ func TestUpdatePropagateUplinkStatus(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdatePropagateUplinkStatusResponse)
+		fmt.Fprint(w, UpdatePropagateUplinkStatusResponse)
 	})
 
 	propagateUplinkStatus := true
@@ -642,7 +642,7 @@ func TestUpdateValueSpecs(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateValueSpecsResponse)
+		fmt.Fprint(w, UpdateValueSpecsResponse)
 	})
 
 	options := ports.UpdateOpts{
@@ -669,7 +669,7 @@ func TestUpdatePortSecurity(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdatePortSecurityResponse)
+		fmt.Fprint(w, UpdatePortSecurityResponse)
 	})
 
 	var portWithExt struct {
@@ -707,7 +707,7 @@ func TestUpdateRevision(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
@@ -720,7 +720,7 @@ func TestUpdateRevision(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	name := "new_port_name"
@@ -757,7 +757,7 @@ func TestRemoveSecurityGroups(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, RemoveSecurityGroupResponse)
+		fmt.Fprint(w, RemoveSecurityGroupResponse)
 	})
 
 	name := "new_port_name"
@@ -799,7 +799,7 @@ func TestRemoveAllowedAddressPairs(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, RemoveAllowedAddressPairsResponse)
+		fmt.Fprint(w, RemoveAllowedAddressPairsResponse)
 	})
 
 	name := "new_port_name"
@@ -837,7 +837,7 @@ func TestDontUpdateAllowedAddressPairs(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, DontUpdateAllowedAddressPairsResponse)
+		fmt.Fprint(w, DontUpdateAllowedAddressPairsResponse)
 	})
 
 	name := "new_port_name"
@@ -887,7 +887,7 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetWithExtraDHCPOptsResponse)
+		fmt.Fprint(w, GetWithExtraDHCPOptsResponse)
 	})
 
 	var s struct {
@@ -933,7 +933,7 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateWithExtraDHCPOptsResponse)
+		fmt.Fprint(w, CreateWithExtraDHCPOptsResponse)
 	})
 
 	adminStateUp := true
@@ -996,7 +996,7 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateWithExtraDHCPOptsResponse)
+		fmt.Fprint(w, UpdateWithExtraDHCPOptsResponse)
 	})
 
 	name := "updated-port-with-dhcp-opts"

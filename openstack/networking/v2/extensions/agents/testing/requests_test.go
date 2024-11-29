@@ -25,7 +25,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AgentsListResult)
+		fmt.Fprint(w, AgentsListResult)
 	})
 
 	count := 0
@@ -66,7 +66,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AgentsGetResult)
+		fmt.Fprint(w, AgentsGetResult)
 	})
 
 	s, err := agents.Get(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
@@ -106,7 +106,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AgentsUpdateResult)
+		fmt.Fprint(w, AgentsUpdateResult)
 	})
 
 	iTrue := true
@@ -149,7 +149,7 @@ func TestListDHCPNetworks(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AgentDHCPNetworksListResult)
+		fmt.Fprint(w, AgentDHCPNetworksListResult)
 	})
 
 	s, err := agents.ListDHCPNetworks(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
@@ -223,7 +223,7 @@ func TestListBGPSpeakers(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, ListBGPSpeakersResult)
+			fmt.Fprint(w, ListBGPSpeakersResult)
 		})
 
 	count := 0
@@ -305,7 +305,7 @@ func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, ListDRAgentHostingBGPSpeakersResult)
+			fmt.Fprint(w, ListDRAgentHostingBGPSpeakersResult)
 		})
 
 	count := 0
@@ -342,7 +342,7 @@ func TestListL3Routers(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AgentL3RoutersListResult)
+		fmt.Fprint(w, AgentL3RoutersListResult)
 	})
 
 	s, err := agents.ListL3Routers(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()

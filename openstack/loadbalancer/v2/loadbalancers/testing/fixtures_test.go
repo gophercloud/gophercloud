@@ -453,9 +453,9 @@ func HandleLoadbalancerListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, LoadbalancersListBody)
+			fmt.Fprint(w, LoadbalancersListBody)
 		case "45e08a3e-a78f-4b40-a229-1e7e23eee1ab":
-			fmt.Fprintf(w, `{ "loadbalancers": [] }`)
+			fmt.Fprint(w, `{ "loadbalancers": [] }`)
 		default:
 			t.Fatalf("/v2.0/lbaas/loadbalancers invoked with unexpected marker=[%s]", marker)
 		}
@@ -533,7 +533,7 @@ func HandleFullyPopulatedLoadbalancerCreationSuccessfully(t *testing.T, response
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -559,7 +559,7 @@ func HandleLoadbalancerCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -570,7 +570,7 @@ func HandleLoadbalancerGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleLoadbalancerBody)
+		fmt.Fprint(w, SingleLoadbalancerBody)
 	})
 }
 
@@ -581,7 +581,7 @@ func HandleLoadbalancerGetStatusesTree(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, GetLoadbalancerStatusesBody)
+		fmt.Fprint(w, GetLoadbalancerStatusesBody)
 	})
 }
 
@@ -609,7 +609,7 @@ func HandleLoadbalancerUpdateSuccessfully(t *testing.T) {
 			}
 		}`)
 
-		fmt.Fprintf(w, PostUpdateLoadbalancerBody)
+		fmt.Fprint(w, PostUpdateLoadbalancerBody)
 	})
 }
 
@@ -620,7 +620,7 @@ func HandleLoadbalancerGetStatsTree(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, GetLoadbalancerStatsBody)
+		fmt.Fprint(w, GetLoadbalancerStatsBody)
 	})
 }
 

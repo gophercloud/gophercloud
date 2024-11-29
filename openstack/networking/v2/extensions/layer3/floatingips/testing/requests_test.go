@@ -24,7 +24,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 
 	count := 0
@@ -88,7 +88,7 @@ func TestInvalidNextPageURLs(t *testing.T) {
 	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{"floatingips": [{}], "floatingips_links": {}}`)
+		fmt.Fprint(w, `{"floatingips": [{}], "floatingips_links": {}}`)
 	})
 
 	err := floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -134,7 +134,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "floatingip": {
         "router_id": "d23abc8d-2991-4a55-ba98-2aaea84cc72f",
@@ -189,7 +189,7 @@ func TestCreateEmptyPort(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 				{
 					"floatingip": {
 						"router_id": "d23abc8d-2991-4a55-ba98-2aaea84cc72f",
@@ -243,7 +243,7 @@ func TestCreateWithSubnetID(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "floatingip": {
         "router_id": null,
@@ -289,7 +289,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "floatingip": {
         "floating_network_id": "90f742b1-6d17-487b-ba95-71881dbc0b64",
@@ -342,7 +342,7 @@ func TestAssociate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 	"floatingip": {
 			"router_id": "d23abc8d-2991-4a55-ba98-2aaea84cc72f",
@@ -384,7 +384,7 @@ func TestDisassociate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "floatingip": {
         "router_id": "d23abc8d-2991-4a55-ba98-2aaea84cc72f",

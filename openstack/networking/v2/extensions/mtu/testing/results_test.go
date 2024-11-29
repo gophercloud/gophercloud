@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, nettest.ListResponse)
+		fmt.Fprint(w, nettest.ListResponse)
 	})
 
 	type NetworkWithMTUExt struct {
@@ -59,7 +59,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, nettest.GetResponse)
+		fmt.Fprint(w, nettest.GetResponse)
 	})
 
 	var s NetworkMTU
@@ -85,7 +85,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 
 	iTrue := true
@@ -123,7 +123,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	iTrue := true

@@ -23,7 +23,7 @@ func TestListBandwidthLimitRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, BandwidthLimitRulesListResult)
+		fmt.Fprint(w, BandwidthLimitRulesListResult)
 	})
 
 	count := 0
@@ -71,7 +71,7 @@ func TestGetBandwidthLimitRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, BandwidthLimitRulesGetResult)
+		fmt.Fprint(w, BandwidthLimitRulesGetResult)
 	})
 
 	r, err := rules.GetBandwidthLimitRule(context.TODO(), fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractBandwidthLimitRule()
@@ -97,7 +97,7 @@ func TestCreateBandwidthLimitRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, BandwidthLimitRulesCreateResult)
+		fmt.Fprint(w, BandwidthLimitRulesCreateResult)
 	})
 
 	opts := rules.CreateBandwidthLimitRuleOpts{
@@ -125,7 +125,7 @@ func TestUpdateBandwidthLimitRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, BandwidthLimitRulesUpdateResult)
+		fmt.Fprint(w, BandwidthLimitRulesUpdateResult)
 	})
 
 	maxKBps := 500
@@ -166,7 +166,7 @@ func TestListDSCPMarkingRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, DSCPMarkingRulesListResult)
+		fmt.Fprint(w, DSCPMarkingRulesListResult)
 	})
 
 	count := 0
@@ -212,7 +212,7 @@ func TestGetDSCPMarkingRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, DSCPMarkingRuleGetResult)
+		fmt.Fprint(w, DSCPMarkingRuleGetResult)
 	})
 
 	r, err := rules.GetDSCPMarkingRule(context.TODO(), fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractDSCPMarkingRule()
@@ -236,7 +236,7 @@ func TestCreateDSCPMarkingRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, DSCPMarkingRuleCreateResult)
+		fmt.Fprint(w, DSCPMarkingRuleCreateResult)
 	})
 
 	opts := rules.CreateDSCPMarkingRuleOpts{
@@ -263,7 +263,7 @@ func TestUpdateDSCPMarkingRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, DSCPMarkingRuleUpdateResult)
+		fmt.Fprint(w, DSCPMarkingRuleUpdateResult)
 	})
 
 	dscpMark := 26
@@ -302,7 +302,7 @@ func TestListMinimumBandwidthRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, MinimumBandwidthRulesListResult)
+		fmt.Fprint(w, MinimumBandwidthRulesListResult)
 	})
 
 	count := 0
@@ -349,7 +349,7 @@ func TestGetMinimumBandwidthRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, MinimumBandwidthRulesGetResult)
+		fmt.Fprint(w, MinimumBandwidthRulesGetResult)
 	})
 
 	r, err := rules.GetMinimumBandwidthRule(context.TODO(), fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractMinimumBandwidthRule()
@@ -374,7 +374,7 @@ func TestCreateMinimumBandwidthRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, MinimumBandwidthRulesCreateResult)
+		fmt.Fprint(w, MinimumBandwidthRulesCreateResult)
 	})
 
 	opts := rules.CreateMinimumBandwidthRuleOpts{
@@ -400,7 +400,7 @@ func TestUpdateMinimumBandwidthRule(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, MinimumBandwidthRulesUpdateResult)
+		fmt.Fprint(w, MinimumBandwidthRulesUpdateResult)
 	})
 
 	minKBps := 500
