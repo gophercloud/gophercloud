@@ -6,13 +6,13 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/services"
 	"github.com/gophercloud/gophercloud/v2/pagination"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListServicesPre253(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	HandleListPre253Successfully(t)
 
 	pages := 0
@@ -27,15 +27,15 @@ func TestListServicesPre253(t *testing.T) {
 		if len(actual) != 4 {
 			t.Fatalf("Expected 4 services, got %d", len(actual))
 		}
-		testhelper.CheckDeepEquals(t, FirstFakeServicePre253, actual[0])
-		testhelper.CheckDeepEquals(t, SecondFakeServicePre253, actual[1])
-		testhelper.CheckDeepEquals(t, ThirdFakeServicePre253, actual[2])
-		testhelper.CheckDeepEquals(t, FourthFakeServicePre253, actual[3])
+		th.CheckDeepEquals(t, FirstFakeServicePre253, actual[0])
+		th.CheckDeepEquals(t, SecondFakeServicePre253, actual[1])
+		th.CheckDeepEquals(t, ThirdFakeServicePre253, actual[2])
+		th.CheckDeepEquals(t, FourthFakeServicePre253, actual[3])
 
 		return true, nil
 	})
 
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
@@ -43,8 +43,8 @@ func TestListServicesPre253(t *testing.T) {
 }
 
 func TestListServices(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
 	pages := 0
@@ -63,15 +63,15 @@ func TestListServices(t *testing.T) {
 		if len(actual) != 4 {
 			t.Fatalf("Expected 4 services, got %d", len(actual))
 		}
-		testhelper.CheckDeepEquals(t, FirstFakeService, actual[0])
-		testhelper.CheckDeepEquals(t, SecondFakeService, actual[1])
-		testhelper.CheckDeepEquals(t, ThirdFakeService, actual[2])
-		testhelper.CheckDeepEquals(t, FourthFakeService, actual[3])
+		th.CheckDeepEquals(t, FirstFakeService, actual[0])
+		th.CheckDeepEquals(t, SecondFakeService, actual[1])
+		th.CheckDeepEquals(t, ThirdFakeService, actual[2])
+		th.CheckDeepEquals(t, FourthFakeService, actual[3])
 
 		return true, nil
 	})
 
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
@@ -79,8 +79,8 @@ func TestListServices(t *testing.T) {
 }
 
 func TestUpdateService(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	HandleUpdateSuccessfully(t)
 
 	client := client.ServiceClient()
@@ -89,16 +89,16 @@ func TestUpdateService(t *testing.T) {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
 
-	testhelper.CheckDeepEquals(t, FakeServiceUpdateBody, *actual)
+	th.CheckDeepEquals(t, FakeServiceUpdateBody, *actual)
 }
 
 func TestDeleteService(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
 	client := client.ServiceClient()
 	res := services.Delete(context.TODO(), client, "fake-service-id")
 
-	testhelper.AssertNoErr(t, res.Err)
+	th.AssertNoErr(t, res.Err)
 }

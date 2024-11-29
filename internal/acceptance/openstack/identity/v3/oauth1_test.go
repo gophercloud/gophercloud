@@ -16,6 +16,8 @@ import (
 )
 
 func TestOAuth1CRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
@@ -24,10 +26,10 @@ func TestOAuth1CRUD(t *testing.T) {
 
 	authOptions := tokens.AuthOptions{
 		Username:   ao.Username,
+		UserID:     ao.UserID,
 		Password:   ao.Password,
 		DomainName: ao.DomainName,
 		DomainID:   ao.DomainID,
-		// We need a scope to get the token roles list
 		Scope: tokens.Scope{
 			ProjectID:   ao.TenantID,
 			ProjectName: ao.TenantName,

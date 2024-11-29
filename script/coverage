@@ -19,5 +19,6 @@ for path in $(find . -path '*/testing' -prune -o -path '*/internal' -prune -o -n
   n=$((n+1))
 done
 
-gocovmerge `ls *.coverprofile` > cover.out
+# shellcheck disable=SC2046
+gocovmerge $(ls -- *.coverprofile) > cover.out
 rm ./*.coverprofile

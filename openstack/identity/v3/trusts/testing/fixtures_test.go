@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/trusts"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
@@ -201,37 +201,37 @@ var ExpectedTrustRolesSlice = []trusts.Role{FirstRole, SecondRole}
 // HandleCreateTrust creates an HTTP handler at `/OS-TRUST/trusts` on the
 // test handler mux that tests trust creation.
 func HandleCreateTrust(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestJSONRequest(t, r, CreateRequest)
+	th.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
 		_, err := fmt.Fprintf(w, CreateResponse)
-		testhelper.AssertNoErr(t, err)
+		th.AssertNoErr(t, err)
 	})
 }
 
 // HandleCreateTrustNoExpire creates an HTTP handler at `/OS-TRUST/trusts` on the
 // test handler mux that tests trust creation.
 func HandleCreateTrustNoExpire(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestJSONRequest(t, r, CreateRequestNoExpire)
+	th.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequestNoExpire)
 
 		w.WriteHeader(http.StatusCreated)
 		_, err := fmt.Fprintf(w, CreateResponseNoExpire)
-		testhelper.AssertNoErr(t, err)
+		th.AssertNoErr(t, err)
 	})
 }
 
 // HandleDeleteUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests user deletion.
 func HandleDeleteTrust(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/3422b7c113894f5d90665e1a79655e23", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/OS-TRUST/trusts/3422b7c113894f5d90665e1a79655e23", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -240,10 +240,10 @@ func HandleDeleteTrust(t *testing.T) {
 // HandleGetTrustSuccessfully creates an HTTP handler at `/OS-TRUST/trusts` on the
 // test handler mux that responds with a single trusts.
 func HandleGetTrustSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/OS-TRUST/trusts/987fe8", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -310,10 +310,10 @@ var ExpectedTrustsSlice = []trusts.Trust{FirstTrust, SecondTrust}
 // HandleListTrustsSuccessfully creates an HTTP handler at `/OS-TRUST/trusts` on the
 // test handler mux that responds with a list of two trusts.
 func HandleListTrustsSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -324,10 +324,10 @@ func HandleListTrustsSuccessfully(t *testing.T) {
 // HandleListTrustRolesSuccessfully creates an HTTP handler at `/OS-TRUST/trusts/987fe8/roles` on the
 // test handler mux that responds with a list trust roles.
 func HandleListTrustRolesSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -338,10 +338,10 @@ func HandleListTrustRolesSuccessfully(t *testing.T) {
 // HandleGetTrustRoleSuccessfully creates an HTTP handler at `/OS-TRUST/trusts/987fe8/roles/c1648e` on the
 // test handler mux that responds with a trust role details.
 func HandleGetTrustRoleSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles/c1648e", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles/c1648e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -352,10 +352,10 @@ func HandleGetTrustRoleSuccessfully(t *testing.T) {
 // HandleCheckTrustRoleSuccessfully creates an HTTP handler at `/OS-TRUST/trusts/987fe8/roles/c1648e` on the
 // test handler mux that responds with a list trust roles.
 func HandleCheckTrustRoleSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles/c1648e", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "HEAD")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles/c1648e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "HEAD")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 	})

@@ -6,13 +6,13 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/services"
 	"github.com/gophercloud/gophercloud/v2/pagination"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListServices(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
 	pages := 0
@@ -27,13 +27,13 @@ func TestListServices(t *testing.T) {
 		if len(actual) != 2 {
 			t.Fatalf("Expected 2 services, got %d", len(actual))
 		}
-		testhelper.CheckDeepEquals(t, FirstFakeService, actual[0])
-		testhelper.CheckDeepEquals(t, SecondFakeService, actual[1])
+		th.CheckDeepEquals(t, FirstFakeService, actual[0])
+		th.CheckDeepEquals(t, SecondFakeService, actual[1])
 
 		return true, nil
 	})
 
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)

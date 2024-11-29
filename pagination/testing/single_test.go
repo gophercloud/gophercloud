@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // SinglePage sample and test cases.
@@ -33,10 +33,10 @@ func ExtractSingleInts(r pagination.Page) ([]int, error) {
 }
 
 func setupSinglePaged() pagination.Pager {
-	testhelper.SetupHTTP()
+	th.SetupHTTP()
 	client := createClient()
 
-	testhelper.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3] }`)
 	})
@@ -45,36 +45,36 @@ func setupSinglePaged() pagination.Pager {
 		return SinglePageResult{pagination.SinglePageBase(r)}
 	}
 
-	return pagination.NewPager(client, testhelper.Server.URL+"/only", createPage)
+	return pagination.NewPager(client, th.Server.URL+"/only", createPage)
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {
 	callCount := 0
 	pager := setupSinglePaged()
-	defer testhelper.TeardownHTTP()
+	defer th.TeardownHTTP()
 
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		callCount++
 
 		expected := []int{1, 2, 3}
 		actual, err := ExtractSingleInts(page)
-		testhelper.AssertNoErr(t, err)
-		testhelper.CheckDeepEquals(t, expected, actual)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, expected, actual)
 		return true, nil
 	})
-	testhelper.CheckNoErr(t, err)
-	testhelper.CheckEquals(t, 1, callCount)
+	th.CheckNoErr(t, err)
+	th.CheckEquals(t, 1, callCount)
 }
 
 func TestAllPagesSingle(t *testing.T) {
 	pager := setupSinglePaged()
-	defer testhelper.TeardownHTTP()
+	defer th.TeardownHTTP()
 
 	page, err := pager.AllPages(context.TODO())
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	expected := []int{1, 2, 3}
 	actual, err := ExtractSingleInts(page)
-	testhelper.AssertNoErr(t, err)
-	testhelper.CheckDeepEquals(t, expected, actual)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
 }

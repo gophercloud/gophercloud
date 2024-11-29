@@ -15,6 +15,8 @@ import (
 )
 
 func TestListMappings(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
@@ -28,9 +30,9 @@ func TestListMappings(t *testing.T) {
 }
 
 func TestMappingsCRUD(t *testing.T) {
-	mappingName := tools.RandomString("TESTMAPPING-", 8)
-
 	clients.RequireAdmin(t)
+
+	mappingName := tools.RandomString("TESTMAPPING-", 8)
 
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
