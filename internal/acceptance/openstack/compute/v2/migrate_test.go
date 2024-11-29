@@ -26,6 +26,16 @@ func TestMigrate(t *testing.T) {
 
 	err = servers.Migrate(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	allPages, err := osmigrations.List(client, osmigrations.ListOpts{
+		InstanceUuid: &server.ID,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allOsMigrations, err := osmigrations.ExtractOsMigrations(allPages)
+	th.AssertNoErr(t, err)
+
+	th.AssertIntGreaterOrEqual(t, len(allOsMigrations), 1)
 }
 
 func TestLiveMigrate(t *testing.T) {
@@ -52,4 +62,14 @@ func TestLiveMigrate(t *testing.T) {
 
 	err = servers.LiveMigrate(context.TODO(), client, server.ID, liveMigrateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	allPages, err := osmigrations.List(client, osmigrations.ListOpts{
+		InstanceUuid: &server.ID,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allOsMigrations, err := osmigrations.ExtractOsMigrations(allPages)
+	th.AssertNoErr(t, err)
+
+	th.AssertIntGreaterOrEqual(t, len(allOsMigrations), 1)
 }
