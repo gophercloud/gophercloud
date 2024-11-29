@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, ListBGPSpeakerResult)
+			fmt.Fprint(w, ListBGPSpeakerResult)
 		})
 	count := 0
 
@@ -54,7 +54,7 @@ func TestGet(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetBGPSpeakerResult)
+		fmt.Fprint(w, GetBGPSpeakerResult)
 	})
 
 	s, err := speakers.Get(context.TODO(), fake.ServiceClient(), bgpSpeakerID).Extract()
@@ -74,7 +74,7 @@ func TestCreate(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 
 	opts := speakers.CreateOpts{
@@ -124,7 +124,7 @@ func TestUpdate(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, GetBGPSpeakerResult)
+			fmt.Fprint(w, GetBGPSpeakerResult)
 		} else if r.Method == "PUT" {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -134,7 +134,7 @@ func TestUpdate(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, UpdateBGPSpeakerResponse)
+			fmt.Fprint(w, UpdateBGPSpeakerResponse)
 		} else {
 			panic("Unexpected Request")
 		}
@@ -168,7 +168,7 @@ func TestAddBGPPeer(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, AddRemoveBGPPeerJSON)
+		fmt.Fprint(w, AddRemoveBGPPeerJSON)
 	})
 
 	opts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeerID}
@@ -207,7 +207,7 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetAdvertisedRoutesResult)
+		fmt.Fprint(w, GetAdvertisedRoutesResult)
 	})
 
 	count := 0
@@ -249,7 +249,7 @@ func TestAddGatewayNetwork(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, AddRemoveGatewayNetworkJSON)
+		fmt.Fprint(w, AddRemoveGatewayNetworkJSON)
 	})
 
 	opts := speakers.AddGatewayNetworkOpts{NetworkID: networkID}
@@ -273,7 +273,7 @@ func TestRemoveGatewayNetwork(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "")
+		fmt.Fprint(w, "")
 	})
 
 	opts := speakers.RemoveGatewayNetworkOpts{NetworkID: networkID}

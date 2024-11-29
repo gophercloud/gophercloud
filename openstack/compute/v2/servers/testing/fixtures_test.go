@@ -741,7 +741,7 @@ func HandleServerNoNetworkCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -761,7 +761,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 
 	th.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
@@ -775,7 +775,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
 				{
 					"images": [
 						{
@@ -804,7 +804,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 				}
 			`)
 		case "2":
-			fmt.Fprintf(w, `{ "images": [] }`)
+			fmt.Fprint(w, `{ "images": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -850,7 +850,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 						}
 					`, th.Server.URL)
 		case "2":
-			fmt.Fprintf(w, `{ "flavors": [] }`)
+			fmt.Fprint(w, `{ "flavors": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -875,7 +875,7 @@ func HandleServersCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -896,7 +896,7 @@ func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response stri
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -915,7 +915,7 @@ func HandleServerCreationWithHostname(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -936,7 +936,7 @@ func HandleServerCreationWithUserdata(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -959,7 +959,7 @@ func HandleServerCreationWithMetadata(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -976,9 +976,9 @@ func HandleServerListSimpleSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, ServerListBody)
+			fmt.Fprint(w, ServerListBody)
 		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
-			fmt.Fprintf(w, `{ "servers": [] }`)
+			fmt.Fprint(w, `{ "servers": [] }`)
 		default:
 			t.Fatalf("/servers invoked with unexpected marker=[%s]", marker)
 		}
@@ -998,9 +998,9 @@ func HandleServerListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, ServerListBody)
+			fmt.Fprint(w, ServerListBody)
 		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
-			fmt.Fprintf(w, `{ "servers": [] }`)
+			fmt.Fprint(w, `{ "servers": [] }`)
 		default:
 			t.Fatalf("/servers/detail invoked with unexpected marker=[%s]", marker)
 		}
@@ -1036,7 +1036,7 @@ func HandleServerGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleServerBody)
+		fmt.Fprint(w, SingleServerBody)
 	})
 }
 
@@ -1048,7 +1048,7 @@ func HandleServerGetFaultSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, FaultyServerBody)
+		fmt.Fprint(w, FaultyServerBody)
 	})
 }
 
@@ -1061,7 +1061,7 @@ func HandleServerUpdateSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
 
-		fmt.Fprintf(w, SingleServerBody)
+		fmt.Fprint(w, SingleServerBody)
 	})
 }
 
@@ -1097,7 +1097,7 @@ func HandleShowConsoleOutputSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -1119,7 +1119,7 @@ func HandleRebuildSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -1243,7 +1243,7 @@ func HandleAddressListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"addresses": {
 				"public": [
 				{
@@ -1285,7 +1285,7 @@ func HandleNetworkAddressListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"public": [
 			{
 				"version": 4,
@@ -1317,7 +1317,7 @@ func HandlePasswordGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, ServerPasswordBody)
+		fmt.Fprint(w, ServerPasswordBody)
 	})
 }
 
@@ -1332,6 +1332,6 @@ func HandleServerWithTagsCreationSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
 
-		fmt.Fprintf(w, SingleServerWithTagsBody)
+		fmt.Fprint(w, SingleServerWithTagsBody)
 	})
 }

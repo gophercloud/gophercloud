@@ -59,7 +59,7 @@ func HandleListTenantsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -81,7 +81,7 @@ func mockCreateTenantResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "tenant": {
         "name": "new_tenant",
@@ -120,7 +120,7 @@ func mockUpdateTenantResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 		"tenant": {
 				"name": "new_name",
@@ -141,7 +141,7 @@ func mockGetTenantResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 		"tenant": {
 				"name": "new_tenant",

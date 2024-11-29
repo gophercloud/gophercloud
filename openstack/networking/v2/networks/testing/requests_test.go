@@ -25,7 +25,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 
 	client := fake.ServiceClient()
@@ -62,7 +62,7 @@ func TestListWithExtensions(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 
 	client := fake.ServiceClient()
@@ -101,7 +101,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 
 	n, err := networks.Get(context.TODO(), fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
@@ -122,7 +122,7 @@ func TestGetWithExtensions(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 
 	var networkWithExtensions struct {
@@ -150,7 +150,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 
 	iTrue := true
@@ -176,7 +176,7 @@ func TestCreateWithOptionalFields(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateOptionalFieldsRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprint(w, `{}`)
 	})
 
 	iTrue := true
@@ -205,7 +205,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	iTrue, iFalse := true, false
@@ -237,7 +237,7 @@ func TestUpdateRevision(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	th.Mux.HandleFunc("/v2.0/networks/4e8e5957-649f-477b-9e5b-f1f75b21c03d", func(w http.ResponseWriter, r *http.Request) {
@@ -251,7 +251,7 @@ func TestUpdateRevision(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateResponse)
+		fmt.Fprint(w, UpdateResponse)
 	})
 
 	iTrue, iFalse := true, false
@@ -293,7 +293,7 @@ func TestCreatePortSecurity(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreatePortSecurityResponse)
+		fmt.Fprint(w, CreatePortSecurityResponse)
 	})
 
 	var networkWithExtensions struct {
@@ -330,7 +330,7 @@ func TestUpdatePortSecurity(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdatePortSecurityResponse)
+		fmt.Fprint(w, UpdatePortSecurityResponse)
 	})
 
 	var networkWithExtensions struct {

@@ -25,7 +25,7 @@ func TestCreateExecution(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"created_at": "2018-09-12 14:48:49",
 				"description": "description",
@@ -92,7 +92,7 @@ func TestGetExecution(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"created_at": "2018-09-12 14:48:49",
 				"description": "description",
@@ -189,7 +189,7 @@ func TestListExecutions(t *testing.T) {
 				"next": "%s/executions?marker=50bb59f1-eb77-4017-a77f-6d575b002667"
 			}`, th.Server.URL)
 		case "50bb59f1-eb77-4017-a77f-6d575b002667":
-			fmt.Fprintf(w, `{ "executions": [] }`)
+			fmt.Fprint(w, `{ "executions": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}

@@ -124,7 +124,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, APIListResponse)
+		fmt.Fprint(w, APIListResponse)
 	})
 }
 
@@ -136,6 +136,6 @@ func MockListOldResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, APIListOldResponse)
+		fmt.Fprint(w, APIListOldResponse)
 	})
 }

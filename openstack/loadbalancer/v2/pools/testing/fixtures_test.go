@@ -145,9 +145,9 @@ func HandlePoolListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, PoolsListBody)
+			fmt.Fprint(w, PoolsListBody)
 		case "45e08a3e-a78f-4b40-a229-1e7e23eee1ab":
-			fmt.Fprintf(w, `{ "pools": [] }`)
+			fmt.Fprint(w, `{ "pools": [] }`)
 		default:
 			t.Fatalf("/v2.0/lbaas/pools invoked with unexpected marker=[%s]", marker)
 		}
@@ -172,7 +172,7 @@ func HandlePoolCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -183,7 +183,7 @@ func HandlePoolGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SinglePoolBody)
+		fmt.Fprint(w, SinglePoolBody)
 	})
 }
 
@@ -211,7 +211,7 @@ func HandlePoolUpdateSuccessfully(t *testing.T) {
 			}
 		}`)
 
-		fmt.Fprintf(w, PostUpdatePoolBody)
+		fmt.Fprint(w, PostUpdatePoolBody)
 	})
 }
 
@@ -342,9 +342,9 @@ func HandleMemberListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, MembersListBody)
+			fmt.Fprint(w, MembersListBody)
 		case "45e08a3e-a78f-4b40-a229-1e7e23eee1ab":
-			fmt.Fprintf(w, `{ "members": [] }`)
+			fmt.Fprint(w, `{ "members": [] }`)
 		default:
 			t.Fatalf("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members invoked with unexpected marker=[%s]", marker)
 		}
@@ -370,7 +370,7 @@ func HandleMemberCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -381,7 +381,7 @@ func HandleMemberGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleMemberBody)
+		fmt.Fprint(w, SingleMemberBody)
 	})
 }
 
@@ -409,7 +409,7 @@ func HandleMemberUpdateSuccessfully(t *testing.T) {
 			}
 		}`)
 
-		fmt.Fprintf(w, PostUpdateMemberBody)
+		fmt.Fprint(w, PostUpdateMemberBody)
 	})
 }
 

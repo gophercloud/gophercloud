@@ -32,7 +32,7 @@ func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON stri
 		th.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, tokens_testing.TokenOutput)
+		fmt.Fprint(w, tokens_testing.TokenOutput)
 	})
 
 	expected := &tokens.Token{

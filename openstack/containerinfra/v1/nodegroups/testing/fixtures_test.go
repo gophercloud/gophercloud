@@ -221,7 +221,7 @@ func handleCreateNodeGroupSuccess(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, nodeGroupCreateResponse)
+		fmt.Fprint(w, nodeGroupCreateResponse)
 	})
 }
 
@@ -233,7 +233,7 @@ func handleCreateNodeGroupDuplicate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
 
-		fmt.Fprintf(w, nodeGroupCreateDuplicateResponse)
+		fmt.Fprint(w, nodeGroupCreateDuplicateResponse)
 	})
 }
 
@@ -245,7 +245,7 @@ func handleCreateNodeGroupMaster(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintf(w, nodeGroupCreateMasterResponse)
+		fmt.Fprint(w, nodeGroupCreateMasterResponse)
 	})
 }
 
@@ -257,7 +257,7 @@ func handleCreateNodeGroupBadSizes(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
 
-		fmt.Fprintf(w, nodeGroupCreateBadSizesResponse)
+		fmt.Fprint(w, nodeGroupCreateBadSizesResponse)
 	})
 }
 
@@ -269,7 +269,7 @@ func handleUpdateNodeGroupSuccess(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, nodeGroupUpdateResponse)
+		fmt.Fprint(w, nodeGroupUpdateResponse)
 	})
 }
 
@@ -281,7 +281,7 @@ func handleUpdateNodeGroupInternal(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintf(w, nodeGroupUpdateInternalResponse)
+		fmt.Fprint(w, nodeGroupUpdateInternalResponse)
 	})
 }
 
@@ -293,7 +293,7 @@ func handleUpdateNodeGroupBadField(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintf(w, nodeGroupUpdateBadFieldResponse)
+		fmt.Fprint(w, nodeGroupUpdateBadFieldResponse)
 	})
 }
 
@@ -305,7 +305,7 @@ func handleUpdateNodeGroupBadMin(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
 
-		fmt.Fprintf(w, nodeGroupUpdateBadMinResponse)
+		fmt.Fprint(w, nodeGroupUpdateBadMinResponse)
 	})
 }
 
@@ -326,7 +326,7 @@ func handleDeleteNodeGroupNotFound(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
 
-		fmt.Fprintf(w, nodeGroupDeleteNotFoundResponse)
+		fmt.Fprint(w, nodeGroupDeleteNotFoundResponse)
 	})
 }
 
@@ -338,7 +338,7 @@ func handleDeleteNodeGroupClusterNotFound(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
 
-		fmt.Fprintf(w, nodeGroupDeleteClusterNotFoundResponse)
+		fmt.Fprint(w, nodeGroupDeleteClusterNotFoundResponse)
 	})
 }
 
@@ -350,7 +350,7 @@ func handleDeleteNodeGroupDefault(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintf(w, nodeGroupDeleteDefaultResponse)
+		fmt.Fprint(w, nodeGroupDeleteDefaultResponse)
 	})
 }
 

@@ -46,11 +46,11 @@ workflow_echo:
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Add("Content-Type", "application/json")
 
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"workflows": [
 				{
 					"created_at": "2018-09-12 15:48:17",
-					"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<%% $.msg %%>\"",
+					"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
 					"id": "604a3a1e-94e3-4066-a34a-aa56873ef236",
 					"input": "msg",
 					"name": "workflow_echo",
@@ -118,10 +118,10 @@ func TestGetWorkflow(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"created_at": "2018-09-12 15:48:17",
-				"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<%% $.msg %%>\"",
+				"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
 				"id": "604a3a1e-94e3-4066-a34a-aa56873ef236",
 				"input": "msg",
 				"name": "workflow_echo",
@@ -187,7 +187,7 @@ func TestListWorkflows(t *testing.T) {
 				]
 			}`, th.Server.URL)
 		case "604a3a1e-94e3-4066-a34a-aa56873ef236":
-			fmt.Fprintf(w, `{ "workflows": [] }`)
+			fmt.Fprint(w, `{ "workflows": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}

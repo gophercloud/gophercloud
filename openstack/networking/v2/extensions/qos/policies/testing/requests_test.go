@@ -26,7 +26,7 @@ func TestGetPort(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, GetPortResponse)
+		_, err := fmt.Fprint(w, GetPortResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -55,7 +55,7 @@ func TestCreatePort(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		_, err := fmt.Fprintf(w, CreatePortResponse)
+		_, err := fmt.Fprint(w, CreatePortResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -93,7 +93,7 @@ func TestUpdatePortWithPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, UpdatePortWithPolicyResponse)
+		_, err := fmt.Fprint(w, UpdatePortWithPolicyResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -131,7 +131,7 @@ func TestUpdatePortWithoutPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, UpdatePortWithoutPolicyResponse)
+		_, err := fmt.Fprint(w, UpdatePortWithoutPolicyResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -166,7 +166,7 @@ func TestGetNetwork(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, GetNetworkResponse)
+		_, err := fmt.Fprint(w, GetNetworkResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -195,7 +195,7 @@ func TestCreateNetwork(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		_, err := fmt.Fprintf(w, CreateNetworkResponse)
+		_, err := fmt.Fprint(w, CreateNetworkResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -232,7 +232,7 @@ func TestUpdateNetworkWithPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, UpdateNetworkWithPolicyResponse)
+		_, err := fmt.Fprint(w, UpdateNetworkWithPolicyResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -273,7 +273,7 @@ func TestUpdateNetworkWithoutPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, UpdateNetworkWithoutPolicyResponse)
+		_, err := fmt.Fprint(w, UpdateNetworkWithoutPolicyResponse)
 		th.AssertNoErr(t, err)
 	})
 
@@ -307,7 +307,7 @@ func TestListPolicies(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListPoliciesResponse)
+		fmt.Fprint(w, ListPoliciesResponse)
 	})
 
 	count := 0
@@ -347,7 +347,7 @@ func TestGetPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetPolicyResponse)
+		fmt.Fprint(w, GetPolicyResponse)
 	})
 
 	p, err := policies.Get(context.TODO(), fake.ServiceClient(), "30a57f4a-336b-4382-8275-d708babd2241").Extract()
@@ -387,7 +387,7 @@ func TestCreatePolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreatePolicyResponse)
+		fmt.Fprint(w, CreatePolicyResponse)
 	})
 
 	opts := policies.CreateOpts{
@@ -425,7 +425,7 @@ func TestUpdatePolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdatePolicyResponse)
+		fmt.Fprint(w, UpdatePolicyResponse)
 	})
 
 	shared := true

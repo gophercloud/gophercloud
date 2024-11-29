@@ -605,7 +605,7 @@ func HandleHypervisorsStatisticsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorsStatisticsBody)
+		fmt.Fprint(w, HypervisorsStatisticsBody)
 	})
 }
 
@@ -615,7 +615,7 @@ func HandleHypervisorListPre253Successfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorListBodyPre253)
+		fmt.Fprint(w, HypervisorListBodyPre253)
 	})
 }
 
@@ -625,7 +625,7 @@ func HandleHypervisorListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorListBody)
+		fmt.Fprint(w, HypervisorListBody)
 	})
 }
 
@@ -638,7 +638,7 @@ func HandleHypervisorListWithParametersSuccessfully(t *testing.T) {
 		})
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorListWithParametersBody)
+		fmt.Fprint(w, HypervisorListWithParametersBody)
 	})
 }
 
@@ -648,7 +648,7 @@ func HandleHypervisorGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorGetBody)
+		fmt.Fprint(w, HypervisorGetBody)
 	})
 }
 
@@ -658,7 +658,7 @@ func HandleHypervisorGetEmptyCPUInfoSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorGetEmptyCPUInfoBody)
+		fmt.Fprint(w, HypervisorGetEmptyCPUInfoBody)
 	})
 }
 
@@ -668,7 +668,7 @@ func HandleHypervisorAfterV287ResponseSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorAfterV287ResponseBody)
+		fmt.Fprint(w, HypervisorAfterV287ResponseBody)
 	})
 }
 
@@ -678,6 +678,6 @@ func HandleHypervisorUptimeSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, HypervisorUptimeBody)
+		fmt.Fprint(w, HypervisorUptimeBody)
 	})
 }

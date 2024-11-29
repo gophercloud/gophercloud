@@ -152,7 +152,7 @@ func HandleTokenPost(t *testing.T, requestJSON string) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, TokenCreationResponse)
+		fmt.Fprint(w, TokenCreationResponse)
 	})
 }
 
@@ -165,7 +165,7 @@ func HandleTokenGet(t *testing.T, token string) {
 		th.TestHeader(t, r, "X-Auth-Token", thclient.TokenID)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, TokenGetResponse)
+		fmt.Fprint(w, TokenGetResponse)
 	})
 }
 

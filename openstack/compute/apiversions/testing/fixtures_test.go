@@ -169,7 +169,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NovaAllAPIVersionsResponse)
+		fmt.Fprint(w, NovaAllAPIVersionsResponse)
 	})
 }
 
@@ -181,7 +181,7 @@ func MockGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NovaAPIVersionResponse_21)
+		fmt.Fprint(w, NovaAPIVersionResponse_21)
 	})
 }
 
@@ -193,6 +193,6 @@ func MockGetMultipleResponses(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NovaAPIInvalidVersionResponse)
+		fmt.Fprint(w, NovaAPIInvalidVersionResponse)
 	})
 }

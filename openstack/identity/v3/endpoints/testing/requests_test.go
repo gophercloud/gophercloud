@@ -33,7 +33,7 @@ func TestCreateSuccessful(t *testing.T) {
     `)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
       {
         "endpoint": {
           "id": "12",
@@ -82,7 +82,7 @@ func TestListEndpoints(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"endpoints": [
 					{
@@ -170,7 +170,7 @@ func TestUpdateEndpoint(t *testing.T) {
 		}
 	`)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 		{
 			"endpoint": {
 				"id": "12",

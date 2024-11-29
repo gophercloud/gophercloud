@@ -226,7 +226,7 @@ func HandleListSuccessfully(t *testing.T) {
 
 			switch next {
 			case "/v2/queues?limit=1&with_count=true":
-				fmt.Fprintf(w, ListQueuesResponse1)
+				fmt.Fprint(w, ListQueuesResponse1)
 			case "/v2/queues?marker=london":
 				fmt.Fprint(w, ListQueuesResponse2)
 			case "/v2/queues?marker=beijing":
@@ -256,7 +256,7 @@ func HandleUpdateSuccessfully(t *testing.T) {
 			th.TestJSONRequest(t, r, UpdateQueueRequest)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, UpdateQueueResponse)
+			fmt.Fprint(w, UpdateQueueResponse)
 		})
 }
 
@@ -268,7 +268,7 @@ func HandleGetSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetQueueResponse)
+			fmt.Fprint(w, GetQueueResponse)
 		})
 }
 
@@ -290,7 +290,7 @@ func HandleGetStatsSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetStatsResponse)
+			fmt.Fprint(w, GetStatsResponse)
 		})
 }
 
@@ -303,7 +303,7 @@ func HandleShareSuccessfully(t *testing.T) {
 			th.TestJSONRequest(t, r, CreateShareRequest)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, CreateShareResponse)
+			fmt.Fprint(w, CreateShareResponse)
 		})
 }
 

@@ -69,7 +69,7 @@ func HandleInterfaceListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"interfaceAttachments": [
 				{
 					"port_state":"ACTIVE",
@@ -99,7 +99,7 @@ func HandleInterfaceGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"interfaceAttachment":
 				{
 					"port_state":"ACTIVE",
@@ -133,7 +133,7 @@ func HandleInterfaceCreateSuccessfully(t *testing.T) {
 		}`)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"interfaceAttachment":
 				{
 					"port_state":"ACTIVE",

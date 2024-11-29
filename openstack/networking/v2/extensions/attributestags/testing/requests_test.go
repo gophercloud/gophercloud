@@ -25,7 +25,7 @@ func TestReplaceAll(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, attributestagsReplaceAllResult)
+		fmt.Fprint(w, attributestagsReplaceAllResult)
 	})
 
 	opts := attributestags.ReplaceAllOpts{
@@ -48,7 +48,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, attributestagsListResult)
+		fmt.Fprint(w, attributestagsListResult)
 	})
 
 	res, err := attributestags.List(context.TODO(), fake.ServiceClient(), "networks", "fakeid").Extract()

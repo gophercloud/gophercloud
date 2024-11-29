@@ -120,10 +120,10 @@ func HandleAllocationListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, AllocationListBody)
+			fmt.Fprint(w, AllocationListBody)
 
 		case "eff80f47-75f0-4d41-b1aa-cf07c201adac":
-			fmt.Fprintf(w, `{ "allocations": [] }`)
+			fmt.Fprint(w, `{ "allocations": [] }`)
 		default:
 			t.Fatalf("/allocations invoked with unexpected marker=[%s]", marker)
 		}
@@ -145,7 +145,7 @@ func HandleAllocationCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -165,6 +165,6 @@ func HandleAllocationGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleAllocationBody)
+		fmt.Fprint(w, SingleAllocationBody)
 	})
 }

@@ -47,6 +47,6 @@ func HandleGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }

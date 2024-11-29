@@ -285,7 +285,7 @@ func HandleListAvailableProjectsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAvailableOutput)
+		fmt.Fprint(w, ListAvailableOutput)
 	})
 }
 
@@ -299,7 +299,7 @@ func HandleListProjectsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -313,7 +313,7 @@ func HandleGetProjectSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -326,7 +326,7 @@ func HandleCreateProjectSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -350,7 +350,7 @@ func HandleUpdateProjectSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdateRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdateOutput)
+		fmt.Fprint(w, UpdateOutput)
 	})
 }
 
@@ -360,7 +360,7 @@ func HandleListProjectTagsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListTagsOutput)
+		fmt.Fprint(w, ListTagsOutput)
 	})
 }
 
@@ -371,7 +371,7 @@ func HandleModifyProjectTagsSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, ModifyProjectTagsRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ModifyProjectTagsOutput)
+		fmt.Fprint(w, ModifyProjectTagsOutput)
 	})
 }
 func HandleDeleteProjectTagsSuccessfully(t *testing.T) {

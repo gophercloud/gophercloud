@@ -167,7 +167,7 @@ func HandleGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -177,7 +177,7 @@ func HandleGetDetailSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, GetDetailsOutput)
+		fmt.Fprint(w, GetDetailsOutput)
 	})
 }
 
@@ -188,7 +188,7 @@ func HandlePutSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateOutput)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, UpdateOutput)
+		fmt.Fprint(w, UpdateOutput)
 	})
 }
 
@@ -199,7 +199,7 @@ func HandlePartialPutSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, PartialUpdateBody)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, UpdateOutput)
+		fmt.Fprint(w, UpdateOutput)
 	})
 }
 

@@ -35,7 +35,7 @@ func TestAddExtraRoutes(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "router": {
         "name": "name",
@@ -109,7 +109,7 @@ func TestRemoveExtraRoutes(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "router": {
         "name": "name",

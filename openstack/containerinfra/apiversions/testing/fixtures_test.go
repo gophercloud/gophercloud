@@ -71,7 +71,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, MagnumAllAPIVersionsResponse)
+		fmt.Fprint(w, MagnumAllAPIVersionsResponse)
 	})
 }
 
@@ -83,6 +83,6 @@ func MockGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, MagnumAPIVersionResponse)
+		fmt.Fprint(w, MagnumAPIVersionResponse)
 	})
 }

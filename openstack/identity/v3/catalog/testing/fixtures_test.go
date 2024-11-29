@@ -85,6 +85,6 @@ func HandleListCatalogSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		_, _ = fmt.Fprintf(w, ListOutput)
+		_, _ = fmt.Fprint(w, ListOutput)
 	})
 }

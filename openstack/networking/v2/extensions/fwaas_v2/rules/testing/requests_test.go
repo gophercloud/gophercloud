@@ -24,7 +24,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "firewall_rules": [
         {
@@ -150,7 +150,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 	"firewall_rule":{
 		"protocol": "tcp",
@@ -215,7 +215,7 @@ func TestCreateAnyProtocol(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 	"firewall_rule":{
 		"protocol": null,
@@ -264,7 +264,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 	"firewall_rule":{
 		"protocol": "tcp",
@@ -333,7 +333,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 	"firewall_rule":{
 		"protocol": "tcp",

@@ -207,7 +207,7 @@ func HandleCreateTrust(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		_, err := fmt.Fprintf(w, CreateResponse)
+		_, err := fmt.Fprint(w, CreateResponse)
 		th.AssertNoErr(t, err)
 	})
 }
@@ -221,7 +221,7 @@ func HandleCreateTrustNoExpire(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequestNoExpire)
 
 		w.WriteHeader(http.StatusCreated)
-		_, err := fmt.Fprintf(w, CreateResponseNoExpire)
+		_, err := fmt.Fprint(w, CreateResponseNoExpire)
 		th.AssertNoErr(t, err)
 	})
 }
@@ -247,7 +247,7 @@ func HandleGetTrustSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -317,7 +317,7 @@ func HandleListTrustsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 }
 
@@ -331,7 +331,7 @@ func HandleListTrustRolesSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListTrustRolesResponse)
+		fmt.Fprint(w, ListTrustRolesResponse)
 	})
 }
 
@@ -345,7 +345,7 @@ func HandleGetTrustRoleSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetTrustRoleResponse)
+		fmt.Fprint(w, GetTrustRoleResponse)
 	})
 }
 

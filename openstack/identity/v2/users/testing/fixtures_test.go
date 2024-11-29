@@ -17,7 +17,7 @@ func MockListUserResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "users":[
         {
@@ -61,7 +61,7 @@ func mockCreateUserResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "user": {
         "name": "new_user",
@@ -83,7 +83,7 @@ func mockGetUserResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 		"user": {
 				"name": "new_user",
@@ -115,7 +115,7 @@ func mockUpdateUserResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
 		"user": {
 				"name": "new_name",
@@ -145,7 +145,7 @@ func mockListRolesResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "roles": [
         {

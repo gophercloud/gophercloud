@@ -164,9 +164,9 @@ func HandleListPoliciesSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		switch r.URL.Query().Get("type") {
 		case "":
-			fmt.Fprintf(w, ListOutput)
+			fmt.Fprint(w, ListOutput)
 		case "application/json":
-			fmt.Fprintf(w, ListWithFilterOutput)
+			fmt.Fprint(w, ListWithFilterOutput)
 		default:
 			w.WriteHeader(http.StatusBadRequest)
 		}
@@ -182,7 +182,7 @@ func HandleCreatePolicySuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -197,7 +197,7 @@ func HandleGetPolicySuccessfully(t *testing.T) {
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, GetOutput)
+			fmt.Fprint(w, GetOutput)
 		},
 	)
 }
@@ -212,7 +212,7 @@ func HandleUpdatePolicySuccessfully(t *testing.T) {
 			th.TestJSONRequest(t, r, UpdateRequest)
 
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, UpdateOutput)
+			fmt.Fprint(w, UpdateOutput)
 		},
 	)
 }

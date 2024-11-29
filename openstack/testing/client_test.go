@@ -46,7 +46,7 @@ func TestAuthenticatedClientV3(t *testing.T) {
 		w.Header().Add("X-Subject-Token", ID)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{ "token": { "expires_at": "2013-02-02T18:30:59.000000Z" } }`)
+		fmt.Fprint(w, `{ "token": { "expires_at": "2013-02-02T18:30:59.000000Z" } }`)
 	})
 
 	options := gophercloud.AuthOptions{
@@ -91,7 +91,7 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	})
 
 	th.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"access": {
 					"token": {
@@ -197,7 +197,7 @@ func TestIdentityAdminV3Client(t *testing.T) {
 		w.Header().Add("X-Subject-Token", ID)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 	{
     "token": {
         "audit_ids": ["VcxU2JYqT8OzfUVvrjEITQ", "qNUTIJntTzO1-XUk5STybw"],

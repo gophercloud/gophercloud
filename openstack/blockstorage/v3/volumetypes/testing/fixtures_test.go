@@ -58,7 +58,7 @@ func MockListResponse(t *testing.T) {
 }
   `, th.Server.URL)
 		case "1":
-			fmt.Fprintf(w, `{"volume_types": []}`)
+			fmt.Fprint(w, `{"volume_types": []}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -72,7 +72,7 @@ func MockGetResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "volume_type": {
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
@@ -112,7 +112,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "volume_type": {
         "name": "test_type",
@@ -143,7 +143,7 @@ func MockUpdateResponse(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "volume_type": {
         "name": "vol-type-002",
@@ -203,7 +203,7 @@ func HandleExtraSpecsListSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ExtraSpecsGetBody)
+		fmt.Fprint(w, ExtraSpecsGetBody)
 	})
 }
 
@@ -215,7 +215,7 @@ func HandleExtraSpecGetSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetExtraSpecBody)
+		fmt.Fprint(w, GetExtraSpecBody)
 	})
 }
 
@@ -233,7 +233,7 @@ func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ExtraSpecsGetBody)
+		fmt.Fprint(w, ExtraSpecsGetBody)
 	})
 }
 
@@ -248,7 +248,7 @@ func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdatedExtraSpecBody)
+		fmt.Fprint(w, UpdatedExtraSpecBody)
 	})
 }
 
@@ -281,7 +281,7 @@ func MockEncryptionCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "encryption": {
         "volume_type_id": "a5082c24-2a27-43a4-b48e-fcec1240e36b",
@@ -324,7 +324,7 @@ func MockEncryptionUpdateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "encryption": {
         "control_location": "front-end",
@@ -345,7 +345,7 @@ func MockEncryptionGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "volume_type_id": "a5082c24-2a27-43a4-b48e-fcec1240e36b",
     "control_location": "front-end",
@@ -370,7 +370,7 @@ func MockEncryptionGetSpecResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "cipher": "aes-xts-plain64"
 }

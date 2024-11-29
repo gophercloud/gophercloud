@@ -150,9 +150,9 @@ func HandleAmphoraListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, AmphoraeListBody)
+			fmt.Fprint(w, AmphoraeListBody)
 		case "7f890893-ced0-46ed-8697-33415d070e5a":
-			fmt.Fprintf(w, `{ "amphorae": [] }`)
+			fmt.Fprint(w, `{ "amphorae": [] }`)
 		default:
 			t.Fatalf("/v2.0/octavia/amphorae invoked with unexpected marker=[%s]", marker)
 		}
@@ -166,7 +166,7 @@ func HandleAmphoraGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleAmphoraBody)
+		fmt.Fprint(w, SingleAmphoraBody)
 	})
 }
 

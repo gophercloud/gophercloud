@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ImportGetResult)
+		fmt.Fprint(w, ImportGetResult)
 	})
 
 	validImportMethods := []string{
@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprint(w, `{}`)
 	})
 
 	opts := imageimport.CreateOpts{

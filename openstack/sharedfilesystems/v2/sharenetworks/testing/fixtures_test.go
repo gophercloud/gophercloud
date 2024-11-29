@@ -55,7 +55,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, createResp("my_network",
+		fmt.Fprint(w, createResp("my_network",
 			"This is my share network",
 			"998b42ee-2cee-4d36-8b95-67b5ca1f2109",
 			"53482b62-2c84-4a53-b6ab-30d9d9800d06"))
@@ -85,7 +85,7 @@ func MockListResponse(t *testing.T) {
 
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `{
+			fmt.Fprint(w, `{
             "share_networks": [
                 {
                     "name": "net_my1",
@@ -135,7 +135,7 @@ func MockListResponse(t *testing.T) {
             ]
         }`)
 		default:
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
 				{
 					"share_networks": []
 				}`)
@@ -157,7 +157,7 @@ func MockFilteredListResponse(t *testing.T) {
 		marker := r.Form.Get("offset")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
 				{
 					"share_networks": [
 						{
@@ -178,7 +178,7 @@ func MockFilteredListResponse(t *testing.T) {
 					]
 				}`)
 		case "1":
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
 				{
 					"share_networks": [
 						{
@@ -199,7 +199,7 @@ func MockFilteredListResponse(t *testing.T) {
 					]
 				}`)
 		case "2":
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
 				{
 					"share_networks": [
 						{
@@ -220,7 +220,7 @@ func MockFilteredListResponse(t *testing.T) {
 					]
 				}`)
 		default:
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
 				{
 					"share_networks": []
 				}`)
@@ -235,7 +235,7 @@ func MockGetResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "share_network": {
                 "name": "net_my1",
@@ -261,7 +261,7 @@ func MockUpdateNeutronResponse(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
             {
                 "share_network": {
                     "name": "net_my2",
@@ -288,7 +288,7 @@ func MockUpdateNovaResponse(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
             {
                 "share_network": {
                     "name": "net_my2",
@@ -315,7 +315,7 @@ func MockAddSecurityServiceResponse(t *testing.T) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "share_network": {
                 "name": "net2",
@@ -341,7 +341,7 @@ func MockRemoveSecurityServiceResponse(t *testing.T) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "share_network": {
                 "name": "net2",

@@ -25,7 +25,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
           "messages": [
             {
@@ -67,7 +67,7 @@ func MockFilteredListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
           "messages": [
             {
@@ -95,7 +95,7 @@ func MockGetResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
           "message": {
             "resource_id": "4336d74f-3bdc-4f27-9657-c01ec63680bf",
