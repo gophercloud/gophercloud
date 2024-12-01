@@ -2,7 +2,7 @@ package testing
 
 import (
 	"fmt"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/osmigrations"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/migrations"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 	"net/http"
@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// ListExpected represents an expected repsonse from a List request.
-var ListExpected = []osmigrations.OSMigration{
+// ListExpected represents an expected response from a List request.
+var ListExpected = []migrations.Migration{
 	{
 		Id:                2,
 		CreatedAt:         time.Date(2024, 11, 28, 8, 15, 6, 000000, time.UTC),
@@ -50,8 +50,8 @@ var ListExpected = []osmigrations.OSMigration{
 	},
 }
 
-// HandleOsMigrationListSuccessfully sets up the test server to respond to a List request.
-func HandleOsMigrationListSuccessfully(t *testing.T) {
+// HandleMigrationListSuccessfully sets up the test server to respond to a List request.
+func HandleMigrationListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-migrations", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

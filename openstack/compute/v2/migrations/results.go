@@ -1,4 +1,4 @@
-package osmigrations
+package migrations
 
 import (
 	"encoding/json"
@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// OSMigration represents the details of an OS migration.
-type OSMigration struct {
+// Migration represents the details of a migration.
+type Migration struct {
 	// The date and time when the resource was created
 	CreatedAt time.Time `json:"-"`
 	// The target compute for a migration
@@ -43,9 +43,9 @@ type OSMigration struct {
 	ProjectId string `json:"project_id"`
 }
 
-// UnmarshalJSON converts our JSON API response into our os migration struct
-func (i *OSMigration) UnmarshalJSON(b []byte) error {
-	type tmp OSMigration
+// UnmarshalJSON converts our JSON API response into our migration struct
+func (i *Migration) UnmarshalJSON(b []byte) error {
+	type tmp Migration
 	var s struct {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
@@ -55,28 +55,28 @@ func (i *OSMigration) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*i = OSMigration(s.tmp)
+	*i = Migration(s.tmp)
 
 	i.UpdatedAt = time.Time(s.UpdatedAt)
 	i.CreatedAt = time.Time(s.CreatedAt)
 	return err
 }
 
-type OsMigrationPage struct {
+type MigrationPage struct {
 	pagination.SinglePageBase
 }
 
-func (r OsMigrationPage) IsEmpty() (bool, error) {
-	osMigrations, err := ExtractOsMigrations(r)
-	return len(osMigrations) == 0, err
+func (r MigrationPage) IsEmpty() (bool, error) {
+	migrations, err := ExtractMigrations(r)
+	return len(migrations) == 0, err
 }
 
-func ExtractOsMigrations(r pagination.Page) ([]OSMigration, error) {
-	var resp []OSMigration
-	err := ExtractOsMigrationsInto(r, &resp)
+func ExtractMigrations(r pagination.Page) ([]Migration, error) {
+	var resp []Migration
+	err := ExtractMigrationsInto(r, &resp)
 	return resp, err
 }
 
-func ExtractOsMigrationsInto(r pagination.Page, v any) error {
-	return r.(OsMigrationPage).Result.ExtractIntoSlicePtr(v, "migrations")
+func ExtractMigrationsInto(r pagination.Page, v any) error {
+	return r.(MigrationPage).Result.ExtractIntoSlicePtr(v, "migrations")
 }

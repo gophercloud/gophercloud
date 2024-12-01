@@ -1,4 +1,4 @@
-package osmigrations
+package migrations
 
 import "github.com/gophercloud/gophercloud/v2"
 

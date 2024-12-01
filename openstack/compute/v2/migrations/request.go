@@ -1,4 +1,4 @@
-package osmigrations
+package migrations
 
 import (
 	"github.com/gophercloud/gophercloud/v2"
@@ -8,14 +8,14 @@ import (
 )
 
 type ListOptsBuilder interface {
-	ToOSMigrationsListQuery() (string, error)
+	ToMigrationsListQuery() (string, error)
 }
 
 type ListOpts struct {
 	// The source/destination compute node of migration to filter
 	Host *string `q:"host"`
 	// The uuid of the instance that migration is operated on to filter
-	InstanceUuid *string `q:"instance_uuid"`
+	InstanceID *string `q:"instance_uuid"`
 	// The type of migration to filter. Valid values are: evacuation, live-migration, migration, resize
 	MigrationType *string `q:"migration_type"`
 	// The source compute node of migration to filter
@@ -36,7 +36,7 @@ type ListOpts struct {
 	ProjectID *string `q:"project_id"`
 }
 
-func (opts ListOpts) ToOSMigrationsListQuery() (string, error) {
+func (opts ListOpts) ToMigrationsListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -59,7 +59,7 @@ func (opts ListOpts) ToOSMigrationsListQuery() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	reqUrl := listURL(client)
 	if opts != nil {
-		query, err := opts.ToOSMigrationsListQuery()
+		query, err := opts.ToMigrationsListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
@@ -67,6 +67,6 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	}
 
 	return pagination.NewPager(client, reqUrl, func(r pagination.PageResult) pagination.Page {
-		return OsMigrationPage{pagination.SinglePageBase(r)}
+		return MigrationPage{pagination.SinglePageBase(r)}
 	})
 }
