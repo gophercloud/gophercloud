@@ -20,7 +20,7 @@ type Migration struct {
 	// The ID of the server migration
 	Id int64 `json:"id"`
 	// The UUID of the server
-	InstanceUuid string `json:"instance_uuid"`
+	InstanceID string `json:"instance_uuid"`
 	// In resize case, the flavor ID for resizing the server
 	NewInstanceTypeId int64 `json:"new_instance_type_id"`
 	// The flavor ID of the server when the migration was started
