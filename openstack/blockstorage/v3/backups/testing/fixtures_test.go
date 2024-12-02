@@ -210,7 +210,7 @@ func MockListResponse(t *testing.T) {
 		case "":
 			fmt.Fprintf(w, ListResponse, th.Server.URL)
 		case "1":
-			fmt.Fprintf(w, `{"backups": []}`)
+			fmt.Fprint(w, `{"backups": []}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -233,7 +233,7 @@ func MockListDetailResponse(t *testing.T) {
 		case "":
 			fmt.Fprintf(w, ListDetailResponse, th.Server.URL)
 		case "1":
-			fmt.Fprintf(w, `{"backups": []}`)
+			fmt.Fprint(w, `{"backups": []}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -247,7 +247,7 @@ func MockGetResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -262,7 +262,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 }
 
@@ -277,7 +277,7 @@ func MockRestoreResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, RestoreResponse)
+		fmt.Fprint(w, RestoreResponse)
 	})
 }
 
@@ -298,7 +298,7 @@ func MockExportResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ExportResponse)
+		fmt.Fprint(w, ExportResponse)
 	})
 }
 
@@ -313,7 +313,7 @@ func MockImportResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, ImportResponse)
+		fmt.Fprint(w, ImportResponse)
 	})
 }
 

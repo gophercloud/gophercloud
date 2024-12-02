@@ -467,10 +467,10 @@ func HandleListIntrospectionsSuccessfully(t *testing.T) {
 
 		switch marker {
 		case "":
-			fmt.Fprintf(w, IntrospectionListBody)
+			fmt.Fprint(w, IntrospectionListBody)
 
 		case "c244557e-899f-46fa-a1ff-5b2c6718616b":
-			fmt.Fprintf(w, `{ "introspection": [] }`)
+			fmt.Fprint(w, `{ "introspection": [] }`)
 
 		default:
 			t.Fatalf("/introspection invoked with unexpected marker=[%s]", marker)
@@ -484,7 +484,7 @@ func HandleGetIntrospectionStatusSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
-		fmt.Fprintf(w, IntrospectionStatus)
+		fmt.Fprint(w, IntrospectionStatus)
 	})
 }
 
@@ -513,7 +513,7 @@ func HandleGetIntrospectionDataSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, IntrospectionDataJSONSample)
+		fmt.Fprint(w, IntrospectionDataJSONSample)
 	})
 }
 

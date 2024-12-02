@@ -93,7 +93,7 @@ func HandleCreateSuccessfully(t *testing.T) {
 
 			w.WriteHeader(http.StatusCreated)
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, CreateClaimResponse)
+			fmt.Fprint(w, CreateClaimResponse)
 		})
 }
 
@@ -117,7 +117,7 @@ func HandleGetSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetClaimResponse)
+			fmt.Fprint(w, GetClaimResponse)
 		})
 }
 

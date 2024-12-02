@@ -76,7 +76,7 @@ func TestListFlavors(t *testing.T) {
 					}
 				`, th.Server.URL)
 		case "2":
-			fmt.Fprintf(w, `{ "flavors": [] }`)
+			fmt.Fprint(w, `{ "flavors": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -121,7 +121,7 @@ func TestGetFlavor(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"flavor": {
 					"id": "1",
@@ -170,7 +170,7 @@ func TestCreateFlavor(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"flavor": {
 					"id": "1",
@@ -225,7 +225,7 @@ func TestUpdateFlavor(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"flavor": {
 					"id": "1",
@@ -288,7 +288,7 @@ func TestFlavorAccessesList(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 			  "flavor_access": [
 			    {
@@ -336,7 +336,7 @@ func TestFlavorAccessAdd(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 			  "flavor_access": [
 			    {
@@ -385,7 +385,7 @@ func TestFlavorAccessRemove(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 			  "flavor_access": []
 			}

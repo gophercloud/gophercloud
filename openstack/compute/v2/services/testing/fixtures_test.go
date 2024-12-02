@@ -259,7 +259,7 @@ func HandleListPre253Successfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, ServiceListBodyPre253)
+		fmt.Fprint(w, ServiceListBodyPre253)
 	})
 }
 
@@ -271,7 +271,7 @@ func HandleListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, ServiceListBody)
+		fmt.Fprint(w, ServiceListBody)
 	})
 }
 
@@ -285,7 +285,7 @@ func HandleUpdateSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, `{"status": "disabled"}`)
 
-		fmt.Fprintf(w, ServiceUpdate)
+		fmt.Fprint(w, ServiceUpdate)
 	})
 }
 

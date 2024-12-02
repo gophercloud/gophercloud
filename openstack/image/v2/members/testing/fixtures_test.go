@@ -18,7 +18,7 @@ func HandleCreateImageMemberSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 		    "created_at": "2013-09-20T19:22:19Z",
 		    "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		    "member_id": "8989447062e04a818baf9e073fd04fa7",
@@ -37,7 +37,7 @@ func HandleImageMemberList(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 		    "members": [
 		        {
 		            "created_at": "2013-10-07T17:58:03Z",
@@ -68,7 +68,7 @@ func HandleImageMemberEmptyList(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 		    "members": [],
 		    "schema": "/v2/schemas/members"
 		}`)
@@ -82,7 +82,7 @@ func HandleImageMemberDetails(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 		    "status": "pending",
 		    "created_at": "2013-11-26T07:21:21Z",
 		    "updated_at": "2013-11-26T07:21:21Z",
@@ -120,7 +120,7 @@ func HandleImageMemberUpdate(t *testing.T) *CallsCounter {
 
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 		    "status": "accepted",
 		    "created_at": "2013-11-26T07:21:21Z",
 		    "updated_at": "2013-11-26T07:21:21Z",

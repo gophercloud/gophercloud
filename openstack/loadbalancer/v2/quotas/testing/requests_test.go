@@ -23,7 +23,7 @@ func TestGet_1(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponseRaw_1)
+		fmt.Fprint(w, GetResponseRaw_1)
 	})
 
 	q, err := quotas.Get(context.TODO(), fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76").Extract()
@@ -42,7 +42,7 @@ func TestGet_2(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponseRaw_2)
+		fmt.Fprint(w, GetResponseRaw_2)
 	})
 
 	q, err := quotas.Get(context.TODO(), fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76").Extract()
@@ -61,7 +61,7 @@ func TestUpdate_1(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, UpdateRequestResponseRaw_1)
+		fmt.Fprint(w, UpdateRequestResponseRaw_1)
 	})
 
 	q, err := quotas.Update(context.TODO(), fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76", quotas.UpdateOpts{
@@ -89,7 +89,7 @@ func TestUpdate_2(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, UpdateRequestResponseRaw_2)
+		fmt.Fprint(w, UpdateRequestResponseRaw_2)
 	})
 
 	q, err := quotas.Update(context.TODO(), fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76", quotas.UpdateOpts{

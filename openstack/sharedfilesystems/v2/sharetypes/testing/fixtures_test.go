@@ -30,7 +30,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "volume_type": {
                 "os-share-type-access:is_public": true,
@@ -76,7 +76,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "volume_types": [
                 {
@@ -141,7 +141,7 @@ func MockGetDefaultResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "volume_type": {
                 "required_extra_specs": null,
@@ -172,7 +172,7 @@ func MockGetExtraSpecsResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "extra_specs": {
                 "snapshot_support": "True",
@@ -199,7 +199,7 @@ func MockSetExtraSpecsResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "extra_specs": {
                 "my_key": "my_value"
@@ -223,7 +223,7 @@ func MockShowAccessResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
         {
             "share_type_access": [
                 {

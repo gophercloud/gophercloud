@@ -89,7 +89,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, IronicAPIAllVersionResponse)
+		fmt.Fprint(w, IronicAPIAllVersionResponse)
 	})
 }
 
@@ -101,6 +101,6 @@ func MockGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, IronicAPIVersionResponse)
+		fmt.Fprint(w, IronicAPIVersionResponse)
 	})
 }

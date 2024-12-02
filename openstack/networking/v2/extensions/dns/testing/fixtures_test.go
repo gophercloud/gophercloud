@@ -78,7 +78,7 @@ func PortHandleListSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, porttest.ListResponse)
+		fmt.Fprint(w, porttest.ListResponse)
 	})
 }
 
@@ -90,7 +90,7 @@ func PortHandleGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, porttest.GetResponse)
+		fmt.Fprint(w, porttest.GetResponse)
 	})
 }
 
@@ -121,7 +121,7 @@ func PortHandleCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "port": {
         "status": "DOWN",
@@ -184,7 +184,7 @@ func PortHandleUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "port": {
         "status": "DOWN",
@@ -229,7 +229,7 @@ func FloatingIPHandleList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, floatingiptest.ListResponseDNS)
+		fmt.Fprint(w, floatingiptest.ListResponseDNS)
 	})
 }
 
@@ -241,7 +241,7 @@ func FloatingIPHandleGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
+		fmt.Fprint(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
 	})
 }
 
@@ -264,7 +264,7 @@ func FloatingIPHandleCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
+		fmt.Fprint(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
 	})
 }
 
@@ -278,7 +278,7 @@ func NetworkHandleList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, networktest.ListResponse)
+		fmt.Fprint(w, networktest.ListResponse)
 	})
 }
 
@@ -290,7 +290,7 @@ func NetworkHandleGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, networktest.GetResponse)
+		fmt.Fprint(w, networktest.GetResponse)
 	})
 }
 
@@ -304,7 +304,7 @@ func NetworkHandleCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, NetworkCreateResponse)
+		fmt.Fprint(w, NetworkCreateResponse)
 	})
 }
 
@@ -319,6 +319,6 @@ func NetworkHandleUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NetworkUpdateResponse)
+		fmt.Fprint(w, NetworkUpdateResponse)
 	})
 }

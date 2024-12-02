@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "firewall_groups": [
     {
@@ -136,7 +136,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "firewall_group": {
     "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
@@ -199,7 +199,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "firewall_group": {
     "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
@@ -260,7 +260,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "firewall_group": {
     "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
@@ -319,7 +319,7 @@ func TestRemoveIngressPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "firewall_group": {
     "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
@@ -367,7 +367,7 @@ func TestRemoveEgressPolicy(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "firewall_group": {
     "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",

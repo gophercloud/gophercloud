@@ -157,7 +157,7 @@ func HandleListSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -169,11 +169,11 @@ func HandleGetSuccessfully(t *testing.T) {
 
 		if r.URL.Query().Get("user_id") == "fake2" {
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetOutputOtherUser)
+			fmt.Fprint(w, GetOutputOtherUser)
 
 		} else {
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, GetOutput)
+			fmt.Fprint(w, GetOutput)
 
 		}
 	})
@@ -188,7 +188,7 @@ func HandleCreateSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{ "keypair": { "name": "createdkey" } }`)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, CreateOutput)
+		fmt.Fprint(w, CreateOutput)
 	})
 }
 
@@ -201,7 +201,7 @@ func HandleCreateSuccessfullyOtherUser(t *testing.T) {
 		th.TestJSONRequest(t, r, `{ "keypair": { "name": "createdkey", "user_id": "fake2" } }`)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, CreateOutputOtherUser)
+		fmt.Fprint(w, CreateOutputOtherUser)
 	})
 }
 
@@ -221,7 +221,7 @@ func HandleImportSuccessfully(t *testing.T) {
 		`)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, ImportOutput)
+		fmt.Fprint(w, ImportOutput)
 	})
 }
 

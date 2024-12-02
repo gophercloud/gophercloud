@@ -68,7 +68,7 @@ func TestFetch(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		w.Header().Set("Content-Type", "application/jason")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "Fee-fi-fo-fum")
+		fmt.Fprint(w, "Fee-fi-fo-fum")
 	})
 
 	client := fakeClient{BaseClient: getHTTPClient()}

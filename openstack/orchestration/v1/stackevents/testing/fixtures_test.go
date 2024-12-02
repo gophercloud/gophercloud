@@ -128,7 +128,7 @@ func HandleFindSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -250,9 +250,9 @@ func HandleListSuccessfully(t *testing.T, output string) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, output)
+			fmt.Fprint(w, output)
 		case "93940999-7d40-44ae-8de4-19624e7b8d18":
-			fmt.Fprintf(w, `{"events":[]}`)
+			fmt.Fprint(w, `{"events":[]}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -377,9 +377,9 @@ func HandleListResourceEventsSuccessfully(t *testing.T, output string) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, output)
+			fmt.Fprint(w, output)
 		case "93940999-7d40-44ae-8de4-19624e7b8d18":
-			fmt.Fprintf(w, `{"events":[]}`)
+			fmt.Fprint(w, `{"events":[]}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -449,6 +449,6 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }

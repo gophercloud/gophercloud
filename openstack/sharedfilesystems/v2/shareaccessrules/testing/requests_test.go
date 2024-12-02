@@ -49,6 +49,6 @@ func MockListResponse(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, listResponse)
+		fmt.Fprint(w, listResponse)
 	})
 }

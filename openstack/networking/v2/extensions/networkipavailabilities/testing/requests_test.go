@@ -24,7 +24,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NetworkIPAvailabilityListResult)
+		fmt.Fprint(w, NetworkIPAvailabilityListResult)
 	})
 
 	count := 0
@@ -65,7 +65,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NetworkIPAvailabilityGetResult)
+		fmt.Fprint(w, NetworkIPAvailabilityGetResult)
 	})
 
 	s, err := networkipavailabilities.Get(context.TODO(), fake.ServiceClient(), "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()

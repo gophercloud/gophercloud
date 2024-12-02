@@ -94,9 +94,9 @@ func HandleFlavorProfileListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, FlavorProfilesListBody)
+			fmt.Fprint(w, FlavorProfilesListBody)
 		case "3a0d060b-fcec-4250-9ab6-940b806a12dd":
-			fmt.Fprintf(w, `{ "flavors": [] }`)
+			fmt.Fprint(w, `{ "flavors": [] }`)
 		default:
 			t.Fatalf("/v2.0/lbaas/flavors invoked with unexpected marker=[%s]", marker)
 		}
@@ -117,7 +117,7 @@ func HandleFlavorProfileCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -127,7 +127,7 @@ func HandleFlavorProfileGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleFlavorProfileBody)
+		fmt.Fprint(w, SingleFlavorProfileBody)
 	})
 }
 
@@ -154,6 +154,6 @@ func HandleFlavorProfileUpdateSuccessfully(t *testing.T) {
 			}
 		}`)
 
-		fmt.Fprintf(w, PostUpdateFlavorBody)
+		fmt.Fprint(w, PostUpdateFlavorBody)
 	})
 }

@@ -27,13 +27,15 @@ func TestList(t *testing.T) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-			r.ParseForm()
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("Failed to parse request form %v", err)
+			}
 			th.AssertDeepEquals(t, r.Form["fields"], fields)
 			th.AssertDeepEquals(t, r.Form["project_id"], filterProjectID)
 
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, ListBGPVPNsResult)
+			fmt.Fprint(w, ListBGPVPNsResult)
 		})
 	count := 0
 
@@ -65,7 +67,7 @@ func TestGet(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetBGPVPNResult)
+		fmt.Fprint(w, GetBGPVPNResult)
 	})
 
 	r, err := bgpvpns.Get(context.TODO(), fake.ServiceClient(), bgpVpnID).Extract()
@@ -85,7 +87,7 @@ func TestCreate(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 
 	opts := bgpvpns.CreateOpts{
@@ -146,7 +148,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateBGPVPNResponse)
+		fmt.Fprint(w, UpdateBGPVPNResponse)
 	})
 
 	name := "foo"
@@ -177,12 +179,14 @@ func TestListNetworkAssociations(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		th.AssertDeepEquals(t, fields, r.Form["fields"])
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListNetworkAssociationsResult)
+		fmt.Fprint(w, ListNetworkAssociationsResult)
 	})
 
 	count := 0
@@ -219,7 +223,7 @@ func TestCreateNetworkAssociation(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateNetworkAssociationRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateNetworkAssociationResponse)
+		fmt.Fprint(w, CreateNetworkAssociationResponse)
 	})
 
 	opts := bgpvpns.CreateNetworkAssociationOpts{
@@ -241,7 +245,7 @@ func TestGetNetworkAssociation(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetNetworkAssociationResult)
+		fmt.Fprint(w, GetNetworkAssociationResult)
 	})
 
 	r, err := bgpvpns.GetNetworkAssociation(context.TODO(), fake.ServiceClient(), bgpVpnID, networkAssociationID).Extract()
@@ -278,12 +282,14 @@ func TestListRouterAssociations(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		th.AssertDeepEquals(t, fields, r.Form["fields"])
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListRouterAssociationsResult)
+		fmt.Fprint(w, ListRouterAssociationsResult)
 	})
 
 	count := 0
@@ -320,7 +326,7 @@ func TestCreateRouterAssociation(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRouterAssociationRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateRouterAssociationResponse)
+		fmt.Fprint(w, CreateRouterAssociationResponse)
 	})
 
 	opts := bgpvpns.CreateRouterAssociationOpts{
@@ -342,7 +348,7 @@ func TestGetRouterAssociation(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetRouterAssociationResult)
+		fmt.Fprint(w, GetRouterAssociationResult)
 	})
 
 	r, err := bgpvpns.GetRouterAssociation(context.TODO(), fake.ServiceClient(), bgpVpnID, routerAssociationID).Extract()
@@ -364,7 +370,7 @@ func TestUpdateRouterAssociation(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdateRouterAssociationRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdateRouterAssociationResponse)
+		fmt.Fprint(w, UpdateRouterAssociationResponse)
 	})
 
 	opts := bgpvpns.UpdateRouterAssociationOpts{
@@ -404,12 +410,14 @@ func TestListPortAssociations(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
 		th.AssertDeepEquals(t, fields, r.Form["fields"])
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListPortAssociationsResult)
+		fmt.Fprint(w, ListPortAssociationsResult)
 	})
 
 	count := 0
@@ -446,7 +454,7 @@ func TestCreatePortAssociation(t *testing.T) {
 		th.TestJSONRequest(t, r, CreatePortAssociationRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreatePortAssociationResponse)
+		fmt.Fprint(w, CreatePortAssociationResponse)
 	})
 
 	opts := bgpvpns.CreatePortAssociationOpts{
@@ -468,7 +476,7 @@ func TestGetPortAssociation(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetPortAssociationResult)
+		fmt.Fprint(w, GetPortAssociationResult)
 	})
 
 	r, err := bgpvpns.GetPortAssociation(context.TODO(), fake.ServiceClient(), bgpVpnID, portAssociationID).Extract()
@@ -490,7 +498,7 @@ func TestUpdatePortAssociation(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdatePortAssociationRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdatePortAssociationResponse)
+		fmt.Fprint(w, UpdatePortAssociationResponse)
 	})
 
 	opts := bgpvpns.UpdatePortAssociationOpts{

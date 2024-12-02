@@ -277,7 +277,7 @@ func HandleResourceProviderList(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, ResourceProvidersBody)
+			fmt.Fprint(w, ResourceProvidersBody)
 		})
 }
 
@@ -289,7 +289,7 @@ func HandleResourceProviderCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ResourceProviderCreateBody)
+		fmt.Fprint(w, ResourceProviderCreateBody)
 	})
 }
 
@@ -301,7 +301,7 @@ func HandleResourceProviderGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ResourceProviderCreateBody)
+		fmt.Fprint(w, ResourceProviderCreateBody)
 	})
 }
 
@@ -324,7 +324,7 @@ func HandleResourceProviderUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ResourceProviderUpdateResponse)
+		fmt.Fprint(w, ResourceProviderUpdateResponse)
 	})
 }
 
@@ -339,7 +339,7 @@ func HandleResourceProviderGetUsages(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, UsagesBody)
+			fmt.Fprint(w, UsagesBody)
 		})
 }
 
@@ -354,7 +354,7 @@ func HandleResourceProviderGetInventories(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, InventoriesBody)
+			fmt.Fprint(w, InventoriesBody)
 		})
 }
 
@@ -369,7 +369,7 @@ func HandleResourceProviderGetAllocations(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, AllocationsBody)
+			fmt.Fprint(w, AllocationsBody)
 		})
 }
 
@@ -384,6 +384,6 @@ func HandleResourceProviderGetTraits(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, TraitsBody)
+			fmt.Fprint(w, TraitsBody)
 		})
 }

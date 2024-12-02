@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NetworksVLANTransparentListResult)
+		fmt.Fprint(w, NetworksVLANTransparentListResult)
 	})
 
 	type networkVLANTransparentExt struct {
@@ -59,7 +59,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NetworksVLANTransparentGetResult)
+		fmt.Fprint(w, NetworksVLANTransparentGetResult)
 	})
 
 	var s struct {
@@ -94,7 +94,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, NetworksVLANTransparentCreateResult)
+		fmt.Fprint(w, NetworksVLANTransparentCreateResult)
 	})
 
 	iTrue := true
@@ -139,7 +139,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, NetworksVLANTransparentUpdateResult)
+		fmt.Fprint(w, NetworksVLANTransparentUpdateResult)
 	})
 
 	iFalse := false

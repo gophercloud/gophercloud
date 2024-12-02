@@ -377,7 +377,7 @@ func HandleListDriversSuccessfully(t *testing.T) {
 			t.Errorf("Failed to parse request form %v", err)
 		}
 
-		fmt.Fprintf(w, ListDriversBody)
+		fmt.Fprint(w, ListDriversBody)
 	})
 }
 
@@ -388,7 +388,7 @@ func HandleGetDriverDetailsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleDriverDetails)
+		fmt.Fprint(w, SingleDriverDetails)
 	})
 }
 
@@ -399,7 +399,7 @@ func HandleGetDriverPropertiesSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleDriverProperties)
+		fmt.Fprint(w, SingleDriverProperties)
 	})
 }
 
@@ -410,6 +410,6 @@ func HandleGetDriverDiskPropertiesSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SingleDriverDiskProperties)
+		fmt.Fprint(w, SingleDriverDiskProperties)
 	})
 }

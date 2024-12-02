@@ -143,7 +143,7 @@ func HandleListOrdersSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 }
 
@@ -157,7 +157,7 @@ func HandleGetOrderSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -170,7 +170,7 @@ func HandleCreateOrderSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 

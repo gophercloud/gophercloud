@@ -75,7 +75,7 @@ func HandleGetSecretACLSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -89,7 +89,7 @@ func HandleGetContainerACLSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -102,7 +102,7 @@ func HandleSetSecretACLSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, SetRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, SecretSetResponse)
+		fmt.Fprint(w, SecretSetResponse)
 	})
 }
 
@@ -115,7 +115,7 @@ func HandleSetContainerACLSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, SetRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ContainerSetResponse)
+		fmt.Fprint(w, ContainerSetResponse)
 	})
 }
 
@@ -128,7 +128,7 @@ func HandleUpdateSecretACLSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdateRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, SecretSetResponse)
+		fmt.Fprint(w, SecretSetResponse)
 	})
 }
 
@@ -141,7 +141,7 @@ func HandleUpdateContainerACLSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdateRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ContainerSetResponse)
+		fmt.Fprint(w, ContainerSetResponse)
 	})
 }
 

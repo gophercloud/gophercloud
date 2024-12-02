@@ -198,7 +198,7 @@ func HandleListSecretsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 }
 
@@ -212,7 +212,7 @@ func HandleGetSecretSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -225,7 +225,7 @@ func HandleGetPayloadSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetPayloadResponse)
+		fmt.Fprint(w, GetPayloadResponse)
 	})
 }
 
@@ -238,7 +238,7 @@ func HandleCreateSecretSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 }
 
@@ -277,7 +277,7 @@ func HandleGetMetadataSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetMetadataResponse)
+		fmt.Fprint(w, GetMetadataResponse)
 	})
 }
 
@@ -293,7 +293,7 @@ func HandleCreateMetadataSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateMetadataResponse)
+		fmt.Fprint(w, CreateMetadataResponse)
 	})
 }
 
@@ -308,7 +308,7 @@ func HandleGetMetadatumSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, MetadatumResponse)
+		fmt.Fprint(w, MetadatumResponse)
 	})
 }
 
@@ -324,7 +324,7 @@ func HandleCreateMetadatumSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, MetadatumResponse)
+		fmt.Fprint(w, MetadatumResponse)
 	})
 }
 
@@ -340,7 +340,7 @@ func HandleUpdateMetadatumSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, MetadatumResponse)
+		fmt.Fprint(w, MetadatumResponse)
 	})
 }
 
