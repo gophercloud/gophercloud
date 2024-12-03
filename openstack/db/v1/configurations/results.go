@@ -104,8 +104,8 @@ type DeleteResult struct {
 
 // Param represents a configuration parameter API resource.
 type Param struct {
-	Max             float64 `json:"max"`
-	Min             float64 `json:"min"`
+	Max             float64 `json:"max,omitempty"`
+	Min             float64 `json:"min,omitempty"`
 	Name            string  `json:"name"`
 	RestartRequired bool    `json:"restart_required"`
 	Type            string  `json:"type"`
