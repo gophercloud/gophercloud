@@ -314,6 +314,10 @@ type Node struct {
 
 	// The UTC date and time when the resource was updated, ISO 8601 format. May be “null”.
 	UpdatedAt time.Time `json:"updated_at"`
+
+	// Whether disable_power_off is enabled or disabled on this node.
+	// Requires microversion 1.95 or later.
+	DisablePowerOff bool `json:"disable_power_off"`
 }
 
 // NodePage abstracts the raw results of making a List() request against
