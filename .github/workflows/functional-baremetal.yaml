@@ -28,14 +28,6 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
-      - name: Workaround for grub-efi-amd64-signed
-        run: sudo rm /var/cache/debconf/config.dat
-        shell: bash
-        if: matrix.ubuntu_version == '20.04'
-      - name: Ensure update and upgrade
-        run: sudo apt update && sudo apt -y upgrade
-        shell: bash
-        if: matrix.ubuntu_version == '20.04'
       - name: Work around broken dnsmasq
         run: sudo apt-get purge -y dnsmasq-base
       - name: Deploy devstack
