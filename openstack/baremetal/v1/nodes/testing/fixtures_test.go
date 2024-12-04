@@ -87,6 +87,7 @@ const NodeListDetailBody = `
       "created_at": "2019-01-31T19:59:28+00:00",
       "deploy_interface": "iscsi",
       "deploy_step": {},
+      "disable_power_off": false,
       "driver": "ipmi",
       "driver_info": {
         "ipmi_port": "6230",
@@ -195,6 +196,7 @@ const NodeListDetailBody = `
       "created_at": "2019-01-31T19:59:29+00:00",
       "deploy_interface": "iscsi",
       "deploy_step": {},
+      "disable_power_off": false,
       "driver": "ipmi",
       "driver_info": {},
       "driver_internal_info": {},
@@ -295,6 +297,7 @@ const NodeListDetailBody = `
       "created_at": "2019-01-31T19:59:30+00:00",
       "deploy_interface": "iscsi",
       "deploy_step": {},
+      "disable_power_off": true,
       "driver": "ipmi",
       "driver_info": {},
       "driver_internal_info": {},
@@ -1123,6 +1126,7 @@ var (
 		InspectionFinishedAt: &InspectionFinishedAt,
 		Retired:              false,
 		RetiredReason:        "No longer needed",
+		DisablePowerOff:      false,
 		Links: []nodes.Link{
 			{Href: "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662", Rel: "self"},
 			{Href: "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662", Rel: "bookmark"},
@@ -1192,6 +1196,7 @@ var (
 		UpdatedAt:            updatedAt,
 		Retired:              false,
 		RetiredReason:        "No longer needed",
+		DisablePowerOff:      true,
 		Links: []nodes.Link{
 			{Href: "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474", Rel: "self"},
 			{Href: "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474", Rel: "bookmark"},
