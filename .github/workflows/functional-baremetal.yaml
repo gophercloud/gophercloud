@@ -29,11 +29,6 @@ jobs:
             ubuntu_version: "22.04"
             use_system_scope: false
             additional_services: ""
-          - name: "antelope"
-            openstack_version: "stable/2023.1"
-            ubuntu_version: "22.04"
-            use_system_scope: false
-            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Ironic and run baremetal acceptance tests
     steps:
