@@ -14,6 +14,11 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "22.04"
+            use_system_scope: true
+            additional_services: "openstack-cli-server"
+          - name: "dalmatian"
+            openstack_version: "stable/2024.2"
+            ubuntu_version: "22.04"
             # NOTE(dtantsur): this forces running tests with a system scope
             # token, which is required for certain actions. Use it on versions
             # starting with 2024.1.
