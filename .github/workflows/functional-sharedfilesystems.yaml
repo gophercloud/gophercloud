@@ -70,5 +70,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: functional-sharedfilesystems-${{ matrix.name }}
+          name: functional-sharedfilesystems-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*

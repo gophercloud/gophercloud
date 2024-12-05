@@ -57,5 +57,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: functional-basic-${{ matrix.name }}
+          name: functional-basic-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
