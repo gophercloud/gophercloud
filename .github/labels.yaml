@@ -106,6 +106,9 @@
   description: This PR updates sharedfilesystems code
   name: edit:sharedfilesystems
 - color: '000000'
+  description: This PR updates testing infrastructure code
+  name: edit:testinfra
+- color: '000000'
   description: This PR updates testing code
   name: edit:testing
 - color: '000000'
