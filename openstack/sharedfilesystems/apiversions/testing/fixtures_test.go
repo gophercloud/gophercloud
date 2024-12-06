@@ -186,7 +186,7 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ManilaAllAPIVersionsResponse)
+		fmt.Fprint(w, ManilaAllAPIVersionsResponse)
 	})
 }
 
@@ -198,7 +198,7 @@ func MockGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ManilaAPIVersionResponse)
+		fmt.Fprint(w, ManilaAPIVersionResponse)
 	})
 }
 
@@ -210,7 +210,7 @@ func MockGetNoResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ManilaAPIInvalidVersionResponse_1)
+		fmt.Fprint(w, ManilaAPIInvalidVersionResponse_1)
 	})
 }
 
@@ -222,6 +222,6 @@ func MockGetMultipleResponses(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ManilaAPIInvalidVersionResponse_2)
+		fmt.Fprint(w, ManilaAPIInvalidVersionResponse_2)
 	})
 }

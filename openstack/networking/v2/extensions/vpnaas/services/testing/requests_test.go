@@ -36,7 +36,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "vpnservice": {
         "router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
@@ -91,7 +91,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
    "vpnservices":[
         {
@@ -154,7 +154,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "vpnservice": {
         "router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
@@ -223,7 +223,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "vpnservice": {
         "router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",

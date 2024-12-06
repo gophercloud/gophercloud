@@ -52,7 +52,7 @@ func TestGetRuleType(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, GetRuleTypeResponse)
+		_, err := fmt.Fprint(w, GetRuleTypeResponse)
 		th.AssertNoErr(t, err)
 	})
 

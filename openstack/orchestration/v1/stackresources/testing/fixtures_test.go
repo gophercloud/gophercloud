@@ -82,7 +82,7 @@ func HandleFindSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -157,9 +157,9 @@ func HandleListSuccessfully(t *testing.T, output string) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, output)
+			fmt.Fprint(w, output)
 		case "49181cd6-169a-4130-9455-31185bbfc5bf":
-			fmt.Fprintf(w, `{"resources":[]}`)
+			fmt.Fprint(w, `{"resources":[]}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -227,7 +227,7 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -256,7 +256,7 @@ func HandleMetadataSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -309,7 +309,7 @@ func HandleListTypesSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -370,7 +370,7 @@ func HandleGetSchemaSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 
@@ -440,7 +440,7 @@ func HandleGetTemplateSuccessfully(t *testing.T, output string) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, output)
 	})
 }
 

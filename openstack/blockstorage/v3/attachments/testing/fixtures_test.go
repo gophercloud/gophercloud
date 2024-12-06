@@ -64,7 +64,7 @@ func MockListResponse(t *testing.T) {
 }
   `, th.Server.URL)
 		case "1":
-			fmt.Fprintf(w, `{"volumes": []}`)
+			fmt.Fprint(w, `{"volumes": []}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -78,7 +78,7 @@ func MockGetResponse(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "attachment": {
         "status": "attaching",
@@ -123,7 +123,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "attachment": {
         "status": "attaching",
@@ -171,7 +171,7 @@ func MockUpdateResponse(t *testing.T) {
       `)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "attachment": {
         "status": "attaching",
@@ -202,7 +202,7 @@ func MockUpdateEmptyResponse(t *testing.T) {
       `)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "attachment": {
         "status": "attaching",

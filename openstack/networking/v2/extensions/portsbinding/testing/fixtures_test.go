@@ -18,7 +18,7 @@ func HandleListSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, porttest.ListResponse)
+		fmt.Fprint(w, porttest.ListResponse)
 	})
 }
 
@@ -30,7 +30,7 @@ func HandleGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, porttest.GetResponse)
+		fmt.Fprint(w, porttest.GetResponse)
 	})
 }
 
@@ -62,7 +62,7 @@ func HandleCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "port": {
         "status": "DOWN",
@@ -120,7 +120,7 @@ func HandleUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
     "port": {
         "status": "DOWN",

@@ -48,7 +48,7 @@ func MockCreateResponse(t *testing.T) {
 		th.TestJSONRequest(t, r, createRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, createResponse)
+		fmt.Fprint(w, createResponse)
 	})
 }
 
@@ -175,7 +175,7 @@ func MockGetResponse(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, getResponse)
+		fmt.Fprint(w, getResponse)
 	})
 }
 
@@ -330,7 +330,7 @@ func MockListExportLocationsResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.47")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, listExportLocationsResponse)
+		fmt.Fprint(w, listExportLocationsResponse)
 	})
 }
 
@@ -355,6 +355,6 @@ func MockGetExportLocationResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.47")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, getExportLocationResponse)
+		fmt.Fprint(w, getExportLocationResponse)
 	})
 }

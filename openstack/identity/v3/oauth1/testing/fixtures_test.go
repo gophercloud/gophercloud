@@ -228,7 +228,7 @@ func HandleCreateConsumer(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateConsumerRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		_, err := fmt.Fprintf(w, CreateConsumerResponse)
+		_, err := fmt.Fprint(w, CreateConsumerResponse)
 		th.AssertNoErr(t, err)
 	})
 }
@@ -243,7 +243,7 @@ func HandleUpdateConsumer(t *testing.T) {
 		th.TestJSONRequest(t, r, UpdateConsumerRequest)
 
 		w.WriteHeader(http.StatusOK)
-		_, err := fmt.Fprintf(w, UpdateConsumerResponse)
+		_, err := fmt.Fprint(w, UpdateConsumerResponse)
 		th.AssertNoErr(t, err)
 	})
 }
@@ -269,7 +269,7 @@ func HandleGetConsumer(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetConsumerResponse)
+		fmt.Fprint(w, GetConsumerResponse)
 	})
 }
 
@@ -306,7 +306,7 @@ func HandleListConsumers(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListConsumersResponse)
+		fmt.Fprint(w, ListConsumersResponse)
 	})
 }
 
@@ -329,7 +329,7 @@ func HandleRequestToken(t *testing.T) {
 
 		w.Header().Set("Content-Type", oauth1.OAuth1TokenContentType)
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `oauth_token=29971f&oauth_token_secret=238eb8&oauth_expires_at=2013-09-11T06:07:51.501805Z`)
+		fmt.Fprint(w, `oauth_token=29971f&oauth_token_secret=238eb8&oauth_expires_at=2013-09-11T06:07:51.501805Z`)
 	})
 }
 
@@ -343,7 +343,7 @@ func HandleAuthorizeToken(t *testing.T) {
 		th.TestJSONRequest(t, r, AuthorizeTokenRequest)
 
 		w.WriteHeader(http.StatusOK)
-		_, err := fmt.Fprintf(w, AuthorizeTokenResponse)
+		_, err := fmt.Fprint(w, AuthorizeTokenResponse)
 		th.AssertNoErr(t, err)
 	})
 }
@@ -366,7 +366,7 @@ func HandleCreateAccessToken(t *testing.T) {
 
 		w.Header().Set("Content-Type", oauth1.OAuth1TokenContentType)
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `oauth_token=accd36&oauth_token_secret=aa47da&oauth_expires_at=2013-09-11T06:07:51.501805Z`)
+		fmt.Fprint(w, `oauth_token=accd36&oauth_token_secret=aa47da&oauth_expires_at=2013-09-11T06:07:51.501805Z`)
 	})
 }
 
@@ -380,7 +380,7 @@ func HandleGetAccessToken(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetUserAccessTokenResponse)
+		fmt.Fprint(w, GetUserAccessTokenResponse)
 	})
 }
 
@@ -405,7 +405,7 @@ func HandleListAccessTokens(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListUserAccessTokensResponse)
+		fmt.Fprint(w, ListUserAccessTokensResponse)
 	})
 }
 
@@ -419,7 +419,7 @@ func HandleListAccessTokenRoles(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListUserAccessTokenRolesResponse)
+		fmt.Fprint(w, ListUserAccessTokenRolesResponse)
 	})
 }
 
@@ -433,7 +433,7 @@ func HandleGetAccessTokenRole(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListUserAccessTokenRoleResponse)
+		fmt.Fprint(w, ListUserAccessTokenRoleResponse)
 	})
 }
 
@@ -449,6 +449,6 @@ func HandleAuthenticate(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, tokens.TokenOutput)
+		fmt.Fprint(w, tokens.TokenOutput)
 	})
 }

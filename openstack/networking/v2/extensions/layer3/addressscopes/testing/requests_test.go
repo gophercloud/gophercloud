@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AddressScopesListResult)
+		fmt.Fprint(w, AddressScopesListResult)
 	})
 
 	count := 0
@@ -63,7 +63,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AddressScopesGetResult)
+		fmt.Fprint(w, AddressScopesGetResult)
 	})
 
 	s, err := addressscopes.Get(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
@@ -91,7 +91,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, AddressScopeCreateResult)
+		fmt.Fprint(w, AddressScopeCreateResult)
 	})
 
 	opts := addressscopes.CreateOpts{
@@ -124,7 +124,7 @@ func TestUpdate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AddressScopeUpdateResult)
+		fmt.Fprint(w, AddressScopeUpdateResult)
 	})
 
 	shared := true

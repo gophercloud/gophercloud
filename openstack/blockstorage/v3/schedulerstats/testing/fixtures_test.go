@@ -104,9 +104,9 @@ func HandleStoragePoolsListSuccessfully(t *testing.T) {
 			t.Errorf("Failed to parse request form %v", err)
 		}
 		if r.FormValue("detail") == "true" {
-			fmt.Fprintf(w, StoragePoolsListBodyDetail)
+			fmt.Fprint(w, StoragePoolsListBodyDetail)
 		} else {
-			fmt.Fprintf(w, StoragePoolsListBody)
+			fmt.Fprint(w, StoragePoolsListBody)
 		}
 	})
 }

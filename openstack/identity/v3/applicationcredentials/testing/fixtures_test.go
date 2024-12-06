@@ -415,7 +415,7 @@ func HandleListApplicationCredentialsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListOutput)
+		fmt.Fprint(w, ListOutput)
 	})
 }
 
@@ -429,7 +429,7 @@ func HandleGetApplicationCredentialSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetOutput)
+		fmt.Fprint(w, GetOutput)
 	})
 }
 
@@ -442,7 +442,7 @@ func HandleCreateApplicationCredentialSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateResponse)
+		fmt.Fprint(w, CreateResponse)
 	})
 }
 
@@ -455,7 +455,7 @@ func HandleCreateNoSecretApplicationCredentialSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateNoSecretRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateNoSecretResponse)
+		fmt.Fprint(w, CreateNoSecretResponse)
 	})
 }
 
@@ -466,7 +466,7 @@ func HandleCreateUnrestrictedApplicationCredentialSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateUnrestrictedRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateUnrestrictedResponse)
+		fmt.Fprint(w, CreateUnrestrictedResponse)
 	})
 }
 
@@ -491,7 +491,7 @@ func HandleListAccessRulesSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAccessRulesOutput)
+		fmt.Fprint(w, ListAccessRulesOutput)
 	})
 }
 
@@ -505,7 +505,7 @@ func HandleGetAccessRuleSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetAccessRuleOutput)
+		fmt.Fprint(w, GetAccessRuleOutput)
 	})
 }
 

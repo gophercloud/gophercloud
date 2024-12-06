@@ -50,7 +50,7 @@ func HandleProviderListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, ProvidersListBody)
+			fmt.Fprint(w, ProvidersListBody)
 		default:
 			t.Fatalf("/v2.0/lbaas/providers invoked with unexpected marker=[%s]", marker)
 		}

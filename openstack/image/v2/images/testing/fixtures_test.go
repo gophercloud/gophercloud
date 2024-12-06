@@ -130,7 +130,7 @@ func HandleImageListSuccessfully(t *testing.T) {
 		addNext := false
 		var imageJSON []string
 
-		fmt.Fprintf(w, `{"images": [`)
+		fmt.Fprint(w, `{"images": [`)
 
 		for _, i := range images {
 			if marker == "" || addNext {
@@ -149,7 +149,7 @@ func HandleImageListSuccessfully(t *testing.T) {
 			}
 		}
 		t.Logf("Writing out %v image(s)", len(imageJSON))
-		fmt.Fprintf(w, strings.Join(imageJSON, ","))
+		fmt.Fprint(w, strings.Join(imageJSON, ","))
 
 		fmt.Fprintf(w, `],
 			    "next": "/images?marker=%s&limit=%v",
@@ -176,7 +176,7 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"status": "queued",
 			"name": "Ubuntu 12.10",
 			"protected": false,
@@ -224,7 +224,7 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 		w.Header().Set("OpenStack-image-import-methods", "glance-direct,web-download")
 		w.Header().Set("OpenStack-image-store-ids", "123,456")
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"architecture": "x86_64",
 			"status": "queued",
 			"name": "Ubuntu 12.10",
@@ -258,7 +258,7 @@ func HandleImageGetSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"status": "active",
 			"name": "cirros-0.3.2-x86_64-disk",
 			"tags": [],
@@ -347,7 +347,7 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 			"name": "Fedora 17",
 			"status": "active",
@@ -389,7 +389,7 @@ func HandleImageListByTagsSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
     "images": [
         {
           "status": "active",
@@ -449,7 +449,7 @@ func HandleImageUpdatePropertiesSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
+		fmt.Fprint(w, `{
 			"id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 			"name": "Fedora 17",
 			"status": "active",

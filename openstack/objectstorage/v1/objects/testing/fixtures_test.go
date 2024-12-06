@@ -61,7 +61,7 @@ func HandleDownloadObjectSuccessfully(t *testing.T, options ...option) {
 		}
 		w.Header().Set("Last-Modified", date.Format(time.RFC1123))
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "Successful download with Gophercloud")
+		fmt.Fprint(w, "Successful download with Gophercloud")
 	})
 }
 
@@ -118,7 +118,7 @@ func HandleListObjectsInfoSuccessfully(t *testing.T, options ...option) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `[
+			fmt.Fprint(w, `[
       {
         "hash": "451e372e48e0f6b1114fa0724aa79fa1",
         "last_modified": "2016-08-17T22:11:58.602650",
@@ -135,7 +135,7 @@ func HandleListObjectsInfoSuccessfully(t *testing.T, options ...option) {
       }
     ]`)
 		case "hello":
-			fmt.Fprintf(w, `[]`)
+			fmt.Fprint(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -157,13 +157,13 @@ func HandleListSubdirSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `[
+			fmt.Fprint(w, `[
       {
         "subdir": "directory/"
       }
     ]`)
 		case "directory/":
-			fmt.Fprintf(w, `[]`)
+			fmt.Fprint(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -323,7 +323,7 @@ func HandleBulkDeleteSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, bulkDeleteResponse)
+		fmt.Fprint(w, bulkDeleteResponse)
 	})
 }
 

@@ -235,7 +235,7 @@ func HandleListContainersSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 }
 
@@ -249,7 +249,7 @@ func HandleGetContainerSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -262,7 +262,7 @@ func HandleCreateContainerSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }
 
@@ -288,7 +288,7 @@ func HandleListConsumersSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListConsumersResponse)
+		fmt.Fprint(w, ListConsumersResponse)
 	})
 }
 
@@ -302,7 +302,7 @@ func HandleCreateConsumerSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateConsumerRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, CreateConsumerResponse)
+		fmt.Fprint(w, CreateConsumerResponse)
 	})
 }
 
@@ -316,6 +316,6 @@ func HandleDeleteConsumerSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateConsumerRequest)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResponse)
+		fmt.Fprint(w, GetResponse)
 	})
 }

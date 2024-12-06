@@ -25,7 +25,7 @@ func TestCreateCronTrigger(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"created_at": "2018-09-12 15:48:18",
 				"first_execution_time": "2018-09-12 17:48:00",
@@ -110,7 +110,7 @@ func TestGetCronTrigger(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 				"created_at": "2018-09-12 15:48:18",
 				"first_execution_time": "2018-09-12 17:48:00",
@@ -195,7 +195,7 @@ func TestListCronTriggers(t *testing.T) {
 				"next": "%s/cron_triggers?marker=0520ffd8-f7f1-4f2e-845b-55d953a1cf46"
 			}`, th.Server.URL)
 		case "0520ffd8-f7f1-4f2e-845b-55d953a1cf46":
-			fmt.Fprintf(w, `{ "cron_triggers": [] }`)
+			fmt.Fprint(w, `{ "cron_triggers": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}

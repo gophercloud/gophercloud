@@ -181,10 +181,10 @@ func HandlePortListSuccessfully(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, PortListBody)
+			fmt.Fprint(w, PortListBody)
 
 		case "f2845e11-dbd4-4728-a8c0-30d19f48924a":
-			fmt.Fprintf(w, `{ "ports": [] }`)
+			fmt.Fprint(w, `{ "ports": [] }`)
 		default:
 			t.Fatalf("/ports invoked with unexpected marker=[%s]", marker)
 		}
@@ -201,7 +201,7 @@ func HandlePortListDetailSuccessfully(t *testing.T) {
 			t.Errorf("Failed to parse request form %v", err)
 		}
 
-		fmt.Fprintf(w, PortListDetailBody)
+		fmt.Fprint(w, PortListDetailBody)
 	})
 }
 
@@ -219,7 +219,7 @@ func HandlePortCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -239,7 +239,7 @@ func HandlePortGetSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, SinglePortBody)
+		fmt.Fprint(w, SinglePortBody)
 	})
 }
 
@@ -251,6 +251,6 @@ func HandlePortUpdateSuccessfully(t *testing.T, response string) {
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, `[{"op": "replace", "path": "/address", "value": "22:22:22:22:22:22"}]`)
 
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }

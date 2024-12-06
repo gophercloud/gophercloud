@@ -106,6 +106,6 @@ func HandleUpdateCertificateSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.WriteHeader(http.StatusAccepted)
-			fmt.Fprintf(w, `{}`)
+			fmt.Fprint(w, `{}`)
 		})
 }

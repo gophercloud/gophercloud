@@ -47,7 +47,7 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "qos_specs": {
     "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
@@ -110,7 +110,7 @@ func MockListResponse(t *testing.T) {
 					}
 				`, th.Server.URL)
 		case "2":
-			fmt.Fprintf(w, `{ "qos_specs": [] }`)
+			fmt.Fprint(w, `{ "qos_specs": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -124,7 +124,7 @@ func MockGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 {
   "qos_specs": {
     "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
@@ -172,7 +172,7 @@ func MockUpdateResponse(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdateBody)
+		fmt.Fprint(w, UpdateBody)
 	})
 }
 
@@ -219,7 +219,7 @@ func MockListAssociationsResponse(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
+		fmt.Fprint(w, `
 			{
 			  "qos_associations": [
 			    {

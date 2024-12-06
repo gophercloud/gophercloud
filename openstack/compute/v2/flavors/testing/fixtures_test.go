@@ -57,7 +57,7 @@ func HandleExtraSpecsListSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ExtraSpecsGetBody)
+		fmt.Fprint(w, ExtraSpecsGetBody)
 	})
 }
 
@@ -69,7 +69,7 @@ func HandleExtraSpecGetSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetExtraSpecBody)
+		fmt.Fprint(w, GetExtraSpecBody)
 	})
 }
 
@@ -87,7 +87,7 @@ func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ExtraSpecsGetBody)
+		fmt.Fprint(w, ExtraSpecsGetBody)
 	})
 }
 
@@ -102,7 +102,7 @@ func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, UpdatedExtraSpecBody)
+		fmt.Fprint(w, UpdatedExtraSpecBody)
 	})
 }
 
