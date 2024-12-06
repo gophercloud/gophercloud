@@ -112,6 +112,15 @@ func (r commonResult) Extract() (*SecGroupRule, error) {
 	return s.SecGroupRule, err
 }
 
+// ExtractRules is a function that accepts a result and extracts security rules.
+func (r commonResult) ExtractRules() ([]SecGroupRule, error) {
+	var s struct {
+		SecGroupRules []SecGroupRule `json:"security_group_rules"`
+	}
+	err := r.ExtractInto(&s)
+	return s.SecGroupRules, err
+}
+
 // CreateResult represents the result of a create operation. Call its Extract
 // method to interpret it as a SecGroupRule.
 type CreateResult struct {
