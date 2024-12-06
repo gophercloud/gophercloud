@@ -1,3 +1,11 @@
+## v2.3.0 (2024-12-06)
+
+* [GH-3213](https://github.com/gophercloud/gophercloud/pull/3213) [v2] Handle nova api version > 2.87 for hypervisor
+* [GH-3236](https://github.com/gophercloud/gophercloud/pull/3236) [v2] Added required fields for Node API Parity
+* [GH-3248](https://github.com/gophercloud/gophercloud/pull/3248) [v2] Add support for disable_power_off
+* [GH-3261](https://github.com/gophercloud/gophercloud/pull/3261) [v2] Misc cleanups
+* [GH-3262](https://github.com/gophercloud/gophercloud/pull/3262) [v2] Address govet 1.24 issue
+
 ## v2.2.0 (2024-10-18)
 
 * [GH-3176](https://github.com/gophercloud/gophercloud/pull/3176) [v2] [containerinfra]: add "MasterLBEnabled" in Cluster results
