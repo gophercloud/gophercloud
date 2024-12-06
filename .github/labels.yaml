@@ -4,6 +4,9 @@
 - color: 'E99695'
   description: This PR will be backported to v2
   name: backport-v2
+- color: '563B40'
+  description: This PR will not be backported
+  name: no-backport
 - color: 'BCF611'
   description: A good issue for first-time contributors
   name: good first issue
