@@ -24,8 +24,16 @@ func TestTokensGet(t *testing.T) {
 
 	authOptions := tokens.AuthOptions{
 		Username:   ao.Username,
+		UserID:     ao.UserID,
 		Password:   ao.Password,
-		DomainName: "default",
+		DomainName: ao.DomainName,
+		DomainID:   ao.DomainID,
+		Scope: tokens.Scope{
+			ProjectID:   ao.TenantID,
+			ProjectName: ao.TenantName,
+			DomainID:    ao.DomainID,
+			DomainName:  ao.DomainName,
+		},
 	}
 
 	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()

@@ -9,25 +9,25 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
 func authTokenPost(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope, requestJSON string) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       testhelper.Endpoint(),
+		Endpoint:       th.Endpoint(),
 	}
 
-	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "Content-Type", "application/json")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestJSONRequest(t, r, requestJSON)
+	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `{
@@ -45,17 +45,17 @@ func authTokenPost(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope
 		ExpiresAt: time.Date(2014, 10, 2, 13, 45, 0, 0, time.UTC),
 	}
 	actual, err := tokens.Create(context.TODO(), &client, &options).Extract()
-	testhelper.AssertNoErr(t, err)
-	testhelper.CheckDeepEquals(t, expected, actual)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
 }
 
 func authTokenPostErr(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope, includeToken bool, expectedErr error) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       testhelper.Endpoint(),
+		Endpoint:       th.Endpoint(),
 	}
 	if includeToken {
 		client.TokenID = "abcdef123456"
@@ -303,8 +303,8 @@ func TestCreateSystemScope(t *testing.T) {
 }
 
 func TestCreateUserIDPasswordTrustID(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	requestJSON := `{
 		"auth": {
@@ -362,11 +362,11 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 			}
 		}
 	}`
-	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "Content-Type", "application/json")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestJSONRequest(t, r, requestJSON)
+	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, responseJSON)
@@ -389,7 +389,7 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 	expectedToken := &tokens.Token{
 		ExpiresAt: time.Date(2024, 02, 28, 12, 10, 39, 0, time.UTC),
 	}
-	testhelper.AssertDeepEquals(t, expectedToken, token)
+	th.AssertDeepEquals(t, expectedToken, token)
 
 	trust, err := rsp.ExtractTrust()
 	if err != nil {
@@ -405,7 +405,7 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 			ID: "c88693b7c81c408e9084ac1e51082bfb",
 		},
 	}
-	testhelper.AssertDeepEquals(t, expectedTrust, trust)
+	th.AssertDeepEquals(t, expectedTrust, trust)
 }
 
 func TestCreateApplicationCredentialIDAndSecret(t *testing.T) {
@@ -513,15 +513,15 @@ func TestCreatePasswordTOTPProjectNameAndDomainNameScope(t *testing.T) {
 }
 
 func TestCreateExtractsTokenFromResponse(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       testhelper.Endpoint(),
+		Endpoint:       th.Endpoint(),
 	}
 
-	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", "aaa111")
 
 		w.WriteHeader(http.StatusCreated)
@@ -652,22 +652,22 @@ func TestCreateFailureEmptyScope(t *testing.T) {
 */
 
 func TestGetRequest(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{
 			TokenID: "12345abcdef",
 		},
-		Endpoint: testhelper.Endpoint(),
+		Endpoint: th.Endpoint(),
 	}
 
-	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeaderUnset(t, r, "Content-Type")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
-		testhelper.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
+	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeaderUnset(t, r, "Content-Type")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
+		th.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `
@@ -691,15 +691,15 @@ func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) go
 		ProviderClient: &gophercloud.ProviderClient{
 			TokenID: "12345abcdef",
 		},
-		Endpoint: testhelper.Endpoint(),
+		Endpoint: th.Endpoint(),
 	}
 
-	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, expectedMethod)
-		testhelper.TestHeaderUnset(t, r, "Content-Type")
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
-		testhelper.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
+	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, expectedMethod)
+		th.TestHeaderUnset(t, r, "Content-Type")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
+		th.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
 
 		w.WriteHeader(status)
 	})
@@ -708,8 +708,8 @@ func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) go
 }
 
 func TestValidateRequestSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "HEAD", http.StatusNoContent)
 
 	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
@@ -723,8 +723,8 @@ func TestValidateRequestSuccessful(t *testing.T) {
 }
 
 func TestValidateRequestFailure(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "HEAD", http.StatusNotFound)
 
 	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
@@ -738,8 +738,8 @@ func TestValidateRequestFailure(t *testing.T) {
 }
 
 func TestValidateRequestError(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "HEAD", http.StatusMethodNotAllowed)
 
 	_, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
@@ -749,17 +749,17 @@ func TestValidateRequestError(t *testing.T) {
 }
 
 func TestRevokeRequestSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNoContent)
 
 	res := tokens.Revoke(context.TODO(), &client, "abcdef12345")
-	testhelper.AssertNoErr(t, res.Err)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestRevokeRequestError(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNotFound)
 
 	res := tokens.Revoke(context.TODO(), &client, "abcdef12345")
@@ -769,20 +769,20 @@ func TestRevokeRequestError(t *testing.T) {
 }
 
 func TestNoTokenInResponse(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       testhelper.Endpoint(),
+		Endpoint:       th.Endpoint(),
 	}
 
-	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `{}`)
 	})
 
 	options := tokens.AuthOptions{UserID: "me", Password: "squirrel!"}
 	_, err := tokens.Create(context.TODO(), &client, &options).Extract()
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 }

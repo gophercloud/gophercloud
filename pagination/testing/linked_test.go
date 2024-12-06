@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
-	"github.com/gophercloud/gophercloud/v2/testhelper"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // LinkedPager sample and test cases.
@@ -31,19 +31,19 @@ func ExtractLinkedInts(r pagination.Page) ([]int, error) {
 }
 
 func createLinked() pagination.Pager {
-	testhelper.SetupHTTP()
+	th.SetupHTTP()
 
-	testhelper.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{ "ints": [1, 2, 3], "links": { "next": "%s/page2" } }`, testhelper.Server.URL)
+		fmt.Fprintf(w, `{ "ints": [1, 2, 3], "links": { "next": "%s/page2" } }`, th.Server.URL)
 	})
 
-	testhelper.Mux.HandleFunc("/page2", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/page2", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{ "ints": [4, 5, 6], "links": { "next": "%s/page3" } }`, testhelper.Server.URL)
+		fmt.Fprintf(w, `{ "ints": [4, 5, 6], "links": { "next": "%s/page3" } }`, th.Server.URL)
 	})
 
-	testhelper.Mux.HandleFunc("/page3", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/page3", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [7, 8, 9], "links": { "next": null } }`)
 	})
@@ -54,12 +54,12 @@ func createLinked() pagination.Pager {
 		return LinkedPageResult{pagination.LinkedPageBase{PageResult: r}}
 	}
 
-	return pagination.NewPager(client, testhelper.Server.URL+"/page1", createPage)
+	return pagination.NewPager(client, th.Server.URL+"/page1", createPage)
 }
 
 func TestEnumerateLinked(t *testing.T) {
 	pager := createLinked()
-	defer testhelper.TeardownHTTP()
+	defer th.TeardownHTTP()
 
 	callCount := 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -101,13 +101,13 @@ func TestEnumerateLinked(t *testing.T) {
 
 func TestAllPagesLinked(t *testing.T) {
 	pager := createLinked()
-	defer testhelper.TeardownHTTP()
+	defer th.TeardownHTTP()
 
 	page, err := pager.AllPages(context.TODO())
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	expected := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	actual, err := ExtractLinkedInts(page)
-	testhelper.AssertNoErr(t, err)
-	testhelper.CheckDeepEquals(t, expected, actual)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
 }
