@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavorprofiles"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 
@@ -106,9 +107,9 @@ func TestUpdateFlavorProfile(t *testing.T) {
 
 	client := fake.ServiceClient()
 	actual, err := flavorprofiles.Update(context.TODO(), client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272", flavorprofiles.UpdateOpts{
-		Name:         "amphora-test-updated",
-		ProviderName: "amphora",
-		FlavorData:   "{\"loadbalancer_topology\": \"SINGLE\"}",
+		Name:         ptr.To("amphora-test-updated"),
+		ProviderName: ptr.To("amphora"),
+		FlavorData:   ptr.To(`{"loadbalancer_topology": "SINGLE"}`),
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)

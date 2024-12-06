@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavorprofiles"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/l7policies"
@@ -724,7 +725,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile
 		Name:            flavorName,
 		Description:     description,
 		FlavorProfileId: flavorProfile.ID,
-		Enabled:         true,
+		Enabled:         ptr.To(false),
 	}
 
 	flavor, err := flavors.Create(context.TODO(), client, createOpts).Extract()
@@ -737,7 +738,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile
 	th.AssertEquals(t, flavorName, flavor.Name)
 	th.AssertEquals(t, description, flavor.Description)
 	th.AssertEquals(t, flavorProfile.ID, flavor.FlavorProfileId)
-	th.AssertEquals(t, true, flavor.Enabled)
+	th.AssertEquals(t, false, flavor.Enabled)
 
 	return flavor, nil
 }
