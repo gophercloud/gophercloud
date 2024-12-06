@@ -43,8 +43,8 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 
 	t.Logf("Created external network: %s", networkName)
 
-	th.AssertEquals(t, network.Name, networkName)
-	th.AssertEquals(t, network.Description, networkDescription)
+	th.AssertEquals(t, networkName, network.Name)
+	th.AssertEquals(t, networkDescription, network.Description)
 
 	return network, nil
 }
@@ -74,9 +74,9 @@ func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient
 
 	t.Logf("Successfully created port: %s", portName)
 
-	th.AssertEquals(t, port.Name, portName)
-	th.AssertEquals(t, port.Description, portDescription)
-	th.AssertEquals(t, port.NetworkID, networkID)
+	th.AssertEquals(t, portName, port.Name)
+	th.AssertEquals(t, portDescription, port.Description)
+	th.AssertEquals(t, networkID, port.NetworkID)
 
 	return port, nil
 }
@@ -101,8 +101,8 @@ func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*grou
 
 	t.Logf("Created security group: %s", secGroup.ID)
 
-	th.AssertEquals(t, secGroup.Name, secGroupName)
-	th.AssertEquals(t, secGroup.Description, secGroupDescription)
+	th.AssertEquals(t, secGroupName, secGroup.Name)
+	th.AssertEquals(t, secGroupDescription, secGroup.Description)
 
 	return secGroup, nil
 }
