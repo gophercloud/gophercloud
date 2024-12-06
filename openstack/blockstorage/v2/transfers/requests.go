@@ -23,7 +23,7 @@ func (opts CreateOpts) ToCreateMap() (map[string]any, error) {
 }
 
 // Create will create a volume tranfer request based on the values in CreateOpts.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToCreateMap()
 	if err != nil {
 		r.Err = err
@@ -49,7 +49,7 @@ func (opts AcceptOpts) ToAcceptMap() (map[string]any, error) {
 }
 
 // Accept will accept a volume tranfer request based on the values in AcceptOpts.
-func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r CreateResult) {
+func Accept(ctx context.Context, client gophercloud.Client, id string, opts AcceptOpts) (r CreateResult) {
 	b, err := opts.ToAcceptMap()
 	if err != nil {
 		r.Err = err
@@ -63,7 +63,7 @@ func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Delete deletes a volume transfer.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -102,7 +102,7 @@ func (opts ListOpts) ToTransferListQuery() (string, error) {
 }
 
 // List returns Transfers optionally limited by the conditions provided in ListOpts.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToTransferListQuery()
@@ -119,7 +119,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // Get retrieves the Transfer with the provided ID. To extract the Transfer object
 // from the response, call the Extract method on the GetResult.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

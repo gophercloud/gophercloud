@@ -53,7 +53,7 @@ func (opts ListOpts) ToResourceTypeListQuery() (string, error) {
 }
 
 // List makes a request against the API to list available resource types.
-func List(ctx context.Context, client *gophercloud.ServiceClient, opts ListOptsBuilder) (r ListResult) {
+func List(ctx context.Context, client gophercloud.Client, opts ListOptsBuilder) (r ListResult) {
 	url := listURL(client)
 
 	if opts == nil {
@@ -72,7 +72,7 @@ func List(ctx context.Context, client *gophercloud.ServiceClient, opts ListOptsB
 }
 
 // GetSchema retreives the schema for a given resource type.
-func GetSchema(ctx context.Context, client *gophercloud.ServiceClient, resourceType string) (r GetSchemaResult) {
+func GetSchema(ctx context.Context, client gophercloud.Client, resourceType string) (r GetSchemaResult) {
 	resp, err := client.Get(ctx, getSchemaURL(client, resourceType), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -106,7 +106,7 @@ func (opts GenerateTemplateOpts) ToGenerateTemplateQuery() (string, error) {
 }
 
 // GenerateTemplate retreives an example template for a given resource type.
-func GenerateTemplate(ctx context.Context, client *gophercloud.ServiceClient, resourceType string, opts GenerateTemplateOptsBuilder) (r TemplateResult) {
+func GenerateTemplate(ctx context.Context, client gophercloud.Client, resourceType string, opts GenerateTemplateOptsBuilder) (r TemplateResult) {
 	url := generateTemplateURL(client, resourceType)
 	if opts == nil {
 		opts = GenerateTemplateOpts{}

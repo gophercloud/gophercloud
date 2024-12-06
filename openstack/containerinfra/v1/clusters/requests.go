@@ -38,7 +38,7 @@ func (opts CreateOpts) ToClusterCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new cluster.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToClusterCreateMap()
 	if err != nil {
 		r.Err = err
@@ -52,14 +52,14 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Get retrieves a specific clusters based on its unique ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified cluster ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -91,7 +91,7 @@ func (opts ListOpts) ToClustersListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // clusters. It accepts a ListOptsBuilder, which allows you to sort
 // the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToClustersListQuery()
@@ -109,7 +109,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // clusters with detailed information.
 // It accepts a ListOptsBuilder, which allows you to sort the returned
 // collection for greater efficiency.
-func ListDetail(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func ListDetail(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(c)
 	if opts != nil {
 		query, err := opts.ToClustersListQuery()
@@ -150,7 +150,7 @@ func (opts UpdateOpts) ToClustersUpdateMap() (map[string]any, error) {
 }
 
 // Update implements cluster updated request.
-func Update[T UpdateOptsBuilder](ctx context.Context, client *gophercloud.ServiceClient, id string, opts []T) (r UpdateResult) {
+func Update[T UpdateOptsBuilder](ctx context.Context, client gophercloud.Client, id string, opts []T) (r UpdateResult) {
 	var o []map[string]any
 	for _, opt := range opts {
 		b, err := opt.ToClustersUpdateMap()
@@ -189,7 +189,7 @@ func (opts UpgradeOpts) ToClustersUpgradeMap() (map[string]any, error) {
 }
 
 // Upgrade implements cluster upgrade request.
-func Upgrade(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpgradeOptsBuilder) (r UpgradeResult) {
+func Upgrade(ctx context.Context, client gophercloud.Client, id string, opts UpgradeOptsBuilder) (r UpgradeResult) {
 	b, err := opts.ToClustersUpgradeMap()
 	if err != nil {
 		r.Err = err
@@ -222,7 +222,7 @@ func (opts ResizeOpts) ToClusterResizeMap() (map[string]any, error) {
 }
 
 // Resize an existing cluster node count.
-func Resize(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ResizeResult) {
+func Resize(ctx context.Context, client gophercloud.Client, id string, opts ResizeOptsBuilder) (r ResizeResult) {
 	b, err := opts.ToClusterResizeMap()
 	if err != nil {
 		r.Err = err

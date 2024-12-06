@@ -40,7 +40,7 @@ func (opts CreateOpts) ToClaimCreateRequest() (map[string]any, string, error) {
 }
 
 // Create creates a Claim that claims messages on a specified queue.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, queueName string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, queueName string, opts CreateOptsBuilder) (r CreateResult) {
 	b, q, err := opts.ToClaimCreateRequest()
 	if err != nil {
 		r.Err = err
@@ -60,7 +60,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, queueName st
 }
 
 // Get queries the specified claim for the specified queue.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, queueName string, claimID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, queueName string, claimID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, queueName, claimID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -94,7 +94,7 @@ func (opts UpdateOpts) ToClaimUpdateMap() (map[string]any, error) {
 }
 
 // Update will update the options for a specified claim.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, queueName string, claimID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, queueName string, claimID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToClaimUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -108,7 +108,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, queueName st
 }
 
 // Delete will delete a Claim for a specified Queue.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, queueName string, claimID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, queueName string, claimID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, queueName, claimID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})

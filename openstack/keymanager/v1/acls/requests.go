@@ -7,14 +7,14 @@ import (
 )
 
 // GetContainerACL retrieves the ACL of a container.
-func GetContainerACL(ctx context.Context, client *gophercloud.ServiceClient, containerID string) (r ACLResult) {
+func GetContainerACL(ctx context.Context, client gophercloud.Client, containerID string) (r ACLResult) {
 	resp, err := client.Get(ctx, containerURL(client, containerID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetSecretACL retrieves the ACL of a secret.
-func GetSecretACL(ctx context.Context, client *gophercloud.ServiceClient, secretID string) (r ACLResult) {
+func GetSecretACL(ctx context.Context, client gophercloud.Client, secretID string) (r ACLResult) {
 	resp, err := client.Get(ctx, secretURL(client, secretID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -55,7 +55,7 @@ func (opts SetOpts) ToACLSetMap() (map[string]any, error) {
 }
 
 // SetContainerACL will set an ACL on a container.
-func SetContainerACL(ctx context.Context, client *gophercloud.ServiceClient, containerID string, opts SetOptsBuilder) (r ACLRefResult) {
+func SetContainerACL(ctx context.Context, client gophercloud.Client, containerID string, opts SetOptsBuilder) (r ACLRefResult) {
 	b, err := opts.ToACLSetMap()
 	if err != nil {
 		r.Err = err
@@ -70,7 +70,7 @@ func SetContainerACL(ctx context.Context, client *gophercloud.ServiceClient, con
 }
 
 // SetSecretACL will set an ACL on a secret.
-func SetSecretACL(ctx context.Context, client *gophercloud.ServiceClient, secretID string, opts SetOptsBuilder) (r ACLRefResult) {
+func SetSecretACL(ctx context.Context, client gophercloud.Client, secretID string, opts SetOptsBuilder) (r ACLRefResult) {
 	b, err := opts.ToACLSetMap()
 	if err != nil {
 		r.Err = err
@@ -85,7 +85,7 @@ func SetSecretACL(ctx context.Context, client *gophercloud.ServiceClient, secret
 }
 
 // UpdateContainerACL will update an ACL on a container.
-func UpdateContainerACL(ctx context.Context, client *gophercloud.ServiceClient, containerID string, opts SetOptsBuilder) (r ACLRefResult) {
+func UpdateContainerACL(ctx context.Context, client gophercloud.Client, containerID string, opts SetOptsBuilder) (r ACLRefResult) {
 	b, err := opts.ToACLSetMap()
 	if err != nil {
 		r.Err = err
@@ -100,7 +100,7 @@ func UpdateContainerACL(ctx context.Context, client *gophercloud.ServiceClient, 
 }
 
 // UpdateSecretACL will update an ACL on a secret.
-func UpdateSecretACL(ctx context.Context, client *gophercloud.ServiceClient, secretID string, opts SetOptsBuilder) (r ACLRefResult) {
+func UpdateSecretACL(ctx context.Context, client gophercloud.Client, secretID string, opts SetOptsBuilder) (r ACLRefResult) {
 	b, err := opts.ToACLSetMap()
 	if err != nil {
 		r.Err = err
@@ -115,7 +115,7 @@ func UpdateSecretACL(ctx context.Context, client *gophercloud.ServiceClient, sec
 }
 
 // DeleteContainerACL will delete an ACL from a conatiner.
-func DeleteContainerACL(ctx context.Context, client *gophercloud.ServiceClient, containerID string) (r DeleteResult) {
+func DeleteContainerACL(ctx context.Context, client gophercloud.Client, containerID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, containerURL(client, containerID), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -124,7 +124,7 @@ func DeleteContainerACL(ctx context.Context, client *gophercloud.ServiceClient, 
 }
 
 // DeleteSecretACL will delete an ACL from a secret.
-func DeleteSecretACL(ctx context.Context, client *gophercloud.ServiceClient, secretID string) (r DeleteResult) {
+func DeleteSecretACL(ctx context.Context, client gophercloud.Client, secretID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, secretURL(client, secretID), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

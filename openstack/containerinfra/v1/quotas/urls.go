@@ -6,10 +6,10 @@ import (
 
 var apiName = "quotas"
 
-func commonURL(client *gophercloud.ServiceClient) string {
+func commonURL(client gophercloud.Client) string {
 	return client.ServiceURL(apiName)
 }
 
-func createURL(client *gophercloud.ServiceClient) string {
+func createURL(client gophercloud.Client) string {
 	return commonURL(client)
 }

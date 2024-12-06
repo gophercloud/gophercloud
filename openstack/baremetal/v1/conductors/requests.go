@@ -49,7 +49,7 @@ func (opts ListOpts) ToConductorListQuery() (string, error) {
 }
 
 // List makes a request against the API to list conductors accessible to you.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToConductorListQuery()
@@ -64,7 +64,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get requests details on a single conductor by hostname
-func Get(ctx context.Context, client *gophercloud.ServiceClient, name string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, name string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, name), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

@@ -46,7 +46,7 @@ func (opts ListOpts) ToAddressScopeListQuery() (string, error) {
 // Default policy settings return only the address-scopes owned by the project
 // of the user submitting the request, unless the user has the administrative
 // role.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToAddressScopeListQuery()
@@ -61,7 +61,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific address-scope based on its ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -97,7 +97,7 @@ func (opts CreateOpts) ToAddressScopeCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new address-scope on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToAddressScopeCreateMap()
 	if err != nil {
 		r.Err = err
@@ -132,7 +132,7 @@ func (opts UpdateOpts) ToAddressScopeUpdateMap() (map[string]any, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing address-scope
 // using the values provided.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, addressScopeID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, addressScopeID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToAddressScopeUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -146,7 +146,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, addressScopeID st
 }
 
 // Delete accepts a unique ID and deletes the address-scope associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

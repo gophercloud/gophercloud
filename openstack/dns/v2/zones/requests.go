@@ -41,7 +41,7 @@ func (opts ListOpts) ToZoneListQuery() (string, error) {
 }
 
 // List implements a zone List request.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := baseURL(client)
 	if opts != nil {
 		query, err := opts.ToZoneListQuery()
@@ -56,7 +56,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns information about a zone, given its ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, zoneID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, zoneID string) (r GetResult) {
 	resp, err := client.Get(ctx, zoneURL(client, zoneID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -107,7 +107,7 @@ func (opts CreateOpts) ToZoneCreateMap() (map[string]any, error) {
 }
 
 // Create implements a zone create request.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToZoneCreateMap()
 	if err != nil {
 		r.Err = err
@@ -156,7 +156,7 @@ func (opts UpdateOpts) ToZoneUpdateMap() (map[string]any, error) {
 }
 
 // Update implements a zone update request.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, zoneID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToZoneUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -170,7 +170,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, zoneID strin
 }
 
 // Delete implements a zone delete request.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, zoneID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, zoneID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, zoneURL(client, zoneID), &gophercloud.RequestOpts{
 		OkCodes:      []int{202},
 		JSONResponse: &r.Body,

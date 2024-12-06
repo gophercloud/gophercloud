@@ -156,7 +156,7 @@ func (opts ListOpts) ToPolicyListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // Policy. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts PolicyListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts PolicyListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
 		query, err := opts.ToPolicyListQuery()
@@ -172,7 +172,7 @@ func List(c *gophercloud.ServiceClient, opts PolicyListOptsBuilder) pagination.P
 }
 
 // Get retrieves a specific QoS policy based on its ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, getURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -211,7 +211,7 @@ func (opts CreateOpts) ToPolicyCreateMap() (map[string]any, error) {
 }
 
 // Create requests the creation of a new QoS policy on the server.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToPolicyCreateMap()
 	if err != nil {
 		r.Err = err
@@ -252,7 +252,7 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]any, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing policy using the
 // values provided.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, policyID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, policyID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToPolicyUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -266,7 +266,7 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, policyID string, 
 }
 
 // Delete accepts a unique ID and deletes the QoS policy associated with it.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
