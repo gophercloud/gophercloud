@@ -91,7 +91,13 @@ to set them manually.
 From the root directory, run:
 
 ```
-./script/acceptancetest
+make acceptance
+```
+
+You can also run tests for a specific service:
+
+```
+make acceptance-compute
 ```
 
 Alternatively, add the following to your `.bashrc`:
