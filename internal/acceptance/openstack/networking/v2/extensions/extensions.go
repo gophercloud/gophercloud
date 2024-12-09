@@ -140,6 +140,44 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 	return rule, nil
 }
 
+// CreateSecurityGroupRulesBulk will create security group rules with a random name
+// and random port between 80 and 99.
+// An error will be returned if one was failed to be created.
+func CreateSecurityGroupRulesBulk(t *testing.T, client *gophercloud.ServiceClient, secGroupID string) ([]rules.SecGroupRule, error) {
+	t.Logf("Attempting to bulk create security group rules in group: %s", secGroupID)
+
+	sgRulesCreateOpts := make([]rules.CreateOpts, 3)
+	for i := range 3 {
+		description := "Rule description"
+		fromPort := tools.RandomInt(80, 89)
+		toPort := tools.RandomInt(90, 99)
+
+		sgRulesCreateOpts[i] = rules.CreateOpts{
+			Description:  description,
+			Direction:    "ingress",
+			EtherType:    "IPv4",
+			SecGroupID:   secGroupID,
+			PortRangeMin: fromPort,
+			PortRangeMax: toPort,
+			Protocol:     rules.ProtocolTCP,
+		}
+	}
+
+	rules, err := rules.CreateBulk(context.TODO(), client, sgRulesCreateOpts).Extract()
+	if err != nil {
+		return rules, err
+	}
+
+	for i, rule := range rules {
+		t.Logf("Created security group rule: %s", rule.ID)
+
+		th.AssertEquals(t, sgRulesCreateOpts[i].SecGroupID, rule.SecGroupID)
+		th.AssertEquals(t, sgRulesCreateOpts[i].Description, rule.Description)
+	}
+
+	return rules, nil
+}
+
 // DeleteSecurityGroup will delete a security group of a specified ID.
 // A fatal error will occur if the deletion failed. This works best as a
 // deferred function

@@ -26,6 +26,12 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
+	rules, err := CreateSecurityGroupRulesBulk(t, client, group.ID)
+	th.AssertNoErr(t, err)
+	for _, r := range rules {
+		defer DeleteSecurityGroupRule(t, client, r.ID)
+	}
+
 	tools.PrintResource(t, group)
 
 	var name = "Update group"
