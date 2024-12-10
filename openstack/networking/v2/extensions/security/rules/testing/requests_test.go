@@ -222,6 +222,101 @@ func TestCreateAnyProtocol(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestCreateBulk(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "security_group_rules": [
+        {
+            "description": "test description of rule",
+            "direction": "ingress",
+            "port_range_min": 80,
+            "ethertype": "IPv4",
+            "port_range_max": 80,
+            "protocol": "tcp",
+            "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+            "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a"
+        },
+        {
+            "description": "test description of rule",
+            "direction": "ingress",
+            "port_range_min": 443,
+            "ethertype": "IPv4",
+            "port_range_max": 443,
+            "protocol": "tcp",
+            "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a"
+        }
+    ]
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprint(w, `
+{
+    "security_group_rules": [
+        {
+            "description": "test description of rule",
+            "direction": "ingress",
+            "ethertype": "IPv4",
+            "port_range_max": 80,
+            "port_range_min": 80,
+            "protocol": "tcp",
+            "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+            "remote_ip_prefix": null,
+            "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a",
+            "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+        },
+        {
+            "description": "test description of rule",
+            "direction": "ingress",
+            "ethertype": "IPv4",
+            "port_range_max": 443,
+            "port_range_min": 443,
+            "protocol": "tcp",
+            "remote_group_id": null,
+            "remote_ip_prefix": null,
+            "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a",
+            "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+        }
+    ]
+}
+    `)
+	})
+
+	opts := []rules.CreateOpts{
+		{
+			Description:   "test description of rule",
+			Direction:     "ingress",
+			PortRangeMin:  80,
+			EtherType:     rules.EtherType4,
+			PortRangeMax:  80,
+			Protocol:      "tcp",
+			RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
+			SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
+		},
+		{
+			Description:  "test description of rule",
+			Direction:    "ingress",
+			PortRangeMin: 443,
+			EtherType:    rules.EtherType4,
+			PortRangeMax: 443,
+			Protocol:     "tcp",
+			SecGroupID:   "a7734e61-b545-452d-a3cd-0189cbd9747a",
+		},
+	}
+	_, err := rules.CreateBulk(context.TODO(), fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+}
+
 func TestRequiredCreateOpts(t *testing.T) {
 	res := rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress})
 	if res.Err == nil {
