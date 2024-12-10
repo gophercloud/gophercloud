@@ -90,7 +90,7 @@ func (opts AuthOptions) CanReauth() bool {
 // Generally, rather than interact with this call directly, end users should
 // call openstack.AuthenticatedClient(), which abstracts all of the gory details
 // about navigating service catalogs and such.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, auth AuthOptionsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, auth AuthOptionsBuilder) (r CreateResult) {
 	b, err := auth.ToTokenV2CreateMap()
 	if err != nil {
 		r.Err = err
@@ -105,7 +105,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, auth AuthOpt
 }
 
 // Get validates and retrieves information for user's token.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, token string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, token string) (r GetResult) {
 	resp, err := client.Get(ctx, GetURL(client, token), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})

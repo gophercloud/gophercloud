@@ -27,7 +27,7 @@ func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
 // custom metadata, call the ExtractMetadata method on the GetResult. To extract
 // all the headers that are returned (including the metadata), call the
 // Extract method on the GetResult.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, opts GetOptsBuilder) (r GetResult) {
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToAccountGetMap()
@@ -84,7 +84,7 @@ func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes an account's metadata.
 // To extract the headers returned, call the Extract method on the UpdateResult.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, opts UpdateOptsBuilder) (r UpdateResult) {
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToAccountUpdateMap()

@@ -17,7 +17,7 @@ type ListOpts struct {
 }
 
 // List enumerates the Tenants to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+func List(client gophercloud.Client, opts *ListOpts) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		q, err := gophercloud.BuildQueryString(opts)
@@ -56,7 +56,7 @@ func (opts CreateOpts) ToTenantCreateMap() (map[string]any, error) {
 }
 
 // Create is the operation responsible for creating new tenant.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTenantCreateMap()
 	if err != nil {
 		r.Err = err
@@ -70,7 +70,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Get requests details on a single tenant by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -101,7 +101,7 @@ func (opts UpdateOpts) ToTenantUpdateMap() (map[string]any, error) {
 }
 
 // Update is the operation responsible for updating exist tenants by their TenantID.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToTenantUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -115,7 +115,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Delete is the operation responsible for permanently deleting a tenant.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

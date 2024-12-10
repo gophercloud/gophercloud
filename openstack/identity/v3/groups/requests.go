@@ -50,7 +50,7 @@ func (opts ListOpts) ToGroupListQuery() (string, error) {
 }
 
 // List enumerates the Groups to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToGroupListQuery()
@@ -65,7 +65,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get retrieves details on a single group, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -111,7 +111,7 @@ func (opts CreateOpts) ToGroupCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new Group.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToGroupCreateMap()
 	if err != nil {
 		r.Err = err
@@ -164,7 +164,7 @@ func (opts UpdateOpts) ToGroupUpdateMap() (map[string]any, error) {
 }
 
 // Update updates an existing Group.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, groupID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, groupID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToGroupUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -178,7 +178,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, groupID stri
 }
 
 // Delete deletes a group.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, groupID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, groupID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, groupID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
