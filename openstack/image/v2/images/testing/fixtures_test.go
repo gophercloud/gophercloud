@@ -34,12 +34,12 @@ func HandleImageListSuccessfully(t *testing.T) {
             "updated_at": "2015-07-15T11:43:35Z",
             "visibility": "public",
             "self": "/v2/images/07aa21a9-fa1a-430e-9a33-185be5982431",
-            "min_disk": 0,
-            "protected": false,
+            "min_disk": 4e-06,
+            "protected": null,
             "id": "07aa21a9-fa1a-430e-9a33-185be5982431",
             "size": 25165824,
             "file": "/v2/images/07aa21a9-fa1a-430e-9a33-185be5982431/file",
-            "checksum": "eb9139e4942121f22bbc2afc0400b2a4",
+            "checksum": null,
             "owner": "cba624273b8344e59dd1fd18685183b0",
             "virtual_size": null,
             "min_ram": 0,
@@ -60,12 +60,12 @@ func HandleImageListSuccessfully(t *testing.T) {
             "updated_at": "2015-07-15T11:43:32Z",
             "visibility": "public",
             "self": "/v2/images/8c64f48a-45a3-4eaa-adff-a8106b6c005b",
-            "min_disk": 0,
+            "min_disk": null,
             "protected": false,
             "id": "8c64f48a-45a3-4eaa-adff-a8106b6c005b",
             "file": "/v2/images/8c64f48a-45a3-4eaa-adff-a8106b6c005b/file",
             "checksum": "be575a2b939972276ef675752936977f",
-            "owner": "cba624273b8344e59dd1fd18685183b0",
+            "owner": null,
             "virtual_size": null,
             "min_ram": 0,
             "schema": "/v2/schemas/image",
@@ -271,6 +271,44 @@ func HandleImageGetSuccessfully(t *testing.T) {
 			"self": "/v2/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27",
 			"min_disk": 0,
 			"protected": false,
+			"properties": "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
+			"id": "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
+			"file": "/v2/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27/file",
+			"checksum": "64d7c1cd2b6f60c92c14662941cb7913",
+			"owner": "5ef70662f8b34079a6eddb8da9d75fe8",
+			"size": 13167616,
+			"min_ram": 0,
+			"schema": "/v2/schemas/image",
+			"virtual_size": null,
+			"hw_disk_bus": "scsi",
+			"hw_disk_bus_model": "virtio-scsi",
+			"hw_scsi_model": "virtio-scsi"
+		}`)
+	})
+}
+
+// HandleImageGetSuccessfullyStringBool test setup
+func HandleImageGetSuccessfullyStringBool(t *testing.T) {
+	th.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{
+			"status": "active",
+			"name": "cirros-0.3.2-x86_64-disk",
+			"tags": [],
+			"container_format": "bare",
+			"created_at": "2014-05-05T17:15:10Z",
+			"disk_format": "qcow2",
+			"updated_at": "2014-05-05T17:15:11Z",
+			"visibility": "public",
+			"os_hidden": "False",
+			"self": "/v2/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27",
+			"min_disk": 0,
+			"protected": false,
+			"properties": "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
 			"id": "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
 			"file": "/v2/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27/file",
 			"checksum": "64d7c1cd2b6f60c92c14662941cb7913",
