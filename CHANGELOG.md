@@ -1,3 +1,7 @@
+## v2.4.0 (2024-12-10)
+
+* [GH-3270](https://github.com/gophercloud/gophercloud/pull/3270) [v2] SG rules: implement bulk create
+
 ## v2.3.0 (2024-12-06)
 
 * [GH-3213](https://github.com/gophercloud/gophercloud/pull/3213) [v2] Handle nova api version > 2.87 for hypervisor
