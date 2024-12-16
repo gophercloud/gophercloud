@@ -69,19 +69,18 @@ func TestListHypervisors(t *testing.T) {
 			return false, err
 		}
 
-		if len(actual) != 2 {
-			t.Fatalf("Expected 2 hypervisors, got %d", len(actual))
+		if len(actual) != 1 {
+			t.Fatalf("Expected 1 hypervisors on page %d, got %d", pages, len(actual))
 		}
 		th.CheckDeepEquals(t, HypervisorFake, actual[0])
-		th.CheckDeepEquals(t, HypervisorFake, actual[1])
 
 		return true, nil
 	})
 
 	th.AssertNoErr(t, err)
 
-	if pages != 1 {
-		t.Errorf("Expected 1 page, saw %d", pages)
+	if pages != 2 {
+		t.Errorf("Expected 2 pages, saw %d", pages)
 	}
 }
 

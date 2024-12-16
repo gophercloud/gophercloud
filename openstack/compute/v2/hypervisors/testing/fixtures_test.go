@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/hypervisors"
+	"github.com/gophercloud/gophercloud/v2/testhelper"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
@@ -85,8 +86,8 @@ const HypervisorListBodyPre253 = `
     ]
 }`
 
-// HypervisorListBody represents a raw hypervisor list result with Pike+ release.
-const HypervisorListBody = `
+// HypervisorListBodyPage1 represents page 1 of a raw hypervisor list result with Pike+ release.
+const HypervisorListBodyPage1 = `
 {
     "hypervisors": [
         {
@@ -127,7 +128,20 @@ const HypervisorListBody = `
             },
             "vcpus": 1,
             "vcpus_used": 0
-        },
+        }
+    ],
+    "hypervisors_links": [
+        {
+            "href": "%s/os-hypervisors/detail?marker=c48f6247-abe4-4a24-824e-ea39e108874f",
+            "rel": "next"
+        }
+    ]
+}`
+
+// HypervisorListBodyPage2 represents page 2 of a raw hypervisor list result with Pike+ release.
+const HypervisorListBodyPage2 = `
+{
+    "hypervisors": [
         {
             "cpu_info": "{\"arch\": \"x86_64\", \"model\": \"Nehalem\", \"vendor\": \"Intel\", \"features\": [\"pge\", \"clflush\"], \"topology\": {\"cores\": 1, \"threads\": 1, \"sockets\": 4}}",
             "current_workload": 0,
@@ -156,6 +170,9 @@ const HypervisorListBody = `
         }
     ]
 }`
+
+// HypervisorListBodyEmpty represents an empty raw hypervisor list result, marking the end of pagination.
+const HypervisorListBodyEmpty = `{ "hypervisors": [] }`
 
 // HypervisorListWithParametersBody represents a raw hypervisor list result with Pike+ release.
 const HypervisorListWithParametersBody = `
@@ -624,8 +641,16 @@ func HandleHypervisorListSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprint(w, HypervisorListBody)
+		switch r.URL.Query().Get("marker") {
+		case "":
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, HypervisorListBodyPage1, testhelper.Server.URL)
+		case "c48f6247-abe4-4a24-824e-ea39e108874f":
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprint(w, HypervisorListBodyPage2)
+		default:
+			http.Error(w, "unexpected marker value", http.StatusInternalServerError)
+		}
 	})
 }
 
