@@ -1,3 +1,8 @@
+## v2.4.0 (2024-12-18)
+
+* [GH-3270](https://github.com/gophercloud/gophercloud/pull/3270) [v2] SG rules: implement bulk create
+* [GH-3273](https://github.com/gophercloud/gophercloud/pull/3273) [v2] Add missing fields in Objectstorage and compute API
+
 ## v2.3.0 (2024-12-06)
 
 * [GH-3213](https://github.com/gophercloud/gophercloud/pull/3213) [v2] Handle nova api version > 2.87 for hypervisor
