@@ -36,7 +36,7 @@ type Page interface {
 
 // Pager knows how to advance through a specific resource collection, one page at a time.
 type Pager struct {
-	client *gophercloud.ServiceClient
+	client gophercloud.Client
 
 	initialURL string
 
@@ -52,7 +52,7 @@ type Pager struct {
 
 // NewPager constructs a manually-configured pager.
 // Supply the URL for the first page, a function that requests a specific page given a URL, and a function that counts a page.
-func NewPager(client *gophercloud.ServiceClient, initialURL string, createPage func(r PageResult) Page) Pager {
+func NewPager(client gophercloud.Client, initialURL string, createPage func(r PageResult) Page) Pager {
 	return Pager{
 		client:     client,
 		initialURL: initialURL,

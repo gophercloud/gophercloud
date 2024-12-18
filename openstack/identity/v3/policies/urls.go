@@ -4,22 +4,22 @@ import "github.com/gophercloud/gophercloud/v2"
 
 const policyPath = "policies"
 
-func listURL(client *gophercloud.ServiceClient) string {
+func listURL(client gophercloud.Client) string {
 	return client.ServiceURL(policyPath)
 }
 
-func createURL(client *gophercloud.ServiceClient) string {
+func createURL(client gophercloud.Client) string {
 	return client.ServiceURL(policyPath)
 }
 
-func getURL(client *gophercloud.ServiceClient, policyID string) string {
+func getURL(client gophercloud.Client, policyID string) string {
 	return client.ServiceURL(policyPath, policyID)
 }
 
-func updateURL(client *gophercloud.ServiceClient, policyID string) string {
+func updateURL(client gophercloud.Client, policyID string) string {
 	return client.ServiceURL(policyPath, policyID)
 }
 
-func deleteURL(client *gophercloud.ServiceClient, policyID string) string {
+func deleteURL(client gophercloud.Client, policyID string) string {
 	return client.ServiceURL(policyPath, policyID)
 }

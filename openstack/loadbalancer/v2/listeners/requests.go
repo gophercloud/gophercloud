@@ -90,7 +90,7 @@ func (opts ListOpts) ToListenerListQuery() (string, error) {
 //
 // Default policy settings return only those listeners that are owned by the
 // project who submits the request, unless an admin user submits the request.
-func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(c gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
 		query, err := opts.ToListenerListQuery()
@@ -238,7 +238,7 @@ func (opts CreateOpts) ToListenerCreateMap() (map[string]any, error) {
 //
 // Users with an admin role can create Listeners on behalf of other projects by
 // specifying a ProjectID attribute different than their own.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, c gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToListenerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -250,7 +250,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 }
 
 // Get retrieves a particular Listeners based on its unique ID.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, c gophercloud.Client, id string) (r GetResult) {
 	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -380,7 +380,7 @@ func (opts UpdateOpts) ToListenerUpdateMap() (map[string]any, error) {
 
 // Update is an operation which modifies the attributes of the specified
 // Listener.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c gophercloud.Client, id string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToListenerUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -394,14 +394,14 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts U
 }
 
 // Delete will permanently delete a particular Listeners based on its unique ID.
-func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, c gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetStats will return the shows the current statistics of a particular Listeners.
-func GetStats(ctx context.Context, c *gophercloud.ServiceClient, id string) (r StatsResult) {
+func GetStats(ctx context.Context, c gophercloud.Client, id string) (r StatsResult) {
 	resp, err := c.Get(ctx, statisticsRootURL(c, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

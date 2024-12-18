@@ -25,7 +25,7 @@ pending through API calls.
 More details here:
 http://developer.openstack.org/api-ref-image-v2.html#createImageMember-v2
 */
-func Create(ctx context.Context, client *gophercloud.ServiceClient, id string, member string) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, id string, member string) (r CreateResult) {
 	b := map[string]any{"member": member}
 	resp, err := client.Post(ctx, createMemberURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
@@ -35,21 +35,21 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, id string, m
 }
 
 // List members returns list of members for specifed image id.
-func List(client *gophercloud.ServiceClient, id string) pagination.Pager {
+func List(client gophercloud.Client, id string) pagination.Pager {
 	return pagination.NewPager(client, listMembersURL(client, id), func(r pagination.PageResult) pagination.Page {
 		return MemberPage{pagination.SinglePageBase(r)}
 	})
 }
 
 // Get image member details.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, imageID string, memberID string) (r DetailsResult) {
+func Get(ctx context.Context, client gophercloud.Client, imageID string, memberID string) (r DetailsResult) {
 	resp, err := client.Get(ctx, getMemberURL(client, imageID, memberID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete membership for given image. Callee should be image owner.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, imageID string, memberID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, imageID string, memberID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteMemberURL(client, imageID, memberID), &gophercloud.RequestOpts{OkCodes: []int{204}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -74,7 +74,7 @@ func (opts UpdateOpts) ToImageMemberUpdateMap() (map[string]any, error) {
 }
 
 // Update function updates member.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, imageID string, memberID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, imageID string, memberID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToImageMemberUpdateMap()
 	if err != nil {
 		r.Err = err

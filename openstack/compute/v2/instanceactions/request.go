@@ -57,7 +57,7 @@ func (opts ListOpts) ToInstanceActionsListQuery() (string, error) {
 }
 
 // List makes a request against the API to list the servers actions.
-func List(client *gophercloud.ServiceClient, id string, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, id string, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client, id)
 	if opts != nil {
 		query, err := opts.ToInstanceActionsListQuery()
@@ -72,7 +72,7 @@ func List(client *gophercloud.ServiceClient, id string, opts ListOptsBuilder) pa
 }
 
 // Get makes a request against the API to get a server action.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, serverID, requestID string) (r InstanceActionResult) {
+func Get(ctx context.Context, client gophercloud.Client, serverID, requestID string) (r InstanceActionResult) {
 	resp, err := client.Get(ctx, instanceActionsURL(client, serverID, requestID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})

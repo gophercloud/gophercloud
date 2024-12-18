@@ -11,18 +11,18 @@ import (
 // Names must not be URL-encoded in this case.
 //
 // See: https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html#hmac-signature-for-temporary-urls
-func tempURL(c *gophercloud.ServiceClient, container, object string) string {
+func tempURL(c gophercloud.Client, container, object string) string {
 	return c.ServiceURL(container, object)
 }
 
-func listURL(c *gophercloud.ServiceClient, container string) (string, error) {
+func listURL(c gophercloud.Client, container string) (string, error) {
 	if err := v1.CheckContainerName(container); err != nil {
 		return "", err
 	}
 	return c.ServiceURL(url.PathEscape(container)), nil
 }
 
-func copyURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+func copyURL(c gophercloud.Client, container, object string) (string, error) {
 	if err := v1.CheckContainerName(container); err != nil {
 		return "", err
 	}
@@ -32,26 +32,26 @@ func copyURL(c *gophercloud.ServiceClient, container, object string) (string, er
 	return c.ServiceURL(url.PathEscape(container), url.PathEscape(object)), nil
 }
 
-func createURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+func createURL(c gophercloud.Client, container, object string) (string, error) {
 	return copyURL(c, container, object)
 }
 
-func getURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+func getURL(c gophercloud.Client, container, object string) (string, error) {
 	return copyURL(c, container, object)
 }
 
-func deleteURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+func deleteURL(c gophercloud.Client, container, object string) (string, error) {
 	return copyURL(c, container, object)
 }
 
-func downloadURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+func downloadURL(c gophercloud.Client, container, object string) (string, error) {
 	return copyURL(c, container, object)
 }
 
-func updateURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
+func updateURL(c gophercloud.Client, container, object string) (string, error) {
 	return copyURL(c, container, object)
 }
 
-func bulkDeleteURL(c *gophercloud.ServiceClient) string {
-	return c.Endpoint + "?bulk-delete=true"
+func bulkDeleteURL(c gophercloud.Client) string {
+	return c.EndpointURL() + "?bulk-delete=true"
 }
