@@ -4,34 +4,8 @@ import (
 	"context"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
-
-// CreateOptsExt adds a KeyPair option to the base CreateOpts.
-type CreateOptsExt struct {
-	servers.CreateOptsBuilder
-
-	// KeyName is the name of the key pair.
-	KeyName string `json:"key_name,omitempty"`
-}
-
-// ToServerCreateMap adds the key_name to the base server creation options.
-func (opts CreateOptsExt) ToServerCreateMap() (map[string]any, error) {
-	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
-	if err != nil {
-		return nil, err
-	}
-
-	if opts.KeyName == "" {
-		return base, nil
-	}
-
-	serverMap := base["server"].(map[string]any)
-	serverMap["key_name"] = opts.KeyName
-
-	return base, nil
-}
 
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.

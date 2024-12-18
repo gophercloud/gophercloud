@@ -508,6 +508,9 @@ type CreateOpts struct {
 
 	// DiskConfig [optional] controls how the created server's disk is partitioned.
 	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
+
+	// KeyName is the name of the key pair.
+	KeyName string `json:"key_name,omitempty"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a

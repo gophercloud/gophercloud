@@ -685,19 +685,17 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create server: %s", name)
 
-	serverCreateOpts := servers.CreateOpts{
+	createOpts := servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
 		Networks: []servers.Network{
 			{UUID: networkID},
 		},
+		KeyName: keyPairName,
 	}
 
-	server, err := servers.Create(context.TODO(), client, keypairs.CreateOptsExt{
-		CreateOptsBuilder: serverCreateOpts,
-		KeyName:           keyPairName,
-	}, nil).Extract()
+	server, err := servers.Create(context.TODO(), client, createOpts, nil).Extract()
 	if err != nil {
 		return nil, err
 	}
