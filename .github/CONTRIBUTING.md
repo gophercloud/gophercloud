@@ -9,7 +9,7 @@
 ## New Contributor Tutorial
 
 For new contributors, we've put together a detailed tutorial
-[here](https://github.com/gophercloud/gophercloud/tree/master/docs/contributor-tutorial)!
+[here](https://github.com/gophercloud/gophercloud/tree/main/docs/contributor-tutorial)!
 
 ## 3 ways to get involved
 
@@ -89,7 +89,7 @@ fork as `origin` instead:
 4. Checkout the latest development branch:
 
    ```bash
-   git checkout master
+   git checkout main
    ```
 
 5. If you're working on something (discussed more in detail below), you will
@@ -107,7 +107,7 @@ need to checkout a new feature branch:
    git commit
    ```
 
-7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/master/docs/STYLEGUIDE.md).
+7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/main/docs/STYLEGUIDE.md).
 
 > Further information about using Git can be found [here](https://git-scm.com/book/en/v2).
 

@@ -2,7 +2,7 @@ name: Apply labels in .github/labels.yaml
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/labels.yaml
       - .github/workflows/ensure-labels.yaml
