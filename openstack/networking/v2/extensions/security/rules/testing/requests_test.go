@@ -313,8 +313,19 @@ func TestCreateBulk(t *testing.T) {
 			SecGroupID:   "a7734e61-b545-452d-a3cd-0189cbd9747a",
 		},
 	}
-	_, err := rules.CreateBulk(context.TODO(), fake.ServiceClient(), opts).Extract()
-	th.AssertNoErr(t, err)
+	{
+		_, err := rules.CreateBulk(context.TODO(), fake.ServiceClient(), opts).Extract()
+		th.AssertNoErr(t, err)
+	}
+
+	{
+		optsBuilder := make([]rules.CreateOptsBuilder, len(opts))
+		for i := range opts {
+			optsBuilder[i] = opts[i]
+		}
+		_, err := rules.CreateBulk(context.TODO(), fake.ServiceClient(), optsBuilder).Extract()
+		th.AssertNoErr(t, err)
+	}
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
