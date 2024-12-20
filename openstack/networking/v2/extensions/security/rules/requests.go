@@ -155,7 +155,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 // As of Dalmatian (2024.2) neutron only allows bulk creation of rules when
 // they all belong to the same tenant and security group.
 // https://github.com/openstack/neutron/blob/6183792/neutron/db/securitygroups_db.py#L814-L828
-func CreateBulk(ctx context.Context, c *gophercloud.ServiceClient, opts []CreateOpts) (r CreateBulkResult) {
+func CreateBulk[createOpts CreateOptsBuilder](ctx context.Context, c *gophercloud.ServiceClient, opts []createOpts) (r CreateBulkResult) {
 	body, err := gophercloud.BuildRequestBody(opts, "security_group_rules")
 	if err != nil {
 		r.Err = err
