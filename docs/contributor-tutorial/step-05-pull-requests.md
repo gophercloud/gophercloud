@@ -125,14 +125,14 @@ it's self contained.
 Use the following `git` workflow to implement this method:
 
 ```shell
-$ git checkout master
+$ git checkout main
 $ git pull
 $ git checkout -b identityv3-regions-create
 $ (write your code)
 $ git add .
 $ git commit -m "Implementing Regions Create"
 
-$ git checkout master
+$ git checkout main
 $ git checkout -b identityv3-regions-update
 $ (write your code)
 $ git add .
@@ -159,7 +159,7 @@ defined relationship.
 Use the following `git` workflow to implement this method:
 
 ```shell
-$ git checkout master
+$ git checkout main
 $ git pull
 $ git checkout -b identityv3-regions-create
 $ (write your code)
