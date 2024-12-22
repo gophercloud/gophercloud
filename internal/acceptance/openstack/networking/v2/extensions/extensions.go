@@ -149,8 +149,8 @@ func CreateSecurityGroupRulesBulk(t *testing.T, client *gophercloud.ServiceClien
 	sgRulesCreateOpts := make([]rules.CreateOpts, 3)
 	for i := range 3 {
 		description := "Rule description"
-		fromPort := tools.RandomInt(80, 89)
-		toPort := tools.RandomInt(90, 99)
+		fromPort := tools.RandomInt(1080, 1089)
+		toPort := tools.RandomInt(1090, 1099)
 
 		sgRulesCreateOpts[i] = rules.CreateOpts{
 			Description:  description,
