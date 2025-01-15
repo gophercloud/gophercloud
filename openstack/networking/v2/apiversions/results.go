@@ -7,7 +7,7 @@ import (
 // APIVersion represents an API version for Neutron. It contains the status of
 // the API, and its unique ID.
 type APIVersion struct {
-	Status string `son:"status"`
+	Status string `json:"status"`
 	ID     string `json:"id"`
 }
 
