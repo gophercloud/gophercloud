@@ -51,7 +51,7 @@ func TestPartialUpdate(t *testing.T) {
 	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, partialUpdateExpectedJSONBody, uriQueryParms)
 	actual, err := quotasets.Update(context.TODO(), client.ServiceClient(), FirstTenantID, partialUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &partiualUpdateExpectedQuotaSet, actual)
+	th.CheckDeepEquals(t, &partialUpdateExpectedQuotaSet, actual)
 }
 
 type ErrorUpdateOpts quotasets.UpdateOpts
