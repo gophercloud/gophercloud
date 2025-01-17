@@ -46,6 +46,7 @@ func TestQuotasetGetUsage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSetUsage)
+	tools.PrintResource(t, quotaSetUsage.Extra)
 }
 
 var UpdateQuotaOpts = quotasets.UpdateOpts{

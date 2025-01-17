@@ -111,6 +111,47 @@ type QuotaUsageSet struct {
 	// Note: allocated attribute is available only when nested quota is
 	// enabled.
 	Groups QuotaUsage `json:"groups"`
+
+	// Extra is a collection of key/values that has the size (GB) usage information
+	// per volume_type. Note: allocated attribute is available only when nested
+	// quota is enabled.
+	Extra map[string]QuotaUsage `json:"-"`
+}
+
+// UnmarshalJSON is used on QuotaUsageSet to unmarshal extra keys that are
+// used to represent QuotaUsage per volume_type.
+func (r *QuotaUsageSet) UnmarshalJSON(b []byte) error {
+	type tmp QuotaUsageSet
+	var s struct {
+		tmp
+		Extra map[string]QuotaUsage `json:"extra"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = QuotaUsageSet(s.tmp)
+
+	var result any
+	err = json.Unmarshal(b, &result)
+	if err != nil {
+		return err
+	}
+
+	// process remaining items as separate QuotaUsage objects.
+	if resultMap, ok := result.(map[string]any); ok {
+		tmpb, err := json.Marshal(gophercloud.RemainingKeys(QuotaUsageSet{}, resultMap))
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(tmpb, &r.Extra)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
 }
 
 // QuotaUsage is a set of details about a single operational limit that allows

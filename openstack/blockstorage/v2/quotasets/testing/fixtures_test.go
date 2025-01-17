@@ -76,7 +76,22 @@ var getUsageExpectedJSONBody = `
             "limit": 41,
             "reserved": 42
         }
-	}
+        "gigabytes_hdd" : {
+            "in_use": 50,
+            "limit": 51,
+            "reserved": 52
+        },
+        "volumes_hdd" : {
+            "in_use": 53,
+            "limit": 54,
+            "reserved": 55
+        },
+        "snapshots_hdd": {
+            "in_use": 56,
+            "limit": 57,
+            "reserved": 58
+        }
+    }
 }`
 
 var getUsageExpectedQuotaSet = quotasets.QuotaUsageSet{
@@ -88,6 +103,11 @@ var getUsageExpectedQuotaSet = quotasets.QuotaUsageSet{
 	Backups:            quotasets.QuotaUsage{InUse: 27, Limit: 28, Reserved: 29},
 	BackupGigabytes:    quotasets.QuotaUsage{InUse: 30, Limit: 31, Reserved: 32},
 	Groups:             quotasets.QuotaUsage{InUse: 40, Limit: 41, Reserved: 42},
+	Extra: map[string]quotasets.QuotaUsage{
+		"gigabytes_hdd": {InUse: 50, Limit: 51, Reserved: 52},
+		"volumes_hdd":   {InUse: 53, Limit: 54, Reserved: 55},
+		"snapshots_hdd": {InUse: 56, Limit: 57, Reserved: 58},
+	},
 }
 
 var fullUpdateExpectedJSONBody = `
@@ -147,7 +167,7 @@ var partialUpdateOpts = quotasets.UpdateOpts{
 	Extra:              make(map[string]any),
 }
 
-var partiualUpdateExpectedQuotaSet = quotasets.QuotaSet{
+var partialUpdateExpectedQuotaSet = quotasets.QuotaSet{
 	Volumes: 200,
 	Extra:   make(map[string]any),
 }
