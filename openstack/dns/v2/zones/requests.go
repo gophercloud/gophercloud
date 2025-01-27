@@ -57,7 +57,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // Get returns information about a zone, given its ID.
 func Get(ctx context.Context, client *gophercloud.ServiceClient, zoneID string) (r GetResult) {
-	resp, err := client.Get(ctx, zoneURL(client, zoneID), &r.Body, nil)
+	resp, err := client.Get(ctx, ZoneURL(client, zoneID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -162,7 +162,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, zoneID strin
 		r.Err = err
 		return
 	}
-	resp, err := client.Patch(ctx, zoneURL(client, zoneID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(ctx, ZoneURL(client, zoneID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -171,9 +171,39 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, zoneID strin
 
 // Delete implements a zone delete request.
 func Delete(ctx context.Context, client *gophercloud.ServiceClient, zoneID string) (r DeleteResult) {
-	resp, err := client.Delete(ctx, zoneURL(client, zoneID), &gophercloud.RequestOpts{
+	resp, err := client.Delete(ctx, ZoneURL(client, zoneID), &gophercloud.RequestOpts{
 		OkCodes:      []int{202},
 		JSONResponse: &r.Body,
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ShareZoneOpts specifies the target project for sharing a zone.
+type ShareZoneOpts struct {
+	// TargetProjectID is the ID of the project to share the zone with.
+	TargetProjectID string `json:"target_project_id" required:"true"`
+}
+
+// Share shares a zone with another project.
+func Share(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, opts ShareZoneOpts) (r gophercloud.ErrResult) {
+	body, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Post(ctx, ZoneURL(client, zoneID, "shares"), body, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Unshare removes a share for a zone.
+func Unshare(ctx context.Context, client *gophercloud.ServiceClient, zoneID, shareID string) (r gophercloud.ErrResult) {
+	resp, err := client.Delete(ctx, ZoneURL(client, zoneID, "shares", shareID), &gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
