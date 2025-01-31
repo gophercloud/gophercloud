@@ -2,86 +2,86 @@ package shares
 
 import "github.com/gophercloud/gophercloud/v2"
 
-func createURL(c *gophercloud.ServiceClient) string {
+func createURL(c gophercloud.Client) string {
 	return c.ServiceURL("shares")
 }
 
-func listDetailURL(c *gophercloud.ServiceClient) string {
+func listDetailURL(c gophercloud.Client) string {
 	return c.ServiceURL("shares", "detail")
 }
 
-func deleteURL(c *gophercloud.ServiceClient, id string) string {
+func deleteURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id)
 }
 
-func getURL(c *gophercloud.ServiceClient, id string) string {
+func getURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id)
 }
 
-func updateURL(c *gophercloud.ServiceClient, id string) string {
+func updateURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id)
 }
 
-func listExportLocationsURL(c *gophercloud.ServiceClient, id string) string {
+func listExportLocationsURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "export_locations")
 }
 
-func getExportLocationURL(c *gophercloud.ServiceClient, shareID, id string) string {
+func getExportLocationURL(c gophercloud.Client, shareID, id string) string {
 	return c.ServiceURL("shares", shareID, "export_locations", id)
 }
 
-func grantAccessURL(c *gophercloud.ServiceClient, id string) string {
+func grantAccessURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func revokeAccessURL(c *gophercloud.ServiceClient, id string) string {
+func revokeAccessURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func listAccessRightsURL(c *gophercloud.ServiceClient, id string) string {
+func listAccessRightsURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func extendURL(c *gophercloud.ServiceClient, id string) string {
+func extendURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func shrinkURL(c *gophercloud.ServiceClient, id string) string {
+func shrinkURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func revertURL(c *gophercloud.ServiceClient, id string) string {
+func revertURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func resetStatusURL(c *gophercloud.ServiceClient, id string) string {
+func resetStatusURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func forceDeleteURL(c *gophercloud.ServiceClient, id string) string {
+func forceDeleteURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func unmanageURL(c *gophercloud.ServiceClient, id string) string {
+func unmanageURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func getMetadataURL(c *gophercloud.ServiceClient, id string) string {
+func getMetadataURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
 
-func getMetadatumURL(c *gophercloud.ServiceClient, id, key string) string {
+func getMetadatumURL(c gophercloud.Client, id, key string) string {
 	return c.ServiceURL("shares", id, "metadata", key)
 }
 
-func setMetadataURL(c *gophercloud.ServiceClient, id string) string {
+func setMetadataURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
 
-func updateMetadataURL(c *gophercloud.ServiceClient, id string) string {
+func updateMetadataURL(c gophercloud.Client, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
 
-func deleteMetadatumURL(c *gophercloud.ServiceClient, id, key string) string {
+func deleteMetadatumURL(c gophercloud.Client, id, key string) string {
 	return c.ServiceURL("shares", id, "metadata", key)
 }

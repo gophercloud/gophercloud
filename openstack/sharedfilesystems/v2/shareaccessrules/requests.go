@@ -7,14 +7,14 @@ import (
 )
 
 // Get retrieves details about a share access rule.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, accessID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, accessID string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, accessID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // List gets all access rules of a share.
-func List(ctx context.Context, client *gophercloud.ServiceClient, shareID string) (r ListResult) {
+func List(ctx context.Context, client gophercloud.Client, shareID string) (r ListResult) {
 	resp, err := client.Get(ctx, listURL(client, shareID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

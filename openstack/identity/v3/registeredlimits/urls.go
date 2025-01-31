@@ -7,10 +7,10 @@ const (
 	enforcementModelPath = "model"
 )
 
-func rootURL(client *gophercloud.ServiceClient) string {
+func rootURL(client gophercloud.Client) string {
 	return client.ServiceURL(rootPath)
 }
 
-func resourceURL(client *gophercloud.ServiceClient, id string) string {
+func resourceURL(client gophercloud.Client, id string) string {
 	return client.ServiceURL(rootPath, id)
 }

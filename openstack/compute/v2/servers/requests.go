@@ -100,7 +100,7 @@ func (opts ListOpts) ToServerListQuery() (string, error) {
 }
 
 // ListSimple makes a request against the API to list servers accessible to you.
-func ListSimple(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func ListSimple(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToServerListQuery()
@@ -115,7 +115,7 @@ func ListSimple(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 // List makes a request against the API to list servers details accessible to you.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToServerListQuery()
@@ -585,7 +585,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]any, error) {
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder, hintOpts SchedulerHintOptsBuilder) (r CreateResult) {
 	b, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -610,21 +610,21 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 
 // Delete requests that a server previously provisioned be removed from your
 // account.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ForceDelete forces the deletion of a server.
-func ForceDelete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
+func ForceDelete(ctx context.Context, client gophercloud.Client, id string) (r ActionResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"forceDelete": ""}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get requests details on a single server, by ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})
@@ -659,7 +659,7 @@ func (opts UpdateOpts) ToServerUpdateMap() (map[string]any, error) {
 }
 
 // Update requests that various attributes of the indicated server be changed.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToServerUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -674,7 +674,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // ChangeAdminPassword alters the administrator or root password for a specified
 // server.
-func ChangeAdminPassword(ctx context.Context, client *gophercloud.ServiceClient, id, newPassword string) (r ActionResult) {
+func ChangeAdminPassword(ctx context.Context, client gophercloud.Client, id, newPassword string) (r ActionResult) {
 	b := map[string]any{
 		"changePassword": map[string]string{
 			"adminPass": newPassword,
@@ -729,7 +729,7 @@ procedure.
 E.g., in Linux, asking it to enter runlevel 6, or executing
 "sudo shutdown -r now", or by asking Windows to rtart the machine.
 */
-func Reboot(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RebootOptsBuilder) (r ActionResult) {
+func Reboot(ctx context.Context, client gophercloud.Client, id string, opts RebootOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerRebootMap()
 	if err != nil {
 		r.Err = err
@@ -795,7 +795,7 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]any, error) {
 
 // Rebuild will reprovision the server according to the configuration options
 // provided in the RebuildOpts struct.
-func Rebuild(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RebuildOptsBuilder) (r RebuildResult) {
+func Rebuild(ctx context.Context, client gophercloud.Client, id string, opts RebuildOptsBuilder) (r RebuildResult) {
 	b, err := opts.ToServerRebuildMap()
 	if err != nil {
 		r.Err = err
@@ -844,7 +844,7 @@ func (opts ResizeOpts) ToServerResizeMap() (map[string]any, error) {
 // While in this state, you can explore the use of the new server's
 // configuration. If you like it, call ConfirmResize() to commit the resize
 // permanently. Otherwise, call RevertResize() to restore the old configuration.
-func Resize(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ActionResult) {
+func Resize(ctx context.Context, client gophercloud.Client, id string, opts ResizeOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerResizeMap()
 	if err != nil {
 		r.Err = err
@@ -857,7 +857,7 @@ func Resize(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 
 // ConfirmResize confirms a previous resize operation on a server.
 // See Resize() for more details.
-func ConfirmResize(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
+func ConfirmResize(ctx context.Context, client gophercloud.Client, id string) (r ActionResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 202, 204},
 	})
@@ -867,7 +867,7 @@ func ConfirmResize(ctx context.Context, client *gophercloud.ServiceClient, id st
 
 // RevertResize cancels a previous resize operation on a server.
 // See Resize() for more details.
-func RevertResize(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ActionResult) {
+func RevertResize(ctx context.Context, client gophercloud.Client, id string) (r ActionResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"revertResize": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -899,7 +899,7 @@ func (opts MetadataOpts) ToMetadataUpdateMap() (map[string]any, error) {
 // Note: Using this operation will erase any already-existing metadata and
 // create the new metadata provided. To keep any already-existing metadata,
 // use the UpdateMetadatas or UpdateMetadata function.
-func ResetMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ResetMetadataOptsBuilder) (r ResetMetadataResult) {
+func ResetMetadata(ctx context.Context, client gophercloud.Client, id string, opts ResetMetadataOptsBuilder) (r ResetMetadataResult) {
 	b, err := opts.ToMetadataResetMap()
 	if err != nil {
 		r.Err = err
@@ -913,7 +913,7 @@ func ResetMetadata(ctx context.Context, client *gophercloud.ServiceClient, id st
 }
 
 // Metadata requests all the metadata for the given server ID.
-func Metadata(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetMetadataResult) {
+func Metadata(ctx context.Context, client gophercloud.Client, id string) (r GetMetadataResult) {
 	resp, err := client.Get(ctx, metadataURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -928,7 +928,7 @@ type UpdateMetadataOptsBuilder interface {
 // UpdateMetadata updates (or creates) all the metadata specified by opts for
 // the given server ID. This operation does not affect already-existing metadata
 // that is not specified by opts.
-func UpdateMetadata(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
+func UpdateMetadata(ctx context.Context, client gophercloud.Client, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
 	b, err := opts.ToMetadataUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -969,7 +969,7 @@ func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]any, string, error)
 
 // CreateMetadatum will create or update the key-value pair with the given key
 // for the given server ID.
-func CreateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id string, opts MetadatumOptsBuilder) (r CreateMetadatumResult) {
+func CreateMetadatum(ctx context.Context, client gophercloud.Client, id string, opts MetadatumOptsBuilder) (r CreateMetadatumResult) {
 	b, key, err := opts.ToMetadatumCreateMap()
 	if err != nil {
 		r.Err = err
@@ -984,7 +984,7 @@ func CreateMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id 
 
 // Metadatum requests the key-value pair with the given key for the given
 // server ID.
-func Metadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
+func Metadatum(ctx context.Context, client gophercloud.Client, id, key string) (r GetMetadatumResult) {
 	resp, err := client.Get(ctx, metadatumURL(client, id, key), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -992,7 +992,7 @@ func Metadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key s
 
 // DeleteMetadatum will delete the key-value pair with the given key for the
 // given server ID.
-func DeleteMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
+func DeleteMetadatum(ctx context.Context, client gophercloud.Client, id, key string) (r DeleteMetadatumResult) {
 	resp, err := client.Delete(ctx, metadatumURL(client, id, key), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -1000,7 +1000,7 @@ func DeleteMetadatum(ctx context.Context, client *gophercloud.ServiceClient, id,
 
 // ListAddresses makes a request against the API to list the servers IP
 // addresses.
-func ListAddresses(client *gophercloud.ServiceClient, id string) pagination.Pager {
+func ListAddresses(client gophercloud.Client, id string) pagination.Pager {
 	return pagination.NewPager(client, listAddressesURL(client, id), func(r pagination.PageResult) pagination.Page {
 		return AddressPage{pagination.SinglePageBase(r)}
 	})
@@ -1008,7 +1008,7 @@ func ListAddresses(client *gophercloud.ServiceClient, id string) pagination.Page
 
 // ListAddressesByNetwork makes a request against the API to list the servers IP
 // addresses for the given network.
-func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network string) pagination.Pager {
+func ListAddressesByNetwork(client gophercloud.Client, id, network string) pagination.Pager {
 	return pagination.NewPager(client, listAddressesByNetworkURL(client, id, network), func(r pagination.PageResult) pagination.Page {
 		return NetworkAddressPage{pagination.SinglePageBase(r)}
 	})
@@ -1038,7 +1038,7 @@ func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]any, error) {
 
 // CreateImage makes a request against the nova API to schedule an image to be
 // created of the server
-func CreateImage(ctx context.Context, client *gophercloud.ServiceClient, id string, opts CreateImageOptsBuilder) (r CreateImageResult) {
+func CreateImage(ctx context.Context, client gophercloud.Client, id string, opts CreateImageOptsBuilder) (r CreateImageResult) {
 	b, err := opts.ToServerCreateImageMap()
 	if err != nil {
 		r.Err = err
@@ -1053,7 +1053,7 @@ func CreateImage(ctx context.Context, client *gophercloud.ServiceClient, id stri
 
 // GetPassword makes a request against the nova API to get the encrypted
 // administrative password.
-func GetPassword(ctx context.Context, client *gophercloud.ServiceClient, serverId string) (r GetPasswordResult) {
+func GetPassword(ctx context.Context, client gophercloud.Client, serverId string) (r GetPasswordResult) {
 	resp, err := client.Get(ctx, passwordURL(client, serverId), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -1078,7 +1078,7 @@ func (opts ShowConsoleOutputOpts) ToServerShowConsoleOutputMap() (map[string]any
 }
 
 // ShowConsoleOutput makes a request against the nova API to get console log from the server
-func ShowConsoleOutput(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ShowConsoleOutputOptsBuilder) (r ShowConsoleOutputResult) {
+func ShowConsoleOutput(ctx context.Context, client gophercloud.Client, id string, opts ShowConsoleOutputOptsBuilder) (r ShowConsoleOutputResult) {
 	b, err := opts.ToServerShowConsoleOutputMap()
 	if err != nil {
 		r.Err = err
@@ -1115,7 +1115,7 @@ func (opts EvacuateOpts) ToEvacuateMap() (map[string]any, error) {
 }
 
 // Evacuate will Evacuate a failed instance to another host.
-func Evacuate(ctx context.Context, client *gophercloud.ServiceClient, id string, opts EvacuateOptsBuilder) (r EvacuateResult) {
+func Evacuate(ctx context.Context, client gophercloud.Client, id string, opts EvacuateOptsBuilder) (r EvacuateResult) {
 	b, err := opts.ToEvacuateMap()
 	if err != nil {
 		r.Err = err
@@ -1129,7 +1129,7 @@ func Evacuate(ctx context.Context, client *gophercloud.ServiceClient, id string,
 }
 
 // InjectNetworkInfo will inject the network info into a server
-func InjectNetworkInfo(ctx context.Context, client *gophercloud.ServiceClient, id string) (r InjectNetworkResult) {
+func InjectNetworkInfo(ctx context.Context, client gophercloud.Client, id string) (r InjectNetworkResult) {
 	b := map[string]any{
 		"injectNetworkInfo": nil,
 	}
@@ -1139,21 +1139,21 @@ func InjectNetworkInfo(ctx context.Context, client *gophercloud.ServiceClient, i
 }
 
 // Lock is the operation responsible for locking a Compute server.
-func Lock(ctx context.Context, client *gophercloud.ServiceClient, id string) (r LockResult) {
+func Lock(ctx context.Context, client gophercloud.Client, id string) (r LockResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"lock": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Unlock is the operation responsible for unlocking a Compute server.
-func Unlock(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnlockResult) {
+func Unlock(ctx context.Context, client gophercloud.Client, id string) (r UnlockResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"unlock": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Migrate will initiate a migration of the instance to another host.
-func Migrate(ctx context.Context, client *gophercloud.ServiceClient, id string) (r MigrateResult) {
+func Migrate(ctx context.Context, client gophercloud.Client, id string) (r MigrateResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"migrate": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -1188,7 +1188,7 @@ func (opts LiveMigrateOpts) ToLiveMigrateMap() (map[string]any, error) {
 }
 
 // LiveMigrate will initiate a live-migration (without rebooting) of the instance to another host.
-func LiveMigrate(ctx context.Context, client *gophercloud.ServiceClient, id string, opts LiveMigrateOptsBuilder) (r MigrateResult) {
+func LiveMigrate(ctx context.Context, client gophercloud.Client, id string, opts LiveMigrateOptsBuilder) (r MigrateResult) {
 	b, err := opts.ToLiveMigrateMap()
 	if err != nil {
 		r.Err = err
@@ -1200,14 +1200,14 @@ func LiveMigrate(ctx context.Context, client *gophercloud.ServiceClient, id stri
 }
 
 // Pause is the operation responsible for pausing a Compute server.
-func Pause(ctx context.Context, client *gophercloud.ServiceClient, id string) (r PauseResult) {
+func Pause(ctx context.Context, client gophercloud.Client, id string) (r PauseResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"pause": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Unpause is the operation responsible for unpausing a Compute server.
-func Unpause(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnpauseResult) {
+func Unpause(ctx context.Context, client gophercloud.Client, id string) (r UnpauseResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"unpause": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -1240,7 +1240,7 @@ func (opts RescueOpts) ToServerRescueMap() (map[string]any, error) {
 }
 
 // Rescue instructs the provider to place the server into RESCUE mode.
-func Rescue(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) (r RescueResult) {
+func Rescue(ctx context.Context, client gophercloud.Client, id string, opts RescueOptsBuilder) (r RescueResult) {
 	b, err := opts.ToServerRescueMap()
 	if err != nil {
 		r.Err = err
@@ -1254,14 +1254,14 @@ func Rescue(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 }
 
 // Unrescue instructs the provider to return the server from RESCUE mode.
-func Unrescue(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnrescueResult) {
+func Unrescue(ctx context.Context, client gophercloud.Client, id string) (r UnrescueResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"unrescue": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ResetNetwork will reset the network of a server
-func ResetNetwork(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResetNetworkResult) {
+func ResetNetwork(ctx context.Context, client gophercloud.Client, id string) (r ResetNetworkResult) {
 	b := map[string]any{
 		"resetNetwork": nil,
 	}
@@ -1282,7 +1282,7 @@ const (
 )
 
 // ResetState will reset the state of a server
-func ResetState(ctx context.Context, client *gophercloud.ServiceClient, id string, state ServerState) (r ResetStateResult) {
+func ResetState(ctx context.Context, client gophercloud.Client, id string, state ServerState) (r ResetStateResult) {
 	stateMap := map[string]any{"state": state}
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-resetState": stateMap}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -1290,14 +1290,14 @@ func ResetState(ctx context.Context, client *gophercloud.ServiceClient, id strin
 }
 
 // Shelve is the operation responsible for shelving a Compute server.
-func Shelve(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveResult) {
+func Shelve(ctx context.Context, client gophercloud.Client, id string) (r ShelveResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"shelve": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ShelveOffload is the operation responsible for Shelve-Offload a Compute server.
-func ShelveOffload(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShelveOffloadResult) {
+func ShelveOffload(ctx context.Context, client gophercloud.Client, id string) (r ShelveOffloadResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"shelveOffload": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -1332,7 +1332,7 @@ func (opts UnshelveOpts) ToUnshelveMap() (map[string]any, error) {
 }
 
 // Unshelve is the operation responsible for unshelve a Compute server.
-func Unshelve(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UnshelveOptsBuilder) (r UnshelveResult) {
+func Unshelve(ctx context.Context, client gophercloud.Client, id string, opts UnshelveOptsBuilder) (r UnshelveResult) {
 	b, err := opts.ToUnshelveMap()
 	if err != nil {
 		r.Err = err
@@ -1344,28 +1344,28 @@ func Unshelve(ctx context.Context, client *gophercloud.ServiceClient, id string,
 }
 
 // Start is the operation responsible for starting a Compute server.
-func Start(ctx context.Context, client *gophercloud.ServiceClient, id string) (r StartResult) {
+func Start(ctx context.Context, client gophercloud.Client, id string) (r StartResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-start": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Stop is the operation responsible for stopping a Compute server.
-func Stop(ctx context.Context, client *gophercloud.ServiceClient, id string) (r StopResult) {
+func Stop(ctx context.Context, client gophercloud.Client, id string) (r StopResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"os-stop": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Suspend is the operation responsible for suspending a Compute server.
-func Suspend(ctx context.Context, client *gophercloud.ServiceClient, id string) (r SuspendResult) {
+func Suspend(ctx context.Context, client gophercloud.Client, id string) (r SuspendResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"suspend": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Resume is the operation responsible for resuming a Compute server.
-func Resume(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ResumeResult) {
+func Resume(ctx context.Context, client gophercloud.Client, id string) (r ResumeResult) {
 	resp, err := client.Post(ctx, actionURL(client, id), map[string]any{"resume": nil}, nil, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

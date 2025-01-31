@@ -42,7 +42,7 @@ func (opts CreateOpts) ToShareTypeCreateMap() (map[string]any, error) {
 // Create will create a new ShareType based on the values in CreateOpts. To
 // extract the ShareType object from the response, call the Extract method
 // on the CreateResult.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToShareTypeCreateMap()
 	if err != nil {
 		r.Err = err
@@ -56,7 +56,7 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 }
 
 // Delete will delete the existing ShareType with the provided ID.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -82,7 +82,7 @@ func (opts ListOpts) ToShareTypeListQuery() (string, error) {
 }
 
 // List returns ShareTypes optionally limited by the conditions provided in ListOpts.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToShareTypeListQuery()
@@ -98,14 +98,14 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // GetDefault will retrieve the default ShareType.
-func GetDefault(ctx context.Context, client *gophercloud.ServiceClient) (r GetDefaultResult) {
+func GetDefault(ctx context.Context, client gophercloud.Client) (r GetDefaultResult) {
 	resp, err := client.Get(ctx, getDefaultURL(client), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetExtraSpecs will retrieve the extra specifications for a given ShareType.
-func GetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetExtraSpecsResult) {
+func GetExtraSpecs(ctx context.Context, client gophercloud.Client, id string) (r GetExtraSpecsResult) {
 	resp, err := client.Get(ctx, getExtraSpecsURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -131,7 +131,7 @@ func (opts SetExtraSpecsOpts) ToShareTypeSetExtraSpecsMap() (map[string]any, err
 // SetExtraSpecs will set new specifications for a ShareType based on the values
 // in SetExtraSpecsOpts. To extract the extra specifications object from the response,
 // call the Extract method on the SetExtraSpecsResult.
-func SetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id string, opts SetExtraSpecsOptsBuilder) (r SetExtraSpecsResult) {
+func SetExtraSpecs(ctx context.Context, client gophercloud.Client, id string, opts SetExtraSpecsOptsBuilder) (r SetExtraSpecsResult) {
 	b, err := opts.ToShareTypeSetExtraSpecsMap()
 	if err != nil {
 		r.Err = err
@@ -146,14 +146,14 @@ func SetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id st
 }
 
 // UnsetExtraSpecs will unset an extra specification for an existing ShareType.
-func UnsetExtraSpecs(ctx context.Context, client *gophercloud.ServiceClient, id string, key string) (r UnsetExtraSpecsResult) {
+func UnsetExtraSpecs(ctx context.Context, client gophercloud.Client, id string, key string) (r UnsetExtraSpecsResult) {
 	resp, err := client.Delete(ctx, unsetExtraSpecsURL(client, id, key), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ShowAccess will show access details for an existing ShareType.
-func ShowAccess(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ShowAccessResult) {
+func ShowAccess(ctx context.Context, client gophercloud.Client, id string) (r ShowAccessResult) {
 	resp, err := client.Get(ctx, showAccessURL(client, id), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -178,7 +178,7 @@ func (opts AccessOpts) ToAddAccessMap() (map[string]any, error) {
 
 // AddAccess will add access to a ShareType based on the values
 // in AccessOpts.
-func AddAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+func AddAccess(ctx context.Context, client gophercloud.Client, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
 	b, err := opts.ToAddAccessMap()
 	if err != nil {
 		r.Err = err
@@ -206,7 +206,7 @@ func (opts AccessOpts) ToRemoveAccessMap() (map[string]any, error) {
 
 // RemoveAccess will remove access to a ShareType based on the values
 // in AccessOpts.
-func RemoveAccess(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+func RemoveAccess(ctx context.Context, client gophercloud.Client, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
 	b, err := opts.ToRemoveAccessMap()
 	if err != nil {
 		r.Err = err

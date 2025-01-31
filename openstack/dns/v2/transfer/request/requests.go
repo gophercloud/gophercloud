@@ -28,7 +28,7 @@ func (opts ListOpts) ToTransferRequestListQuery() (string, error) {
 }
 
 // List implements a transfer request List request.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func List(client gophercloud.Client, opts ListOptsBuilder) pagination.Pager {
 	url := baseURL(client)
 	if opts != nil {
 		query, err := opts.ToTransferRequestListQuery()
@@ -43,7 +43,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns information about a transfer request, given its ID.
-func Get(ctx context.Context, client *gophercloud.ServiceClient, transferRequestID string) (r GetResult) {
+func Get(ctx context.Context, client gophercloud.Client, transferRequestID string) (r GetResult) {
 	resp, err := client.Get(ctx, resourceURL(client, transferRequestID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
@@ -75,7 +75,7 @@ func (opts CreateOpts) ToTransferRequestCreateMap() (map[string]any, error) {
 }
 
 // Create implements a transfer request create request.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(ctx context.Context, client gophercloud.Client, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToTransferRequestCreateMap()
 	if err != nil {
 		r.Err = err
@@ -114,7 +114,7 @@ func (opts UpdateOpts) ToTransferRequestUpdateMap() (map[string]any, error) {
 }
 
 // Update implements a transfer request update request.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, transferID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(ctx context.Context, client gophercloud.Client, transferID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToTransferRequestUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -128,7 +128,7 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, transferID s
 }
 
 // Delete implements a transfer request delete request.
-func Delete(ctx context.Context, client *gophercloud.ServiceClient, transferID string) (r DeleteResult) {
+func Delete(ctx context.Context, client gophercloud.Client, transferID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, resourceURL(client, transferID), &gophercloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent},
 	})
