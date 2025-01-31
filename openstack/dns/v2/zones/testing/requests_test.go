@@ -2,8 +2,12 @@ package testing
 
 import (
 	"context"
+	"encoding/json"
+	"io"
+	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/zones"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -104,4 +108,73 @@ func TestDelete(t *testing.T) {
 	actual, err := zones.Delete(context.TODO(), client.ServiceClient(), DeletedZone.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &DeletedZone, actual)
+}
+
+func TestZoneURL(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	client := &gophercloud.ServiceClient{
+		ProviderClient: &gophercloud.ProviderClient{},
+		Endpoint:       th.Endpoint(),
+	}
+
+	url := zones.ZoneURL(client, "zone-id", "shares", "share-id")
+	expected := client.ServiceURL("zones", "zone-id", "shares", "share-id")
+
+	if url != expected {
+		t.Fatalf("unexpected URL: got %s, expected %s", url, expected)
+	}
+}
+
+func TestShareZone(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	// Debugging: Print the mock server endpoint to ensure requests are routed correctly.
+	t.Logf("Mock server endpoint: %s", th.Endpoint())
+
+	// Mock handler for sharing a zone
+	th.Mux.HandleFunc("/zones/zone-id/shares", func(w http.ResponseWriter, r *http.Request) {
+		t.Logf("Received request at path: %s", r.URL.Path)
+		th.AssertEquals(t, r.Method, "POST")
+
+		// Read and close the request body
+		body, err := io.ReadAll(r.Body)
+		defer r.Body.Close()
+		th.AssertNoErr(t, err)
+
+		// Parse the body into a map for comparison
+		expectedBody := map[string]string{"target_project_id": "project-id"}
+		actualBody := map[string]string{}
+		err = json.Unmarshal(body, &actualBody)
+		th.AssertNoErr(t, err)
+
+		// Assert that the request body matches the expected map
+		th.CheckDeepEquals(t, expectedBody, actualBody)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	client := client.ServiceClient()
+
+	opts := zones.ShareZoneOpts{TargetProjectID: "project-id"}
+	err := zones.Share(context.TODO(), client, "zone-id", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnshareZone(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	// Mock handler for unsharing a zone
+	th.Mux.HandleFunc("/zones/zone-id/shares/share-id", func(w http.ResponseWriter, r *http.Request) {
+		th.AssertEquals(t, r.Method, "DELETE")
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	client := client.ServiceClient()
+
+	err := zones.Unshare(context.TODO(), client, "zone-id", "share-id").ExtractErr()
+	th.AssertNoErr(t, err)
 }
