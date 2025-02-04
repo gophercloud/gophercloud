@@ -75,7 +75,7 @@ var getUsageExpectedJSONBody = `
             "in_use": 40,
             "limit": 41,
             "reserved": 42
-        }
+        },
         "gigabytes_hdd" : {
             "in_use": 50,
             "limit": 51,
