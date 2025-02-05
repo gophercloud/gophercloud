@@ -31,7 +31,7 @@ func TestPortGroupsCreateDestroy(t *testing.T) {
 	// Verify the portgroup exists by listing
 	var found *portgroups.PortGroup
 	err = portgroups.List(client, portgroups.ListOpts{
-		Node: "f9c9a846-c53f-4b17-9f0c-dd9f459d35c8",
+		Node: node.UUID,
 	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pg, err := portgroups.ExtractPortGroups(page)
 		if err != nil {
