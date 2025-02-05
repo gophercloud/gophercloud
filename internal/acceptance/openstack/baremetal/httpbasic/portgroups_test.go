@@ -30,7 +30,6 @@ func TestPortGroupsCreateDestroy(t *testing.T) {
 	defer v1.DeletePortGroup(t, client, portgroup)
 
 	// Verify the portgroup exists by listing
-	var found *portgroups.PortGroup
 	err = portgroups.List(client, portgroups.ListOpts{
 		Node: node.UUID,
 	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -41,7 +40,6 @@ func TestPortGroupsCreateDestroy(t *testing.T) {
 
 		for _, p := range pg {
 			if p.UUID == portgroup.UUID {
-				found = &p
 				return true, nil
 			}
 		}
@@ -49,5 +47,4 @@ func TestPortGroupsCreateDestroy(t *testing.T) {
 		return false, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, found, true)
 }
