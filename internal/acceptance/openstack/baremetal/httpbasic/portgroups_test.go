@@ -18,7 +18,8 @@ func TestPortGroupsCreateDestroy(t *testing.T) {
 	client, err := clients.NewBareMetalV1HTTPBasic()
 	th.AssertNoErr(t, err)
 
-	client.Microversion = "1.23"
+	// NOTE(sharpz7) - increased due to create fake node requiring it.
+	client.Microversion = "1.50"
 
 	node, err := v1.CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
