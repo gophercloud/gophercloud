@@ -2,6 +2,9 @@ package testing
 
 import (
 	"context"
+	"encoding/json"
+	"io"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/zones"
@@ -104,4 +107,42 @@ func TestDelete(t *testing.T) {
 	actual, err := zones.Delete(context.TODO(), client.ServiceClient(), DeletedZone.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &DeletedZone, actual)
+}
+
+func TestShare(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/zones/zone-id/shares", func(w http.ResponseWriter, r *http.Request) {
+		th.AssertEquals(t, r.Method, "POST")
+
+		body, err := io.ReadAll(r.Body)
+		defer r.Body.Close()
+		th.AssertNoErr(t, err)
+
+		var reqBody map[string]string
+		err = json.Unmarshal(body, &reqBody)
+		th.AssertNoErr(t, err)
+		expectedBody := map[string]string{"target_project_id": "project-id"}
+		th.CheckDeepEquals(t, expectedBody, reqBody)
+
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	opts := zones.ShareZoneOpts{TargetProjectID: "project-id"}
+	err := zones.Share(context.TODO(), client.ServiceClient(), "zone-id", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnshare(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/zones/zone-id/shares/share-id", func(w http.ResponseWriter, r *http.Request) {
+		th.AssertEquals(t, r.Method, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := zones.Unshare(context.TODO(), client.ServiceClient(), "zone-id", "share-id").ExtractErr()
+	th.AssertNoErr(t, err)
 }
