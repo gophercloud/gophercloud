@@ -74,6 +74,26 @@ func TestSnapshots(t *testing.T) {
 		return true, nil
 	})
 
+	err = snapshots.ListDetail(client, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		actual, err := snapshots.ExtractSnapshots(page)
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, 1, len(actual))
+
+		var found bool
+		for _, v := range actual {
+			if v.ID == snapshot1.ID || v.ID == snapshot2.ID {
+				if v.user_id == snapshot1.user_id || v.user_id == snapshot2.user_id {
+					found = true
+				}
+			}
+
+		}
+
+		th.AssertEquals(t, found, true)
+
+		return true, nil
+	})
+
 	th.AssertNoErr(t, err)
 }
 
