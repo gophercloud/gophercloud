@@ -219,7 +219,7 @@ func TestNodesVirtualMedia(t *testing.T) {
 
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.89"
+	client.Microversion = "1.93"
 
 	node, err := CreateNode(t, client)
 	th.AssertNoErr(t, err)
@@ -240,6 +240,9 @@ func TestNodesVirtualMedia(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	err = nodes.DetachVirtualMedia(context.TODO(), client, node.UUID, nodes.DetachVirtualMediaOpts{}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = nodes.GetVirtualMedia(context.TODO(), client, node.UUID).Err
 	th.AssertNoErr(t, err)
 }
 

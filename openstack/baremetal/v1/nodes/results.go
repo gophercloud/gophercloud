@@ -710,3 +710,8 @@ type VirtualMediaAttachResult struct {
 type VirtualMediaDetachResult struct {
 	gophercloud.ErrResult
 }
+
+// Requires microversion 1.93 or later.
+type VirtualMediaGetResult struct {
+	gophercloud.Result
+}
