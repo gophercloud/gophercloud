@@ -1849,3 +1849,78 @@ func HandleDetachVirtualMediaSuccessfully(t *testing.T, withType bool) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+// HandleListVirtualInterfacesSuccessfully sets up the test server to respond to a ListVirtualInterfaces request
+func HandleListVirtualInterfacesSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Accept", "application/json")
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, `
+{
+  "vifs": [
+    {
+      "id": "1974dcfa-836f-41b2-b541-686c100900e5"
+    }
+  ]
+}`)
+		})
+}
+
+// HandleAttachVirtualInterfaceSuccessfully sets up the test server to respond to an AttachVirtualInterface request
+func HandleAttachVirtualInterfaceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, `{"id":"1974dcfa-836f-41b2-b541-686c100900e5"}`)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+// HandleAttachVirtualInterfaceWithPortSuccessfully sets up the test server to respond to an AttachVirtualInterface request with port
+func HandleAttachVirtualInterfaceWithPortSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, `{"id":"1974dcfa-836f-41b2-b541-686c100900e5","port_uuid":"b2f96298-5172-45e9-b174-8d1ba936ab47"}`)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+// HandleAttachVirtualInterfaceWithPortgroupSuccessfully sets up the test server to respond to an AttachVirtualInterface request with portgroup
+func HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, `{"id":"1974dcfa-836f-41b2-b541-686c100900e5","portgroup_uuid":"c24944b5-a52e-4c5c-9c0a-52a0235a08a2"}`)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+// HandleDetachVirtualInterfaceSuccessfully sets up the test server to respond to a DetachVirtualInterface request
+func HandleDetachVirtualInterfaceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vifs/1974dcfa-836f-41b2-b541-686c100900e5",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Accept", "application/json")
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
