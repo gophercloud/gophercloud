@@ -998,3 +998,61 @@ func DetachVirtualMedia(ctx context.Context, client *gophercloud.ServiceClient, 
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// VirtualInterfaceOpts defines options for attaching a VIF to a node
+type VirtualInterfaceOpts struct {
+	// The UUID or name of the VIF
+	ID string `json:"id" required:"true"`
+	// The UUID of a port to attach the VIF to. Cannot be specified with PortgroupUUID
+	PortUUID string `json:"port_uuid,omitempty"`
+	// The UUID of a portgroup to attach the VIF to. Cannot be specified with PortUUID
+	PortgroupUUID string `json:"portgroup_uuid,omitempty"`
+}
+
+// VirtualInterfaceOptsBuilder allows extensions to add additional parameters to the
+// AttachVirtualInterface request.
+type VirtualInterfaceOptsBuilder interface {
+	ToVirtualInterfaceMap() (map[string]any, error)
+}
+
+// ToVirtualInterfaceMap assembles a request body based on the contents of a VirtualInterfaceOpts.
+func (opts VirtualInterfaceOpts) ToVirtualInterfaceMap() (map[string]any, error) {
+	if opts.PortUUID != "" && opts.PortgroupUUID != "" {
+		return nil, fmt.Errorf("cannot specify both port_uuid and portgroup_uuid")
+	}
+
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// ListVirtualInterfaces returns a list of VIFs that are attached to the node.
+func ListVirtualInterfaces(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ListVirtualInterfacesResult) {
+	resp, err := client.Get(ctx, virtualInterfaceURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// AttachVirtualInterface attaches a VIF to a node.
+func AttachVirtualInterface(ctx context.Context, client *gophercloud.ServiceClient, id string, opts VirtualInterfaceOptsBuilder) (r VirtualInterfaceAttachResult) {
+	reqBody, err := opts.ToVirtualInterfaceMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Post(ctx, virtualInterfaceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DetachVirtualInterface detaches a VIF from a node.
+func DetachVirtualInterface(ctx context.Context, client *gophercloud.ServiceClient, id string, vifID string) (r VirtualInterfaceDetachResult) {
+	resp, err := client.Delete(ctx, virtualInterfaceDeleteURL(client, id, vifID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

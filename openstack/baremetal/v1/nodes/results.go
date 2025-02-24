@@ -660,3 +660,40 @@ type VirtualMediaAttachResult struct {
 type VirtualMediaDetachResult struct {
 	gophercloud.ErrResult
 }
+
+// VirtualInterfaceAttachResult is the response from an AttachVirtualInterface operation.
+type VirtualInterfaceAttachResult struct {
+	gophercloud.ErrResult
+}
+
+// VirtualInterfaceDetachResult is the response from a DetachVirtualInterface operation.
+type VirtualInterfaceDetachResult struct {
+	gophercloud.ErrResult
+}
+
+// VIF represents a virtual interface attached to a node.
+type VIF struct {
+	// The UUID or name of the VIF
+	ID string `json:"id"`
+}
+
+// ListVirtualInterfacesResult is the response from a ListVirtualInterfaces operation.
+type ListVirtualInterfacesResult struct {
+	gophercloud.Result
+	gophercloud.HeaderResult
+}
+
+// Extract interprets any ListVirtualInterfacesResult as a list of VIFs.
+func (r ListVirtualInterfacesResult) Extract() ([]VIF, error) {
+	var s struct {
+		VIFs []VIF `json:"vifs"`
+	}
+
+	err := r.Result.ExtractInto(&s)
+	return s.VIFs, err
+}
+
+// ExtractHeader interprets any ListVirtualInterfacesResult as a HeaderResult.
+func (r ListVirtualInterfacesResult) ExtractHeader() (gophercloud.HeaderResult, error) {
+	return r.HeaderResult, nil
+}
