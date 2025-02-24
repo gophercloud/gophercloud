@@ -21,7 +21,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.38"
 
-	node, err := CreateFakeNode(t, client)
+	node, err := CreateNode(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node)
 
@@ -251,7 +251,7 @@ func TestNodesServicingHold(t *testing.T) {
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.87"
 
-	node, err := CreateFakeNode(t, client)
+	node, err := CreateNode(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node)
 

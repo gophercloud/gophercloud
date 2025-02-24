@@ -54,11 +54,9 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            # pyghmi is not mirrored on github
-            PYGHMI_REPO=https://opendev.org/x/pyghmi
             enable_plugin ironic https://github.com/openstack/ironic ${{ matrix.openstack_version }}
-            LIBS_FROM_GIT=pyghmi,virtualbmc
-            FORCE_CONFIG_DRIVE=True
+            LIBS_FROM_GIT=sushy-tools,virtualbmc
+            FORCE_CONFIG_DRIVE=False
             Q_AGENT=openvswitch
             Q_ML2_TENANT_NETWORK_TYPE=vxlan
             Q_ML2_PLUGIN_MECHANISM_DRIVERS=openvswitch
@@ -74,7 +72,11 @@ jobs:
             IRONIC_BUILD_DEPLOY_RAMDISK=False
             IRONIC_AUTOMATED_CLEAN_ENABLED=False
             IRONIC_CALLBACK_TIMEOUT=600
-            IRONIC_DEPLOY_DRIVER=ipmi
+            IRONIC_DEPLOY_DRIVER=redfish
+            IRONIC_CALLBACK_TIMEOUT=1800
+            SUSHY_EMULATOR_FAKE_DRIVER = True
+            IRONIC_ENABLED_HARDWARE_TYPES=redfish
+            IRONIC_ENABLED_BOOT_INTERFACES=ipxe,redfish-virtual-media,http-ipxe
             IRONIC_INSPECTOR_BUILD_RAMDISK=False
             IRONIC_RAMDISK_TYPE=tinyipa
             IRONIC_TEMPEST_BUILD_TIMEOUT=720

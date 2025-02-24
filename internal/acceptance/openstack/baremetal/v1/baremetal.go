@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -17,18 +18,20 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create bare metal node: %s", name)
 
+	baremetalEndpoint := client.Endpoint
+	hostIP := strings.Replace(baremetalEndpoint, "/baremetal/", "", 1)
 	node, err := nodes.Create(context.TODO(), client, nodes.CreateOpts{
 		Name:          name,
-		Driver:        "ipmi",
+		Driver:        "redfish",
 		BootInterface: "ipxe",
 		RAIDInterface: "agent",
 		DriverInfo: map[string]any{
-			"ipmi_port":      "6230",
-			"ipmi_username":  "admin",
-			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",
-			"ipmi_address":   "192.168.122.1",
-			"deploy_ramdisk": "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
-			"ipmi_password":  "admin",
+			"redfish_username":  "admin",
+			"deploy_kernel":     "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",
+			"redfish_address":   hostIP + ":9132",
+			"redfish_system_id": "/redfish/v1/Systems/" + name,
+			"deploy_ramdisk":    "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
+			"redfish_password":  "password",
 		},
 	}).Extract()
 
