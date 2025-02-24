@@ -89,3 +89,11 @@ func firmwareListURL(client *gophercloud.ServiceClient, id string) string {
 func virtualMediaURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("nodes", id, "vmedia")
 }
+
+func virtualInterfaceURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "vifs")
+}
+
+func virtualInterfaceDeleteURL(client *gophercloud.ServiceClient, id string, vifID string) string {
+	return client.ServiceURL("nodes", id, "vifs", vifID)
+}
