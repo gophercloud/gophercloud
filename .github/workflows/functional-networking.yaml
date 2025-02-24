@@ -57,7 +57,7 @@ jobs:
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
-          go-version: '^1.22'
+          go-version: '^1.23'
       - name: Run Gophercloud acceptance tests
         run: ./script/acceptancetest
         env:
