@@ -1160,3 +1160,25 @@ func TestCreateServerWithTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ServerDerpTags, *actualServer)
 }
+
+func TestCreateServerWithHypervisorHostname(t *testing.T) {
+	opts := servers.CreateOpts{
+		Name:               "createdserver",
+		FlavorRef:          "performance1-1",
+		ImageRef:           "asdfasdfasdf",
+		HypervisorHostname: "test-hypervisor",
+	}
+	expected := `
+    {
+        "server": {
+            "name":"createdserver",
+            "flavorRef":"performance1-1",
+            "imageRef":"asdfasdfasdf",
+            "hypervisor_hostname":"test-hypervisor"
+        }
+    }
+    `
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
