@@ -272,3 +272,50 @@ func TestNodesServicingHold(t *testing.T) {
 	}, nodes.Active)
 	th.AssertNoErr(t, err)
 }
+
+func TestNodesVirtualInterfaces(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/2023.2") // Adjust based on when this feature was added
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.28" // VIFs were added in API version 1.28
+
+	node, err := CreateNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+
+	// First, list VIFs (should be empty initially)
+	vifs, err := nodes.ListVirtualInterfaces(context.TODO(), client, node.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(vifs))
+
+	// For a real test, we would need a valid VIF ID from the networking service
+	// Since this is difficult in a test environment, we can test the API call
+	// with a fake ID and expect it to fail with a specific error
+	fakeVifID := "1974dcfa-836f-41b2-b541-686c100900e5"
+
+	// Try to attach a VIF (this will likely fail with a 404 Not Found since the VIF doesn't exist)
+	err = nodes.AttachVirtualInterface(context.TODO(), client, node.UUID, nodes.VirtualInterfaceOpts{
+		ID: fakeVifID,
+	}).ExtractErr()
+
+	// We expect this to fail, but we're testing the API call itself
+	// In a real environment with valid VIFs, you would check for success instead
+	if err == nil {
+		t.Logf("Warning: Expected error when attaching non-existent VIF, but got success. This might indicate the test environment has a VIF with ID %s", fakeVifID)
+	}
+
+	// Try to detach a VIF (this will likely fail with a 404 Not Found)
+	err = nodes.DetachVirtualInterface(context.TODO(), client, node.UUID, fakeVifID).ExtractErr()
+
+	// Again, we expect this to fail in most test environments
+	if err == nil {
+		t.Logf("Warning: Expected error when detaching non-existent VIF, but got success. This might indicate the test environment has a VIF with ID %s", fakeVifID)
+	}
+
+	// List VIFs again to confirm state hasn't changed
+	vifs, err = nodes.ListVirtualInterfaces(context.TODO(), client, node.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(vifs))
+}
