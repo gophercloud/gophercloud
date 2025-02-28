@@ -279,7 +279,8 @@ func TestNodesVirtualInterfaces(t *testing.T) {
 
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.28" // VIFs were added in API version 1.28
+	// VIFs were added in API version 1.28, but at least 1.38 is needed for tests to pass
+	client.Microversion = "1.38"
 
 	node, err := CreateNode(t, client)
 	th.AssertNoErr(t, err)
