@@ -20,35 +20,31 @@ func TestCreateSuccessful(t *testing.T) {
 	th.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `
-      {
-        "endpoint": {
-          "interface": "public",
-          "name": "the-endiest-of-points",
-          "region": "underground",
-          "url": "https://1.2.3.4:9000/",
-          "service_id": "asdfasdfasdfasdf"
-        }
-      }
-    `)
+		th.TestJSONRequest(t, r, `{
+			"endpoint": {
+				"interface": "public",
+				"name": "the-endiest-of-points",
+				"region": "underground",
+				"url": "https://1.2.3.4:9000/",
+				"service_id": "asdfasdfasdfasdf"
+			}
+		}`)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprint(w, `
-      {
-        "endpoint": {
-          "id": "12",
-          "interface": "public",
-		  "enabled": true,
-		  "links": {
-            "self": "https://localhost:5000/v3/endpoints/12"
-          },
-          "name": "the-endiest-of-points",
-          "region": "underground",
-          "service_id": "asdfasdfasdfasdf",
-          "url": "https://1.2.3.4:9000/"
-        }
-      }
-    `)
+		fmt.Fprint(w, `{
+			"endpoint": {
+				"id": "12",
+				"interface": "public",
+				"enabled": true,
+				"links": {
+					"self": "https://localhost:5000/v3/endpoints/12"
+				},
+				"name": "the-endiest-of-points",
+				"region": "underground",
+				"service_id": "asdfasdfasdfasdf",
+				"url": "https://1.2.3.4:9000/"
+			}
+		}`)
 	})
 
 	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(), endpoints.CreateOpts{
@@ -82,40 +78,38 @@ func TestListEndpoints(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprint(w, `
-			{
-				"endpoints": [
-					{
-						"id": "12",
-						"interface": "public",
-						"enabled": true,
-						"links": {
-							"self": "https://localhost:5000/v3/endpoints/12"
-						},
-						"name": "the-endiest-of-points",
-						"region": "underground",
-						"service_id": "asdfasdfasdfasdf",
-						"url": "https://1.2.3.4:9000/"
+		fmt.Fprint(w, `{
+			"endpoints": [
+				{
+					"id": "12",
+					"interface": "public",
+					"enabled": true,
+					"links": {
+						"self": "https://localhost:5000/v3/endpoints/12"
 					},
-					{
-						"id": "13",
-						"interface": "internal",
-						"enabled": false,
-						"links": {
-							"self": "https://localhost:5000/v3/endpoints/13"
-						},
-						"name": "shhhh",
-						"region": "underground",
-						"service_id": "asdfasdfasdfasdf",
-						"url": "https://1.2.3.4:9001/"
-					}
-				],
-				"links": {
-					"next": null,
-					"previous": null
+					"name": "the-endiest-of-points",
+					"region": "underground",
+					"service_id": "asdfasdfasdfasdf",
+					"url": "https://1.2.3.4:9000/"
+				},
+				{
+					"id": "13",
+					"interface": "internal",
+					"enabled": false,
+					"links": {
+						"self": "https://localhost:5000/v3/endpoints/13"
+					},
+					"name": "shhhh",
+					"region": "underground",
+					"service_id": "asdfasdfasdfasdf",
+					"url": "https://1.2.3.4:9001/"
 				}
+			],
+			"links": {
+				"next": null,
+				"previous": null
 			}
-		`)
+		}`)
 	})
 
 	count := 0
@@ -154,6 +148,47 @@ func TestListEndpoints(t *testing.T) {
 	th.AssertEquals(t, 1, count)
 }
 
+func TestGetEndpoint(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		fmt.Fprint(w, `{
+			"endpoint": {
+				"id": "12",
+				"interface": "public",
+				"enabled": true,
+				"links": {
+					"self": "https://localhost:5000/v3/endpoints/12"
+				},
+				"name": "the-endiest-of-points",
+				"region": "underground",
+				"service_id": "asdfasdfasdfasdf",
+				"url": "https://1.2.3.4:9000/"
+			}
+		}`)
+	})
+
+	actual, err := endpoints.Get(context.TODO(), client.ServiceClient(), "12").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected error from Get: %v", err)
+	}
+
+	expected := &endpoints.Endpoint{
+		ID:           "12",
+		Availability: gophercloud.AvailabilityPublic,
+		Enabled:      true,
+		Name:         "the-endiest-of-points",
+		Region:       "underground",
+		ServiceID:    "asdfasdfasdfasdf",
+		URL:          "https://1.2.3.4:9000/",
+	}
+	th.AssertDeepEquals(t, expected, actual)
+}
+
 func TestUpdateEndpoint(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -161,17 +196,14 @@ func TestUpdateEndpoint(t *testing.T) {
 	th.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `
-		{
-	    "endpoint": {
-	      "name": "renamed",
+		th.TestJSONRequest(t, r, `{
+			"endpoint": {
+				"name": "renamed",
 				"region": "somewhere-else"
-	    }
-		}
-	`)
+			}
+		}`)
 
-		fmt.Fprint(w, `
-		{
+		fmt.Fprint(w, `{
 			"endpoint": {
 				"id": "12",
 				"interface": "public",
@@ -184,8 +216,7 @@ func TestUpdateEndpoint(t *testing.T) {
 				"service_id": "asdfasdfasdfasdf",
 				"url": "https://1.2.3.4:9000/"
 			}
-		}
-	`)
+		}`)
 	})
 
 	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(), "12", endpoints.UpdateOpts{

@@ -19,6 +19,12 @@ func (r commonResult) Extract() (*Endpoint, error) {
 	return s.Endpoint, err
 }
 
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as an Endpoint.
+type GetResult struct {
+	commonResult
+}
+
 // CreateResult is the response from a Create operation. Call its Extract
 // method to interpret it as an Endpoint.
 type CreateResult struct {
