@@ -1,3 +1,7 @@
+## v2.6.0 (2025-03-03)
+
+* [GH-3309](https://github.com/gophercloud/gophercloud/pull/3309) Backport: Added support for hypervisor_hostname to v2
+
 ## v2.5.0 (2025-02-11)
 
 * [GH-3278](https://github.com/gophercloud/gophercloud/pull/3278) [v2] test: Ensure that randomly created secgroup rules don't conflict
