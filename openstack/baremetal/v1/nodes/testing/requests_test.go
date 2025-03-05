@@ -829,3 +829,83 @@ func TestVirtualMediaDetachWithTypes(t *testing.T) {
 	err := nodes.DetachVirtualMedia(context.TODO(), c, "1234asdf", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestListVirtualInterfaces(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListVirtualInterfacesSuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.ListVirtualInterfaces(context.TODO(), c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := []nodes.VIF{
+		{
+			ID: "1974dcfa-836f-41b2-b541-686c100900e5",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestAttachVirtualInterface(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAttachVirtualInterfaceSuccessfully(t)
+
+	c := client.ServiceClient()
+	opts := nodes.VirtualInterfaceOpts{
+		ID: "1974dcfa-836f-41b2-b541-686c100900e5",
+	}
+	err := nodes.AttachVirtualInterface(context.TODO(), c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestAttachVirtualInterfaceWithPort(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAttachVirtualInterfaceWithPortSuccessfully(t)
+
+	c := client.ServiceClient()
+	opts := nodes.VirtualInterfaceOpts{
+		ID:       "1974dcfa-836f-41b2-b541-686c100900e5",
+		PortUUID: "b2f96298-5172-45e9-b174-8d1ba936ab47",
+	}
+	err := nodes.AttachVirtualInterface(context.TODO(), c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestAttachVirtualInterfaceWithPortgroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t)
+
+	c := client.ServiceClient()
+	opts := nodes.VirtualInterfaceOpts{
+		ID:            "1974dcfa-836f-41b2-b541-686c100900e5",
+		PortgroupUUID: "c24944b5-a52e-4c5c-9c0a-52a0235a08a2",
+	}
+	err := nodes.AttachVirtualInterface(context.TODO(), c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDetachVirtualInterface(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDetachVirtualInterfaceSuccessfully(t)
+
+	c := client.ServiceClient()
+	err := nodes.DetachVirtualInterface(context.TODO(), c, "1234asdf", "1974dcfa-836f-41b2-b541-686c100900e5").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestVirtualInterfaceOptsValidation(t *testing.T) {
+	opts := nodes.VirtualInterfaceOpts{
+		ID:            "1974dcfa-836f-41b2-b541-686c100900e5",
+		PortUUID:      "b2f96298-5172-45e9-b174-8d1ba936ab47",
+		PortgroupUUID: "c24944b5-a52e-4c5c-9c0a-52a0235a08a2",
+	}
+
+	_, err := opts.ToVirtualInterfaceMap()
+	th.AssertEquals(t, err.Error(), "cannot specify both port_uuid and portgroup_uuid")
+}
