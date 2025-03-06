@@ -5,6 +5,7 @@ package trunks
 import (
 	"context"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -17,56 +18,40 @@ import (
 
 func TestTrunkCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Skip these tests if we don't have the required extension
 	v2.RequireNeutronExtension(t, client, "trunk")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeleteNetwork(t, client, network.ID)
 
 	// Create Subnet
 	subnet, err := v2.CreateSubnet(t, client, network.ID)
-	if err != nil {
-		t.Fatalf("Unable to create subnet: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeleteSubnet(t, client, subnet.ID)
 
 	// Create port
 	parentPort, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, parentPort.ID)
 
 	subport1, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, subport1.ID)
 
 	subport2, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, subport2.ID)
 
 	trunk, err := CreateTrunk(t, client, parentPort.ID, subport1.ID, subport2.ID)
-	if err != nil {
-		t.Fatalf("Unable to create trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteTrunk(t, client, trunk.ID)
 
 	_, err = trunks.Get(context.TODO(), client, trunk.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Update Trunk
 	name := ""
@@ -76,9 +61,7 @@ func TestTrunkCRUD(t *testing.T) {
 		Description: &description,
 	}
 	updatedTrunk, err := trunks.Update(context.TODO(), client, trunk.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	if trunk.Name == updatedTrunk.Name {
 		t.Fatalf("Trunk name was not updated correctly")
@@ -93,9 +76,7 @@ func TestTrunkCRUD(t *testing.T) {
 
 	// Get subports
 	subports, err := trunks.GetSubports(context.TODO(), client, trunk.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get subports from the Trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, trunk.Subports[0], subports[0])
 	th.AssertDeepEquals(t, trunk.Subports[1], subports[1])
 
@@ -104,22 +85,16 @@ func TestTrunkCRUD(t *testing.T) {
 
 func TestTrunkList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Skip these tests if we don't have the required extension
 	v2.RequireNeutronExtension(t, client, "trunk")
 
 	allPages, err := trunks.List(client, nil).AllPages(context.TODO())
-	if err != nil {
-		t.Fatalf("Unable to list trunks: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allTrunks, err := trunks.ExtractTrunks(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract trunks: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, trunk := range allTrunks {
 		tools.PrintResource(t, trunk)
@@ -128,50 +103,36 @@ func TestTrunkList(t *testing.T) {
 
 func TestTrunkSubportOperation(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Skip these tests if we don't have the required extension
 	v2.RequireNeutronExtension(t, client, "trunk")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeleteNetwork(t, client, network.ID)
 
 	// Create Subnet
 	subnet, err := v2.CreateSubnet(t, client, network.ID)
-	if err != nil {
-		t.Fatalf("Unable to create subnet: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeleteSubnet(t, client, subnet.ID)
 
 	// Create port
 	parentPort, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, parentPort.ID)
 
 	subport1, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, subport1.ID)
 
 	subport2, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, subport2.ID)
 
 	trunk, err := CreateTrunk(t, client, parentPort.ID)
-	if err != nil {
-		t.Fatalf("Unable to create trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteTrunk(t, client, trunk.ID)
 
 	// Add subports to the trunk
@@ -190,9 +151,7 @@ func TestTrunkSubportOperation(t *testing.T) {
 		},
 	}
 	updatedTrunk, err := trunks.AddSubports(context.TODO(), client, trunk.ID, addSubportsOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to add subports to the Trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, len(updatedTrunk.Subports))
 	th.AssertDeepEquals(t, addSubportsOpts.Subports[0], updatedTrunk.Subports[0])
 	th.AssertDeepEquals(t, addSubportsOpts.Subports[1], updatedTrunk.Subports[1])
@@ -205,58 +164,42 @@ func TestTrunkSubportOperation(t *testing.T) {
 		},
 	}
 	updatedAgainTrunk, err := trunks.RemoveSubports(context.TODO(), client, trunk.ID, subRemoveOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to remove subports from the Trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, trunk.Subports, updatedAgainTrunk.Subports)
 }
 
 func TestTrunkTags(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Skip these tests if we don't have the required extension
 	v2.RequireNeutronExtension(t, client, "trunk")
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeleteNetwork(t, client, network.ID)
 
 	// Create Subnet
 	subnet, err := v2.CreateSubnet(t, client, network.ID)
-	if err != nil {
-		t.Fatalf("Unable to create subnet: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeleteSubnet(t, client, subnet.ID)
 
 	// Create port
 	parentPort, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, parentPort.ID)
 
 	subport1, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, subport1.ID)
 
 	subport2, err := v2.CreatePort(t, client, network.ID, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer v2.DeletePort(t, client, subport2.ID)
 
 	trunk, err := CreateTrunk(t, client, parentPort.ID, subport1.ID, subport2.ID)
-	if err != nil {
-		t.Fatalf("Unable to create trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteTrunk(t, client, trunk.ID)
 
 	tagReplaceAllOpts := attributestags.ReplaceAllOpts{
@@ -264,14 +207,10 @@ func TestTrunkTags(t *testing.T) {
 		Tags: []string{"a", "b", "c"},
 	}
 	_, err = attributestags.ReplaceAll(context.TODO(), client, "trunks", trunk.ID, tagReplaceAllOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to set trunk tags: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	gtrunk, err := trunks.Get(context.TODO(), client, trunk.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get trunk: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	tags := gtrunk.Tags
 	sort.Strings(tags) // Ensure ordering, older OpenStack versions aren't sorted...
 	th.AssertDeepEquals(t, []string{"a", "b", "c"}, tags)
@@ -296,4 +235,91 @@ func TestTrunkTags(t *testing.T) {
 	tags, err = attributestags.List(context.TODO(), client, "trunks", trunk.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(tags))
+}
+
+func TestTrunkRevision(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "trunk")
+
+	// Create Network
+	network, err := v2.CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer v2.DeleteNetwork(t, client, network.ID)
+
+	// Create Subnet
+	subnet, err := v2.CreateSubnet(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer v2.DeleteSubnet(t, client, subnet.ID)
+
+	// Create port
+	parentPort, err := v2.CreatePort(t, client, network.ID, subnet.ID)
+	th.AssertNoErr(t, err)
+	defer v2.DeletePort(t, client, parentPort.ID)
+
+	subport1, err := v2.CreatePort(t, client, network.ID, subnet.ID)
+	th.AssertNoErr(t, err)
+	defer v2.DeletePort(t, client, subport1.ID)
+
+	subport2, err := v2.CreatePort(t, client, network.ID, subnet.ID)
+	th.AssertNoErr(t, err)
+	defer v2.DeletePort(t, client, subport2.ID)
+
+	trunk, err := CreateTrunk(t, client, parentPort.ID, subport1.ID, subport2.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteTrunk(t, client, trunk.ID)
+
+	tools.PrintResource(t, trunk)
+
+	// Store the current revision number.
+	oldRevisionNumber := trunk.RevisionNumber
+
+	// Update the trunk without revision number.
+	// This should work.
+	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
+	updateOpts := &trunks.UpdateOpts{
+		Name:        &newName,
+		Description: &newDescription,
+	}
+	trunk, err = trunks.Update(context.TODO(), client, trunk.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, trunk)
+
+	// This should fail due to an old revision number.
+	newDescription = "new description"
+	updateOpts = &trunks.UpdateOpts{
+		Name:           &newName,
+		Description:    &newDescription,
+		RevisionNumber: &oldRevisionNumber,
+	}
+	_, err = trunks.Update(context.TODO(), client, trunk.ID, updateOpts).Extract()
+	th.AssertErr(t, err)
+	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
+		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
+	}
+
+	// Reread the trunk to show that it did not change.
+	trunk, err = trunks.Get(context.TODO(), client, trunk.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, trunk)
+
+	// This should work because now we do provide a valid revision number.
+	newDescription = "new description"
+	updateOpts = &trunks.UpdateOpts{
+		Name:           &newName,
+		Description:    &newDescription,
+		RevisionNumber: &trunk.RevisionNumber,
+	}
+	trunk, err = trunks.Update(context.TODO(), client, trunk.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, trunk)
+
+	th.AssertEquals(t, trunk.Name, newName)
+	th.AssertEquals(t, trunk.Description, newDescription)
 }
