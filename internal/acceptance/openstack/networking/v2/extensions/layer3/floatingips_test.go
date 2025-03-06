@@ -4,6 +4,7 @@ package layer3
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -202,4 +203,63 @@ func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 	tools.PrintResource(t, fip)
 
 	DeleteFloatingIP(t, client, fip.ID)
+}
+
+func TestLayer3FloatingIPsRevision(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	fip, err := CreateFloatingIP(t, client, choices.ExternalNetworkID, "")
+	th.AssertNoErr(t, err)
+	defer DeleteFloatingIP(t, client, fip.ID)
+
+	tools.PrintResource(t, fip)
+
+	// Store the current revision number.
+	oldRevisionNumber := fip.RevisionNumber
+
+	// Update the fip without revision number.
+	// This should work.
+	newDescription := ""
+	updateOpts := &floatingips.UpdateOpts{
+		Description: &newDescription,
+	}
+	fip, err = floatingips.Update(context.TODO(), client, fip.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, fip)
+
+	// This should fail due to an old revision number.
+	newDescription = "new description"
+	updateOpts = &floatingips.UpdateOpts{
+		Description:    &newDescription,
+		RevisionNumber: &oldRevisionNumber,
+	}
+	_, err = floatingips.Update(context.TODO(), client, fip.ID, updateOpts).Extract()
+	th.AssertErr(t, err)
+	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
+		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
+	}
+
+	// Reread the fip to show that it did not change.
+	fip, err = floatingips.Get(context.TODO(), client, fip.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, fip)
+
+	// This should work because now we do provide a valid revision number.
+	newDescription = "new description"
+	updateOpts = &floatingips.UpdateOpts{
+		Description:    &newDescription,
+		RevisionNumber: &fip.RevisionNumber,
+	}
+	fip, err = floatingips.Update(context.TODO(), client, fip.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, fip)
+
+	th.AssertEquals(t, fip.Description, newDescription)
 }
