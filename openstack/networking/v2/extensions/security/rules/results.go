@@ -56,6 +56,9 @@ type SecGroupRule struct {
 
 	// ProjectID is the project owner of this security group rule.
 	ProjectID string `json:"project_id"`
+
+	// RevisionNumber optionally set via extensions/standard-attr-revisions
+	RevisionNumber int `json:"revision_number"`
 }
 
 // SecGroupRulePage is the page returned by a pager when traversing over a
