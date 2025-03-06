@@ -32,6 +32,9 @@ jobs:
 
           go install github.com/wadey/gocovmerge@master
 
+          # Fallback to a go1.22 compatible version for gophercloud v2
+          go install golang.org/x/tools/cmd/goimports@latest || go install golang.org/x/tools/cmd/goimports@v0.30.0
+
       - name: Run unit tests
         run: |
           ./script/coverage
