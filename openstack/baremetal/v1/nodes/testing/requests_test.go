@@ -830,6 +830,26 @@ func TestVirtualMediaDetachWithTypes(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestVirtualMediaGetAttached(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetVirtualMediaSuccessfully(t, true)
+
+	c := client.ServiceClient()
+	err := nodes.GetVirtualMedia(context.TODO(), c, "1234asdf").Err
+	th.AssertNoErr(t, err)
+}
+
+func TestVirtualMediaGetNotAttached(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetVirtualMediaSuccessfully(t, false)
+
+	c := client.ServiceClient()
+	err := nodes.GetVirtualMedia(context.TODO(), c, "1234asdf").Err
+	th.AssertNoErr(t, err)
+}
+
 func TestListVirtualInterfaces(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

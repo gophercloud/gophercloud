@@ -900,6 +900,28 @@ const NodeVirtualMediaAttachBodyWithSource = `
 }
 `
 
+const NodeVirtualMediaGetBodyAttached = `
+{
+    "image": "https://example.com/image",
+    "inserted": true,
+    "media_types": [
+      "CD",
+      "DVD"
+    ]
+}
+`
+
+const NodeVirtualMediaGetBodyNotAttached = `
+{
+    "image": "",
+    "inserted": false,
+    "media_types": [
+      "CD",
+      "DVD"
+    ]
+}
+`
+
 var (
 	createdAtFoo, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:28+00:00")
 	createdAtBar, _      = time.Parse(time.RFC3339, "2019-01-31T19:59:29+00:00")
@@ -1847,6 +1869,19 @@ func HandleDetachVirtualMediaSuccessfully(t *testing.T, withType bool) {
 			th.TestFormValues(t, r, map[string]string{})
 		}
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleGetVirtualMediaSuccessfully(t *testing.T, attached bool) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusOK)
+		if attached {
+			fmt.Fprint(w, NodeVirtualMediaGetBodyAttached)
+		} else {
+			fmt.Fprint(w, NodeVirtualMediaGetBodyNotAttached)
+		}
 	})
 }
 

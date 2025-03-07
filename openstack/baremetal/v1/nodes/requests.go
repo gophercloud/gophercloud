@@ -1003,6 +1003,18 @@ func DetachVirtualMedia(ctx context.Context, client *gophercloud.ServiceClient, 
 	return
 }
 
+// Request the list of virtual media devices attached to the Node.
+// Requires microversion 1.93 or later.
+func GetVirtualMedia(ctx context.Context, client *gophercloud.ServiceClient, id string) (r VirtualMediaGetResult) {
+
+	resp, err := client.Get(ctx, virtualMediaURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // VirtualInterfaceOpts defines options for attaching a VIF to a node
 type VirtualInterfaceOpts struct {
 	// The UUID or name of the VIF
