@@ -216,6 +216,8 @@ func TestLayer3RouterAgents(t *testing.T) {
 }
 
 func TestLayer3RouterRevision(t *testing.T) {
+	// https://bugs.launchpad.net/neutron/+bug/2101871
+	clients.SkipRelease(t, "stable/2023.2")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
