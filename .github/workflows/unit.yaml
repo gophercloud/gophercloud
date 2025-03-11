@@ -30,7 +30,7 @@ jobs:
           cd "$(mktemp -d)"
           go mod init unit_tests
 
-          go install github.com/wadey/gocovmerge@master
+          go install github.com/alexfalkowski/gocovmerge@v1.4.0
 
       - name: Run unit tests
         run: |
