@@ -567,7 +567,7 @@ func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string) error
 			return false, err
 		}
 
-		if p.Status == "ACTIVE" || p.Status == "DOWN" {
+		if p.Status == ports.PortStatusActive || p.Status == ports.PortStatusDown {
 			return true, nil
 		}
 

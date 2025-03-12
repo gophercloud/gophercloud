@@ -81,7 +81,7 @@ type Port struct {
 	// Indicates whether network is currently operational. Possible values include
 	// `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define additional
 	// values.
-	Status string `json:"status"`
+	Status PortStatus `json:"status"`
 
 	// Mac address to use on this port.
 	MACAddress string `json:"mac_address"`
