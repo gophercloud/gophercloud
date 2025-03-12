@@ -42,7 +42,7 @@ func TestList(t *testing.T) {
 
 		expected := []ports.Port{
 			{
-				Status:       "ACTIVE",
+				Status:       ports.PortStatusActive,
 				Name:         "",
 				AdminStateUp: true,
 				NetworkID:    "70c1db1f-b701-45bd-96e0-a313ee3430b3",
@@ -102,7 +102,7 @@ func TestListWithExtensions(t *testing.T) {
 	err = ports.ExtractPortsInto(allPages, &allPorts)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, allPorts[0].Status, "ACTIVE")
+	th.AssertEquals(t, allPorts[0].Status, ports.PortStatusActive)
 	th.AssertEquals(t, allPorts[0].PortSecurityEnabled, false)
 }
 
@@ -123,7 +123,7 @@ func TestGet(t *testing.T) {
 	n, err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, n.Status, ports.PortStatusActive)
 	th.AssertEquals(t, n.Name, "")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -135,7 +135,7 @@ func TestGet(t *testing.T) {
 	})
 	th.AssertEquals(t, n.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
 	th.AssertDeepEquals(t, n.SecurityGroups, []string{})
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, n.Status, ports.PortStatusActive)
 	th.AssertEquals(t, n.DeviceID, "5e3898d7-11be-483e-9732-b2f5eccd2b2e")
 	th.AssertEquals(t, n.CreatedAt, time.Date(2019, time.June, 30, 4, 15, 37, 0, time.UTC))
 	th.AssertEquals(t, n.UpdatedAt, time.Date(2019, time.June, 30, 5, 18, 49, 0, time.UTC))
@@ -163,7 +163,7 @@ func TestGetWithExtensions(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&portWithExtensions)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExtensions.Status, "ACTIVE")
+	th.AssertEquals(t, portWithExtensions.Status, ports.PortStatusActive)
 	th.AssertEquals(t, portWithExtensions.PortSecurityEnabled, false)
 }
 
@@ -200,7 +200,7 @@ func TestCreate(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
+	th.AssertEquals(t, n.Status, ports.PortStatusDown)
 	th.AssertEquals(t, n.Name, "private-port")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -249,7 +249,7 @@ func TestCreateOmitSecurityGroups(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
+	th.AssertEquals(t, n.Status, ports.PortStatusDown)
 	th.AssertEquals(t, n.Name, "private-port")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -299,7 +299,7 @@ func TestCreateWithNoSecurityGroup(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
+	th.AssertEquals(t, n.Status, ports.PortStatusDown)
 	th.AssertEquals(t, n.Name, "private-port")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -346,7 +346,7 @@ func TestCreateWithPropagateUplinkStatus(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
+	th.AssertEquals(t, n.Status, ports.PortStatusDown)
 	th.AssertEquals(t, n.Name, "private-port")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -396,7 +396,7 @@ func TestCreateWithValueSpecs(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
+	th.AssertEquals(t, n.Status, ports.PortStatusDown)
 	th.AssertEquals(t, n.Name, "private-port")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -513,7 +513,7 @@ func TestCreatePortSecurity(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExt.Status, "DOWN")
+	th.AssertEquals(t, portWithExt.Status, ports.PortStatusDown)
 	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
 }
 
@@ -687,7 +687,7 @@ func TestUpdatePortSecurity(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExt.Status, "DOWN")
+	th.AssertEquals(t, portWithExt.Status, ports.PortStatusDown)
 	th.AssertEquals(t, portWithExt.Name, "private-port")
 	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
 }
@@ -898,7 +898,7 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "ACTIVE")
+	th.AssertEquals(t, s.Status, ports.PortStatusActive)
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
 	th.AssertEquals(t, s.AdminStateUp, true)
@@ -964,7 +964,7 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
+	th.AssertEquals(t, s.Status, ports.PortStatusDown)
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
 	th.AssertEquals(t, s.AdminStateUp, true)
@@ -1029,7 +1029,7 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
+	th.AssertEquals(t, s.Status, ports.PortStatusDown)
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
 	th.AssertEquals(t, s.AdminStateUp, true)
