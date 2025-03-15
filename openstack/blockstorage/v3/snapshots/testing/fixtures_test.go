@@ -61,6 +61,62 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
+func MockListDetailsResponse(t *testing.T) {
+	th.Mux.HandleFunc("/snapshots/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprint(w, `
+    {
+      "snapshots": [
+        {
+          "id": "289da7f8-6440-407c-9fb4-7db01ec49164",
+          "name": "snapshot-001",
+          "volume_id": "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
+          "description": "Daily Backup",
+          "status": "available",
+          "size": 30,
+		      "created_at": "2017-05-30T03:35:03.000000",
+          "os-extended-snapshot-attributes:progress": "100%",
+          "os-extended-snapshot-attributes:project_id": "84b8950a-8594-4e5b-8dce-0dfa9c696357",
+          "group_snapshot_id": null,
+          "user_id": "075da7f8-6440-407c-9fb4-7db01ec49531",
+          "consumes_quota": true
+        },
+        {
+          "id": "96c3bda7-c82a-4f50-be73-ca7621794835",
+          "name": "snapshot-002",
+          "volume_id": "76b8950a-8594-4e5b-8dce-0dfa9c696358",
+          "description": "Weekly Backup",
+          "status": "available",
+          "size": 25,
+		      "created_at": "2017-05-30T03:35:03.000000",
+          "os-extended-snapshot-attributes:progress": "50%",
+          "os-extended-snapshot-attributes:project_id": "84b8950a-8594-4e5b-8dce-0dfa9c696357",
+          "group_snapshot_id": "865da7f8-6440-407c-9fb4-7db01ec40876",
+          "user_id": "075da7f8-6440-407c-9fb4-7db01ec49531",
+          "consumes_quota": false
+        }
+      ]
+    }
+    `)
+		case "1":
+			fmt.Fprint(w, `{"snapshots": []}`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
+}
+
 // MockGetResponse provides mock response for get snapshot API call
 func MockGetResponse(t *testing.T) {
 	th.Mux.HandleFunc("/snapshots/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
