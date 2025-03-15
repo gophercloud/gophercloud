@@ -59,6 +59,62 @@ func TestList(t *testing.T) {
 	}
 }
 
+func TestDetailList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListDetailsResponse(t)
+
+	count := 0
+
+	err := snapshots.ListDetail(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+		actual, err := snapshots.ExtractSnapshots(page)
+		if err != nil {
+			t.Errorf("Failed to extract snapshots: %v", err)
+			return false, err
+		}
+		expected := []snapshots.Snapshot{
+			{
+				ID:              "289da7f8-6440-407c-9fb4-7db01ec49164",
+				Name:            "snapshot-001",
+				VolumeID:        "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
+				Status:          "available",
+				Size:            30,
+				CreatedAt:       time.Date(2017, 5, 30, 3, 35, 3, 0, time.UTC),
+				Description:     "Daily Backup",
+				Progress:        "100%",
+				ProjectID:       "84b8950a-8594-4e5b-8dce-0dfa9c696357",
+				GroupSnapshotID: "",
+				UserID:          "075da7f8-6440-407c-9fb4-7db01ec49531",
+				ConsumesQuota:   true,
+			},
+			{
+				ID:              "96c3bda7-c82a-4f50-be73-ca7621794835",
+				Name:            "snapshot-002",
+				VolumeID:        "76b8950a-8594-4e5b-8dce-0dfa9c696358",
+				Status:          "available",
+				Size:            25,
+				CreatedAt:       time.Date(2017, 5, 30, 3, 35, 3, 0, time.UTC),
+				Description:     "Weekly Backup",
+				Progress:        "50%",
+				ProjectID:       "84b8950a-8594-4e5b-8dce-0dfa9c696357",
+				GroupSnapshotID: "865da7f8-6440-407c-9fb4-7db01ec40876",
+				UserID:          "075da7f8-6440-407c-9fb4-7db01ec49531",
+				ConsumesQuota:   false,
+			},
+		}
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
