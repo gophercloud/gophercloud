@@ -79,7 +79,7 @@ type Policy struct {
 	// Shared indicates whether this policy is shared across all projects.
 	Shared bool `json:"shared"`
 
-	// RevisionNumber represents revision number of the policy.
+	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber int `json:"revision_number"`
 
 	// Rules represents QoS rules of the policy.
