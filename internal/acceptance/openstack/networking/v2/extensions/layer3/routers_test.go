@@ -4,6 +4,7 @@ package layer3
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -212,4 +213,71 @@ func TestLayer3RouterAgents(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
+}
+
+func TestLayer3RouterRevision(t *testing.T) {
+	// https://bugs.launchpad.net/neutron/+bug/2101871
+	clients.SkipRelease(t, "stable/2023.2")
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	network, err := networking.CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, client, network.ID)
+
+	router, err := CreateRouter(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteRouter(t, client, router.ID)
+
+	tools.PrintResource(t, router)
+
+	// Store the current revision number.
+	oldRevisionNumber := router.RevisionNumber
+
+	// Update the router without revision number.
+	// This should work.
+	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
+	updateOpts := &routers.UpdateOpts{
+		Name:        newName,
+		Description: &newDescription,
+	}
+	router, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, router)
+
+	// This should fail due to an old revision number.
+	newDescription = "new description"
+	updateOpts = &routers.UpdateOpts{
+		Name:           newName,
+		Description:    &newDescription,
+		RevisionNumber: &oldRevisionNumber,
+	}
+	_, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
+	th.AssertErr(t, err)
+	if !strings.Contains(err.Error(), "RevisionNumberConstraintFailed") {
+		t.Fatalf("expected to see an error of type RevisionNumberConstraintFailed, but got the following error instead: %v", err)
+	}
+
+	// Reread the router to show that it did not change.
+	router, err = routers.Get(context.TODO(), client, router.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, router)
+
+	// This should work because now we do provide a valid revision number.
+	newDescription = "new description"
+	updateOpts = &routers.UpdateOpts{
+		Name:           newName,
+		Description:    &newDescription,
+		RevisionNumber: &router.RevisionNumber,
+	}
+	router, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, router)
+
+	th.AssertEquals(t, router.Name, newName)
+	th.AssertEquals(t, router.Description, newDescription)
 }
