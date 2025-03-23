@@ -219,7 +219,7 @@ func TestNodesVirtualMedia(t *testing.T) {
 
 	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
-	client.Microversion = "1.89"
+	client.Microversion = "1.93"
 
 	node, err := CreateNode(t, client)
 	th.AssertNoErr(t, err)
@@ -241,6 +241,15 @@ func TestNodesVirtualMedia(t *testing.T) {
 
 	err = nodes.DetachVirtualMedia(context.TODO(), client, node.UUID, nodes.DetachVirtualMediaOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	err = nodes.GetVirtualMedia(context.TODO(), client, node.UUID).Err
+	// Since Virtual Media GET api call is synchronous, we get a HTTP 400
+	// response as CreateNode has ipmi driver hardcoded, but the api is
+	// only supported by the redfish driver
+	// (TODO: hroyrh) fix this once redfish driver is used in the tests
+	if node.Driver == "redfish" {
+		th.AssertNoErr(t, err)
+	}
 }
 
 func TestNodesServicingHold(t *testing.T) {

@@ -711,6 +711,11 @@ type VirtualMediaDetachResult struct {
 	gophercloud.ErrResult
 }
 
+// Requires microversion 1.93 or later.
+type VirtualMediaGetResult struct {
+	gophercloud.Result
+}
+
 // VirtualInterfaceAttachResult is the response from an AttachVirtualInterface operation.
 type VirtualInterfaceAttachResult struct {
 	gophercloud.ErrResult
