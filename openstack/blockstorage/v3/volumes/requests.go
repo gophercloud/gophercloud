@@ -763,3 +763,14 @@ func ResetStatus(ctx context.Context, client *gophercloud.ServiceClient, id stri
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Unmanage removes a volume from Block Storage management without
+// removing the back-end storage object that is associated with it.
+func Unmanage(ctx context.Context, client *gophercloud.ServiceClient, id string) (r UnmanageResult) {
+	body := map[string]any{"os-unmanage": make(map[string]any)}
+	resp, err := client.Post(ctx, actionURL(client, id), body, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
