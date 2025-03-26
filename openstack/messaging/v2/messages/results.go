@@ -123,9 +123,5 @@ func (r MessagePage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	next, err := gophercloud.ExtractNextURL(s.Links)
-	if err != nil {
-		return "", err
-	}
-	return nextPageURL(r.URL.String(), next)
+	return gophercloud.ExtractNextURL(s.Links)
 }
