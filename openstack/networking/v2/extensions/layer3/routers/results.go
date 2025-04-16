@@ -122,11 +122,14 @@ func (r RouterPage) IsEmpty() (bool, error) {
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractRouters(r pagination.Page) ([]Router, error) {
-	var s struct {
-		Routers []Router `json:"routers"`
-	}
-	err := (r.(RouterPage)).ExtractInto(&s)
-	return s.Routers, err
+	var s []Router
+	err := ExtractRoutersInto(r, &s)
+	return s, err
+}
+
+// ExtractRoutersInto extracts the elements into a slice of Router structs.
+func ExtractRoutersInto(r pagination.Page, v any) error {
+	return r.(RouterPage).Result.ExtractIntoSlicePtr(v, "routers")
 }
 
 type commonResult struct {
