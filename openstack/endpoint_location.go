@@ -79,12 +79,20 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 	// Extract Endpoints from the catalog entries that match the requested Type, Interface,
 	// Name if provided, and Region if provided.
 	var endpoints = make([]tokens3.Endpoint, 0, 1)
+
+	entriesByType := map[string][]tokens3.CatalogEntry{}
 	for _, entry := range catalog.Entries {
-		if (slices.Contains(opts.Types(), entry.Type)) && (opts.Name == "" || entry.Name == opts.Name) {
-			for _, endpoint := range entry.Endpoints {
-				if (opts.Availability == gophercloud.Availability(endpoint.Interface)) &&
-					(opts.Region == "" || endpoint.Region == opts.Region || endpoint.RegionID == opts.Region) {
-					endpoints = append(endpoints, endpoint)
+		entriesByType[entry.Type] = append(entriesByType[entry.Type], entry)
+	}
+
+	for _, serviceType := range opts.Types() {
+		if entries, ok := entriesByType[serviceType]; ok {
+			for _, entry := range entries {
+				for _, endpoint := range entry.Endpoints {
+					if (opts.Availability == gophercloud.Availability(endpoint.Interface)) &&
+						(opts.Region == "" || endpoint.Region == opts.Region || endpoint.RegionID == opts.Region) {
+						endpoints = append(endpoints, endpoint)
+					}
 				}
 			}
 		}
