@@ -8,6 +8,8 @@ import (
 	tokens3 "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 )
 
+// TODO(stephenfin): Remove this module in v3. The functions below are no longer used.
+
 /*
 V2EndpointURL discovers the endpoint URL for a specific service from a
 ServiceCatalog acquired during the v2 identity service.
