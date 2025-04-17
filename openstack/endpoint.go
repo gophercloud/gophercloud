@@ -1,12 +1,33 @@
 package openstack
 
 import (
+	"context"
 	"slices"
 
 	"github.com/gophercloud/gophercloud/v2"
 	tokens2 "github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	tokens3 "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
+
+func endpointSupportsVersion(ctx context.Context, client *gophercloud.ProviderClient, serviceType, endpointURL string, expectedVersion int) (bool, error) {
+	// Swift doesn't support version discovery :(
+	if expectedVersion == 0 || serviceType == "object-store" {
+		return true, nil
+	}
+
+	endpointURL, err := utils.BaseVersionedEndpoint(endpointURL)
+	if err != nil {
+		return false, err
+	}
+
+	supportedMicroversions, err := utils.GetServiceVersions(ctx, client, endpointURL)
+	if err != nil {
+		return false, err
+	}
+
+	return supportedMicroversions.MinMajor == 0 || supportedMicroversions.MinMajor == expectedVersion, nil
+}
 
 /*
 V2Endpoint discovers the endpoint URL for a specific service from a
@@ -18,7 +39,7 @@ criteria and when none do. The minimum that can be specified is a Type, but you
 will also often need to specify a Name and/or a Region depending on what's
 available on your OpenStack deployment.
 */
-func V2Endpoint(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
+func V2Endpoint(ctx context.Context, client *gophercloud.ProviderClient, catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
 	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
 	//
 	// If multiple endpoints are found, we return the first result and disregard the rest.
@@ -45,6 +66,14 @@ func V2Endpoint(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) 
 					return "", err
 				}
 
+				endpointSupportsVersion, err := endpointSupportsVersion(ctx, client, entry.Type, endpointURL, opts.Version)
+				if err != nil {
+					return "", err
+				}
+				if !endpointSupportsVersion {
+					continue
+				}
+
 				return endpointURL, nil
 			}
 		}
@@ -65,7 +94,7 @@ criteria and when none do. The minimum that can be specified is a Type, but you
 will also often need to specify a Name and/or a Region depending on what's
 available on your OpenStack deployment.
 */
-func V3Endpoint(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
+func V3Endpoint(ctx context.Context, client *gophercloud.ProviderClient, catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
 	if opts.Availability != gophercloud.AvailabilityAdmin &&
 		opts.Availability != gophercloud.AvailabilityPublic &&
 		opts.Availability != gophercloud.AvailabilityInternal {
@@ -90,7 +119,17 @@ func V3Endpoint(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpts) 
 					continue
 				}
 
-				return gophercloud.NormalizeURL(endpoint.URL), nil
+				endpointURL := gophercloud.NormalizeURL(endpoint.URL)
+
+				endpointSupportsVersion, err := endpointSupportsVersion(ctx, client, entry.Type, endpointURL, opts.Version)
+				if err != nil {
+					return "", err
+				}
+				if !endpointSupportsVersion {
+					continue
+				}
+
+				return endpointURL, nil
 			}
 		}
 	}
