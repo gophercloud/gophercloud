@@ -1,12 +1,24 @@
 package openstack
 
 import (
+	"regexp"
 	"slices"
 
 	"github.com/gophercloud/gophercloud/v2"
 	tokens2 "github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	tokens3 "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 )
+
+func extractServiceTypeVersion(serviceType string) string {
+	versionedServiceTypeAliasRegexp := regexp.MustCompile(`^.*v(\d)$`)
+
+	matches := versionedServiceTypeAliasRegexp.FindAllStringSubmatch(serviceType, 1)
+	if matches != nil {
+		// no point converting to an int
+		return matches[0][1]
+	}
+	return ""
+}
 
 /*
 V2EndpointURL discovers the endpoint URL for a specific service from a
@@ -80,8 +92,14 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 	// Name if provided, and Region if provided.
 	var endpoints = make([]tokens3.Endpoint, 0, 1)
 
+	requestedVersion := extractServiceTypeVersion(opts.Type)
 	entriesByType := map[string][]tokens3.CatalogEntry{}
 	for _, entry := range catalog.Entries {
+		// If we explicitly requested e.g. volumev3 and the endpoint is using volumev2, ignore
+		actualVersion := extractServiceTypeVersion(entry.Type)
+		if requestedVersion != "" && actualVersion != "" && requestedVersion != actualVersion {
+			continue
+		}
 		entriesByType[entry.Type] = append(entriesByType[entry.Type], entry)
 	}
 
