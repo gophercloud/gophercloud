@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-#
-# Run 'go fmt' to warn about unformatted code
-
-set -euxo pipefail
-
-go fmt ./...
