@@ -118,10 +118,21 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 			// TODO(stephenfin): This should probably be an error in v3
 			for t, aliases := range ServiceTypeAliases {
 				if slices.Contains(aliases, eo.Type) {
-					// we intentionally override the service type, even if it
-					// was explicitly requested by the user
-					eo.Type = t
-					eo.Aliases = aliases
+					// we pretend the alias is the official service type and the
+					// official service type is an alias which allows us to prefer
+					// what the user requested
+					// TODO(stephenfin): We should stop doing this once we have
+					// proper version discovery
+					// https://github.com/gophercloud/gophercloud/issues/3349
+					altAliases := []string{t}
+					for _, alias := range aliases {
+						if alias == eo.Type {
+							continue
+						}
+						altAliases = append(altAliases, alias)
+					}
+					eo.Aliases = altAliases
+					continue
 				}
 			}
 		}
