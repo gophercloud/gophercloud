@@ -205,7 +205,7 @@ func HandlePortGroupListSuccessfully(t *testing.T) {
 		switch marker {
 		case "":
 			// Return both portgroups.
-			fmt.Fprintf(w, PortGroupsListBody)
+			fmt.Fprint(w, PortGroupsListBody)
 		case "d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796":
 			// No portgroups remain.
 			fmt.Fprintf(w, `{ "portgroups": [] }`)
@@ -241,7 +241,7 @@ func HandlePortGroupCreationSuccessfully(t *testing.T, response string) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, response)
+		fmt.Fprint(w, response)
 	})
 }
 
@@ -266,6 +266,6 @@ func HandlePortGroupGetSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, SinglePortGroupBody)
+			fmt.Fprint(w, SinglePortGroupBody)
 		})
 }
