@@ -40,7 +40,7 @@ import (
 //     clouds.yaml, use that location as the only search location for `clouds.yaml` and `secure.yaml`;
 //   - otherwise, the search locations for `clouds.yaml` and `secure.yaml` are:
 //     1. the current working directory (on Linux: `./`)
-//     2. the directory `openstack` under the standatd user config location for
+//     2. the directory `openstack` under the standard user config location for
 //     the operating system (on Linux: `${XDG_CONFIG_HOME:-$HOME/.config}/openstack/`)
 //     3. on Linux, `/etc/openstack/`
 //
