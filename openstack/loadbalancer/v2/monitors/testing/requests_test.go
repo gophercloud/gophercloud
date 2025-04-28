@@ -60,6 +60,7 @@ func TestCreateHealthmonitor(t *testing.T) {
 
 	actual, err := monitors.Create(context.TODO(), fake.ServiceClient(), monitors.CreateOpts{
 		Type:           "HTTP",
+		DomainName:     "www.example.com",
 		Name:           "db",
 		PoolID:         "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
 		ProjectID:      "453105b9-1754-413f-aab1-55f1af620750",
@@ -67,6 +68,7 @@ func TestCreateHealthmonitor(t *testing.T) {
 		Timeout:        10,
 		MaxRetries:     5,
 		MaxRetriesDown: 4,
+		HTTPVersion:    "1.1",
 		Tags:           []string{},
 		URLPath:        "/check",
 		ExpectedCodes:  "200-299",
