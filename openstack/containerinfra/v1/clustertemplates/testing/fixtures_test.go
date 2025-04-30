@@ -278,6 +278,28 @@ func HandleCreateClusterTemplateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `{
+                  "coe": "kubernetes",
+                  "dns_nameserver": "8.8.8.8",
+                  "docker_storage_driver": "devicemapper",
+                  "docker_volume_size": 3,
+                  "external_network_id": "public",
+                  "flavor_id": "m1.small",
+                  "hidden": true,
+                  "http_proxy": "http://10.164.177.169:8080",
+                  "https_proxy": "http://10.164.177.169:8080",
+                  "image_id": "Fedora-Atomic-27-20180212.2.x86_64",
+                  "keypair_id": "kp",
+                  "master_lb_enabled": true,
+                  "name": "kubernetes-dev",
+                  "network_driver": "flannel",
+                  "no_proxy": "10.0.0.0/8,172.0.0.0/8,192.0.0.0/8,localhost",
+                  "public": false,
+                  "registry_enabled": false,
+                  "server_type": "vm",
+                  "tls_disabled": false,
+                  "volume_driver": "cinder"
+                }`)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
