@@ -15,6 +15,12 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "22.04"
             devstack_conf_overrides: |
+              # ensure we're using a working version of setuptools
+              if [ -n "\$TOP_DIR" ]; then
+                sed -i 's/setuptools\[core\]$/setuptools[core]==79.0.1/g' \$TOP_DIR/lib/infra \$TOP_DIR/inc/python
+                sed -i 's/pip_install "-U" "pbr"/pip_install "-U" "pbr" "setuptools[core]==79.0.1"/g' \$TOP_DIR/lib/infra
+              fi
+
               enable_plugin magnum https://github.com/openstack/magnum master
               MAGNUMCLIENT_BRANCH=master
             additional_services: "openstack-cli-server"
@@ -54,6 +60,7 @@ jobs:
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true
+
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: "h-eng,h-api,h-api-cfn,h-api-cw,${{ matrix.additional_services }}"
       - name: Checkout go

@@ -14,6 +14,12 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              # ensure we're using a working version of setuptools
+              if [ -n "\$TOP_DIR" ]; then
+                sed -i 's/setuptools\[core\]$/setuptools[core]==79.0.1/g' \$TOP_DIR/lib/infra \$TOP_DIR/inc/python
+                sed -i 's/pip_install "-U" "pbr"/pip_install "-U" "pbr" "setuptools[core]==79.0.1"/g' \$TOP_DIR/lib/infra
+              fi
             additional_services: "openstack-cli-server"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
@@ -39,6 +45,8 @@ jobs:
           conf_overrides: |
             enable_plugin octavia https://github.com/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://github.com/openstack/neutron ${{ matrix.openstack_version }}
+
+            ${{ matrix.devstack_conf_overrides }}
           enabled_services: "octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos,${{ matrix.additional_services }}"
       - name: Checkout go
         uses: actions/setup-go@v5
