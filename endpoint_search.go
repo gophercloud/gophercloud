@@ -45,7 +45,7 @@ var ServiceTypeAliases = map[string][]string{
 	"object-store":                        {},
 	"orchestration":                       {},
 	"placement":                           {},
-	"shared-file-system":                  {"sharev2", "share"},
+	"shared-file-system":                  {"share", "sharev2"},
 	"workflow":                            {"workflowv2"},
 }
 
