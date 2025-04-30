@@ -31,6 +31,9 @@ func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, c
 	t.Logf("Attempting to create %s cluster template: %s", coe, name)
 
 	boolFalse := false
+	labels := map[string]string{
+		"test": "test",
+	}
 	createOpts := clustertemplates.CreateOpts{
 		COE:                 coe,
 		DNSNameServer:       "8.8.8.8",
@@ -45,6 +48,8 @@ func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, c
 		Public:              &boolFalse,
 		RegistryEnabled:     &boolFalse,
 		ServerType:          "vm",
+		// workaround for https://bugs.launchpad.net/magnum/+bug/2109685
+		Labels: labels,
 	}
 
 	res := clustertemplates.Create(context.TODO(), client, createOpts)
@@ -68,6 +73,7 @@ func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, c
 	tools.PrintResource(t, clusterTemplate.CreatedAt)
 
 	th.AssertEquals(t, name, clusterTemplate.Name)
+	th.AssertDeepEquals(t, labels, clusterTemplate.Labels)
 	th.AssertEquals(t, choices.ExternalNetworkID, clusterTemplate.ExternalNetworkID)
 	th.AssertEquals(t, choices.MagnumImageID, clusterTemplate.ImageID)
 
