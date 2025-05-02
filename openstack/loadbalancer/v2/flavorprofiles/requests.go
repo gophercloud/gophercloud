@@ -121,7 +121,7 @@ func (opts UpdateOpts) ToFlavorProfileUpdateMap() (map[string]any, error) {
 
 // Update is an operation which modifies the attributes of the specified
 // FlavorProfile.
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToFlavorProfileUpdateMap()
 	if err != nil {
 		r.Err = err
