@@ -42,6 +42,12 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 	return
 }
 
+// AcceptOptsBuilder allows extensions to add additional parameters to the
+// Accept request.
+type AcceptOptsBuilder interface {
+	ToAcceptMap() (map[string]any, error)
+}
+
 // AcceptOpts contains options for a Share transfer accept reqeust.
 type AcceptOpts struct {
 	// The auth key of the share transfer to accept.
@@ -58,7 +64,7 @@ func (opts AcceptOpts) ToAcceptMap() (map[string]any, error) {
 }
 
 // Accept will accept a share tranfer request based on the values in AcceptOpts.
-func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r AcceptResult) {
+func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOptsBuilder) (r AcceptResult) {
 	b, err := opts.ToAcceptMap()
 	if err != nil {
 		r.Err = err
