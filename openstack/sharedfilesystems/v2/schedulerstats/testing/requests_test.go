@@ -40,7 +40,7 @@ func TestListPoolsDetail(t *testing.T) {
 	}
 
 	pages = 0
-	err = schedulerstats.ListDetail(client.ServiceClient(), schedulerstats.ListDetailOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err = schedulerstats.ListDetail(client.ServiceClient(), schedulerstats.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := schedulerstats.ExtractPools(page)
