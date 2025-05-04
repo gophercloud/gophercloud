@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**baremetal**'
+      - '.github/workflows/functional-baremetal.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
@@ -105,6 +106,7 @@ jobs:
           OS_BRANCH: ${{ matrix.openstack_version }}
           # TODO(dtantsur): default to true when no longer supporting versions before 2024.1
           USE_SYSTEM_SCOPE: ${{ matrix.use_system_scope }}
+          IRONIC_ENDPOINT: "http://127.0.0.1:6385/v1"
       - name: Generate logs on failure
         run: ./script/collectlogs
         if: failure()
