@@ -1,3 +1,4 @@
+# Testing
 name: functional-baremetal
 on:
   pull_request:
