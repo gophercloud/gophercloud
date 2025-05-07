@@ -18,7 +18,7 @@ import (
 const replicasPathMicroversion = "2.56"
 
 func TestReplicaCreate(t *testing.T) {
-	clients.RequireManilaReplicas(t)
+	RequireManilaReplicas(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
@@ -55,7 +55,7 @@ func TestReplicaCreate(t *testing.T) {
 }
 
 func TestReplicaPromote(t *testing.T) {
-	clients.RequireManilaReplicas(t)
+	RequireManilaReplicas(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
@@ -131,7 +131,7 @@ func TestReplicaPromote(t *testing.T) {
 }
 
 func TestReplicaExportLocations(t *testing.T) {
-	clients.RequireManilaReplicas(t)
+	RequireManilaReplicas(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
@@ -198,7 +198,7 @@ func TestReplicaExportLocations(t *testing.T) {
 }
 
 func TestReplicaListDetail(t *testing.T) {
-	clients.RequireManilaReplicas(t)
+	RequireManilaReplicas(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
@@ -231,7 +231,7 @@ func TestReplicaListDetail(t *testing.T) {
 }
 
 func TestReplicaResetStatus(t *testing.T) {
-	clients.RequireManilaReplicas(t)
+	RequireManilaReplicas(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
@@ -272,7 +272,7 @@ func TestReplicaResetStatus(t *testing.T) {
 
 // This test available only for cloud admins
 func TestReplicaForceDelete(t *testing.T) {
-	clients.RequireManilaReplicas(t)
+	RequireManilaReplicas(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewSharedFileSystemV2Client()

@@ -15,7 +15,7 @@ import (
 
 func TestAllocationsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
-	clients.RequireIronicHTTPBasic(t)
+	RequireIronicHTTPBasic(t)
 
 	client, err := clients.NewBareMetalV1HTTPBasic()
 	th.AssertNoErr(t, err)

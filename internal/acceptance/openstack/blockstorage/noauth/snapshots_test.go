@@ -12,7 +12,7 @@ import (
 )
 
 func TestSnapshotsList(t *testing.T) {
-	clients.RequireCinderNoAuth(t)
+	RequireCinderNoAuth(t)
 
 	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
@@ -35,7 +35,7 @@ func TestSnapshotsList(t *testing.T) {
 }
 
 func TestSnapshotsCreateDelete(t *testing.T) {
-	clients.RequireCinderNoAuth(t)
+	RequireCinderNoAuth(t)
 
 	client, err := clients.NewBlockStorageV3NoAuthClient()
 	if err != nil {
