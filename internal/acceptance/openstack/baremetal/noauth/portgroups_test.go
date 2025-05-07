@@ -1,3 +1,5 @@
+//go:build acceptance || baremetal || ports
+
 package noauth
 
 import (

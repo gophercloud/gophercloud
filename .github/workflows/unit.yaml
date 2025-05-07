@@ -1,8 +1,9 @@
-on: [push, pull_request]
 name: Unit Testing
+on:
+  - push
+  - pull_request
 permissions:
   contents: read
-
 jobs:
   test:
     permissions:
@@ -15,35 +16,29 @@ jobs:
         go-version:
           - "1.23.0"
           - "1"
-
     steps:
+      - name: Checkout Gophercloud
+        uses: actions/checkout@v4
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-
-      - uses: actions/checkout@v4
-
       - name: Setup environment
         run: |
           # Changing into a different directory to avoid polluting go.sum with "go get"
           cd "$(mktemp -d)"
           go mod init unit_tests
-
           go install github.com/wadey/gocovmerge@master
-
       - name: Run unit tests
         run: |
-          ./script/coverage
-          ./script/unittest
-
+          make unit
+          make coverage
       - name: Check coverage
         uses: coverallsapp/github-action@v2
         with:
           file: cover.out
           flag-name: Go-${{ matrix.go-version }}
           parallel: true
-
   finish:
     permissions:
       checks: write  # for coverallsapp/github-action to create a new check based on the results
