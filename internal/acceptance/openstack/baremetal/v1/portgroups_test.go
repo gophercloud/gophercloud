@@ -1,3 +1,5 @@
+//go:build acceptance || baremetal || portgroups
+
 package v1
 
 import (
