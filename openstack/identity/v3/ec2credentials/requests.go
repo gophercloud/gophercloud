@@ -22,6 +22,12 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, userID string, 
 	return
 }
 
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToCredentialCreateMap() (map[string]any, error)
+}
+
 // CreateOpts provides options used to create an EC2 credential.
 type CreateOpts struct {
 	// TenantID is the project ID scope of the EC2 credential.
@@ -34,7 +40,7 @@ func (opts CreateOpts) ToCredentialCreateMap() (map[string]any, error) {
 }
 
 // Create creates a new EC2 Credential.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, userID string, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, userID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToCredentialCreateMap()
 	if err != nil {
 		r.Err = err

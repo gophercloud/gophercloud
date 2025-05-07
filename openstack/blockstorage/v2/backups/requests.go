@@ -238,6 +238,12 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, o
 	return
 }
 
+// RestoreOptsBuilder allows extensions to add additional parameters to the
+// Restore request.
+type RestoreOptsBuilder interface {
+	ToRestoreMap() (map[string]any, error)
+}
+
 // RestoreOpts contains options for restoring a Backup. This object is passed to
 // the backups.RestoreFromBackup function.
 type RestoreOpts struct {
@@ -257,7 +263,7 @@ func (opts RestoreOpts) ToRestoreMap() (map[string]any, error) {
 // RestoreFromBackup will restore a Backup to a volume based on the values in
 // RestoreOpts. To extract the Restore object from the response, call the
 // Extract method on the RestoreResult.
-func RestoreFromBackup(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RestoreOpts) (r RestoreResult) {
+func RestoreFromBackup(ctx context.Context, client *gophercloud.ServiceClient, id string, opts RestoreOptsBuilder) (r RestoreResult) {
 	b, err := opts.ToRestoreMap()
 	if err != nil {
 		r.Err = err
@@ -278,6 +284,12 @@ func Export(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 	return
 }
 
+// ImportOptsBuilder allows extensions to add additional parameters to the
+// Import request.
+type ImportOptsBuilder interface {
+	ToBackupImportMap() (map[string]any, error)
+}
+
 // ImportOpts contains options for importing a Backup. This object is passed to
 // the backups.ImportBackup function.
 type ImportOpts BackupRecord
@@ -291,7 +303,7 @@ func (opts ImportOpts) ToBackupImportMap() (map[string]any, error) {
 // Import will import a Backup data to a backup based on the values in
 // ImportOpts. To extract the Backup object from the response, call the
 // Extract method on the ImportResult.
-func Import(ctx context.Context, client *gophercloud.ServiceClient, opts ImportOpts) (r ImportResult) {
+func Import(ctx context.Context, client *gophercloud.ServiceClient, opts ImportOptsBuilder) (r ImportResult) {
 	b, err := opts.ToBackupImportMap()
 	if err != nil {
 		r.Err = err

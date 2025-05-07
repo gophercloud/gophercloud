@@ -617,6 +617,12 @@ func SetImageMetadata(ctx context.Context, client *gophercloud.ServiceClient, id
 	return
 }
 
+// BootableOptsBuilder allows extensions to add additional parameters to the
+// SetBootable request.
+type BootableOptsBuilder interface {
+	ToBootableMap() (map[string]any, error)
+}
+
 // BootableOpts contains options for setting bootable status to a volume.
 type BootableOpts struct {
 	// Enables or disables the bootable attribute. You can boot an instance from a bootable volume.
@@ -630,7 +636,7 @@ func (opts BootableOpts) ToBootableMap() (map[string]any, error) {
 }
 
 // SetBootable will set bootable status on a volume based on the values in BootableOpts
-func SetBootable(ctx context.Context, client *gophercloud.ServiceClient, id string, opts BootableOpts) (r SetBootableResult) {
+func SetBootable(ctx context.Context, client *gophercloud.ServiceClient, id string, opts BootableOptsBuilder) (r SetBootableResult) {
 	b, err := opts.ToBootableMap()
 	if err != nil {
 		r.Err = err
@@ -691,6 +697,12 @@ func ChangeType(ctx context.Context, client *gophercloud.ServiceClient, id strin
 	return
 }
 
+// ReImageOptsBuilder allows extensions to add additional parameters to the
+// ReImage request.
+type ReImageOptsBuilder interface {
+	ToReImageMap() (map[string]any, error)
+}
+
 // ReImageOpts contains options for Re-image a volume.
 type ReImageOpts struct {
 	// New image id
@@ -705,7 +717,7 @@ func (opts ReImageOpts) ToReImageMap() (map[string]any, error) {
 }
 
 // ReImage will re-image a volume based on the values in ReImageOpts
-func ReImage(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ReImageOpts) (r ReImageResult) {
+func ReImage(ctx context.Context, client *gophercloud.ServiceClient, id string, opts ReImageOptsBuilder) (r ReImageResult) {
 	b, err := opts.ToReImageMap()
 	if err != nil {
 		r.Err = err

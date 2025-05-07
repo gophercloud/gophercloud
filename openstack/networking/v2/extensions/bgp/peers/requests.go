@@ -43,7 +43,7 @@ func (opts CreateOpts) ToPeerCreateMap() (map[string]any, error) {
 }
 
 // Create a BGP Peer
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToPeerCreateMap()
 	if err != nil {
 		r.Err = err
@@ -79,7 +79,7 @@ func (opts UpdateOpts) ToPeerUpdateMap() (map[string]any, error) {
 }
 
 // Update accept a BGP Peer ID and an UpdateOpts and update the BGP Peer
-func Update(ctx context.Context, c *gophercloud.ServiceClient, bgpPeerID string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, bgpPeerID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToPeerUpdateMap()
 	if err != nil {
 		r.Err = err

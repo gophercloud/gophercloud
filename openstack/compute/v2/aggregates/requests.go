@@ -15,6 +15,12 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 	})
 }
 
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToAggregatesCreateMap() (map[string]any, error)
+}
+
 type CreateOpts struct {
 	// The name of the host aggregate.
 	Name string `json:"name" required:"true"`
@@ -31,7 +37,7 @@ func (opts CreateOpts) ToAggregatesCreateMap() (map[string]any, error) {
 }
 
 // Create makes a request against the API to create an aggregate.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToAggregatesCreateMap()
 	if err != nil {
 		r.Err = err
@@ -64,6 +70,12 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int
 	return
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToAggregatesUpdateMap() (map[string]any, error)
+}
+
 type UpdateOpts struct {
 	// The name of the host aggregate.
 	Name *string `json:"name,omitempty"`
@@ -80,7 +92,7 @@ func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]any, error) {
 }
 
 // Update makes a request against the API to update a specific aggregate.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, aggregateID int, opts UpdateOptsBuilder) (r UpdateResult) {
 	v := strconv.Itoa(aggregateID)
 
 	b, err := opts.ToAggregatesUpdateMap()

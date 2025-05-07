@@ -276,8 +276,7 @@ func (opts ModifyTagsOpts) ToModifyTagsCreateMap() (map[string]any, error) {
 }
 
 // ModifyTags deletes all tags of a project and adds new ones.
-func ModifyTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string, opts ModifyTagsOpts) (r ModifyTagsResult) {
-
+func ModifyTags(ctx context.Context, client *gophercloud.ServiceClient, projectID string, opts ModifyTagsOptsBuilder) (r ModifyTagsResult) {
 	b, err := opts.ToModifyTagsCreateMap()
 	if err != nil {
 		r.Err = err
