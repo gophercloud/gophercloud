@@ -14,7 +14,7 @@ import (
 )
 
 func TestTokenAuthenticate(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2UnauthenticatedClient()
@@ -38,7 +38,7 @@ func TestTokenAuthenticate(t *testing.T) {
 }
 
 func TestTokenValidate(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2Client()

@@ -13,7 +13,7 @@ import (
 )
 
 func TestTenantsList(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2Client()
@@ -38,7 +38,7 @@ func TestTenantsList(t *testing.T) {
 }
 
 func TestTenantsCRUD(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2AdminClient()
