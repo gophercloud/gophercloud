@@ -1,8 +1,0 @@
-#!/bin/bash
-#
-# Run all the tests.
-
-set -euxo pipefail
-
-# shellcheck disable=SC2068
-go test -v -tags 'acceptance fixtures' ./... $@
