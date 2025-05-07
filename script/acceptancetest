@@ -22,5 +22,33 @@ if [[ -z "${LOG_DIR}" ]]; then
 fi
 mkdir -p "${LOG_DIR}"
 
+# wait until $IRONIC_ENDPOINT is available, or 2 minutes. Use curl
+# to check if the endpoint is available
+IRONIC_ENDPOINT=${IRONIC_ENDPOINT}
+
+if [ -z "$IRONIC_ENDPOINT" ]; then
+  echo "IRONIC_ENDPOINT is not set. Skipping availability check."
+else
+  TIMEOUT=120 # 2 minutes in seconds
+  START_TIME=$(date +%s)
+
+  until
+    curl -s -o /dev/null -w "%{http_code}" "$IRONIC_ENDPOINT" | grep -q "20[0-9]"
+    if [ $? -eq 0 ]; then
+      echo "Ironic endpoint is available."
+      break
+    fi
+    CURRENT_TIME=$(date +%s)
+    ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
+    if [ "$ELAPSED_TIME" -gt "$TIMEOUT" ]; then
+      echo "Timeout reached. Ironic endpoint is not available after 2 minutes."
+      break
+    fi
+    echo "Ironic endpoint not yet available. Waiting..."
+    sleep 5
+  done
+fi
+
+
 # shellcheck disable=SC2068
 go test -v -timeout $timeout -tags "fixtures acceptance" "${PACKAGE:-./internal/acceptance/openstack/...}" $@ |& tee -a "${LOG_DIR}/acceptance_tests.log"
