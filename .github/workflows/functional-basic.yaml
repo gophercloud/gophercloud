@@ -27,7 +27,7 @@ jobs:
             ubuntu_version: "22.04"
             additional_services: ""
           - name: "bobcat"
-            openstack_version: "stable/2023.2"
+            openstack_version: "2023.2-eol"
             ubuntu_version: "22.04"
             additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
