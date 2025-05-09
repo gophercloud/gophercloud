@@ -26,14 +26,6 @@ jobs:
             ubuntu_version: "22.04"
             mistral_plugin_version: "stable/2024.1"
             additional_services: ""
-          - name: "bobcat"
-            openstack_version: "stable/2023.2"
-            ubuntu_version: "22.04"
-            # Devstack support is broken with Mistral v2023.2, and requires 2 patches:
-            # * https://github.com/openstack/mistral/commit/e343ccb078d8ba261ac70afca93f4358589730d3
-            # * https://github.com/openstack/mistral/commit/ecdeadeb7a1aa87cba2cdb0c1a2bb1ffc4aabf25
-            mistral_plugin_version: "ecdeadeb7a1aa87cba2cdb0c1a2bb1ffc4aabf25"
-            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Deploy OpenStack ${{ matrix.name }} with Mistral and run workflow acceptance tests
     steps:
