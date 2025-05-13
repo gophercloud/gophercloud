@@ -43,7 +43,7 @@ func (opts CreateOpts) ToSpeakerCreateMap() (map[string]any, error) {
 }
 
 // Create accepts a CreateOpts and create a BGP Speaker.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSpeakerCreateMap()
 	if err != nil {
 		r.Err = err

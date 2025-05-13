@@ -81,7 +81,7 @@ func (opts CreateOpts) ToBGPVPNCreateMap() (map[string]any, error) {
 }
 
 // Create a BGP VPN
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToBGPVPNCreateMap()
 	if err != nil {
 		r.Err = err
@@ -121,7 +121,7 @@ func (opts UpdateOpts) ToBGPVPNUpdateMap() (map[string]any, error) {
 }
 
 // Update accept a BGP VPN ID and an UpdateOpts and update the BGP VPN
-func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToBGPVPNUpdateMap()
 	if err != nil {
 		r.Err = err

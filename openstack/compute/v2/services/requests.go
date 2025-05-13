@@ -51,6 +51,12 @@ const (
 	ServiceDisabled ServiceStatus = "disabled"
 )
 
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToServiceUpdateMap() (map[string]any, error)
+}
+
 // UpdateOpts specifies the base attributes that may be updated on a service.
 type UpdateOpts struct {
 	// Status represents the new service status. One of enabled or disabled.
@@ -70,7 +76,7 @@ func (opts UpdateOpts) ToServiceUpdateMap() (map[string]any, error) {
 }
 
 // Update requests that various attributes of the indicated service be changed.
-func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToServiceUpdateMap()
 	if err != nil {
 		r.Err = err

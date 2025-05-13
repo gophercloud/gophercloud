@@ -7,6 +7,12 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToCreateMap() (map[string]any, error)
+}
+
 // CreateOpts contains options for a Volume transfer.
 type CreateOpts struct {
 	// The ID of the volume to transfer.
@@ -23,7 +29,7 @@ func (opts CreateOpts) ToCreateMap() (map[string]any, error) {
 }
 
 // Create will create a volume tranfer request based on the values in CreateOpts.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToCreateMap()
 	if err != nil {
 		r.Err = err
@@ -34,6 +40,12 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
+}
+
+// AcceptOptsBuilder allows extensions to add additional parameters to the
+// Accept request.
+type AcceptOptsBuilder interface {
+	ToAcceptMap() (map[string]any, error)
 }
 
 // AcceptOpts contains options for a Volume transfer accept reqeust.
@@ -49,7 +61,7 @@ func (opts AcceptOpts) ToAcceptMap() (map[string]any, error) {
 }
 
 // Accept will accept a volume tranfer request based on the values in AcceptOpts.
-func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r CreateResult) {
+func Accept(ctx context.Context, client *gophercloud.ServiceClient, id string, opts AcceptOptsBuilder) (r CreateResult) {
 	b, err := opts.ToAcceptMap()
 	if err != nil {
 		r.Err = err
