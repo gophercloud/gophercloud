@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/vpnaas/endpointgroups"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -15,6 +16,9 @@ import (
 func TestGroupList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "vpnaas")
 
 	allPages, err := endpointgroups.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -30,6 +34,9 @@ func TestGroupList(t *testing.T) {
 func TestGroupCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "vpnaas")
 
 	group, err := CreateEndpointGroup(t, client)
 	th.AssertNoErr(t, err)

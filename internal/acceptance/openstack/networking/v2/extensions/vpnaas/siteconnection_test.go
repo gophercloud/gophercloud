@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
-	networks "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
+	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	layer3 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions/layer3"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/routers"
@@ -18,6 +18,9 @@ import (
 func TestConnectionList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "vpnaas")
 
 	allPages, err := siteconnections.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -31,19 +34,24 @@ func TestConnectionList(t *testing.T) {
 }
 
 func TestConnectionCRUD(t *testing.T) {
+	// TODO(stephenfin): Why are we skipping this? Can we unskip? If not, we should remove.
 	clients.SkipReleasesAbove(t, "stable/wallaby")
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "vpnaas")
+
 	// Create Network
-	network, err := networks.CreateNetwork(t, client)
+	network, err := networking.CreateNetwork(t, client)
 	th.AssertNoErr(t, err)
-	defer networks.DeleteNetwork(t, client, network.ID)
+	defer networking.DeleteNetwork(t, client, network.ID)
 
 	// Create Subnet
-	subnet, err := networks.CreateSubnet(t, client, network.ID)
+	subnet, err := networking.CreateSubnet(t, client, network.ID)
 	th.AssertNoErr(t, err)
-	defer networks.DeleteSubnet(t, client, subnet.ID)
+	defer networking.DeleteSubnet(t, client, subnet.ID)
 
 	router, err := layer3.CreateExternalRouter(t, client)
 	th.AssertNoErr(t, err)
