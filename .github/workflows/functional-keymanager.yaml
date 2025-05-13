@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**keymanager**'
+      - '.github/workflows/functional-keymanager.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:

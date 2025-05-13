@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**blockstorage**'
+      - '.github/workflows/functional-blockstorage.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:

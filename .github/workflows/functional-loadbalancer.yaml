@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**loadbalancer**'
+      - '.github/workflows/functional-loadbalancer.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:

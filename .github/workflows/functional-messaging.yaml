@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**messaging**'
+      - '.github/workflows/functional-messaging.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
