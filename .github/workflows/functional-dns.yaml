@@ -2,8 +2,8 @@ name: functional-dns
 on:
   pull_request:
     paths:
-      - '**openstack/dns**'
-      - '**functional-dns.yaml'
+      - '**dns**'
+      - '.github/workflows/functional-dns.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:

@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**workflow**'
+      - '.github/workflows/functional-workflow.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
