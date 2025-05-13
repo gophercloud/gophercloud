@@ -31,7 +31,7 @@ jobs:
       - name: Work around broken dnsmasq
         run: sudo apt-get purge -y dnsmasq-base
       - name: Deploy devstack
-        uses: gophercloud@devstack-action@v0.17
+        uses: gophercloud/devstack-action@v0.17
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
