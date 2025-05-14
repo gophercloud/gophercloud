@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**networking**'
+      - '.github/workflows/functional-networking.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
@@ -37,7 +38,7 @@ jobs:
           "update_port:binding:profile": "rule:admin_only or rule:service_api"
           EOF
       - name: Deploy devstack
-        uses: gophercloud@devstack-action@v0.17
+        uses: gophercloud/devstack-action@v0.17
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |

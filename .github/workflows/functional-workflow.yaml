@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '**workflow**'
+      - '.github/workflows/functional-workflow.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
@@ -32,7 +33,7 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: gophercloud@devstack-action@v0.17
+        uses: gophercloud/devstack-action@v0.17
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |

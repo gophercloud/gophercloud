@@ -16,8 +16,8 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func TestAgentsRUD(t *testing.T) {
-	t.Skip("TestAgentsRUD needs to be re-worked to work with both ML2/OVS and OVN")
+func TestAgentsCRUD(t *testing.T) {
+	t.Skip("TestAgentsCRUD needs to be re-worked to work with both ML2/OVS and OVN")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
@@ -96,12 +96,15 @@ func TestAgentsRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestBGPAgentRUD(t *testing.T) {
+func TestBGPAgentCRUD(t *testing.T) {
 	timeout := 15 * time.Minute
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "bgp")
 
 	// List BGP Agents
 	listOpts := &agents.ListOpts{

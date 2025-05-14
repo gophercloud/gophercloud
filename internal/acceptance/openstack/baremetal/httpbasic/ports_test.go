@@ -16,7 +16,7 @@ import (
 
 func TestPortsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
-	clients.RequireIronicHTTPBasic(t)
+	RequireIronicHTTPBasic(t)
 
 	client, err := clients.NewBareMetalV1HTTPBasic()
 	th.AssertNoErr(t, err)
@@ -52,7 +52,7 @@ func TestPortsCreateDestroy(t *testing.T) {
 
 func TestPortsUpdate(t *testing.T) {
 	clients.RequireLong(t)
-	clients.RequireIronicHTTPBasic(t)
+	RequireIronicHTTPBasic(t)
 
 	client, err := clients.NewBareMetalV1HTTPBasic()
 	th.AssertNoErr(t, err)

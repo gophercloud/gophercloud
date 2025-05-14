@@ -31,7 +31,7 @@ func TestMigrate(t *testing.T) {
 func TestLiveMigrate(t *testing.T) {
 	clients.RequireLong(t)
 	clients.RequireAdmin(t)
-	clients.RequireLiveMigration(t)
+	RequireLiveMigration(t)
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)

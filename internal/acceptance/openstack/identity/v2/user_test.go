@@ -13,7 +13,7 @@ import (
 )
 
 func TestUsersList(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2AdminClient()
@@ -38,7 +38,7 @@ func TestUsersList(t *testing.T) {
 }
 
 func TestUsersCreateUpdateDelete(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2AdminClient()
