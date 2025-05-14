@@ -17,8 +17,12 @@ import (
 
 func TestBGPSpeakerCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "bgp")
 
 	// Create a BGP Speaker
 	bgpSpeaker, err := CreateBGPSpeaker(t, client)
