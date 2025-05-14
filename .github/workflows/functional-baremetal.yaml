@@ -78,6 +78,33 @@ jobs:
         run: |
           source ${{ github.workspace }}/script/stackenv
           export IRONIC_ENDPOINT=http://${HOST_IP}:6385/v1
+          if [[ -z "$IRONIC_ENDPOINT" ]]; then
+            echo "IRONIC_ENDPOINT is not set. Skipping availability check."
+          else
+            TIMEOUT=120  # seconds
+            INTERVAL=5   # seconds between retries
+            START_TIME=$(date +%s)
+
+            while true; do
+              # Fetch only the status code
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$IRONIC_ENDPOINT")
+
+              if [[ $HTTP_CODE =~ ^20[0-9]$ ]]; then
+                echo "Ironic endpoint is available (HTTP $HTTP_CODE)."
+                break
+              fi
+
+              NOW=$(date +%s)
+              ELAPSED=$((NOW - START_TIME))
+              if (( ELAPSED >= TIMEOUT )); then
+                echo "Timeout reached after $TIMEOUT seconds. Endpoint still not available."
+                break
+              fi
+
+              echo "Ironic endpoint not yet available (got $HTTP_CODE). Waiting $INTERVAL seconds..."
+              sleep $INTERVAL
+            done
+          fi
           make acceptance-baremetal
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
