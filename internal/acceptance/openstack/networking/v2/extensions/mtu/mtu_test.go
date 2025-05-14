@@ -16,7 +16,7 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func TestMTUNetworkCRUDL(t *testing.T) {
+func TestMTUNetworkCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
