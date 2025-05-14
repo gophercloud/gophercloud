@@ -141,8 +141,8 @@ func TestDNSPortCRUDL(t *testing.T) {
 	th.AssertDeepEquals(t, newPort, getNewPort)
 }
 
-func TestDNSFloatingIPCRDL(t *testing.T) {
-	t.Skip("Skipping TestDNSFloatingIPCRDL for now, as it doesn't work with ML2/OVN.")
+func TestDNSFloatingIPCRUD(t *testing.T) {
+	t.Skip("Skipping TestDNSFloatingIPCRUD for now, as it doesn't work with ML2/OVN.")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()

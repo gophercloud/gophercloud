@@ -20,6 +20,9 @@ func TestBGPVPNCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "bgpvpn")
+
 	// Create a BGP VPN
 	bgpVpnCreated, err := CreateBGPVPN(t, client)
 	th.AssertNoErr(t, err)
@@ -60,11 +63,14 @@ func TestBGPVPNCRUD(t *testing.T) {
 	t.Logf("BGP VPN %s deleted", bgpVpnUpdated.Name)
 }
 
-func TestBGPVPNNetworkAssociationCRD(t *testing.T) {
+func TestBGPVPNNetworkAssociationCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "bgpvpn")
 
 	// Create a BGP VPN
 	bgpVpnCreated, err := CreateBGPVPN(t, client)
@@ -116,6 +122,9 @@ func TestBGPVPNRouterAssociationCRUD(t *testing.T) {
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "bgpvpn")
 
 	// Create a BGP VPN
 	bgpVpnCreated, err := CreateBGPVPN(t, client)
@@ -181,6 +190,9 @@ func TestBGPVPNPortAssociationCRUD(t *testing.T) {
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	networking.RequireNeutronExtension(t, client, "bgpvpn")
 
 	// Create a BGP VPN
 	bgpVpnCreated, err := CreateBGPVPN(t, client)
