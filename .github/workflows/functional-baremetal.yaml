@@ -78,7 +78,7 @@ jobs:
         run: |
           source ${{ github.workspace }}/script/stackenv
           export IRONIC_ENDPOINT=http://${HOST_IP}:6385/v1
-          sleep 120
+          sleep 500
           make acceptance-baremetal
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
