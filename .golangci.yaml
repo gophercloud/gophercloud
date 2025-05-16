@@ -18,8 +18,6 @@ linters:
       - linters:
           - staticcheck
         text: "SA1019: (x509.EncryptPEMBlock|strings.Title)"
-      - path: (.+)\.go$
-        text: SA1006
     paths:
       - third_party$
       - builtin$
