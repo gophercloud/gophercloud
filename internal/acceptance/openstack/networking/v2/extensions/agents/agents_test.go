@@ -165,7 +165,7 @@ func TestBGPAgentCRUD(t *testing.T) {
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
 			t.Logf("Agent %s has %d speaker(s)", agentID, numOfSpeakers)
-			return 1 == numOfSpeakers, nil
+			return numOfSpeakers == 1, nil
 		}, timeout)
 	th.AssertNoErr(t, err)
 
@@ -201,7 +201,7 @@ func TestBGPAgentCRUD(t *testing.T) {
 			agentConf := bgpAgent.Configurations
 			numOfSpeakers := int(agentConf["bgp_speakers"].(float64))
 			t.Logf("Agent %s has %d speaker(s)", bgpAgent.ID, numOfSpeakers)
-			return 0 == numOfSpeakers, nil
+			return numOfSpeakers == 0, nil
 		}, timeout)
 	th.AssertNoErr(t, err)
 }
