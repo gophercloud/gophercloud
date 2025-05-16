@@ -105,7 +105,7 @@ func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, optio
 		return v3auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
 	default:
 		// The switch statement must be out of date from the versions list.
-		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
+		return fmt.Errorf("unrecognized identity version: %s", chosen.ID)
 	}
 }
 
