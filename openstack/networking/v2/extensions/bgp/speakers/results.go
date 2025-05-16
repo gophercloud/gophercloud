@@ -19,7 +19,7 @@ func (r commonResult) Extract() (*BGPSpeaker, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, jroot)
+	return r.ExtractIntoStructPtr(v, jroot)
 }
 
 // BGPSpeaker BGP Speaker
@@ -84,7 +84,7 @@ func ExtractBGPSpeakers(r pagination.Page) ([]BGPSpeaker, error) {
 // a list of BGPSpeaker and the later should be used to store the result that would be
 // extracted from the former.
 func ExtractBGPSpeakersInto(r pagination.Page, v any) error {
-	return r.(BGPSpeakerPage).Result.ExtractIntoSlicePtr(v, "bgp_speakers")
+	return r.(BGPSpeakerPage).ExtractIntoSlicePtr(v, "bgp_speakers")
 }
 
 // GetResult represents the result of a get operation. Call its Extract
@@ -124,7 +124,7 @@ func (r AddBGPPeerResult) Extract() (*AddBGPPeerOpts, error) {
 }
 
 func (r AddBGPPeerResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 // RemoveBGPPeerResult represent the response of the PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove-bgp-peer
@@ -167,7 +167,7 @@ func ExtractAdvertisedRoutes(r pagination.Page) ([]AdvertisedRoute, error) {
 
 // ExtractAdvertisedRoutesInto extract the advertised routes from the first param into the 2nd
 func ExtractAdvertisedRoutesInto(r pagination.Page, v any) error {
-	return r.(AdvertisedRoutePage).Result.ExtractIntoSlicePtr(v, "advertised_routes")
+	return r.(AdvertisedRoutePage).ExtractIntoSlicePtr(v, "advertised_routes")
 }
 
 // AddGatewayNetworkResult represents the data that would be PUT to

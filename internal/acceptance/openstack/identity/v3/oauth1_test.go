@@ -215,7 +215,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		tokens.Token
 		oauth1.TokenExt
 	}
-	tokenRes := tokens.Get(context.TODO(), newClient, newClient.ProviderClient.TokenID)
+	tokenRes := tokens.Get(context.TODO(), newClient, newClient.TokenID)
 	err = tokenRes.ExtractInto(&token)
 	th.AssertNoErr(t, err)
 	oauth1Roles, err := tokenRes.ExtractRoles()
