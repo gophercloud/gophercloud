@@ -54,7 +54,7 @@ func (r *LLDPTLVType) UnmarshalJSON(data []byte) error {
 	}
 
 	if len(list) != 2 {
-		return fmt.Errorf("Invalid LLDP TLV key-value pair")
+		return fmt.Errorf("invalid LLDP TLV key-value pair")
 	}
 
 	fieldtype, ok := list[0].(float64)

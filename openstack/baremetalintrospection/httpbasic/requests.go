@@ -20,7 +20,7 @@ func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophe
 		return nil, fmt.Errorf("IronicInspectorEndpoint is required")
 	}
 	if eo.IronicInspectorUser == "" || eo.IronicInspectorUserPassword == "" {
-		return nil, fmt.Errorf("User and Password are required")
+		return nil, fmt.Errorf("IronicInspectorUser and IronicInspectorUserPassword are required")
 	}
 
 	token := []byte(eo.IronicInspectorUser + ":" + eo.IronicInspectorUserPassword)
