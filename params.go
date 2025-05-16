@@ -109,7 +109,7 @@ func BuildRequestBody(opts any, parent string) (map[string]any, error) {
 					}
 					xorFieldIsZero = isZero(xorField)
 				}
-				if !(zero != xorFieldIsZero) {
+				if zero == xorFieldIsZero {
 					err := ErrMissingInput{}
 					err.Argument = fmt.Sprintf("%s/%s", f.Name, xorTag)
 					err.Info = fmt.Sprintf("Exactly one of %s and %s must be provided", f.Name, xorTag)
