@@ -119,13 +119,14 @@ func TestUpdate(t *testing.T) {
 
 	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
 	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID, func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case "GET":
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprint(w, GetBGPSpeakerResult)
-		} else if r.Method == "PUT" {
+		case "PUT":
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 			th.TestHeader(t, r, "Content-Type", "application/json")
@@ -135,7 +136,7 @@ func TestUpdate(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprint(w, UpdateBGPSpeakerResponse)
-		} else {
+		default:
 			panic("Unexpected Request")
 		}
 	})
