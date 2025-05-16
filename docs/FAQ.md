@@ -8,7 +8,7 @@ Please see our dedicated document [here](MICROVERSIONS.md).
 
 You can implement custom logging and/or limit re-auth attempts by creating a custom HTTP client
 like the following and setting it as the provider client's HTTP Client (via the
-`gophercloud.ProviderClient.HTTPClient` field):
+`gophercloud.HTTPClient` field):
 
 ```go
 //...

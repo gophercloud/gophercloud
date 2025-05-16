@@ -27,11 +27,11 @@ func (r serverResult) Extract() (*Server, error) {
 }
 
 func (r serverResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "server")
+	return r.ExtractIntoStructPtr(v, "server")
 }
 
 func ExtractServersInto(r pagination.Page, v any) error {
-	return r.(ServerPage).Result.ExtractIntoSlicePtr(v, "servers")
+	return r.(ServerPage).ExtractIntoSlicePtr(v, "servers")
 }
 
 // CreateResult is the response from a Create operation. Call its Extract
