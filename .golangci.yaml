@@ -1,19 +1,72 @@
----
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
     - errcheck
-    - gofmt
-    - goimports
     - govet
     - staticcheck
     - unparam
     - unused
-
-issues:
-  exclude:
-    - SA1006  # printf-style function with dynamic format string and no further arguments should use print-style function instead (staticcheck)
-  exclude-rules:
-    - linters:
-        - staticcheck
-      text: 'SA1019: (x509.EncryptPEMBlock|strings.Title)'
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - staticcheck
+        text: "S1038: should use fmt.Fprintf instead of fmt.Fprint"
+      - linters:
+          - staticcheck
+        text: "SA1019: (x509.EncryptPEMBlock|strings.Title)"
+      - linters:
+          - staticcheck
+        text: "ST1005: error strings should not be capitalized"
+      - linters:
+          - staticcheck
+        text: "ST1005: error strings should not end with punctuation or newlines"
+      - linters:
+          - staticcheck
+        text: "ST1017: don't use Yoda conditions"
+      - linters:
+          - staticcheck
+        text: "ST1019: package \".*\" is being imported more than once"
+      - linters:
+          - staticcheck
+        text: "ST1019\\(related information\\): other import of \".*\""
+      - linters:
+          - staticcheck
+        text: "ST1023: should omit type .* from declaration; it will be inferred from the right-hand side"
+      - linters:
+          - staticcheck
+        text: "QF1001: could apply De Morgan's law"
+      - linters:
+          - staticcheck
+        text: "QF1003: could use tagged switch on .*"
+      - linters:
+          - staticcheck
+        text: "QF1004: could use strings.ReplaceAll instead"
+      - linters:
+          - staticcheck
+        text: "QF1011: could omit type .* from declaration; it will be inferred from the right-hand side"
+      - linters:
+          - staticcheck
+        text: "could remove embedded field \".*\" from selector"
+      - path: (.+)\.go$
+        text: SA1006
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
