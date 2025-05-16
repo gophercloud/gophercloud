@@ -3,7 +3,7 @@ Package domains manages and retrieves Domains in the OpenStack Identity Service.
 
 Example to List Domains
 
-	var iTrue bool = true
+	var iTrue = true
 	listOpts := domains.ListOpts{
 		Enabled: &iTrue,
 	}
@@ -38,7 +38,7 @@ Example to Update a Domain
 
 	domainID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	var iFalse bool = false
+	var iFalse = false
 	updateOpts := domains.UpdateOpts{
 		Enabled: &iFalse,
 	}

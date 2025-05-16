@@ -42,7 +42,7 @@ func TestCreate(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	HandleCreateSuccessfully(t, fakeServer)
-	var enableEncrypted *bool = new(bool)
+	var enableEncrypted = new(bool)
 
 	createOpts := queues.CreateOpts{
 		QueueName:                  QueueName,

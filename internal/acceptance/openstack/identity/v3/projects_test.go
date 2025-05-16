@@ -35,7 +35,7 @@ func TestProjectsList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	var iTrue bool = true
+	var iTrue = true
 	listOpts := projects.ListOpts{
 		Enabled: &iTrue,
 	}
