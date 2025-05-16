@@ -43,7 +43,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url += query
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		p := BGPVPNPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
@@ -169,7 +169,7 @@ func ListNetworkAssociations(c *gophercloud.ServiceClient, id string, opts ListN
 	url += query
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		p := NetworkAssociationPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
@@ -258,7 +258,7 @@ func ListRouterAssociations(c *gophercloud.ServiceClient, id string, opts ListRo
 	url += query
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		p := RouterAssociationPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
@@ -380,7 +380,7 @@ func ListPortAssociations(c *gophercloud.ServiceClient, id string, opts ListPort
 	url += query
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		p := PortAssociationPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
