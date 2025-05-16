@@ -458,7 +458,7 @@ func NewLoadBalancerV2(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 	sc, err := initClientOpts(client, eo, "load-balancer", 2)
 
 	// Fixes edge case having an OpenStack lb endpoint with trailing version number.
-	endpoint := strings.Replace(sc.Endpoint, "v2.0/", "", -1)
+	endpoint := strings.ReplaceAll(sc.Endpoint, "v2.0/", "")
 
 	sc.ResourceBase = endpoint + "v2.0/"
 	return sc, err
