@@ -673,7 +673,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 	}
 
 	if strings.ToLower(vol.Bootable) != "true" {
-		return fmt.Errorf("Volume bootable status is %q, expected 'true'", vol.Bootable)
+		return fmt.Errorf("volume bootable status is %q, expected 'true'", vol.Bootable)
 	}
 
 	bootableOpts = volumes.BootableOpts{
@@ -691,7 +691,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 	}
 
 	if strings.ToLower(vol.Bootable) == "true" {
-		return fmt.Errorf("Volume bootable status is %q, expected 'false'", vol.Bootable)
+		return fmt.Errorf("volume bootable status is %q, expected 'false'", vol.Bootable)
 	}
 
 	return nil

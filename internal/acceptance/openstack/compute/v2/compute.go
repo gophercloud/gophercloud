@@ -888,7 +888,7 @@ func GetNetworkIDFromNetworks(t *testing.T, client *gophercloud.ServiceClient, n
 		}
 	}
 
-	return "", fmt.Errorf("Failed to obtain network ID for network %s", networkName)
+	return "", fmt.Errorf("failed to obtain network ID for network %s", networkName)
 }
 
 // ImportPublicKey will create a KeyPair with a random name and a specified
@@ -952,7 +952,7 @@ func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Ser
 		}
 
 		if latest.Status == "ERROR" {
-			return false, fmt.Errorf("Instance in ERROR state")
+			return false, fmt.Errorf("instance in ERROR state")
 		}
 
 		return false, nil

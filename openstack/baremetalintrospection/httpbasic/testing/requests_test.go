@@ -23,7 +23,7 @@ func TestNoAuth(t *testing.T) {
 		IronicInspectorEndpoint: "http://ironic:5050/v1",
 	})
 	_ = errTest1
-	th.AssertEquals(t, "User and Password are required", err.Error())
+	th.AssertEquals(t, "IronicInspectorUser and IronicInspectorUserPassword are required", err.Error())
 
 	errTest2, err := httpbasic.NewBareMetalIntrospectionHTTPBasic(httpbasic.EndpointOpts{
 		IronicInspectorUser:         "myUser",
