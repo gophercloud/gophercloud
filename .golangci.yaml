@@ -32,9 +32,6 @@ linters:
         text: "ST1017: don't use Yoda conditions"
       - linters:
           - staticcheck
-        text: "ST1023: should omit type .* from declaration; it will be inferred from the right-hand side"
-      - linters:
-          - staticcheck
         text: "QF1001: could apply De Morgan's law"
       - linters:
           - staticcheck
@@ -42,9 +39,6 @@ linters:
       - linters:
           - staticcheck
         text: "QF1004: could use strings.ReplaceAll instead"
-      - linters:
-          - staticcheck
-        text: "QF1011: could omit type .* from declaration; it will be inferred from the right-hand side"
       - linters:
           - staticcheck
         text: "could remove embedded field \".*\" from selector"

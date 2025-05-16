@@ -35,7 +35,7 @@ func TestDomainsList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	var iTrue bool = true
+	var iTrue = true
 	listOpts := domains.ListOpts{
 		Enabled: &iTrue,
 	}
@@ -78,7 +78,7 @@ func TestDomainsCRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	var iTrue bool = true
+	var iTrue = true
 	var description = "Testing Domain"
 	createOpts := domains.CreateOpts{
 		Description: description,
@@ -93,7 +93,7 @@ func TestDomainsCRUD(t *testing.T) {
 
 	th.AssertEquals(t, domain.Description, description)
 
-	var iFalse bool = false
+	var iFalse = false
 	description = ""
 	updateOpts := domains.UpdateOpts{
 		Description: &description,

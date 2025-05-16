@@ -41,7 +41,7 @@ Example to Update a Service
 
 	serviceID :=  "3c7bbe9a6ecb453ca1789586291380ed"
 
-	var iFalse bool = false
+	var iFalse = false
 	updateOpts := services.UpdateOpts{
 		Enabled: &iFalse,
 		Extra: map[string]any{
