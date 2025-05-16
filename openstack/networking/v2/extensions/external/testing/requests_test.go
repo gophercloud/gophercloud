@@ -9,7 +9,7 @@ import (
 )
 
 func TestListExternal(t *testing.T) {
-	var iTrue bool = true
+	var iTrue = true
 
 	networkListOpts := networks.ListOpts{
 		ID: "d32019d3-bc6e-4319-9c1d-6722fc136a22",
