@@ -14,7 +14,7 @@ import (
 )
 
 func TestRolesAddToUser(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2AdminClient()
@@ -53,7 +53,7 @@ func TestRolesAddToUser(t *testing.T) {
 }
 
 func TestRolesList(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2AdminClient()

@@ -234,7 +234,7 @@ func TestServersMetadata(t *testing.T) {
 
 func TestServersActionChangeAdminPassword(t *testing.T) {
 	clients.RequireLong(t)
-	clients.RequireGuestAgent(t)
+	RequireGuestAgent(t)
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)

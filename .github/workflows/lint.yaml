@@ -1,27 +1,23 @@
-on: [push, pull_request]
 name: Linters
+on:
+  - push
+  - pull_request
 permissions:
   contents: read
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Checkout Gophercloud
+        uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: '1'
-
-      - uses: actions/checkout@v4
-
-      - name: Run go fmt
+      - name: Run linters
         run: |
-          ./script/format
-
-      - name: Run go vet
-        run: |
-          ./script/vet
-
+          make lint
+      # TODO: Use 'go mod tidy -diff' instead once go 1.23 is out
+      # https://github.com/golang/go/issues/27005
       - name: Ensure go.mod is up-to-date
         run: |
           if [ $(go mod tidy && git diff | wc -l) -gt 0 ]; then git diff && exit 1; fi

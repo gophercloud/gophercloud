@@ -13,7 +13,7 @@ import (
 )
 
 func TestExtensionsList(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2Client()
@@ -37,7 +37,7 @@ func TestExtensionsList(t *testing.T) {
 }
 
 func TestExtensionsGet(t *testing.T) {
-	clients.RequireIdentityV2(t)
+	RequireIdentityV2(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV2Client()

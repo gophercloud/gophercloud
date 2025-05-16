@@ -36,14 +36,14 @@ func TestAuthenticatedClient(t *testing.T) {
 
 	t.Logf("Client successfully acquired a token: %v", client.TokenID)
 
-	// Find the storage service in the service catalog.
-	storage, err := openstack.NewObjectStorageV1(client, gophercloud.EndpointOpts{
+	// Find the compute service in the service catalog.
+	compute, err := openstack.NewComputeV2(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 	if err != nil {
-		t.Errorf("Unable to locate a storage service: %v", err)
+		t.Errorf("Unable to locate a compute service: %v", err)
 	} else {
-		t.Logf("Located a storage service at endpoint: [%s]", storage.Endpoint)
+		t.Logf("Located a compute service at endpoint: [%s]", compute.Endpoint)
 	}
 }
 
