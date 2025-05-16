@@ -62,7 +62,7 @@ func createMarkerPaged(t *testing.T) pagination.Pager {
 
 	createPage := func(r pagination.PageResult) pagination.Page {
 		p := MarkerPageResult{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	}
 

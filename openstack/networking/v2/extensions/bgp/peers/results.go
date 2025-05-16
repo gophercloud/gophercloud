@@ -19,7 +19,7 @@ func (r commonResult) Extract() (*BGPPeer, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, jroot)
+	return r.ExtractIntoStructPtr(v, jroot)
 }
 
 // BGP peer
@@ -72,7 +72,7 @@ func ExtractBGPPeers(r pagination.Page) ([]BGPPeer, error) {
 }
 
 func ExtractBGPPeersInto(r pagination.Page, v any) error {
-	return r.(BGPPeerPage).Result.ExtractIntoSlicePtr(v, "bgp_peers")
+	return r.(BGPPeerPage).ExtractIntoSlicePtr(v, "bgp_peers")
 }
 
 // GetResult represents the result of a get operation. Call its Extract

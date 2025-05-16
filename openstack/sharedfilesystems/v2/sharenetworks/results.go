@@ -94,7 +94,7 @@ func (r ShareNetworkPage) LastMarker() (string, error) {
 		return maxInt, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return maxInt, err
 	}

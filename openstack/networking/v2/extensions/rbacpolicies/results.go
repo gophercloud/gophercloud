@@ -17,7 +17,7 @@ func (r commonResult) Extract() (*RBACPolicy, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "rbac_policy")
+	return r.ExtractIntoStructPtr(v, "rbac_policy")
 }
 
 // CreateResult represents the result of a create operation. Call its Extract
@@ -101,5 +101,5 @@ func ExtractRBACPolicies(r pagination.Page) ([]RBACPolicy, error) {
 
 // ExtractRBACPolicesInto extracts the elements into a slice of RBAC Policy structs.
 func ExtractRBACPolicesInto(r pagination.Page, v any) error {
-	return r.(RBACPolicyPage).Result.ExtractIntoSlicePtr(v, "rbac_policies")
+	return r.(RBACPolicyPage).ExtractIntoSlicePtr(v, "rbac_policies")
 }
