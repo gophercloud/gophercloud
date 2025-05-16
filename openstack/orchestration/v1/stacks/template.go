@@ -202,7 +202,7 @@ func ignoreIfTemplate(key string, value any) bool {
 		return true
 	}
 	// `.template` and `.yaml` are allowed suffixes for template URLs when referred to by `type`
-	if key == "type" && !(strings.HasSuffix(valueString, ".template") || strings.HasSuffix(valueString, ".yaml")) {
+	if key == "type" && !strings.HasSuffix(valueString, ".template") && !strings.HasSuffix(valueString, ".yaml") {
 		return true
 	}
 	return false

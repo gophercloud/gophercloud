@@ -80,7 +80,7 @@ func (t *TE) Fetch() error {
 	if err != nil {
 		return err
 	}
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return fmt.Errorf("error fetching %s: %s", t.URL, resp.Status)
 	}
 	t.Bin = body
