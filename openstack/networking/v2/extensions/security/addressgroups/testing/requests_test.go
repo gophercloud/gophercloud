@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AddressGroupListResponse)
+		fmt.Fprint(w, AddressGroupListResponse)
 	})
 
 	count := 0
@@ -73,7 +73,7 @@ func TestCreate(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, AddressGroupCreateResponse)
+		fmt.Fprint(w, AddressGroupCreateResponse)
 	})
 
 	opts := addressgroups.CreateOpts{
@@ -107,7 +107,7 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, AddressGroupGetResponse)
+		fmt.Fprint(w, AddressGroupGetResponse)
 	})
 
 	sr, err := addressgroups.Get(context.TODO(), fake.ServiceClient(fakeServer), "8722e0e0-9cc9-4490-9660-8c9a5732fbb0").Extract()
@@ -134,7 +134,7 @@ func TestUpdate(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, AddressGroupUpdateResponse)
+			fmt.Fprint(w, AddressGroupUpdateResponse)
 		})
 
 	name := "ADDR_GP_2"
@@ -168,7 +168,7 @@ func TestAddAddresses(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, AddressGroupAddAddressesResponse)
+			fmt.Fprint(w, AddressGroupAddAddressesResponse)
 		})
 
 	opts := addressgroups.UpdateAddressesOpts{
@@ -197,7 +197,7 @@ func TestRemoveAddresses(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			fmt.Fprintf(w, AddressGroupRemoveAddressesResponse)
+			fmt.Fprint(w, AddressGroupRemoveAddressesResponse)
 		})
 
 	opts := addressgroups.UpdateAddressesOpts{
