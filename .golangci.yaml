@@ -27,9 +27,6 @@ linters:
       - linters:
           - staticcheck
         text: "ST1005: error strings should not end with punctuation or newlines"
-      - linters:
-          - staticcheck
-        text: "could remove embedded field \".*\" from selector"
       - path: (.+)\.go$
         text: SA1006
     paths:

@@ -496,7 +496,7 @@ func extractLastMarker(r pagination.Page) (string, error) {
 	casted := r.(ObjectPage)
 
 	// If a delimiter was requested, check if a subdir exists.
-	queryParams, err := url.ParseQuery(casted.URL.RawQuery)
+	queryParams, err := url.ParseQuery(casted.RawQuery)
 	if err != nil {
 		return "", err
 	}

@@ -109,7 +109,7 @@ func (r ReplicaPage) LastMarker() (string, error) {
 		return invalidMarker, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return invalidMarker, err
 	}
@@ -160,7 +160,7 @@ func ExtractReplicas(r pagination.Page) ([]Replica, error) {
 // ExtractReplicasInto similar to ExtractReplicas but operates on a `list` of
 // replicas.
 func ExtractReplicasInto(r pagination.Page, v any) error {
-	return r.(ReplicaPage).Result.ExtractIntoSlicePtr(v, "share_replicas")
+	return r.(ReplicaPage).ExtractIntoSlicePtr(v, "share_replicas")
 }
 
 // DeleteResult contains the response body and error from a Delete request.

@@ -18,5 +18,5 @@ func (r ManageExistingResult) Extract() (*volumes.Volume, error) {
 
 // ExtractInto converts our response data into a volume struct
 func (r ManageExistingResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "volume")
+	return r.ExtractIntoStructPtr(v, "volume")
 }

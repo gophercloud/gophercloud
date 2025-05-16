@@ -127,5 +127,5 @@ func (r MessagePage) NextPageURL() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return nextPageURL(r.URL.String(), next)
+	return nextPageURL(r.String(), next)
 }

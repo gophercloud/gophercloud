@@ -79,8 +79,8 @@ func TestListPortWithSubports(t *testing.T) {
 	th.AssertEquals(t, 1, len(allPorts))
 	port := allPorts[0]
 
-	th.AssertEquals(t, trunk.ID, port.TrunkDetails.TrunkID)
-	th.AssertEquals(t, 2, len(port.TrunkDetails.SubPorts))
+	th.AssertEquals(t, trunk.ID, port.TrunkID)
+	th.AssertEquals(t, 2, len(port.SubPorts))
 
 	// Note that MAC address is not (currently) returned in list queries. We
 	// exclude it from the comparison here in case it's ever added. MAC
@@ -92,18 +92,18 @@ func TestListPortWithSubports(t *testing.T) {
 		SegmentationID:   1,
 		SegmentationType: "vlan",
 		PortID:           subport1.ID,
-	}, port.TrunkDetails.SubPorts[0].Subport)
+	}, port.SubPorts[0].Subport)
 	th.AssertDeepEquals(t, trunks.Subport{
 		SegmentationID:   2,
 		SegmentationType: "vlan",
 		PortID:           subport2.ID,
-	}, port.TrunkDetails.SubPorts[1].Subport)
+	}, port.SubPorts[1].Subport)
 
 	// Test GET port with trunk details
 	err = ports.Get(context.TODO(), client, parentPort.ID).ExtractInto(&port)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, trunk.ID, port.TrunkDetails.TrunkID)
-	th.AssertEquals(t, 2, len(port.TrunkDetails.SubPorts))
+	th.AssertEquals(t, trunk.ID, port.TrunkID)
+	th.AssertEquals(t, 2, len(port.SubPorts))
 	th.AssertDeepEquals(t, trunk_details.Subport{
 		Subport: trunks.Subport{
 			SegmentationID:   1,
@@ -111,7 +111,7 @@ func TestListPortWithSubports(t *testing.T) {
 			PortID:           subport1.ID,
 		},
 		MACAddress: subport1.MACAddress,
-	}, port.TrunkDetails.SubPorts[0])
+	}, port.SubPorts[0])
 	th.AssertDeepEquals(t, trunk_details.Subport{
 		Subport: trunks.Subport{
 			SegmentationID:   2,
@@ -119,5 +119,5 @@ func TestListPortWithSubports(t *testing.T) {
 			PortID:           subport2.ID,
 		},
 		MACAddress: subport2.MACAddress,
-	}, port.TrunkDetails.SubPorts[1])
+	}, port.SubPorts[1])
 }
