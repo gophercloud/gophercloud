@@ -17,9 +17,6 @@ linters:
     rules:
       - linters:
           - staticcheck
-        text: "S1038: should use fmt.Fprintf instead of fmt.Fprint"
-      - linters:
-          - staticcheck
         text: "SA1019: (x509.EncryptPEMBlock|strings.Title)"
       - linters:
           - staticcheck
