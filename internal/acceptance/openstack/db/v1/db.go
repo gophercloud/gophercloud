@@ -138,7 +138,7 @@ func WaitForInstanceStatus(
 		}
 
 		if latest.Status == "ERROR" {
-			return false, fmt.Errorf("Instance in ERROR state")
+			return false, fmt.Errorf("instance in ERROR state")
 		}
 
 		return false, nil

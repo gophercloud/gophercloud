@@ -18,12 +18,6 @@ linters:
       - linters:
           - staticcheck
         text: "SA1019: (x509.EncryptPEMBlock|strings.Title)"
-      - linters:
-          - staticcheck
-        text: "ST1005: error strings should not be capitalized"
-      - linters:
-          - staticcheck
-        text: "ST1005: error strings should not end with punctuation or newlines"
       - path: (.+)\.go$
         text: SA1006
     paths:
