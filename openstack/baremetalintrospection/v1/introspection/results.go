@@ -22,13 +22,13 @@ func (r introspectionResult) Extract() (*Introspection, error) {
 
 // ExtractInto will extract a response body into an Introspection struct.
 func (r introspectionResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 // ExtractIntrospectionsInto will extract a collection of introspectResult pages into a
 // slice of Introspection entities.
 func ExtractIntrospectionsInto(r pagination.Page, v any) error {
-	return r.(IntrospectionPage).Result.ExtractIntoSlicePtr(v, "introspection")
+	return r.(IntrospectionPage).ExtractIntoSlicePtr(v, "introspection")
 }
 
 // ExtractIntrospections interprets the results of a single page from a

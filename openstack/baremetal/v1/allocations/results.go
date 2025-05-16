@@ -56,11 +56,11 @@ func (r allocationResult) Extract() (*Allocation, error) {
 }
 
 func (r allocationResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractAllocationsInto(r pagination.Page, v any) error {
-	return r.(AllocationPage).Result.ExtractIntoSlicePtr(v, "allocations")
+	return r.(AllocationPage).ExtractIntoSlicePtr(v, "allocations")
 }
 
 // AllocationPage abstracts the raw results of making a List() request against

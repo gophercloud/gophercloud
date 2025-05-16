@@ -47,11 +47,11 @@ func (r ValidateResult) Extract() (*NodeValidation, error) {
 }
 
 func (r nodeResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractNodesInto(r pagination.Page, v any) error {
-	return r.(NodePage).Result.ExtractIntoSlicePtr(v, "nodes")
+	return r.(NodePage).ExtractIntoSlicePtr(v, "nodes")
 }
 
 // Extract interprets a BIOSSettingsResult as an array of BIOSSetting structs, if possible.

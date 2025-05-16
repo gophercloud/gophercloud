@@ -70,11 +70,11 @@ func (r portgroupsResult) Extract() (*PortGroup, error) {
 }
 
 func (r portgroupsResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractPortGroupsInto(r pagination.Page, v any) error {
-	return r.(PortGroupsPage).Result.ExtractIntoSlicePtr(v, "portgroups")
+	return r.(PortGroupsPage).ExtractIntoSlicePtr(v, "portgroups")
 }
 
 // PortGroupsPage abstracts the raw results of making a List() request against
