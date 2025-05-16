@@ -56,7 +56,7 @@ func (r *Service) UnmarshalJSON(b []byte) error {
 	case string:
 		r.ID = t
 	default:
-		return fmt.Errorf("ID has unexpected type: %T", t)
+		return fmt.Errorf("iD has unexpected type: %T", t)
 	}
 
 	return nil
@@ -175,7 +175,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 				return err
 			}
 		default:
-			return fmt.Errorf("CPUInfo has unexpected type: %T", t)
+			return fmt.Errorf("cPUInfo has unexpected type: %T", t)
 		}
 
 		if len(tmpb) != 0 {
@@ -194,7 +194,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.HypervisorVersion = int(t)
 	default:
-		return fmt.Errorf("Hypervisor version has unexpected type: %T", t)
+		return fmt.Errorf("hypervisor version has unexpected type: %T", t)
 	}
 
 	// free_disk_gb doesn't exist after api version 2.87
@@ -205,7 +205,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 		case float64:
 			r.FreeDiskGB = int(t)
 		default:
-			return fmt.Errorf("Free disk GB has unexpected type: %T", t)
+			return fmt.Errorf("free disk GB has unexpected type: %T", t)
 		}
 	}
 
@@ -217,7 +217,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 		case float64:
 			r.LocalGB = int(t)
 		default:
-			return fmt.Errorf("Local GB has unexpected type: %T", t)
+			return fmt.Errorf("local GB has unexpected type: %T", t)
 		}
 	}
 
@@ -231,7 +231,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	case string:
 		r.ID = t
 	default:
-		return fmt.Errorf("ID has unexpected type: %T", t)
+		return fmt.Errorf("iD has unexpected type: %T", t)
 	}
 
 	return nil
@@ -384,7 +384,7 @@ func (r *Uptime) UnmarshalJSON(b []byte) error {
 	case string:
 		r.ID = t
 	default:
-		return fmt.Errorf("ID has unexpected type: %T", t)
+		return fmt.Errorf("iD has unexpected type: %T", t)
 	}
 
 	return nil

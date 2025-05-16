@@ -59,7 +59,7 @@ func TestDelete(t *testing.T) {
 type ErrorUpdateOpts quotasets.UpdateOpts
 
 func (opts ErrorUpdateOpts) ToComputeQuotaUpdateMap() (map[string]any, error) {
-	return nil, errors.New("This is an error")
+	return nil, errors.New("this is an error")
 }
 
 func TestErrorInToComputeQuotaUpdateMap(t *testing.T) {

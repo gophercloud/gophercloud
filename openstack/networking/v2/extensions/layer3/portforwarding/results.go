@@ -67,7 +67,7 @@ func (r commonResult) Extract() (*PortForwarding, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "port_forwarding")
+	return r.ExtractIntoStructPtr(v, "port_forwarding")
 }
 
 // PortForwardingPage is the page returned by a pager when traversing over a

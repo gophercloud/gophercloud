@@ -646,7 +646,7 @@ func DeleteSecret(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func ParseID(ref string) (string, error) {
 	parts := strings.Split(ref, "/")
 	if len(parts) < 2 {
-		return "", fmt.Errorf("Could not parse %s", ref)
+		return "", fmt.Errorf("could not parse %s", ref)
 	}
 
 	return parts[len(parts)-1], nil
@@ -757,7 +757,7 @@ func WaitForOrder(client *gophercloud.ServiceClient, orderID string) error {
 		}
 
 		if order.Status == "ERROR" {
-			return false, fmt.Errorf("Order %s in ERROR state", orderID)
+			return false, fmt.Errorf("order %s in ERROR state", orderID)
 		}
 
 		return false, nil

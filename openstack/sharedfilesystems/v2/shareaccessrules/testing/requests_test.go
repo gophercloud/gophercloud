@@ -10,7 +10,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/shareaccessrules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestGet(t *testing.T) {
@@ -45,7 +44,7 @@ func TestGet(t *testing.T) {
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareAccessRulesEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

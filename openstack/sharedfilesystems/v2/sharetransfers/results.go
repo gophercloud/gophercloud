@@ -62,7 +62,7 @@ func (r commonResult) Extract() (*Transfer, error) {
 
 // ExtractInto converts our response data into a transfer struct.
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "transfer")
+	return r.ExtractIntoStructPtr(v, "transfer")
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -94,7 +94,7 @@ func ExtractTransfers(r pagination.Page) ([]Transfer, error) {
 
 // ExtractTransfersInto similar to ExtractInto but operates on a `list` of transfers
 func ExtractTransfersInto(r pagination.Page, v any) error {
-	return r.(TransferPage).Result.ExtractIntoSlicePtr(v, "transfers")
+	return r.(TransferPage).ExtractIntoSlicePtr(v, "transfers")
 }
 
 // TransferPage is a pagination.pager that is returned from a call to the List function.
@@ -129,7 +129,7 @@ func (r TransferPage) LastMarker() (string, error) {
 		return invalidMarker, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return invalidMarker, err
 	}

@@ -66,7 +66,7 @@ func (r *Service) UnmarshalJSON(b []byte) error {
 	case string:
 		r.ID = t
 	default:
-		return fmt.Errorf("ID has unexpected type: %T", t)
+		return fmt.Errorf("iD has unexpected type: %T", t)
 	}
 
 	return nil

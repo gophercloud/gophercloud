@@ -90,7 +90,7 @@ func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, statu
 		}
 
 		if strings.Contains(current.Status, "error") {
-			return true, fmt.Errorf("An error occurred, wrong status: %s", current.Status)
+			return true, fmt.Errorf("an error occurred, wrong status: %s", current.Status)
 		}
 
 		return false, nil
@@ -99,7 +99,7 @@ func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, statu
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return fmt.Errorf("Snapshot status is '%s' and unable to get manila messages: %s", err, mErr)
+			return fmt.Errorf("snapshot status is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 

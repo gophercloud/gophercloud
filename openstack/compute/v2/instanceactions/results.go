@@ -186,9 +186,9 @@ func (r InstanceActionResult) Extract() (InstanceActionDetail, error) {
 }
 
 func (r InstanceActionResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "instanceAction")
+	return r.ExtractIntoStructPtr(v, "instanceAction")
 }
 
 func ExtractInstanceActionsInto(r pagination.Page, v any) error {
-	return r.(InstanceActionPage).Result.ExtractIntoSlicePtr(v, "instanceActions")
+	return r.(InstanceActionPage).ExtractIntoSlicePtr(v, "instanceActions")
 }

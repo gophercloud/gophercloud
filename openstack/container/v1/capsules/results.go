@@ -258,7 +258,7 @@ func (r CapsulePage) IsEmpty() (bool, error) {
 		return len(v) == 0, nil
 	}
 
-	return false, fmt.Errorf("Unable to determine Capsule type")
+	return false, fmt.Errorf("unable to determine Capsule type")
 }
 
 // ExtractCapsulesBase accepts a Page struct, specifically a CapsulePage struct,

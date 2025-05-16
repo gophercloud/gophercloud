@@ -145,7 +145,7 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 		case float64:
 			r.DefaultPrefixLen = int(t)
 		default:
-			return fmt.Errorf("DefaultPrefixLen has unexpected type: %T", t)
+			return fmt.Errorf("defaultPrefixLen has unexpected type: %T", t)
 		}
 
 		switch t := s1.MinPrefixLen.(type) {
@@ -156,7 +156,7 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 		case float64:
 			r.MinPrefixLen = int(t)
 		default:
-			return fmt.Errorf("MinPrefixLen has unexpected type: %T", t)
+			return fmt.Errorf("minPrefixLen has unexpected type: %T", t)
 		}
 
 		switch t := s1.MaxPrefixLen.(type) {
@@ -167,7 +167,7 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 		case float64:
 			r.MaxPrefixLen = int(t)
 		default:
-			return fmt.Errorf("MaxPrefixLen has unexpected type: %T", t)
+			return fmt.Errorf("maxPrefixLen has unexpected type: %T", t)
 		}
 
 		return nil
@@ -202,7 +202,7 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.DefaultPrefixLen = int(t)
 	default:
-		return fmt.Errorf("DefaultPrefixLen has unexpected type: %T", t)
+		return fmt.Errorf("defaultPrefixLen has unexpected type: %T", t)
 	}
 
 	switch t := s2.MinPrefixLen.(type) {
@@ -213,7 +213,7 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.MinPrefixLen = int(t)
 	default:
-		return fmt.Errorf("MinPrefixLen has unexpected type: %T", t)
+		return fmt.Errorf("minPrefixLen has unexpected type: %T", t)
 	}
 
 	switch t := s2.MaxPrefixLen.(type) {
@@ -224,7 +224,7 @@ func (r *SubnetPool) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.MaxPrefixLen = int(t)
 	default:
-		return fmt.Errorf("MaxPrefixLen has unexpected type: %T", t)
+		return fmt.Errorf("maxPrefixLen has unexpected type: %T", t)
 	}
 
 	return nil

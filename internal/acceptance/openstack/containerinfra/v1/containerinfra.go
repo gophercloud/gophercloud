@@ -203,7 +203,7 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 		}
 
 		if strings.Contains(cluster.Status, "FAILED") {
-			return false, fmt.Errorf("Cluster %s FAILED. Status=%s StatusReason=%s", clusterID, cluster.Status, cluster.StatusReason)
+			return false, fmt.Errorf("cluster %s FAILED. Status=%s StatusReason=%s", clusterID, cluster.Status, cluster.StatusReason)
 		}
 
 		return false, nil
