@@ -121,5 +121,5 @@ func getHypervisorID(t *testing.T, client *gophercloud.ServiceClient) (string, e
 		return allHypervisors[0].ID, nil
 	}
 
-	return "", fmt.Errorf("Unable to get hypervisor ID")
+	return "", fmt.Errorf("unable to get hypervisor ID")
 }

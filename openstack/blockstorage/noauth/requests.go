@@ -39,7 +39,7 @@ func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientT
 
 	token := strings.Split(client.TokenID, ":")
 	if len(token) != 2 {
-		return nil, fmt.Errorf("Malformed noauth token")
+		return nil, fmt.Errorf("malformed noauth token")
 	}
 
 	endpoint := fmt.Sprintf("%s%s", gophercloud.NormalizeURL(eo.CinderEndpoint), token[1])

@@ -108,7 +108,7 @@ func WaitForStackStatus(client *gophercloud.ServiceClient, stackName, stackID, s
 		}
 
 		if latest.Status == "ERROR" {
-			return false, fmt.Errorf("Stack in ERROR state")
+			return false, fmt.Errorf("stack in ERROR state")
 		}
 
 		return false, nil

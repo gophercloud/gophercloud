@@ -46,7 +46,7 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	t.Logf("Successfully created listener %s", listenerName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return listener, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, listener.Name, listenerName)
@@ -98,7 +98,7 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 	t.Logf("Successfully created listener %s", listenerName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return listener, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, listener.Name, listenerName)
@@ -317,7 +317,7 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalan
 	t.Logf("Successfully created member %s", memberName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return member, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return member, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, member.Name, memberName)
@@ -351,7 +351,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 	t.Logf("Successfully created monitor: %s", monitorName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return monitor, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return monitor, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, monitor.Name, monitorName)
@@ -390,7 +390,7 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 	t.Logf("Successfully created pool %s", poolName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return pool, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return pool, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, pool.Name, poolName)
@@ -427,7 +427,7 @@ func CreatePoolHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	t.Logf("Successfully created pool %s", poolName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return pool, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return pool, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, pool.Name, poolName)
@@ -465,7 +465,7 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 	t.Logf("Successfully created l7 policy %s", policyName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return policy, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return policy, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, policy.Name, policyName)
@@ -497,7 +497,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 	t.Logf("Successfully created l7 rule for policy %s", policyID)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
-		return rule, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+		return rule, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
@@ -685,7 +685,7 @@ func WaitForLoadBalancerState(client *gophercloud.ServiceClient, lbID, status st
 		}
 
 		if current.ProvisioningStatus == "ERROR" {
-			return false, fmt.Errorf("Load balancer is in ERROR state")
+			return false, fmt.Errorf("load balancer is in ERROR state")
 		}
 
 		return false, nil

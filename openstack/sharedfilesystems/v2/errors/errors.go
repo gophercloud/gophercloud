@@ -21,6 +21,6 @@ func ExtractErrorInto(rawError error, errorDetails *ErrorDetails) (err error) {
 	if errors.As(rawError, &codeError) {
 		return json.Unmarshal(codeError.Body, errorDetails)
 	} else {
-		return errors.New("Unable to extract detailed error message")
+		return errors.New("unable to extract detailed error message")
 	}
 }

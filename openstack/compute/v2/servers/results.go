@@ -119,11 +119,11 @@ func decryptPassword(encryptedPassword string, privateKey *rsa.PrivateKey) (stri
 
 	n, err := base64.StdEncoding.Decode(b64EncryptedPassword, []byte(encryptedPassword))
 	if err != nil {
-		return "", fmt.Errorf("Failed to base64 decode encrypted password: %s", err)
+		return "", fmt.Errorf("failed to base64 decode encrypted password: %s", err)
 	}
 	password, err := rsa.DecryptPKCS1v15(nil, privateKey, b64EncryptedPassword[0:n])
 	if err != nil {
-		return "", fmt.Errorf("Failed to decrypt password: %s", err)
+		return "", fmt.Errorf("failed to decrypt password: %s", err)
 	}
 
 	return string(password), nil
@@ -159,7 +159,7 @@ func (r CreateImageResult) extractImageIDFromLocationHeader() (string, error) {
 
 	imageID := path.Base(u.Path)
 	if imageID == "." || imageID == "/" {
-		return "", fmt.Errorf("Failed to parse the ID of newly created image: %s", u)
+		return "", fmt.Errorf("failed to parse the ID of newly created image: %s", u)
 	}
 
 	return imageID, nil
