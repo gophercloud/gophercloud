@@ -636,7 +636,7 @@ func CreateTempURL(ctx context.Context, c *gophercloud.ServiceClient, containerN
 	secretKey := []byte(tempURLKey)
 	_, objectPath, splitFound := strings.Cut(urlToBeSigned, opts.Split)
 	if !splitFound {
-		return "", fmt.Errorf("URL prefix %q not found", opts.Split)
+		return "", fmt.Errorf("uRL prefix %q not found", opts.Split)
 	}
 	objectPath = opts.Split + objectPath
 	body := fmt.Sprintf("%s\n%d\n%s", opts.Method, expiry, objectPath)

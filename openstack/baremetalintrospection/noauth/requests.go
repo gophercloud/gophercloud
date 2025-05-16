@@ -17,7 +17,7 @@ type EndpointOpts struct {
 func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc := new(gophercloud.ServiceClient)
 	if eo.IronicInspectorEndpoint == "" {
-		return nil, fmt.Errorf("IronicInspectorEndpoint is required")
+		return nil, fmt.Errorf("ironicInspectorEndpoint is required")
 	}
 
 	sc.Endpoint = gophercloud.NormalizeURL(eo.IronicInspectorEndpoint)
