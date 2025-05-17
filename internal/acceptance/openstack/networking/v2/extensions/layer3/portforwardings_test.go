@@ -15,10 +15,10 @@ import (
 )
 
 func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
-	networking.RequirePortForwarding(t)
-
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	networking.RequireNeutronExtension(t, client, "floating-ip-port-forwarding")
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
