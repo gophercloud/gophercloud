@@ -29,7 +29,7 @@ jobs:
             additional_services: "openstack-cli-server"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
-            ubuntu_version: "22.04"
+            ubuntu_version: "24.04"
             additional_services: "openstack-cli-server"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"

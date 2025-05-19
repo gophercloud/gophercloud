@@ -34,7 +34,7 @@ jobs:
             additional_services: "openstack-cli-server"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
-            ubuntu_version: "22.04"
+            ubuntu_version: "24.04"
             devstack_conf_overrides: |
               # ensure we're using a working version of setuptools
               if [ -n "\$TOP_DIR" ]; then
