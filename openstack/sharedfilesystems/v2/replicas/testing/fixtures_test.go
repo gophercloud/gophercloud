@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const (
@@ -41,7 +41,7 @@ var createResponse = `{
 func MockCreateResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
@@ -56,7 +56,7 @@ func MockCreateResponse(t *testing.T) {
 func MockDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
 		w.WriteHeader(http.StatusAccepted)
 	})
@@ -72,7 +72,7 @@ var promoteRequest = `{
 func MockPromoteResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
@@ -89,7 +89,7 @@ var resyncRequest = `{
 func MockResyncResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
@@ -108,7 +108,7 @@ var resetStatusRequest = `{
 func MockResetStatusResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
@@ -127,7 +127,7 @@ var resetStateRequest = `{
 func MockResetStateResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
@@ -144,7 +144,7 @@ var deleteRequest = `{
 func MockForceDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
@@ -172,7 +172,7 @@ var getResponse = `{
 func MockGetResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getResponse)
@@ -209,7 +209,7 @@ var listEmptyResponse = `{"share_replicas": []}`
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
 
 		w.Header().Add("Content-Type", "application/json")
@@ -278,7 +278,7 @@ var listDetailEmptyResponse = `{"share_replicas": []}`
 func MockListDetailResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.11")
 
 		w.Header().Add("Content-Type", "application/json")
@@ -326,7 +326,7 @@ var listExportLocationsResponse = `{
 func MockListExportLocationsResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/export-locations", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.47")
 		w.WriteHeader(http.StatusOK)
@@ -351,7 +351,7 @@ var getExportLocationResponse = `{
 func MockGetExportLocationResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+replicaID+"/export-locations/ae73e762-e8b9-4aad-aad3-23afb7cd6825", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		th.TestHeader(t, r, "X-OpenStack-Manila-API-Version", "2.47")
 		w.WriteHeader(http.StatusOK)

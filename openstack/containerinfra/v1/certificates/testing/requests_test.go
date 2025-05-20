@@ -6,7 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/certificates"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestGetCertificates(t *testing.T) {
@@ -15,7 +15,7 @@ func TestGetCertificates(t *testing.T) {
 
 	HandleGetCertificateSuccessfully(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	actual, err := certificates.Get(context.TODO(), sc, "d564b18a-2890-4152-be3d-e05d784ff72").Extract()
@@ -29,7 +29,7 @@ func TestCreateCertificates(t *testing.T) {
 
 	HandleCreateCertificateSuccessfully(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	opts := certificates.CreateOpts{
@@ -48,7 +48,7 @@ func TestUpdateCertificates(t *testing.T) {
 
 	HandleUpdateCertificateSuccessfully(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := certificates.Update(context.TODO(), sc, "d564b18a-2890-4152-be3d-e05d784ff72").ExtractErr()

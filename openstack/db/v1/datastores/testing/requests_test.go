@@ -7,7 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/datastores"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 	"github.com/gophercloud/gophercloud/v2/testhelper/fixture"
 )
 
@@ -18,7 +18,7 @@ func TestList(t *testing.T) {
 
 	pages := 0
 
-	err := datastores.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := datastores.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := datastores.ExtractDatastores(page)
@@ -40,7 +40,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, "/datastores/{dsID}", "GET", "", GetDSResp, 200)
 
-	ds, err := datastores.Get(context.TODO(), fake.ServiceClient(), "{dsID}").Extract()
+	ds, err := datastores.Get(context.TODO(), client.ServiceClient(), "{dsID}").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleDatastore, ds)
 }
@@ -52,7 +52,7 @@ func TestListVersions(t *testing.T) {
 
 	pages := 0
 
-	err := datastores.ListVersions(fake.ServiceClient(), "{dsID}").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := datastores.ListVersions(client.ServiceClient(), "{dsID}").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := datastores.ExtractVersions(page)
@@ -74,7 +74,7 @@ func TestGetVersion(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, "/datastores/{dsID}/versions/{versionID}", "GET", "", GetVersionResp, 200)
 
-	ds, err := datastores.GetVersion(context.TODO(), fake.ServiceClient(), "{dsID}", "{versionID}").Extract()
+	ds, err := datastores.GetVersion(context.TODO(), client.ServiceClient(), "{dsID}", "{versionID}").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &ExampleVersion1, ds)
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/nodegroups"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const (
@@ -128,7 +128,7 @@ var expectedUpdatedNodeGroup = nodegroups.NodeGroup{
 func handleGetNodeGroupSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup1UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -140,7 +140,7 @@ func handleGetNodeGroupSuccess(t *testing.T) {
 func handleGetNodeGroupNotFound(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -152,7 +152,7 @@ func handleGetNodeGroupNotFound(t *testing.T) {
 func handleGetNodeGroupClusterNotFound(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -164,7 +164,7 @@ func handleGetNodeGroupClusterNotFound(t *testing.T) {
 func handleListNodeGroupsSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -176,7 +176,7 @@ func handleListNodeGroupsSuccess(t *testing.T) {
 func handleListNodeGroupsLimitSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -204,7 +204,7 @@ func handleListNodeGroupsLimitSuccess(t *testing.T) {
 func handleListNodeGroupsClusterNotFound(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -216,7 +216,7 @@ func handleListNodeGroupsClusterNotFound(t *testing.T) {
 func handleCreateNodeGroupSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
@@ -228,7 +228,7 @@ func handleCreateNodeGroupSuccess(t *testing.T) {
 func handleCreateNodeGroupDuplicate(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
@@ -240,7 +240,7 @@ func handleCreateNodeGroupDuplicate(t *testing.T) {
 func handleCreateNodeGroupMaster(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -252,7 +252,7 @@ func handleCreateNodeGroupMaster(t *testing.T) {
 func handleCreateNodeGroupBadSizes(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPost)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
@@ -264,7 +264,7 @@ func handleCreateNodeGroupBadSizes(t *testing.T) {
 func handleUpdateNodeGroupSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
@@ -276,7 +276,7 @@ func handleUpdateNodeGroupSuccess(t *testing.T) {
 func handleUpdateNodeGroupInternal(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -288,7 +288,7 @@ func handleUpdateNodeGroupInternal(t *testing.T) {
 func handleUpdateNodeGroupBadField(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -300,7 +300,7 @@ func handleUpdateNodeGroupBadField(t *testing.T) {
 func handleUpdateNodeGroupBadMin(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPatch)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
@@ -312,7 +312,7 @@ func handleUpdateNodeGroupBadMin(t *testing.T) {
 func handleDeleteNodeGroupSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -321,7 +321,7 @@ func handleDeleteNodeGroupSuccess(t *testing.T) {
 func handleDeleteNodeGroupNotFound(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -333,7 +333,7 @@ func handleDeleteNodeGroupNotFound(t *testing.T) {
 func handleDeleteNodeGroupClusterNotFound(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -345,7 +345,7 @@ func handleDeleteNodeGroupClusterNotFound(t *testing.T) {
 func handleDeleteNodeGroupDefault(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stacks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 var Create_time, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
@@ -45,7 +45,7 @@ const CreateOutput = `
 func HandleCreateSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, output)
@@ -132,7 +132,7 @@ const FullListOutput = `
 func HandleListSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -216,7 +216,7 @@ const GetOutput = `
 func HandleGetSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -228,7 +228,7 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 func HandleFindSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -242,7 +242,7 @@ func HandleFindSuccessfully(t *testing.T, output string) {
 func HandleUpdateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -255,7 +255,7 @@ func HandleUpdateSuccessfully(t *testing.T) {
 func HandleUpdatePatchSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -268,7 +268,7 @@ func HandleUpdatePatchSuccessfully(t *testing.T) {
 func HandleDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -304,7 +304,7 @@ var PreviewExpected = &stacks.PreviewedStack{
 func HandlePreviewSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/preview", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -427,7 +427,7 @@ const AbandonOutput = `
 func HandleAbandonSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c8/abandon", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")

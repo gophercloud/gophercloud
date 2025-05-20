@@ -10,7 +10,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/objects"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 type handlerOptions struct {
@@ -38,7 +38,7 @@ func HandleDownloadObjectSuccessfully(t *testing.T, options ...option) {
 	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		date := time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Set("Date", date.Format(time.RFC1123))
 		w.Header().Set("X-Static-Large-Object", "True")
@@ -108,7 +108,7 @@ func HandleListObjectsInfoSuccessfully(t *testing.T, options ...option) {
 
 	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -147,7 +147,7 @@ func HandleListObjectsInfoSuccessfully(t *testing.T, options ...option) {
 func HandleListSubdirSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -176,7 +176,7 @@ func HandleListSubdirSuccessfully(t *testing.T) {
 func HandleListZeroObjectNames204(t *testing.T) {
 	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.WriteHeader(http.StatusNoContent)
@@ -195,7 +195,7 @@ func HandleCreateTextObjectSuccessfully(t *testing.T, content string, options ..
 
 	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "text/plain")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestBody(t, r, `Did gyre and gimble in the wabe`)
@@ -215,7 +215,7 @@ func HandleCreateTextObjectSuccessfully(t *testing.T, content string, options ..
 func HandleCreateTextWithCacheControlSuccessfully(t *testing.T, content string) {
 	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Cache-Control", `max-age="3600", public`)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestBody(t, r, `All mimsy were the borogoves`)
@@ -236,7 +236,7 @@ func HandleCreateTextWithCacheControlSuccessfully(t *testing.T, content string) 
 func HandleCreateTypelessObjectSuccessfully(t *testing.T, content string) {
 	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestBody(t, r, `The sky was the color of television, tuned to a dead channel.`)
 
@@ -259,7 +259,7 @@ func HandleCreateTypelessObjectSuccessfully(t *testing.T, content string) {
 func HandleCopyObjectSuccessfully(t *testing.T, destination string) {
 	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "COPY")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "Destination", destination)
 		w.WriteHeader(http.StatusCreated)
@@ -271,7 +271,7 @@ func HandleCopyObjectSuccessfully(t *testing.T, destination string) {
 func HandleCopyObjectVersionSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "COPY")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "Destination", "/newTestContainer/newTestObject")
 		th.TestFormValues(t, r, map[string]string{"version-id": "123456788"})
@@ -292,7 +292,7 @@ func HandleDeleteObjectSuccessfully(t *testing.T, options ...option) {
 
 	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -313,7 +313,7 @@ const bulkDeleteResponse = `
 func HandleBulkDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "Content-Type", "text/plain")
 		th.TestFormValues(t, r, map[string]string{
@@ -339,7 +339,7 @@ func HandleUpdateObjectSuccessfully(t *testing.T, options ...option) {
 
 	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Object-Meta-Gophercloud-Test", "objects")
 		th.TestHeader(t, r, "X-Remove-Object-Meta-Gophercloud-Test-Remove", "remove")
@@ -365,7 +365,7 @@ func HandleGetObjectSuccessfully(t *testing.T, options ...option) {
 
 	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("X-Object-Meta-Gophercloud-Test", "objects")
 		w.Header().Add("X-Static-Large-Object", "true")

@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stackevents"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 var Timestamp1, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
@@ -123,7 +123,7 @@ const FindOutput = `
 func HandleFindSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/postman_stack/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -240,7 +240,7 @@ const ListOutput = `
 func HandleListSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -367,7 +367,7 @@ const ListResourceEventsOutput = `
 func HandleListResourceEventsSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -444,7 +444,7 @@ const GetOutput = `
 func HandleGetSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events/93940999-7d40-44ae-8de4-19624e7b8d18", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")

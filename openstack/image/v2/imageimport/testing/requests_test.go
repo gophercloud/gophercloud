@@ -8,7 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/imageimport"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestGet(t *testing.T) {
@@ -17,7 +17,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/info/import", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -30,7 +30,7 @@ func TestGet(t *testing.T) {
 		string(imageimport.WebDownloadMethod),
 	}
 
-	s, err := imageimport.Get(context.TODO(), fakeclient.ServiceClient()).Extract()
+	s, err := imageimport.Get(context.TODO(), client.ServiceClient()).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ImportMethods.Description, "Import methods available.")
@@ -44,7 +44,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/import", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, ImportCreateRequest)
 
 		w.Header().Add("Content-Type", "application/json")
@@ -56,6 +56,6 @@ func TestCreate(t *testing.T) {
 		Name: imageimport.WebDownloadMethod,
 		URI:  "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img",
 	}
-	err := imageimport.Create(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
+	err := imageimport.Create(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

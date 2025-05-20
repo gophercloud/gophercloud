@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/flavors"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListFlavors(t *testing.T) {
@@ -17,7 +17,7 @@ func TestListFlavors(t *testing.T) {
 	HandleList(t)
 
 	pages := 0
-	err := flavors.List(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := flavors.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavors.ExtractFlavors(page)
@@ -91,7 +91,7 @@ func TestGetFlavor(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGet(t)
 
-	actual, err := flavors.Get(context.TODO(), fake.ServiceClient(), flavorID).Extract()
+	actual, err := flavors.Get(context.TODO(), client.ServiceClient(), flavorID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &flavors.Flavor{

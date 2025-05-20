@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stackresources"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestFindResources(t *testing.T) {
@@ -16,7 +16,7 @@ func TestFindResources(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleFindSuccessfully(t, FindOutput)
 
-	actual, err := stackresources.Find(context.TODO(), fake.ServiceClient(), "hello_world").Extract()
+	actual, err := stackresources.Find(context.TODO(), client.ServiceClient(), "hello_world").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := FindExpected
@@ -29,7 +29,7 @@ func TestListResources(t *testing.T) {
 	HandleListSuccessfully(t, ListOutput)
 
 	count := 0
-	err := stackresources.List(fake.ServiceClient(), "hello_world", "49181cd6-169a-4130-9455-31185bbfc5bf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := stackresources.List(client.ServiceClient(), "hello_world", "49181cd6-169a-4130-9455-31185bbfc5bf", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := stackresources.ExtractResources(page)
 		th.AssertNoErr(t, err)
@@ -47,7 +47,7 @@ func TestGetResource(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t, GetOutput)
 
-	actual, err := stackresources.Get(context.TODO(), fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
+	actual, err := stackresources.Get(context.TODO(), client.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetExpected
@@ -59,7 +59,7 @@ func TestResourceMetadata(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleMetadataSuccessfully(t, MetadataOutput)
 
-	actual, err := stackresources.Metadata(context.TODO(), fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
+	actual, err := stackresources.Metadata(context.TODO(), client.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := MetadataExpected
@@ -72,7 +72,7 @@ func TestListResourceTypes(t *testing.T) {
 	HandleListTypesSuccessfully(t, ListTypesOutput)
 
 	count := 0
-	err := stackresources.ListTypes(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := stackresources.ListTypes(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := stackresources.ExtractResourceTypes(page)
 		th.AssertNoErr(t, err)
@@ -93,7 +93,7 @@ func TestGetResourceSchema(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSchemaSuccessfully(t, GetSchemaOutput)
 
-	actual, err := stackresources.Schema(context.TODO(), fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	actual, err := stackresources.Schema(context.TODO(), client.ServiceClient(), "OS::Heat::AResourceName").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetSchemaExpected
@@ -105,7 +105,7 @@ func TestGetResourceTemplate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetTemplateSuccessfully(t, GetTemplateOutput)
 
-	actual, err := stackresources.Template(context.TODO(), fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	actual, err := stackresources.Template(context.TODO(), client.ServiceClient(), "OS::Heat::AResourceName").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := GetTemplateExpected
@@ -121,6 +121,6 @@ func TestMarkUnhealthyResource(t *testing.T) {
 		MarkUnhealthy:        true,
 		ResourceStatusReason: "Kubelet.Ready is Unknown more than 10 mins.",
 	}
-	err := stackresources.MarkUnhealthy(context.TODO(), fake.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance", markUnhealthyOpts).ExtractErr()
+	err := stackresources.MarkUnhealthy(context.TODO(), client.ServiceClient(), "teststack", "0b1771bd-9336-4f2b-ae86-a80f971faf1e", "wordpress_instance", markUnhealthyOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/quotas"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreateQuota(t *testing.T) {
@@ -21,7 +21,7 @@ func TestCreateQuota(t *testing.T) {
 		HardLimit: 10,
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	res := quotas.Create(context.TODO(), sc, opts)

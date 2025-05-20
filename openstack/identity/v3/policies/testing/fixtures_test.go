@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/policies"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // ListOutput provides a single page of Policy results.
@@ -158,7 +158,7 @@ func HandleListPoliciesSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -178,7 +178,7 @@ func HandleListPoliciesSuccessfully(t *testing.T) {
 func HandleCreatePolicySuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
@@ -193,7 +193,7 @@ func HandleGetPolicySuccessfully(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "Accept", "application/json")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -208,7 +208,7 @@ func HandleUpdatePolicySuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/policies/b49884da9d31494ea02aff38d4b4e701",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestJSONRequest(t, r, UpdateRequest)
 
 			w.WriteHeader(http.StatusOK)
@@ -222,7 +222,7 @@ func HandleUpdatePolicySuccessfully(t *testing.T) {
 func HandleDeletePolicySuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/policies/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})

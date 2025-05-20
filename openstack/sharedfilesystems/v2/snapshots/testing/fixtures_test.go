@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const (
@@ -53,7 +53,7 @@ var createResponse = `{
 func MockCreateResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, createRequest)
@@ -67,7 +67,7 @@ func MockCreateResponse(t *testing.T) {
 func MockDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
@@ -108,7 +108,7 @@ var updateResponse = `{
 func MockUpdateResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, updateRequest)
@@ -148,7 +148,7 @@ var getResponse = `{
 func MockGetResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getResponse)
 	})
@@ -188,7 +188,7 @@ var listDetailEmptyResponse = `{"snapshots": []}`
 func MockListDetailResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -217,7 +217,7 @@ var resetStatusRequest = `{
 func MockResetStatusResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, resetStatusRequest)
@@ -234,7 +234,7 @@ var forceDeleteRequest = `{
 func MockForceDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, forceDeleteRequest)

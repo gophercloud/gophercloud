@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/resourcetypes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const BasicListOutput = `
@@ -79,7 +79,7 @@ func HandleListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/resource_types",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")
@@ -328,7 +328,7 @@ func HandleGetSchemaSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/resource_types/OS::Test::TestServer",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")
@@ -374,7 +374,7 @@ func HandleGenerateTemplateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/resource_types/OS::Heat::None/template",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")

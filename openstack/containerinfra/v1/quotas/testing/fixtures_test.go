@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const projectID = "aa5436ab58144c768ca4e9d2e9f5c3b2"
@@ -25,7 +25,7 @@ var CreateResponse = fmt.Sprintf(`
 func HandleCreateQuotaSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/quotas", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const (
@@ -78,7 +78,7 @@ var createResponse = `{
 func MockCreateResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, createRequest)
@@ -92,7 +92,7 @@ func MockCreateResponse(t *testing.T) {
 func MockDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
@@ -152,7 +152,7 @@ var updateResponse = `
 func MockUpdateResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, updateRequest)
@@ -209,7 +209,7 @@ var getResponse = `{
 func MockGetResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getResponse)
 	})
@@ -266,7 +266,7 @@ var listDetailEmptyResponse = `{"shares": []}`
 func MockListDetailResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -301,7 +301,7 @@ var listExportLocationsResponse = `{
 func MockListExportLocationsResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/export_locations", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, listExportLocationsResponse)
@@ -322,7 +322,7 @@ var getExportLocationResponse = `{
 func MockGetExportLocationResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/export_locations/80ed63fc-83bc-4afc-b881-da4a345ac83d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getExportLocationResponse)
@@ -353,7 +353,7 @@ var grantAccessResponse = `{
 func MockGrantAccessResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, grantAccessRequest)
@@ -373,7 +373,7 @@ var revokeAccessRequest = `{
 func MockRevokeAccessResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, revokeAccessRequest)
@@ -404,7 +404,7 @@ var listAccessRightsResponse = `{
 func MockListAccessRightsResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, listAccessRightsRequest)
@@ -424,7 +424,7 @@ var extendRequest = `{
 func MockExtendResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, extendRequest)
@@ -443,7 +443,7 @@ var shrinkRequest = `{
 func MockShrinkResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, shrinkRequest)
@@ -462,7 +462,7 @@ var getMetadataResponse = `{
 func MockGetMetadataResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -480,7 +480,7 @@ var getMetadatumResponse = `{
 func MockGetMetadatumResponse(t *testing.T, key string) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata/"+key, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -504,7 +504,7 @@ var setMetadataResponse = `{
 func MockSetMetadataResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, setMetadataRequest)
@@ -530,7 +530,7 @@ var updateMetadataResponse = `{
 func MockUpdateMetadataResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, updateMetadataRequest)
@@ -544,7 +544,7 @@ func MockUpdateMetadataResponse(t *testing.T) {
 func MockDeleteMetadatumResponse(t *testing.T, key string) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata/"+key, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 	})
 }
@@ -559,7 +559,7 @@ var revertRequest = `{
 func MockRevertResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, revertRequest)
@@ -578,7 +578,7 @@ var resetStatusRequest = `{
 func MockResetStatusResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, resetStatusRequest)
@@ -595,7 +595,7 @@ var forceDeleteRequest = `{
 func MockForceDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, forceDeleteRequest)
@@ -612,7 +612,7 @@ var unmanageRequest = `{
 func MockUnmanageResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, unmanageRequest)

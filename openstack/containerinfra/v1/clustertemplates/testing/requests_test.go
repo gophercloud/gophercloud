@@ -7,7 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clustertemplates"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreateClusterTemplate(t *testing.T) {
@@ -46,7 +46,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 		Hidden:              &boolTrue,
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clustertemplates.Create(context.TODO(), sc, opts)
 	th.AssertNoErr(t, res.Err)
@@ -67,7 +67,7 @@ func TestDeleteClusterTemplate(t *testing.T) {
 
 	HandleDeleteClusterSuccessfully(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clustertemplates.Delete(context.TODO(), sc, "6dc6d336e3fc4c0a951b5698cd1236ee")
 	th.AssertNoErr(t, res.Err)
@@ -83,7 +83,7 @@ func TestListClusterTemplates(t *testing.T) {
 
 	count := 0
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	err := clustertemplates.List(sc, clustertemplates.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
@@ -109,7 +109,7 @@ func TestGetClusterTemplate(t *testing.T) {
 
 	HandleGetClusterTemplateSuccessfully(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clustertemplates.Get(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
 	th.AssertNoErr(t, err)
@@ -123,7 +123,7 @@ func TestGetClusterTemplateEmptyTime(t *testing.T) {
 
 	HandleGetClusterTemplateEmptyTimeSuccessfully(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clustertemplates.Get(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
 	th.AssertNoErr(t, err)
@@ -150,7 +150,7 @@ func TestUpdateClusterTemplate(t *testing.T) {
 		},
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts)
 	th.AssertNoErr(t, res.Err)
@@ -180,7 +180,7 @@ func TestUpdateClusterTemplateEmptyTime(t *testing.T) {
 		},
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -208,7 +208,7 @@ func TestUpdateClusterTemplateInvalidUpdate(t *testing.T) {
 		},
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 	_, err := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
 	th.AssertEquals(t, true, err != nil)

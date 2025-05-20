@@ -9,7 +9,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/backups"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const ListResponse = `
@@ -197,7 +197,7 @@ var (
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -220,7 +220,7 @@ func MockListResponse(t *testing.T) {
 func MockListDetailResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -243,7 +243,7 @@ func MockListDetailResponse(t *testing.T) {
 func MockGetResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -254,7 +254,7 @@ func MockGetResponse(t *testing.T) {
 func MockCreateResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -269,7 +269,7 @@ func MockCreateResponse(t *testing.T) {
 func MockRestoreResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/restore", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, RestoreRequest)
@@ -284,7 +284,7 @@ func MockRestoreResponse(t *testing.T) {
 func MockDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
@@ -292,7 +292,7 @@ func MockDeleteResponse(t *testing.T) {
 func MockExportResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/export_record", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Add("Content-Type", "application/json")
@@ -305,7 +305,7 @@ func MockExportResponse(t *testing.T) {
 func MockImportResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/import_record", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, ImportRequest)
@@ -321,7 +321,7 @@ func MockImportResponse(t *testing.T) {
 func MockResetStatusResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, ResetRequest)
 
@@ -333,7 +333,7 @@ func MockResetStatusResponse(t *testing.T) {
 func MockForceDeleteResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, ForceDeleteRequest)
 

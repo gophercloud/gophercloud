@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/container/v1/capsules"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestGetCapsule_OldTime(t *testing.T) {
@@ -29,7 +29,7 @@ func TestGetCapsule_OldTime(t *testing.T) {
 	ec.Containers[0].UpdatedAt = updatedAt
 	ec.Containers[0].StartedAt = startedAt
 
-	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ec.UUID).Extract()
+	actualCapsule, err := capsules.Get(context.TODO(), client.ServiceClient(), ec.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &ec, actualCapsule)
@@ -43,7 +43,7 @@ func TestGetCapsule_NewTime(t *testing.T) {
 
 	ec := GetFakeCapsule()
 
-	actualCapsule, err := capsules.Get(context.TODO(), fakeclient.ServiceClient(), ec.UUID).Extract()
+	actualCapsule, err := capsules.Get(context.TODO(), client.ServiceClient(), ec.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &ec, actualCapsule)
@@ -61,7 +61,7 @@ func TestCreateCapsule(t *testing.T) {
 	createOpts := capsules.CreateOpts{
 		TemplateOpts: template,
 	}
-	actualCapsule, err := capsules.Create(context.TODO(), fakeclient.ServiceClient(), createOpts).Extract()
+	actualCapsule, err := capsules.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &ec, actualCapsule)
@@ -84,7 +84,7 @@ func TestListCapsule(t *testing.T) {
 	expected := []capsules.Capsule{ec}
 
 	count := 0
-	results := capsules.List(fakeclient.ServiceClient(), nil)
+	results := capsules.List(client.ServiceClient(), nil)
 	err := results.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := capsules.ExtractCapsules(page)
@@ -121,7 +121,7 @@ func TestListCapsuleV132(t *testing.T) {
 	expected := []capsules.CapsuleV132{ec}
 
 	count := 0
-	results := capsules.List(fakeclient.ServiceClient(), nil)
+	results := capsules.List(client.ServiceClient(), nil)
 	err := results.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := capsules.ExtractCapsules(page)
@@ -147,6 +147,6 @@ func TestDelete(t *testing.T) {
 
 	HandleCapsuleDeleteSuccessfully(t)
 
-	res := capsules.Delete(context.TODO(), fakeclient.ServiceClient(), "963a239d-3946-452b-be5a-055eab65a421")
+	res := capsules.Delete(context.TODO(), client.ServiceClient(), "963a239d-3946-452b-be5a-055eab65a421")
 	th.AssertNoErr(t, res.Err)
 }

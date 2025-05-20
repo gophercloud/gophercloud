@@ -11,7 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListFlavors(t *testing.T) {
@@ -20,7 +20,7 @@ func TestListFlavors(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		if err := r.ParseForm(); err != nil {
@@ -85,7 +85,7 @@ func TestListFlavors(t *testing.T) {
 
 	pages := 0
 	// Get public and private flavors
-	err := flavors.ListDetail(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := flavors.ListDetail(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavors.ExtractFlavors(page)
@@ -119,7 +119,7 @@ func TestGetFlavor(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
@@ -141,7 +141,7 @@ func TestGetFlavor(t *testing.T) {
 		`)
 	})
 
-	actual, err := flavors.Get(context.TODO(), fake.ServiceClient(), "12345").Extract()
+	actual, err := flavors.Get(context.TODO(), client.ServiceClient(), "12345").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor: %v", err)
 	}
@@ -168,7 +168,7 @@ func TestCreateFlavor(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
@@ -197,7 +197,7 @@ func TestCreateFlavor(t *testing.T) {
 		RxTxFactor:  1.0,
 		Description: "foo",
 	}
-	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	actual, err := flavors.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create flavor: %v", err)
 	}
@@ -223,7 +223,7 @@ func TestUpdateFlavor(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
@@ -245,7 +245,7 @@ func TestUpdateFlavor(t *testing.T) {
 	opts := &flavors.UpdateOpts{
 		Description: ptr.To("foo"),
 	}
-	actual, err := flavors.Update(context.TODO(), fake.ServiceClient(), "12345678", opts).Extract()
+	actual, err := flavors.Update(context.TODO(), client.ServiceClient(), "12345678", opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update flavor: %v", err)
 	}
@@ -272,12 +272,12 @@ func TestDeleteFlavor(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := flavors.Delete(context.TODO(), fake.ServiceClient(), "12345678")
+	res := flavors.Delete(context.TODO(), client.ServiceClient(), "12345678")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -287,7 +287,7 @@ func TestFlavorAccessesList(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/12345678/os-flavor-access", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
 			{
@@ -308,7 +308,7 @@ func TestFlavorAccessesList(t *testing.T) {
 		},
 	}
 
-	allPages, err := flavors.ListAccesses(fake.ServiceClient(), "12345678").AllPages(context.TODO())
+	allPages, err := flavors.ListAccesses(client.ServiceClient(), "12345678").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := flavors.ExtractAccesses(allPages)
@@ -325,7 +325,7 @@ func TestFlavorAccessAdd(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "accept", "application/json")
 		th.TestJSONRequest(t, r, `
 			{
@@ -360,7 +360,7 @@ func TestFlavorAccessAdd(t *testing.T) {
 		Tenant: "2f954bcf047c4ee9b09a37d49ae6db54",
 	}
 
-	actual, err := flavors.AddAccess(context.TODO(), fake.ServiceClient(), "12345678", addAccessOpts).Extract()
+	actual, err := flavors.AddAccess(context.TODO(), client.ServiceClient(), "12345678", addAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -374,7 +374,7 @@ func TestFlavorAccessRemove(t *testing.T) {
 
 	th.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "accept", "application/json")
 		th.TestJSONRequest(t, r, `
 			{
@@ -398,7 +398,7 @@ func TestFlavorAccessRemove(t *testing.T) {
 		Tenant: "2f954bcf047c4ee9b09a37d49ae6db54",
 	}
 
-	actual, err := flavors.RemoveAccess(context.TODO(), fake.ServiceClient(), "12345678", removeAccessOpts).Extract()
+	actual, err := flavors.RemoveAccess(context.TODO(), client.ServiceClient(), "12345678", removeAccessOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -412,7 +412,7 @@ func TestFlavorExtraSpecsList(t *testing.T) {
 	HandleExtraSpecsListSuccessfully(t)
 
 	expected := ExtraSpecs
-	actual, err := flavors.ListExtraSpecs(context.TODO(), fake.ServiceClient(), "1").Extract()
+	actual, err := flavors.ListExtraSpecs(context.TODO(), client.ServiceClient(), "1").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
@@ -423,7 +423,7 @@ func TestFlavorExtraSpecGet(t *testing.T) {
 	HandleExtraSpecGetSuccessfully(t)
 
 	expected := ExtraSpec
-	actual, err := flavors.GetExtraSpec(context.TODO(), fake.ServiceClient(), "1", "hw:cpu_policy").Extract()
+	actual, err := flavors.GetExtraSpec(context.TODO(), client.ServiceClient(), "1", "hw:cpu_policy").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
@@ -438,7 +438,7 @@ func TestFlavorExtraSpecsCreate(t *testing.T) {
 		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
 	}
 	expected := ExtraSpecs
-	actual, err := flavors.CreateExtraSpecs(context.TODO(), fake.ServiceClient(), "1", createOpts).Extract()
+	actual, err := flavors.CreateExtraSpecs(context.TODO(), client.ServiceClient(), "1", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
@@ -452,7 +452,7 @@ func TestFlavorExtraSpecUpdate(t *testing.T) {
 		"hw:cpu_policy": "CPU-POLICY-2",
 	}
 	expected := UpdatedExtraSpec
-	actual, err := flavors.UpdateExtraSpec(context.TODO(), fake.ServiceClient(), "1", updateOpts).Extract()
+	actual, err := flavors.UpdateExtraSpec(context.TODO(), client.ServiceClient(), "1", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
@@ -462,6 +462,6 @@ func TestFlavorExtraSpecDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleExtraSpecDeleteSuccessfully(t)
 
-	res := flavors.DeleteExtraSpec(context.TODO(), fake.ServiceClient(), "1", "hw:cpu_policy")
+	res := flavors.DeleteExtraSpec(context.TODO(), client.ServiceClient(), "1", "hw:cpu_policy")
 	th.AssertNoErr(t, res.Err)
 }

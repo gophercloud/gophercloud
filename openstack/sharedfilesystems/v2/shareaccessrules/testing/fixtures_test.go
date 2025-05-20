@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const (
@@ -36,7 +36,7 @@ var getResponse = `{
 func MockGetResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareAccessRulesEndpoint+"/"+shareAccessRuleID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

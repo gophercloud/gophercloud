@@ -13,7 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/workflow/v2/workflows"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreateWorkflow(t *testing.T) {
@@ -35,7 +35,7 @@ workflow_echo:
 
 	th.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "text/plain")
 		th.TestFormValues(t, r, map[string]string{
 			"namespace": "some-namespace",
@@ -70,7 +70,7 @@ workflow_echo:
 		Definition: strings.NewReader(definition),
 	}
 
-	actual, err := workflows.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	actual, err := workflows.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create workflow: %v", err)
 	}
@@ -102,12 +102,12 @@ func TestDeleteWorkflow(t *testing.T) {
 
 	th.Mux.HandleFunc("/workflows/604a3a1e-94e3-4066-a34a-aa56873ef236", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := workflows.Delete(context.TODO(), fake.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
+	res := workflows.Delete(context.TODO(), client.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -116,7 +116,7 @@ func TestGetWorkflow(t *testing.T) {
 	defer th.TeardownHTTP()
 	th.Mux.HandleFunc("/workflows/1", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
 			{
@@ -133,7 +133,7 @@ func TestGetWorkflow(t *testing.T) {
 			}
 		`)
 	})
-	actual, err := workflows.Get(context.TODO(), fake.ServiceClient(), "1").Extract()
+	actual, err := workflows.Get(context.TODO(), client.ServiceClient(), "1").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get workflow: %v", err)
 	}
@@ -161,7 +161,7 @@ func TestListWorkflows(t *testing.T) {
 	defer th.TeardownHTTP()
 	th.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
@@ -194,7 +194,7 @@ func TestListWorkflows(t *testing.T) {
 	})
 	pages := 0
 	// Get all workflows
-	err := workflows.List(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := workflows.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := workflows.ExtractWorkflows(page)
 		if err != nil {
