@@ -6,13 +6,13 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func MockListUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -45,7 +45,7 @@ func MockListUserResponse(t *testing.T) {
 func mockCreateUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -78,7 +78,7 @@ func mockCreateUserResponse(t *testing.T) {
 func mockGetUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users/new_user", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -100,7 +100,7 @@ func mockGetUserResponse(t *testing.T) {
 func mockUpdateUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -132,7 +132,7 @@ func mockUpdateUserResponse(t *testing.T) {
 func mockDeleteUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
@@ -140,7 +140,7 @@ func mockDeleteUserResponse(t *testing.T) {
 func mockListRolesResponse(t *testing.T) {
 	th.Mux.HandleFunc("/tenants/1d8b6120dcc640fda4fc9194ffc80273/users/c39e3de9be2d4c779f1dfd6abacc176d/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

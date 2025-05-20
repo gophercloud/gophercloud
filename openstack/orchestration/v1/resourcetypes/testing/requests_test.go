@@ -6,7 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/resourcetypes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestBasicListResourceTypes(t *testing.T) {
@@ -14,7 +14,7 @@ func TestBasicListResourceTypes(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), nil)
+	result := resourcetypes.List(context.TODO(), client.ServiceClient(), nil)
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()
@@ -28,7 +28,7 @@ func TestFullListResourceTypes(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), resourcetypes.ListOpts{
+	result := resourcetypes.List(context.TODO(), client.ServiceClient(), resourcetypes.ListOpts{
 		WithDescription: true,
 	})
 	th.AssertNoErr(t, result.Err)
@@ -44,7 +44,7 @@ func TestFilteredListResourceTypes(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), resourcetypes.ListOpts{
+	result := resourcetypes.List(context.TODO(), client.ServiceClient(), resourcetypes.ListOpts{
 		NameRegex:       listFilterRegex,
 		WithDescription: true,
 	})
@@ -61,7 +61,7 @@ func TestGetSchema(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSchemaSuccessfully(t)
 
-	result := resourcetypes.GetSchema(context.TODO(), fake.ServiceClient(), "OS::Test::TestServer")
+	result := resourcetypes.GetSchema(context.TODO(), client.ServiceClient(), "OS::Test::TestServer")
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()
@@ -75,7 +75,7 @@ func TestGenerateTemplate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGenerateTemplateSuccessfully(t)
 
-	result := resourcetypes.GenerateTemplate(context.TODO(), fake.ServiceClient(), "OS::Heat::None", nil)
+	result := resourcetypes.GenerateTemplate(context.TODO(), client.ServiceClient(), "OS::Heat::None", nil)
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()

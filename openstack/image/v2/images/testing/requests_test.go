@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/images"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListImage(t *testing.T) {
@@ -19,7 +19,7 @@ func TestListImage(t *testing.T) {
 
 	t.Logf("Id\tName\tOwner\tChecksum\tSizeBytes")
 
-	pager := images.List(fakeclient.ServiceClient(), images.ListOpts{Limit: 1})
+	pager := images.List(client.ServiceClient(), images.ListOpts{Limit: 1})
 	t.Logf("Pager state %v", pager)
 	count, pages := 0, 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -50,7 +50,7 @@ func TestAllPagesImage(t *testing.T) {
 
 	HandleImageListSuccessfully(t)
 
-	pages, err := images.List(fakeclient.ServiceClient(), nil).AllPages(context.TODO())
+	pages, err := images.List(client.ServiceClient(), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	images, err := images.ExtractImages(pages)
 	th.AssertNoErr(t, err)
@@ -66,7 +66,7 @@ func TestCreateImage(t *testing.T) {
 	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
 	name := "Ubuntu 12.10"
 
-	actualImage, err := images.Create(context.TODO(), fakeclient.ServiceClient(), images.CreateOpts{
+	actualImage, err := images.Create(context.TODO(), client.ServiceClient(), images.CreateOpts{
 		ID:   id,
 		Name: name,
 		Properties: map[string]string{
@@ -127,7 +127,7 @@ func TestCreateImageNulls(t *testing.T) {
 	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
 	name := "Ubuntu 12.10"
 
-	actualImage, err := images.Create(context.TODO(), fakeclient.ServiceClient(), images.CreateOpts{
+	actualImage, err := images.Create(context.TODO(), client.ServiceClient(), images.CreateOpts{
 		ID:   id,
 		Name: name,
 		Tags: []string{"ubuntu", "quantal"},
@@ -193,7 +193,7 @@ func TestGetImage(t *testing.T) {
 
 	HandleImageGetSuccessfully(t)
 
-	actualImage, err := images.Get(context.TODO(), fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
+	actualImage, err := images.Get(context.TODO(), client.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -251,7 +251,7 @@ func TestDeleteImage(t *testing.T) {
 
 	HandleImageDeleteSuccessfully(t)
 
-	result := images.Delete(context.TODO(), fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
+	result := images.Delete(context.TODO(), client.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
 	th.AssertNoErr(t, result.Err)
 }
 
@@ -261,7 +261,7 @@ func TestUpdateImage(t *testing.T) {
 
 	HandleImageUpdateSuccessfully(t)
 
-	actualImage, err := images.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+	actualImage, err := images.Update(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.ReplaceImageName{NewName: "Fedora 17"},
 		images.ReplaceImageTags{NewTags: []string{"fedora", "beefy"}},
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
@@ -356,7 +356,7 @@ func TestImageListByTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedQueryString, actualQueryString)
 
-	pages, err := images.List(fakeclient.ServiceClient(), listOpts).AllPages(context.TODO())
+	pages, err := images.List(client.ServiceClient(), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allImages, err := images.ExtractImages(pages)
 	th.AssertNoErr(t, err)
@@ -415,7 +415,7 @@ func TestUpdateImageProperties(t *testing.T) {
 
 	HandleImageUpdatePropertiesSuccessfully(t)
 
-	actualImage, err := images.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+	actualImage, err := images.Update(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.UpdateImageProperty{
 			Op:    images.AddOp,
 			Name:  "hw_disk_bus",

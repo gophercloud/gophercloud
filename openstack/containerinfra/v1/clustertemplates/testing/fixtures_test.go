@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clustertemplates"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const ClusterTemplateResponse = `
@@ -277,7 +277,7 @@ var ExpectedClusterTemplates = []clustertemplates.ClusterTemplate{ExpectedCluste
 func HandleCreateClusterTemplateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
                   "coe": "kubernetes",
                   "dns_nameserver": "8.8.8.8",
@@ -315,7 +315,7 @@ func HandleCreateClusterTemplateSuccessfully(t *testing.T) {
 func HandleDeleteClusterSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
@@ -329,7 +329,7 @@ func HandleDeleteClusterSuccessfully(t *testing.T) {
 func HandleListClusterTemplateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -341,7 +341,7 @@ func HandleListClusterTemplateSuccessfully(t *testing.T) {
 func HandleGetClusterTemplateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates/7d85f602-a948-4a30-afd4-e84f47471c15", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -353,7 +353,7 @@ func HandleGetClusterTemplateSuccessfully(t *testing.T) {
 func HandleGetClusterTemplateEmptyTimeSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates/7d85f602-a948-4a30-afd4-e84f47471c15", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -530,7 +530,7 @@ var ExpectedUpdateClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
 func HandleUpdateClusterTemplateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates/7d85f602-a948-4a30-afd4-e84f47471c15", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -542,7 +542,7 @@ func HandleUpdateClusterTemplateSuccessfully(t *testing.T) {
 func HandleUpdateClusterTemplateEmptyTimeSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates/7d85f602-a948-4a30-afd4-e84f47471c15", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -554,7 +554,7 @@ func HandleUpdateClusterTemplateEmptyTimeSuccessfully(t *testing.T) {
 func HandleUpdateClusterTemplateInvalidUpdate(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clustertemplates/7d85f602-a948-4a30-afd4-e84f47471c15", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

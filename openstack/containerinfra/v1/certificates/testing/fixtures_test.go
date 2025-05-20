@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/certificates"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const CertificateResponse = `
@@ -70,7 +70,7 @@ var ExpectedCreateCertificateResponse = certificates.Certificate{
 func HandleGetCertificateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
@@ -86,7 +86,7 @@ func HandleGetCertificateSuccessfully(t *testing.T) {
 func HandleCreateCertificateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/certificates/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
@@ -103,7 +103,7 @@ func HandleUpdateCertificateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusAccepted)
 			fmt.Fprint(w, `{}`)

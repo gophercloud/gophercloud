@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // HandleGetAccountSuccessfully creates an HTTP handler at `/` on the test handler mux that
@@ -13,7 +13,7 @@ import (
 func HandleGetAccountSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("X-Account-Container-Count", "2")
 		w.Header().Set("X-Account-Object-Count", "5")
@@ -32,7 +32,7 @@ func HandleGetAccountSuccessfully(t *testing.T) {
 func HandleGetAccountNoQuotaSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("X-Account-Container-Count", "2")
 		w.Header().Set("X-Account-Object-Count", "5")
@@ -49,7 +49,7 @@ func HandleGetAccountNoQuotaSuccessfully(t *testing.T) {
 func HandleUpdateAccountSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "X-Account-Meta-Gophercloud-Test", "accounts")
 		th.TestHeader(t, r, "X-Remove-Account-Meta-Gophercloud-Test-Remove", "remove")
 		th.TestHeader(t, r, "Content-Type", "")

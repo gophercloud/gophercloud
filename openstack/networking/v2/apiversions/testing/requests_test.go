@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/apiversions"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListVersions(t *testing.T) {
@@ -18,7 +18,7 @@ func TestListVersions(t *testing.T) {
 
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -42,7 +42,7 @@ func TestListVersions(t *testing.T) {
 
 	count := 0
 
-	err := apiversions.ListVersions(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := apiversions.ListVersions(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := apiversions.ExtractAPIVersions(page)
 		if err != nil {
@@ -76,7 +76,7 @@ func TestNonJSONCannotBeExtractedIntoAPIVersions(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	err := apiversions.ListVersions(fake.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := apiversions.ListVersions(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		if _, err := apiversions.ExtractAPIVersions(page); err == nil {
 			t.Fatalf("Expected error, got nil")
 		}
@@ -91,7 +91,7 @@ func TestAPIInfo(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -136,7 +136,7 @@ func TestAPIInfo(t *testing.T) {
 
 	count := 0
 
-	err := apiversions.ListVersionResources(fake.ServiceClient(), "v2.0").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := apiversions.ListVersionResources(client.ServiceClient(), "v2.0").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := apiversions.ExtractVersionResources(page)
 		if err != nil {
@@ -178,7 +178,7 @@ func TestNonJSONCannotBeExtractedIntoAPIVersionResources(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	err := apiversions.ListVersionResources(fake.ServiceClient(), "v2.0").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := apiversions.ListVersionResources(client.ServiceClient(), "v2.0").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		if _, err := apiversions.ExtractVersionResources(page); err == nil {
 			t.Fatalf("Expected error, got nil")
 		}

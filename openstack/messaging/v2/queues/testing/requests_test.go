@@ -7,7 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/queues"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestList(t *testing.T) {
@@ -21,7 +21,7 @@ func TestList(t *testing.T) {
 	}
 
 	count := 0
-	err := queues.List(fake.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := queues.List(client.ServiceClient(), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := queues.ExtractQueues(page)
 		th.AssertNoErr(t, err)
 		countField, err := page.(queues.QueuePage).GetCount()
@@ -56,7 +56,7 @@ func TestCreate(t *testing.T) {
 		Extra:                      map[string]any{"description": "Queue for unit testing."},
 	}
 
-	err := queues.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractErr()
+	err := queues.Create(context.TODO(), client.ServiceClient(), createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -76,7 +76,7 @@ func TestUpdate(t *testing.T) {
 		Extra: map[string]any{"description": "Update queue description"},
 	}
 
-	actual, err := queues.Update(context.TODO(), fake.ServiceClient(), QueueName, updateOpts).Extract()
+	actual, err := queues.Update(context.TODO(), client.ServiceClient(), QueueName, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, updatedQueueResult, actual)
 }
@@ -86,7 +86,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := queues.Get(context.TODO(), fake.ServiceClient(), QueueName).Extract()
+	actual, err := queues.Get(context.TODO(), client.ServiceClient(), QueueName).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, QueueDetails, actual)
 }
@@ -96,7 +96,7 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := queues.Delete(context.TODO(), fake.ServiceClient(), QueueName).ExtractErr()
+	err := queues.Delete(context.TODO(), client.ServiceClient(), QueueName).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -105,7 +105,7 @@ func TestGetStat(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetStatsSuccessfully(t)
 
-	actual, err := queues.GetStats(context.TODO(), fake.ServiceClient(), QueueName).Extract()
+	actual, err := queues.GetStats(context.TODO(), client.ServiceClient(), QueueName).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedStats, actual)
 }
@@ -121,7 +121,7 @@ func TestShare(t *testing.T) {
 		Expires: "2016-09-01T00:00:00",
 	}
 
-	actual, err := queues.Share(context.TODO(), fake.ServiceClient(), QueueName, shareOpts).Extract()
+	actual, err := queues.Share(context.TODO(), client.ServiceClient(), QueueName, shareOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedShare, actual)
 }
@@ -135,6 +135,6 @@ func TestPurge(t *testing.T) {
 		ResourceTypes: []queues.PurgeResource{queues.ResourceMessages, queues.ResourceSubscriptions},
 	}
 
-	err := queues.Purge(context.TODO(), fake.ServiceClient(), QueueName, purgeOpts).ExtractErr()
+	err := queues.Purge(context.TODO(), client.ServiceClient(), QueueName, purgeOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

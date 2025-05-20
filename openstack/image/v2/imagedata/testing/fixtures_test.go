@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // HandlePutImageDataSuccessfully setup
 func HandlePutImageDataSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		b, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -30,7 +30,7 @@ func HandlePutImageDataSuccessfully(t *testing.T) {
 func HandleStageImageDataSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/stage", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		b, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -47,7 +47,7 @@ func HandleStageImageDataSuccessfully(t *testing.T) {
 func HandleGetImageDataSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 

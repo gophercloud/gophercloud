@@ -12,7 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/workflow/v2/executions"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreateExecution(t *testing.T) {
@@ -21,7 +21,7 @@ func TestCreateExecution(t *testing.T) {
 
 	th.Mux.HandleFunc("/executions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusCreated)
 
 		w.Header().Add("Content-Type", "application/json")
@@ -54,7 +54,7 @@ func TestCreateExecution(t *testing.T) {
 		Description: "description",
 	}
 
-	actual, err := executions.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	actual, err := executions.Create(context.TODO(), client.ServiceClient(), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create execution: %v", err)
 	}
@@ -89,7 +89,7 @@ func TestGetExecution(t *testing.T) {
 
 	th.Mux.HandleFunc("/executions/50bb59f1-eb77-4017-a77f-6d575b002667", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
@@ -113,7 +113,7 @@ func TestGetExecution(t *testing.T) {
 		`)
 	})
 
-	actual, err := executions.Get(context.TODO(), fake.ServiceClient(), "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
+	actual, err := executions.Get(context.TODO(), client.ServiceClient(), "50bb59f1-eb77-4017-a77f-6d575b002667").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get execution: %v", err)
 	}
@@ -147,10 +147,10 @@ func TestDeleteExecution(t *testing.T) {
 	defer th.TeardownHTTP()
 	th.Mux.HandleFunc("/executions/1", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
-	res := executions.Delete(context.TODO(), fake.ServiceClient(), "1")
+	res := executions.Delete(context.TODO(), client.ServiceClient(), "1")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -159,7 +159,7 @@ func TestListExecutions(t *testing.T) {
 	defer th.TeardownHTTP()
 	th.Mux.HandleFunc("/executions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
@@ -196,7 +196,7 @@ func TestListExecutions(t *testing.T) {
 	})
 	pages := 0
 	// Get all executions
-	err := executions.List(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := executions.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := executions.ExtractExecutions(page)
 		if err != nil {

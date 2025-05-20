@@ -8,7 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/qos/ruletypes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListRuleTypes(t *testing.T) {
@@ -17,7 +17,7 @@ func TestListRuleTypes(t *testing.T) {
 
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -25,7 +25,7 @@ func TestListRuleTypes(t *testing.T) {
 		fmt.Fprint(w, ListRuleTypesResponse)
 	})
 
-	page, err := ruletypes.ListRuleTypes(fake.ServiceClient()).AllPages(context.TODO())
+	page, err := ruletypes.ListRuleTypes(client.ServiceClient()).AllPages(context.TODO())
 	if err != nil {
 		t.Errorf("Failed to list rule types pages: %v", err)
 		return
@@ -47,7 +47,7 @@ func TestGetRuleType(t *testing.T) {
 
 	th.Mux.HandleFunc("/qos/rule-types/bandwidth_limit", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -56,7 +56,7 @@ func TestGetRuleType(t *testing.T) {
 		th.AssertNoErr(t, err)
 	})
 
-	r, err := ruletypes.GetRuleType(context.TODO(), fake.ServiceClient(), "bandwidth_limit").Extract()
+	r, err := ruletypes.GetRuleType(context.TODO(), client.ServiceClient(), "bandwidth_limit").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "bandwidth_limit", r.Type)

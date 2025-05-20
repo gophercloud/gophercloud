@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/nodegroups"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // TestGetNodeGroupSuccess gets a node group successfully.
@@ -18,7 +18,7 @@ func TestGetNodeGroupSuccess(t *testing.T) {
 
 	handleGetNodeGroupSuccess(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	ng, err := nodegroups.Get(context.TODO(), sc, clusterUUID, nodeGroup1UUID).Extract()
@@ -34,7 +34,7 @@ func TestGetNodeGroupNotFound(t *testing.T) {
 
 	handleGetNodeGroupNotFound(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.Get(context.TODO(), sc, clusterUUID, badNodeGroupUUID).Extract()
@@ -49,7 +49,7 @@ func TestGetNodeGroupClusterNotFound(t *testing.T) {
 
 	handleGetNodeGroupClusterNotFound(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.Get(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).Extract()
@@ -63,7 +63,7 @@ func TestListNodeGroupsSuccess(t *testing.T) {
 
 	handleListNodeGroupsSuccess(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	ngPages, err := nodegroups.List(sc, clusterUUID, nodegroups.ListOpts{}).AllPages(context.TODO())
@@ -85,7 +85,7 @@ func TestListNodeGroupsLimitSuccess(t *testing.T) {
 
 	handleListNodeGroupsLimitSuccess(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	listOpts := nodegroups.ListOpts{Limit: 1}
@@ -107,7 +107,7 @@ func TestListNodeGroupsClusterNotFound(t *testing.T) {
 
 	handleListNodeGroupsClusterNotFound(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	_, err := nodegroups.List(sc, clusterUUID, nodegroups.ListOpts{}).AllPages(context.TODO())
@@ -121,7 +121,7 @@ func TestCreateNodeGroupSuccess(t *testing.T) {
 
 	handleCreateNodeGroupSuccess(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
@@ -142,7 +142,7 @@ func TestCreateNodeGroupDuplicate(t *testing.T) {
 
 	handleCreateNodeGroupDuplicate(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
@@ -161,7 +161,7 @@ func TestCreateNodeGroupMaster(t *testing.T) {
 
 	handleCreateNodeGroupMaster(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	createOpts := nodegroups.CreateOpts{
@@ -181,7 +181,7 @@ func TestCreateNodeGroupBadSizes(t *testing.T) {
 
 	handleCreateNodeGroupBadSizes(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	maxNodes := 3
@@ -202,7 +202,7 @@ func TestUpdateNodeGroupSuccess(t *testing.T) {
 
 	handleUpdateNodeGroupSuccess(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -226,7 +226,7 @@ func TestUpdateNodeGroupInternal(t *testing.T) {
 
 	handleUpdateNodeGroupInternal(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -249,7 +249,7 @@ func TestUpdateNodeGroupBadField(t *testing.T) {
 
 	handleUpdateNodeGroupBadField(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -272,7 +272,7 @@ func TestUpdateNodeGroupBadMin(t *testing.T) {
 
 	handleUpdateNodeGroupBadMin(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	updateOpts := []nodegroups.UpdateOptsBuilder{
@@ -294,7 +294,7 @@ func TestDeleteNodeGroupSuccess(t *testing.T) {
 
 	handleDeleteNodeGroupSuccess(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()
@@ -308,7 +308,7 @@ func TestDeleteNodeGroupNotFound(t *testing.T) {
 
 	handleDeleteNodeGroupNotFound(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, badNodeGroupUUID).ExtractErr()
@@ -322,7 +322,7 @@ func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
 
 	handleDeleteNodeGroupClusterNotFound(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
@@ -336,7 +336,7 @@ func TestDeleteNodeGroupDefault(t *testing.T) {
 
 	handleDeleteNodeGroupDefault(t)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := nodegroups.Delete(context.TODO(), sc, clusterUUID, nodeGroup2UUID).ExtractErr()

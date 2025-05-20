@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/container/v1/capsules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // ValidJSONTemplate is a valid OpenStack Capsule template in JSON format
@@ -625,7 +625,7 @@ func GetFakeCapsuleV132() capsules.CapsuleV132 {
 func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
@@ -637,7 +637,7 @@ func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
 func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
@@ -650,7 +650,7 @@ func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
 func HandleCapsuleCreateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 		fmt.Fprint(w, CapsuleGetBody_NewTime)
@@ -661,7 +661,7 @@ func HandleCapsuleCreateSuccessfully(t *testing.T) {
 func HandleCapsuleListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -673,7 +673,7 @@ func HandleCapsuleListSuccessfully(t *testing.T) {
 func HandleCapsuleV132ListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -684,7 +684,7 @@ func HandleCapsuleV132ListSuccessfully(t *testing.T) {
 func HandleCapsuleDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules/963a239d-3946-452b-be5a-055eab65a421", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }

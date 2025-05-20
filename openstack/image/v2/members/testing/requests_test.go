@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/members"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const createdAtString = "2013-09-20T19:22:19Z"
@@ -19,7 +19,7 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	HandleCreateImageMemberSuccessfully(t)
-	im, err := members.Create(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	im, err := members.Create(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7").Extract()
 	th.AssertNoErr(t, err)
 
@@ -46,7 +46,7 @@ func TestMemberListSuccessfully(t *testing.T) {
 
 	HandleImageMemberList(t)
 
-	pager := members.List(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
+	pager := members.List(client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
 	t.Logf("Pager state %v", pager)
 	count, pages := 0, 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -76,7 +76,7 @@ func TestMemberListEmpty(t *testing.T) {
 
 	HandleImageMemberEmptyList(t)
 
-	pager := members.List(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
+	pager := members.List(client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
 	t.Logf("Pager state %v", pager)
 	count, pages := 0, 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -105,7 +105,7 @@ func TestShowMemberDetails(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	HandleImageMemberDetails(t)
-	md, err := members.Get(context.TODO(), fakeclient.ServiceClient(),
+	md, err := members.Get(context.TODO(), client.ServiceClient(),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7").Extract()
 
@@ -136,7 +136,7 @@ func TestDeleteMember(t *testing.T) {
 
 	counter := HandleImageMemberDeleteSuccessfully(t)
 
-	result := members.Delete(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	result := members.Delete(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7")
 	th.AssertEquals(t, 1, counter.Counter)
 	th.AssertNoErr(t, result.Err)
@@ -147,7 +147,7 @@ func TestMemberUpdateSuccessfully(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	counter := HandleImageMemberUpdate(t)
-	im, err := members.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	im, err := members.Update(context.TODO(), client.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7",
 		members.UpdateOpts{
 			Status: "accepted",

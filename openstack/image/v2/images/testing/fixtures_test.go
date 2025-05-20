@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 type imageEntry struct {
@@ -101,7 +101,7 @@ func HandleImageListSuccessfully(t *testing.T) {
 
 	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 
@@ -163,7 +163,7 @@ func HandleImageListSuccessfully(t *testing.T) {
 func HandleImageCreationSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 			"name": "Ubuntu 12.10",
@@ -209,7 +209,7 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 			"architecture": "x86_64",
@@ -254,7 +254,7 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 func HandleImageGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -290,7 +290,7 @@ func HandleImageGetSuccessfully(t *testing.T) {
 func HandleImageDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -300,7 +300,7 @@ func HandleImageDeleteSuccessfully(t *testing.T) {
 func HandleImageUpdateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `[
 			{
@@ -383,7 +383,7 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 func HandleImageListByTagsSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 
@@ -425,7 +425,7 @@ func HandleImageListByTagsSuccessfully(t *testing.T) {
 func HandleImageUpdatePropertiesSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `[
 			{
