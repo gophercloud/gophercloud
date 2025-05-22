@@ -140,20 +140,18 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 	return rule, nil
 }
 
-// CreateSecurityGroupRulesBulk will create security group rules with a random name
-// and random port between 80 and 99.
+// CreateSecurityGroupRulesBulk will create 3 security group rules with ports between 1080 and 1099.
 // An error will be returned if one was failed to be created.
 func CreateSecurityGroupRulesBulk(t *testing.T, client *gophercloud.ServiceClient, secGroupID string) ([]rules.SecGroupRule, error) {
 	t.Logf("Attempting to bulk create security group rules in group: %s", secGroupID)
 
 	sgRulesCreateOpts := make([]rules.CreateOpts, 3)
-	for i := range 3 {
-		description := "Rule description"
-		fromPort := tools.RandomInt(1080, 1089)
-		toPort := tools.RandomInt(1090, 1099)
+	for i := range sgRulesCreateOpts {
+		fromPort := 1080 + i
+		toPort := tools.RandomInt(fromPort, 1099)
 
 		sgRulesCreateOpts[i] = rules.CreateOpts{
-			Description:  description,
+			Description:  "Rule description",
 			Direction:    "ingress",
 			EtherType:    "IPv4",
 			SecGroupID:   secGroupID,
