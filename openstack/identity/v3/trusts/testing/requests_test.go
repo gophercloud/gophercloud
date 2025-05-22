@@ -12,12 +12,12 @@ import (
 )
 
 func TestCreateTrust(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateTrust(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateTrust(t, fakeServer)
 
 	expiresAt := time.Date(2019, 12, 1, 14, 0, 0, 0, time.UTC)
-	result, err := trusts.Create(context.TODO(), client.ServiceClient(), trusts.CreateOpts{
+	result, err := trusts.Create(context.TODO(), client.ServiceClient(fakeServer), trusts.CreateOpts{
 		ExpiresAt:         &expiresAt,
 		AllowRedelegation: true,
 		ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
@@ -35,11 +35,11 @@ func TestCreateTrust(t *testing.T) {
 }
 
 func TestCreateTrustNoExpire(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateTrustNoExpire(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateTrustNoExpire(t, fakeServer)
 
-	result, err := trusts.Create(context.TODO(), client.ServiceClient(), trusts.CreateOpts{
+	result, err := trusts.Create(context.TODO(), client.ServiceClient(fakeServer), trusts.CreateOpts{
 		AllowRedelegation: true,
 		ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
 		Roles: []trusts.Role{
@@ -56,30 +56,30 @@ func TestCreateTrustNoExpire(t *testing.T) {
 }
 
 func TestDeleteTrust(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteTrust(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteTrust(t, fakeServer)
 
-	res := trusts.Delete(context.TODO(), client.ServiceClient(), "3422b7c113894f5d90665e1a79655e23")
+	res := trusts.Delete(context.TODO(), client.ServiceClient(fakeServer), "3422b7c113894f5d90665e1a79655e23")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetTrust(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetTrustSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetTrustSuccessfully(t, fakeServer)
 
-	res := trusts.Get(context.TODO(), client.ServiceClient(), "987fe8")
+	res := trusts.Get(context.TODO(), client.ServiceClient(fakeServer), "987fe8")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestListTrusts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTrustsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTrustsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := trusts.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := trusts.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := trusts.ExtractTrusts(page)
@@ -94,11 +94,11 @@ func TestListTrusts(t *testing.T) {
 }
 
 func TestListTrustsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTrustsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTrustsSuccessfully(t, fakeServer)
 
-	allPages, err := trusts.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := trusts.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := trusts.ExtractTrusts(allPages)
 	th.AssertNoErr(t, err)
@@ -106,13 +106,13 @@ func TestListTrustsAllPages(t *testing.T) {
 }
 
 func TestListTrustsFiltered(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTrustsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTrustsSuccessfully(t, fakeServer)
 	trustsListOpts := trusts.ListOpts{
 		TrustorUserID: "86c0d5",
 	}
-	allPages, err := trusts.List(client.ServiceClient(), trustsListOpts).AllPages(context.TODO())
+	allPages, err := trusts.List(client.ServiceClient(fakeServer), trustsListOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := trusts.ExtractTrusts(allPages)
 	th.AssertNoErr(t, err)
@@ -120,12 +120,12 @@ func TestListTrustsFiltered(t *testing.T) {
 }
 
 func TestListTrustRoles(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTrustRolesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTrustRolesSuccessfully(t, fakeServer)
 
 	count := 0
-	err := trusts.ListRoles(client.ServiceClient(), "987fe8").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := trusts.ListRoles(client.ServiceClient(fakeServer), "987fe8").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := trusts.ExtractRoles(page)
@@ -140,11 +140,11 @@ func TestListTrustRoles(t *testing.T) {
 }
 
 func TestListTrustRolesAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTrustRolesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTrustRolesSuccessfully(t, fakeServer)
 
-	allPages, err := trusts.ListRoles(client.ServiceClient(), "987fe8").AllPages(context.TODO())
+	allPages, err := trusts.ListRoles(client.ServiceClient(fakeServer), "987fe8").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := trusts.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -152,21 +152,21 @@ func TestListTrustRolesAllPages(t *testing.T) {
 }
 
 func TestGetTrustRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetTrustRoleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetTrustRoleSuccessfully(t, fakeServer)
 
-	role, err := trusts.GetRole(context.TODO(), client.ServiceClient(), "987fe8", "c1648e").Extract()
+	role, err := trusts.GetRole(context.TODO(), client.ServiceClient(fakeServer), "987fe8", "c1648e").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, FirstRole, *role)
 }
 
 func TestCheckTrustRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCheckTrustRoleSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCheckTrustRoleSuccessfully(t, fakeServer)
 
-	err := trusts.CheckRole(context.TODO(), client.ServiceClient(), "987fe8", "c1648e").ExtractErr()
+	err := trusts.CheckRole(context.TODO(), client.ServiceClient(fakeServer), "987fe8", "c1648e").ExtractErr()
 	th.AssertNoErr(t, err)
 }

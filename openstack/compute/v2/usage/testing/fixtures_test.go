@@ -74,8 +74,8 @@ const GetSingleTenant = `{
 
 // HandleGetSingleTenantSuccessfully configures the test server to respond to a
 // Get request for a single tenant
-func HandleGetSingleTenantSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-simple-tenant-usage/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSingleTenantSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-simple-tenant-usage/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -224,8 +224,8 @@ const GetAllTenants = `{
 
 // HandleGetAllTenantsSuccessfully configures the test server to respond to a
 // Get request for all tenants.
-func HandleGetAllTenantsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-simple-tenant-usage", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetAllTenantsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-simple-tenant-usage", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")

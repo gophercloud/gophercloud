@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stacks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 var Create_time, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
@@ -42,10 +42,10 @@ const CreateOutput = `
 
 // HandleCreateSuccessfully creates an HTTP handler at `/stacks` on the test handler mux
 // that responds with a `Create` response.
-func HandleCreateSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, output)
@@ -129,10 +129,10 @@ const FullListOutput = `
 
 // HandleListSuccessfully creates an HTTP handler at `/stacks` on the test handler mux
 // that responds with a `List` response.
-func HandleListSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -213,10 +213,10 @@ const GetOutput = `
 
 // HandleGetSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
 // on the test handler mux that responds with a `Get` response.
-func HandleGetSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -225,10 +225,10 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 	})
 }
 
-func HandleFindSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
+func HandleFindSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -239,10 +239,10 @@ func HandleFindSuccessfully(t *testing.T, output string) {
 
 // HandleUpdateSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
 // on the test handler mux that responds with an `Update` response.
-func HandleUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -252,10 +252,10 @@ func HandleUpdateSuccessfully(t *testing.T) {
 
 // HandleUpdatePatchSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
 // on the test handler mux that responds with an `Update` response.
-func HandleUpdatePatchSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdatePatchSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -265,10 +265,10 @@ func HandleUpdatePatchSuccessfully(t *testing.T) {
 
 // HandleDeleteSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
 // on the test handler mux that responds with a `Delete` response.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -301,10 +301,10 @@ var PreviewExpected = &stacks.PreviewedStack{
 
 // HandlePreviewSuccessfully creates an HTTP handler at `/stacks/preview`
 // on the test handler mux that responds with a `Preview` response.
-func HandlePreviewSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/preview", func(w http.ResponseWriter, r *http.Request) {
+func HandlePreviewSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/preview", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -424,10 +424,10 @@ const AbandonOutput = `
 
 // HandleAbandonSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87/abandon`
 // on the test handler mux that responds with an `Abandon` response.
-func HandleAbandonSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c8/abandon", func(w http.ResponseWriter, r *http.Request) {
+func HandleAbandonSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c8/abandon", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")

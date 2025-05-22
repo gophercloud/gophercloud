@@ -13,10 +13,10 @@ import (
 )
 
 func TestPortForwardingList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e/port_forwardings", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e/port_forwardings", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -28,7 +28,7 @@ func TestPortForwardingList(t *testing.T) {
 
 	count := 0
 
-	err := portforwarding.List(fake.ServiceClient(), portforwarding.ListOpts{}, "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := portforwarding.List(fake.ServiceClient(fakeServer), portforwarding.ListOpts{}, "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := portforwarding.ExtractPortForwardings(page)
 		if err != nil {
@@ -67,10 +67,10 @@ func TestPortForwardingList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e/port_forwardings", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e/port_forwardings", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -112,7 +112,7 @@ func TestCreate(t *testing.T) {
 		InternalPortID:    "1238be08-a2a8-4b8d-addf-fb5e2250e480",
 	}
 
-	pf, err := portforwarding.Create(context.TODO(), fake.ServiceClient(), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e", options).Extract()
+	pf, err := portforwarding.Create(context.TODO(), fake.ServiceClient(fakeServer), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "725ade3c-9760-4880-8080-8fc2dbab9acc", pf.ID)
@@ -124,10 +124,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -148,7 +148,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	pf, err := portforwarding.Get(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc").Extract()
+	pf, err := portforwarding.Get(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "tcp", pf.Protocol)
@@ -160,24 +160,24 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := portforwarding.Delete(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc")
+	res := portforwarding.Delete(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -221,7 +221,7 @@ func TestUpdate(t *testing.T) {
 		ExternalPort:   updatedExternalPort,
 	}
 
-	actual, err := portforwarding.Update(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc", options).Extract()
+	actual, err := portforwarding.Update(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc", options).Extract()
 	th.AssertNoErr(t, err)
 	expected := portforwarding.PortForwarding{
 		Protocol:          "udp",

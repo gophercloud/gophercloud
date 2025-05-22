@@ -67,8 +67,8 @@ const UpdateRequest = `
 
 // HandleGetSecretACLSuccessfully creates an HTTP handler at `/secrets/uuid/acl`
 // on the test handler mux that responds with an acl.
-func HandleGetSecretACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSecretACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -81,8 +81,8 @@ func HandleGetSecretACLSuccessfully(t *testing.T) {
 
 // HandleGetContainerACLSuccessfully creates an HTTP handler at `/secrets/uuid/acl`
 // on the test handler mux that responds with an acl.
-func HandleGetContainerACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetContainerACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -95,8 +95,8 @@ func HandleGetContainerACLSuccessfully(t *testing.T) {
 
 // HandleSetSecretACLSuccessfully creates an HTTP handler at `/secrets` on the
 // test handler mux that tests secret creation.
-func HandleSetSecretACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleSetSecretACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, SetRequest)
@@ -108,8 +108,8 @@ func HandleSetSecretACLSuccessfully(t *testing.T) {
 
 // HandleSetContainerACLSuccessfully creates an HTTP handler at `/secrets` on the
 // test handler mux that tests secret creation.
-func HandleSetContainerACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleSetContainerACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, SetRequest)
@@ -121,8 +121,8 @@ func HandleSetContainerACLSuccessfully(t *testing.T) {
 
 // HandleUpdateSecretACLSuccessfully creates an HTTP handler at `/secrets` on the
 // test handler mux that tests secret creation.
-func HandleUpdateSecretACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateSecretACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)
@@ -134,8 +134,8 @@ func HandleUpdateSecretACLSuccessfully(t *testing.T) {
 
 // HandleUpdateContainerACLSuccessfully creates an HTTP handler at `/secrets` on the
 // test handler mux that tests secret creation.
-func HandleUpdateContainerACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateContainerACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)
@@ -147,8 +147,8 @@ func HandleUpdateContainerACLSuccessfully(t *testing.T) {
 
 // HandleDeleteSecretACLSuccessfully creates an HTTP handler at `/secrets` on the
 // test handler mux that tests secret deletion.
-func HandleDeleteSecretACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSecretACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -158,8 +158,8 @@ func HandleDeleteSecretACLSuccessfully(t *testing.T) {
 
 // HandleDeleteContainerACLSuccessfully creates an HTTP handler at `/secrets` on the
 // test handler mux that tests secret deletion.
-func HandleDeleteContainerACLSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteContainerACLSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/containers/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/acl", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

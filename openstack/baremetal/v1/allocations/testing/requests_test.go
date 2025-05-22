@@ -11,12 +11,12 @@ import (
 )
 
 func TestListAllocations(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAllocationListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := allocations.List(client.ServiceClient(), allocations.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := allocations.List(client.ServiceClient(fakeServer), allocations.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := allocations.ExtractAllocations(page)
@@ -41,11 +41,11 @@ func TestListAllocations(t *testing.T) {
 }
 
 func TestCreateAllocation(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAllocationCreationSuccessfully(t, SingleAllocationBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationCreationSuccessfully(t, fakeServer, SingleAllocationBody)
 
-	actual, err := allocations.Create(context.TODO(), client.ServiceClient(), allocations.CreateOpts{
+	actual, err := allocations.Create(context.TODO(), client.ServiceClient(fakeServer), allocations.CreateOpts{
 		Name:           "allocation-1",
 		ResourceClass:  "baremetal",
 		CandidateNodes: []string{"344a3e2-978a-444e-990a-cbf47c62ef88"},
@@ -57,20 +57,20 @@ func TestCreateAllocation(t *testing.T) {
 }
 
 func TestDeleteAllocation(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAllocationDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationDeletionSuccessfully(t, fakeServer)
 
-	res := allocations.Delete(context.TODO(), client.ServiceClient(), "344a3e2-978a-444e-990a-cbf47c62ef88")
+	res := allocations.Delete(context.TODO(), client.ServiceClient(fakeServer), "344a3e2-978a-444e-990a-cbf47c62ef88")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetAllocation(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAllocationGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationGetSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := allocations.Get(context.TODO(), c, "344a3e2-978a-444e-990a-cbf47c62ef88").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)

@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/resourcetypes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const BasicListOutput = `
@@ -75,11 +75,11 @@ var FilteredListExpected = []resourcetypes.ResourceTypeSummary{
 
 // HandleListSuccessfully creates an HTTP handler at `/resource_types`
 // on the test handler mux that responds with a `List` response.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/resource_types",
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_types",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")
@@ -324,11 +324,11 @@ const GetSchemaOutput = `
 // HandleGetSchemaSuccessfully creates an HTTP handler at
 // `/resource_types/OS::Test::TestServer` on the test handler mux that
 // responds with a `GetSchema` response.
-func HandleGetSchemaSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/resource_types/OS::Test::TestServer",
+func HandleGetSchemaSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_types/OS::Test::TestServer",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")
@@ -370,11 +370,11 @@ const GenerateTemplateOutput = `
 // HandleGenerateTemplateSuccessfully creates an HTTP handler at
 // `/resource_types/OS::Heat::None/template` on the test handler mux that
 // responds with a template.
-func HandleGenerateTemplateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/resource_types/OS::Heat::None/template",
+func HandleGenerateTemplateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_types/OS::Heat::None/template",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
-			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			th.TestHeader(t, r, "Accept", "application/json")
 
 			w.Header().Set("Content-Type", "application/json")

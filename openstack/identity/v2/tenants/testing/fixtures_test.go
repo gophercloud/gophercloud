@@ -51,8 +51,8 @@ var ExpectedTenantSlice = []tenants.Tenant{RedTeam, BlueTeam}
 
 // HandleListTenantsSuccessfully creates an HTTP handler at `/tenants` on the test handler mux that
 // responds with a list of two tenants.
-func HandleListTenantsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/tenants", func(w http.ResponseWriter, r *http.Request) {
+func HandleListTenantsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/tenants", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -63,8 +63,8 @@ func HandleListTenantsSuccessfully(t *testing.T) {
 	})
 }
 
-func mockCreateTenantResponse(t *testing.T) {
-	th.Mux.HandleFunc("/tenants", func(w http.ResponseWriter, r *http.Request) {
+func mockCreateTenantResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/tenants", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -94,16 +94,16 @@ func mockCreateTenantResponse(t *testing.T) {
 	})
 }
 
-func mockDeleteTenantResponse(t *testing.T) {
-	th.Mux.HandleFunc("/tenants/2466f69cd4714d89a548a68ed97ffcd4", func(w http.ResponseWriter, r *http.Request) {
+func mockDeleteTenantResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/tenants/2466f69cd4714d89a548a68ed97ffcd4", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
-func mockUpdateTenantResponse(t *testing.T) {
-	th.Mux.HandleFunc("/tenants/5c62ef576dc7444cbb73b1fe84b97648", func(w http.ResponseWriter, r *http.Request) {
+func mockUpdateTenantResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/tenants/5c62ef576dc7444cbb73b1fe84b97648", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -133,8 +133,8 @@ func mockUpdateTenantResponse(t *testing.T) {
 	})
 }
 
-func mockGetTenantResponse(t *testing.T) {
-	th.Mux.HandleFunc("/tenants/5c62ef576dc7444cbb73b1fe84b97648", func(w http.ResponseWriter, r *http.Request) {
+func mockGetTenantResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/tenants/5c62ef576dc7444cbb73b1fe84b97648", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

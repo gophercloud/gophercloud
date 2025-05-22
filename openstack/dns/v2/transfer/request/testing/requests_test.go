@@ -11,12 +11,12 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	count := 0
-	err := transferRequests.List(client.ServiceClient(), nil).EachPage(
+	err := transferRequests.List(client.ServiceClient(fakeServer), nil).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -30,15 +30,15 @@ func TestList(t *testing.T) {
 }
 
 func TestListWithOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	listOpts := transferRequests.ListOpts{
 		Status: "ACTIVE",
 	}
 
-	allPages, err := transferRequests.List(client.ServiceClient(), listOpts).AllPages(context.TODO())
+	allPages, err := transferRequests.List(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTransferRequests, err := transferRequests.ExtractTransferRequests(allPages)
 	th.AssertNoErr(t, err)
@@ -46,11 +46,11 @@ func TestListWithOpts(t *testing.T) {
 }
 
 func TestListAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
-	allPages, err := transferRequests.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := transferRequests.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTransferRequests, err := transferRequests.ExtractTransferRequests(allPages)
 	th.AssertNoErr(t, err)
@@ -58,20 +58,20 @@ func TestListAllPages(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
 	actual, err := transferRequests.Get(
-		context.TODO(), client.ServiceClient(), "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3").Extract()
+		context.TODO(), client.ServiceClient(fakeServer), "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstTransferRequest, actual)
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 
 	createOpts := transferRequests.CreateOpts{
 		TargetProjectID: "05d98711-b3a1-4264-a395-f46383671ee6",
@@ -79,15 +79,15 @@ func TestCreate(t *testing.T) {
 	}
 
 	actual, err := transferRequests.Create(
-		context.TODO(), client.ServiceClient(), FirstTransferRequest.ZoneID, createOpts).Extract()
+		context.TODO(), client.ServiceClient(fakeServer), FirstTransferRequest.ZoneID, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedTransferRequest, actual)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSuccessfully(t, fakeServer)
 
 	var description = "Updated Description"
 	updateOpts := transferRequests.UpdateOpts{
@@ -98,18 +98,18 @@ func TestUpdate(t *testing.T) {
 	UpdatedTransferRequest.Description = "Updated Description"
 
 	actual, err := transferRequests.Update(
-		context.TODO(), client.ServiceClient(), UpdatedTransferRequest.ID, updateOpts).Extract()
+		context.TODO(), client.ServiceClient(fakeServer), UpdatedTransferRequest.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &UpdatedTransferRequest, actual)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
 	DeletedZone := CreatedTransferRequest
 
-	err := transferRequests.Delete(context.TODO(), client.ServiceClient(), DeletedZone.ID).ExtractErr()
+	err := transferRequests.Delete(context.TODO(), client.ServiceClient(fakeServer), DeletedZone.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

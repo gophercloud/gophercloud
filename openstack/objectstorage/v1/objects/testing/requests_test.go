@@ -17,7 +17,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/objects"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestContainerNames(t *testing.T) {
@@ -39,69 +39,68 @@ func TestContainerNames(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("list", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
-				HandleListObjectsInfoSuccessfully(t, WithPath("/"))
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+				HandleListObjectsInfoSuccessfully(t, fakeServer, WithPath("/"))
 
-				_, err := objects.List(fake.ServiceClient(), tc.containerName, nil).AllPages(context.TODO())
+				_, err := objects.List(client.ServiceClient(fakeServer), tc.containerName, nil).AllPages(context.TODO())
 				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("download", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
-				HandleDownloadObjectSuccessfully(t, WithPath("/"))
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+				HandleDownloadObjectSuccessfully(t, fakeServer, WithPath("/"))
 
-				_, err := objects.Download(context.TODO(), fake.ServiceClient(), tc.containerName, "testObject", nil).Extract()
+				_, err := objects.Download(context.TODO(), client.ServiceClient(fakeServer), tc.containerName, "testObject", nil).Extract()
 				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("create", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
 				content := "Ceci n'est pas une pipe"
-				HandleCreateTextObjectSuccessfully(t, content, WithPath("/"))
+				HandleCreateTextObjectSuccessfully(t, fakeServer, content, WithPath("/"))
 
-				res := objects.Create(context.TODO(), fake.ServiceClient(), tc.containerName, "testObject", &objects.CreateOpts{
+				res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), tc.containerName, "testObject", &objects.CreateOpts{
 					ContentType: "text/plain",
 					Content:     strings.NewReader(content),
 				})
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("delete", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
-				HandleDeleteObjectSuccessfully(t, WithPath("/"))
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+				HandleDeleteObjectSuccessfully(t, fakeServer, WithPath("/"))
 
-				res := objects.Delete(context.TODO(), fake.ServiceClient(), tc.containerName, "testObject", nil)
+				res := objects.Delete(context.TODO(), client.ServiceClient(fakeServer), tc.containerName, "testObject", nil)
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("get", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
-				HandleGetObjectSuccessfully(t, WithPath("/"))
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+				HandleGetObjectSuccessfully(t, fakeServer, WithPath("/"))
 
-				_, err := objects.Get(context.TODO(), fake.ServiceClient(), tc.containerName, "testObject", nil).ExtractMetadata()
+				_, err := objects.Get(context.TODO(), client.ServiceClient(fakeServer), tc.containerName, "testObject", nil).ExtractMetadata()
 				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("update", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
-				HandleUpdateObjectSuccessfully(t)
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+				HandleUpdateObjectSuccessfully(t, fakeServer)
 
-				res := objects.Update(context.TODO(), fake.ServiceClient(), tc.containerName, "testObject", &objects.UpdateOpts{
+				res := objects.Update(context.TODO(), client.ServiceClient(fakeServer), tc.containerName, "testObject", &objects.UpdateOpts{
 					Metadata: map[string]string{"Gophercloud-Test": "objects"},
 				})
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("createTempURL", func(t *testing.T) {
 				port := 33200
-				th.SetupHTTP()
-				th.SetupPersistentPortHTTP(t, port)
-				defer th.TeardownHTTP()
+				fakeServer := th.SetupPersistentPortHTTP(t, port)
+				defer fakeServer.Teardown()
 
 				// Handle fetching of secret key inside of CreateTempURL
-				containerTesting.HandleGetContainerSuccessfully(t)
-				accountTesting.HandleGetAccountSuccessfully(t)
-				client := fake.ServiceClient()
+				containerTesting.HandleGetContainerSuccessfully(t, fakeServer)
+				accountTesting.HandleGetAccountSuccessfully(t, fakeServer)
+				client := client.ServiceClient(fakeServer)
 
 				// Append v1/ to client endpoint URL to be compliant with tempURL generator
 				client.Endpoint = client.Endpoint + "v1/"
@@ -114,11 +113,11 @@ func TestContainerNames(t *testing.T) {
 				th.CheckErr(t, err, &tc.expectedError)
 			})
 			t.Run("bulk-delete", func(t *testing.T) {
-				th.SetupHTTP()
-				defer th.TeardownHTTP()
-				HandleBulkDeleteSuccessfully(t)
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+				HandleBulkDeleteSuccessfully(t, fakeServer)
 
-				res := objects.BulkDelete(context.TODO(), fake.ServiceClient(), tc.containerName, []string{"testObject"})
+				res := objects.BulkDelete(context.TODO(), client.ServiceClient(fakeServer), tc.containerName, []string{"testObject"})
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 		})
@@ -126,11 +125,11 @@ func TestContainerNames(t *testing.T) {
 }
 
 func TestDownloadReader(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDownloadObjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDownloadObjectSuccessfully(t, fakeServer)
 
-	response := objects.Download(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", nil)
+	response := objects.Download(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", nil)
 	defer response.Body.Close()
 
 	// Check reader
@@ -141,11 +140,11 @@ func TestDownloadReader(t *testing.T) {
 }
 
 func TestDownloadExtraction(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDownloadObjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDownloadObjectSuccessfully(t, fakeServer)
 
-	response := objects.Download(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", nil)
+	response := objects.Download(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", nil)
 
 	// Check []byte extraction
 	bytes, err := response.ExtractContent()
@@ -165,34 +164,34 @@ func TestDownloadExtraction(t *testing.T) {
 }
 
 func TestDownloadWithLastModified(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDownloadObjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDownloadObjectSuccessfully(t, fakeServer)
 
 	options1 := &objects.DownloadOpts{
 		IfUnmodifiedSince: time.Date(2009, time.November, 10, 22, 59, 59, 0, time.UTC),
 	}
-	response1 := objects.Download(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options1)
+	response1 := objects.Download(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options1)
 	_, err1 := response1.Extract()
 	th.AssertErr(t, err1)
 
 	options2 := &objects.DownloadOpts{
 		IfModifiedSince: time.Date(2009, time.November, 10, 23, 0, 1, 0, time.UTC),
 	}
-	response2 := objects.Download(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options2)
+	response2 := objects.Download(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options2)
 	content, err2 := response2.ExtractContent()
 	th.AssertNoErr(t, err2)
 	th.AssertEquals(t, 0, len(content))
 }
 
 func TestListObjectInfo(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListObjectsInfoSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListObjectsInfoSuccessfully(t, fakeServer)
 
 	count := 0
 	options := &objects.ListOpts{}
-	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := objects.List(client.ServiceClient(fakeServer), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractInfo(page)
 		th.AssertNoErr(t, err)
@@ -206,13 +205,13 @@ func TestListObjectInfo(t *testing.T) {
 }
 
 func TestListObjectSubdir(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSubdirSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSubdirSuccessfully(t, fakeServer)
 
 	count := 0
 	options := &objects.ListOpts{Prefix: "", Delimiter: "/"}
-	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := objects.List(client.ServiceClient(fakeServer), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractInfo(page)
 		th.AssertNoErr(t, err)
@@ -226,14 +225,14 @@ func TestListObjectSubdir(t *testing.T) {
 }
 
 func TestListObjectNames(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListObjectsInfoSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListObjectsInfoSuccessfully(t, fakeServer)
 
 	// Check without delimiter.
 	count := 0
 	options := &objects.ListOpts{}
-	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := objects.List(client.ServiceClient(fakeServer), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
 		if err != nil {
@@ -251,7 +250,7 @@ func TestListObjectNames(t *testing.T) {
 	// Check with delimiter.
 	count = 0
 	options = &objects.ListOpts{Delimiter: "/"}
-	err = objects.List(fake.ServiceClient(), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err = objects.List(client.ServiceClient(fakeServer), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
 		if err != nil {
@@ -268,13 +267,13 @@ func TestListObjectNames(t *testing.T) {
 }
 
 func TestListZeroObjectNames204(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListZeroObjectNames204(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListZeroObjectNames204(t, fakeServer)
 
 	count := 0
 	options := &objects.ListOpts{}
-	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := objects.List(client.ServiceClient(fakeServer), "testContainer", options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
 		if err != nil {
@@ -291,100 +290,100 @@ func TestListZeroObjectNames204(t *testing.T) {
 }
 
 func TestCreateObject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	content := "Did gyre and gimble in the wabe"
 
-	HandleCreateTextObjectSuccessfully(t, content)
+	HandleCreateTextObjectSuccessfully(t, fakeServer, content)
 
 	options := &objects.CreateOpts{ContentType: "text/plain", Content: strings.NewReader(content)}
-	res := objects.Create(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options)
+	res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestCreateObjectWithCacheControl(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	content := "All mimsy were the borogoves"
 
-	HandleCreateTextWithCacheControlSuccessfully(t, content)
+	HandleCreateTextWithCacheControlSuccessfully(t, fakeServer, content)
 
 	options := &objects.CreateOpts{
 		CacheControl: `max-age="3600", public`,
 		Content:      strings.NewReader(content),
 	}
-	res := objects.Create(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options)
+	res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestCreateObjectWithoutContentType(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	content := "The sky was the color of television, tuned to a dead channel."
 
-	HandleCreateTypelessObjectSuccessfully(t, content)
+	HandleCreateTypelessObjectSuccessfully(t, fakeServer, content)
 
-	res := objects.Create(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", &objects.CreateOpts{Content: strings.NewReader(content)})
+	res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", &objects.CreateOpts{Content: strings.NewReader(content)})
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestCopyObject(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
-		th.SetupHTTP()
-		defer th.TeardownHTTP()
-		HandleCopyObjectSuccessfully(t, "/newTestContainer/newTestObject")
+		fakeServer := th.SetupHTTP()
+		defer fakeServer.Teardown()
+		HandleCopyObjectSuccessfully(t, fakeServer, "/newTestContainer/newTestObject")
 
 		options := &objects.CopyOpts{Destination: "/newTestContainer/newTestObject"}
-		res := objects.Copy(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options)
+		res := objects.Copy(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options)
 		th.AssertNoErr(t, res.Err)
 	})
 	t.Run("slash", func(t *testing.T) {
-		th.SetupHTTP()
-		defer th.TeardownHTTP()
-		HandleCopyObjectSuccessfully(t, "/newTestContainer/path%2Fto%2FnewTestObject")
+		fakeServer := th.SetupHTTP()
+		defer fakeServer.Teardown()
+		HandleCopyObjectSuccessfully(t, fakeServer, "/newTestContainer/path%2Fto%2FnewTestObject")
 
 		options := &objects.CopyOpts{Destination: "/newTestContainer/path/to/newTestObject"}
-		res := objects.Copy(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options)
+		res := objects.Copy(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options)
 		th.AssertNoErr(t, res.Err)
 	})
 	t.Run("emojis", func(t *testing.T) {
-		th.SetupHTTP()
-		defer th.TeardownHTTP()
-		HandleCopyObjectSuccessfully(t, "/newTestContainer/new%F0%9F%98%8ATest%2C%3B%22O%28bject%21_%E7%AF%84")
+		fakeServer := th.SetupHTTP()
+		defer fakeServer.Teardown()
+		HandleCopyObjectSuccessfully(t, fakeServer, "/newTestContainer/new%F0%9F%98%8ATest%2C%3B%22O%28bject%21_%E7%AF%84")
 
 		options := &objects.CopyOpts{Destination: "/newTestContainer/new😊Test,;\"O(bject!_範"}
-		res := objects.Copy(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options)
+		res := objects.Copy(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options)
 		th.AssertNoErr(t, res.Err)
 	})
 }
 
 func TestCopyObjectVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCopyObjectVersionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCopyObjectVersionSuccessfully(t, fakeServer)
 
 	options := &objects.CopyOpts{Destination: "/newTestContainer/newTestObject", ObjectVersionID: "123456788"}
-	res, err := objects.Copy(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options).Extract()
+	res, err := objects.Copy(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "123456789", res.ObjectVersionID)
 }
 
 func TestDeleteObject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteObjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteObjectSuccessfully(t, fakeServer)
 
-	res := objects.Delete(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", nil)
+	res := objects.Delete(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", nil)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestBulkDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleBulkDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleBulkDeleteSuccessfully(t, fakeServer)
 
 	expected := objects.BulkDeleteResponse{
 		ResponseStatus: "foo",
@@ -393,15 +392,15 @@ func TestBulkDelete(t *testing.T) {
 		Errors:         [][]string{},
 	}
 
-	resp, err := objects.BulkDelete(context.TODO(), fake.ServiceClient(), "testContainer", []string{"testObject1", "testObject2"}).Extract()
+	resp, err := objects.BulkDelete(context.TODO(), client.ServiceClient(fakeServer), "testContainer", []string{"testObject1", "testObject2"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, *resp)
 }
 
 func TestUpateObjectMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateObjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateObjectSuccessfully(t, fakeServer)
 
 	s := new(string)
 	i := new(int64)
@@ -414,24 +413,24 @@ func TestUpateObjectMetadata(t *testing.T) {
 		DeleteAt:           i,
 		DetectContentType:  new(bool),
 	}
-	res := objects.Update(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", options)
+	res := objects.Update(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", options)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetObject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetObjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetObjectSuccessfully(t, fakeServer)
 
 	expected := map[string]string{"Gophercloud-Test": "objects"}
-	actual, err := objects.Get(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", nil).ExtractMetadata()
+	actual, err := objects.Get(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", nil).ExtractMetadata()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 
 	getOpts := objects.GetOpts{
 		Newest: true,
 	}
-	actualHeaders, err := objects.Get(context.TODO(), fake.ServiceClient(), "testContainer", "testObject", getOpts).Extract()
+	actualHeaders, err := objects.Get(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, actualHeaders.StaticLargeObject)
 }
@@ -505,14 +504,13 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 
 func TestCreateTempURL(t *testing.T) {
 	port := 33200
-	th.SetupHTTP()
-	th.SetupPersistentPortHTTP(t, port)
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupPersistentPortHTTP(t, port)
+	defer fakeServer.Teardown()
 
 	// Handle fetching of secret key inside of CreateTempURL
-	containerTesting.HandleGetContainerSuccessfully(t)
-	accountTesting.HandleGetAccountSuccessfully(t)
-	client := fake.ServiceClient()
+	containerTesting.HandleGetContainerSuccessfully(t, fakeServer)
+	accountTesting.HandleGetAccountSuccessfully(t, fakeServer)
+	client := client.ServiceClient(fakeServer)
 
 	// Append v1/ to client endpoint URL to be compliant with tempURL generator
 	client.Endpoint = client.Endpoint + "v1/"

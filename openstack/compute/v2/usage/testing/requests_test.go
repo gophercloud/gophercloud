@@ -11,12 +11,12 @@ import (
 )
 
 func TestGetTenant(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSingleTenantSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSingleTenantSuccessfully(t, fakeServer)
 
 	count := 0
-	err := usage.SingleTenant(client.ServiceClient(), FirstTenantID, nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := usage.SingleTenant(client.ServiceClient(fakeServer), FirstTenantID, nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := usage.ExtractSingleTenant(page)
@@ -30,16 +30,16 @@ func TestGetTenant(t *testing.T) {
 }
 
 func TestAllTenants(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetAllTenantsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetAllTenantsSuccessfully(t, fakeServer)
 
 	getOpts := usage.AllTenantsOpts{
 		Detailed: true,
 	}
 
 	count := 0
-	err := usage.AllTenants(client.ServiceClient(), getOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := usage.AllTenants(client.ServiceClient(fakeServer), getOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := usage.ExtractAllTenants(page)

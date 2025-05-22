@@ -12,10 +12,10 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := qos.CreateOpts{
 		Name:     "qos-001",
@@ -24,29 +24,29 @@ func TestCreate(t *testing.T) {
 			"read_iops_sec": "20000",
 		},
 	}
-	actual, err := qos.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	actual, err := qos.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &createQoSExpected, actual)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := qos.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteOpts{})
+	res := qos.Delete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteOpts{})
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
 	pages := 0
-	err := qos.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := qos.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := qos.ExtractQoS(page)
 		if err != nil {
@@ -76,20 +76,20 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	actual, err := qos.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	actual, err := qos.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &getQoSExpected, actual)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	MockUpdateResponse(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	MockUpdateResponse(t, fakeServer)
 
 	updateOpts := qos.UpdateOpts{
 		Consumer: qos.ConsumerBack,
@@ -100,64 +100,64 @@ func TestUpdate(t *testing.T) {
 	}
 
 	expected := UpdateQos
-	actual, err := qos.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", updateOpts).Extract()
+	actual, err := qos.Update(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestDeleteKeys(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteKeysResponse(t)
+	MockDeleteKeysResponse(t, fakeServer)
 
-	res := qos.DeleteKeys(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteKeysOpts{"read_iops_sec"})
+	res := qos.DeleteKeys(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteKeysOpts{"read_iops_sec"})
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestAssociate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockAssociateResponse(t)
+	MockAssociateResponse(t, fakeServer)
 
 	associateOpts := qos.AssociateOpts{
 		VolumeTypeID: "b596be6a-0ce9-43fa-804a-5c5e181ede76",
 	}
 
-	res := qos.Associate(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", associateOpts)
+	res := qos.Associate(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", associateOpts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestDisssociate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDisassociateResponse(t)
+	MockDisassociateResponse(t, fakeServer)
 
 	disassociateOpts := qos.DisassociateOpts{
 		VolumeTypeID: "b596be6a-0ce9-43fa-804a-5c5e181ede76",
 	}
 
-	res := qos.Disassociate(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", disassociateOpts)
+	res := qos.Disassociate(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", disassociateOpts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestDissasociateAll(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDisassociateAllResponse(t)
+	MockDisassociateAllResponse(t, fakeServer)
 
-	res := qos.DisassociateAll(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := qos.DisassociateAll(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestQosAssociationsList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListAssociationsResponse(t)
+	MockListAssociationsResponse(t, fakeServer)
 
 	expected := []qos.QosAssociation{
 		{
@@ -167,7 +167,7 @@ func TestQosAssociationsList(t *testing.T) {
 		},
 	}
 
-	allPages, err := qos.ListAssociations(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").AllPages(context.TODO())
+	allPages, err := qos.ListAssociations(client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := qos.ExtractAssociations(allPages)

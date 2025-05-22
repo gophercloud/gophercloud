@@ -79,10 +79,10 @@ func TestConcurrentReauth(t *testing.T) {
 		return nil
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Auth-Token") != postreauthTok {
 			w.WriteHeader(http.StatusUnauthorized)
 			info.mut.Lock()
@@ -113,7 +113,7 @@ func TestConcurrentReauth(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			resp, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			resp, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", fakeServer.Endpoint()), reqopts)
 			th.CheckNoErr(t, err)
 			if resp == nil {
 				t.Errorf("got a nil response")
@@ -171,10 +171,10 @@ func TestReauthEndLoop(t *testing.T) {
 		return nil
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		// route always return 401
 		w.WriteHeader(http.StatusUnauthorized)
 	})
@@ -190,7 +190,7 @@ func TestReauthEndLoop(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			_, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", fakeServer.Endpoint()), reqopts)
 
 			mut.Lock()
 			defer mut.Unlock()
@@ -256,10 +256,10 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		return nil
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Auth-Token") != postreauthTok {
 			info.mut.Lock()
 			info.failedAuths++
@@ -293,7 +293,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 			if i != 0 {
 				<-info.reauthCh
 			}
-			resp, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			resp, err := p.Request(context.TODO(), "GET", fmt.Sprintf("%s/route", fakeServer.Endpoint()), reqopts)
 			th.CheckNoErr(t, err)
 			if resp == nil {
 				t.Errorf("got a nil response")
@@ -339,13 +339,13 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 		return nil
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	requestCounter := 0
 	var requestCounterMutex sync.Mutex
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		requestCounterMutex.Lock()
 		requestCounter++
 		//avoid infinite loop
@@ -363,7 +363,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	// the part before the colon), but when encountering another 401 response, we
 	// did not attempt reauthentication again and just passed that 401 response to
 	// the caller as ErrDefault401.
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	expectedErrorRx := regexp.MustCompile(`^Successfully re-authenticated, but got error executing request: Expected HTTP response code \[200\] when accessing \[GET http://[^/]*//route\], but got 401 instead: unauthorized$`)
 	if !expectedErrorRx.MatchString(err.Error()) {
 		t.Errorf("expected error that looks like %q, but got %q", expectedErrorRx.String(), err.Error())
@@ -501,17 +501,17 @@ func TestRequestRetry(t *testing.T) {
 
 	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "1")
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -528,17 +528,17 @@ func TestRequestRetryHTTPDate(t *testing.T) {
 
 	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", time.Now().Add(1*time.Second).UTC().Format(http.TimeFormat))
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -555,17 +555,17 @@ func TestRequestRetryError(t *testing.T) {
 
 	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "foo bar")
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -582,15 +582,15 @@ func TestRequestRetrySuccess(t *testing.T) {
 
 	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		//always reply 200
 		http.Error(w, "retry later", http.StatusOK)
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -614,17 +614,17 @@ func TestRequestRetryContext(t *testing.T) {
 
 	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "1")
 
 		//always reply 429
 		http.Error(w, "retry later", http.StatusTooManyRequests)
 	})
 
-	_, err := p.Request(ctx, "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(ctx, "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
@@ -643,11 +643,11 @@ func TestRequestGeneralRetry(t *testing.T) {
 		return nil
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	count := 0
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		if count < 3 {
 			http.Error(w, "bad gateway", http.StatusBadGateway)
 			count += 1
@@ -656,7 +656,7 @@ func TestRequestGeneralRetry(t *testing.T) {
 		}
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err != nil {
 		t.Fatal("expecting nil, got err")
 	}
@@ -671,11 +671,11 @@ func TestRequestGeneralRetryAbort(t *testing.T) {
 		return err
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	count := 0
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		if count < 3 {
 			http.Error(w, "bad gateway", http.StatusBadGateway)
 			count += 1
@@ -684,7 +684,7 @@ func TestRequestGeneralRetryAbort(t *testing.T) {
 		}
 	})
 
-	_, err := p.Request(context.TODO(), "GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting err, got nil")
 	}

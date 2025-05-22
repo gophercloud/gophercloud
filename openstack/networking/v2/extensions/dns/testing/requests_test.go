@@ -32,10 +32,10 @@ var createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
 var updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
 
 func TestPortList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	PortHandleListSuccessfully(t)
+	PortHandleListSuccessfully(t, fakeServer)
 
 	var actual []PortDNS
 
@@ -79,7 +79,7 @@ func TestPortList(t *testing.T) {
 		DNSName:         "test-port",
 	}
 
-	allPages, err := ports.List(fake.ServiceClient(), listOptsBuilder).AllPages(context.TODO())
+	allPages, err := ports.List(fake.ServiceClient(fakeServer), listOptsBuilder).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = ports.ExtractPortsInto(allPages, &actual)
@@ -89,14 +89,14 @@ func TestPortList(t *testing.T) {
 }
 
 func TestPortGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	PortHandleGet(t)
+	PortHandleGet(t, fakeServer)
 
 	var s PortDNS
 
-	err := ports.Get(context.TODO(), fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
+	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "ACTIVE")
@@ -124,10 +124,10 @@ func TestPortGet(t *testing.T) {
 }
 
 func TestPortCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	PortHandleCreate(t)
+	PortHandleCreate(t, fakeServer)
 
 	var s PortDNS
 
@@ -147,7 +147,7 @@ func TestPortCreate(t *testing.T) {
 		DNSName:           "test-port",
 	}
 
-	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&s)
+	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Status, "DOWN")
@@ -174,17 +174,20 @@ func TestPortCreate(t *testing.T) {
 }
 
 func TestPortRequiredCreateOpts(t *testing.T) {
-	res := ports.Create(context.TODO(), fake.ServiceClient(), dns.PortCreateOptsExt{CreateOptsBuilder: ports.CreateOpts{}})
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	res := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), dns.PortCreateOptsExt{CreateOptsBuilder: ports.CreateOpts{}})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestPortUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	PortHandleUpdate(t)
+	PortHandleUpdate(t, fakeServer)
 
 	var s PortDNS
 
@@ -203,7 +206,7 @@ func TestPortUpdate(t *testing.T) {
 		DNSName:           &dnsName,
 	}
 
-	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
+	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -222,13 +225,13 @@ func TestPortUpdate(t *testing.T) {
 }
 
 func TestFloatingIPGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	FloatingIPHandleGet(t)
+	FloatingIPHandleGet(t, fakeServer)
 
 	var actual FloatingIPDNS
-	err := floatingips.Get(context.TODO(), fake.ServiceClient(), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").ExtractInto(&actual)
+	err := floatingips.Get(context.TODO(), fake.ServiceClient(fakeServer), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
 	expected := FloatingIPDNS{
@@ -254,10 +257,10 @@ func TestFloatingIPGet(t *testing.T) {
 }
 
 func TestFloatingIPCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	FloatingIPHandleCreate(t)
+	FloatingIPHandleCreate(t, fakeServer)
 
 	var actual FloatingIPDNS
 
@@ -271,7 +274,7 @@ func TestFloatingIPCreate(t *testing.T) {
 		DNSDomain:         "local.",
 	}
 
-	err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).ExtractInto(&actual)
+	err := floatingips.Create(context.TODO(), fake.ServiceClient(fakeServer), options).ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
 	expected := FloatingIPDNS{
@@ -297,14 +300,14 @@ func TestFloatingIPCreate(t *testing.T) {
 }
 
 func TestNetworkGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	NetworkHandleGet(t)
+	NetworkHandleGet(t, fakeServer)
 
 	var actual NetworkDNS
 
-	err := networks.Get(context.TODO(), fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&actual)
+	err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
 	expected := NetworkDNS{
@@ -328,10 +331,10 @@ func TestNetworkGet(t *testing.T) {
 }
 
 func TestNetworkCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	NetworkHandleCreate(t)
+	NetworkHandleCreate(t, fakeServer)
 
 	var actual NetworkDNS
 
@@ -342,7 +345,7 @@ func TestNetworkCreate(t *testing.T) {
 		DNSDomain:         "local.",
 	}
 
-	err := networks.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&actual)
+	err := networks.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
 	expected := NetworkDNS{
@@ -366,10 +369,10 @@ func TestNetworkCreate(t *testing.T) {
 }
 
 func TestNetworkUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	NetworkHandleUpdate(t)
+	NetworkHandleUpdate(t, fakeServer)
 
 	var actual NetworkDNS
 
@@ -380,7 +383,7 @@ func TestNetworkUpdate(t *testing.T) {
 		DNSDomain:         new(string),
 	}
 
-	err := networks.Update(context.TODO(), fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324", updateOpts).ExtractInto(&actual)
+	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "db193ab3-96e3-4cb3-8fc5-05f4296d0324", updateOpts).ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
 	expected := NetworkDNS{

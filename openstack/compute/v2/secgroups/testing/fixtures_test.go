@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const rootPath = "/os-security-groups"
@@ -25,10 +25,10 @@ const listGroupsJSON = `
 }
 `
 
-func mockListGroupsResponse(t *testing.T) {
-	th.Mux.HandleFunc(rootPath, func(w http.ResponseWriter, r *http.Request) {
+func mockListGroupsResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(rootPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -37,11 +37,11 @@ func mockListGroupsResponse(t *testing.T) {
 	})
 }
 
-func mockListGroupsByServerResponse(t *testing.T, serverID string) {
+func mockListGroupsByServerResponse(t *testing.T, fakeServer th.FakeServer, serverID string) {
 	url := fmt.Sprintf("/servers/%s%s", serverID, rootPath)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -50,10 +50,10 @@ func mockListGroupsByServerResponse(t *testing.T, serverID string) {
 	})
 }
 
-func mockCreateGroupResponse(t *testing.T) {
-	th.Mux.HandleFunc(rootPath, func(w http.ResponseWriter, r *http.Request) {
+func mockCreateGroupResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(rootPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -81,11 +81,11 @@ func mockCreateGroupResponse(t *testing.T) {
 	})
 }
 
-func mockUpdateGroupResponse(t *testing.T, groupID string) {
+func mockUpdateGroupResponse(t *testing.T, fakeServer th.FakeServer, groupID string) {
 	url := fmt.Sprintf("%s/%s", rootPath, groupID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -113,11 +113,11 @@ func mockUpdateGroupResponse(t *testing.T, groupID string) {
 	})
 }
 
-func mockGetGroupsResponse(t *testing.T, groupID string) {
+func mockGetGroupsResponse(t *testing.T, fakeServer th.FakeServer, groupID string) {
 	url := fmt.Sprintf("%s/%s", rootPath, groupID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -151,11 +151,11 @@ func mockGetGroupsResponse(t *testing.T, groupID string) {
 	})
 }
 
-func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
+func mockGetNumericIDGroupResponse(t *testing.T, fakeServer th.FakeServer, groupID int) {
 	url := fmt.Sprintf("%s/%d", rootPath, groupID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -170,11 +170,11 @@ func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
 	})
 }
 
-func mockGetNumericIDGroupRuleResponse(t *testing.T, groupID int) {
+func mockGetNumericIDGroupRuleResponse(t *testing.T, fakeServer th.FakeServer, groupID int) {
 	url := fmt.Sprintf("%s/%d", rootPath, groupID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -195,20 +195,20 @@ func mockGetNumericIDGroupRuleResponse(t *testing.T, groupID int) {
 	})
 }
 
-func mockDeleteGroupResponse(t *testing.T, groupID string) {
+func mockDeleteGroupResponse(t *testing.T, fakeServer th.FakeServer, groupID string) {
 	url := fmt.Sprintf("%s/%s", rootPath, groupID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func mockAddRuleResponse(t *testing.T) {
-	th.Mux.HandleFunc("/os-security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+func mockAddRuleResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -241,10 +241,10 @@ func mockAddRuleResponse(t *testing.T) {
 	})
 }
 
-func mockAddRuleResponseICMPZero(t *testing.T) {
-	th.Mux.HandleFunc("/os-security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+func mockAddRuleResponseICMPZero(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -277,21 +277,21 @@ func mockAddRuleResponseICMPZero(t *testing.T) {
 	})
 }
 
-func mockDeleteRuleResponse(t *testing.T, ruleID string) {
+func mockDeleteRuleResponse(t *testing.T, fakeServer th.FakeServer, ruleID string) {
 	url := fmt.Sprintf("/os-security-group-rules/%s", ruleID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func mockAddServerToGroupResponse(t *testing.T, serverID string) {
+func mockAddServerToGroupResponse(t *testing.T, fakeServer th.FakeServer, serverID string) {
 	url := fmt.Sprintf("/servers/%s/action", serverID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -306,11 +306,11 @@ func mockAddServerToGroupResponse(t *testing.T, serverID string) {
 	})
 }
 
-func mockRemoveServerFromGroupResponse(t *testing.T, serverID string) {
+func mockRemoveServerFromGroupResponse(t *testing.T, fakeServer th.FakeServer, serverID string) {
 	url := fmt.Sprintf("/servers/%s/action", serverID)
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {

@@ -133,8 +133,8 @@ var (
 )
 
 // HandlePoolListSuccessfully sets up the test server to respond to a pool List request.
-func HandlePoolListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools", func(w http.ResponseWriter, r *http.Request) {
+func HandlePoolListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -156,8 +156,8 @@ func HandlePoolListSuccessfully(t *testing.T) {
 
 // HandlePoolCreationSuccessfully sets up the test server to respond to a pool creation request
 // with a given response.
-func HandlePoolCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools", func(w http.ResponseWriter, r *http.Request) {
+func HandlePoolCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -177,8 +177,8 @@ func HandlePoolCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandlePoolGetSuccessfully sets up the test server to respond to a pool Get request.
-func HandlePoolGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/c3741b06-df4d-4715-b142-276b6bce75ab", func(w http.ResponseWriter, r *http.Request) {
+func HandlePoolGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/c3741b06-df4d-4715-b142-276b6bce75ab", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -188,8 +188,8 @@ func HandlePoolGetSuccessfully(t *testing.T) {
 }
 
 // HandlePoolDeletionSuccessfully sets up the test server to respond to a pool deletion request.
-func HandlePoolDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/c3741b06-df4d-4715-b142-276b6bce75ab", func(w http.ResponseWriter, r *http.Request) {
+func HandlePoolDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/c3741b06-df4d-4715-b142-276b6bce75ab", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -198,8 +198,8 @@ func HandlePoolDeletionSuccessfully(t *testing.T) {
 }
 
 // HandlePoolUpdateSuccessfully sets up the test server to respond to a pool Update request.
-func HandlePoolUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/c3741b06-df4d-4715-b142-276b6bce75ab", func(w http.ResponseWriter, r *http.Request) {
+func HandlePoolUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/c3741b06-df4d-4715-b142-276b6bce75ab", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -330,8 +330,8 @@ var (
 )
 
 // HandleMemberListSuccessfully sets up the test server to respond to a member List request.
-func HandleMemberListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
+func HandleMemberListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -353,8 +353,8 @@ func HandleMemberListSuccessfully(t *testing.T) {
 
 // HandleMemberCreationSuccessfully sets up the test server to respond to a member creation request
 // with a given response.
-func HandleMemberCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
+func HandleMemberCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -375,8 +375,8 @@ func HandleMemberCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandleMemberGetSuccessfully sets up the test server to respond to a member Get request.
-func HandleMemberGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
+func HandleMemberGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -386,8 +386,8 @@ func HandleMemberGetSuccessfully(t *testing.T) {
 }
 
 // HandleMemberDeletionSuccessfully sets up the test server to respond to a member deletion request.
-func HandleMemberDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
+func HandleMemberDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -396,8 +396,8 @@ func HandleMemberDeletionSuccessfully(t *testing.T) {
 }
 
 // HandleMemberUpdateSuccessfully sets up the test server to respond to a member Update request.
-func HandleMemberUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
+func HandleMemberUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -414,8 +414,8 @@ func HandleMemberUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleMembersUpdateSuccessfully sets up the test server to respond to a batch member Update request.
-func HandleMembersUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
+func HandleMembersUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -444,8 +444,8 @@ func HandleMembersUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleEmptyMembersUpdateSuccessfully sets up the test server to respond to an empty batch member Update request.
-func HandleEmptyMembersUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
+func HandleEmptyMembersUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

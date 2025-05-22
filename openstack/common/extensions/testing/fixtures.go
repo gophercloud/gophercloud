@@ -64,8 +64,8 @@ var SingleExtension = &extensions.Extension{
 
 // HandleListExtensionsSuccessfully creates an HTTP handler at `/extensions` on the test handler
 // mux that response with a list containing a single tenant.
-func HandleListExtensionsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
+func HandleListExtensionsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -77,8 +77,8 @@ func HandleListExtensionsSuccessfully(t *testing.T) {
 
 // HandleGetExtensionSuccessfully creates an HTTP handler at `/extensions/agent` that responds with
 // a JSON payload corresponding to SingleExtension.
-func HandleGetExtensionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetExtensionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

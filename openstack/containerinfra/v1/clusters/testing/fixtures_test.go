@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clusters"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const clusterUUID = "746e779a-751a-456b-a3e9-c883d734946f"
@@ -95,10 +95,10 @@ var ExpectedCluster2 = clusters.Cluster{
 
 var ExpectedClusterUUID = clusterUUID
 
-func HandleCreateClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
@@ -108,10 +108,10 @@ func HandleCreateClusterSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleGetClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
+func HandleGetClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -247,10 +247,10 @@ var ClusterListResponse = fmt.Sprintf(`
 
 var ExpectedClusters = []clusters.Cluster{ExpectedCluster}
 
-func HandleListClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {
+func HandleListClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
@@ -260,10 +260,10 @@ func HandleListClusterSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleListDetailClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/detail", func(w http.ResponseWriter, r *http.Request) {
+func HandleListDetailClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
@@ -278,10 +278,10 @@ var UpdateResponse = fmt.Sprintf(`
 	"uuid":"%s"
 }`, clusterUUID)
 
-func HandleUpdateClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
@@ -296,10 +296,10 @@ var UpgradeResponse = fmt.Sprintf(`
 	"uuid":"%s"
 }`, clusterUUID)
 
-func HandleUpgradeClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/actions/upgrade", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpgradeClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/actions/upgrade", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
@@ -309,10 +309,10 @@ func HandleUpgradeClusterSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleDeleteClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
@@ -325,10 +325,10 @@ var ResizeResponse = fmt.Sprintf(`
 	"uuid": "%s"
 }`, clusterUUID)
 
-func HandleResizeClusterSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/actions/resize", func(w http.ResponseWriter, r *http.Request) {
+func HandleResizeClusterSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/actions/resize", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("X-OpenStack-Request-Id", requestUUID)

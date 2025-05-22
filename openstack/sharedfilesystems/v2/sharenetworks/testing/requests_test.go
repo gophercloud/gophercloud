@@ -13,10 +13,10 @@ import (
 
 // Verifies that a share network can be created correctly
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := &sharenetworks.CreateOpts{
 		Name:            "my_network",
@@ -25,7 +25,7 @@ func TestCreate(t *testing.T) {
 		NeutronSubnetID: "53482b62-2c84-4a53-b6ab-30d9d9800d06",
 	}
 
-	n, err := sharenetworks.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := sharenetworks.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "my_network")
@@ -36,23 +36,23 @@ func TestCreate(t *testing.T) {
 
 // Verifies that share network deletion works
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := sharenetworks.Delete(context.TODO(), client.ServiceClient(), "fa158a3d-6d9f-4187-9ca5-abbb82646eb2")
+	res := sharenetworks.Delete(context.TODO(), client.ServiceClient(fakeServer), "fa158a3d-6d9f-4187-9ca5-abbb82646eb2")
 	th.AssertNoErr(t, res.Err)
 }
 
 // Verifies that share networks can be listed correctly
 func TestListDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := sharenetworks.ListDetail(client.ServiceClient(), &sharenetworks.ListOpts{}).AllPages(context.TODO())
+	allPages, err := sharenetworks.ListDetail(client.ServiceClient(fakeServer), &sharenetworks.ListOpts{}).AllPages(context.TODO())
 
 	th.AssertNoErr(t, err)
 	actual, err := sharenetworks.ExtractShareNetworks(allPages)
@@ -112,10 +112,10 @@ func TestListDetail(t *testing.T) {
 
 // Verifies that share networks list can be called with query parameters
 func TestPaginatedListDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockFilteredListResponse(t)
+	MockFilteredListResponse(t, fakeServer)
 
 	options := &sharenetworks.ListOpts{
 		Offset: 0,
@@ -124,7 +124,7 @@ func TestPaginatedListDetail(t *testing.T) {
 
 	count := 0
 
-	err := sharenetworks.ListDetail(client.ServiceClient(), options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := sharenetworks.ListDetail(client.ServiceClient(fakeServer), options).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		_, err := sharenetworks.ExtractShareNetworks(page)
 		if err != nil {
@@ -141,10 +141,10 @@ func TestPaginatedListDetail(t *testing.T) {
 
 // Verifies that it is possible to get a share network
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
 	var nilTime time.Time
 	expected := sharenetworks.ShareNetwork{
@@ -163,7 +163,7 @@ func TestGet(t *testing.T) {
 		ProjectID:       "16e1ab15c35a457e9c2b2aa189f544e1",
 	}
 
-	n, err := sharenetworks.Get(context.TODO(), client.ServiceClient(), "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd").Extract()
+	n, err := sharenetworks.Get(context.TODO(), client.ServiceClient(fakeServer), "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd").Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, &expected, n)
@@ -171,10 +171,10 @@ func TestGet(t *testing.T) {
 
 // Verifies that it is possible to update a share network using neutron network
 func TestUpdateNeutron(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateNeutronResponse(t)
+	MockUpdateNeutronResponse(t, fakeServer)
 
 	expected := sharenetworks.ShareNetwork{
 		ID:              "713df749-aac0-4a54-af52-10f6c991e80c",
@@ -201,17 +201,17 @@ func TestUpdateNeutron(t *testing.T) {
 		NeutronSubnetID: "new-neutron-subnet-id",
 	}
 
-	v, err := sharenetworks.Update(context.TODO(), client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
+	v, err := sharenetworks.Update(context.TODO(), client.ServiceClient(fakeServer), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, v)
 }
 
 // Verifies that it is possible to update a share network using nova network
 func TestUpdateNova(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateNovaResponse(t)
+	MockUpdateNovaResponse(t, fakeServer)
 
 	expected := sharenetworks.ShareNetwork{
 		ID:              "713df749-aac0-4a54-af52-10f6c991e80c",
@@ -237,17 +237,17 @@ func TestUpdateNova(t *testing.T) {
 		NovaNetID:   "new-nova-id",
 	}
 
-	v, err := sharenetworks.Update(context.TODO(), client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
+	v, err := sharenetworks.Update(context.TODO(), client.ServiceClient(fakeServer), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, v)
 }
 
 // Verifies that it is possible to add a security service to a share network
 func TestAddSecurityService(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockAddSecurityServiceResponse(t)
+	MockAddSecurityServiceResponse(t, fakeServer)
 
 	var nilTime time.Time
 	expected := sharenetworks.ShareNetwork{
@@ -267,19 +267,19 @@ func TestAddSecurityService(t *testing.T) {
 	}
 
 	options := sharenetworks.AddSecurityServiceOpts{SecurityServiceID: "securityServiceID"}
-	s, err := sharenetworks.AddSecurityService(context.TODO(), client.ServiceClient(), "shareNetworkID", options).Extract()
+	s, err := sharenetworks.AddSecurityService(context.TODO(), client.ServiceClient(fakeServer), "shareNetworkID", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, s)
 }
 
 // Verifies that it is possible to remove a security service from a share network
 func TestRemoveSecurityService(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockRemoveSecurityServiceResponse(t)
+	MockRemoveSecurityServiceResponse(t, fakeServer)
 
 	options := sharenetworks.RemoveSecurityServiceOpts{SecurityServiceID: "securityServiceID"}
-	_, err := sharenetworks.RemoveSecurityService(context.TODO(), client.ServiceClient(), "shareNetworkID", options).Extract()
+	_, err := sharenetworks.RemoveSecurityService(context.TODO(), client.ServiceClient(fakeServer), "shareNetworkID", options).Extract()
 	th.AssertNoErr(t, err)
 }

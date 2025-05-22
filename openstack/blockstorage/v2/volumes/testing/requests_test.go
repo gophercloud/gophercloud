@@ -13,14 +13,14 @@ import (
 )
 
 func TestListWithExtensions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
 	count := 0
 
-	err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := volumes.List(client.ServiceClient(fakeServer), &volumes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := volumes.ExtractVolumes(page)
 		if err != nil {
@@ -97,12 +97,12 @@ func TestListWithExtensions(t *testing.T) {
 }
 
 func TestListAllWithExtensions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages(context.TODO())
+	allPages, err := volumes.List(client.ServiceClient(fakeServer), &volumes.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	var actual []volumes.Volume
@@ -113,12 +113,12 @@ func TestListAllWithExtensions(t *testing.T) {
 }
 
 func TestListAll(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages(context.TODO())
+	allPages, err := volumes.List(client.ServiceClient(fakeServer), &volumes.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := volumes.ExtractVolumes(allPages)
 	th.AssertNoErr(t, err)
@@ -185,12 +185,12 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	v, err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := volumes.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "vol-001")
@@ -198,13 +198,13 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := &volumes.CreateOpts{Size: 75, Name: "vol-001"}
-	n, err := volumes.Create(context.TODO(), client.ServiceClient(), options, nil).Extract()
+	n, err := volumes.Create(context.TODO(), client.ServiceClient(fakeServer), options, nil).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Size, 75)
@@ -246,84 +246,84 @@ func TestCreateSchedulerHints(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := volumes.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", volumes.DeleteOpts{})
+	res := volumes.Delete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", volumes.DeleteOpts{})
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateResponse(t)
+	MockUpdateResponse(t, fakeServer)
 
 	var name = "vol-002"
 	options := volumes.UpdateOpts{Name: &name}
-	v, err := volumes.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	v, err := volumes.Update(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "vol-002", v.Name)
 }
 
 func TestGetWithExtensions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
 	var v volumes.Volume
-	err := volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&v)
+	err := volumes.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&v)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", v.TenantID)
 
-	err = volumes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(v)
+	err = volumes.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(v)
 	if err == nil {
 		t.Errorf("Expected error when providing non-pointer struct")
 	}
 }
 
 func TestAttach(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockAttachResponse(t)
+	MockAttachResponse(t, fakeServer)
 
 	options := &volumes.AttachOpts{
 		MountPoint:   "/mnt",
 		Mode:         "rw",
 		InstanceUUID: "50902f4f-a974-46a0-85e9-7efc5e22dfdd",
 	}
-	err := volumes.Attach(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.Attach(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestBeginDetaching(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockBeginDetachingResponse(t)
+	MockBeginDetachingResponse(t, fakeServer)
 
-	err := volumes.BeginDetaching(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
+	err := volumes.BeginDetaching(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestDetach(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDetachResponse(t)
+	MockDetachResponse(t, fakeServer)
 
-	err := volumes.Detach(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", &volumes.DetachOpts{}).ExtractErr()
+	err := volumes.Detach(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", &volumes.DetachOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestUploadImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	MockUploadImageResponse(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	MockUploadImageResponse(t, fakeServer)
 	options := &volumes.UploadImageOpts{
 		ContainerFormat: "bare",
 		DiskFormat:      "raw",
@@ -331,7 +331,7 @@ func TestUploadImage(t *testing.T) {
 		Force:           true,
 	}
 
-	actual, err := volumes.UploadImage(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).Extract()
+	actual, err := volumes.UploadImage(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := volumes.VolumeImage{
@@ -361,30 +361,30 @@ func TestUploadImage(t *testing.T) {
 }
 
 func TestReserve(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockReserveResponse(t)
+	MockReserveResponse(t, fakeServer)
 
-	err := volumes.Reserve(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
+	err := volumes.Reserve(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestUnreserve(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUnreserveResponse(t)
+	MockUnreserveResponse(t, fakeServer)
 
-	err := volumes.Unreserve(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
+	err := volumes.Unreserve(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestInitializeConnection(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockInitializeConnectionResponse(t)
+	MockInitializeConnectionResponse(t, fakeServer)
 
 	options := &volumes.InitializeConnectionOpts{
 		IP:        "127.0.0.1",
@@ -394,15 +394,15 @@ func TestInitializeConnection(t *testing.T) {
 		Platform:  "x86_64",
 		OSType:    "linux2",
 	}
-	_, err := volumes.InitializeConnection(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).Extract()
+	_, err := volumes.InitializeConnection(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestTerminateConnection(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockTerminateConnectionResponse(t)
+	MockTerminateConnectionResponse(t, fakeServer)
 
 	options := &volumes.TerminateConnectionOpts{
 		IP:        "127.0.0.1",
@@ -412,39 +412,39 @@ func TestTerminateConnection(t *testing.T) {
 		Platform:  "x86_64",
 		OSType:    "linux2",
 	}
-	err := volumes.TerminateConnection(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.TerminateConnection(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestExtendSize(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockExtendSizeResponse(t)
+	MockExtendSizeResponse(t, fakeServer)
 
 	options := &volumes.ExtendSizeOpts{
 		NewSize: 3,
 	}
 
-	err := volumes.ExtendSize(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.ExtendSize(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestForceDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockForceDeleteResponse(t)
+	MockForceDeleteResponse(t, fakeServer)
 
-	res := volumes.ForceDelete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := volumes.ForceDelete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestSetImageMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockSetImageMetadataResponse(t)
+	MockSetImageMetadataResponse(t, fakeServer)
 
 	options := &volumes.ImageMetadataOpts{
 		Metadata: map[string]string{
@@ -452,59 +452,59 @@ func TestSetImageMetadata(t *testing.T) {
 		},
 	}
 
-	err := volumes.SetImageMetadata(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.SetImageMetadata(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestSetBootable(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockSetBootableResponse(t)
+	MockSetBootableResponse(t, fakeServer)
 
 	options := volumes.BootableOpts{
 		Bootable: true,
 	}
 
-	err := volumes.SetBootable(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.SetBootable(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestReImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockReImageResponse(t)
+	MockReImageResponse(t, fakeServer)
 
 	options := volumes.ReImageOpts{
 		ImageID:         "71543ced-a8af-45b6-a5c4-a46282108a90",
 		ReImageReserved: false,
 	}
 
-	err := volumes.ReImage(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.ReImage(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestChangeType(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockChangeTypeResponse(t)
+	MockChangeTypeResponse(t, fakeServer)
 
 	options := &volumes.ChangeTypeOpts{
 		NewType:         "ssd",
 		MigrationPolicy: "on-demand",
 	}
 
-	err := volumes.ChangeType(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.ChangeType(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestResetStatus(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResetStatusResponse(t)
+	MockResetStatusResponse(t, fakeServer)
 
 	options := &volumes.ResetStatusOpts{
 		Status:          "error",
@@ -512,6 +512,6 @@ func TestResetStatus(t *testing.T) {
 		MigrationStatus: "migrating",
 	}
 
-	err := volumes.ResetStatus(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	err := volumes.ResetStatus(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }

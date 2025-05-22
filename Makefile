@@ -35,11 +35,11 @@ format:
 .PHONY: format
 
 unit:
-	$(GO_TEST) ./...
+	$(GO_TEST) -shuffle on ./...
 .PHONY: unit
 
 coverage:
-	$(GO_TEST) -covermode count -coverprofile cover.out -coverpkg=./... ./...
+	$(GO_TEST) -shuffle on -covermode count -coverprofile cover.out -coverpkg=./... ./...
 .PHONY: coverage
 
 acceptance: acceptance-basic acceptance-baremetal acceptance-blockstorage acceptance-compute acceptance-container acceptance-containerinfra acceptance-db acceptance-dns acceptance-identity acceptance-image acceptance-keymanager acceptance-loadbalancer acceptance-messaging acceptance-networking acceptance-objectstorage acceptance-orchestration acceptance-placement acceptance-sharedfilesystems acceptance-workflow

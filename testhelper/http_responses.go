@@ -13,48 +13,28 @@ import (
 	"testing"
 )
 
-var (
+type FakeServer struct {
 	// Mux is a multiplexer that can be used to register handlers.
 	Mux *http.ServeMux
 
 	// Server is an in-memory HTTP server for testing.
 	Server *httptest.Server
-)
-
-// SetupPersistentPortHTTP prepares the Mux and Server listening specific port.
-func SetupPersistentPortHTTP(t *testing.T, port int) {
-	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
-	if err != nil {
-		t.Errorf("Failed to listen to 127.0.0.1:%d: %s", port, err)
-	}
-	Mux = http.NewServeMux()
-	Server = httptest.NewUnstartedServer(Mux)
-	Server.Listener = l
-	Server.Start()
 }
 
-// SetupHTTP prepares the Mux and Server.
-func SetupHTTP() {
-	Mux = http.NewServeMux()
-	Server = httptest.NewServer(Mux)
+func (fakeServer FakeServer) Teardown() {
+	fakeServer.Server.Close()
 }
 
-// TeardownHTTP releases HTTP-related resources.
-func TeardownHTTP() {
-	Server.Close()
-}
-
-// Endpoint returns a fake endpoint that will actually target the Mux.
-func Endpoint() string {
-	return Server.URL + "/"
+func (fakeServer FakeServer) Endpoint() string {
+	return fakeServer.Server.URL + "/"
 }
 
 // Serves a static content at baseURL/relPath
-func ServeFile(t *testing.T, baseURL, relPath, contentType, content string) string {
+func (fakeServer FakeServer) ServeFile(t *testing.T, baseURL, relPath, contentType, content string) string {
 	rawURL := strings.Join([]string{baseURL, relPath}, "/")
 	parsedURL, err := url.Parse(rawURL)
 	AssertNoErr(t, err)
-	Mux.HandleFunc(parsedURL.Path, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(parsedURL.Path, func(w http.ResponseWriter, r *http.Request) {
 		TestMethod(t, r, "GET")
 		w.Header().Set("Content-Type", contentType)
 		w.WriteHeader(http.StatusOK)
@@ -62,6 +42,34 @@ func ServeFile(t *testing.T, baseURL, relPath, contentType, content string) stri
 	})
 
 	return rawURL
+}
+
+// SetupPersistentPortHTTP prepares the Mux and Server listening specific port.
+func SetupPersistentPortHTTP(t *testing.T, port int) FakeServer {
+	mux := http.NewServeMux()
+	server := httptest.NewUnstartedServer(mux)
+	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	if err != nil {
+		t.Errorf("Failed to listen to 127.0.0.1:%d: %s", port, err)
+	}
+	server.Listener = l
+	server.Start()
+
+	return FakeServer{
+		Mux:    mux,
+		Server: server,
+	}
+}
+
+// SetupHTTP prepares the Mux and Server.
+func SetupHTTP() FakeServer {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+
+	return FakeServer{
+		Mux:    mux,
+		Server: server,
+	}
 }
 
 // TestFormValues ensures that all the URL parameters given to the http.Request are the same as values.
