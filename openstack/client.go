@@ -404,17 +404,17 @@ func NewBlockStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 // NewBlockStorageV2 creates a ServiceClient that may be used to access the v2
 // block storage service.
 func NewBlockStorageV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "block-storage")
+	return initClientOpts(client, eo, "volumev2")
 }
 
 // NewBlockStorageV3 creates a ServiceClient that may be used to access the v3 block storage service.
 func NewBlockStorageV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "block-storage")
+	return initClientOpts(client, eo, "volumev3")
 }
 
 // NewSharedFileSystemV2 creates a ServiceClient that may be used to access the v2 shared file system service.
 func NewSharedFileSystemV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "shared-file-system")
+	return initClientOpts(client, eo, "sharev2")
 }
 
 // NewOrchestrationV1 creates a ServiceClient that may be used to access the v1
@@ -485,7 +485,7 @@ func NewContainerInfraV1(client *gophercloud.ProviderClient, eo gophercloud.Endp
 
 // NewWorkflowV2 creates a ServiceClient that may be used with the v2 workflow management package.
 func NewWorkflowV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "workflow")
+	return initClientOpts(client, eo, "workflowv2")
 }
 
 // NewPlacementV1 creates a ServiceClient that may be used with the placement package.
