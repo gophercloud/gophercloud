@@ -91,7 +91,7 @@ func TestListConsumersAllPages(t *testing.T) {
 }
 
 func TestRequestToken(t *testing.T) {
-	fakeServer := th.SetupPersistentPortHTTP(t, 33199)
+	fakeServer := th.SetupPersistentPortHTTP(t, 33100)
 	defer fakeServer.Teardown()
 	HandleRequestToken(t, fakeServer)
 
@@ -130,7 +130,7 @@ func TestAuthorizeToken(t *testing.T) {
 }
 
 func TestCreateAccessToken(t *testing.T) {
-	fakeServer := th.SetupPersistentPortHTTP(t, 33199)
+	fakeServer := th.SetupPersistentPortHTTP(t, 33101)
 	defer fakeServer.Teardown()
 	HandleCreateAccessToken(t, fakeServer)
 
@@ -246,7 +246,7 @@ func TestGetAccessTokenRole(t *testing.T) {
 }
 
 func TestAuthenticate(t *testing.T) {
-	fakeServer := th.SetupPersistentPortHTTP(t, 33199)
+	fakeServer := th.SetupPersistentPortHTTP(t, 33102)
 	defer fakeServer.Teardown()
 	HandleAuthenticate(t, fakeServer)
 
