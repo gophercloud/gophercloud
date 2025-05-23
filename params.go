@@ -438,7 +438,7 @@ func BuildQueryString(opts any) (*url.URL, error) {
 		return &url.URL{RawQuery: params.Encode()}, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.
-	return nil, fmt.Errorf("Options type is not a struct.")
+	return &url.URL{}, fmt.Errorf("Options type is not a struct.")
 }
 
 /*
