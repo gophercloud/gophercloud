@@ -116,7 +116,7 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := ShareNetworkPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
