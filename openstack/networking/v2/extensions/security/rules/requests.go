@@ -41,10 +41,7 @@ type ListOpts struct {
 // ToSecGroupListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToSecGroupListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(&opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
