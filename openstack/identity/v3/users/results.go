@@ -2,6 +2,8 @@ package users
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -20,7 +22,7 @@ type User struct {
 	DomainID string `json:"domain_id"`
 
 	// Enabled is whether or not the user is enabled.
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"-"`
 
 	// Extra is a collection of miscellaneous key/values.
 	Extra map[string]any `json:"-"`
@@ -45,6 +47,7 @@ func (r *User) UnmarshalJSON(b []byte) error {
 	type tmp User
 	var s struct {
 		tmp
+		Enabled           any                             `json:"enabled"`
 		Extra             map[string]any                  `json:"extra"`
 		PasswordExpiresAt gophercloud.JSONRFC3339MilliNoZ `json:"password_expires_at"`
 	}
@@ -55,6 +58,20 @@ func (r *User) UnmarshalJSON(b []byte) error {
 	*r = User(s.tmp)
 
 	r.PasswordExpiresAt = time.Time(s.PasswordExpiresAt)
+
+	switch t := s.Enabled.(type) {
+	case nil:
+		r.Enabled = false
+	case bool:
+		r.Enabled = t
+	case string:
+		r.Enabled, err = strconv.ParseBool(t)
+		if err != nil {
+			return fmt.Errorf("Failed to parse Enabled %q: %v", t, err)
+		}
+	default:
+		return fmt.Errorf("Unknown type for Enabled: %T (value: %v)", t, t)
+	}
 
 	// Collect other fields and bundle them into Extra
 	// but only if a field titled "extra" wasn't sent.

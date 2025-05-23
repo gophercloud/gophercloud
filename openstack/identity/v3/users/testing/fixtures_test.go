@@ -25,7 +25,7 @@ const ListOutput = `
     "users": [
         {
             "domain_id": "default",
-            "enabled": true,
+            "enabled": "True",
             "id": "2844b2a08be147a08ef58317d6471f1f",
             "links": {
                 "self": "http://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f"
