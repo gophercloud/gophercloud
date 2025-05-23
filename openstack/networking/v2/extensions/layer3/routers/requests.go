@@ -55,12 +55,15 @@ func (opts ListOpts) ToRouterListQuery() (string, error) {
 // Default policy settings return only those routers that are owned by the
 // tenant who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	q, err := opts.ToRouterListQuery()
-	if err != nil {
-		return pagination.Pager{Err: err}
+	url := rootURL(c)
+	if opts != nil {
+		query, err := opts.ToRouterListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
 	}
-	u := rootURL(c) + q
-	return pagination.NewPager(c, u, func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return RouterPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
