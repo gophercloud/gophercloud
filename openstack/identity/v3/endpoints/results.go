@@ -52,9 +52,6 @@ type Endpoint struct {
 	// or public), referenced by the gophercloud.Availability type.
 	Availability gophercloud.Availability `json:"interface"`
 
-	// Name is the name of the Endpoint.
-	Name string `json:"name"`
-
 	// Region is the region the Endpoint is located in.
 	Region string `json:"region"`
 
