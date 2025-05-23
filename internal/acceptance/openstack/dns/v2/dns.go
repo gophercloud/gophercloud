@@ -186,6 +186,41 @@ func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, tr *
 	t.Logf("Deleted zone transfer request: %s", tr.ID)
 }
 
+// CreateShare will create a zone share. An error will be returned if the
+// zone share was unable to be created.
+func CreateShare(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zone, targetProjectID string) (*zones.ZoneShare, error) {
+	t.Logf("Attempting to share zone %s with project %s", zone.ID, targetProjectID)
+
+	createOpts := zones.ShareZoneOpts{
+		TargetProjectID: targetProjectID,
+	}
+
+	share, err := zones.Share(context.TODO(), client, zone.ID, createOpts).Extract()
+	if err != nil {
+		return share, err
+	}
+
+	t.Logf("Created share for zone: %s", zone.ID)
+
+	th.AssertEquals(t, share.ZoneID, zone.ID)
+	th.AssertEquals(t, share.TargetProjectID, targetProjectID)
+
+	return share, nil
+}
+
+// UnshareZone will unshare a zone. An error will be returned if the
+// zone unshare was unable to be created.
+func UnshareZone(t *testing.T, client *gophercloud.ServiceClient, share *zones.ZoneShare) {
+	t.Logf("Attempting to unshare zone %s with project %s", share.ZoneID, share.TargetProjectID)
+
+	err := zones.Unshare(context.TODO(), client, share.ZoneID, share.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to unshare zone %s: %v", share.ZoneID, err)
+	}
+
+	t.Logf("Unshared zone: %s", share.ZoneID)
+}
+
 // DeleteRecordSet will delete a specified record set. A fatal error will occur if
 // the record set failed to be deleted. This works best when used as a deferred
 // function.
