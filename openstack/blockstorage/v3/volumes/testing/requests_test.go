@@ -540,11 +540,11 @@ func TestResetStatus(t *testing.T) {
 }
 
 func TestUnmanage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUnmanageResponse(t)
+	MockUnmanageResponse(t, fakeServer)
 
-	err := volumes.Unmanage(context.TODO(), client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
+	err := volumes.Unmanage(context.TODO(), client.ServiceClient(fakeServer), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
 	th.AssertNoErr(t, err)
 }

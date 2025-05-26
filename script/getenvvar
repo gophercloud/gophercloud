@@ -73,13 +73,13 @@ if 'username' not in auth or 'password' not in auth:
 # """.strip()
 
 result = f"""
-unset OS_CLOUD
-export OS_AUTH_URL={auth['auth_url']}
-export OS_USERNAME={auth['username']}
-export OS_PASSWORD={auth['password']}
-export OS_PROJECT_NAME={auth['project_name']}
-export OS_DOMAIN_ID={auth['user_domain_id']}
-export OS_REGION_NAME={cloud['region_name']}
+unset OS_CLOUD;
+export OS_AUTH_URL={auth['auth_url']};
+export OS_USERNAME={auth['username']};
+export OS_PASSWORD={auth['password']};
+export OS_PROJECT_NAME={auth['project_name']};
+export OS_DOMAIN_ID={auth['user_domain_id']};
+export OS_REGION_NAME={cloud['region_name']};
 """
 
-print(result)
+print(result.strip())
