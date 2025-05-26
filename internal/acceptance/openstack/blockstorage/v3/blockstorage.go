@@ -791,8 +791,10 @@ func Unmanage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.V
 
 	err = gophercloud.WaitFor(context.TODO(), func(ctx context.Context) (bool, error) {
 		if _, err := volumes.Get(ctx, client, volume.ID).Extract(); err != nil {
-			if _, ok := err.(gophercloud.ErrResourceNotFound); ok {
-				return true, nil
+			if errCode, ok := err.(gophercloud.ErrUnexpectedResponseCode); ok {
+				if errCode.Actual == 404 {
+					return true, nil
+				}
 			}
 			return false, err
 		}
