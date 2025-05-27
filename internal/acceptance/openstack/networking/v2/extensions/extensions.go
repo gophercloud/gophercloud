@@ -7,6 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/external"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/addressgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/groups"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/rules"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
@@ -197,5 +198,47 @@ func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, ru
 	err := rules.Delete(context.TODO(), client, ruleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete security group rule: %v", err)
+	}
+}
+
+// CreateSecurityAddressGroup will create a security address group with a random name.
+func CreateSecurityAddressGroup(t *testing.T, client *gophercloud.ServiceClient) (*addressgroups.AddressGroup, error) {
+	addressGroupName := tools.RandomString("TESTACC-", 8)
+	addressGroupDescription := tools.RandomString("TESTACC-DESC-", 8)
+
+	t.Logf("Attempting to create security address group: %s", addressGroupName)
+
+	addresses := []string{
+		"192.168.1.1/32",
+	}
+	createOpts := addressgroups.CreateOpts{
+		Name:        addressGroupName,
+		Description: addressGroupDescription,
+		Addresses:   addresses,
+	}
+
+	addressGroup, err := addressgroups.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return addressGroup, err
+	}
+
+	t.Logf("Created security address group: %s", addressGroup.ID)
+
+	th.AssertEquals(t, addressGroupName, addressGroup.Name)
+	th.AssertEquals(t, addressGroupDescription, addressGroup.Description)
+	th.AssertDeepEquals(t, addresses, addressGroup.Addresses)
+
+	return addressGroup, nil
+}
+
+// DeleteSecurityAddressGroup will delete a security address group of a specified ID.
+// A fatal error will occur if the deletion failed. This works best as a
+// deferred function
+func DeleteSecurityAddressGroup(t *testing.T, client *gophercloud.ServiceClient, addressGroupID string) {
+	t.Logf("Attempting to delete security address group: %s", addressGroupID)
+
+	err := addressgroups.Delete(context.TODO(), client, addressGroupID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete security address group: %v", err)
 	}
 }
