@@ -19,23 +19,24 @@ type ListOptsBuilder interface {
 // you to sort by a particular network attribute. SortDir sets the direction,
 // and is either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Direction      string `q:"direction"`
-	EtherType      string `q:"ethertype"`
-	ID             string `q:"id"`
-	Description    string `q:"description"`
-	PortRangeMax   int    `q:"port_range_max"`
-	PortRangeMin   int    `q:"port_range_min"`
-	Protocol       string `q:"protocol"`
-	RemoteGroupID  string `q:"remote_group_id"`
-	RemoteIPPrefix string `q:"remote_ip_prefix"`
-	SecGroupID     string `q:"security_group_id"`
-	TenantID       string `q:"tenant_id"`
-	ProjectID      string `q:"project_id"`
-	Limit          int    `q:"limit"`
-	Marker         string `q:"marker"`
-	SortKey        string `q:"sort_key"`
-	SortDir        string `q:"sort_dir"`
-	RevisionNumber *int   `q:"revision_number"`
+	Direction            string `q:"direction"`
+	EtherType            string `q:"ethertype"`
+	ID                   string `q:"id"`
+	Description          string `q:"description"`
+	PortRangeMax         int    `q:"port_range_max"`
+	PortRangeMin         int    `q:"port_range_min"`
+	Protocol             string `q:"protocol"`
+	RemoteAddressGroupID string `q:"remote_address_group_id"`
+	RemoteGroupID        string `q:"remote_group_id"`
+	RemoteIPPrefix       string `q:"remote_ip_prefix"`
+	SecGroupID           string `q:"security_group_id"`
+	TenantID             string `q:"tenant_id"`
+	ProjectID            string `q:"project_id"`
+	Limit                int    `q:"limit"`
+	Marker               string `q:"marker"`
+	SortKey              string `q:"sort_key"`
+	SortDir              string `q:"sort_dir"`
+	RevisionNumber       *int   `q:"revision_number"`
 }
 
 // ToSecGroupListQuery formats a ListOpts into a query string.
@@ -137,12 +138,16 @@ type CreateOpts struct {
 	// "tcp", "udp", "icmp" or an empty string.
 	Protocol RuleProtocol `json:"protocol,omitempty"`
 
+	// The remote address group ID to be associated with this security group rule.
+	// You can specify either RemoteAddressGroupID, RemoteGroupID, or RemoteIPPrefix
+	RemoteAddressGroupID string `json:"remote_address_group_id,omitempty"`
+
 	// The remote group ID to be associated with this security group rule. You can
-	// specify either RemoteGroupID or RemoteIPPrefix.
+	// specify either RemoteAddressGroupID,RemoteGroupID or RemoteIPPrefix.
 	RemoteGroupID string `json:"remote_group_id,omitempty"`
 
 	// The remote IP prefix to be associated with this security group rule. You can
-	// specify either RemoteGroupID or RemoteIPPrefix. This attribute matches the
+	// specify either RemoteAddressGroupID,RemoteGroupID or RemoteIPPrefix. This attribute matches the
 	// specified IP prefix as the source IP address of the IP packet.
 	RemoteIPPrefix string `json:"remote_ip_prefix,omitempty"`
 
