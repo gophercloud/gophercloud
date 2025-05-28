@@ -43,7 +43,7 @@ jobs:
 
     - name: Add label semver:patch
       if: steps.go-apidiff.outputs.semver-type == 'patch'
-      run: gh pr edit "$NUMBER" --add-label "semver:patch" --remove-label "semver:major,semver:minor"
+      run: gh pr edit "$NUMBER" --add-label "semver:patch,backport-v2" --remove-label "semver:major,semver:minor"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
@@ -51,7 +51,7 @@ jobs:
 
     - name: Add label semver:minor
       if: steps.go-apidiff.outputs.semver-type == 'minor'
-      run: gh pr edit "$NUMBER" --add-label "semver:minor" --remove-label "semver:major,semver:patch"
+      run: gh pr edit "$NUMBER" --add-label "semver:minor,backport-v2" --remove-label "semver:major,semver:patch,backport-v1"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
@@ -59,7 +59,7 @@ jobs:
 
     - name: Add label semver:major
       if: steps.go-apidiff.outputs.semver-type == 'major'
-      run: gh pr edit "$NUMBER" --add-label "semver:major" --remove-label "semver:minor,semver:patch"
+      run: gh pr edit "$NUMBER" --add-label "semver:major" --remove-label "semver:minor,semver:patch,backport-v2,backport-v1"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
@@ -68,7 +68,7 @@ jobs:
     - name: Report failure
       if: failure()
       run: |
-        gh pr edit "$NUMBER" --remove-label "semver:major,semver:minor,semver:patch"
+        gh pr edit "$NUMBER" --remove-label "semver:major,semver:minor,semver:patch,backport-v2,backport-v1"
         gh issue comment "$NUMBER" --body "$BODY"
         exit 1
       env:
