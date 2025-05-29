@@ -147,11 +147,11 @@ func (r commonResult) Extract() (*Volume, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "volume")
+	return r.ExtractIntoStructPtr(v, "volume")
 }
 
 func ExtractVolumesInto(r pagination.Page, v any) error {
-	return r.(VolumePage).Result.ExtractIntoSlicePtr(v, "volumes")
+	return r.(VolumePage).ExtractIntoSlicePtr(v, "volumes")
 }
 
 // CreateResult contains the response body and error from a Create request.

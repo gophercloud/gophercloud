@@ -241,7 +241,7 @@ func FloatingIPHandleGet(t *testing.T, fakeServer th.FakeServer) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
+		fmt.Fprintf(w, `{"floatingip": %s}`, floatingiptest.FipDNS)
 	})
 }
 
@@ -264,7 +264,7 @@ func FloatingIPHandleCreate(t *testing.T, fakeServer th.FakeServer) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprint(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
+		fmt.Fprintf(w, `{"floatingip": %s}`, floatingiptest.FipDNS)
 	})
 }
 
