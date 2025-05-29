@@ -124,6 +124,10 @@ type Subnet struct {
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber int `json:"revision_number"`
 
+	// SegmentID of a network segment the subnet is associated with. It is
+	// available when segment extension is enabled.
+	SegmentID string `json:"segment_id"`
+
 	// Timestamp when the subnet was created
 	CreatedAt time.Time `json:"created_at"`
 
