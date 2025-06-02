@@ -43,6 +43,7 @@ type ListOpts struct {
 	NotTags           string `q:"not-tags"`
 	NotTagsAny        string `q:"not-tags-any"`
 	RevisionNumber    *int   `q:"revision_number"`
+	SegmentID         string `q:"segment_id"`
 }
 
 // ToSubnetListQuery formats a ListOpts into a query string.
@@ -147,6 +148,10 @@ type CreateOpts struct {
 	// Prefixlen is used when user creates a subnet from the subnetpool. It will
 	// overwrite the "default_prefixlen" value of the referenced subnetpool.
 	Prefixlen int `json:"prefixlen,omitempty"`
+
+	// SegmentID is a network segment the subnet is associated with. It is
+	// available when segment extension is enabled.
+	SegmentID string `json:"segment_id,omitempty"`
 }
 
 // ToSubnetCreateMap builds a request body from CreateOpts.
@@ -219,6 +224,10 @@ type UpdateOpts struct {
 	// will set revision_number=%s. If the revision number does not match, the
 	// update will fail.
 	RevisionNumber *int `json:"-" h:"If-Match"`
+
+	// SegmentID is a network segment the subnet is associated with. It is
+	// available when segment extension is enabled.
+	SegmentID *string `json:"segment_id,omitempty"`
 }
 
 // ToSubnetUpdateMap builds a request body from UpdateOpts.
