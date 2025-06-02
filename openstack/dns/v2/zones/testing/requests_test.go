@@ -3,6 +3,7 @@ package testing
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"testing"
@@ -127,11 +128,14 @@ func TestShare(t *testing.T) {
 		th.CheckDeepEquals(t, expectedBody, reqBody)
 
 		w.WriteHeader(http.StatusCreated)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, ShareZoneResponse)
 	})
 
 	opts := zones.ShareZoneOpts{TargetProjectID: "project-id"}
-	err := zones.Share(context.TODO(), client.ServiceClient(), "zone-id", opts).ExtractErr()
+	zone, err := zones.Share(context.TODO(), client.ServiceClient(), "zone-id", opts).Extract()
 	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ShareZone, *zone)
 }
 
 func TestUnshare(t *testing.T) {
@@ -145,4 +149,26 @@ func TestUnshare(t *testing.T) {
 
 	err := zones.Unshare(context.TODO(), client.ServiceClient(), "zone-id", "share-id").ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestListShares(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/zones/zone-id/shares", func(w http.ResponseWriter, r *http.Request) {
+		th.AssertEquals(t, r.Method, "GET")
+		th.AssertEquals(t, "true", r.Header.Get("X-Auth-All-Projects"))
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, ListSharesResponse)
+	})
+
+	opts := zones.ListSharesOpts{
+		AllProjects: true,
+	}
+	pages, err := zones.ListShares(client.ServiceClient(), "zone-id", opts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	actual, err := zones.ExtractZoneShares(pages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ListZoneShares, actual)
 }
