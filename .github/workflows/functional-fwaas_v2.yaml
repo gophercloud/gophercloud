@@ -42,7 +42,7 @@ jobs:
           "update_port:binding:profile": "rule:admin_only or rule:service_api"
           EOF
       - name: Deploy devstack
-        uses: gophercloud/devstack-action@v0.17
+        uses: gophercloud/devstack-action@v0.18
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
