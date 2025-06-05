@@ -33,7 +33,7 @@ jobs:
       # if semver=major, this will return RC=1, so let's ignore the failure so label
       # can be set later. We check for actual errors in the next step.
       continue-on-error: true
-      uses: joelanford/go-apidiff@002aa613b261e8d1547b516fb71793280f05bb78
+      uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685
 
     # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
     # a failure. Instead let's just return a failure if go-apidiff failed to run.
