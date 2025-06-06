@@ -433,7 +433,7 @@ func CheckErr(t *testing.T, e error, expected ...any) {
 func AssertIntLesserOrEqual(t *testing.T, v1 int, v2 int) {
 	t.Helper()
 
-	if !(v1 <= v2) {
+	if v1 > v2 {
 		logFatal(t, fmt.Sprintf("The first value \"%v\" is greater than the second value \"%v\"", v1, v2))
 	}
 }
@@ -442,7 +442,7 @@ func AssertIntLesserOrEqual(t *testing.T, v1 int, v2 int) {
 func AssertIntGreaterOrEqual(t *testing.T, v1 int, v2 int) {
 	t.Helper()
 
-	if !(v1 >= v2) {
+	if v1 < v2 {
 		logFatal(t, fmt.Sprintf("The first value \"%v\" is lesser than the second value \"%v\"", v1, v2))
 	}
 }

@@ -205,7 +205,7 @@ func (r ListBGPSpeakersResult) IsEmpty() (bool, error) {
 	}
 
 	speakers, err := ExtractBGPSpeakers(r)
-	return 0 == len(speakers), err
+	return len(speakers) == 0, err
 }
 
 // ExtractBGPSpeakers inteprets the ListBGPSpeakersResult into an array of BGP speakers

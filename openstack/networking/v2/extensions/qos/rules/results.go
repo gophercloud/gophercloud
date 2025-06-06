@@ -88,7 +88,7 @@ func ExtractBandwidthLimitRules(r pagination.Page) ([]BandwidthLimitRule, error)
 
 // ExtractBandwidthLimitRulesInto extracts the elements into a slice of RBAC Policy structs.
 func ExtractBandwidthLimitRulesInto(r pagination.Page, v any) error {
-	return r.(BandwidthLimitRulePage).Result.ExtractIntoSlicePtr(v, "bandwidth_limit_rules")
+	return r.(BandwidthLimitRulePage).ExtractIntoSlicePtr(v, "bandwidth_limit_rules")
 }
 
 // Extract is a function that accepts a result and extracts a DSCPMarkingRule.
@@ -164,7 +164,7 @@ func ExtractDSCPMarkingRules(r pagination.Page) ([]DSCPMarkingRule, error) {
 
 // ExtractDSCPMarkingRulesInto extracts the elements into a slice of RBAC Policy structs.
 func ExtractDSCPMarkingRulesInto(r pagination.Page, v any) error {
-	return r.(DSCPMarkingRulePage).Result.ExtractIntoSlicePtr(v, "dscp_marking_rules")
+	return r.(DSCPMarkingRulePage).ExtractIntoSlicePtr(v, "dscp_marking_rules")
 }
 
 // Extract is a function that accepts a result and extracts a BandwidthLimitRule.
@@ -243,5 +243,5 @@ func ExtractMinimumBandwidthRules(r pagination.Page) ([]MinimumBandwidthRule, er
 
 // ExtractMinimumBandwidthRulesInto extracts the elements into a slice of RBAC Policy structs.
 func ExtractMinimumBandwidthRulesInto(r pagination.Page, v any) error {
-	return r.(MinimumBandwidthRulePage).Result.ExtractIntoSlicePtr(v, "minimum_bandwidth_rules")
+	return r.(MinimumBandwidthRulePage).ExtractIntoSlicePtr(v, "minimum_bandwidth_rules")
 }

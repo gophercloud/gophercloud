@@ -48,7 +48,7 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 		}
 
 		if latest.State == "ERROR" {
-			return false, fmt.Errorf("Execution in ERROR state")
+			return false, fmt.Errorf("execution in ERROR state")
 		}
 
 		return false, nil

@@ -156,11 +156,11 @@ func (r commonResult) Extract() (*Backup, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "backup")
+	return r.ExtractIntoStructPtr(v, "backup")
 }
 
 func ExtractBackupsInto(r pagination.Page, v any) error {
-	return r.(BackupPage).Result.ExtractIntoSlicePtr(v, "backups")
+	return r.(BackupPage).ExtractIntoSlicePtr(v, "backups")
 }
 
 // RestoreResult contains the response body and error from a restore request.
@@ -189,7 +189,7 @@ func (r RestoreResult) Extract() (*Restore, error) {
 }
 
 func (r RestoreResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "restore")
+	return r.ExtractIntoStructPtr(v, "restore")
 }
 
 // ExportResult contains the response body and error from an export request.
@@ -214,7 +214,7 @@ func (r ExportResult) Extract() (*BackupRecord, error) {
 }
 
 func (r ExportResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "backup-record")
+	return r.ExtractIntoStructPtr(v, "backup-record")
 }
 
 // ImportResponse struct contains the response of the Backup Import action.
@@ -236,7 +236,7 @@ func (r ImportResult) Extract() (*ImportResponse, error) {
 }
 
 func (r ImportResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "backup")
+	return r.ExtractIntoStructPtr(v, "backup")
 }
 
 // ImportBackup contains all the information to import a Cinder Backup.
