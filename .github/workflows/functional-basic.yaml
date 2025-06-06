@@ -36,7 +36,7 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: gophercloud/devstack-action@v0.18
+        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
         with:
           branch: ${{ matrix.openstack_version }}
           enabled_services: 's-account,s-container,s-object,s-proxy,${{ matrix.additional_services }}'
