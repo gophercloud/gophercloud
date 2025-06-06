@@ -323,10 +323,7 @@ func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 // ToObjectCopyQuery formats a CopyOpts into a query.
 func (opts CopyOpts) ToObjectCopyQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // Copy is a function that copies one object to another.
