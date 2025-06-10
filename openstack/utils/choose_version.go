@@ -122,8 +122,8 @@ type SupportedMicroversions struct {
 	MinMinor int
 }
 
-// GetSupportedMicroversions returns the minimum and maximum microversion that is supported by the ServiceClient Endpoint.
-func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceClient) (SupportedMicroversions, error) {
+// GetServiceVersions returns the minimum and maximum microversion that is supported by the ServiceClient Endpoint.
+func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient, endpointURL string) (SupportedMicroversions, error) {
 	type valueResp struct {
 		ID         string `json:"id"`
 		Status     string `json:"status"`
@@ -138,8 +138,9 @@ func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceC
 	var minVersion, maxVersion string
 	var supportedMicroversions SupportedMicroversions
 	var resp response
-	_, err := client.Get(ctx, client.Endpoint, &resp, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 300},
+	_, err := client.Request(ctx, "GET", endpointURL, &gophercloud.RequestOpts{
+		JSONResponse: &resp,
+		OkCodes:      []int{200, 300},
 	})
 
 	if err != nil {
@@ -161,7 +162,7 @@ func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceC
 
 	// Return early if the endpoint does not support microversions
 	if minVersion == "" && maxVersion == "" {
-		return supportedMicroversions, fmt.Errorf("microversions not supported by ServiceClient Endpoint")
+		return supportedMicroversions, fmt.Errorf("microversions not supported by endpoint")
 	}
 
 	supportedMicroversions.MinMajor, supportedMicroversions.MinMinor, err = ParseMicroversion(minVersion)
@@ -175,6 +176,11 @@ func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceC
 	}
 
 	return supportedMicroversions, nil
+}
+
+// GetSupportedMicroversions returns the minimum and maximum microversion that is supported by the ServiceClient Endpoint.
+func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceClient) (SupportedMicroversions, error) {
+	return GetServiceVersions(ctx, client.ProviderClient, client.Endpoint)
 }
 
 // RequireMicroversion checks that the required microversion is supported and
