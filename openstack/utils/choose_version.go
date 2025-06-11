@@ -158,7 +158,8 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 	type valueResp struct {
 		ID         string `json:"id"`
 		Status     string `json:"status"`
-		Version    string `json:"version"`
+		Version    string `json:"version,omitempty"`
+		MaxVersion string `json:"max_version,omitempty"`
 		MinVersion string `json:"min_version"`
 	}
 	type response struct {
@@ -202,14 +203,18 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 			Status: status,
 		}
 
-		// Only normalize the microversion if there is a microversion to normalize
-		if version.MinVersion != "" && version.Version != "" {
+		// Only normalize the microversions if there are microversions to normalize
+		if (version.Version != "" || version.MaxVersion != "") && version.MinVersion != "" {
 			supportedVersion.MinMajor, supportedVersion.MinMinor, err = ParseMicroversion(version.MinVersion)
 			if err != nil {
 				return supportedVersions, err
 			}
 
-			supportedVersion.MaxMajor, supportedVersion.MaxMinor, err = ParseMicroversion(version.Version)
+			maxVersion := version.Version
+			if maxVersion == "" {
+				maxVersion = version.MaxVersion
+			}
+			supportedVersion.MaxMajor, supportedVersion.MaxMinor, err = ParseMicroversion(maxVersion)
 			if err != nil {
 				return supportedVersions, err
 			}
