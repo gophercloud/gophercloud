@@ -22,10 +22,15 @@ func TestGetServiceVersions(t *testing.T) {
 		expectedErr      string
 	}{
 		{
-			// FIXME(stephenfin): This is erroring because we can't handle the addition 'values' envelope
-			name:        "identity unversioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "identity/",
-			expectedErr: "cannot unmarshal object",
+			name:     "identity unversioned endpoint",
+			endpoint: fakeServer.Endpoint() + "identity/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  3,
+					Minor:  14,
+					Status: utils.StatusCurrent,
+				},
+			},
 		},
 		{
 			name:     "identity versioned endpoint",
@@ -83,7 +88,6 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			// FIXME(stephenfin): The max version is wrong because we ignore the max_version field
 			name:     "container-infra unversioned endpoint",
 			endpoint: fakeServer.Endpoint() + "container-infra/",
 			expectedVersions: []utils.SupportedVersion{
@@ -91,14 +95,22 @@ func TestGetServiceVersions(t *testing.T) {
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 1, MaxMinor: 11, MinMajor: 1, MinMinor: 1,
+					},
 				},
 			},
 		},
 		{
-			// FIXME(stephenfin): This is broken because we don't handle the lack of an envelope
-			name:        "container-infra versioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "container-infra/v1/",
-			expectedErr: "empty version provided",
+			name:     "container-infra versioned endpoint",
+			endpoint: fakeServer.Endpoint() + "container-infra/v1/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusUnknown,
+				},
+			},
 		},
 		{
 			name:     "orchestration unversioned endpoint",
@@ -132,7 +144,7 @@ func TestGetServiceVersions(t *testing.T) {
 			// FIXME(stephenfin): We should handle invalid version documents
 			name:        "workflow versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "workflow/v2/",
-			expectedErr: "empty version provided",
+			expectedErr: "failed to unmarshal versions document",
 		},
 		{
 			name:     "baremetal unversioned endpoint",
@@ -218,10 +230,9 @@ func TestGetSupportedMicroversions(t *testing.T) {
 		expectedErr      string
 	}{
 		{
-			// FIXME(stephenfin): This is erroring because we can't handle the addition 'values' envelope
 			name:        "identity unversioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "identity/",
-			expectedErr: "cannot unmarshal object",
+			expectedErr: "not supported",
 		},
 		{
 			// identity does not support microversions and returns error
@@ -249,16 +260,17 @@ func TestGetSupportedMicroversions(t *testing.T) {
 			},
 		},
 		{
-			// FIXME(stephenfin): This is erroring because we ignore the max_version field
-			name:        "container-infra unversioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "container-infra/",
-			expectedErr: "microversions not supported by endpoint",
+			name:     "container-infra unversioned endpoint",
+			endpoint: fakeServer.Endpoint() + "container-infra/",
+			expectedVersions: utils.SupportedMicroversions{
+				MaxMajor: 1, MaxMinor: 11, MinMajor: 1, MinMinor: 1,
+			},
 		},
 		{
 			// container-infra does not expose proper discovery information
 			name:        "container-infra versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "container-infra/v1/",
-			expectedErr: "empty version provided",
+			expectedErr: "not supported",
 		},
 		{
 			// orchestration does not support microversions and returns error
@@ -283,7 +295,7 @@ func TestGetSupportedMicroversions(t *testing.T) {
 			// FIXME(stephenfin): We should handle invalid version documents
 			name:        "workflow versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "workflow/v2/",
-			expectedErr: "empty version provided",
+			expectedErr: "failed to unmarshal versions document",
 		},
 		{
 			name:     "baremetal unversioned endpoint",

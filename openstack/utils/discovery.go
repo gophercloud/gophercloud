@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"sort"
@@ -46,21 +47,84 @@ type SupportedMicroversions struct {
 	MinMinor int
 }
 
+type version struct {
+	ID         string `json:"id"`
+	Status     string `json:"status"`
+	Version    string `json:"version,omitempty"`
+	MaxVersion string `json:"max_version,omitempty"`
+	MinVersion string `json:"min_version"`
+}
+
+type response struct {
+	Versions []version `json:"-"`
+}
+
+func (r *response) UnmarshalJSON(in []byte) error {
+	// intermediateResponse is an intermediate struct that allows us to offload the difference
+	// between a single version document and a multi-version document to the json parser and
+	// only focus on differences in the latter
+	type intermediateResponse struct {
+		ID       string           `json:"id"`
+		Version  *version         `json:"version"`
+		Versions *json.RawMessage `json:"versions"`
+	}
+
+	data := intermediateResponse{}
+	if err := json.Unmarshal(in, &data); err != nil {
+		return err
+	}
+
+	// case 1: we have a single enveloped version object
+	//
+	// this is the approach used by Manila for single version responses
+	if data.Version != nil {
+		r.Versions = []version{*data.Version}
+		return nil
+	}
+
+	// case 2: we have an singly enveloped array of version objects
+	//
+	// this is the approach used by nova, cinder and glance, among others, for multi-version
+	// responses
+	if data.Versions != nil {
+		var versionArr []version
+		if err := json.Unmarshal(*data.Versions, &versionArr); err == nil {
+			r.Versions = versionArr
+			return nil
+		}
+	}
+
+	// case 3: we have an doubly enveloped array of version objects
+	//
+	// this is the approach used by keystone and barbican, among others, for multi-version
+	// responses
+	if data.Versions != nil {
+		type values struct {
+			Values []version `json:"values"`
+		}
+
+		var valuesObj values
+		if err := json.Unmarshal(*data.Versions, &valuesObj); err == nil {
+			r.Versions = valuesObj.Values
+			return nil
+		}
+	}
+
+	// case 4: we have a single unenveloped version object
+	//
+	// this is the approach used by most other services for single version responses
+	if data.ID != "" {
+		r.Versions = []version{{ID: data.ID}}
+		return nil
+	}
+
+	return fmt.Errorf("failed to unmarshal versions document: %s", in)
+}
+
 // GetServiceVersions returns the versions supported by the ServiceClient Endpoint.
 // If the endpoint resolves to an unversioned discovery API, this should return one or more supported versions.
 // If the endpoint resolves to a versioned discovery API, this should return exactly one supported version.
 func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient, endpointURL string) ([]SupportedVersion, error) {
-	type valueResp struct {
-		ID         string `json:"id"`
-		Status     string `json:"status"`
-		Version    string `json:"version"`
-		MinVersion string `json:"min_version"`
-	}
-	type response struct {
-		Version  valueResp   `json:"version"`
-		Versions []valueResp `json:"versions"`
-	}
-
 	var supportedVersions []SupportedVersion
 
 	var resp response
@@ -72,12 +136,7 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 		return supportedVersions, err
 	}
 
-	var versions []valueResp
-	if len(resp.Versions) > 0 {
-		versions = resp.Versions
-	} else {
-		versions = append(versions, resp.Version)
-	}
+	versions := resp.Versions
 
 	for _, version := range versions {
 		majorVersion, minorVersion, err := ParseVersion(version.ID)
@@ -96,14 +155,18 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 			Status: status,
 		}
 
-		// Only normalize the microversion if there is a microversion to normalize
-		if version.MinVersion != "" && version.Version != "" {
+		// Only normalize the microversions if there are microversions to normalize
+		if (version.Version != "" || version.MaxVersion != "") && version.MinVersion != "" {
 			supportedVersion.MinMajor, supportedVersion.MinMinor, err = ParseMicroversion(version.MinVersion)
 			if err != nil {
 				return supportedVersions, err
 			}
 
-			supportedVersion.MaxMajor, supportedVersion.MaxMinor, err = ParseMicroversion(version.Version)
+			maxVersion := version.Version
+			if maxVersion == "" {
+				maxVersion = version.MaxVersion
+			}
+			supportedVersion.MaxMajor, supportedVersion.MaxMinor, err = ParseMicroversion(maxVersion)
 			if err != nil {
 				return supportedVersions, err
 			}
