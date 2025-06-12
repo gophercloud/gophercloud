@@ -192,9 +192,8 @@ type UpdateOpts struct {
 	// AllocationPools are IP Address pools that will be available for DHCP.
 	AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
 
-	// GatewayIP sets gateway information for the subnet. Setting to nil will
-	// cause a default gateway to automatically be created. Setting to an empty
-	// string will cause the subnet to be created with no gateway. Setting to
+	// GatewayIP sets gateway information for the subnet. Setting to an empty
+	// string will cause the subnet to not have a gateway. Setting to
 	// an explicit address will set that address as the gateway.
 	GatewayIP *string `json:"gateway_ip,omitempty"`
 
