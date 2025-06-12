@@ -27,10 +27,7 @@ type ListOpts struct {
 // ToBGPVPNListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToBGPVPNListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List the BGP VPNs
@@ -152,10 +149,7 @@ type ListNetworkAssociationsOpts struct {
 // query string.
 func (opts ListNetworkAssociationsOpts) ToNetworkAssociationsListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListNetworkAssociations pages over the network associations of a specified
@@ -241,10 +235,7 @@ type ListRouterAssociationsOpts struct {
 // query string.
 func (opts ListRouterAssociationsOpts) ToRouterAssociationsListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListRouterAssociations pages over the router associations of a specified
@@ -363,10 +354,7 @@ type ListPortAssociationsOpts struct {
 // query string.
 func (opts ListPortAssociationsOpts) ToPortAssociationsListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListPortAssociations pages over the port associations of a specified
