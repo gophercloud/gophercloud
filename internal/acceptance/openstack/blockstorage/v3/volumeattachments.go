@@ -72,7 +72,7 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, vol
 	}
 
 	if allAttachments[0].ID != attachment.ID {
-		return fmt.Errorf("Attachment IDs from get and list are not equal: %q != %q", allAttachments[0].ID, attachment.ID)
+		return fmt.Errorf("attachment IDs from get and list are not equal: %q != %q", allAttachments[0].ID, attachment.ID)
 	}
 
 	t.Logf("Attached volume %s to server %s within %q attachment", volume.ID, server.ID, attachment.ID)

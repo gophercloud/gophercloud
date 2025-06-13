@@ -120,12 +120,12 @@ func PrintMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error 
 
 	allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages(context.TODO())
 	if err != nil {
-		return fmt.Errorf("Unable to retrieve messages: %v", err)
+		return fmt.Errorf("unable to retrieve messages: %v", err)
 	}
 
 	allMessages, err := messages.ExtractMessages(allPages)
 	if err != nil {
-		return fmt.Errorf("Unable to extract messages: %v", err)
+		return fmt.Errorf("unable to extract messages: %v", err)
 	}
 
 	for _, message := range allMessages {
@@ -159,7 +159,7 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 		}
 
 		if strings.Contains(current.Status, "error") {
-			return true, fmt.Errorf("An error occurred, wrong status: %s", current.Status)
+			return true, fmt.Errorf("an error occurred, wrong status: %s", current.Status)
 		}
 
 		return false, nil
@@ -168,7 +168,7 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return current, fmt.Errorf("Share status is '%s' and unable to get manila messages: %s", err, mErr)
+			return current, fmt.Errorf("share status is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 

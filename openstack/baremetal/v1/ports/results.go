@@ -18,11 +18,11 @@ func (r portResult) Extract() (*Port, error) {
 }
 
 func (r portResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractPortsInto(r pagination.Page, v any) error {
-	return r.(PortPage).Result.ExtractIntoSlicePtr(v, "ports")
+	return r.(PortPage).ExtractIntoSlicePtr(v, "ports")
 }
 
 // Port represents a port in the OpenStack Bare Metal API.

@@ -355,7 +355,7 @@ func TestListL3Routers(t *testing.T) {
 		},
 	}
 
-	var snat bool = true
+	var snat = true
 	gw := routers.GatewayInfo{
 		EnableSNAT: &snat,
 		NetworkID:  "ae34051f-aa6c-4c75-abf5-50dc9ac99ef3",
