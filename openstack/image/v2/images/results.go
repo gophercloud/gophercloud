@@ -2,12 +2,11 @@ package images
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
 	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/assert"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
@@ -17,7 +16,7 @@ type Image struct {
 	ID string `json:"id"`
 
 	// Name is the human-readable display name for the image.
-	Name string `json:"name"`
+	Name string `json:"-"`
 
 	// Status is the image status. It can be "queued" or "active"
 	// See image/v2/images/type.go
@@ -29,23 +28,23 @@ type Image struct {
 
 	// ContainerFormat is the format of the container.
 	// Valid values are ami, ari, aki, bare, and ovf.
-	ContainerFormat string `json:"container_format"`
+	ContainerFormat string `json:"-"`
 
 	// DiskFormat is the format of the disk.
 	// If set, valid values are ami, ari, aki, vhd, vmdk, raw, qcow2, vdi,
 	// and iso.
-	DiskFormat string `json:"disk_format"`
+	DiskFormat string `json:"-"`
 
 	// MinDiskGigabytes is the amount of disk space in GB that is required to
 	// boot the image.
-	MinDiskGigabytes int `json:"min_disk"`
+	MinDiskGigabytes int `json:"-"`
 
 	// MinRAMMegabytes [optional] is the amount of RAM in MB that is required to
 	// boot the image.
-	MinRAMMegabytes int `json:"min_ram"`
+	MinRAMMegabytes int `json:"-"`
 
 	// Owner is the tenant ID the image belongs to.
-	Owner string `json:"owner"`
+	Owner string `json:"-"`
 
 	// Protected is whether the image is deletable or not.
 	Protected bool `json:"protected"`
@@ -54,10 +53,10 @@ type Image struct {
 	Visibility ImageVisibility `json:"visibility"`
 
 	// Hidden is whether the image is listed in default image list or not.
-	Hidden bool `json:"os_hidden"`
+	Hidden bool `json:"-"`
 
 	// Checksum is the checksum of the data that's associated with the image.
-	Checksum string `json:"checksum"`
+	Checksum string `json:"-"`
 
 	// SizeBytes is the size of the data that's associated with the image.
 	SizeBytes int64 `json:"-"`
@@ -70,7 +69,7 @@ type Image struct {
 
 	// Properties is a set of key-value pairs, if any, that are associated with
 	// the image.
-	Properties map[string]any
+	Properties map[string]any `json:"-"`
 
 	// CreatedAt is the date when the image has been created.
 	CreatedAt time.Time `json:"created_at"`
@@ -88,7 +87,7 @@ type Image struct {
 	Schema string `json:"schema"`
 
 	// VirtualSize is the virtual size of the image
-	VirtualSize int64 `json:"virtual_size"`
+	VirtualSize int64 `json:"-"`
 
 	// OpenStackImageImportMethods is a slice listing the types of import
 	// methods available in the cloud.
@@ -102,7 +101,16 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	type tmp Image
 	var s struct {
 		tmp
+		Name                        any    `json:"name"`
+		ContainerFormat             any    `json:"container_format"`
+		DiskFormat                  any    `json:"disk_format"`
+		MinDiskGigabytes            any    `json:"min_disk"`
+		MinRAMMegabytes             any    `json:"min_ram"`
+		Owner                       any    `json:"owner"`
+		Hidden                      any    `json:"os_hidden"`
+		Checksum                    any    `json:"checksum"`
 		SizeBytes                   any    `json:"size"`
+		VirtualSize                 any    `json:"virtual_size"`
 		OpenStackImageImportMethods string `json:"openstack-image-import-methods"`
 		OpenStackImageStoreIDs      string `json:"openstack-image-store-ids"`
 	}
@@ -112,15 +120,48 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	}
 	*r = Image(s.tmp)
 
-	switch t := s.SizeBytes.(type) {
-	case nil:
-		r.SizeBytes = 0
-	case float32:
-		r.SizeBytes = int64(t)
-	case float64:
-		r.SizeBytes = int64(t)
-	default:
-		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
+	// some of the values may be nil, or bool as a string format, or int as
+	// a string format so we need to assert them to the correct type using
+	// the assert package
+	r.Name, err = assert.String(s.Name, "Name")
+	if err != nil {
+		return err
+	}
+	r.ContainerFormat, err = assert.String(s.ContainerFormat, "ContainerFormat")
+	if err != nil {
+		return err
+	}
+	r.DiskFormat, err = assert.String(s.DiskFormat, "DiskFormat")
+	if err != nil {
+		return err
+	}
+	r.MinDiskGigabytes, err = assert.Int(s.MinDiskGigabytes, "MinDiskGigabytes")
+	if err != nil {
+		return err
+	}
+	r.MinRAMMegabytes, err = assert.Int(s.MinRAMMegabytes, "MinRAMMegabytes")
+	if err != nil {
+		return err
+	}
+	r.Owner, err = assert.String(s.Owner, "Owner")
+	if err != nil {
+		return err
+	}
+	r.Hidden, err = assert.Bool(s.Hidden, "Hidden")
+	if err != nil {
+		return err
+	}
+	r.Checksum, err = assert.String(s.Checksum, "Checksum")
+	if err != nil {
+		return err
+	}
+	r.SizeBytes, err = assert.Int64(s.SizeBytes, "SizeBytes")
+	if err != nil {
+		return err
+	}
+	r.VirtualSize, err = assert.Int64(s.VirtualSize, "VirtualSize")
+	if err != nil {
+		return err
 	}
 
 	// Bundle all other fields into Properties
@@ -131,10 +172,22 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	}
 	if resultMap, ok := result.(map[string]any); ok {
 		delete(resultMap, "self")
+		delete(resultMap, "name")
+		delete(resultMap, "container_format")
+		delete(resultMap, "disk_format")
+		delete(resultMap, "min_disk")
+		delete(resultMap, "min_ram")
+		delete(resultMap, "owner")
+		delete(resultMap, "os_hidden")
+		delete(resultMap, "checksum")
 		delete(resultMap, "size")
+		delete(resultMap, "virtual_size")
 		delete(resultMap, "openstack-image-import-methods")
 		delete(resultMap, "openstack-image-store-ids")
 		r.Properties = gophercloud.RemainingKeys(Image{}, resultMap)
+		if m, ok := resultMap["properties"]; ok {
+			r.Properties["properties"] = m
+		}
 	}
 
 	if v := strings.FieldsFunc(strings.TrimSpace(s.OpenStackImageImportMethods), splitFunc); len(v) > 0 {

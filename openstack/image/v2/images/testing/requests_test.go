@@ -239,10 +239,72 @@ func TestGetImage(t *testing.T) {
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
+			"properties":        "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
 		},
 	}
 
-	th.AssertDeepEquals(t, &expectedImage, actualImage)
+	th.AssertDeepEquals(t, expectedImage, *actualImage)
+	th.AssertEquals(t, "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}", actualImage.Properties["properties"])
+}
+
+func TestGetImageStringBool(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleImageGetSuccessfullyStringBool(t)
+
+	actualImage, err := images.Get(context.TODO(), fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27").Extract()
+
+	th.AssertNoErr(t, err)
+
+	checksum := "64d7c1cd2b6f60c92c14662941cb7913"
+	sizeBytes := int64(13167616)
+	containerFormat := "bare"
+	diskFormat := "qcow2"
+	minDiskGigabytes := 0
+	minRAMMegabytes := 0
+	owner := "5ef70662f8b34079a6eddb8da9d75fe8"
+	file := actualImage.File
+	createdDate := actualImage.CreatedAt
+	lastUpdate := actualImage.UpdatedAt
+	schema := "/v2/schemas/image"
+
+	expectedImage := images.Image{
+		ID:   "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
+		Name: "cirros-0.3.2-x86_64-disk",
+		Tags: []string{},
+
+		Status: images.ImageStatusActive,
+
+		ContainerFormat: containerFormat,
+		DiskFormat:      diskFormat,
+
+		MinDiskGigabytes: minDiskGigabytes,
+		MinRAMMegabytes:  minRAMMegabytes,
+
+		Owner: owner,
+
+		Protected:  false,
+		Visibility: images.ImageVisibilityPublic,
+		Hidden:     false,
+
+		Checksum:    checksum,
+		SizeBytes:   sizeBytes,
+		File:        file,
+		CreatedAt:   createdDate,
+		UpdatedAt:   lastUpdate,
+		Schema:      schema,
+		VirtualSize: 0,
+		Properties: map[string]any{
+			"hw_disk_bus":       "scsi",
+			"hw_disk_bus_model": "virtio-scsi",
+			"hw_scsi_model":     "virtio-scsi",
+			"properties":        "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
+		},
+	}
+
+	th.AssertDeepEquals(t, expectedImage, *actualImage)
+	th.AssertEquals(t, "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}", actualImage.Properties["properties"])
 }
 
 func TestDeleteImage(t *testing.T) {
