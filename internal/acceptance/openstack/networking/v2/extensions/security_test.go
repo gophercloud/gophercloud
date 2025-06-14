@@ -39,7 +39,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	var name = "Update group"
 	var description = ""
 	updateOpts := groups.UpdateOpts{
-		Name:        name,
+		Name:        &name,
 		Description: &description,
 		Stateful:    new(bool),
 	}
@@ -115,7 +115,7 @@ func TestSecurityGroupsRevision(t *testing.T) {
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := &groups.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &newDescription,
 	}
 	group, err = groups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
@@ -126,7 +126,6 @@ func TestSecurityGroupsRevision(t *testing.T) {
 	// This should fail due to an old revision number.
 	newDescription = "new description"
 	updateOpts = &groups.UpdateOpts{
-		Name:           newName,
 		Description:    &newDescription,
 		RevisionNumber: &oldRevisionNumber,
 	}
@@ -145,7 +144,7 @@ func TestSecurityGroupsRevision(t *testing.T) {
 	// This should work because now we do provide a valid revision number.
 	newDescription = "new description"
 	updateOpts = &groups.UpdateOpts{
-		Name:           newName,
+		Name:           new(string),
 		Description:    &newDescription,
 		RevisionNumber: &group.RevisionNumber,
 	}
@@ -154,7 +153,7 @@ func TestSecurityGroupsRevision(t *testing.T) {
 
 	tools.PrintResource(t, group)
 
-	th.AssertEquals(t, group.Name, newName)
+	th.AssertEquals(t, group.Name, "")
 	th.AssertEquals(t, group.Description, newDescription)
 }
 

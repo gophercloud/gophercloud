@@ -114,7 +114,7 @@ type UpdateOptsBuilder interface {
 // group.
 type UpdateOpts struct {
 	// Human-readable name for the Security Group. Does not have to be unique.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// Describes the security group.
 	Description *string `json:"description,omitempty"`
