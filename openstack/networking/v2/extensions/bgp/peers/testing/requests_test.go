@@ -127,11 +127,14 @@ func TestUpdate(t *testing.T) {
 		fmt.Fprint(w, UpdateBGPPeerResponse)
 	})
 
-	var opts peers.UpdateOpts
-	opts.Name = "test-rename-bgp-peer"
-	opts.Password = "superStrong"
+	name := "test-rename-bgp-peer"
+	password := "superStrong"
+	opts := peers.UpdateOpts{
+		Name:     &name,
+		Password: &password,
+	}
 
 	r, err := peers.Update(context.TODO(), fake.ServiceClient(fakeServer), bgpPeerID, opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, r.Name, opts.Name)
+	th.AssertEquals(t, r.Name, *opts.Name)
 }

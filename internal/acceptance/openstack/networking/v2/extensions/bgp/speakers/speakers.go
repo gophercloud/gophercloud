@@ -2,7 +2,6 @@ package speakers
 
 import (
 	"context"
-	"strconv"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -12,13 +11,13 @@ import (
 )
 
 func CreateBGPSpeaker(t *testing.T, client *gophercloud.ServiceClient) (*speakers.BGPSpeaker, error) {
+	iTrue := true
 	opts := speakers.CreateOpts{
 		IPVersion:                     4,
-		AdvertiseFloatingIPHostRoutes: false,
-		AdvertiseTenantNetworks:       true,
+		AdvertiseFloatingIPHostRoutes: new(bool),
+		AdvertiseTenantNetworks:       &iTrue,
 		Name:                          tools.RandomString("TESTACC-BGPSPEAKER-", 8),
-		LocalAS:                       "3000",
-		Networks:                      []string{},
+		LocalAS:                       3000,
 	}
 
 	t.Logf("Attempting to create BGP Speaker: %s", opts.Name)
@@ -27,12 +26,11 @@ func CreateBGPSpeaker(t *testing.T, client *gophercloud.ServiceClient) (*speaker
 		return bgpSpeaker, err
 	}
 
-	localas, err := strconv.Atoi(opts.LocalAS)
 	th.AssertEquals(t, bgpSpeaker.Name, opts.Name)
-	th.AssertEquals(t, bgpSpeaker.LocalAS, localas)
+	th.AssertEquals(t, bgpSpeaker.LocalAS, opts.LocalAS)
 	th.AssertEquals(t, bgpSpeaker.IPVersion, opts.IPVersion)
-	th.AssertEquals(t, bgpSpeaker.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
-	th.AssertEquals(t, bgpSpeaker.AdvertiseFloatingIPHostRoutes, opts.AdvertiseFloatingIPHostRoutes)
+	th.AssertEquals(t, bgpSpeaker.AdvertiseTenantNetworks, *opts.AdvertiseTenantNetworks)
+	th.AssertEquals(t, bgpSpeaker.AdvertiseFloatingIPHostRoutes, *opts.AdvertiseFloatingIPHostRoutes)
 	t.Logf("Successfully created BGP Speaker")
 	tools.PrintResource(t, bgpSpeaker)
 	return bgpSpeaker, err
