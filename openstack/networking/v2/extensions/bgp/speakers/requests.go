@@ -24,12 +24,12 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetRes
 
 // CreateOpts represents options used to create a BGP Speaker.
 type CreateOpts struct {
-	Name                          string   `json:"name"`
-	IPVersion                     int      `json:"ip_version"`
-	AdvertiseFloatingIPHostRoutes bool     `json:"advertise_floating_ip_host_routes"`
-	AdvertiseTenantNetworks       bool     `json:"advertise_tenant_networks"`
-	LocalAS                       string   `json:"local_as"`
-	Networks                      []string `json:"networks,omitempty"`
+	Name                          string `json:"name,omitempty"`
+	IPVersion                     int    `json:"ip_version,omitempty"`
+	AdvertiseFloatingIPHostRoutes *bool  `json:"advertise_floating_ip_host_routes,omitempty"`
+	AdvertiseTenantNetworks       *bool  `json:"advertise_tenant_networks,omitempty"`
+	LocalAS                       int    `json:"local_as"`
+	TenantID                      string `json:"tenant_id,omitempty"`
 }
 
 // CreateOptsBuilder declare a function that build CreateOpts into a Create request body.
@@ -63,9 +63,9 @@ func Delete(ctx context.Context, c *gophercloud.ServiceClient, speakerID string)
 
 // UpdateOpts represents options used to update a BGP Speaker.
 type UpdateOpts struct {
-	Name                          string `json:"name,omitempty"`
-	AdvertiseFloatingIPHostRoutes bool   `json:"advertise_floating_ip_host_routes"`
-	AdvertiseTenantNetworks       bool   `json:"advertise_tenant_networks"`
+	Name                          *string `json:"name,omitempty"`
+	AdvertiseFloatingIPHostRoutes *bool   `json:"advertise_floating_ip_host_routes,omitempty"`
+	AdvertiseTenantNetworks       *bool   `json:"advertise_tenant_networks,omitempty"`
 }
 
 // ToSpeakerUpdateMap build a request body from UpdateOpts

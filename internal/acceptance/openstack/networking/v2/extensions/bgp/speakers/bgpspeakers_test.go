@@ -48,10 +48,12 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 	defer networking.DeleteNetwork(t, client, network.ID)
 
 	// Update BGP Speaker
+	name := tools.RandomString("TESTACC-BGPSPEAKER-", 10)
+	iTrue := true
 	opts := speakers.UpdateOpts{
-		Name:                          tools.RandomString("TESTACC-BGPSPEAKER-", 10),
-		AdvertiseTenantNetworks:       false,
-		AdvertiseFloatingIPHostRoutes: true,
+		Name:                          &name,
+		AdvertiseTenantNetworks:       new(bool),
+		AdvertiseFloatingIPHostRoutes: &iTrue,
 	}
 	speakerUpdated, err := speakers.Update(context.TODO(), client, bgpSpeaker.ID, opts).Extract()
 	th.AssertNoErr(t, err)
