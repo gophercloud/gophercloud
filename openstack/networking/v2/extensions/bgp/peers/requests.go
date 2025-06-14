@@ -32,9 +32,10 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	AuthType string `json:"auth_type"`
 	RemoteAS int    `json:"remote_as"`
-	Name     string `json:"name"`
+	Name     string `json:"name,omitempty"`
 	Password string `json:"password,omitempty"`
 	PeerIP   string `json:"peer_ip"`
+	TenantID string `json:"tenant_id,omitempty"`
 }
 
 // ToPeerCreateMap builds a request body from CreateOpts.
@@ -69,8 +70,8 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents options used to update a BGP Peer.
 type UpdateOpts struct {
-	Name     string `json:"name,omitempty"`
-	Password string `json:"password,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	Password *string `json:"password,omitempty"`
 }
 
 // ToPeerUpdateMap builds a request body from UpdateOpts.
