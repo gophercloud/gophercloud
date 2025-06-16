@@ -2,7 +2,6 @@ package testing
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -11,162 +10,144 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-type getSupportedServiceMicroversions struct {
-	Endpoint    string
-	ExpectedMax string
-	ExpectedMin string
-	ExpectedErr bool
-}
-
-func TestGetSupportedVersions(t *testing.T) {
+func TestGetSupportedMicroversions(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
-	setupVersionHandler(fakeServer)
+	setupMultiServiceVersionHandler(fakeServer)
 
-	tests := []getSupportedServiceMicroversions{
+	tests := []struct {
+		name             string
+		endpoint         string
+		expectedVersions utils.SupportedMicroversions
+		expectedErr      string
+	}{
 		{
 			// v2 does not support microversions and returns error
-			Endpoint:    fakeServer.Endpoint() + "compute/v2/",
-			ExpectedMax: "",
-			ExpectedMin: "",
-			ExpectedErr: true,
+			name:        "compute legacy endpoint",
+			endpoint:    fakeServer.Endpoint() + "compute/v2/",
+			expectedErr: "not supported",
 		},
 		{
-			Endpoint:    fakeServer.Endpoint() + "compute/v2.1/",
-			ExpectedMax: "2.90",
-			ExpectedMin: "2.1",
-			ExpectedErr: false,
+			name:     "compute versioned endpoint",
+			endpoint: fakeServer.Endpoint() + "compute/v2.1/",
+			expectedVersions: utils.SupportedMicroversions{
+				MaxMajor: 2, MaxMinor: 90, MinMajor: 2, MinMinor: 1,
+			},
 		},
 		{
-			Endpoint:    fakeServer.Endpoint() + "ironic/v1/",
-			ExpectedMax: "1.87",
-			ExpectedMin: "1.1",
-			ExpectedErr: false,
+			name:     "baremetal versioned endpoint",
+			endpoint: fakeServer.Endpoint() + "baremetal/v1/",
+			expectedVersions: utils.SupportedMicroversions{
+				MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+			},
 		},
 		{
 			// This endpoint returns multiple versions, which is not supported
-			Endpoint:    fakeServer.Endpoint() + "ironic/v1.2/",
-			ExpectedMax: "not-relevant",
-			ExpectedMin: "not-relevant",
-			ExpectedErr: true,
+			name:        "fictional multi-version endpoint",
+			endpoint:    fakeServer.Endpoint() + "multi-version/v1.2/",
+			expectedErr: "not supported",
 		},
 	}
-
-	for _, test := range tests {
-		c := &gophercloud.ProviderClient{
-			IdentityBase:     fakeServer.Endpoint(),
-			IdentityEndpoint: fakeServer.Endpoint() + "v2.0/",
-		}
-
-		client := &gophercloud.ServiceClient{
-			ProviderClient: c,
-			Endpoint:       test.Endpoint,
-		}
-
-		supported, err := utils.GetSupportedMicroversions(context.TODO(), client)
-
-		if test.ExpectedErr {
-			if err == nil {
-				t.Error("Expected error but got none!")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &gophercloud.ProviderClient{}
+			client := &gophercloud.ServiceClient{
+				ProviderClient: c,
+				Endpoint:       tt.endpoint,
 			}
-			// Check for reasonable error message
-			if !strings.Contains(err.Error(), "not supported") {
-				t.Error("Expected error to contain 'not supported' but it did not!")
-			}
-			// No point parsing and comparing versions after error, so continue to next test case
-			continue
-		} else {
-			if err != nil {
-				t.Errorf("Expected no error but got %s", err.Error())
-			}
-		}
 
-		min := fmt.Sprintf("%d.%d", supported.MinMajor, supported.MinMinor)
-		max := fmt.Sprintf("%d.%d", supported.MaxMajor, supported.MaxMinor)
+			actualVersions, err := utils.GetSupportedMicroversions(context.TODO(), client)
 
-		if (min != test.ExpectedMin) || (max != test.ExpectedMax) {
-			t.Errorf("Expected min=%s and max=%s but got min=%s and max=%s", test.ExpectedMin, test.ExpectedMax, min, max)
-		}
+			if tt.expectedErr != "" {
+				th.AssertErr(t, err)
+				if !strings.Contains(err.Error(), tt.expectedErr) {
+					t.Fatalf("Expected error to contain '%s', got '%s': %+v", tt.expectedErr, err, tt)
+				}
+			} else {
+				th.AssertNoErr(t, err)
+			}
+
+			th.AssertDeepEquals(t, tt.expectedVersions, actualVersions)
+		})
 	}
-}
-
-type microversionSupported struct {
-	Version    string
-	MinVersion string
-	MaxVersion string
-	Supported  bool
-	Error      bool
 }
 
 func TestMicroversionSupported(t *testing.T) {
-	tests := []microversionSupported{
+	tests := []struct {
+		name          string
+		version       string
+		minVersion    string
+		maxVersion    string
+		supported     bool
+		expectedError bool
+	}{
 		{
-			// Checking min version
-			Version:    "2.1",
-			MinVersion: "2.1",
-			MaxVersion: "2.90",
-			Supported:  true,
-			Error:      false,
+			name:          "Checking min version",
+			version:       "2.1",
+			minVersion:    "2.1",
+			maxVersion:    "2.90",
+			supported:     true,
+			expectedError: false,
 		},
 		{
-			// Checking max version
-			Version:    "2.90",
-			MinVersion: "2.1",
-			MaxVersion: "2.90",
-			Supported:  true,
-			Error:      false,
+			name:          "Checking max version",
+			version:       "2.90",
+			minVersion:    "2.1",
+			maxVersion:    "2.90",
+			supported:     true,
+			expectedError: false,
 		},
 		{
-			// Checking too high version
-			Version:    "2.95",
-			MinVersion: "2.1",
-			MaxVersion: "2.90",
-			Supported:  false,
-			Error:      false,
+			name:          "Checking too high version",
+			version:       "2.95",
+			minVersion:    "2.1",
+			maxVersion:    "2.90",
+			supported:     false,
+			expectedError: false,
 		},
 		{
-			// Checking too low version
-			Version:    "2.1",
-			MinVersion: "2.53",
-			MaxVersion: "2.90",
-			Supported:  false,
-			Error:      false,
+			name:          "Checking too low version",
+			version:       "2.1",
+			minVersion:    "2.53",
+			maxVersion:    "2.90",
+			supported:     false,
+			expectedError: false,
 		},
 		{
-			// Invalid version
-			Version:    "2.1.53",
-			MinVersion: "2.53",
-			MaxVersion: "2.90",
-			Supported:  false,
-			Error:      true,
+			name:          "Invalid version",
+			version:       "2.1.53",
+			minVersion:    "2.53",
+			maxVersion:    "2.90",
+			supported:     false,
+			expectedError: true,
 		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var err error
+			var supportedVersions utils.SupportedMicroversions
 
-	for _, test := range tests {
-		var err error
-		var supportedVersions utils.SupportedMicroversions
-		supportedVersions.MaxMajor, supportedVersions.MaxMinor, err = utils.ParseMicroversion(test.MaxVersion)
-		if err != nil {
-			t.Error("Error parsing MaxVersion!")
-		}
-		supportedVersions.MinMajor, supportedVersions.MinMinor, err = utils.ParseMicroversion(test.MinVersion)
-		if err != nil {
-			t.Error("Error parsing MinVersion!")
-		}
-
-		supported, err := supportedVersions.IsSupported(test.Version)
-		if test.Error {
-			if err == nil {
-				t.Error("Expected error but got none!")
-			}
-		} else {
+			supportedVersions.MaxMajor, supportedVersions.MaxMinor, err = utils.ParseMicroversion(tt.maxVersion)
 			if err != nil {
-				t.Errorf("Expected no error but got %s", err.Error())
+				t.Fatal("Error parsing MaxVersion!")
 			}
-		}
-		if test.Supported != supported {
-			t.Errorf("Expected supported=%t to be %t, when version=%s, min=%s and max=%s",
-				supported, test.Supported, test.Version, test.MinVersion, test.MaxVersion)
-		}
+
+			supportedVersions.MinMajor, supportedVersions.MinMinor, err = utils.ParseMicroversion(tt.minVersion)
+			if err != nil {
+				t.Fatal("Error parsing MinVersion!")
+			}
+
+			supported, err := supportedVersions.IsSupported(tt.version)
+			if tt.expectedError {
+				th.AssertErr(t, err)
+			} else {
+				th.AssertNoErr(t, err)
+			}
+
+			if tt.supported != supported {
+				t.Fatalf("Expected supported=%t to be %t, when version=%s, min=%s and max=%s",
+					supported, tt.supported, tt.version, tt.minVersion, tt.maxVersion)
+			}
+		})
 	}
 }
