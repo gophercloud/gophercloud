@@ -7,7 +7,7 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func setupVersionHandler(fakeServer th.FakeServer) {
+func setupIdentityVersionHandler(fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
@@ -31,6 +31,40 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 				}
 			}
 		`, fakeServer.Server.URL, fakeServer.Server.URL)
+	})
+}
+
+func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
+	// Compute v2 API
+	fakeServer.Mux.HandleFunc("/compute/v2/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `
+			{
+				"version": {
+					"id": "v2.0",
+					"status": "SUPPORTED",
+					"version": "",
+					"min_version": "",
+					"updated": "2011-01-21T11:33:21Z",
+					"links": [
+						{
+							"rel": "self",
+							"href": "%s/compute/v2/"
+						},
+						{
+							"rel": "describedby",
+							"type": "text/html",
+							"href": "http://docs.openstack.org/"
+						}
+					],
+					"media-types": [
+						{
+							"base": "application/json",
+							"type": "application/vnd.openstack.compute+json;version=2"
+						}
+					]
+				}
+			}
+		`, fakeServer.Server.URL)
 	})
 	// Compute v2.1 API
 	fakeServer.Mux.HandleFunc("/compute/v2.1/", func(w http.ResponseWriter, r *http.Request) {
@@ -63,39 +97,8 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 			}
 		`, fakeServer.Server.URL)
 	})
-	// Compute v2 API
-	fakeServer.Mux.HandleFunc("/compute/v2/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `
-			{
-				"version": {
-					"id": "v2.0",
-					"status": "SUPPORTED",
-					"version": "",
-					"min_version": "",
-					"updated": "2011-01-21T11:33:21Z",
-					"links": [
-						{
-							"rel": "self",
-							"href": "%s/compute/v2/"
-						},
-						{
-							"rel": "describedby",
-							"type": "text/html",
-							"href": "http://docs.openstack.org/"
-						}
-					],
-					"media-types": [
-						{
-							"base": "application/json",
-							"type": "application/vnd.openstack.compute+json;version=2"
-						}
-					]
-				}
-			}
-		`, fakeServer.Server.URL)
-	})
-	// Ironic API
-	fakeServer.Mux.HandleFunc("/ironic/v1/", func(w http.ResponseWriter, r *http.Request) {
+	// Baremetal API
+	fakeServer.Mux.HandleFunc("/baremetal/v1/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 		{
 			"name": "OpenStack Ironic API",
@@ -104,7 +107,7 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 				"id": "v1",
 				"links": [
 					{
-						"href": "%s/ironic/v1/",
+						"href": "%s/baremetal/v1/",
 						"rel": "self"
 					}
 				],
@@ -117,7 +120,7 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 					"id": "v1",
 					"links": [
 						{
-							"href": "%s/ironic/v1/",
+							"href": "%s/baremetal/v1/",
 							"rel": "self"
 						}
 					],
@@ -129,30 +132,18 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 		}
 		`, fakeServer.Server.URL, fakeServer.Server.URL)
 	})
-	// Ironic multi-version
-	fakeServer.Mux.HandleFunc("/ironic/v1.2/", func(w http.ResponseWriter, r *http.Request) {
+	// Fictional multi-version API
+	fakeServer.Mux.HandleFunc("/multi-version/v1.2/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 		{
-			"name": "OpenStack Ironic API",
-			"description": "Ironic is an OpenStack project which enables the provision and management of baremetal machines.",
-			"default_version": {
-				"id": "v1",
-				"links": [
-					{
-						"href": "%s/ironic/v1/",
-						"rel": "self"
-					}
-				],
-				"status": "CURRENT",
-				"min_version": "1.1",
-				"version": "1.87"
-			},
+			"name": "Multi-version API",
+			"description": "A fictional API with multiple microversions.",
 			"versions": [
 				{
 					"id": "v1",
 					"links": [
 						{
-							"href": "%s/ironic/v1/",
+							"href": "%s/multi-version/v1/",
 							"rel": "self"
 						}
 					],
@@ -164,7 +155,7 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 					"id": "v1.2",
 					"links": [
 						{
-							"href": "%s/ironic/v1/",
+							"href": "%s/multi-version/v1/",
 							"rel": "self"
 						}
 					],
@@ -174,6 +165,6 @@ func setupVersionHandler(fakeServer th.FakeServer) {
 				}
 			]
 		}
-		`, fakeServer.Server.URL, fakeServer.Server.URL, fakeServer.Server.URL)
+		`, fakeServer.Server.URL, fakeServer.Server.URL)
 	})
 }
