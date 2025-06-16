@@ -12,7 +12,7 @@ import (
 func TestChooseVersion(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
-	setupVersionHandler(fakeServer)
+	setupIdentityVersionHandler(fakeServer)
 
 	v2 := &utils.Version{ID: "v2.0", Priority: 2, Suffix: "blarg"}
 	v3 := &utils.Version{ID: "v3.0", Priority: 3, Suffix: "hargl"}
@@ -40,7 +40,7 @@ func TestChooseVersion(t *testing.T) {
 func TestChooseVersionOpinionatedLink(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
-	setupVersionHandler(fakeServer)
+	setupIdentityVersionHandler(fakeServer)
 
 	v2 := &utils.Version{ID: "v2.0", Priority: 2, Suffix: "nope"}
 	v3 := &utils.Version{ID: "v3.0", Priority: 3, Suffix: "northis"}
