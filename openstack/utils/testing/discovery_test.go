@@ -18,12 +18,14 @@ func TestGetServiceVersions(t *testing.T) {
 	tests := []struct {
 		name             string
 		endpoint         string
+		discoverVersions bool
 		expectedVersions []utils.SupportedVersion
 		expectedErr      string
 	}{
 		{
-			name:     "identity unversioned endpoint",
-			endpoint: fakeServer.Endpoint() + "identity/",
+			name:             "identity unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "identity/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  3,
@@ -33,8 +35,10 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "identity versioned endpoint",
-			endpoint: fakeServer.Endpoint() + "identity/v3/",
+			name:             "identity unversioned endpoint without discovery",
+			endpoint:         fakeServer.Endpoint() + "identity/",
+			discoverVersions: false,
+			// we will still run discovery since we can't extract the version from the URL
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  3,
@@ -44,8 +48,34 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "compute unversioned endpoint",
-			endpoint: fakeServer.Endpoint() + "compute/",
+			name:             "identity versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "identity/v3/",
+			discoverVersions: true,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  3,
+					Minor:  14,
+					Status: utils.StatusCurrent,
+				},
+			},
+		},
+		{
+			name:             "identity versioned endpoint without discovery",
+			endpoint:         fakeServer.Endpoint() + "identity/v3/",
+			discoverVersions: false,
+			// we will skip discovery since we can extract a version from the URL
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  3,
+					Minor:  0,
+					Status: utils.StatusUnknown,
+				},
+			},
+		},
+		{
+			name:             "compute unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "compute/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  2,
@@ -63,8 +93,9 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "compute legacy endpoint",
-			endpoint: fakeServer.Endpoint() + "compute/v2/",
+			name:             "compute legacy endpoint",
+			endpoint:         fakeServer.Endpoint() + "compute/v2/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  2,
@@ -74,8 +105,9 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "compute versioned endpoint",
-			endpoint: fakeServer.Endpoint() + "compute/v2.1/",
+			name:             "compute versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "compute/v2.1/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  2,
@@ -88,8 +120,9 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "container-infra unversioned endpoint",
-			endpoint: fakeServer.Endpoint() + "container-infra/",
+			name:             "container-infra unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "container-infra/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  1,
@@ -102,8 +135,9 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "container-infra versioned endpoint",
-			endpoint: fakeServer.Endpoint() + "container-infra/v1/",
+			name:             "container-infra versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "container-infra/v1/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  1,
@@ -113,8 +147,9 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "orchestration unversioned endpoint",
-			endpoint: fakeServer.Endpoint() + "heat-api/",
+			name:             "orchestration unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "heat-api/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  1,
@@ -124,14 +159,21 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			// FIXME(stephenfin): We should missing version documents
-			name:        "orchestration versioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "heat-api/v1/",
-			expectedErr: "Expected HTTP response code",
+			name:             "orchestration versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "heat-api/v1/",
+			discoverVersions: true,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusUnknown,
+				},
+			},
 		},
 		{
-			name:     "workflow unversioned endpoint",
-			endpoint: fakeServer.Endpoint() + "workflow/",
+			name:             "workflow unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "workflow/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  2,
@@ -141,14 +183,21 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			// FIXME(stephenfin): We should handle invalid version documents
-			name:        "workflow versioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "workflow/v2/",
-			expectedErr: "failed to unmarshal versions document",
+			name:             "workflow versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "workflow/v2/",
+			discoverVersions: true,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusUnknown,
+				},
+			},
 		},
 		{
-			name:     "baremetal unversioned endpoint",
-			endpoint: fakeServer.Endpoint() + "baremetal/",
+			name:             "baremetal unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "baremetal/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  1,
@@ -161,8 +210,9 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "baremetal versioned endpoint",
-			endpoint: fakeServer.Endpoint() + "baremetal/v1/",
+			name:             "baremetal versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "baremetal/v1/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  1,
@@ -175,8 +225,24 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "fictional multi-version endpoint",
-			endpoint: fakeServer.Endpoint() + "multi-version/v1.2/",
+			name:             "baremetal versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "baremetal/v1/",
+			discoverVersions: true,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+					},
+				},
+			},
+		},
+		{
+			name:             "fictional multi-version endpoint",
+			endpoint:         fakeServer.Endpoint() + "multi-version/v1.2/",
+			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
 					Major:  1,
@@ -201,7 +267,7 @@ func TestGetServiceVersions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			client := &gophercloud.ProviderClient{}
 
-			actualVersions, err := utils.GetServiceVersions(context.TODO(), client, tt.endpoint)
+			actualVersions, err := utils.GetServiceVersions(context.TODO(), client, tt.endpoint, tt.discoverVersions)
 
 			if tt.expectedErr != "" {
 				th.AssertErr(t, err)
@@ -279,10 +345,10 @@ func TestGetSupportedMicroversions(t *testing.T) {
 			expectedErr: "not supported",
 		},
 		{
-			// FIXME(stephenfin): We should handle missing version documents
+			// orchestration does not support microversions and returns error
 			name:        "orchestration versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "heat-api/v1/",
-			expectedErr: "Expected HTTP response code",
+			expectedErr: "not supported",
 		},
 		{
 			// workflow does not support microversions and returns error
@@ -292,10 +358,9 @@ func TestGetSupportedMicroversions(t *testing.T) {
 		},
 		{
 			// workflow does not support microversions and returns error
-			// FIXME(stephenfin): We should handle invalid version documents
 			name:        "workflow versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "workflow/v2/",
-			expectedErr: "failed to unmarshal versions document",
+			expectedErr: "not supported",
 		},
 		{
 			name:     "baremetal unversioned endpoint",
