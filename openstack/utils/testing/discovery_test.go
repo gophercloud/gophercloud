@@ -18,7 +18,7 @@ func TestGetServiceVersions(t *testing.T) {
 	tests := []struct {
 		name             string
 		endpoint         string
-		expectedVersions utils.SupportedMicroversions
+		expectedVersions []utils.SupportedVersion
 		expectedErr      string
 	}{
 		{
@@ -28,47 +28,88 @@ func TestGetServiceVersions(t *testing.T) {
 			expectedErr: "cannot unmarshal object",
 		},
 		{
-			// FIXME(stephenfin): We should handle missing microversion info
-			name:        "identity versioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "identity/v3/",
-			expectedErr: "not supported",
+			name:     "identity versioned endpoint",
+			endpoint: fakeServer.Endpoint() + "identity/v3/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  3,
+					Minor:  14,
+					Status: utils.StatusCurrent,
+				},
+			},
 		},
 		{
-			// FIXME(stephenfin): We should handle missing microversion info
-			name:        "compute unversioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "compute/",
-			expectedErr: "not supported",
+			name:     "compute unversioned endpoint",
+			endpoint: fakeServer.Endpoint() + "compute/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  1,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 2, MaxMinor: 90, MinMajor: 2, MinMinor: 1,
+					},
+				},
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusSupported,
+				},
+			},
 		},
 		{
-			// FIXME(stephenfin): We should handle missing microversion info
-			name:        "compute legacy endpoint",
-			endpoint:    fakeServer.Endpoint() + "compute/v2/",
-			expectedErr: "not supported",
+			name:     "compute legacy endpoint",
+			endpoint: fakeServer.Endpoint() + "compute/v2/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusSupported,
+				},
+			},
 		},
 		{
 			name:     "compute versioned endpoint",
 			endpoint: fakeServer.Endpoint() + "compute/v2.1/",
-			expectedVersions: utils.SupportedMicroversions{
-				MaxMajor: 2, MaxMinor: 90, MinMajor: 2, MinMinor: 1,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  1,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 2, MaxMinor: 90, MinMajor: 2, MinMinor: 1,
+					},
+				},
 			},
 		},
 		{
-			// FIXME(stephenfin): This is erroring because we ignore the max_version field
-			name:        "container-infra unversioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "container-infra/",
-			expectedErr: "invalid microversion format",
+			// FIXME(stephenfin): The max version is wrong because we ignore the max_version field
+			name:     "container-infra unversioned endpoint",
+			endpoint: fakeServer.Endpoint() + "container-infra/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+				},
+			},
 		},
 		{
-			// FIXME(stephenfin): We should handle missing microversion info
+			// FIXME(stephenfin): This is broken because we don't handle the lack of an envelope
 			name:        "container-infra versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "container-infra/v1/",
-			expectedErr: "not supported",
+			expectedErr: "empty version provided",
 		},
 		{
-			// FIXME(stephenfin): We should handle missing microversion info
-			name:        "orchestration unversioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "heat-api/",
-			expectedErr: "not supported",
+			name:     "orchestration unversioned endpoint",
+			endpoint: fakeServer.Endpoint() + "heat-api/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+				},
+			},
 		},
 		{
 			// FIXME(stephenfin): We should missing version documents
@@ -77,36 +118,71 @@ func TestGetServiceVersions(t *testing.T) {
 			expectedErr: "Expected HTTP response code",
 		},
 		{
-			// FIXME(stephenfin): We should handle missing microversion info
-			name:        "workflow unversioned endpoint",
-			endpoint:    fakeServer.Endpoint() + "workflow/",
-			expectedErr: "not supported",
+			name:     "workflow unversioned endpoint",
+			endpoint: fakeServer.Endpoint() + "workflow/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+				},
+			},
 		},
 		{
 			// FIXME(stephenfin): We should handle invalid version documents
 			name:        "workflow versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "workflow/v2/",
-			expectedErr: "not supported",
+			expectedErr: "empty version provided",
 		},
 		{
 			name:     "baremetal unversioned endpoint",
 			endpoint: fakeServer.Endpoint() + "baremetal/",
-			expectedVersions: utils.SupportedMicroversions{
-				MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+					},
+				},
 			},
 		},
 		{
 			name:     "baremetal versioned endpoint",
 			endpoint: fakeServer.Endpoint() + "baremetal/v1/",
-			expectedVersions: utils.SupportedMicroversions{
-				MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+					},
+				},
 			},
 		},
 		{
-			// FIXME(stephenfin): We should handle multiple microversion info
-			name:        "fictional multi-version endpoint",
-			endpoint:    fakeServer.Endpoint() + "multi-version/v1.2/",
-			expectedErr: "not supported",
+			name:     "fictional multi-version endpoint",
+			endpoint: fakeServer.Endpoint() + "multi-version/v1.2/",
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  1,
+					Minor:  2,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 1, MaxMinor: 90, MinMajor: 1, MinMinor: 2,
+					},
+				},
+				{
+					Major:  1,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+					SupportedMicroversions: utils.SupportedMicroversions{
+						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
+					},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -176,13 +252,13 @@ func TestGetSupportedMicroversions(t *testing.T) {
 			// FIXME(stephenfin): This is erroring because we ignore the max_version field
 			name:        "container-infra unversioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "container-infra/",
-			expectedErr: "invalid microversion format",
+			expectedErr: "microversions not supported by endpoint",
 		},
 		{
 			// container-infra does not expose proper discovery information
 			name:        "container-infra versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "container-infra/v1/",
-			expectedErr: "not supported",
+			expectedErr: "empty version provided",
 		},
 		{
 			// orchestration does not support microversions and returns error
@@ -204,9 +280,10 @@ func TestGetSupportedMicroversions(t *testing.T) {
 		},
 		{
 			// workflow does not support microversions and returns error
+			// FIXME(stephenfin): We should handle invalid version documents
 			name:        "workflow versioned endpoint",
 			endpoint:    fakeServer.Endpoint() + "workflow/v2/",
-			expectedErr: "not supported",
+			expectedErr: "empty version provided",
 		},
 		{
 			name:     "baremetal unversioned endpoint",

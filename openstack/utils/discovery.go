@@ -3,78 +3,151 @@ package utils
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
 )
 
+type Status string
+
+const (
+	StatusCurrent      Status = "CURRENT"
+	StatusSupported    Status = "SUPPORTED"
+	StatusDeprecated   Status = "DEPRECATED"
+	StatusExperimental Status = "EXPERIMENTAL"
+	StatusUnknown      Status = ""
+)
+
+// SupportedVersion stores a normalized form of the API version data. It handles APIs that
+// support microversions as well as those that do not.
+type SupportedVersion struct {
+	// Major is the major version number of the API
+	Major int
+	// Minor is the minor version number of the API
+	Minor int
+	// Status is the status of the API
+	Status Status
+	SupportedMicroversions
+}
+
+// SupportedMicroversions stores a normalized form of the maximum and minimum API microversions
+// supported by a given service.
 type SupportedMicroversions struct {
+	// MaxMajor is the major version number of the maximum supported API microversion
 	MaxMajor int
+	// MaxMinor is the minor version number of the maximum supported API microversion
 	MaxMinor int
+	// MinMajor is the major version number of the minimum supported API microversion
 	MinMajor int
+	// MinMinor is the minor version number of the minimum supported API microversion
 	MinMinor int
 }
 
-// GetServiceVersions returns the minimum and maximum microversion that is supported by the ServiceClient Endpoint.
-func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient, endpointURL string) (SupportedMicroversions, error) {
+// GetServiceVersions returns the versions supported by the ServiceClient Endpoint.
+// If the endpoint resolves to an unversioned discovery API, this should return one or more supported versions.
+// If the endpoint resolves to a versioned discovery API, this should return exactly one supported version.
+func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient, endpointURL string) ([]SupportedVersion, error) {
 	type valueResp struct {
 		ID         string `json:"id"`
 		Status     string `json:"status"`
 		Version    string `json:"version"`
 		MinVersion string `json:"min_version"`
 	}
-
 	type response struct {
 		Version  valueResp   `json:"version"`
 		Versions []valueResp `json:"versions"`
 	}
-	var minVersion, maxVersion string
-	var supportedMicroversions SupportedMicroversions
+
+	var supportedVersions []SupportedVersion
+
 	var resp response
 	_, err := client.Request(ctx, "GET", endpointURL, &gophercloud.RequestOpts{
 		JSONResponse: &resp,
 		OkCodes:      []int{200, 300},
 	})
-
 	if err != nil {
-		return supportedMicroversions, err
+		return supportedVersions, err
 	}
 
+	var versions []valueResp
 	if len(resp.Versions) > 0 {
-		// We are dealing with an unversioned endpoint
-		// We only handle the case when there is exactly one, and assume it is the correct one
-		if len(resp.Versions) > 1 {
-			return supportedMicroversions, fmt.Errorf("unversioned endpoint with multiple alternatives not supported")
-		}
-		minVersion = resp.Versions[0].MinVersion
-		maxVersion = resp.Versions[0].Version
+		versions = resp.Versions
 	} else {
-		minVersion = resp.Version.MinVersion
-		maxVersion = resp.Version.Version
+		versions = append(versions, resp.Version)
 	}
 
-	// Return early if the endpoint does not support microversions
-	if minVersion == "" && maxVersion == "" {
-		return supportedMicroversions, fmt.Errorf("microversions not supported by endpoint")
+	for _, version := range versions {
+		majorVersion, minorVersion, err := ParseVersion(version.ID)
+		if err != nil {
+			return supportedVersions, err
+		}
+
+		status, err := ParseStatus(version.Status)
+		if err != nil {
+			return supportedVersions, err
+		}
+
+		supportedVersion := SupportedVersion{
+			Major:  majorVersion,
+			Minor:  minorVersion,
+			Status: status,
+		}
+
+		// Only normalize the microversion if there is a microversion to normalize
+		if version.MinVersion != "" && version.Version != "" {
+			supportedVersion.MinMajor, supportedVersion.MinMinor, err = ParseMicroversion(version.MinVersion)
+			if err != nil {
+				return supportedVersions, err
+			}
+
+			supportedVersion.MaxMajor, supportedVersion.MaxMinor, err = ParseMicroversion(version.Version)
+			if err != nil {
+				return supportedVersions, err
+			}
+		}
+
+		supportedVersions = append(supportedVersions, supportedVersion)
 	}
 
-	supportedMicroversions.MinMajor, supportedMicroversions.MinMinor, err = ParseMicroversion(minVersion)
-	if err != nil {
-		return supportedMicroversions, err
-	}
+	sort.Slice(supportedVersions, func(i, j int) bool {
+		return supportedVersions[i].Major > supportedVersions[j].Major || (supportedVersions[i].Major == supportedVersions[j].Major &&
+			supportedVersions[i].Minor > supportedVersions[j].Minor)
+	})
 
-	supportedMicroversions.MaxMajor, supportedMicroversions.MaxMinor, err = ParseMicroversion(maxVersion)
-	if err != nil {
-		return supportedMicroversions, err
-	}
-
-	return supportedMicroversions, nil
+	return supportedVersions, nil
 }
 
 // GetSupportedMicroversions returns the minimum and maximum microversion that is supported by the ServiceClient Endpoint.
 func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceClient) (SupportedMicroversions, error) {
-	return GetServiceVersions(ctx, client.ProviderClient, client.Endpoint)
+	var supportedMicroversions SupportedMicroversions
+
+	supportedVersions, err := GetServiceVersions(ctx, client.ProviderClient, client.Endpoint)
+	if err != nil {
+		return supportedMicroversions, err
+	}
+
+	// If there are multiple versions then we were handed an unversioned endpoint. These don't
+	// provide microversion information, so we need to fail. Likewise, if there are no versions
+	// then something has gone wrong and we also need to fail.
+	if len(supportedVersions) > 1 {
+		return supportedMicroversions, fmt.Errorf("unversioned endpoint with multiple alternatives not supported")
+	} else if len(supportedVersions) == 0 {
+		return supportedMicroversions, fmt.Errorf("microversions not supported by endpoint")
+	}
+
+	supportedMicroversions = supportedVersions[0].SupportedMicroversions
+
+	if supportedMicroversions.MaxMajor == 0 &&
+		supportedMicroversions.MaxMinor == 0 &&
+		supportedMicroversions.MinMajor == 0 &&
+		supportedMicroversions.MinMinor == 0 {
+		return supportedMicroversions, fmt.Errorf("microversions not supported by endpoint")
+	}
+
+	return supportedMicroversions, err
 }
 
 // RequireMicroversion checks that the required microversion is supported and
@@ -117,6 +190,42 @@ func (supported SupportedMicroversions) IsSupported(version string) (bool, error
 	return false, nil
 }
 
+// ParseVersion parsed the version strings v{MAJOR} and v{MAJOR}.{MINOR} into separate integers
+// major and minor.
+// For example, "v2.1" becomes 2 and 1, "v3" becomes 3 and 0, and "1" becomes 1 and 0.
+func ParseVersion(version string) (major, minor int, err error) {
+	if version == "" {
+		return 0, 0, fmt.Errorf("empty version provided")
+	}
+
+	// We use the regex indicated by the version discovery guidelines.
+	//
+	// https://specs.openstack.org/openstack/api-sig/guidelines/consuming-catalog/version-discovery.html#inferring-version
+	//
+	// However, we diverge slightly since not all services include the 'v' prefix (glares at zaqar)
+	versionRe := regexp.MustCompile(`^v?(?P<major>[0-9]+)(\.(?P<minor>[0-9]+))?$`)
+
+	match := versionRe.FindStringSubmatch(version)
+	if len(match) == 0 {
+		return 0, 0, fmt.Errorf("invalid format: %q", version)
+	}
+
+	major, err = strconv.Atoi(match[versionRe.SubexpIndex("major")])
+	if err != nil {
+		return 0, 0, err
+	}
+
+	minor = 0
+	if match[versionRe.SubexpIndex("minor")] != "" {
+		minor, err = strconv.Atoi(match[versionRe.SubexpIndex("minor")])
+		if err != nil {
+			return 0, 0, err
+		}
+	}
+
+	return major, minor, nil
+}
+
 // ParseMicroversion parses the version major.minor into separate integers major and minor.
 // For example, "2.53" becomes 2 and 53.
 func ParseMicroversion(version string) (major int, minor int, err error) {
@@ -133,4 +242,19 @@ func ParseMicroversion(version string) (major int, minor int, err error) {
 		return 0, 0, err
 	}
 	return major, minor, nil
+}
+
+func ParseStatus(status string) (Status, error) {
+	switch strings.ToUpper(status) {
+	case "CURRENT", "STABLE": // keystone uses STABLE instead of CURRENT
+		return StatusCurrent, nil
+	case "SUPPORTED":
+		return StatusSupported, nil
+	case "DEPRECATED":
+		return StatusDeprecated, nil
+	case "":
+		return StatusUnknown, nil
+	default:
+		return StatusUnknown, fmt.Errorf("invalid status: %q", status)
+	}
 }
