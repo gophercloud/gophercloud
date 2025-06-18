@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"regexp"
 	"sort"
 	"strconv"
@@ -121,11 +122,55 @@ func (r *response) UnmarshalJSON(in []byte) error {
 	return fmt.Errorf("failed to unmarshal versions document: %s", in)
 }
 
+func extractVersion(endpointURL string) (int, int, error) {
+	u, err := url.Parse(endpointURL)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	parts := strings.Split(strings.TrimRight(u.Path, "/"), "/")
+	if len(parts) == 0 {
+		return 0, 0, fmt.Errorf("expected path with version, got: %s", u.Path)
+	}
+
+	// first, check the nth path element for a version string
+	if majorVersion, minorVersion, err := ParseVersion(parts[len(parts)-1]); err == nil {
+		return majorVersion, minorVersion, nil
+	}
+
+	// if there are no more parts, quit
+	if len(parts) == 1 {
+		// we don't return the error message directly since it might be misleading: at this point
+		// we might have a *malformed* version identifier rather than *no* version identifier
+		return 0, 0, fmt.Errorf("failed to infer version from path: %s", u.Path)
+	}
+
+	// the guidelines say we should use the currently scoped project_id from the token, but we
+	// don't necessarily have a token yet so we speculatively look at the (n-1)th path element
+	// (but only that) just as keystoneauth does
+	//
+	// https://github.com/openstack/keystoneauth/blob/master/keystoneauth1/discover.py#L1534-L1545
+	if majorVersion, minorVersion, err := ParseVersion(parts[len(parts)-1]); err == nil {
+		return majorVersion, minorVersion, err
+	}
+
+	// once again, we don't return the error message directly
+	return 0, 0, fmt.Errorf("failed to infer version from path: %s", u.Path)
+}
+
 // GetServiceVersions returns the versions supported by the ServiceClient Endpoint.
 // If the endpoint resolves to an unversioned discovery API, this should return one or more supported versions.
 // If the endpoint resolves to a versioned discovery API, this should return exactly one supported version.
-func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient, endpointURL string) ([]SupportedVersion, error) {
+func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient, endpointURL string, discoverVersions bool) ([]SupportedVersion, error) {
 	var supportedVersions []SupportedVersion
+	var endpointVersion *SupportedVersion
+
+	if majorVersion, minorVersion, err := extractVersion(endpointURL); err == nil {
+		endpointVersion = &SupportedVersion{Major: majorVersion, Minor: minorVersion}
+		if !discoverVersions {
+			return append(supportedVersions, *endpointVersion), nil
+		}
+	}
 
 	var resp response
 	_, err := client.Request(ctx, "GET", endpointURL, &gophercloud.RequestOpts{
@@ -133,6 +178,10 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 		OkCodes:      []int{200, 300},
 	})
 	if err != nil {
+		// we weren't able to find a discovery document but we have version information from the URL
+		if endpointVersion != nil {
+			return append(supportedVersions, *endpointVersion), nil
+		}
 		return supportedVersions, err
 	}
 
@@ -187,7 +236,7 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 func GetSupportedMicroversions(ctx context.Context, client *gophercloud.ServiceClient) (SupportedMicroversions, error) {
 	var supportedMicroversions SupportedMicroversions
 
-	supportedVersions, err := GetServiceVersions(ctx, client.ProviderClient, client.Endpoint)
+	supportedVersions, err := GetServiceVersions(ctx, client.ProviderClient, client.Endpoint, true)
 	if err != nil {
 		return supportedMicroversions, err
 	}

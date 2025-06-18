@@ -65,7 +65,7 @@ func endpointSupportsVersion(ctx context.Context, client *gophercloud.ProviderCl
 		return false, err
 	}
 
-	supportedVersions, err := utils.GetServiceVersions(ctx, client, endpointURL)
+	supportedVersions, err := utils.GetServiceVersions(ctx, client, endpointURL, false)
 	if err != nil {
 		return false, err
 	}
