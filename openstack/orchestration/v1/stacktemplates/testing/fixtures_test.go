@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stacktemplates"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // GetExpected represents the expected object from a Get request.
@@ -40,10 +40,10 @@ const GetOutput = `
 
 // HandleGetSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87/template`
 // on the test handler mux that responds with a `Get` response.
-func HandleGetSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87/template", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87/template", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -83,10 +83,10 @@ const ValidateOutput = `
 
 // HandleValidateSuccessfully creates an HTTP handler at `/validate`
 // on the test handler mux that responds with a `Validate` response.
-func HandleValidateSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/validate", func(w http.ResponseWriter, r *http.Request) {
+func HandleValidateSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/validate", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")

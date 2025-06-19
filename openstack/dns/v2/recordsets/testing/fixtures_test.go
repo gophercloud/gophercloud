@@ -200,8 +200,8 @@ var ExpectedRecordSetSlice = []recordsets.RecordSet{FirstRecordSet, SecondRecord
 var ExpectedRecordSetSliceLimited = []recordsets.RecordSet{SecondRecordSet}
 
 // HandleListByZoneSuccessfully configures the test server to respond to a ListByZone request.
-func HandleListByZoneSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets", func(w http.ResponseWriter, r *http.Request) {
+func HandleListByZoneSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -220,8 +220,8 @@ func HandleListByZoneSuccessfully(t *testing.T) {
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request.
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -273,8 +273,8 @@ const CreateRecordSetResponse = `
 var CreatedRecordSet = FirstRecordSet
 
 // HandleZoneCreationSuccessfully configures the test server to respond to a Create request.
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets",
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -325,8 +325,8 @@ const UpdateRecordSetResponse = `
 `
 
 // HandleUpdateSuccessfully configures the test server to respond to an Update request.
-func HandleUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -365,8 +365,8 @@ const DeleteRecordSetResponse = `
 `
 
 // HandleDeleteSuccessfully configures the test server to respond to an Delete request.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

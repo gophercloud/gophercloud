@@ -11,24 +11,24 @@ import (
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func getClient(microVersion string) *gophercloud.ServiceClient {
-	c := client.ServiceClient()
+func getClient(fakeServer th.FakeServer, microVersion string) *gophercloud.ServiceClient {
+	c := client.ServiceClient(fakeServer)
 	c.Type = "sharev2"
 	c.Microversion = microVersion
 	return c
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := &replicas.CreateOpts{
 		ShareID:          "65a34695-f9e5-4eea-b48d-a0b261d82943",
 		AvailabilityZone: "zone-1",
 	}
-	actual, err := replicas.Create(context.TODO(), getClient("2.11"), options).Extract()
+	actual, err := replicas.Create(context.TODO(), getClient(fakeServer, "2.11"), options).Extract()
 
 	expected := &replicas.Replica{
 		ID:               "3b9c33e8-b136-45c6-84a6-019c8db1d550",
@@ -44,32 +44,32 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	result := replicas.Delete(context.TODO(), getClient("2.11"), replicaID)
+	result := replicas.Delete(context.TODO(), getClient(fakeServer, "2.11"), replicaID)
 	th.AssertNoErr(t, result.Err)
 }
 
 func TestForceDeleteSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockForceDeleteResponse(t)
+	MockForceDeleteResponse(t, fakeServer)
 
-	err := replicas.ForceDelete(context.TODO(), getClient("2.11"), replicaID).ExtractErr()
+	err := replicas.ForceDelete(context.TODO(), getClient(fakeServer, "2.11"), replicaID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	actual, err := replicas.Get(context.TODO(), getClient("2.11"), replicaID).Extract()
+	actual, err := replicas.Get(context.TODO(), getClient(fakeServer, "2.11"), replicaID).Extract()
 
 	expected := &replicas.Replica{
 		AvailabilityZone: "zone-1",
@@ -88,15 +88,15 @@ func TestGet(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
 	listOpts := &replicas.ListOpts{
 		ShareID: "65a34695-f9e5-4eea-b48d-a0b261d82943",
 	}
-	allPages, err := replicas.List(getClient("2.11"), listOpts).AllPages(context.TODO())
+	allPages, err := replicas.List(getClient(fakeServer, "2.11"), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := replicas.ExtractReplicas(allPages)
@@ -127,15 +127,15 @@ func TestList(t *testing.T) {
 }
 
 func TestListDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListDetailResponse(t)
+	MockListDetailResponse(t, fakeServer)
 
 	listOpts := &replicas.ListOpts{
 		ShareID: "65a34695-f9e5-4eea-b48d-a0b261d82943",
 	}
-	allPages, err := replicas.ListDetail(getClient("2.11"), listOpts).AllPages(context.TODO())
+	allPages, err := replicas.ListDetail(getClient(fakeServer, "2.11"), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := replicas.ExtractReplicas(allPages)
@@ -181,12 +181,12 @@ func TestListDetail(t *testing.T) {
 }
 
 func TestListExportLocationsSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListExportLocationsResponse(t)
+	MockListExportLocationsResponse(t, fakeServer)
 
-	actual, err := replicas.ListExportLocations(context.TODO(), getClient("2.47"), replicaID).Extract()
+	actual, err := replicas.ListExportLocations(context.TODO(), getClient(fakeServer, "2.47"), replicaID).Extract()
 
 	expected := []replicas.ExportLocation{
 		{
@@ -210,12 +210,12 @@ func TestListExportLocationsSuccess(t *testing.T) {
 }
 
 func TestGetExportLocationSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetExportLocationResponse(t)
+	MockGetExportLocationResponse(t, fakeServer)
 
-	s, err := replicas.GetExportLocation(context.TODO(), getClient("2.47"), replicaID, "ae73e762-e8b9-4aad-aad3-23afb7cd6825").Extract()
+	s, err := replicas.GetExportLocation(context.TODO(), getClient(fakeServer, "2.47"), replicaID, "ae73e762-e8b9-4aad-aad3-23afb7cd6825").Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, s, &replicas.ExportLocation{
@@ -230,41 +230,41 @@ func TestGetExportLocationSuccess(t *testing.T) {
 }
 
 func TestResetStatusSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResetStatusResponse(t)
+	MockResetStatusResponse(t, fakeServer)
 
-	err := replicas.ResetStatus(context.TODO(), getClient("2.11"), replicaID, &replicas.ResetStatusOpts{Status: "available"}).ExtractErr()
+	err := replicas.ResetStatus(context.TODO(), getClient(fakeServer, "2.11"), replicaID, &replicas.ResetStatusOpts{Status: "available"}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestResetStateSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResetStateResponse(t)
+	MockResetStateResponse(t, fakeServer)
 
-	err := replicas.ResetState(context.TODO(), getClient("2.11"), replicaID, &replicas.ResetStateOpts{State: "active"}).ExtractErr()
+	err := replicas.ResetState(context.TODO(), getClient(fakeServer, "2.11"), replicaID, &replicas.ResetStateOpts{State: "active"}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestResyncSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResyncResponse(t)
+	MockResyncResponse(t, fakeServer)
 
-	err := replicas.Resync(context.TODO(), getClient("2.11"), replicaID).ExtractErr()
+	err := replicas.Resync(context.TODO(), getClient(fakeServer, "2.11"), replicaID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestPromoteSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockPromoteResponse(t)
+	MockPromoteResponse(t, fakeServer)
 
-	err := replicas.Promote(context.TODO(), getClient("2.11"), replicaID, &replicas.PromoteOpts{QuiesceWaitTime: 30}).ExtractErr()
+	err := replicas.Promote(context.TODO(), getClient(fakeServer, "2.11"), replicaID, &replicas.PromoteOpts{QuiesceWaitTime: 30}).ExtractErr()
 	th.AssertNoErr(t, err)
 }

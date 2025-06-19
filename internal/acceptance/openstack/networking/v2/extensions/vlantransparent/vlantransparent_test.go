@@ -25,11 +25,7 @@ func TestVLANTransparentCRUD(t *testing.T) {
 
 	tools.PrintResource(t, network)
 
-	// Update the created VLAN transparent network.
-	newNetwork, err := UpdateVLANTransparentNetwork(t, client, network.ID)
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, newNetwork)
+	// The vlan_transparent field is read-only so no update test
 
 	// Check that the created VLAN transparent network exists.
 	vlanTransparentNetworks, err := ListVLANTransparentNetworks(t, client)

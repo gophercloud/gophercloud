@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func createReq(name, description, network, subnetwork string) string {
@@ -41,10 +41,10 @@ func createResp(name, description, network, subnetwork string) string {
     }`, name, description, network, subnetwork)
 }
 
-func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks", func(w http.ResponseWriter, r *http.Request) {
+func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, createReq("my_network",
@@ -62,18 +62,18 @@ func MockCreateResponse(t *testing.T) {
 	})
 }
 
-func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/fa158a3d-6d9f-4187-9ca5-abbb82646eb2", func(w http.ResponseWriter, r *http.Request) {
+func MockDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/fa158a3d-6d9f-4187-9ca5-abbb82646eb2", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/detail", func(w http.ResponseWriter, r *http.Request) {
+func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -143,10 +143,10 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
-func MockFilteredListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/detail", func(w http.ResponseWriter, r *http.Request) {
+func MockFilteredListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -228,10 +228,10 @@ func MockFilteredListResponse(t *testing.T) {
 	})
 }
 
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd", func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -256,10 +256,10 @@ func MockGetResponse(t *testing.T) {
 	})
 }
 
-func MockUpdateNeutronResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/713df749-aac0-4a54-af52-10f6c991e80c", func(w http.ResponseWriter, r *http.Request) {
+func MockUpdateNeutronResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/713df749-aac0-4a54-af52-10f6c991e80c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `
             {
@@ -283,10 +283,10 @@ func MockUpdateNeutronResponse(t *testing.T) {
 	})
 }
 
-func MockUpdateNovaResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/713df749-aac0-4a54-af52-10f6c991e80c", func(w http.ResponseWriter, r *http.Request) {
+func MockUpdateNovaResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/713df749-aac0-4a54-af52-10f6c991e80c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `
             {
@@ -310,10 +310,10 @@ func MockUpdateNovaResponse(t *testing.T) {
 	})
 }
 
-func MockAddSecurityServiceResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/shareNetworkID/action", func(w http.ResponseWriter, r *http.Request) {
+func MockAddSecurityServiceResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/shareNetworkID/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `
         {
@@ -336,10 +336,10 @@ func MockAddSecurityServiceResponse(t *testing.T) {
 	})
 }
 
-func MockRemoveSecurityServiceResponse(t *testing.T) {
-	th.Mux.HandleFunc("/share-networks/shareNetworkID/action", func(w http.ResponseWriter, r *http.Request) {
+func MockRemoveSecurityServiceResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/share-networks/shareNetworkID/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `
         {

@@ -11,12 +11,12 @@ import (
 )
 
 func TestListAvailableProjects(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAvailableProjectsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAvailableProjectsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := projects.ListAvailable(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := projects.ListAvailable(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := projects.ExtractProjects(page)
@@ -31,12 +31,12 @@ func TestListAvailableProjects(t *testing.T) {
 }
 
 func TestListProjects(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListProjectsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListProjectsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := projects.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := projects.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := projects.ExtractProjects(page)
@@ -83,19 +83,19 @@ func TestListGroupsFiltersCheck(t *testing.T) {
 }
 
 func TestGetProject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetProjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetProjectSuccessfully(t, fakeServer)
 
-	actual, err := projects.Get(context.TODO(), client.ServiceClient(), "1234").Extract()
+	actual, err := projects.Get(context.TODO(), client.ServiceClient(fakeServer), "1234").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, RedTeam, *actual)
 }
 
 func TestCreateProject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateProjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateProjectSuccessfully(t, fakeServer)
 
 	createOpts := projects.CreateOpts{
 		Name:        "Red Team",
@@ -104,24 +104,24 @@ func TestCreateProject(t *testing.T) {
 		Extra:       map[string]any{"test": "old"},
 	}
 
-	actual, err := projects.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := projects.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, RedTeam, *actual)
 }
 
 func TestDeleteProject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteProjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteProjectSuccessfully(t, fakeServer)
 
-	res := projects.Delete(context.TODO(), client.ServiceClient(), "1234")
+	res := projects.Delete(context.TODO(), client.ServiceClient(fakeServer), "1234")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateProject(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateProjectSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateProjectSuccessfully(t, fakeServer)
 
 	var description = "The team that is bright red"
 	updateOpts := projects.UpdateOpts{
@@ -131,40 +131,40 @@ func TestUpdateProject(t *testing.T) {
 		Extra:       map[string]any{"test": "new"},
 	}
 
-	actual, err := projects.Update(context.TODO(), client.ServiceClient(), "1234", updateOpts).Extract()
+	actual, err := projects.Update(context.TODO(), client.ServiceClient(fakeServer), "1234", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, UpdatedRedTeam, *actual)
-	t.Log(projects.Update(context.TODO(), client.ServiceClient(), "1234", updateOpts))
+	t.Log(projects.Update(context.TODO(), client.ServiceClient(fakeServer), "1234", updateOpts))
 }
 
 func TestListProjectTags(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListProjectTagsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListProjectTagsSuccessfully(t, fakeServer)
 
-	actual, err := projects.ListTags(context.TODO(), client.ServiceClient(), "966b3c7d36a24facaf20b7e458bf2192").Extract()
+	actual, err := projects.ListTags(context.TODO(), client.ServiceClient(fakeServer), "966b3c7d36a24facaf20b7e458bf2192").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedTags, *actual)
 }
 
 func TestModifyProjectTags(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleModifyProjectTagsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleModifyProjectTagsSuccessfully(t, fakeServer)
 
 	modifyOpts := projects.ModifyTagsOpts{
 		Tags: []string{"foo", "bar"},
 	}
-	actual, err := projects.ModifyTags(context.TODO(), client.ServiceClient(), "966b3c7d36a24facaf20b7e458bf2192", modifyOpts).Extract()
+	actual, err := projects.ModifyTags(context.TODO(), client.ServiceClient(fakeServer), "966b3c7d36a24facaf20b7e458bf2192", modifyOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedProjects, *actual)
 }
 
 func TestDeleteTags(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteProjectTagsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteProjectTagsSuccessfully(t, fakeServer)
 
-	err := projects.DeleteTags(context.TODO(), client.ServiceClient(), "966b3c7d36a24facaf20b7e458bf2192").ExtractErr()
+	err := projects.DeleteTags(context.TODO(), client.ServiceClient(fakeServer), "966b3c7d36a24facaf20b7e458bf2192").ExtractErr()
 	th.AssertNoErr(t, err)
 }

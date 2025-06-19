@@ -11,12 +11,12 @@ import (
 )
 
 func TestListConductors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleConductorListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleConductorListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := conductors.List(client.ServiceClient(), conductors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := conductors.List(client.ServiceClient(fakeServer), conductors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := conductors.ExtractConductors(page)
@@ -41,12 +41,12 @@ func TestListConductors(t *testing.T) {
 }
 
 func TestListDetailConductors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleConductorListDetailSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleConductorListDetailSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := conductors.List(client.ServiceClient(), conductors.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := conductors.List(client.ServiceClient(fakeServer), conductors.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := conductors.ExtractConductors(page)
@@ -93,11 +93,11 @@ func TestListOpts(t *testing.T) {
 }
 
 func TestGetConductor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleConductorGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleConductorGetSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := conductors.Get(context.TODO(), c, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)

@@ -11,12 +11,12 @@ import (
 
 // Verifies that availability zones can be listed correctly
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetSuccessfully(t)
+	HandleGetSuccessfully(t, fakeServer)
 
-	allPages, err := az.List(client.ServiceClient()).AllPages(context.TODO())
+	allPages, err := az.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := az.ExtractAvailabilityZones(allPages)
@@ -27,12 +27,12 @@ func TestList(t *testing.T) {
 
 // Verifies that detailed availability zones can be listed correctly
 func TestListDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetDetailSuccessfully(t)
+	HandleGetDetailSuccessfully(t, fakeServer)
 
-	allPages, err := az.ListDetail(client.ServiceClient()).AllPages(context.TODO())
+	allPages, err := az.ListDetail(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := az.ExtractAvailabilityZones(allPages)

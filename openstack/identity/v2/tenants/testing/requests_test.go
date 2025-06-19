@@ -12,12 +12,12 @@ import (
 )
 
 func TestListTenants(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListTenantsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListTenantsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := tenants.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := tenants.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := tenants.ExtractTenants(page)
@@ -32,10 +32,10 @@ func TestListTenants(t *testing.T) {
 }
 
 func TestCreateTenant(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockCreateTenantResponse(t)
+	mockCreateTenantResponse(t, fakeServer)
 
 	opts := tenants.CreateOpts{
 		Name:        "new_tenant",
@@ -43,7 +43,7 @@ func TestCreateTenant(t *testing.T) {
 		Enabled:     gophercloud.Enabled,
 	}
 
-	tenant, err := tenants.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	tenant, err := tenants.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -58,20 +58,20 @@ func TestCreateTenant(t *testing.T) {
 }
 
 func TestDeleteTenant(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockDeleteTenantResponse(t)
+	mockDeleteTenantResponse(t, fakeServer)
 
-	err := tenants.Delete(context.TODO(), client.ServiceClient(), "2466f69cd4714d89a548a68ed97ffcd4").ExtractErr()
+	err := tenants.Delete(context.TODO(), client.ServiceClient(fakeServer), "2466f69cd4714d89a548a68ed97ffcd4").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestUpdateTenant(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockUpdateTenantResponse(t)
+	mockUpdateTenantResponse(t, fakeServer)
 
 	id := "5c62ef576dc7444cbb73b1fe84b97648"
 	description := "This is new name"
@@ -81,7 +81,7 @@ func TestUpdateTenant(t *testing.T) {
 		Enabled:     gophercloud.Enabled,
 	}
 
-	tenant, err := tenants.Update(context.TODO(), client.ServiceClient(), id, opts).Extract()
+	tenant, err := tenants.Update(context.TODO(), client.ServiceClient(fakeServer), id, opts).Extract()
 
 	th.AssertNoErr(t, err)
 
@@ -96,12 +96,12 @@ func TestUpdateTenant(t *testing.T) {
 }
 
 func TestGetTenant(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockGetTenantResponse(t)
+	mockGetTenantResponse(t, fakeServer)
 
-	tenant, err := tenants.Get(context.TODO(), client.ServiceClient(), "5c62ef576dc7444cbb73b1fe84b97648").Extract()
+	tenant, err := tenants.Get(context.TODO(), client.ServiceClient(fakeServer), "5c62ef576dc7444cbb73b1fe84b97648").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &tenants.Tenant{

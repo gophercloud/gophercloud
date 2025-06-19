@@ -93,8 +93,8 @@ var (
 	}
 )
 
-func HandleStoragePoolsListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/scheduler-stats/get_pools", func(w http.ResponseWriter, r *http.Request) {
+func HandleStoragePoolsListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/scheduler-stats/get_pools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

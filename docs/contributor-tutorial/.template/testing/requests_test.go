@@ -16,7 +16,7 @@ func TestListResources(t *testing.T) {
 	HandleListResourcesSuccessfully(t)
 
 	count := 0
-	err := resources.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := resources.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := resources.ExtractResources(page)
@@ -35,7 +35,7 @@ func TestListResourcesAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListResourcesSuccessfully(t)
 
-	allPages, err := resources.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := resources.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := resources.ExtractResources(allPages)
 	th.AssertNoErr(t, err)
@@ -47,7 +47,7 @@ func TestGetResource(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetResourceSuccessfully(t)
 
-	actual, err := resources.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := resources.Get(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondResource, *actual)
 }
@@ -61,7 +61,7 @@ func TestCreateResource(t *testing.T) {
 		Name: "resource two",
 	}
 
-	actual, err := resources.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := resources.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondResource, *actual)
 }
@@ -71,7 +71,7 @@ func TestDeleteResource(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteResourceSuccessfully(t)
 
-	res := resources.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
+	res := resources.Delete(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -84,7 +84,7 @@ func TestUpdateResource(t *testing.T) {
 		Description: "Staging Resource",
 	}
 
-	actual, err := resources.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := resources.Update(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, SecondResourceUpdated, *actual)
 }

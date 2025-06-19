@@ -10,29 +10,29 @@ import (
 )
 
 func TestGetSecretACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSecretACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSecretACLSuccessfully(t, fakeServer)
 
-	actual, err := acls.GetSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	actual, err := acls.GetSecretACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedACL, *actual)
 }
 
 func TestGetContainerACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetContainerACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetContainerACLSuccessfully(t, fakeServer)
 
-	actual, err := acls.GetContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	actual, err := acls.GetContainerACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedACL, *actual)
 }
 
 func TestSetSecretACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetSecretACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetSecretACLSuccessfully(t, fakeServer)
 
 	users := []string{"GG27dVwR9gBMnsOaRoJ1DFJmZfdVjIdW"}
 	iFalse := false
@@ -44,15 +44,15 @@ func TestSetSecretACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.SetSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
+	actual, err := acls.SetSecretACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedSecretACLRef, *actual)
 }
 
 func TestSetContainerACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetContainerACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetContainerACLSuccessfully(t, fakeServer)
 
 	users := []string{"GG27dVwR9gBMnsOaRoJ1DFJmZfdVjIdW"}
 	iFalse := false
@@ -64,33 +64,33 @@ func TestSetContainerACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.SetContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
+	actual, err := acls.SetContainerACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedContainerACLRef, *actual)
 }
 
 func TestDeleteSecretACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSecretACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSecretACLSuccessfully(t, fakeServer)
 
-	res := acls.DeleteSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
+	res := acls.DeleteSecretACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestDeleteContainerACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteContainerACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteContainerACLSuccessfully(t, fakeServer)
 
-	res := acls.DeleteContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
+	res := acls.DeleteContainerACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateSecretACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSecretACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSecretACLSuccessfully(t, fakeServer)
 
 	newUsers := []string{}
 	updateOpts := acls.SetOpts{
@@ -100,15 +100,15 @@ func TestUpdateSecretACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.UpdateSecretACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
+	actual, err := acls.UpdateSecretACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedSecretACLRef, *actual)
 }
 
 func TestUpdateContainerACL(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateContainerACLSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateContainerACLSuccessfully(t, fakeServer)
 
 	newUsers := []string{}
 	updateOpts := acls.SetOpts{
@@ -118,7 +118,7 @@ func TestUpdateContainerACL(t *testing.T) {
 		},
 	}
 
-	actual, err := acls.UpdateContainerACL(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
+	actual, err := acls.UpdateContainerACL(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedContainerACLRef, *actual)
 }

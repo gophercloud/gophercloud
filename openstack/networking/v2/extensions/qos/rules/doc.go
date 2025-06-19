@@ -76,7 +76,7 @@ Example of Deleting a single BandwidthLimitRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	err := rules.DeleteBandwidthLimitRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
+	err := rules.DeleteBandwidthLimitRule(fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
 	if err != nil {
 	    panic(err)
 	}
@@ -151,7 +151,7 @@ Example of Deleting a single DSCPMarkingRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	err := rules.DeleteDSCPMarkingRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
+	err := rules.DeleteDSCPMarkingRule(fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
 	if err != nil {
 	    panic(err)
 	}
@@ -228,7 +228,7 @@ Example of Deleting a single MinimumBandwidthRule
 	policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 	ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
 
-	err := rules.DeleteMinimumBandwidthRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
+	err := rules.DeleteMinimumBandwidthRule(fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
 	if err != nil {
 	    panic(err)
 	}

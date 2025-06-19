@@ -13,11 +13,11 @@ import (
 )
 
 func TestCreateConsumer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateConsumer(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateConsumer(t, fakeServer)
 
-	consumer, err := oauth1.CreateConsumer(context.TODO(), client.ServiceClient(), oauth1.CreateConsumerOpts{
+	consumer, err := oauth1.CreateConsumer(context.TODO(), client.ServiceClient(fakeServer), oauth1.CreateConsumerOpts{
 		Description: "My consumer",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -26,11 +26,11 @@ func TestCreateConsumer(t *testing.T) {
 }
 
 func TestUpdateConsumer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateConsumer(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateConsumer(t, fakeServer)
 
-	consumer, err := oauth1.UpdateConsumer(context.TODO(), client.ServiceClient(), "7fea2d", oauth1.UpdateConsumerOpts{
+	consumer, err := oauth1.UpdateConsumer(context.TODO(), client.ServiceClient(fakeServer), "7fea2d", oauth1.UpdateConsumerOpts{
 		Description: "My new consumer",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -39,32 +39,32 @@ func TestUpdateConsumer(t *testing.T) {
 }
 
 func TestDeleteConsumer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteConsumer(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteConsumer(t, fakeServer)
 
-	err := oauth1.DeleteConsumer(context.TODO(), client.ServiceClient(), "7fea2d").ExtractErr()
+	err := oauth1.DeleteConsumer(context.TODO(), client.ServiceClient(fakeServer), "7fea2d").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetConsumer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetConsumer(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetConsumer(t, fakeServer)
 
-	consumer, err := oauth1.GetConsumer(context.TODO(), client.ServiceClient(), "7fea2d").Extract()
+	consumer, err := oauth1.GetConsumer(context.TODO(), client.ServiceClient(fakeServer), "7fea2d").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, FirstConsumer, *consumer)
 }
 
 func TestListConsumers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListConsumers(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListConsumers(t, fakeServer)
 
 	count := 0
-	err := oauth1.ListConsumers(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := oauth1.ListConsumers(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := oauth1.ExtractConsumers(page)
@@ -79,11 +79,11 @@ func TestListConsumers(t *testing.T) {
 }
 
 func TestListConsumersAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListConsumers(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListConsumers(t, fakeServer)
 
-	allPages, err := oauth1.ListConsumers(client.ServiceClient()).AllPages(context.TODO())
+	allPages, err := oauth1.ListConsumers(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := oauth1.ExtractConsumers(allPages)
 	th.AssertNoErr(t, err)
@@ -91,12 +91,12 @@ func TestListConsumersAllPages(t *testing.T) {
 }
 
 func TestRequestToken(t *testing.T) {
-	th.SetupPersistentPortHTTP(t, 33199)
-	defer th.TeardownHTTP()
-	HandleRequestToken(t)
+	fakeServer := th.SetupPersistentPortHTTP(t, 33199)
+	defer fakeServer.Teardown()
+	HandleRequestToken(t, fakeServer)
 
 	ts := time.Unix(0, 0)
-	token, err := oauth1.RequestToken(context.TODO(), client.ServiceClient(), oauth1.RequestTokenOpts{
+	token, err := oauth1.RequestToken(context.TODO(), client.ServiceClient(fakeServer), oauth1.RequestTokenOpts{
 		OAuthConsumerKey:     Consumer.ID,
 		OAuthConsumerSecret:  Consumer.Secret,
 		OAuthSignatureMethod: oauth1.HMACSHA1,
@@ -110,11 +110,11 @@ func TestRequestToken(t *testing.T) {
 }
 
 func TestAuthorizeToken(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAuthorizeToken(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAuthorizeToken(t, fakeServer)
 
-	token, err := oauth1.AuthorizeToken(context.TODO(), client.ServiceClient(), "29971f", oauth1.AuthorizeTokenOpts{
+	token, err := oauth1.AuthorizeToken(context.TODO(), client.ServiceClient(fakeServer), "29971f", oauth1.AuthorizeTokenOpts{
 		Roles: []oauth1.Role{
 			{
 				ID: "a3b29b",
@@ -130,12 +130,12 @@ func TestAuthorizeToken(t *testing.T) {
 }
 
 func TestCreateAccessToken(t *testing.T) {
-	th.SetupPersistentPortHTTP(t, 33199)
-	defer th.TeardownHTTP()
-	HandleCreateAccessToken(t)
+	fakeServer := th.SetupPersistentPortHTTP(t, 33199)
+	defer fakeServer.Teardown()
+	HandleCreateAccessToken(t, fakeServer)
 
 	ts := time.Unix(1586804894, 0)
-	token, err := oauth1.CreateAccessToken(context.TODO(), client.ServiceClient(), oauth1.CreateAccessTokenOpts{
+	token, err := oauth1.CreateAccessToken(context.TODO(), client.ServiceClient(fakeServer), oauth1.CreateAccessTokenOpts{
 		OAuthConsumerKey:     Consumer.ID,
 		OAuthConsumerSecret:  Consumer.Secret,
 		OAuthToken:           Token.OAuthToken,
@@ -151,32 +151,32 @@ func TestCreateAccessToken(t *testing.T) {
 }
 
 func TestGetAccessToken(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetAccessToken(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetAccessToken(t, fakeServer)
 
-	token, err := oauth1.GetAccessToken(context.TODO(), client.ServiceClient(), "ce9e07", "6be26a").Extract()
+	token, err := oauth1.GetAccessToken(context.TODO(), client.ServiceClient(fakeServer), "ce9e07", "6be26a").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, UserAccessToken, *token)
 }
 
 func TestRevokeAccessToken(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRevokeAccessToken(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRevokeAccessToken(t, fakeServer)
 
-	err := oauth1.RevokeAccessToken(context.TODO(), client.ServiceClient(), "ce9e07", "6be26a").ExtractErr()
+	err := oauth1.RevokeAccessToken(context.TODO(), client.ServiceClient(fakeServer), "ce9e07", "6be26a").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestListAccessTokens(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAccessTokens(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAccessTokens(t, fakeServer)
 
 	count := 0
-	err := oauth1.ListAccessTokens(client.ServiceClient(), "ce9e07").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := oauth1.ListAccessTokens(client.ServiceClient(fakeServer), "ce9e07").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := oauth1.ExtractAccessTokens(page)
@@ -191,11 +191,11 @@ func TestListAccessTokens(t *testing.T) {
 }
 
 func TestListAccessTokensAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAccessTokens(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAccessTokens(t, fakeServer)
 
-	allPages, err := oauth1.ListAccessTokens(client.ServiceClient(), "ce9e07").AllPages(context.TODO())
+	allPages, err := oauth1.ListAccessTokens(client.ServiceClient(fakeServer), "ce9e07").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := oauth1.ExtractAccessTokens(allPages)
 	th.AssertNoErr(t, err)
@@ -203,12 +203,12 @@ func TestListAccessTokensAllPages(t *testing.T) {
 }
 
 func TestListAccessTokenRoles(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAccessTokenRoles(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAccessTokenRoles(t, fakeServer)
 
 	count := 0
-	err := oauth1.ListAccessTokenRoles(client.ServiceClient(), "ce9e07", "6be26a").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := oauth1.ListAccessTokenRoles(client.ServiceClient(fakeServer), "ce9e07", "6be26a").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := oauth1.ExtractAccessTokenRoles(page)
@@ -223,11 +223,11 @@ func TestListAccessTokenRoles(t *testing.T) {
 }
 
 func TestListAccessTokenRolesAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAccessTokenRoles(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAccessTokenRoles(t, fakeServer)
 
-	allPages, err := oauth1.ListAccessTokenRoles(client.ServiceClient(), "ce9e07", "6be26a").AllPages(context.TODO())
+	allPages, err := oauth1.ListAccessTokenRoles(client.ServiceClient(fakeServer), "ce9e07", "6be26a").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := oauth1.ExtractAccessTokenRoles(allPages)
 	th.AssertNoErr(t, err)
@@ -235,20 +235,20 @@ func TestListAccessTokenRolesAllPages(t *testing.T) {
 }
 
 func TestGetAccessTokenRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetAccessTokenRole(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetAccessTokenRole(t, fakeServer)
 
-	role, err := oauth1.GetAccessTokenRole(context.TODO(), client.ServiceClient(), "ce9e07", "6be26a", "5ad150").Extract()
+	role, err := oauth1.GetAccessTokenRole(context.TODO(), client.ServiceClient(fakeServer), "ce9e07", "6be26a", "5ad150").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, UserAccessTokenRole, *role)
 }
 
 func TestAuthenticate(t *testing.T) {
-	th.SetupPersistentPortHTTP(t, 33199)
-	defer th.TeardownHTTP()
-	HandleAuthenticate(t)
+	fakeServer := th.SetupPersistentPortHTTP(t, 33199)
+	defer fakeServer.Teardown()
+	HandleAuthenticate(t, fakeServer)
 
 	expected := &tokens.Token{
 		ExpiresAt: time.Date(2017, 6, 3, 2, 19, 49, 0, time.UTC),
@@ -265,7 +265,7 @@ func TestAuthenticate(t *testing.T) {
 		OAuthNonce:           "66148873158553341551586804894",
 	}
 
-	actual, err := oauth1.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	actual, err := oauth1.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }

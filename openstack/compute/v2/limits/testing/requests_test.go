@@ -10,15 +10,15 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
 	getOpts := limits.GetOpts{
 		TenantID: TenantID,
 	}
 
-	actual, err := limits.Get(context.TODO(), client.ServiceClient(), getOpts).Extract()
+	actual, err := limits.Get(context.TODO(), client.ServiceClient(fakeServer), getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &LimitsResult, actual)
 }

@@ -14,25 +14,25 @@ import (
 )
 
 func TestCreateSuccessful(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/OS-EP-FILTER/projects/project-id/endpoints/endpoint-id", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/OS-EP-FILTER/projects/project-id/endpoints/endpoint-id", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := projectendpoints.Create(context.TODO(), client.ServiceClient(), "project-id", "endpoint-id").Err
+	err := projectendpoints.Create(context.TODO(), client.ServiceClient(fakeServer), "project-id", "endpoint-id").Err
 	th.AssertNoErr(t, err)
 }
 
 func TestListEndpoints(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/OS-EP-FILTER/projects/project-id/endpoints", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/OS-EP-FILTER/projects/project-id/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -71,7 +71,7 @@ func TestListEndpoints(t *testing.T) {
 	})
 
 	count := 0
-	err := projectendpoints.List(client.ServiceClient(), "project-id").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := projectendpoints.List(client.ServiceClient(fakeServer), "project-id").EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := projectendpoints.ExtractEndpoints(page)
 		if err != nil {
@@ -103,16 +103,16 @@ func TestListEndpoints(t *testing.T) {
 }
 
 func TestDeleteEndpoint(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/OS-EP-FILTER/projects/project-id/endpoints/endpoint-id", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/OS-EP-FILTER/projects/project-id/endpoints/endpoint-id", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := projectendpoints.Delete(context.TODO(), client.ServiceClient(), "project-id", "endpoint-id")
+	res := projectendpoints.Delete(context.TODO(), client.ServiceClient(fakeServer), "project-id", "endpoint-id")
 	th.AssertNoErr(t, res.Err)
 }
