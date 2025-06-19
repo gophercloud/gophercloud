@@ -360,6 +360,8 @@ func ParseStatus(status string) (Status, error) {
 	switch strings.ToUpper(status) {
 	case "CURRENT", "STABLE": // keystone uses STABLE instead of CURRENT
 		return StatusCurrent, nil
+	case "EXPERIMENTAL":
+		return StatusExperimental, nil
 	case "SUPPORTED":
 		return StatusSupported, nil
 	case "DEPRECATED":
