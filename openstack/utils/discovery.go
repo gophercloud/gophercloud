@@ -26,12 +26,16 @@ const (
 // SupportedVersion stores a normalized form of the API version data. It handles APIs that
 // support microversions as well as those that do not.
 type SupportedVersion struct {
+	// ID is the unparsed ID string
+	ID string
 	// Major is the major version number of the API
 	Major int
 	// Minor is the minor version number of the API
 	Minor int
 	// Status is the status of the API
 	Status Status
+	// URL is the URL of the endpoint
+	URL string
 	SupportedMicroversions
 }
 
@@ -48,12 +52,18 @@ type SupportedMicroversions struct {
 	MinMinor int
 }
 
+type linkResp struct {
+	Href string `json:"href"`
+	Rel  string `json:"rel"`
+}
+
 type version struct {
-	ID         string `json:"id"`
-	Status     string `json:"status"`
-	Version    string `json:"version,omitempty"`
-	MaxVersion string `json:"max_version,omitempty"`
-	MinVersion string `json:"min_version"`
+	ID         string     `json:"id"`
+	Status     string     `json:"status"`
+	Version    string     `json:"version,omitempty"`
+	MaxVersion string     `json:"max_version,omitempty"`
+	MinVersion string     `json:"min_version"`
+	Links      []linkResp `json:"links"`
 }
 
 type response struct {
@@ -166,7 +176,7 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 	var endpointVersion *SupportedVersion
 
 	if majorVersion, minorVersion, err := extractVersion(endpointURL); err == nil {
-		endpointVersion = &SupportedVersion{Major: majorVersion, Minor: minorVersion}
+		endpointVersion = &SupportedVersion{Major: majorVersion, Minor: minorVersion, URL: endpointURL}
 		if !discoverVersions {
 			return append(supportedVersions, *endpointVersion), nil
 		}
@@ -199,9 +209,48 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 		}
 
 		supportedVersion := SupportedVersion{
+			ID:     version.ID,
 			Major:  majorVersion,
 			Minor:  minorVersion,
 			Status: status,
+		}
+
+		// Only normalize the URL if there are links
+		if len(version.Links) > 0 {
+			for _, link := range version.Links {
+				if link.Rel != "self" {
+					continue
+				}
+
+				endpointURL, err := url.Parse(endpointURL)
+				if err != nil {
+					return supportedVersions, err
+				}
+
+				linkURL, err := url.Parse(link.Href)
+				if err != nil {
+					return supportedVersions, err
+				}
+
+				// The href field is typically - but not always - an absolute URL, and you would
+				// think we could use this as-is. Unfortunately, things are not so simple. We often
+				// get incorrect data from services (generally because a service does not include
+				// the application part of the path, defined by SCRIPT_NAME in PEP-333(3) parlance,
+				// in paths). Deployers can also forget to configure web servers or enable the
+				// necessary middleware to ensure things like the X-Forward-Host headers are used
+				// when deploying behind a reverse proxy or load balancer. Cumulatively, this means
+				// we must (a) prefer the host of the endpoint URL over that of the self link href
+				// and (b) we must merge the two paths.
+				//
+				// https://specs.openstack.org/openstack/api-sig/guidelines/consuming-catalog/version-discovery.html#expanding-endpoints
+				path := strings.TrimRight(endpointURL.Path, "/")
+				path += "/"
+				path += strings.Trim(strings.TrimPrefix(linkURL.Path, endpointURL.Path), "/")
+
+				supportedVersion.URL = endpointURL.Scheme + "://" + endpointURL.Host + strings.TrimRight(path, "/") + "/"
+
+				break
+			}
 		}
 
 		// Only normalize the microversions if there are microversions to normalize

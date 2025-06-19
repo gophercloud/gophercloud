@@ -28,9 +28,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v3.14",
 					Major:  3,
 					Minor:  14,
 					Status: utils.StatusCurrent,
+					URL:    fakeServer.Endpoint() + "identity/v3/",
 				},
 			},
 		},
@@ -41,9 +43,11 @@ func TestGetServiceVersions(t *testing.T) {
 			// we will still run discovery since we can't extract the version from the URL
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v3.14",
 					Major:  3,
 					Minor:  14,
 					Status: utils.StatusCurrent,
+					URL:    fakeServer.Endpoint() + "identity/v3/",
 				},
 			},
 		},
@@ -53,9 +57,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v3.14",
 					Major:  3,
 					Minor:  14,
 					Status: utils.StatusCurrent,
+					URL:    fakeServer.Endpoint() + "identity/v3/",
 				},
 			},
 		},
@@ -66,9 +72,11 @@ func TestGetServiceVersions(t *testing.T) {
 			// we will skip discovery since we can extract a version from the URL
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "",
 					Major:  3,
 					Minor:  0,
 					Status: utils.StatusUnknown,
+					URL:    fakeServer.Endpoint() + "identity/v3/",
 				},
 			},
 		},
@@ -78,17 +86,21 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v2.1",
 					Major:  2,
 					Minor:  1,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 2, MaxMinor: 90, MinMajor: 2, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "compute/v2.1/",
 				},
 				{
+					ID:     "v2.0",
 					Major:  2,
 					Minor:  0,
 					Status: utils.StatusSupported,
+					URL:    fakeServer.Endpoint() + "compute/v2/",
 				},
 			},
 		},
@@ -98,9 +110,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v2.0",
 					Major:  2,
 					Minor:  0,
 					Status: utils.StatusSupported,
+					URL:    fakeServer.Endpoint() + "compute/v2/",
 				},
 			},
 		},
@@ -110,12 +124,14 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v2.1",
 					Major:  2,
 					Minor:  1,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 2, MaxMinor: 90, MinMajor: 2, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "compute/v2.1/",
 				},
 			},
 		},
@@ -125,12 +141,14 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v1",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 1, MaxMinor: 11, MinMajor: 1, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "container-infra/v1/",
 				},
 			},
 		},
@@ -140,9 +158,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusUnknown,
+					URL:    fakeServer.Endpoint() + "container-infra/v1/",
 				},
 			},
 		},
@@ -152,9 +172,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v1.0",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
+					URL:    fakeServer.Endpoint() + "heat-api/v1/",
 				},
 			},
 		},
@@ -164,9 +186,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusUnknown,
+					URL:    fakeServer.Endpoint() + "heat-api/v1/",
 				},
 			},
 		},
@@ -176,14 +200,18 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "2",
 					Major:  2,
 					Minor:  0,
 					Status: utils.StatusCurrent,
+					URL:    fakeServer.Endpoint() + "messaging/v2/",
 				},
 				{
+					ID:     "1.1",
 					Major:  1,
 					Minor:  1,
 					Status: utils.StatusDeprecated,
+					URL:    fakeServer.Endpoint() + "messaging/v1.1/",
 				},
 			},
 		},
@@ -193,9 +221,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "",
 					Major:  2,
 					Minor:  0,
 					Status: utils.StatusUnknown,
+					URL:    fakeServer.Endpoint() + "messaging/v2/",
 				},
 			},
 		},
@@ -205,9 +235,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v2.0",
 					Major:  2,
 					Minor:  0,
 					Status: utils.StatusCurrent,
+					URL:    fakeServer.Endpoint() + "workflow/v2/",
 				},
 			},
 		},
@@ -217,9 +249,11 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "",
 					Major:  2,
 					Minor:  0,
 					Status: utils.StatusUnknown,
+					URL:    fakeServer.Endpoint() + "workflow/v2/",
 				},
 			},
 		},
@@ -229,12 +263,14 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v1",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "baremetal/v1/",
 				},
 			},
 		},
@@ -244,12 +280,14 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v1",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "baremetal/v1/",
 				},
 			},
 		},
@@ -259,35 +297,41 @@ func TestGetServiceVersions(t *testing.T) {
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v1",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "baremetal/v1/",
 				},
 			},
 		},
 		{
 			name:             "fictional multi-version endpoint",
-			endpoint:         fakeServer.Endpoint() + "multi-version/v1.2/",
+			endpoint:         fakeServer.Endpoint() + "multi-version/",
 			discoverVersions: true,
 			expectedVersions: []utils.SupportedVersion{
 				{
+					ID:     "v1.2",
 					Major:  1,
 					Minor:  2,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 1, MaxMinor: 90, MinMajor: 1, MinMinor: 2,
 					},
+					URL: fakeServer.Endpoint() + "multi-version/v1/",
 				},
 				{
+					ID:     "v1",
 					Major:  1,
 					Minor:  0,
 					Status: utils.StatusCurrent,
 					SupportedMicroversions: utils.SupportedMicroversions{
 						MaxMajor: 1, MaxMinor: 87, MinMajor: 1, MinMinor: 1,
 					},
+					URL: fakeServer.Endpoint() + "multi-version/v1/",
 				},
 			},
 		},

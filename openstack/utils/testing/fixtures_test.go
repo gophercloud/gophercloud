@@ -500,7 +500,7 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 	})
 
 	// Fictional multi-version API
-	fakeServer.Mux.HandleFunc("/multi-version/v1.2/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/multi-version/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 		{
 			"name": "Multi-version API",
