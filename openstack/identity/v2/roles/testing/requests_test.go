@@ -11,14 +11,14 @@ import (
 )
 
 func TestRole(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListRoleResponse(t)
+	MockListRoleResponse(t, fakeServer)
 
 	count := 0
 
-	err := roles.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := roles.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoles(page)
 		if err != nil {
@@ -44,23 +44,23 @@ func TestRole(t *testing.T) {
 }
 
 func TestAddUser(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockAddUserRoleResponse(t)
+	MockAddUserRoleResponse(t, fakeServer)
 
-	err := roles.AddUser(context.TODO(), client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := roles.AddUser(context.TODO(), client.ServiceClient(fakeServer), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }
 
 func TestDeleteUser(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteUserRoleResponse(t)
+	MockDeleteUserRoleResponse(t, fakeServer)
 
-	err := roles.DeleteUser(context.TODO(), client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := roles.DeleteUser(context.TODO(), client.ServiceClient(fakeServer), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }

@@ -13,10 +13,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -57,7 +57,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := rules.List(fake.ServiceClient(), rules.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := rules.List(fake.ServiceClient(fakeServer), rules.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := rules.ExtractRules(page)
 		if err != nil {
@@ -105,10 +105,10 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -160,15 +160,15 @@ func TestCreate(t *testing.T) {
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}
-	_, err := rules.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	_, err := rules.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestCreateAnyProtocol(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -218,15 +218,15 @@ func TestCreateAnyProtocol(t *testing.T) {
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}
-	_, err := rules.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	_, err := rules.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestCreateBulk(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -313,34 +313,37 @@ func TestCreateBulk(t *testing.T) {
 			SecGroupID:   "a7734e61-b545-452d-a3cd-0189cbd9747a",
 		},
 	}
-	_, err := rules.CreateBulk(context.TODO(), fake.ServiceClient(), opts).Extract()
+	_, err := rules.CreateBulk(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress})
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	res := rules.Create(context.TODO(), fake.ServiceClient(fakeServer), rules.CreateOpts{Direction: rules.DirIngress})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
+	res = rules.Create(context.TODO(), fake.ServiceClient(fakeServer), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
+	res = rules.Create(context.TODO(), fake.ServiceClient(fakeServer), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = rules.Create(context.TODO(), fake.ServiceClient(), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4, SecGroupID: "something", Protocol: "foo"})
+	res = rules.Create(context.TODO(), fake.ServiceClient(fakeServer), rules.CreateOpts{Direction: rules.DirIngress, EtherType: rules.EtherType4, SecGroupID: "something", Protocol: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-group-rules/3c0e45ff-adaf-4124-b083-bf390e5482ff", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules/3c0e45ff-adaf-4124-b083-bf390e5482ff", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -365,7 +368,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	sr, err := rules.Get(context.TODO(), fake.ServiceClient(), "3c0e45ff-adaf-4124-b083-bf390e5482ff").Extract()
+	sr, err := rules.Get(context.TODO(), fake.ServiceClient(fakeServer), "3c0e45ff-adaf-4124-b083-bf390e5482ff").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "egress", sr.Direction)
@@ -381,15 +384,15 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-group-rules/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := rules.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := rules.Delete(context.TODO(), fake.ServiceClient(fakeServer), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

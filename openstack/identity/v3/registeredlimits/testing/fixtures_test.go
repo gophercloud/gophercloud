@@ -155,8 +155,8 @@ var ExpectedRegisteredLimitsSlice = []registeredlimits.RegisteredLimit{FirstRegi
 
 // HandleListRegisteredLimitsSuccessfully creates an HTTP handler at `/registered_limits` on the
 // test handler mux that responds with a list of two registered limits.
-func HandleListRegisteredLimitsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/registered_limits", func(w http.ResponseWriter, r *http.Request) {
+func HandleListRegisteredLimitsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/registered_limits", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -169,8 +169,8 @@ func HandleListRegisteredLimitsSuccessfully(t *testing.T) {
 
 // HandleGetRegisteredLimitSuccessfully creates an HTTP handler at `/registered_limits` on the
 // test handler mux that responds with a single project.
-func HandleGetRegisteredLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/registered_limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetRegisteredLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/registered_limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -183,8 +183,8 @@ func HandleGetRegisteredLimitSuccessfully(t *testing.T) {
 
 // HandleCreateRegisteredLimitSuccessfully creates an HTTP handler at `/registered_limits` on the
 // test handler mux that tests registered limit creation.
-func HandleCreateRegisteredLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/registered_limits", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateRegisteredLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/registered_limits", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -196,8 +196,8 @@ func HandleCreateRegisteredLimitSuccessfully(t *testing.T) {
 
 // HandleDeleteRegisteredLimitSuccessfully creates an HTTP handler at `/registered_limits` on the
 // test handler mux that tests registered_limit deletion.
-func HandleDeleteRegisteredLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/registered_limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteRegisteredLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/registered_limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -207,8 +207,8 @@ func HandleDeleteRegisteredLimitSuccessfully(t *testing.T) {
 
 // HandleUpdateRegisteredLimitSuccessfully creates an HTTP handler at `/registered_limits` on the
 // test handler mux that tests registered limits updates.
-func HandleUpdateRegisteredLimitSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/registered_limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateRegisteredLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/registered_limits/3229b3849f584faea483d6851f7aab05", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)

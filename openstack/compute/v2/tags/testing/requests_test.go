@@ -12,10 +12,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -27,17 +27,17 @@ func TestList(t *testing.T) {
 	})
 
 	expected := []string{"foo", "bar", "baz"}
-	actual, err := tags.List(context.TODO(), client.ServiceClient(), "uuid1").Extract()
+	actual, err := tags.List(context.TODO(), client.ServiceClient(fakeServer), "uuid1").Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestCheckOk(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -45,16 +45,16 @@ func TestCheckOk(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	exists, err := tags.Check(context.TODO(), client.ServiceClient(), "uuid1", "foo").Extract()
+	exists, err := tags.Check(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "foo").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, exists)
 }
 
 func TestCheckFail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags/bar", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags/bar", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -62,16 +62,16 @@ func TestCheckFail(t *testing.T) {
 		w.WriteHeader(http.StatusNotFound)
 	})
 
-	exists, err := tags.Check(context.TODO(), client.ServiceClient(), "uuid1", "bar").Extract()
+	exists, err := tags.Check(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "bar").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, false, exists)
 }
 
 func TestReplaceAll(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPut)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -83,17 +83,17 @@ func TestReplaceAll(t *testing.T) {
 	})
 
 	expected := []string{"tag1", "tag2", "tag3"}
-	actual, err := tags.ReplaceAll(context.TODO(), client.ServiceClient(), "uuid1", tags.ReplaceAllOpts{Tags: []string{"tag1", "tag2", "tag3"}}).Extract()
+	actual, err := tags.ReplaceAll(context.TODO(), client.ServiceClient(fakeServer), "uuid1", tags.ReplaceAllOpts{Tags: []string{"tag1", "tag2", "tag3"}}).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestAddCreated(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPut)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -101,15 +101,15 @@ func TestAddCreated(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	err := tags.Add(context.TODO(), client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	err := tags.Add(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestAddExists(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodPut)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -117,15 +117,15 @@ func TestAddExists(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := tags.Add(context.TODO(), client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	err := tags.Add(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -133,15 +133,15 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := tags.Delete(context.TODO(), client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	err := tags.Delete(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestDeleteAll(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodDelete)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -149,6 +149,6 @@ func TestDeleteAll(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := tags.DeleteAll(context.TODO(), client.ServiceClient(), "uuid1").ExtractErr()
+	err := tags.DeleteAll(context.TODO(), client.ServiceClient(fakeServer), "uuid1").ExtractErr()
 	th.AssertNoErr(t, err)
 }

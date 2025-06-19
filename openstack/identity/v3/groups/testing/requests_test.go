@@ -11,12 +11,12 @@ import (
 )
 
 func TestListGroups(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListGroupsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListGroupsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := groups.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := groups.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := groups.ExtractGroups(page)
@@ -31,11 +31,11 @@ func TestListGroups(t *testing.T) {
 }
 
 func TestListGroupsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListGroupsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListGroupsSuccessfully(t, fakeServer)
 
-	allPages, err := groups.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := groups.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := groups.ExtractGroups(allPages)
 	th.AssertNoErr(t, err)
@@ -77,11 +77,11 @@ func TestListGroupsFiltersCheck(t *testing.T) {
 }
 
 func TestGetGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetGroupSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetGroupSuccessfully(t, fakeServer)
 
-	actual, err := groups.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := groups.Get(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroup, *actual)
@@ -89,9 +89,9 @@ func TestGetGroup(t *testing.T) {
 }
 
 func TestCreateGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateGroupSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateGroupSuccessfully(t, fakeServer)
 
 	createOpts := groups.CreateOpts{
 		Name:        "support",
@@ -102,15 +102,15 @@ func TestCreateGroup(t *testing.T) {
 		},
 	}
 
-	actual, err := groups.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := groups.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroup, *actual)
 }
 
 func TestUpdateGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateGroupSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateGroupSuccessfully(t, fakeServer)
 
 	var description = "L2 Support Team"
 	updateOpts := groups.UpdateOpts{
@@ -120,16 +120,16 @@ func TestUpdateGroup(t *testing.T) {
 		},
 	}
 
-	actual, err := groups.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := groups.Update(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroupUpdated, *actual)
 }
 
 func TestDeleteGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteGroupSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteGroupSuccessfully(t, fakeServer)
 
-	res := groups.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
+	res := groups.Delete(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }

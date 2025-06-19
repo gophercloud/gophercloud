@@ -12,12 +12,12 @@ import (
 
 // Verifies that availability zones can be listed correctly
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := availabilityzones.List(client.ServiceClient()).AllPages(context.TODO())
+	allPages, err := availabilityzones.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := availabilityzones.ExtractAvailabilityZones(allPages)
 	th.AssertNoErr(t, err)

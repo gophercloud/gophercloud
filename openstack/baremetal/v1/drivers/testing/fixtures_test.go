@@ -368,8 +368,8 @@ var (
 )
 
 // HandleListDriversSuccessfully sets up the test server to respond to a drivers ListDrivers request.
-func HandleListDriversSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/drivers", func(w http.ResponseWriter, r *http.Request) {
+func HandleListDriversSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/drivers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -382,8 +382,8 @@ func HandleListDriversSuccessfully(t *testing.T) {
 }
 
 // HandleGetDriverDetailsSuccessfully sets up the test server to respond to a drivers GetDriverDetails request.
-func HandleGetDriverDetailsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/drivers/ipmi", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetDriverDetailsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/drivers/ipmi", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -393,8 +393,8 @@ func HandleGetDriverDetailsSuccessfully(t *testing.T) {
 }
 
 // HandleGetDriverPropertiesSuccessfully sets up the test server to respond to a drivers GetDriverProperties request.
-func HandleGetDriverPropertiesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/drivers/agent_ipmitool/properties", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetDriverPropertiesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/drivers/agent_ipmitool/properties", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -404,8 +404,8 @@ func HandleGetDriverPropertiesSuccessfully(t *testing.T) {
 }
 
 // HandleGetDriverDiskPropertiesSuccessfully sets up the test server to respond to a drivers GetDriverDiskProperties request.
-func HandleGetDriverDiskPropertiesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/drivers/agent_ipmitool/raid/logical_disk_properties", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetDriverDiskPropertiesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/drivers/agent_ipmitool/raid/logical_disk_properties", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

@@ -12,14 +12,14 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
 	count := 0
 
-	err := snapshots.List(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := snapshots.List(client.ServiceClient(fakeServer), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := snapshots.ExtractSnapshots(page)
 		if err != nil {
@@ -60,14 +60,14 @@ func TestList(t *testing.T) {
 }
 
 func TestDetailList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListDetailsResponse(t)
+	MockListDetailsResponse(t, fakeServer)
 
 	count := 0
 
-	err := snapshots.ListDetail(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := snapshots.ListDetail(client.ServiceClient(fakeServer), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := snapshots.ExtractSnapshots(page)
 		if err != nil {
@@ -116,12 +116,12 @@ func TestDetailList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	v, err := snapshots.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := snapshots.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "snapshot-001")
@@ -129,13 +129,13 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := snapshots.CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
-	n, err := snapshots.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := snapshots.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")
@@ -144,10 +144,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdateMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateMetadataResponse(t)
+	MockUpdateMetadataResponse(t, fakeServer)
 
 	expected := map[string]any{"key": "v1"}
 
@@ -157,70 +157,70 @@ func TestUpdateMetadata(t *testing.T) {
 		},
 	}
 
-	actual, err := snapshots.UpdateMetadata(context.TODO(), client.ServiceClient(), "123", options).ExtractMetadata()
+	actual, err := snapshots.UpdateMetadata(context.TODO(), client.ServiceClient(fakeServer), "123", options).ExtractMetadata()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, actual, expected)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := snapshots.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := snapshots.Delete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateResponse(t)
+	MockUpdateResponse(t, fakeServer)
 
 	var name = "snapshot-002"
 	var description = "Daily backup 002"
 	options := snapshots.UpdateOpts{Name: &name, Description: &description}
-	v, err := snapshots.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	v, err := snapshots.Update(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "snapshot-002", v.Name)
 	th.CheckEquals(t, "Daily backup 002", v.Description)
 }
 
 func TestResetStatus(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResetStatusResponse(t)
+	MockResetStatusResponse(t, fakeServer)
 
 	opts := &snapshots.ResetStatusOpts{
 		Status: "error",
 	}
-	res := snapshots.ResetStatus(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
+	res := snapshots.ResetStatus(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateStatus(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateStatusResponse(t)
+	MockUpdateStatusResponse(t, fakeServer)
 
 	opts := &snapshots.UpdateStatusOpts{
 		Status:   "error",
 		Progress: "80%",
 	}
-	res := snapshots.UpdateStatus(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
+	res := snapshots.UpdateStatus(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestForceDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockForceDeleteResponse(t)
+	MockForceDeleteResponse(t, fakeServer)
 
-	res := snapshots.ForceDelete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := snapshots.ForceDelete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }

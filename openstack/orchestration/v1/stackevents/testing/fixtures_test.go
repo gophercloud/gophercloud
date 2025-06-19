@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/stackevents"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 var Timestamp1, _ = time.Parse(time.RFC3339, "2018-06-26T07:58:17Z")
@@ -120,10 +120,10 @@ const FindOutput = `
 
 // HandleFindSuccessfully creates an HTTP handler at `/stacks/postman_stack/events`
 // on the test handler mux that responds with a `Find` response.
-func HandleFindSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/postman_stack/events", func(w http.ResponseWriter, r *http.Request) {
+func HandleFindSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/postman_stack/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -237,10 +237,10 @@ const ListOutput = `
 
 // HandleListSuccessfully creates an HTTP handler at `/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/events`
 // on the test handler mux that responds with a `List` response.
-func HandleListSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/events", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -364,10 +364,10 @@ const ListResourceEventsOutput = `
 
 // HandleListResourceEventsSuccessfully creates an HTTP handler at `/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events`
 // on the test handler mux that responds with a `ListResourceEvents` response.
-func HandleListResourceEventsSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events", func(w http.ResponseWriter, r *http.Request) {
+func HandleListResourceEventsSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -441,10 +441,10 @@ const GetOutput = `
 
 // HandleGetSuccessfully creates an HTTP handler at `/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events/93940999-7d40-44ae-8de4-19624e7b8d18`
 // on the test handler mux that responds with a `Get` response.
-func HandleGetSuccessfully(t *testing.T, output string) {
-	th.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events/93940999-7d40-44ae-8de4-19624e7b8d18", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer, output string) {
+	fakeServer.Mux.HandleFunc("/stacks/hello_world/49181cd6-169a-4130-9455-31185bbfc5bf/resources/my_resource/events/93940999-7d40-44ae-8de4-19624e7b8d18", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")

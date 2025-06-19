@@ -12,12 +12,12 @@ import (
 )
 
 func TestListSecrets(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSecretsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSecretsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := secrets.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := secrets.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := secrets.ExtractSecrets(page)
@@ -32,11 +32,11 @@ func TestListSecrets(t *testing.T) {
 }
 
 func TestListSecretsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSecretsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSecretsSuccessfully(t, fakeServer)
 
-	allPages, err := secrets.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := secrets.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := secrets.ExtractSecrets(allPages)
 	th.AssertNoErr(t, err)
@@ -44,19 +44,19 @@ func TestListSecretsAllPages(t *testing.T) {
 }
 
 func TestGetSecret(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSecretSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSecretSuccessfully(t, fakeServer)
 
-	actual, err := secrets.Get(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	actual, err := secrets.Get(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstSecret, *actual)
 }
 
 func TestCreateSecret(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSecretSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSecretSuccessfully(t, fakeServer)
 
 	expiration := time.Date(2028, 6, 21, 2, 49, 48, 0, time.UTC)
 	createOpts := secrets.CreateOpts{
@@ -70,39 +70,39 @@ func TestCreateSecret(t *testing.T) {
 		Expiration:         &expiration,
 	}
 
-	actual, err := secrets.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := secrets.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCreateResult, *actual)
 }
 
 func TestDeleteSecret(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSecretSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSecretSuccessfully(t, fakeServer)
 
-	res := secrets.Delete(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
+	res := secrets.Delete(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateSecret(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSecretSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSecretSuccessfully(t, fakeServer)
 
 	updateOpts := secrets.UpdateOpts{
 		Payload: "foobar",
 	}
 
-	err := secrets.Update(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).ExtractErr()
+	err := secrets.Update(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetPayloadSecret(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetPayloadSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetPayloadSuccessfully(t, fakeServer)
 
-	res := secrets.GetPayload(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", nil)
+	res := secrets.GetPayload(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", nil)
 	th.AssertNoErr(t, res.Err)
 	payload, err := res.Extract()
 	th.AssertNoErr(t, err)
@@ -110,74 +110,74 @@ func TestGetPayloadSecret(t *testing.T) {
 }
 
 func TestGetMetadataSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetMetadataSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetMetadataSuccessfully(t, fakeServer)
 
-	actual, err := secrets.GetMetadata(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	actual, err := secrets.GetMetadata(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedMetadata, actual)
 }
 
 func TestCreateMetadataSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateMetadataSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateMetadataSuccessfully(t, fakeServer)
 
 	createOpts := secrets.MetadataOpts{
 		"foo":       "bar",
 		"something": "something else",
 	}
 
-	actual, err := secrets.CreateMetadata(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).Extract()
+	actual, err := secrets.CreateMetadata(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCreateMetadataResult, actual)
 }
 
 func TestGetMetadatumSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetMetadatumSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetMetadatumSuccessfully(t, fakeServer)
 
-	actual, err := secrets.GetMetadatum(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", "foo").Extract()
+	actual, err := secrets.GetMetadatum(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", "foo").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedMetadatum, *actual)
 }
 
 func TestCreateMetadatumSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateMetadatumSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateMetadatumSuccessfully(t, fakeServer)
 
 	createOpts := secrets.MetadatumOpts{
 		Key:   "foo",
 		Value: "bar",
 	}
 
-	err := secrets.CreateMetadatum(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).ExtractErr()
+	err := secrets.CreateMetadatum(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestUpdateMetadatumSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateMetadatumSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateMetadatumSuccessfully(t, fakeServer)
 
 	updateOpts := secrets.MetadatumOpts{
 		Key:   "foo",
 		Value: "bar",
 	}
 
-	actual, err := secrets.UpdateMetadatum(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
+	actual, err := secrets.UpdateMetadatum(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedMetadatum, *actual)
 }
 
 func TestDeleteMetadatumSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteMetadatumSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteMetadatumSuccessfully(t, fakeServer)
 
-	err := secrets.DeleteMetadatum(context.TODO(), client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", "foo").ExtractErr()
+	err := secrets.DeleteMetadatum(context.TODO(), client.ServiceClient(fakeServer), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }

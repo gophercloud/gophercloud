@@ -12,16 +12,16 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/workflow/v2/crontriggers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreateCronTrigger(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/cron_triggers", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/cron_triggers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusCreated)
 
 		w.Header().Add("Content-Type", "application/json")
@@ -58,7 +58,7 @@ func TestCreateCronTrigger(t *testing.T) {
 		},
 	}
 
-	actual, err := crontriggers.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	actual, err := crontriggers.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create cron trigger: %v", err)
 	}
@@ -89,26 +89,26 @@ func TestCreateCronTrigger(t *testing.T) {
 }
 
 func TestDeleteCronTrigger(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/cron_triggers/0520ffd8-f7f1-4f2e-845b-55d953a1cf46", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/cron_triggers/0520ffd8-f7f1-4f2e-845b-55d953a1cf46", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := crontriggers.Delete(context.TODO(), fake.ServiceClient(), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46")
+	res := crontriggers.Delete(context.TODO(), client.ServiceClient(fakeServer), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetCronTrigger(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/cron_triggers/0520ffd8-f7f1-4f2e-845b-55d953a1cf46", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/cron_triggers/0520ffd8-f7f1-4f2e-845b-55d953a1cf46", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, `
 			{
@@ -129,7 +129,7 @@ func TestGetCronTrigger(t *testing.T) {
 			}
 		`)
 	})
-	actual, err := crontriggers.Get(context.TODO(), fake.ServiceClient(), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46").Extract()
+	actual, err := crontriggers.Get(context.TODO(), client.ServiceClient(fakeServer), "0520ffd8-f7f1-4f2e-845b-55d953a1cf46").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get cron trigger: %v", err)
 	}
@@ -161,11 +161,11 @@ func TestGetCronTrigger(t *testing.T) {
 }
 
 func TestListCronTriggers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/cron_triggers", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/cron_triggers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
@@ -193,7 +193,7 @@ func TestListCronTriggers(t *testing.T) {
 					}
 				],
 				"next": "%s/cron_triggers?marker=0520ffd8-f7f1-4f2e-845b-55d953a1cf46"
-			}`, th.Server.URL)
+			}`, fakeServer.Server.URL)
 		case "0520ffd8-f7f1-4f2e-845b-55d953a1cf46":
 			fmt.Fprint(w, `{ "cron_triggers": [] }`)
 		default:
@@ -202,7 +202,7 @@ func TestListCronTriggers(t *testing.T) {
 	})
 	pages := 0
 	// Get all cron triggers
-	err := crontriggers.List(fake.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := crontriggers.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := crontriggers.ExtractCronTriggers(page)
 		if err != nil {

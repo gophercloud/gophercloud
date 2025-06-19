@@ -8,17 +8,17 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListResourceProviders(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderList(t)
+	HandleResourceProviderList(t, fakeServer)
 
 	count := 0
-	err := resourceproviders.List(fake.ServiceClient(), resourceproviders.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := resourceproviders.List(client.ServiceClient(fakeServer), resourceproviders.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := resourceproviders.ExtractResourceProviders(page)
@@ -39,10 +39,10 @@ func TestListResourceProviders(t *testing.T) {
 }
 
 func TestCreateResourceProvider(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderCreate(t)
+	HandleResourceProviderCreate(t, fakeServer)
 
 	expected := ExpectedResourceProvider1
 
@@ -52,41 +52,41 @@ func TestCreateResourceProvider(t *testing.T) {
 		ParentProviderUUID: ExpectedResourceProvider1.ParentProviderUUID,
 	}
 
-	actual, err := resourceproviders.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	actual, err := resourceproviders.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestGetResourceProvider(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderGet(t)
+	HandleResourceProviderGet(t, fakeServer)
 
 	expected := ExpectedResourceProvider1
 
-	actual, err := resourceproviders.Get(context.TODO(), fake.ServiceClient(), ExpectedResourceProvider1.UUID).Extract()
+	actual, err := resourceproviders.Get(context.TODO(), client.ServiceClient(fakeServer), ExpectedResourceProvider1.UUID).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestDeleteResourceProvider(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderDelete(t)
+	HandleResourceProviderDelete(t, fakeServer)
 
-	res := resourceproviders.Delete(context.TODO(), fake.ServiceClient(), "b99b3ab4-3aa6-4fba-b827-69b88b9c544a")
+	res := resourceproviders.Delete(context.TODO(), client.ServiceClient(fakeServer), "b99b3ab4-3aa6-4fba-b827-69b88b9c544a")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderUpdate(t)
+	HandleResourceProviderUpdate(t, fakeServer)
 
 	name := "new_name"
 	parentProviderUUID := "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
@@ -95,7 +95,7 @@ func TestUpdate(t *testing.T) {
 		Name:               &name,
 		ParentProviderUUID: &parentProviderUUID,
 	}
-	rp, err := resourceproviders.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	rp, err := resourceproviders.Update(context.TODO(), client.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, rp.Name, name)
@@ -103,45 +103,45 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestGetResourceProvidersUsages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderGetUsages(t)
+	HandleResourceProviderGetUsages(t, fakeServer)
 
-	actual, err := resourceproviders.GetUsages(context.TODO(), fake.ServiceClient(), ResourceProviderTestID).Extract()
+	actual, err := resourceproviders.GetUsages(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUsages, *actual)
 }
 
 func TestGetResourceProvidersInventories(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderGetInventories(t)
+	HandleResourceProviderGetInventories(t, fakeServer)
 
-	actual, err := resourceproviders.GetInventories(context.TODO(), fake.ServiceClient(), ResourceProviderTestID).Extract()
+	actual, err := resourceproviders.GetInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedInventories, *actual)
 }
 
 func TestGetResourceProvidersAllocations(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderGetAllocations(t)
+	HandleResourceProviderGetAllocations(t, fakeServer)
 
-	actual, err := resourceproviders.GetAllocations(context.TODO(), fake.ServiceClient(), ResourceProviderTestID).Extract()
+	actual, err := resourceproviders.GetAllocations(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedAllocations, *actual)
 }
 
 func TestGetResourceProvidersTraits(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResourceProviderGetTraits(t)
+	HandleResourceProviderGetTraits(t, fakeServer)
 
-	actual, err := resourceproviders.GetTraits(context.TODO(), fake.ServiceClient(), ResourceProviderTestID).Extract()
+	actual, err := resourceproviders.GetTraits(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedTraits, *actual)
 }

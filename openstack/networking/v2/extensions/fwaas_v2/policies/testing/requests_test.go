@@ -14,10 +14,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -59,7 +59,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := policies.List(fake.ServiceClient(), policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := policies.List(fake.ServiceClient(fakeServer), policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := policies.ExtractPolicies(page)
 		if err != nil {
@@ -107,10 +107,10 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -166,15 +166,15 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	_, err := policies.Create(context.TODO(), fake.ServiceClient(), options).Extract()
+	_, err := policies.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestInsertRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/e3c78ab6-e827-4297-8d68-739063865a8b/insert_rule", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/e3c78ab6-e827-4297-8d68-739063865a8b/insert_rule", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -211,7 +211,7 @@ func TestInsertRule(t *testing.T) {
 		InsertBefore: "3062ed90-1fb0-4c25-af3d-318dff2143ae",
 	}
 
-	policy, err := policies.InsertRule(context.TODO(), fake.ServiceClient(), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
+	policy, err := policies.InsertRule(context.TODO(), fake.ServiceClient(fakeServer), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "TESTACC-2LnMayeG", policy.Name)
 	th.AssertEquals(t, 2, len(policy.Rules))
@@ -224,8 +224,8 @@ func TestInsertRule(t *testing.T) {
 }
 
 func TestInsertRuleWithInvalidParameters(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	//invalid opts, its not allowed to specify InsertBefore and InsertAfter together
 	options := policies.InsertRuleOpts{
@@ -234,7 +234,7 @@ func TestInsertRuleWithInvalidParameters(t *testing.T) {
 		InsertAfter:  "2",
 	}
 
-	_, err := policies.InsertRule(context.TODO(), fake.ServiceClient(), "0", options).Extract()
+	_, err := policies.InsertRule(context.TODO(), fake.ServiceClient(fakeServer), "0", options).Extract()
 
 	// expect to fail with an gophercloud error
 	th.AssertErr(t, err)
@@ -242,10 +242,10 @@ func TestInsertRuleWithInvalidParameters(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/f2b08c1e-aa81-4668-8ae1-1401bcb0576c", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/f2b08c1e-aa81-4668-8ae1-1401bcb0576c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -271,7 +271,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	policy, err := policies.Get(context.TODO(), fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+	policy, err := policies.Get(context.TODO(), fake.ServiceClient(fakeServer), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "www", policy.Name)
@@ -286,10 +286,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/f2b08c1e-aa81-4668-8ae1-1401bcb0576c", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/f2b08c1e-aa81-4668-8ae1-1401bcb0576c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -341,29 +341,29 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	_, err := policies.Update(context.TODO(), fake.ServiceClient(), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c", options).Extract()
+	_, err := policies.Update(context.TODO(), fake.ServiceClient(fakeServer), "f2b08c1e-aa81-4668-8ae1-1401bcb0576c", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/4ec89077-d057-4a2b-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/4ec89077-d057-4a2b-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := policies.Delete(context.TODO(), fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	res := policies.Delete(context.TODO(), fake.ServiceClient(fakeServer), "4ec89077-d057-4a2b-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestRemoveRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/9fed8075-06ee-463f-83a6-d4118791b02f/remove_rule", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/9fed8075-06ee-463f-83a6-d4118791b02f/remove_rule", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -393,7 +393,7 @@ func TestRemoveRule(t *testing.T) {
     `)
 	})
 
-	policy, err := policies.RemoveRule(context.TODO(), fake.ServiceClient(), "9fed8075-06ee-463f-83a6-d4118791b02f", "9fed8075-06ee-463f-83a6-d4118791b02f").Extract()
+	policy, err := policies.RemoveRule(context.TODO(), fake.ServiceClient(fakeServer), "9fed8075-06ee-463f-83a6-d4118791b02f", "9fed8075-06ee-463f-83a6-d4118791b02f").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "9fed8075-06ee-463f-83a6-d4118791b02f", policy.ID)
 

@@ -65,7 +65,7 @@ Create a workflow
 
 Delete a workflow
 
-	res := workflows.Delete(fake.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
+	res := workflows.Delete(fake.ServiceClient(fakeServer), "604a3a1e-94e3-4066-a34a-aa56873ef236")
 	if res.Err != nil {
 		panic(res.Err)
 	}

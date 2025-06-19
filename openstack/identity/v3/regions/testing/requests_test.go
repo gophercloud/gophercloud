@@ -11,12 +11,12 @@ import (
 )
 
 func TestListRegions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRegionsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRegionsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := regions.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := regions.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := regions.ExtractRegions(page)
@@ -31,11 +31,11 @@ func TestListRegions(t *testing.T) {
 }
 
 func TestListRegionsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListRegionsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRegionsSuccessfully(t, fakeServer)
 
-	allPages, err := regions.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := regions.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := regions.ExtractRegions(allPages)
 	th.AssertNoErr(t, err)
@@ -44,20 +44,20 @@ func TestListRegionsAllPages(t *testing.T) {
 }
 
 func TestGetRegion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetRegionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetRegionSuccessfully(t, fakeServer)
 
-	actual, err := regions.Get(context.TODO(), client.ServiceClient(), "RegionOne-West").Extract()
+	actual, err := regions.Get(context.TODO(), client.ServiceClient(fakeServer), "RegionOne-West").Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegion, *actual)
 }
 
 func TestCreateRegion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateRegionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateRegionSuccessfully(t, fakeServer)
 
 	createOpts := regions.CreateOpts{
 		ID:          "RegionOne-West",
@@ -68,15 +68,15 @@ func TestCreateRegion(t *testing.T) {
 		ParentRegionID: "RegionOne",
 	}
 
-	actual, err := regions.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := regions.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegion, *actual)
 }
 
 func TestUpdateRegion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateRegionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateRegionSuccessfully(t, fakeServer)
 
 	var description = "First West sub-region of RegionOne"
 	updateOpts := regions.UpdateOpts{
@@ -92,16 +92,16 @@ func TestUpdateRegion(t *testing.T) {
 		*/
 	}
 
-	actual, err := regions.Update(context.TODO(), client.ServiceClient(), "RegionOne-West", updateOpts).Extract()
+	actual, err := regions.Update(context.TODO(), client.ServiceClient(fakeServer), "RegionOne-West", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegionUpdated, *actual)
 }
 
 func TestDeleteRegion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteRegionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteRegionSuccessfully(t, fakeServer)
 
-	res := regions.Delete(context.TODO(), client.ServiceClient(), "RegionOne-West")
+	res := regions.Delete(context.TODO(), client.ServiceClient(fakeServer), "RegionOne-West")
 	th.AssertNoErr(t, res.Err)
 }

@@ -15,11 +15,11 @@ func TestAuth(t *testing.T) {
 		Key:  "testing",
 	}
 
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAuthSuccessfully(t, authOpts)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAuthSuccessfully(t, fakeServer, authOpts)
 
-	providerClient, err := openstack.NewClient(th.Endpoint())
+	providerClient, err := openstack.NewClient(fakeServer.Endpoint())
 	th.AssertNoErr(t, err)
 
 	swiftClient, err := swauth.NewObjectStorageV1(context.TODO(), providerClient, authOpts)

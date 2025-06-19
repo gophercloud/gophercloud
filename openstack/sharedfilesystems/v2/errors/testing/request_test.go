@@ -11,13 +11,13 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := &shares.CreateOpts{Size: 1, Name: "my_test_share", ShareProto: "NFS", SnapshotID: "70bfbebc-d3ff-4528-8bbb-58422daa280b"}
-	_, err := shares.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	_, err := shares.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 
 	if err == nil {
 		t.Fatal("Expected error")

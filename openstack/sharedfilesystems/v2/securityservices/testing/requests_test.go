@@ -13,10 +13,10 @@ import (
 
 // Verifies that a security service can be created correctly
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := &securityservices.CreateOpts{
 		Name:        "SecServ1",
@@ -27,7 +27,7 @@ func TestCreate(t *testing.T) {
 		Type:        "kerberos",
 	}
 
-	s, err := securityservices.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	s, err := securityservices.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "SecServ1")
@@ -39,7 +39,10 @@ func TestCreate(t *testing.T) {
 }
 
 // Verifies that a security service cannot be created without a type
-func TestCreateFails(t *testing.T) {
+func TestRequiredCreateOpts(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
 	options := &securityservices.CreateOpts{
 		Name:        "SecServ1",
 		Description: "Creating my first Security Service",
@@ -48,7 +51,7 @@ func TestCreateFails(t *testing.T) {
 		Password:    "***",
 	}
 
-	_, err := securityservices.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	_, err := securityservices.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
@@ -56,23 +59,23 @@ func TestCreateFails(t *testing.T) {
 
 // Verifies that security service deletion works
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := securityservices.Delete(context.TODO(), client.ServiceClient(), "securityServiceID")
+	res := securityservices.Delete(context.TODO(), client.ServiceClient(fakeServer), "securityServiceID")
 	th.AssertNoErr(t, res.Err)
 }
 
 // Verifies that security services can be listed correctly
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := securityservices.List(client.ServiceClient(), &securityservices.ListOpts{}).AllPages(context.TODO())
+	allPages, err := securityservices.List(client.ServiceClient(fakeServer), &securityservices.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := securityservices.ExtractSecurityServices(allPages)
 	th.AssertNoErr(t, err)
@@ -115,16 +118,16 @@ func TestList(t *testing.T) {
 
 // Verifies that security services list can be called with query parameters
 func TestFilteredList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockFilteredListResponse(t)
+	MockFilteredListResponse(t, fakeServer)
 
 	options := &securityservices.ListOpts{
 		Type: "kerberos",
 	}
 
-	allPages, err := securityservices.List(client.ServiceClient(), options).AllPages(context.TODO())
+	allPages, err := securityservices.List(client.ServiceClient(fakeServer), options).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := securityservices.ExtractSecurityServices(allPages)
 	th.AssertNoErr(t, err)
@@ -152,10 +155,10 @@ func TestFilteredList(t *testing.T) {
 
 // Verifies that it is possible to get a security service
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
 	var nilTime time.Time
 	expected := securityservices.SecurityService{
@@ -174,7 +177,7 @@ func TestGet(t *testing.T) {
 		Password:    "supersecret",
 	}
 
-	n, err := securityservices.Get(context.TODO(), client.ServiceClient(), "3c829734-0679-4c17-9637-801da48c0d5f").Extract()
+	n, err := securityservices.Get(context.TODO(), client.ServiceClient(fakeServer), "3c829734-0679-4c17-9637-801da48c0d5f").Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, &expected, n)
@@ -182,10 +185,10 @@ func TestGet(t *testing.T) {
 
 // Verifies that it is possible to update a security service
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateResponse(t)
+	MockUpdateResponse(t, fakeServer)
 	expected := securityservices.SecurityService{
 		ID:          "securityServiceID",
 		Name:        "SecServ2",
@@ -204,7 +207,7 @@ func TestUpdate(t *testing.T) {
 
 	name := "SecServ2"
 	options := securityservices.UpdateOpts{Name: &name}
-	s, err := securityservices.Update(context.TODO(), client.ServiceClient(), "securityServiceID", options).Extract()
+	s, err := securityservices.Update(context.TODO(), client.ServiceClient(fakeServer), "securityServiceID", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, s)
 }

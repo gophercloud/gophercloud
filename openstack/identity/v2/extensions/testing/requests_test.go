@@ -12,12 +12,12 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListExtensionsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListExtensionsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := extensions.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := extensions.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := extensions.ExtractExtensions(page)
 		th.AssertNoErr(t, err)
@@ -30,11 +30,11 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	common.HandleGetExtensionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	common.HandleGetExtensionSuccessfully(t, fakeServer)
 
-	actual, err := extensions.Get(context.TODO(), client.ServiceClient(), "agent").Extract()
+	actual, err := extensions.Get(context.TODO(), client.ServiceClient(fakeServer), "agent").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, common.SingleExtension, actual)
 }

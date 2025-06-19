@@ -11,12 +11,12 @@ import (
 )
 
 func TestListDrivers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListDriversSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListDriversSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := drivers.ListDrivers(client.ServiceClient(), drivers.ListDriversOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := drivers.ListDrivers(client.ServiceClient(fakeServer), drivers.ListDriversOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := drivers.ExtractDrivers(page)
@@ -43,11 +43,11 @@ func TestListDrivers(t *testing.T) {
 }
 
 func TestGetDriverDetails(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetDriverDetailsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetDriverDetailsSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := drivers.GetDriverDetails(context.TODO(), c, "ipmi").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -57,11 +57,11 @@ func TestGetDriverDetails(t *testing.T) {
 }
 
 func TestGetDriverProperties(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetDriverPropertiesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetDriverPropertiesSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := drivers.GetDriverProperties(context.TODO(), c, "agent_ipmitool").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -71,11 +71,11 @@ func TestGetDriverProperties(t *testing.T) {
 }
 
 func TestGetDriverDiskProperties(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetDriverDiskPropertiesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetDriverDiskPropertiesSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := drivers.GetDriverDiskProperties(context.TODO(), c, "agent_ipmitool").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)

@@ -12,12 +12,12 @@ import (
 )
 
 func TestListPolicies(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListPoliciesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListPoliciesSuccessfully(t, fakeServer)
 
 	count := 0
-	err := policies.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := policies.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := policies.ExtractPolicies(page)
@@ -32,11 +32,11 @@ func TestListPolicies(t *testing.T) {
 }
 
 func TestListPoliciesAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListPoliciesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListPoliciesSuccessfully(t, fakeServer)
 
-	allPages, err := policies.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := policies.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := policies.ExtractPolicies(allPages)
 	th.AssertNoErr(t, err)
@@ -44,14 +44,14 @@ func TestListPoliciesAllPages(t *testing.T) {
 }
 
 func TestListPoliciesWithFilter(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListPoliciesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListPoliciesSuccessfully(t, fakeServer)
 
 	listOpts := policies.ListOpts{
 		Type: "application/json",
 	}
-	allPages, err := policies.List(client.ServiceClient(), listOpts).AllPages(context.TODO())
+	allPages, err := policies.List(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := policies.ExtractPolicies(allPages)
 	th.AssertNoErr(t, err)
@@ -91,9 +91,9 @@ func TestListPoliciesFiltersCheck(t *testing.T) {
 }
 
 func TestCreatePolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreatePolicySuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreatePolicySuccessfully(t, fakeServer)
 
 	createOpts := policies.CreateOpts{
 		Type: "application/json",
@@ -103,7 +103,7 @@ func TestCreatePolicy(t *testing.T) {
 		},
 	}
 
-	actual, err := policies.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := policies.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondPolicy, *actual)
 }
@@ -152,21 +152,21 @@ func TestCreatePolicyTypeLengthCheck(t *testing.T) {
 }
 
 func TestGetPolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetPolicySuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetPolicySuccessfully(t, fakeServer)
 
 	id := "b49884da9d31494ea02aff38d4b4e701"
-	actual, err := policies.Get(context.TODO(), client.ServiceClient(), id).Extract()
+	actual, err := policies.Get(context.TODO(), client.ServiceClient(fakeServer), id).Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondPolicy, *actual)
 }
 
 func TestUpdatePolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdatePolicySuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdatePolicySuccessfully(t, fakeServer)
 
 	updateOpts := policies.UpdateOpts{
 		Extra: map[string]any{
@@ -175,7 +175,7 @@ func TestUpdatePolicy(t *testing.T) {
 	}
 
 	id := "b49884da9d31494ea02aff38d4b4e701"
-	actual, err := policies.Update(context.TODO(), client.ServiceClient(), id, updateOpts).Extract()
+	actual, err := policies.Update(context.TODO(), client.ServiceClient(fakeServer), id, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondPolicyUpdated, *actual)
 }
@@ -221,10 +221,10 @@ func TestUpdatePolicyTypeLengthCheck(t *testing.T) {
 }
 
 func TestDeletePolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeletePolicySuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeletePolicySuccessfully(t, fakeServer)
 
-	res := policies.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
+	res := policies.Delete(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
