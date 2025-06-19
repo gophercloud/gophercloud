@@ -1,7 +1,8 @@
 undefine GOFLAGS
 
 GOLANGCI_LINT_VERSION?=v1.62.2
-GO_TEST?=go run gotest.tools/gotestsum@latest --format testname --
+GOTESTSUM_VERSION?=v1.12.2
+GO_TEST?=go run gotest.tools/gotestsum@$(GOTESTSUM_VERSION) --format testname --
 TIMEOUT := "60m"
 
 ifeq ($(shell command -v podman 2> /dev/null),)
