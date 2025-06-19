@@ -171,6 +171,35 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
+			name:             "messaging unversioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "messaging/",
+			discoverVersions: true,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusCurrent,
+				},
+				{
+					Major:  1,
+					Minor:  1,
+					Status: utils.StatusDeprecated,
+				},
+			},
+		},
+		{
+			name:             "messaging versioned endpoint",
+			endpoint:         fakeServer.Endpoint() + "messaging/v2/",
+			discoverVersions: true,
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusUnknown,
+				},
+			},
+		},
+		{
 			name:             "workflow unversioned endpoint",
 			endpoint:         fakeServer.Endpoint() + "workflow/",
 			discoverVersions: true,
