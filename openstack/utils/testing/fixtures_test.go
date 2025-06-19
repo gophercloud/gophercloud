@@ -87,6 +87,7 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 			}
 		`, fakeServer.Server.URL)
 	})
+
 	// Compute root API
 	fakeServer.Mux.HandleFunc("/compute/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
@@ -184,34 +185,38 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 			}
 		`, fakeServer.Server.URL)
 	})
+
 	// Container Infra root API
+	//
+	// Magnum currently (as of Epoxy) does not include the application path in URLs, so the URLs
+	// are broken, hence our use of a static host below.
 	fakeServer.Mux.HandleFunc("/container-infra/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `
-		{
-			"name": "OpenStack Magnum API",
-			"description": "Magnum is an OpenStack project which aims to provide container cluster management.",
-			"versions": [
-				{
-					"id": "v1",
-					"links": [
-						{
-							"href": "%s/v1/",
-							"rel": "self"
-						}
-					],
-					"status": "CURRENT",
-					"max_version": "1.11",
-					"min_version": "1.1"
-				}
-			]
-		}
-		`, fakeServer.Server.URL)
+		fmt.Fprint(w, `
+			{
+				"name": "OpenStack Magnum API",
+				"description": "Magnum is an OpenStack project which aims to provide container cluster management.",
+				"versions": [
+					{
+						"id": "v1",
+						"links": [
+							{
+								"href": "https://10.1.100.1/v1/",
+								"rel": "self"
+							}
+						],
+						"status": "CURRENT",
+						"max_version": "1.11",
+						"min_version": "1.1"
+					}
+				]
+			}
+		`)
 	})
 	// Container Infra v1 API
 	//
-	// NOTE(stephenfin): In reality, this returns absolute URLs, but those URLs are wrong since
-	// they don't respect the Host header. We're using relative URLs because (a) it's probably
-	// what magnum should be doing and (b) it avoids needing 17 odd arguments to Fprintf
+	// Magnum returns a fairly comprehensive document but sadly it omits version information
+	// (though there is an 'id' field).  We haven't reproduced it fully since it's long and there's
+	// no point. Also, the links share the same issue as described above.
 	fakeServer.Mux.HandleFunc("/container-infra/v1/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `
 			{
@@ -224,7 +229,7 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 				],
 				"links": [
 					{
-						"href": "/v1/",
+						"href": "https://10.1.100.1/v1/",
 						"rel": "self"
 					},
 					{
@@ -243,79 +248,10 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 						"rel": "bookmark"
 					}
 				],
-				"clusters": [
-					{
-						"href": "/v1/clusters/",
-						"rel": "self"
-					},
-					{
-						"href": "/clusters/",
-						"rel": "bookmark"
-					}
-				],
-				"quotas": [
-					{
-						"href": "/v1/quotas/",
-						"rel": "self"
-					},
-					{
-						"href": "/quotas/",
-						"rel": "bookmark"
-					}
-				],
-				"certificates": [
-					{
-						"href": "/v1/certificates/",
-						"rel": "self"
-					},
-					{
-						"href": "/certificates/",
-						"rel": "bookmark"
-					}
-				],
-				"mservices": [
-					{
-						"href": "/v1/mservices/",
-						"rel": "self"
-					},
-					{
-						"href": "/mservices/",
-						"rel": "bookmark"
-					}
-				],
-				"stats": [
-					{
-						"href": "/v1/stats/",
-						"rel": "self"
-					},
-					{
-						"href": "/stats/",
-						"rel": "bookmark"
-					}
-				],
-				"federations": [
-					{
-						"href": "/v1/federations/",
-						"rel": "self"
-					},
-					{
-						"href": "/federations/",
-						"rel": "bookmark"
-					}
-				],
-				"nodegroups": [
-					{
-						"href": "/v1/clusters/{cluster_id}/nodegroups",
-						"rel": "self"
-					},
-					{
-						"href": "/clusters/{cluster_id}/nodegroups",
-						"rel": "bookmark"
-					}
-				]
 			}
 		`, fakeServer.Server.URL)
 	})
+
 	// Orchestration root API
 	fakeServer.Mux.HandleFunc("/heat-api/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
@@ -340,6 +276,82 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
 	})
+
+	// Messaging root API
+	//
+	// Zaqar is rather unique in that it uses relative URLs practically everywhere.
+	fakeServer.Mux.HandleFunc("/messaging/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `
+			{
+				"versions": [
+					{
+						"id": "1.1",
+						"status": "DEPRECATED",
+						"updated": "2016-7-29T02:22:47Z",
+						"media-types": [
+							{
+								"base": "application/json",
+								"type": "application/vnd.openstack.messaging-v1_1+json"
+							}
+						],
+						"links": [
+							{
+								"href": "/v1.1/",
+								"rel": "self"
+							}
+						]
+					},
+					{
+						"id": "2",
+						"status": "CURRENT",
+						"updated": "2014-9-24T04:06:47Z",
+						"media-types": [
+							{
+								"base": "application/json",
+								"type": "application/vnd.openstack.messaging-v2+json"
+							}
+						],
+						"links": [
+							{
+								"href": "/v2/",
+								"rel": "self"
+							}
+						]
+					}
+				]
+			}
+		`)
+	})
+	// Messaging v2 API (invalid version document)
+	//
+	// Zaqar returns a fairly comprehensive document but sadly it omits version information and
+	// an 'id' field.  We haven't reproduced the document fully since it's long and there's no
+	// point.
+	fakeServer.Mux.HandleFunc("/messaging/v2/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `
+			{
+				"resources": {
+					"rel/queues": {
+						"href-template": "/v2/queues{?marker,limit,detailed}",
+						"href-vars": {
+							"marker": "param/marker",
+							"limit": "param/queue_limit",
+							"detailed": "param/detailed"
+						},
+						"hints": {
+							"allow": [
+								"GET"
+							],
+							"formats": {
+								"application/json": {}
+							}
+						}
+					}
+				}
+			}
+		`)
+	})
+
 	// Workflow root API
 	//
 	// In reality, this deploys under a port rather than a path (as of Epoxy) but we don't want to
@@ -371,6 +383,7 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 			}
 		`, fakeServer.Server.URL)
 	})
+
 	// Baremetal root API
 	fakeServer.Mux.HandleFunc("/baremetal/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
@@ -417,7 +430,7 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 			"id": "v1",
 			"links": [
 				{
-					"href": "/baremetal/v1/",
+					"href": "%s/baremetal/v1/",
 					"rel": "self"
 				},
 				{
@@ -483,8 +496,9 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 				"version": "1.87"
 			}
 		}
-		`, fakeServer.Server.URL)
+		`, fakeServer.Server.URL, fakeServer.Server.URL)
 	})
+
 	// Fictional multi-version API
 	fakeServer.Mux.HandleFunc("/multi-version/v1.2/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
