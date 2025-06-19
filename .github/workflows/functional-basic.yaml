@@ -1,5 +1,6 @@
 name: functional-basic
 on:
+  merge_group:
   pull_request:
     paths-ignore:
       - 'docs/**'

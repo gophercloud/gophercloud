@@ -1,5 +1,6 @@
 name: functional-messaging
 on:
+  merge_group:
   pull_request:
     paths:
       - 'openstack/auth_env.go'

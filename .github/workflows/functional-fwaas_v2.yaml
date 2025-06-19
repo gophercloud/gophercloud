@@ -4,6 +4,7 @@
 # [1] https://bugs.launchpad.net/neutron/+bug/1971958
 name: functional-fwaas_v2
 on:
+  merge_group:
   pull_request:
     paths:
       - 'openstack/auth_env.go'

@@ -1,5 +1,6 @@
 name: functional-placement
 on:
+  merge_group:
   pull_request:
     paths:
       - 'openstack/auth_env.go'
