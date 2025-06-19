@@ -88,24 +88,39 @@ func AuthenticatedClient(ctx context.Context, options gophercloud.AuthOptions) (
 // Authenticate authenticates or re-authenticates against the most
 // recent identity service supported at the provided endpoint.
 func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
-	versions := []*utils.Version{
-		{ID: v2, Priority: 20, Suffix: "/v2.0/"},
-		{ID: v3, Priority: 30, Suffix: "/v3/"},
-	}
-
-	chosen, endpoint, err := utils.ChooseVersion(ctx, client, versions)
+	supportedVersions, err := utils.GetServiceVersions(ctx, client, client.IdentityBase, true)
 	if err != nil {
 		return err
 	}
 
-	switch chosen.ID {
-	case v2:
-		return v2auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
-	case v3:
-		return v3auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
+	if len(supportedVersions) == 0 {
+		return fmt.Errorf("No supported version available from endpoint %s", client.IdentityBase)
+	}
+
+	var version utils.SupportedVersion
+	var idx int
+	for true {
+		if len(supportedVersions) <= idx {
+			return fmt.Errorf("No supported version available from endpoint %s", client.IdentityBase)
+		}
+		// The list is sorted in descending order, so if v3 is supported we will get that first.
+		// We just need to ensure it's not experimental.
+		version = supportedVersions[idx]
+		if version.Status != utils.StatusExperimental {
+			break
+		}
+
+		idx += 1
+	}
+
+	switch version.Major {
+	case 2:
+		return v2auth(ctx, client, version.URL, &options, gophercloud.EndpointOpts{})
+	case 3:
+		return v3auth(ctx, client, version.URL, &options, gophercloud.EndpointOpts{})
 	default:
 		// The switch statement must be out of date from the versions list.
-		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
+		return fmt.Errorf("Unrecognized identity version: %s", version.ID)
 	}
 }
 
