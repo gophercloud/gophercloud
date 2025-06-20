@@ -13,7 +13,7 @@ import (
 
 func TestStandardPluginData(t *testing.T) {
 	var pluginData nodes.PluginData
-	err := pluginData.RawMessage.UnmarshalJSON([]byte(invtest.StandardPluginDataSample))
+	err := pluginData.UnmarshalJSON([]byte(invtest.StandardPluginDataSample))
 	th.AssertNoErr(t, err)
 
 	parsedData, err := pluginData.AsStandardData()
@@ -28,7 +28,7 @@ func TestStandardPluginData(t *testing.T) {
 
 func TestInspectorPluginData(t *testing.T) {
 	var pluginData nodes.PluginData
-	err := pluginData.RawMessage.UnmarshalJSON([]byte(insptest.IntrospectionDataJSONSample))
+	err := pluginData.UnmarshalJSON([]byte(insptest.IntrospectionDataJSONSample))
 	th.AssertNoErr(t, err)
 
 	parsedData, err := pluginData.AsInspectorData()
@@ -43,7 +43,7 @@ func TestInspectorPluginData(t *testing.T) {
 
 func TestGuessFormatUnknownDefaultsToIronic(t *testing.T) {
 	var pluginData nodes.PluginData
-	err := pluginData.RawMessage.UnmarshalJSON([]byte("{}"))
+	err := pluginData.UnmarshalJSON([]byte("{}"))
 	th.AssertNoErr(t, err)
 
 	irData, inspData, err := pluginData.GuessFormat()
@@ -54,7 +54,7 @@ func TestGuessFormatUnknownDefaultsToIronic(t *testing.T) {
 
 func TestGuessFormatErrors(t *testing.T) {
 	var pluginData nodes.PluginData
-	err := pluginData.RawMessage.UnmarshalJSON([]byte("\"banana\""))
+	err := pluginData.UnmarshalJSON([]byte("\"banana\""))
 	th.AssertNoErr(t, err)
 
 	irData, inspData, err := pluginData.GuessFormat()
@@ -65,7 +65,7 @@ func TestGuessFormatErrors(t *testing.T) {
 	failsInspectorConversion := `{
 	    "interfaces": "banana"
 	}`
-	err = pluginData.RawMessage.UnmarshalJSON([]byte(failsInspectorConversion))
+	err = pluginData.UnmarshalJSON([]byte(failsInspectorConversion))
 	th.AssertNoErr(t, err)
 
 	irData, inspData, err = pluginData.GuessFormat()

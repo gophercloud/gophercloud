@@ -17,11 +17,11 @@ func (r driverResult) Extract() (*Driver, error) {
 }
 
 func (r driverResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractDriversInto(r pagination.Page, v any) error {
-	return r.(DriverPage).Result.ExtractIntoSlicePtr(v, "drivers")
+	return r.(DriverPage).ExtractIntoSlicePtr(v, "drivers")
 }
 
 // Driver represents a driver in the OpenStack Bare Metal API.

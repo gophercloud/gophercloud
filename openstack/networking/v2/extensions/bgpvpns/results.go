@@ -23,7 +23,7 @@ func (r commonResult) Extract() (*BGPVPN, error) {
 }
 
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "bgpvpn")
+	return r.ExtractIntoStructPtr(v, "bgpvpn")
 }
 
 // BGPVPN represents an MPLS network with which Neutron routers and/or networks
@@ -115,7 +115,7 @@ func (r BGPVPNPage) LastMarker() (string, error) {
 		return invalidMarker, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return invalidMarker, err
 	}
@@ -150,7 +150,7 @@ func ExtractBGPVPNs(r pagination.Page) ([]BGPVPN, error) {
 }
 
 func ExtractBGPVPNsInto(r pagination.Page, v any) error {
-	return r.(BGPVPNPage).Result.ExtractIntoSlicePtr(v, "bgpvpns")
+	return r.(BGPVPNPage).ExtractIntoSlicePtr(v, "bgpvpns")
 }
 
 // GetResult represents the result of a get operation. Call its Extract
@@ -189,7 +189,7 @@ func (r commonNetworkAssociationResult) Extract() (*NetworkAssociation, error) {
 }
 
 func (r commonNetworkAssociationResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "network_association")
+	return r.ExtractIntoStructPtr(v, "network_association")
 }
 
 // NetworkAssociation represents a BGP VPN network association object.
@@ -233,7 +233,7 @@ func (r NetworkAssociationPage) LastMarker() (string, error) {
 		return invalidMarker, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return invalidMarker, err
 	}
@@ -264,7 +264,7 @@ func ExtractNetworkAssociations(r pagination.Page) ([]NetworkAssociation, error)
 }
 
 func ExtractNetworkAssociationsInto(r pagination.Page, v interface{}) error {
-	return r.(NetworkAssociationPage).Result.ExtractIntoSlicePtr(v, "network_associations")
+	return r.(NetworkAssociationPage).ExtractIntoSlicePtr(v, "network_associations")
 }
 
 // CreateNetworkAssociationResult represents the result of a create operation. Call its Extract
@@ -297,7 +297,7 @@ func (r commonRouterAssociationResult) Extract() (*RouterAssociation, error) {
 }
 
 func (r commonRouterAssociationResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "router_association")
+	return r.ExtractIntoStructPtr(v, "router_association")
 }
 
 // RouterAssociation represents a BGP VPN router association object.
@@ -342,7 +342,7 @@ func (r RouterAssociationPage) LastMarker() (string, error) {
 		return invalidMarker, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return invalidMarker, err
 	}
@@ -373,7 +373,7 @@ func ExtractRouterAssociations(r pagination.Page) ([]RouterAssociation, error) {
 }
 
 func ExtractRouterAssociationsInto(r pagination.Page, v interface{}) error {
-	return r.(RouterAssociationPage).Result.ExtractIntoSlicePtr(v, "router_associations")
+	return r.(RouterAssociationPage).ExtractIntoSlicePtr(v, "router_associations")
 }
 
 // CreateRouterAssociationResult represents the result of a create operation. Call its Extract
@@ -412,7 +412,7 @@ func (r commonPortAssociationResult) Extract() (*PortAssociation, error) {
 }
 
 func (r commonPortAssociationResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "port_association")
+	return r.ExtractIntoStructPtr(v, "port_association")
 }
 
 // PortAssociation represents a BGP VPN port association object.
@@ -458,7 +458,7 @@ func (r PortAssociationPage) LastMarker() (string, error) {
 		return invalidMarker, nil
 	}
 
-	u, err := url.Parse(r.URL.String())
+	u, err := url.Parse(r.String())
 	if err != nil {
 		return invalidMarker, err
 	}
@@ -489,7 +489,7 @@ func ExtractPortAssociations(r pagination.Page) ([]PortAssociation, error) {
 }
 
 func ExtractPortAssociationsInto(r pagination.Page, v interface{}) error {
-	return r.(PortAssociationPage).Result.ExtractIntoSlicePtr(v, "port_associations")
+	return r.(PortAssociationPage).ExtractIntoSlicePtr(v, "port_associations")
 }
 
 // CreatePortAssociationResult represents the result of a create operation. Call its Extract

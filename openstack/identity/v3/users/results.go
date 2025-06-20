@@ -67,10 +67,10 @@ func (r *User) UnmarshalJSON(b []byte) error {
 	case string:
 		r.Enabled, err = strconv.ParseBool(t)
 		if err != nil {
-			return fmt.Errorf("Failed to parse Enabled %q: %v", t, err)
+			return fmt.Errorf("failed to parse Enabled %q: %v", t, err)
 		}
 	default:
-		return fmt.Errorf("Unknown type for Enabled: %T (value: %v)", t, t)
+		return fmt.Errorf("unknown type for Enabled: %T (value: %v)", t, t)
 	}
 
 	// Collect other fields and bundle them into Extra

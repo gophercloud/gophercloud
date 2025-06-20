@@ -89,13 +89,13 @@ func (r commonResult) Extract() (*Attachment, error) {
 
 // ExtractInto converts our response data into a attachment struct.
 func (r commonResult) ExtractInto(a any) error {
-	return r.Result.ExtractIntoStructPtr(a, "attachment")
+	return r.ExtractIntoStructPtr(a, "attachment")
 }
 
 // ExtractAttachmentsInto similar to ExtractInto but operates on a List of
 // attachments.
 func ExtractAttachmentsInto(r pagination.Page, a any) error {
-	return r.(AttachmentPage).Result.ExtractIntoSlicePtr(a, "attachments")
+	return r.(AttachmentPage).ExtractIntoSlicePtr(a, "attachments")
 }
 
 // CreateResult contains the response body and error from a Create request.

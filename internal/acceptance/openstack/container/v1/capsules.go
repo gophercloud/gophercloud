@@ -36,11 +36,11 @@ func WaitForCapsuleStatus(client *gophercloud.ServiceClient, uuid, status string
 		}
 
 		if newStatus == "Failed" {
-			return false, fmt.Errorf("Capsule in FAILED state")
+			return false, fmt.Errorf("capsule in FAILED state")
 		}
 
 		if newStatus == "Error" {
-			return false, fmt.Errorf("Capsule in ERROR state")
+			return false, fmt.Errorf("capsule in ERROR state")
 		}
 
 		return false, nil

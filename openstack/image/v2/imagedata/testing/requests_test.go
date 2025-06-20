@@ -74,14 +74,15 @@ func min(a int, b int) int {
 
 func (rs *RS) Seek(offset int64, whence int) (int64, error) {
 	var offsetInt = int(offset)
-	if whence == 0 {
+	switch whence {
+	case 0:
 		rs.offset = offsetInt
-	} else if whence == 1 {
+	case 1:
 		rs.offset = rs.offset + offsetInt
-	} else if whence == 2 {
+	case 2:
 		rs.offset = len(rs.bs) - offsetInt
-	} else {
-		return 0, fmt.Errorf("For parameter `whence`, expected value in {0,1,2} but got: %#v", whence)
+	default:
+		return 0, fmt.Errorf("for parameter `whence`, expected value in {0,1,2} but got: %#v", whence)
 	}
 
 	return int64(rs.offset), nil

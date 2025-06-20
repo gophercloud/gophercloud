@@ -100,7 +100,7 @@ func TestObjects(t *testing.T) {
 		})
 		th.AssertNoErr(t, err)
 
-		resp, err := client.ProviderClient.HTTPClient.Get(objURLs[i])
+		resp, err := client.HTTPClient.Get(objURLs[i])
 		th.AssertNoErr(t, err)
 		if resp.StatusCode != http.StatusOK {
 			resp.Body.Close()
@@ -121,7 +121,7 @@ func TestObjects(t *testing.T) {
 		})
 		th.AssertNoErr(t, err)
 
-		resp, err = client.ProviderClient.HTTPClient.Get(objURLs[i])
+		resp, err = client.HTTPClient.Get(objURLs[i])
 		th.AssertNoErr(t, err)
 		if resp.StatusCode != http.StatusOK {
 			resp.Body.Close()

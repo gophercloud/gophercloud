@@ -20,7 +20,7 @@ func TestUsersList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	var iTrue bool = true
+	var iTrue = true
 	listOpts := users.ListOpts{
 		Enabled: &iTrue,
 	}

@@ -45,7 +45,7 @@ func getProjectID(t *testing.T, client *gophercloud.ServiceClient) (string, erro
 		return project.ID, nil
 	}
 
-	return "", fmt.Errorf("Unable to get project ID")
+	return "", fmt.Errorf("unable to get project ID")
 }
 
 func getProjectIDByName(t *testing.T, client *gophercloud.ServiceClient, name string) (string, error) {
@@ -61,7 +61,7 @@ func getProjectIDByName(t *testing.T, client *gophercloud.ServiceClient, name st
 		}
 	}
 
-	return "", fmt.Errorf("Unable to get project ID")
+	return "", fmt.Errorf("unable to get project ID")
 }
 
 // What will be sent as desired Quotas to the Server

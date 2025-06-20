@@ -19,11 +19,11 @@ func (r conductorResult) Extract() (*Conductor, error) {
 }
 
 func (r conductorResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "")
+	return r.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractConductorInto(r pagination.Page, v any) error {
-	return r.(ConductorPage).Result.ExtractIntoSlicePtr(v, "conductors")
+	return r.(ConductorPage).ExtractIntoSlicePtr(v, "conductors")
 }
 
 // Conductor represents a conductor in the OpenStack Bare Metal API.

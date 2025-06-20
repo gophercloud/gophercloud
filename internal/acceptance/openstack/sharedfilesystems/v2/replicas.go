@@ -95,7 +95,7 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 		}
 
 		if strings.Contains(current.Status, "error") {
-			return true, fmt.Errorf("An error occurred, wrong status: %s", current.Status)
+			return true, fmt.Errorf("an error occurred, wrong status: %s", current.Status)
 		}
 
 		return false, nil
@@ -104,7 +104,7 @@ func waitForReplicaStatus(t *testing.T, c *gophercloud.ServiceClient, id, status
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return fmt.Errorf("Replica status is '%s' and unable to get manila messages: %s", err, mErr)
+			return fmt.Errorf("replica status is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 
@@ -127,7 +127,7 @@ func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state s
 		}
 
 		if strings.Contains(current.State, "error") {
-			return true, fmt.Errorf("An error occurred, wrong state: %s", current.State)
+			return true, fmt.Errorf("an error occurred, wrong state: %s", current.State)
 		}
 
 		return false, nil
@@ -136,7 +136,7 @@ func waitForReplicaState(t *testing.T, c *gophercloud.ServiceClient, id, state s
 	if err != nil {
 		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
-			return fmt.Errorf("Replica state is '%s' and unable to get manila messages: %s", err, mErr)
+			return fmt.Errorf("replica state is '%s' and unable to get manila messages: %s", err, mErr)
 		}
 	}
 
