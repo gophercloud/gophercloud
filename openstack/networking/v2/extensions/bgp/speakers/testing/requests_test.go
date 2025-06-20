@@ -77,13 +77,13 @@ func TestCreate(t *testing.T) {
 		fmt.Fprint(w, CreateResponse)
 	})
 
+	iTrue := true
 	opts := speakers.CreateOpts{
 		IPVersion:                     6,
-		AdvertiseFloatingIPHostRoutes: false,
-		AdvertiseTenantNetworks:       true,
+		AdvertiseFloatingIPHostRoutes: new(bool),
+		AdvertiseTenantNetworks:       &iTrue,
 		Name:                          "gophercloud-testing-bgp-speaker",
-		LocalAS:                       "2000",
-		Networks:                      []string{},
+		LocalAS:                       2000,
 	}
 	r, err := speakers.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
@@ -91,8 +91,8 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, r.LocalAS, 2000)
 	th.AssertEquals(t, len(r.Networks), 0)
 	th.AssertEquals(t, r.IPVersion, opts.IPVersion)
-	th.AssertEquals(t, r.AdvertiseFloatingIPHostRoutes, opts.AdvertiseFloatingIPHostRoutes)
-	th.AssertEquals(t, r.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
+	th.AssertEquals(t, r.AdvertiseFloatingIPHostRoutes, *opts.AdvertiseFloatingIPHostRoutes)
+	th.AssertEquals(t, r.AdvertiseTenantNetworks, *opts.AdvertiseTenantNetworks)
 }
 
 func TestDelete(t *testing.T) {
@@ -141,17 +141,19 @@ func TestUpdate(t *testing.T) {
 		}
 	})
 
+	name := "testing-bgp-speaker"
+	iTrue := true
 	opts := speakers.UpdateOpts{
-		Name:                          "testing-bgp-speaker",
-		AdvertiseTenantNetworks:       false,
-		AdvertiseFloatingIPHostRoutes: true,
+		Name:                          &name,
+		AdvertiseTenantNetworks:       new(bool),
+		AdvertiseFloatingIPHostRoutes: &iTrue,
 	}
 
 	r, err := speakers.Update(context.TODO(), fake.ServiceClient(fakeServer), bgpSpeakerID, opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, r.Name, opts.Name)
-	th.AssertEquals(t, r.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
-	th.AssertEquals(t, r.AdvertiseFloatingIPHostRoutes, opts.AdvertiseFloatingIPHostRoutes)
+	th.AssertEquals(t, r.Name, *opts.Name)
+	th.AssertEquals(t, r.AdvertiseTenantNetworks, *opts.AdvertiseTenantNetworks)
+	th.AssertEquals(t, r.AdvertiseFloatingIPHostRoutes, *opts.AdvertiseFloatingIPHostRoutes)
 }
 
 func TestAddBGPPeer(t *testing.T) {
