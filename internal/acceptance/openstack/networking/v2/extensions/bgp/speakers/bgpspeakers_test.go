@@ -48,21 +48,23 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 	defer networking.DeleteNetwork(t, client, network.ID)
 
 	// Update BGP Speaker
+	name := tools.RandomString("TESTACC-BGPSPEAKER-", 10)
+	iTrue := true
 	opts := speakers.UpdateOpts{
-		Name:                          tools.RandomString("TESTACC-BGPSPEAKER-", 10),
-		AdvertiseTenantNetworks:       false,
-		AdvertiseFloatingIPHostRoutes: true,
+		Name:                          &name,
+		AdvertiseTenantNetworks:       new(bool),
+		AdvertiseFloatingIPHostRoutes: &iTrue,
 	}
 	speakerUpdated, err := speakers.Update(context.TODO(), client, bgpSpeaker.ID, opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, speakerUpdated.Name, opts.Name)
+	th.AssertEquals(t, speakerUpdated.Name, *opts.Name)
 	t.Logf("Updated the BGP Speaker, name set from %s to %s", bgpSpeaker.Name, speakerUpdated.Name)
 
 	// Get a BGP Speaker
 	bgpSpeakerGot, err := speakers.Get(context.TODO(), client, bgpSpeaker.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bgpSpeaker.ID, bgpSpeakerGot.ID)
-	th.AssertEquals(t, opts.Name, bgpSpeakerGot.Name)
+	th.AssertEquals(t, *opts.Name, bgpSpeakerGot.Name)
 
 	// AddBGPPeer
 	addBGPPeerOpts := speakers.AddBGPPeerOpts{BGPPeerID: bgpPeer.ID}
