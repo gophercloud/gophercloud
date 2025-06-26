@@ -52,7 +52,7 @@ func TestFlavorsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, flavor)
 
-	th.AssertEquals(t, flavor.FlavorProfileId, flavorProfile.ID)
+	th.AssertEquals(t, flavor.FlavorProfileID, flavorProfile.ID)
 
 	flavorUpdateOpts := flavors.UpdateOpts{
 		Name: ptr.To(tools.RandomString("TESTACCTUP-", 8)),
