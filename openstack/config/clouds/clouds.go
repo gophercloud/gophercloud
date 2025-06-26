@@ -13,7 +13,7 @@
 //		panic(err)
 //	}
 //
-//	networkClient, err := openstack.NewNetworkV2(providerClient, eo)
+//	networkClient, err := openstack.NewNetworkV2(ctx, providerClient, eo)
 //	if err != nil {
 //		panic(err)
 //	}

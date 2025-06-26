@@ -20,7 +20,7 @@ import (
 
 Example of Preparing Orchestration client:
 
-	client, err := openstack.NewOrchestrationV1(provider,  gophercloud.EndpointOpts{Region: "RegionOne"})
+	client, err := openstack.NewOrchestrationV1(context.TODO(), provider, gophercloud.EndpointOpts{Region: "RegionOne"})
 
 Example of List Stack:
 
