@@ -26,7 +26,7 @@ Example to Create a Flavor
 		Name:            "Flavor name",
 		Description:     "My flavor description",
 		Enable:          true,
-		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
+		FlavorProfileID: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}
 
 	flavor, err := flavors.Create(context.TODO(), octaviaClient, createOpts).Extract()

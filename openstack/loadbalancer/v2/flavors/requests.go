@@ -65,7 +65,7 @@ type CreateOpts struct {
 
 	// The ID of the FlavorProfile which give the metadata for the creation of
 	// a LoadBalancer.
-	FlavorProfileId string `json:"flavor_profile_id" required:"true"`
+	FlavorProfileID string `json:"flavor_profile_id" required:"true"`
 
 	// If the resource is available for use. The default is True.
 	Enabled *bool `json:"enabled,omitempty"`
