@@ -6,7 +6,7 @@ that API.
 
 Example of Creating a new RemoteConsole
 
-	computeClient, err := openstack.NewComputeV2(providerClient, endpointOptions)
+	computeClient, err := openstack.NewComputeV2(context.TODO(), providerClient, endpointOptions)
 	computeClient.Microversion = "2.6"
 
 	createOpts := remoteconsoles.CreateOpts{

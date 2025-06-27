@@ -26,7 +26,7 @@ More information can be found here:
 You can set a specific microversion on a Service Client by doing the following:
 
 ```go
-client, err := openstack.NewComputeV2(providerClient, nil)
+client, err := openstack.NewComputeV2(context.TODO(), providerClient, nil)
 client.Microversion = "2.52"
 ```
 

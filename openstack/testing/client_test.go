@@ -286,7 +286,7 @@ func TestIdentityAdminV3Client(t *testing.T) {
 	}
 	pc, err := openstack.AuthenticatedClient(context.TODO(), options)
 	th.AssertNoErr(t, err)
-	sc, err := openstack.NewIdentityV3(pc, gophercloud.EndpointOpts{
+	sc, err := openstack.NewIdentityV3(context.TODO(), pc, gophercloud.EndpointOpts{
 		Availability: gophercloud.AvailabilityAdmin,
 	})
 	th.AssertNoErr(t, err)

@@ -37,7 +37,7 @@ func TestAuthenticatedClient(t *testing.T) {
 	t.Logf("Client successfully acquired a token: %v", client.TokenID)
 
 	// Find the compute service in the service catalog.
-	compute, err := openstack.NewComputeV2(client, gophercloud.EndpointOpts{
+	compute, err := openstack.NewComputeV2(context.TODO(), client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 	if err != nil {
@@ -128,7 +128,7 @@ func TestReauth(t *testing.T) {
 	}
 
 	t.Logf("Creating a compute client")
-	_, err = openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
+	_, err = openstack.NewComputeV2(context.TODO(), provider, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 	if err != nil {
@@ -145,7 +145,7 @@ func TestReauth(t *testing.T) {
 	}
 
 	t.Logf("Creating a compute client")
-	_, err = openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
+	_, err = openstack.NewComputeV2(context.TODO(), provider, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 	if err != nil {
