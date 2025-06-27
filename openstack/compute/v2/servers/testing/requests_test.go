@@ -1182,3 +1182,18 @@ func TestCreateServerWithHypervisorHostname(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, expected, actual)
 }
+
+func TestUpdateServerHostname(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerHostnameUpdateSuccessfully(t)
+
+	client := client.ServiceClient()
+	newHostname := "new-hostname"
+	actual, err := servers.Update(context.TODO(), client, "1234asdf", servers.UpdateOpts{Hostname: &newHostname}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}

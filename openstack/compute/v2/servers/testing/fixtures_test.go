@@ -1338,3 +1338,17 @@ func HandleServerWithTagsCreationSuccessfully(t *testing.T) {
 		fmt.Fprint(w, SingleServerWithTagsBody)
 	})
 }
+
+// HandleServerHostnameUpdateSuccessfully sets up the test server to respond to a server update
+// request changing the hostname.
+func HandleServerHostnameUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{ "server": { "hostname": "new-hostname" } }`)
+
+		fmt.Fprint(w, SingleServerBody)
+	})
+}

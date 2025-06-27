@@ -631,3 +631,40 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 		t.Fatalf("Instance must not be a member of specified network")
 	}
 }
+
+func TestServersUpdateHostname(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "2.90"
+
+	server, err := CreateMicroversionServer(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
+
+	alternateHostname := tools.RandomString("ACPTTEST", 16)
+	for alternateHostname == *server.Hostname {
+		alternateHostname = tools.RandomString("ACPTTEST", 16)
+	}
+
+	t.Logf("Attempting to change the server's hostname to %s.", alternateHostname)
+
+	updateOpts := servers.UpdateOpts{
+		Hostname: &alternateHostname,
+	}
+
+	updated, err := servers.Update(context.TODO(), client, server.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, server.ID, updated.ID)
+
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		latest, err := servers.Get(ctx, client, updated.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+		return *latest.Hostname == alternateHostname, nil
+	})
+	th.AssertNoErr(t, err)
+}
