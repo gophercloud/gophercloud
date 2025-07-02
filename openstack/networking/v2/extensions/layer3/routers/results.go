@@ -21,7 +21,7 @@ type GatewayInfo struct {
 // router.
 type ExternalFixedIP struct {
 	IPAddress string `json:"ip_address,omitempty"`
-	SubnetID  string `json:"subnet_id"`
+	SubnetID  string `json:"subnet_id,omitempty"`
 }
 
 // Route is a possible route in a router.
