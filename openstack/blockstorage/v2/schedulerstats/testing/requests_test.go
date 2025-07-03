@@ -11,12 +11,12 @@ import (
 )
 
 func TestListStoragePoolsDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleStoragePoolsListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleStoragePoolsListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := schedulerstats.List(client.ServiceClient(), schedulerstats.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := schedulerstats.List(client.ServiceClient(fakeServer), schedulerstats.ListOpts{Detail: true}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := schedulerstats.ExtractStoragePools(page)

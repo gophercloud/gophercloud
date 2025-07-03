@@ -47,9 +47,9 @@ func TestWaitForError(t *testing.T) {
 	defer cancel()
 
 	err := gophercloud.WaitFor(ctx, func(context.Context) (bool, error) {
-		return false, errors.New("Error has occurred")
+		return false, errors.New("error has occurred")
 	})
-	th.AssertEquals(t, "Error has occurred", err.Error())
+	th.AssertEquals(t, "error has occurred", err.Error())
 }
 
 func TestWaitForPredicateExceed(t *testing.T) {
@@ -67,7 +67,7 @@ func TestWaitForPredicateExceed(t *testing.T) {
 			return true, ctx.Err()
 
 		case <-time.After(4 * time.Second):
-			return false, errors.New("Just wasting time")
+			return false, errors.New("just wasting time")
 		}
 	})
 	th.AssertErrIs(t, err, context.DeadlineExceeded)

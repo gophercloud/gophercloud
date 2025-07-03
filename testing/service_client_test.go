@@ -18,9 +18,9 @@ func TestServiceURL(t *testing.T) {
 }
 
 func TestMoreHeaders(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -29,7 +29,7 @@ func TestMoreHeaders(t *testing.T) {
 		"custom": "header",
 	}
 	c.ProviderClient = new(gophercloud.ProviderClient)
-	resp, err := c.Get(context.TODO(), fmt.Sprintf("%s/route", th.Endpoint()), nil, nil)
+	resp, err := c.Get(context.TODO(), fmt.Sprintf("%s/route", fakeServer.Endpoint()), nil, nil)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, resp.Request.Header.Get("custom"), "header")
 }

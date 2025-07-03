@@ -729,8 +729,8 @@ func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]any, error
 
 // HandleServerNoNetworkCreationSuccessfully sets up the test server with no
 // network to respond to a server creation request with a given response.
-func HandleServerNoNetworkCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerNoNetworkCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -750,8 +750,8 @@ func HandleServerNoNetworkCreationSuccessfully(t *testing.T, response string) {
 
 // HandleServerCreationSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
-func HandleServerCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -767,7 +767,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 		fmt.Fprint(w, response)
 	})
 
-	th.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -813,7 +813,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 		}
 	})
 
-	th.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -851,7 +851,7 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 								}
 							]
 						}
-					`, th.Server.URL)
+					`, fakeServer.Server.URL)
 		case "2":
 			fmt.Fprint(w, `{ "flavors": [] }`)
 		default:
@@ -862,8 +862,8 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 
 // HandleServerCreationWithCustomFieldSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
-func HandleServersCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServersCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -884,8 +884,8 @@ func HandleServersCreationSuccessfully(t *testing.T, response string) {
 
 // HandleServerCreationWithCustomFieldSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
-func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -903,8 +903,8 @@ func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response stri
 	})
 }
 
-func HandleServerCreationWithHostname(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerCreationWithHostname(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -924,8 +924,8 @@ func HandleServerCreationWithHostname(t *testing.T, response string) {
 
 // HandleServerCreationWithUserdata sets up the test server to respond to a server creation request
 // with a given response.
-func HandleServerCreationWithUserdata(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerCreationWithUserdata(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -945,8 +945,8 @@ func HandleServerCreationWithUserdata(t *testing.T, response string) {
 
 // HandleServerCreationWithMetadata sets up the test server to respond to a server creation request
 // with a given response.
-func HandleServerCreationWithMetadata(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerCreationWithMetadata(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -967,8 +967,8 @@ func HandleServerCreationWithMetadata(t *testing.T, response string) {
 }
 
 // HandleServerListSimpleSuccessfully sets up the test server to respond to a server List request.
-func HandleServerListSimpleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerListSimpleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -989,8 +989,8 @@ func HandleServerListSimpleSuccessfully(t *testing.T) {
 }
 
 // HandleServerListSuccessfully sets up the test server to respond to a server detail List request.
-func HandleServerListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1011,8 +1011,8 @@ func HandleServerListSuccessfully(t *testing.T) {
 }
 
 // HandleServerDeletionSuccessfully sets up the test server to respond to a server deletion request.
-func HandleServerDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1022,8 +1022,8 @@ func HandleServerDeletionSuccessfully(t *testing.T) {
 
 // HandleServerForceDeletionSuccessfully sets up the test server to respond to a server force deletion
 // request.
-func HandleServerForceDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/asdfasdfasdf/action", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerForceDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/asdfasdfasdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "forceDelete": "" }`)
@@ -1033,8 +1033,8 @@ func HandleServerForceDeletionSuccessfully(t *testing.T) {
 }
 
 // HandleServerGetSuccessfully sets up the test server to respond to a server Get request.
-func HandleServerGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1045,8 +1045,8 @@ func HandleServerGetSuccessfully(t *testing.T) {
 
 // HandleServerGetFaultSuccessfully sets up the test server to respond to a server Get
 // request which contains a fault.
-func HandleServerGetFaultSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerGetFaultSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1056,8 +1056,8 @@ func HandleServerGetFaultSuccessfully(t *testing.T) {
 }
 
 // HandleServerUpdateSuccessfully sets up the test server to respond to a server Update request.
-func HandleServerUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1070,8 +1070,8 @@ func HandleServerUpdateSuccessfully(t *testing.T) {
 
 // HandleAdminPasswordChangeSuccessfully sets up the test server to respond to a server password
 // change request.
-func HandleAdminPasswordChangeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+func HandleAdminPasswordChangeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "changePassword": { "adminPass": "new-password" } }`)
@@ -1081,8 +1081,8 @@ func HandleAdminPasswordChangeSuccessfully(t *testing.T) {
 }
 
 // HandleRebootSuccessfully sets up the test server to respond to a reboot request with success.
-func HandleRebootSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+func HandleRebootSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
@@ -1092,8 +1092,8 @@ func HandleRebootSuccessfully(t *testing.T) {
 }
 
 // HandleShowConsoleOutputSuccessfully sets up the test server to respond to a os-getConsoleOutput request with success.
-func HandleShowConsoleOutputSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+func HandleShowConsoleOutputSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "os-getConsoleOutput": { "length": 50 } }`)
@@ -1105,8 +1105,8 @@ func HandleShowConsoleOutputSuccessfully(t *testing.T, response string) {
 }
 
 // HandleRebuildSuccessfully sets up the test server to respond to a rebuild request with success.
-func HandleRebuildSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+func HandleRebuildSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
@@ -1127,8 +1127,8 @@ func HandleRebuildSuccessfully(t *testing.T, response string) {
 }
 
 // HandleMetadatumGetSuccessfully sets up the test server to respond to a metadatum Get request.
-func HandleMetadatumGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
+func HandleMetadatumGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1141,8 +1141,8 @@ func HandleMetadatumGetSuccessfully(t *testing.T) {
 }
 
 // HandleMetadatumCreateSuccessfully sets up the test server to respond to a metadatum Create request.
-func HandleMetadatumCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
+func HandleMetadatumCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -1159,8 +1159,8 @@ func HandleMetadatumCreateSuccessfully(t *testing.T) {
 }
 
 // HandleMetadatumDeleteSuccessfully sets up the test server to respond to a metadatum Delete request.
-func HandleMetadatumDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
+func HandleMetadatumDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1169,8 +1169,8 @@ func HandleMetadatumDeleteSuccessfully(t *testing.T) {
 }
 
 // HandleMetadataGetSuccessfully sets up the test server to respond to a metadata Get request.
-func HandleMetadataGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
+func HandleMetadataGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1182,8 +1182,8 @@ func HandleMetadataGetSuccessfully(t *testing.T) {
 }
 
 // HandleMetadataResetSuccessfully sets up the test server to respond to a metadata Create request.
-func HandleMetadataResetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
+func HandleMetadataResetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -1201,8 +1201,8 @@ func HandleMetadataResetSuccessfully(t *testing.T) {
 }
 
 // HandleMetadataUpdateSuccessfully sets up the test server to respond to a metadata Update request.
-func HandleMetadataUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
+func HandleMetadataUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -1240,8 +1240,8 @@ var ListAddressesExpected = map[string][]servers.Address{
 }
 
 // HandleAddressListSuccessfully sets up the test server to respond to a ListAddresses request.
-func HandleAddressListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/asdfasdfasdf/ips", func(w http.ResponseWriter, r *http.Request) {
+func HandleAddressListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/asdfasdfasdf/ips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1282,8 +1282,8 @@ var ListNetworkAddressesExpected = []servers.Address{
 }
 
 // HandleNetworkAddressListSuccessfully sets up the test server to respond to a ListAddressesByNetwork request.
-func HandleNetworkAddressListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/asdfasdfasdf/ips/public", func(w http.ResponseWriter, r *http.Request) {
+func HandleNetworkAddressListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/asdfasdfasdf/ips/public", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1304,8 +1304,8 @@ func HandleNetworkAddressListSuccessfully(t *testing.T) {
 }
 
 // HandleCreateServerImageSuccessfully sets up the test server to respond to a TestCreateServerImage request.
-func HandleCreateServerImageSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/serverimage/action", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateServerImageSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/serverimage/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Location", "https://0.0.0.0/images/xxxx-xxxxx-xxxxx-xxxx")
@@ -1314,8 +1314,8 @@ func HandleCreateServerImageSuccessfully(t *testing.T) {
 }
 
 // HandlePasswordGetSuccessfully sets up the test server to respond to a password Get request.
-func HandlePasswordGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/1234asdf/os-server-password", func(w http.ResponseWriter, r *http.Request) {
+func HandlePasswordGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf/os-server-password", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1326,8 +1326,8 @@ func HandlePasswordGetSuccessfully(t *testing.T) {
 
 // HandleServerWithTagsCreationSuccessfully sets up the test server to respond
 // to a server creation request with a given response.
-func HandleServerWithTagsCreationSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+func HandleServerWithTagsCreationSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, ServerWithTagsCreateRequest)
@@ -1336,5 +1336,19 @@ func HandleServerWithTagsCreationSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Fprint(w, SingleServerWithTagsBody)
+	})
+}
+
+// HandleServerHostnameUpdateSuccessfully sets up the test server to respond to a server update
+// request changing the hostname.
+func HandleServerHostnameUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{ "server": { "hostname": "new-hostname" } }`)
+
+		fmt.Fprint(w, SingleServerBody)
 	})
 }

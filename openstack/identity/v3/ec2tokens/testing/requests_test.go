@@ -17,15 +17,15 @@ import (
 
 // authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
 func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON string) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       th.Endpoint(),
+		Endpoint:       fakeServer.Endpoint(),
 	}
 
-	th.Mux.HandleFunc("/ec2tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/ec2tokens", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")

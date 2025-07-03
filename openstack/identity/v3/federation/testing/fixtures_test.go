@@ -281,8 +281,8 @@ var ExpectedMappingsSlice = []federation.Mapping{MappingACME}
 
 // HandleListMappingsSuccessfully creates an HTTP handler at `/mappings` on the
 // test handler mux that responds with a list of two mappings.
-func HandleListMappingsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/OS-FEDERATION/mappings", func(w http.ResponseWriter, r *http.Request) {
+func HandleListMappingsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/OS-FEDERATION/mappings", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -295,8 +295,8 @@ func HandleListMappingsSuccessfully(t *testing.T) {
 
 // HandleCreateMappingSuccessfully creates an HTTP handler at `/mappings` on the
 // test handler mux that tests mapping creation.
-func HandleCreateMappingSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateMappingSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -308,8 +308,8 @@ func HandleCreateMappingSuccessfully(t *testing.T) {
 
 // HandleGetMappingSuccessfully creates an HTTP handler at `/mappings` on the
 // test handler mux that responds with a single mapping.
-func HandleGetMappingSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetMappingSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -322,8 +322,8 @@ func HandleGetMappingSuccessfully(t *testing.T) {
 
 // HandleUpdateMappingSuccessfully creates an HTTP handler at `/mappings` on the
 // test handler mux that tests mapping update.
-func HandleUpdateMappingSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateMappingSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)
@@ -335,8 +335,8 @@ func HandleUpdateMappingSuccessfully(t *testing.T) {
 
 // HandleDeleteMappingSuccessfully creates an HTTP handler at `/mappings` on the
 // test handler mux that tests mapping deletion.
-func HandleDeleteMappingSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteMappingSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/OS-FEDERATION/mappings/ACME", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

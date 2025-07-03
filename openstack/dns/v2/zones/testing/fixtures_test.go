@@ -143,8 +143,8 @@ var SecondZone = zones.Zone{
 var ExpectedZonesSlice = []zones.Zone{FirstZone, SecondZone}
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -154,8 +154,8 @@ func HandleListSuccessfully(t *testing.T) {
 }
 
 // HandleGetSuccessfully configures the test server to respond to a List request.
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -204,8 +204,8 @@ const CreateZoneResponse = `
 var CreatedZone = FirstZone
 
 // HandleZoneCreationSuccessfully configures the test server to respond to a Create request.
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateZoneRequest)
@@ -250,8 +250,8 @@ const UpdateZoneResponse = `
 `
 
 // HandleZoneUpdateSuccessfully configures the test server to respond to an Update request.
-func HandleUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -289,8 +289,8 @@ const DeleteZoneResponse = `
 `
 
 // HandleZoneDeleteSuccessfully configures the test server to respond to an Delete request.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -300,3 +300,57 @@ func HandleDeleteSuccessfully(t *testing.T) {
 			fmt.Fprint(w, DeleteZoneResponse)
 		})
 }
+
+// ShareZoneResponse is a sample response to share a zone.
+const ShareZoneResponse = `
+{
+    "id": "fd40b017-bf97-461c-8d30-d4e922b28edd",
+    "zone_id": "a3365b47-ee93-43ad-9a60-2b2ca96b1898",
+    "project_id": "16ade46c85a1435bb86d9138d37da57e",
+    "target_project_id": "232e37df46af42089710e2ae39111c2f",
+    "created_at": "2022-11-30T22:20:27.000000",
+    "updated_at": null,
+    "links": {
+        "self": "http://127.0.0.1:60053/v2/zones/a3365b47-ee93-43ad-9a60-2b2ca96b1898/shares/fd40b017-bf97-461c-8d30-d4e922b28edd",
+        "zone": "http://127.0.0.1:60053/v2/zones/a3365b47-ee93-43ad-9a60-2b2ca96b1898"
+    }
+}
+`
+
+// ShareZoneCreatedAt is the expected created at time for the shared zone
+var ShareZoneCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2022-11-30T22:20:27.000000")
+
+// ShareZone is the expected shared zone
+var ShareZone = zones.ZoneShare{
+	ID:              "fd40b017-bf97-461c-8d30-d4e922b28edd",
+	ZoneID:          "a3365b47-ee93-43ad-9a60-2b2ca96b1898",
+	ProjectID:       "16ade46c85a1435bb86d9138d37da57e",
+	TargetProjectID: "232e37df46af42089710e2ae39111c2f",
+	CreatedAt:       ShareZoneCreatedAt,
+}
+
+// ListSharesResponse is a sample response to list zone shares.
+const ListSharesResponse = `
+{
+  "shared_zones": [
+    {
+      "id": "fd40b017-bf97-461c-8d30-d4e922b28edd",
+      "zone_id": "a3365b47-ee93-43ad-9a60-2b2ca96b1898",
+      "project_id": "16ade46c85a1435bb86d9138d37da57e",
+      "target_project_id": "232e37df46af42089710e2ae39111c2f",
+      "created_at": "2022-11-30T22:20:27.000000",
+      "updated_at": null,
+      "links": {
+        "self": "http://127.0.0.1:60053/v2/zones/a3365b47-ee93-43ad-9a60-2b2ca96b1898/shares/fd40b017-bf97-461c-8d30-d4e922b28edd",
+        "zone": "http://127.0.0.1:60053/v2/zones/a3365b47-ee93-43ad-9a60-2b2ca96b1898"
+      }
+    }
+  ],
+  "links": {
+    "self": "http://127.0.0.1:60053/v2/zones/a3365b47-ee93-43ad-9a60-2b2ca96b1898/shares"
+  }
+}
+`
+
+// ListZoneShares is the expected list of shared zones
+var ListZoneShares = []zones.ZoneShare{ShareZone}

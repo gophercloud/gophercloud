@@ -2,6 +2,13 @@ name: functional-containerinfra
 on:
   pull_request:
     paths:
+      - 'openstack/auth_env.go'
+      - 'openstack/client.go'
+      - 'openstack/endpoint.go'
+      - 'openstack/endpoint_location.go'
+      - 'openstack/config/provider_client.go'
+      - 'openstack/utils/choose_version.go'
+      - 'openstack/utils/discovery.go'
       - '**containerinfra**'
       - '.github/workflows/functional-containerinfra.yaml'
   schedule:
@@ -14,7 +21,7 @@ jobs:
         include:
           - name: "master"
             openstack_version: "master"
-            ubuntu_version: "22.04"
+            ubuntu_version: "24.04"
             devstack_conf_overrides: |
               # ensure we're using a working version of setuptools
               if [ -n "\$TOP_DIR" ]; then
@@ -24,6 +31,19 @@ jobs:
 
               enable_plugin magnum https://github.com/openstack/magnum master
               MAGNUMCLIENT_BRANCH=master
+            additional_services: "openstack-cli-server"
+          - name: "epoxy"
+            openstack_version: "stable/2025.1"
+            ubuntu_version: "22.04"
+            devstack_conf_overrides: |
+              # ensure we're using a working version of setuptools
+              if [ -n "\$TOP_DIR" ]; then
+                sed -i 's/setuptools\[core\]$/setuptools[core]==79.0.1/g' \$TOP_DIR/lib/infra \$TOP_DIR/inc/python
+                sed -i 's/pip_install "-U" "pbr"/pip_install "-U" "pbr" "setuptools[core]==79.0.1"/g' \$TOP_DIR/lib/infra
+              fi
+
+              enable_plugin magnum https://github.com/openstack/magnum stable/2025.1
+              MAGNUMCLIENT_BRANCH=stable/2025.1
             additional_services: "openstack-cli-server"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
@@ -45,7 +65,7 @@ jobs:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
       - name: Deploy devstack
-        uses: gophercloud/devstack-action@v0.17
+        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |

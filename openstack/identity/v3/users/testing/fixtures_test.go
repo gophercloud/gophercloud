@@ -25,7 +25,7 @@ const ListOutput = `
     "users": [
         {
             "domain_id": "default",
-            "enabled": true,
+            "enabled": "True",
             "id": "2844b2a08be147a08ef58317d6471f1f",
             "links": {
                 "self": "http://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f"
@@ -374,8 +374,8 @@ var ExpectedProjectsSlice = []projects.Project{FirstProject, SecondProject}
 
 // HandleListUsersSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a list of two users.
-func HandleListUsersSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+func HandleListUsersSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -388,8 +388,8 @@ func HandleListUsersSuccessfully(t *testing.T) {
 
 // HandleGetUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a single user.
-func HandleGetUserSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetUserSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -402,8 +402,8 @@ func HandleGetUserSuccessfully(t *testing.T) {
 
 // HandleCreateUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests user creation.
-func HandleCreateUserSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateUserSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -415,8 +415,8 @@ func HandleCreateUserSuccessfully(t *testing.T) {
 
 // HandleCreateNoOptionsUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests user creation.
-func HandleCreateNoOptionsUserSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateNoOptionsUserSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateNoOptionsRequest)
@@ -428,8 +428,8 @@ func HandleCreateNoOptionsUserSuccessfully(t *testing.T) {
 
 // HandleUpdateUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests user update.
-func HandleUpdateUserSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateUserSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)
@@ -441,8 +441,8 @@ func HandleUpdateUserSuccessfully(t *testing.T) {
 
 // HandleChangeUserPasswordSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests change user password.
-func HandleChangeUserPasswordSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/9fe1d3/password", func(w http.ResponseWriter, r *http.Request) {
+func HandleChangeUserPasswordSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/9fe1d3/password", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, ChangePasswordRequest)
@@ -453,8 +453,8 @@ func HandleChangeUserPasswordSuccessfully(t *testing.T) {
 
 // HandleDeleteUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests user deletion.
-func HandleDeleteUserSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteUserSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -464,8 +464,8 @@ func HandleDeleteUserSuccessfully(t *testing.T) {
 
 // HandleListUserGroupsSuccessfully creates an HTTP handler at /users/{userID}/groups
 // on the test handler mux that respons with a list of two groups
-func HandleListUserGroupsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/9fe1d3/groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleListUserGroupsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/9fe1d3/groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -478,8 +478,8 @@ func HandleListUserGroupsSuccessfully(t *testing.T) {
 
 // HandleAddToGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users/{userID}
 // on the test handler mux that tests adding user to group.
-func HandleAddToGroupSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleAddToGroupSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -489,8 +489,8 @@ func HandleAddToGroupSuccessfully(t *testing.T) {
 
 // HandleIsMemberOfGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users/{userID}
 // on the test handler mux that tests checking whether user belongs to group.
-func HandleIsMemberOfGroupSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleIsMemberOfGroupSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "HEAD")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -500,8 +500,8 @@ func HandleIsMemberOfGroupSuccessfully(t *testing.T) {
 
 // HandleRemoveFromGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users/{userID}
 // on the test handler mux that tests removing user from group.
-func HandleRemoveFromGroupSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleRemoveFromGroupSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -511,8 +511,8 @@ func HandleRemoveFromGroupSuccessfully(t *testing.T) {
 
 // HandleListUserProjectsSuccessfully creates an HTTP handler at /users/{userID}/projects
 // on the test handler mux that respons wit a list of two projects
-func HandleListUserProjectsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/9fe1d3/projects", func(w http.ResponseWriter, r *http.Request) {
+func HandleListUserProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/9fe1d3/projects", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -525,8 +525,8 @@ func HandleListUserProjectsSuccessfully(t *testing.T) {
 
 // HandleListInGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users
 // on the test handler mux that response with a list of two users
-func HandleListInGroupSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/groups/ea167b/users", func(w http.ResponseWriter, r *http.Request) {
+func HandleListInGroupSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/groups/ea167b/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

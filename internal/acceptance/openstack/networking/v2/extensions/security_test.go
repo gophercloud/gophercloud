@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/addressgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/groups"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -38,7 +39,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	var name = "Update group"
 	var description = ""
 	updateOpts := groups.UpdateOpts{
-		Name:        name,
+		Name:        &name,
 		Description: &description,
 		Stateful:    new(bool),
 	}
@@ -114,7 +115,7 @@ func TestSecurityGroupsRevision(t *testing.T) {
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := &groups.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &newDescription,
 	}
 	group, err = groups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
@@ -125,7 +126,6 @@ func TestSecurityGroupsRevision(t *testing.T) {
 	// This should fail due to an old revision number.
 	newDescription = "new description"
 	updateOpts = &groups.UpdateOpts{
-		Name:           newName,
 		Description:    &newDescription,
 		RevisionNumber: &oldRevisionNumber,
 	}
@@ -144,7 +144,7 @@ func TestSecurityGroupsRevision(t *testing.T) {
 	// This should work because now we do provide a valid revision number.
 	newDescription = "new description"
 	updateOpts = &groups.UpdateOpts{
-		Name:           newName,
+		Name:           new(string),
 		Description:    &newDescription,
 		RevisionNumber: &group.RevisionNumber,
 	}
@@ -153,6 +153,82 @@ func TestSecurityGroupsRevision(t *testing.T) {
 
 	tools.PrintResource(t, group)
 
-	th.AssertEquals(t, group.Name, newName)
+	th.AssertEquals(t, group.Name, "")
 	th.AssertEquals(t, group.Description, newDescription)
+}
+
+func TestSecurityAddressGroups(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	group, err := CreateSecurityAddressGroup(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteSecurityAddressGroup(t, client, group.ID)
+
+	tools.PrintResource(t, group)
+
+	name := "Update group"
+	description := ""
+	updateOpts := addressgroups.UpdateOpts{
+		Name:        &name,
+		Description: &description,
+	}
+	newGroup, err := addressgroups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, newGroup)
+
+	th.AssertEquals(t, newGroup.Name, name)
+	th.AssertEquals(t, newGroup.Description, description)
+
+	listOpts := addressgroups.ListOpts{}
+	allPages, err := addressgroups.List(client, listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	allGroups, err := addressgroups.ExtractGroups(allPages)
+	th.AssertNoErr(t, err)
+
+	var found = -1
+	for i, v := range allGroups {
+		if v.ID == group.ID {
+			found = i
+			break
+		}
+	}
+	if found == -1 {
+		t.Fatalf("Expected to find group %s in the list of groups", group.ID)
+	}
+
+	th.AssertEquals(t, allGroups[found].Name, newGroup.Name)
+	th.AssertEquals(t, allGroups[found].Description, newGroup.Description)
+	th.AssertDeepEquals(t, allGroups[found].Addresses, newGroup.Addresses)
+
+	// Test that we can add a new address to the group.
+	newAddresses := []string{
+		"192.168.170.0/24",
+	}
+	addAddressOpts := addressgroups.UpdateAddressesOpts{
+		Addresses: newAddresses,
+	}
+	updatedGroup, err := addressgroups.AddAddresses(context.TODO(), client, group.ID, addAddressOpts).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, updatedGroup)
+
+	// Check that the new address was added.
+	expectedAddresses := append(group.Addresses, newAddresses...)
+	th.AssertDeepEquals(t, updatedGroup.Addresses, expectedAddresses)
+
+	// Test that we can remove an address from the group.
+	removeAddressOpts := addressgroups.UpdateAddressesOpts{
+		Addresses: newAddresses,
+	}
+	updatedGroup, err = addressgroups.RemoveAddresses(context.TODO(), client, group.ID, removeAddressOpts).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, updatedGroup)
+
+	// Check that the address was removed.
+	expectedAddresses = group.Addresses
+	th.AssertDeepEquals(t, updatedGroup.Addresses, expectedAddresses)
+
+	// Verify that the group exists.
+	_, err = addressgroups.Get(context.TODO(), client, group.ID).Extract()
+	th.AssertNoErr(t, err)
 }

@@ -13,12 +13,12 @@ import (
 )
 
 func TestListDetailNodes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeListDetailSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeListDetailSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := nodes.ListDetail(client.ServiceClient(), nodes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := nodes.ListDetail(client.ServiceClient(fakeServer), nodes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := nodes.ExtractNodes(page)
@@ -44,12 +44,12 @@ func TestListDetailNodes(t *testing.T) {
 }
 
 func TestListNodes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := nodes.List(client.ServiceClient(), nodes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := nodes.List(client.ServiceClient(fakeServer), nodes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := nodes.ExtractNodes(page)
@@ -90,11 +90,11 @@ func TestListOpts(t *testing.T) {
 }
 
 func TestCreateNode(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeCreationSuccessfully(t, SingleNodeBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeCreationSuccessfully(t, fakeServer, SingleNodeBody)
 
-	actual, err := nodes.Create(context.TODO(), client.ServiceClient(), nodes.CreateOpts{
+	actual, err := nodes.Create(context.TODO(), client.ServiceClient(fakeServer), nodes.CreateOpts{
 		Name:          "foo",
 		Driver:        "ipmi",
 		BootInterface: "pxe",
@@ -114,20 +114,20 @@ func TestCreateNode(t *testing.T) {
 }
 
 func TestDeleteNode(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeDeletionSuccessfully(t, fakeServer)
 
-	res := nodes.Delete(context.TODO(), client.ServiceClient(), "asdfasdfasdf")
+	res := nodes.Delete(context.TODO(), client.ServiceClient(fakeServer), "asdfasdfasdf")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetNode(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeGetSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.Get(context.TODO(), c, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -137,11 +137,11 @@ func TestGetNode(t *testing.T) {
 }
 
 func TestUpdateNode(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeUpdateSuccessfully(t, SingleNodeBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeUpdateSuccessfully(t, fakeServer, SingleNodeBody)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.Update(context.TODO(), c, "1234asdf", nodes.UpdateOpts{
 		nodes.UpdateOperation{
 			Op:   nodes.ReplaceOp,
@@ -159,7 +159,10 @@ func TestUpdateNode(t *testing.T) {
 }
 
 func TestUpdateRequiredOp(t *testing.T) {
-	c := client.ServiceClient()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	c := client.ServiceClient(fakeServer)
 	_, err := nodes.Update(context.TODO(), c, "1234asdf", nodes.UpdateOpts{
 		nodes.UpdateOperation{
 			Path:  "/driver",
@@ -174,7 +177,10 @@ func TestUpdateRequiredOp(t *testing.T) {
 }
 
 func TestUpdateRequiredPath(t *testing.T) {
-	c := client.ServiceClient()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	c := client.ServiceClient(fakeServer)
 	_, err := nodes.Update(context.TODO(), c, "1234asdf", nodes.UpdateOpts{
 		nodes.UpdateOperation{
 			Op:    nodes.ReplaceOp,
@@ -188,32 +194,32 @@ func TestUpdateRequiredPath(t *testing.T) {
 }
 
 func TestValidateNode(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeValidateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeValidateSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.Validate(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeFooValidation, *actual)
 }
 
 func TestInjectNMI(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleInjectNMISuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleInjectNMISuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.InjectNMI(context.TODO(), c, "1234asdf").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestSetBootDevice(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetBootDeviceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetBootDeviceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.SetBootDevice(context.TODO(), c, "1234asdf", nodes.BootDeviceOpts{
 		BootDevice: "pxe",
 		Persistent: false,
@@ -222,33 +228,33 @@ func TestSetBootDevice(t *testing.T) {
 }
 
 func TestGetBootDevice(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetBootDeviceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetBootDeviceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	bootDevice, err := nodes.GetBootDevice(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeBootDevice, *bootDevice)
 }
 
 func TestGetSupportedBootDevices(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSupportedBootDeviceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSupportedBootDeviceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	bootDevices, err := nodes.GetSupportedBootDevices(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeSupportedBootDevice, bootDevices)
 }
 
 func TestNodeChangeProvisionStateActive(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeChangeProvisionStateActive(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateActive(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target:      nodes.TargetActive,
 		ConfigDrive: "http://127.0.0.1/images/test-node-config-drive.iso.gz",
@@ -258,11 +264,11 @@ func TestNodeChangeProvisionStateActive(t *testing.T) {
 }
 
 func TestNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeChangeProvisionStateActiveWithSteps(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateActiveWithSteps(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetActive,
 		DeploySteps: []nodes.DeployStep{
@@ -281,12 +287,11 @@ func TestNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
 }
 
 func TestHandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateConfigDrive(t, fakeServer)
 
-	HandleNodeChangeProvisionStateConfigDrive(t)
-
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target:      nodes.TargetActive,
@@ -297,11 +302,11 @@ func TestHandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
 }
 
 func TestNodeChangeProvisionStateClean(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeChangeProvisionStateClean(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateClean(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
@@ -319,11 +324,11 @@ func TestNodeChangeProvisionStateClean(t *testing.T) {
 }
 
 func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeChangeProvisionStateCleanWithConflict(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateCleanWithConflict(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
@@ -343,7 +348,10 @@ func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 }
 
 func TestCleanStepRequiresInterface(t *testing.T) {
-	c := client.ServiceClient()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
@@ -362,7 +370,10 @@ func TestCleanStepRequiresInterface(t *testing.T) {
 }
 
 func TestCleanStepRequiresStep(t *testing.T) {
-	c := client.ServiceClient()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
@@ -381,11 +392,11 @@ func TestCleanStepRequiresStep(t *testing.T) {
 }
 
 func TestNodeChangeProvisionStateService(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleNodeChangeProvisionStateService(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateService(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
 		Target: nodes.TargetService,
 		ServiceSteps: []nodes.ServiceStep{
@@ -403,31 +414,31 @@ func TestNodeChangeProvisionStateService(t *testing.T) {
 }
 
 func TestChangePowerState(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleChangePowerStateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleChangePowerStateSuccessfully(t, fakeServer)
 
 	opts := nodes.PowerStateOpts{
 		Target:  nodes.PowerOn,
 		Timeout: 100,
 	}
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangePowerState(context.TODO(), c, "1234asdf", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestChangePowerStateWithConflict(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleChangePowerStateWithConflict(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleChangePowerStateWithConflict(t, fakeServer)
 
 	opts := nodes.PowerStateOpts{
 		Target:  nodes.PowerOn,
 		Timeout: 100,
 	}
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.ChangePowerState(context.TODO(), c, "1234asdf", opts).ExtractErr()
 	if !gophercloud.ResponseCodeIs(err, http.StatusConflict) {
 		t.Fatalf("expected 409 response, but got %s", err.Error())
@@ -435,9 +446,9 @@ func TestChangePowerStateWithConflict(t *testing.T) {
 }
 
 func TestSetRAIDConfig(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetRAIDConfig(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetRAIDConfig(t, fakeServer)
 
 	sizeGB := 100
 	isRootVolume := true
@@ -452,16 +463,16 @@ func TestSetRAIDConfig(t *testing.T) {
 		},
 	}
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.SetRAIDConfig(context.TODO(), c, "1234asdf", config).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 // Without specifying a size, we need to send a string: "MAX"
 func TestSetRAIDConfigMaxSize(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetRAIDConfigMaxSize(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetRAIDConfigMaxSize(t, fakeServer)
 
 	isRootVolume := true
 
@@ -474,7 +485,7 @@ func TestSetRAIDConfigMaxSize(t *testing.T) {
 		},
 	}
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.SetRAIDConfig(context.TODO(), c, "1234asdf", config).ExtractErr()
 	th.AssertNoErr(t, err)
 }
@@ -572,37 +583,37 @@ func TestToRAIDConfigMap(t *testing.T) {
 }
 
 func TestListBIOSSettings(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListBIOSSettingsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListBIOSSettingsSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.ListBIOSSettings(context.TODO(), c, "1234asdf", nil).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeBIOSSettings, actual)
 }
 
 func TestListDetailBIOSSettings(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListDetailBIOSSettingsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListDetailBIOSSettingsSuccessfully(t, fakeServer)
 
 	opts := nodes.ListBIOSSettingsOpts{
 		Detail: true,
 	}
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.ListBIOSSettings(context.TODO(), c, "1234asdf", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeDetailBIOSSettings, actual)
 }
 
 func TestGetBIOSSetting(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetBIOSSettingSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetBIOSSettingSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.GetBIOSSetting(context.TODO(), c, "1234asdf", "ProcVirtualization").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeSingleBIOSSetting, *actual)
@@ -620,22 +631,22 @@ func TestListBIOSSettingsOpts(t *testing.T) {
 }
 
 func TestGetVendorPassthruMethods(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetVendorPassthruMethodsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetVendorPassthruMethodsSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.GetVendorPassthruMethods(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeVendorPassthruMethods, *actual)
 }
 
 func TestGetAllSubscriptions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetAllSubscriptionsVendorPassthruSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetAllSubscriptionsVendorPassthruSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	method := nodes.CallVendorPassthruOpts{
 		Method: "get_all_subscriptions",
 	}
@@ -645,11 +656,11 @@ func TestGetAllSubscriptions(t *testing.T) {
 }
 
 func TestGetSubscription(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSubscriptionVendorPassthruSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSubscriptionVendorPassthruSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	method := nodes.CallVendorPassthruOpts{
 		Method: "get_subscription",
 	}
@@ -662,11 +673,11 @@ func TestGetSubscription(t *testing.T) {
 }
 
 func TestCreateSubscriptionAllParameters(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	method := nodes.CallVendorPassthruOpts{
 		Method: "create_subscription",
 	}
@@ -683,11 +694,11 @@ func TestCreateSubscriptionAllParameters(t *testing.T) {
 }
 
 func TestCreateSubscriptionWithRequiredParameters(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	method := nodes.CallVendorPassthruOpts{
 		Method: "create_subscription",
 	}
@@ -700,11 +711,11 @@ func TestCreateSubscriptionWithRequiredParameters(t *testing.T) {
 }
 
 func TestDeleteSubscription(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSubscriptionVendorPassthruSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSubscriptionVendorPassthruSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	method := nodes.CallVendorPassthruOpts{
 		Method: "delete_subscription",
 	}
@@ -716,11 +727,11 @@ func TestDeleteSubscription(t *testing.T) {
 }
 
 func TestSetMaintenance(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetNodeMaintenanceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetNodeMaintenanceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.SetMaintenance(context.TODO(), c, "1234asdf", nodes.MaintenanceOpts{
 		Reason: "I'm tired",
 	}).ExtractErr()
@@ -728,21 +739,21 @@ func TestSetMaintenance(t *testing.T) {
 }
 
 func TestUnsetMaintenance(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUnsetNodeMaintenanceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUnsetNodeMaintenanceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.UnsetMaintenance(context.TODO(), c, "1234asdf").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetInventory(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetInventorySuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetInventorySuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.GetInventory(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeInventoryData.Inventory, actual.Inventory)
@@ -757,11 +768,11 @@ func TestGetInventory(t *testing.T) {
 }
 
 func TestListFirmware(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListFirmwareSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListFirmwareSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.ListFirmware(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeFirmwareList, actual)
@@ -779,11 +790,11 @@ func TestVirtualMediaOpts(t *testing.T) {
 }
 
 func TestVirtualMediaAttach(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAttachVirtualMediaSuccessfully(t, false)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAttachVirtualMediaSuccessfully(t, fakeServer, false)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	opts := nodes.AttachVirtualMediaOpts{
 		ImageURL:   "https://example.com/image",
 		DeviceType: nodes.VirtualMediaCD,
@@ -793,11 +804,11 @@ func TestVirtualMediaAttach(t *testing.T) {
 }
 
 func TestVirtualMediaAttachWithSource(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAttachVirtualMediaSuccessfully(t, true)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAttachVirtualMediaSuccessfully(t, fakeServer, true)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	opts := nodes.AttachVirtualMediaOpts{
 		ImageURL:            "https://example.com/image",
 		DeviceType:          nodes.VirtualMediaCD,
@@ -808,21 +819,21 @@ func TestVirtualMediaAttachWithSource(t *testing.T) {
 }
 
 func TestVirtualMediaDetach(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDetachVirtualMediaSuccessfully(t, false)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDetachVirtualMediaSuccessfully(t, fakeServer, false)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.DetachVirtualMedia(context.TODO(), c, "1234asdf", nodes.DetachVirtualMediaOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestVirtualMediaDetachWithTypes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDetachVirtualMediaSuccessfully(t, true)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDetachVirtualMediaSuccessfully(t, fakeServer, true)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	opts := nodes.DetachVirtualMediaOpts{
 		DeviceTypes: []nodes.VirtualMediaDeviceType{nodes.VirtualMediaCD},
 	}
@@ -831,31 +842,31 @@ func TestVirtualMediaDetachWithTypes(t *testing.T) {
 }
 
 func TestVirtualMediaGetAttached(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetVirtualMediaSuccessfully(t, true)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetVirtualMediaSuccessfully(t, fakeServer, true)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.GetVirtualMedia(context.TODO(), c, "1234asdf").Err
 	th.AssertNoErr(t, err)
 }
 
 func TestVirtualMediaGetNotAttached(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetVirtualMediaSuccessfully(t, false)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetVirtualMediaSuccessfully(t, fakeServer, false)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.GetVirtualMedia(context.TODO(), c, "1234asdf").Err
 	th.AssertNoErr(t, err)
 }
 
 func TestListVirtualInterfaces(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListVirtualInterfacesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListVirtualInterfacesSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := nodes.ListVirtualInterfaces(context.TODO(), c, "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 
@@ -869,11 +880,11 @@ func TestListVirtualInterfaces(t *testing.T) {
 }
 
 func TestAttachVirtualInterface(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAttachVirtualInterfaceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAttachVirtualInterfaceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	opts := nodes.VirtualInterfaceOpts{
 		ID: "1974dcfa-836f-41b2-b541-686c100900e5",
 	}
@@ -882,11 +893,11 @@ func TestAttachVirtualInterface(t *testing.T) {
 }
 
 func TestAttachVirtualInterfaceWithPort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAttachVirtualInterfaceWithPortSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAttachVirtualInterfaceWithPortSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	opts := nodes.VirtualInterfaceOpts{
 		ID:       "1974dcfa-836f-41b2-b541-686c100900e5",
 		PortUUID: "b2f96298-5172-45e9-b174-8d1ba936ab47",
@@ -896,11 +907,11 @@ func TestAttachVirtualInterfaceWithPort(t *testing.T) {
 }
 
 func TestAttachVirtualInterfaceWithPortgroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	opts := nodes.VirtualInterfaceOpts{
 		ID:            "1974dcfa-836f-41b2-b541-686c100900e5",
 		PortgroupUUID: "c24944b5-a52e-4c5c-9c0a-52a0235a08a2",
@@ -910,11 +921,11 @@ func TestAttachVirtualInterfaceWithPortgroup(t *testing.T) {
 }
 
 func TestDetachVirtualInterface(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDetachVirtualInterfaceSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDetachVirtualInterfaceSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	err := nodes.DetachVirtualInterface(context.TODO(), c, "1234asdf", "1974dcfa-836f-41b2-b541-686c100900e5").ExtractErr()
 	th.AssertNoErr(t, err)
 }

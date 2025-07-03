@@ -14,6 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/backups"
+	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/manageablevolumes"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/qos"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/snapshots"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
@@ -672,7 +673,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 	}
 
 	if strings.ToLower(vol.Bootable) != "true" {
-		return fmt.Errorf("Volume bootable status is %q, expected 'true'", vol.Bootable)
+		return fmt.Errorf("volume bootable status is %q, expected 'true'", vol.Bootable)
 	}
 
 	bootableOpts = volumes.BootableOpts{
@@ -690,7 +691,7 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 	}
 
 	if strings.ToLower(vol.Bootable) == "true" {
-		return fmt.Errorf("Volume bootable status is %q, expected 'false'", vol.Bootable)
+		return fmt.Errorf("volume bootable status is %q, expected 'false'", vol.Bootable)
 	}
 
 	return nil
@@ -778,4 +779,79 @@ func ReImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Vo
 	}
 
 	return nil
+}
+
+func Unmanage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	t.Logf("Attempting to unmanage volume %s", volume.ID)
+
+	err := volumes.Unmanage(context.TODO(), client, volume.ID).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	err = gophercloud.WaitFor(context.TODO(), func(ctx context.Context) (bool, error) {
+		if _, err := volumes.Get(ctx, client, volume.ID).Extract(); err != nil {
+			if errCode, ok := err.(gophercloud.ErrUnexpectedResponseCode); ok {
+				if errCode.Actual == 404 {
+					return true, nil
+				}
+			}
+			return false, err
+		}
+		return false, nil
+	})
+	if err != nil {
+		return err
+	}
+
+	t.Logf("Successfully unmanaged volume %s", volume.ID)
+
+	return nil
+}
+
+func ManageExisting(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) (*volumes.Volume, error) {
+	t.Logf("Attempting to manage existing volume %s", volume.Name)
+
+	manageOpts := manageablevolumes.ManageExistingOpts{
+		Host: volume.Host,
+		Ref: map[string]string{
+			"source-name": fmt.Sprintf("volume-%s", volume.ID),
+		},
+		Name:             volume.Name,
+		AvailabilityZone: volume.AvailabilityZone,
+		Description:      volume.Description,
+		VolumeType:       volume.VolumeType,
+		Bootable:         volume.Bootable == "true",
+		Metadata:         volume.Metadata,
+	}
+
+	managed, err := manageablevolumes.ManageExisting(context.TODO(), client, manageOpts).Extract()
+	if err != nil {
+		return managed, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
+	defer cancel()
+
+	if err := volumes.WaitForStatus(ctx, client, managed.ID, "available"); err != nil {
+		return managed, err
+	}
+
+	managed, err = volumes.Get(context.TODO(), client, managed.ID).Extract()
+	if err != nil {
+		return managed, err
+	}
+
+	tools.PrintResource(t, managed)
+	th.AssertEquals(t, managed.Host, volume.Host)
+	th.AssertEquals(t, managed.Name, volume.Name)
+	th.AssertEquals(t, managed.AvailabilityZone, volume.AvailabilityZone)
+	th.AssertEquals(t, managed.Description, volume.Description)
+	th.AssertEquals(t, managed.VolumeType, volume.VolumeType)
+	th.AssertEquals(t, managed.Bootable, volume.Bootable)
+	th.AssertDeepEquals(t, managed.Metadata, volume.Metadata)
+
+	t.Logf("Successfully managed existing volume %s", managed.ID)
+
+	return managed, nil
 }

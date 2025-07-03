@@ -24,7 +24,7 @@ func TestHttpBasic(t *testing.T) {
 		IronicEndpoint: "http://ironic:6385/v1",
 	})
 	_ = errTest1
-	th.AssertEquals(t, "User and Password are required", err.Error())
+	th.AssertEquals(t, "IronicUser and IronicUserPassword are required", err.Error())
 
 	errTest2, err := httpbasic.NewBareMetalHTTPBasic(httpbasic.EndpointOpts{
 		IronicUser:         "myUser",

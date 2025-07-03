@@ -154,12 +154,12 @@ func (r commonResult) Extract() (*Volume, error) {
 
 // ExtractInto converts our response data into a volume struct
 func (r commonResult) ExtractInto(v any) error {
-	return r.Result.ExtractIntoStructPtr(v, "volume")
+	return r.ExtractIntoStructPtr(v, "volume")
 }
 
 // ExtractVolumesInto similar to ExtractInto but operates on a `list` of volumes
 func ExtractVolumesInto(r pagination.Page, v any) error {
-	return r.(VolumePage).Result.ExtractIntoSlicePtr(v, "volumes")
+	return r.(VolumePage).ExtractIntoSlicePtr(v, "volumes")
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -397,5 +397,10 @@ type ReImageResult struct {
 
 // ResetStatusResult contains the response error from a ResetStatus request.
 type ResetStatusResult struct {
+	gophercloud.ErrResult
+}
+
+// UnmanageResult contains the response error from a Unmanage request.
+type UnmanageResult struct {
 	gophercloud.ErrResult
 }

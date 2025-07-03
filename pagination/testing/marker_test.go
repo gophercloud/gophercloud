@@ -9,6 +9,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // MarkerPager sample and test cases.
@@ -36,10 +37,8 @@ func (r MarkerPageResult) LastMarker() (string, error) {
 	return results[len(results)-1], nil
 }
 
-func createMarkerPaged(t *testing.T) pagination.Pager {
-	th.SetupHTTP()
-
-	th.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
+func createMarkerPaged(t *testing.T, fakeServer th.FakeServer) pagination.Pager {
+	fakeServer.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			t.Errorf("Failed to parse request form %v", err)
 		}
@@ -58,15 +57,15 @@ func createMarkerPaged(t *testing.T) pagination.Pager {
 		}
 	})
 
-	client := createClient()
+	client := client.ServiceClient(fakeServer)
 
 	createPage := func(r pagination.PageResult) pagination.Page {
 		p := MarkerPageResult{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	}
 
-	return pagination.NewPager(client, th.Server.URL+"/page", createPage)
+	return pagination.NewPager(client, fakeServer.Server.URL+"/page", createPage)
 }
 
 func ExtractMarkerStrings(page pagination.Page) ([]string, error) {
@@ -82,8 +81,10 @@ func ExtractMarkerStrings(page pagination.Page) ([]string, error) {
 }
 
 func TestEnumerateMarker(t *testing.T) {
-	pager := createMarkerPaged(t)
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	pager := createMarkerPaged(t, fakeServer)
 
 	callCount := 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -117,8 +118,10 @@ func TestEnumerateMarker(t *testing.T) {
 }
 
 func TestAllPagesMarker(t *testing.T) {
-	pager := createMarkerPaged(t)
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	pager := createMarkerPaged(t, fakeServer)
 
 	page, err := pager.AllPages(context.TODO())
 	th.AssertNoErr(t, err)

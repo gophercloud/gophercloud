@@ -11,12 +11,12 @@ import (
 )
 
 func TestListVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allVersions, err := apiversions.List(client.ServiceClient()).AllPages(context.TODO())
+	allVersions, err := apiversions.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := apiversions.ExtractAPIVersions(allVersions)
 	th.AssertNoErr(t, err)
@@ -45,12 +45,12 @@ func TestListVersions(t *testing.T) {
 }
 
 func TestListOldVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListOldResponse(t)
+	MockListOldResponse(t, fakeServer)
 
-	allVersions, err := apiversions.List(client.ServiceClient()).AllPages(context.TODO())
+	allVersions, err := apiversions.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := apiversions.ExtractAPIVersions(allVersions)
 	th.AssertNoErr(t, err)
@@ -72,12 +72,12 @@ func TestListOldVersions(t *testing.T) {
 }
 
 func TestGetVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allVersions, err := apiversions.List(client.ServiceClient()).AllPages(context.TODO())
+	allVersions, err := apiversions.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := apiversions.ExtractAPIVersion(allVersions, "v3.0")
 	th.AssertNoErr(t, err)
@@ -96,12 +96,12 @@ func TestGetVersion(t *testing.T) {
 }
 
 func TestGetOldVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListOldResponse(t)
+	MockListOldResponse(t, fakeServer)
 
-	allVersions, err := apiversions.List(client.ServiceClient()).AllPages(context.TODO())
+	allVersions, err := apiversions.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := apiversions.ExtractAPIVersion(allVersions, "v2.0")
 	th.AssertNoErr(t, err)

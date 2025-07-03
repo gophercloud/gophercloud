@@ -116,7 +116,7 @@ func List(client *gophercloud.ServiceClient, stackName, stackID string, opts Lis
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := EventPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
@@ -173,7 +173,7 @@ func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, r
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := EventPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }

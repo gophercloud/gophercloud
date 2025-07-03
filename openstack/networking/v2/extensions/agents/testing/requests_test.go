@@ -15,10 +15,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -30,7 +30,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := agents.List(fake.ServiceClient(), agents.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := agents.List(fake.ServiceClient(fakeServer), agents.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := agents.ExtractAgents(page)
 
@@ -56,10 +56,10 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -69,7 +69,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, AgentsGetResult)
 	})
 
-	s, err := agents.Get(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	s, err := agents.Get(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ID, "43583cf5-472e-4dc8-af5b-6aed4c94ee3a")
@@ -93,10 +93,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -115,17 +115,17 @@ func TestUpdate(t *testing.T) {
 		Description:  &description,
 		AdminStateUp: &iTrue,
 	}
-	s, err := agents.Update(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", updateOpts).Extract()
+	s, err := agents.Update(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, *s, Agent)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -134,15 +134,15 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := agents.Delete(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").ExtractErr()
+	err := agents.Delete(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestListDHCPNetworks(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -152,7 +152,7 @@ func TestListDHCPNetworks(t *testing.T) {
 		fmt.Fprint(w, AgentDHCPNetworksListResult)
 	})
 
-	s, err := agents.ListDHCPNetworks(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	s, err := agents.ListDHCPNetworks(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
 	var nilSlice []string
@@ -171,10 +171,10 @@ func TestListDHCPNetworks(t *testing.T) {
 }
 
 func TestScheduleDHCPNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -188,15 +188,15 @@ func TestScheduleDHCPNetwork(t *testing.T) {
 	opts := &agents.ScheduleDHCPNetworkOpts{
 		NetworkID: "1ae075ca-708b-4e66-b4a7-b7698632f05f",
 	}
-	err := agents.ScheduleDHCPNetwork(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
+	err := agents.ScheduleDHCPNetwork(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestRemoveDHCPNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks/1ae075ca-708b-4e66-b4a7-b7698632f05f", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks/1ae075ca-708b-4e66-b4a7-b7698632f05f", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -205,17 +205,17 @@ func TestRemoveDHCPNetwork(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := agents.RemoveDHCPNetwork(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
+	err := agents.RemoveDHCPNetwork(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestListBGPSpeakers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	agentID := "30d76012-46de-4215-aaa1-a1630d01d891"
 
-	th.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances",
+	fakeServer.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -227,7 +227,7 @@ func TestListBGPSpeakers(t *testing.T) {
 		})
 
 	count := 0
-	err := agents.ListBGPSpeakers(fake.ServiceClient(), agentID).EachPage(
+	err := agents.ListBGPSpeakers(fake.ServiceClient(fakeServer), agentID).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -248,13 +248,13 @@ func TestListBGPSpeakers(t *testing.T) {
 }
 
 func TestScheduleBGPSpeaker(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	agentID := "30d76012-46de-4215-aaa1-a1630d01d891"
 	speakerID := "8edb2c68-0654-49a9-b3fe-030f92e3ddf6"
 
-	th.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances",
+	fakeServer.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -268,18 +268,18 @@ func TestScheduleBGPSpeaker(t *testing.T) {
 
 	var opts agents.ScheduleBGPSpeakerOpts
 	opts.SpeakerID = speakerID
-	err := agents.ScheduleBGPSpeaker(context.TODO(), fake.ServiceClient(), agentID, opts).ExtractErr()
+	err := agents.ScheduleBGPSpeaker(context.TODO(), fake.ServiceClient(fakeServer), agentID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestRemoveBGPSpeaker(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	agentID := "30d76012-46de-4215-aaa1-a1630d01d891"
 	speakerID := "8edb2c68-0654-49a9-b3fe-030f92e3ddf6"
 
-	th.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances/"+speakerID,
+	fakeServer.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances/"+speakerID,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -289,16 +289,16 @@ func TestRemoveBGPSpeaker(t *testing.T) {
 			w.WriteHeader(http.StatusNoContent)
 		})
 
-	err := agents.RemoveBGPSpeaker(context.TODO(), fake.ServiceClient(), agentID, speakerID).ExtractErr()
+	err := agents.RemoveBGPSpeaker(context.TODO(), fake.ServiceClient(fakeServer), agentID, speakerID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	speakerID := "3f511b1b-d541-45f1-aa98-2e44e8183d4c"
-	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+speakerID+"/bgp-dragents",
+	fakeServer.Mux.HandleFunc("/v2.0/bgp-speakers/"+speakerID+"/bgp-dragents",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -309,7 +309,7 @@ func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
 		})
 
 	count := 0
-	err := agents.ListDRAgentHostingBGPSpeakers(fake.ServiceClient(), speakerID).EachPage(
+	err := agents.ListDRAgentHostingBGPSpeakers(fake.ServiceClient(fakeServer), speakerID).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -332,10 +332,10 @@ func TestListDRAgentHostingBGPSpeakers(t *testing.T) {
 }
 
 func TestListL3Routers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/l3-routers", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/l3-routers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -345,7 +345,7 @@ func TestListL3Routers(t *testing.T) {
 		fmt.Fprint(w, AgentL3RoutersListResult)
 	})
 
-	s, err := agents.ListL3Routers(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	s, err := agents.ListL3Routers(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
 	routes := []routers.Route{
@@ -355,7 +355,7 @@ func TestListL3Routers(t *testing.T) {
 		},
 	}
 
-	var snat bool = true
+	var snat = true
 	gw := routers.GatewayInfo{
 		EnableSNAT: &snat,
 		NetworkID:  "ae34051f-aa6c-4c75-abf5-50dc9ac99ef3",
@@ -390,10 +390,10 @@ func TestListL3Routers(t *testing.T) {
 }
 
 func TestScheduleL3Router(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/l3-routers", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/l3-routers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -407,15 +407,15 @@ func TestScheduleL3Router(t *testing.T) {
 	opts := &agents.ScheduleL3RouterOpts{
 		RouterID: "43e66290-79a4-415d-9eb9-7ff7919839e1",
 	}
-	err := agents.ScheduleL3Router(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
+	err := agents.ScheduleL3Router(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestRemoveL3Router(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/l3-routers/43e66290-79a4-415d-9eb9-7ff7919839e1", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/l3-routers/43e66290-79a4-415d-9eb9-7ff7919839e1", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -424,6 +424,6 @@ func TestRemoveL3Router(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := agents.RemoveL3Router(context.TODO(), fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "43e66290-79a4-415d-9eb9-7ff7919839e1").ExtractErr()
+	err := agents.RemoveL3Router(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "43e66290-79a4-415d-9eb9-7ff7919839e1").ExtractErr()
 	th.AssertNoErr(t, err)
 }

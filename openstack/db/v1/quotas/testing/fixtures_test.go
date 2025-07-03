@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/fixture"
 )
 
@@ -37,6 +38,6 @@ var getQuotasResp = `
 }
 `
 
-func HandleGet(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "GET", "", getQuotasResp, 200)
+func HandleGet(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "GET", "", getQuotasResp, 200)
 }

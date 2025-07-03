@@ -8,18 +8,18 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/imagedata"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestUpload(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandlePutImageDataSuccessfully(t)
+	HandlePutImageDataSuccessfully(t, fakeServer)
 
 	err := imagedata.Upload(
 		context.TODO(),
-		fakeclient.ServiceClient(),
+		client.ServiceClient(fakeServer),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24})).ExtractErr()
 
@@ -27,14 +27,14 @@ func TestUpload(t *testing.T) {
 }
 
 func TestStage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleStageImageDataSuccessfully(t)
+	HandleStageImageDataSuccessfully(t, fakeServer)
 
 	err := imagedata.Stage(
 		context.TODO(),
-		fakeclient.ServiceClient(),
+		client.ServiceClient(fakeServer),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24})).ExtractErr()
 
@@ -74,26 +74,27 @@ func min(a int, b int) int {
 
 func (rs *RS) Seek(offset int64, whence int) (int64, error) {
 	var offsetInt = int(offset)
-	if whence == 0 {
+	switch whence {
+	case 0:
 		rs.offset = offsetInt
-	} else if whence == 1 {
+	case 1:
 		rs.offset = rs.offset + offsetInt
-	} else if whence == 2 {
+	case 2:
 		rs.offset = len(rs.bs) - offsetInt
-	} else {
-		return 0, fmt.Errorf("For parameter `whence`, expected value in {0,1,2} but got: %#v", whence)
+	default:
+		return 0, fmt.Errorf("for parameter `whence`, expected value in {0,1,2} but got: %#v", whence)
 	}
 
 	return int64(rs.offset), nil
 }
 
 func TestDownload(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetImageDataSuccessfully(t)
+	HandleGetImageDataSuccessfully(t, fakeServer)
 
-	rdr, err := imagedata.Download(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
+	rdr, err := imagedata.Download(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
 	th.AssertNoErr(t, err)
 
 	defer rdr.Close()

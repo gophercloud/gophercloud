@@ -8,14 +8,14 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/clusters"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreateCluster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleCreateClusterSuccessfully(t)
+	HandleCreateClusterSuccessfully(t, fakeServer)
 
 	masterCount := 1
 	nodeCount := 1
@@ -39,7 +39,7 @@ func TestCreateCluster(t *testing.T) {
 		MergeLabels:       gophercloud.Enabled,
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clusters.Create(context.TODO(), sc, opts)
 	th.AssertNoErr(t, res.Err)
@@ -54,12 +54,12 @@ func TestCreateCluster(t *testing.T) {
 }
 
 func TestGetCluster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetClusterSuccessfully(t)
+	HandleGetClusterSuccessfully(t, fakeServer)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	actual, err := clusters.Get(context.TODO(), sc, "746e779a-751a-456b-a3e9-c883d734946f").Extract()
 	th.AssertNoErr(t, err)
@@ -69,13 +69,13 @@ func TestGetCluster(t *testing.T) {
 }
 
 func TestListClusters(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleListClusterSuccessfully(t)
+	HandleListClusterSuccessfully(t, fakeServer)
 
 	count := 0
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	err := clusters.List(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
@@ -97,13 +97,13 @@ func TestListClusters(t *testing.T) {
 }
 
 func TestListDetailClusters(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleListDetailClusterSuccessfully(t)
+	HandleListDetailClusterSuccessfully(t, fakeServer)
 
 	count := 0
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	err := clusters.ListDetail(sc, clusters.ListOpts{Limit: 2}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
@@ -125,10 +125,10 @@ func TestListDetailClusters(t *testing.T) {
 }
 
 func TestUpdateCluster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleUpdateClusterSuccessfully(t)
+	HandleUpdateClusterSuccessfully(t, fakeServer)
 
 	updateOpts := []clusters.UpdateOptsBuilder{
 		clusters.UpdateOpts{
@@ -143,7 +143,7 @@ func TestUpdateCluster(t *testing.T) {
 		},
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clusters.Update(context.TODO(), sc, clusterUUID, updateOpts)
 	th.AssertNoErr(t, res.Err)
@@ -158,16 +158,16 @@ func TestUpdateCluster(t *testing.T) {
 }
 
 func TestUpgradeCluster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleUpgradeClusterSuccessfully(t)
+	HandleUpgradeClusterSuccessfully(t, fakeServer)
 
 	opts := clusters.UpgradeOpts{
 		ClusterTemplate: "0562d357-8641-4759-8fed-8173f02c9633",
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clusters.Upgrade(context.TODO(), sc, clusterUUID, opts)
 	th.AssertNoErr(t, res.Err)
@@ -182,12 +182,12 @@ func TestUpgradeCluster(t *testing.T) {
 }
 
 func TestDeleteCluster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleDeleteClusterSuccessfully(t)
+	HandleDeleteClusterSuccessfully(t, fakeServer)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	r := clusters.Delete(context.TODO(), sc, clusterUUID)
 	err := r.ExtractErr()
@@ -208,10 +208,10 @@ func TestDeleteCluster(t *testing.T) {
 }
 
 func TestResizeCluster(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleResizeClusterSuccessfully(t)
+	HandleResizeClusterSuccessfully(t, fakeServer)
 
 	nodeCount := 2
 
@@ -219,7 +219,7 @@ func TestResizeCluster(t *testing.T) {
 		NodeCount: &nodeCount,
 	}
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	res := clusters.Resize(context.TODO(), sc, clusterUUID, opts)
 	th.AssertNoErr(t, res.Err)

@@ -14,10 +14,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-groups", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := groups.List(fake.ServiceClient(), groups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := groups.List(fake.ServiceClient(fakeServer), groups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := groups.ExtractGroups(page)
 		if err != nil {
@@ -51,10 +51,10 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-groups", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -68,15 +68,15 @@ func TestCreate(t *testing.T) {
 	})
 
 	opts := groups.CreateOpts{Name: "new-webservers", Description: "security group for webservers"}
-	_, err := groups.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	_, err := groups.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-groups/2076db17-a522-4506-91de-c6dd8e837028",
+	fakeServer.Mux.HandleFunc("/v2.0/security-groups/2076db17-a522-4506-91de-c6dd8e837028",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -90,8 +90,9 @@ func TestUpdate(t *testing.T) {
 			fmt.Fprint(w, SecurityGroupUpdateResponse)
 		})
 
-	opts := groups.UpdateOpts{Name: "newer-webservers"}
-	sg, err := groups.Update(context.TODO(), fake.ServiceClient(), "2076db17-a522-4506-91de-c6dd8e837028", opts).Extract()
+	name := "newer-webservers"
+	opts := groups.UpdateOpts{Name: &name}
+	sg, err := groups.Update(context.TODO(), fake.ServiceClient(fakeServer), "2076db17-a522-4506-91de-c6dd8e837028", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "newer-webservers", sg.Name)
@@ -102,10 +103,10 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-groups/85cc3048-abc3-43cc-89b3-377341426ac5", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-groups/85cc3048-abc3-43cc-89b3-377341426ac5", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -115,7 +116,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, SecurityGroupGetResponse)
 	})
 
-	sg, err := groups.Get(context.TODO(), fake.ServiceClient(), "85cc3048-abc3-43cc-89b3-377341426ac5").Extract()
+	sg, err := groups.Get(context.TODO(), fake.ServiceClient(fakeServer), "85cc3048-abc3-43cc-89b3-377341426ac5").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "default", sg.Description)
@@ -128,15 +129,15 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/security-groups/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/security-groups/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := groups.Delete(context.TODO(), fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := groups.Delete(context.TODO(), fake.ServiceClient(fakeServer), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

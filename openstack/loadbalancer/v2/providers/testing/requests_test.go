@@ -11,12 +11,12 @@ import (
 )
 
 func TestListProviders(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleProviderListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleProviderListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := providers.List(fake.ServiceClient(), providers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := providers.List(fake.ServiceClient(fakeServer), providers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := providers.ExtractProviders(page)
@@ -41,11 +41,11 @@ func TestListProviders(t *testing.T) {
 }
 
 func TestListAllProviders(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleProviderListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleProviderListSuccessfully(t, fakeServer)
 
-	allPages, err := providers.List(fake.ServiceClient(), providers.ListOpts{}).AllPages(context.TODO())
+	allPages, err := providers.List(fake.ServiceClient(fakeServer), providers.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := providers.ExtractProviders(allPages)
 	th.AssertNoErr(t, err)

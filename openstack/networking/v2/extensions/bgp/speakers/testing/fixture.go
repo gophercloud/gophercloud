@@ -67,7 +67,7 @@ const CreateRequest = `
     "advertise_floating_ip_host_routes": false,
     "advertise_tenant_networks": true,
     "ip_version": 6,
-    "local_as": "2000",
+    "local_as": 2000,
     "name": "gophercloud-testing-bgp-speaker"
   }
 }

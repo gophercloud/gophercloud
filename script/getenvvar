@@ -83,7 +83,7 @@ export OS_REGION_NAME={cloud['region_name']}
 export IRONIC_ENDPOINT=http://{cloud['host']}:6385/v1
 """
 
-print(result)
+print(result.strip())
 
 # print the YAML file
 print("ADAM DUMP")

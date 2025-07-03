@@ -7,27 +7,27 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/databases"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreate(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreate(t, fakeServer)
 
 	opts := databases.BatchCreateOpts{
 		databases.CreateOpts{Name: "testingdb", CharSet: "utf8", Collate: "utf8_general_ci"},
 		databases.CreateOpts{Name: "sampledb"},
 	}
 
-	res := databases.Create(context.TODO(), fake.ServiceClient(), instanceID, opts)
+	res := databases.Create(context.TODO(), client.ServiceClient(fakeServer), instanceID, opts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleList(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleList(t, fakeServer)
 
 	expectedDBs := []databases.Database{
 		{Name: "anotherexampledb"},
@@ -38,7 +38,7 @@ func TestList(t *testing.T) {
 	}
 
 	pages := 0
-	err := databases.List(fake.ServiceClient(), instanceID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := databases.List(client.ServiceClient(fakeServer), instanceID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := databases.ExtractDBs(page)
@@ -59,10 +59,10 @@ func TestList(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDelete(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDelete(t, fakeServer)
 
-	err := databases.Delete(context.TODO(), fake.ServiceClient(), instanceID, "{dbName}").ExtractErr()
+	err := databases.Delete(context.TODO(), client.ServiceClient(fakeServer), instanceID, "{dbName}").ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -10,12 +10,12 @@ import (
 )
 
 func TestListVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allVersions, err := apiversions.List(client.ServiceClient()).AllPages(context.TODO())
+	allVersions, err := apiversions.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := apiversions.ExtractAPIVersions(allVersions)
