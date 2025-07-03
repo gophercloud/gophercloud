@@ -15,6 +15,7 @@ import (
 
 func TestPortGroupsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
+	RequireIronicNoAuth(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
