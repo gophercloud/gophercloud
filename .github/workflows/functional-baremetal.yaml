@@ -77,8 +77,6 @@ jobs:
       - name: Run Gophercloud acceptance tests
         run: |
           source ${{ github.workspace }}/script/stackenv
-          export IRONIC_ENDPOINT=http://${HOST_IP}:6385/v1
-          sleep 500
           make acceptance-baremetal
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack

@@ -80,6 +80,11 @@ export OS_PASSWORD={auth['password']}
 export OS_PROJECT_NAME={auth['project_name']}
 export OS_DOMAIN_ID={auth['user_domain_id']}
 export OS_REGION_NAME={cloud['region_name']}
+export IRONIC_ENDPOINT=http://{cloud['host']}:6385/v1
 """
 
 print(result)
+
+# print the YAML file
+print("ADAM DUMP")
+print(yaml.dump(data))
