@@ -14,12 +14,12 @@ import (
 )
 
 func TestListAll(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 	pages := 0
-	err := volumetypes.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := volumetypes.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 		actual, err := volumetypes.ExtractVolumeTypes(page)
 		if err != nil {
@@ -52,12 +52,12 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	v, err := volumetypes.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := volumetypes.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "vol-type-001")
@@ -68,10 +68,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	var isPublic = true
 
@@ -82,7 +82,7 @@ func TestCreate(t *testing.T) {
 		ExtraSpecs:  map[string]string{"capabilities": "gpu"},
 	}
 
-	n, err := volumetypes.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := volumetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "test_type")
@@ -94,20 +94,20 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := volumetypes.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := volumetypes.Delete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateResponse(t)
+	MockUpdateResponse(t, fakeServer)
 
 	var isPublic = true
 	var name = "vol-type-002"
@@ -116,77 +116,77 @@ func TestUpdate(t *testing.T) {
 		IsPublic: &isPublic,
 	}
 
-	v, err := volumetypes.Update(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	v, err := volumetypes.Update(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "vol-type-002", v.Name)
 	th.CheckEquals(t, true, v.IsPublic)
 }
 
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecsListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecsListSuccessfully(t, fakeServer)
 
 	expected := ExtraSpecs
-	actual, err := volumetypes.ListExtraSpecs(context.TODO(), client.ServiceClient(), "1").Extract()
+	actual, err := volumetypes.ListExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "1").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestVolumeTypeExtraSpecGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecGetSuccessfully(t, fakeServer)
 
 	expected := ExtraSpec
-	actual, err := volumetypes.GetExtraSpec(context.TODO(), client.ServiceClient(), "1", "capabilities").Extract()
+	actual, err := volumetypes.GetExtraSpec(context.TODO(), client.ServiceClient(fakeServer), "1", "capabilities").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestVolumeTypeExtraSpecsCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecsCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecsCreateSuccessfully(t, fakeServer)
 
 	createOpts := volumetypes.ExtraSpecsOpts{
 		"capabilities":        "gpu",
 		"volume_backend_name": "ssd",
 	}
 	expected := ExtraSpecs
-	actual, err := volumetypes.CreateExtraSpecs(context.TODO(), client.ServiceClient(), "1", createOpts).Extract()
+	actual, err := volumetypes.CreateExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "1", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestVolumeTypeExtraSpecUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecUpdateSuccessfully(t, fakeServer)
 
 	updateOpts := volumetypes.ExtraSpecsOpts{
 		"capabilities": "gpu-2",
 	}
 	expected := UpdatedExtraSpec
-	actual, err := volumetypes.UpdateExtraSpec(context.TODO(), client.ServiceClient(), "1", updateOpts).Extract()
+	actual, err := volumetypes.UpdateExtraSpec(context.TODO(), client.ServiceClient(fakeServer), "1", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestVolumeTypeExtraSpecDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleExtraSpecDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleExtraSpecDeleteSuccessfully(t, fakeServer)
 
-	res := volumetypes.DeleteExtraSpec(context.TODO(), client.ServiceClient(), "1", "capabilities")
+	res := volumetypes.DeleteExtraSpec(context.TODO(), client.ServiceClient(fakeServer), "1", "capabilities")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestVolumeTypeListAccesses(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/os-volume-type-access", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/os-volume-type-access", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -209,7 +209,7 @@ func TestVolumeTypeListAccesses(t *testing.T) {
 		},
 	}
 
-	allPages, err := volumetypes.ListAccesses(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b").AllPages(context.TODO())
+	allPages, err := volumetypes.ListAccesses(client.ServiceClient(fakeServer), "a5082c24-2a27-43a4-b48e-fcec1240e36b").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := volumetypes.ExtractAccesses(allPages)
@@ -221,10 +221,10 @@ func TestVolumeTypeListAccesses(t *testing.T) {
 }
 
 func TestVolumeTypeAddAccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "accept", "application/json")
@@ -244,16 +244,16 @@ func TestVolumeTypeAddAccess(t *testing.T) {
 		Project: "6f70656e737461636b20342065766572",
 	}
 
-	err := volumetypes.AddAccess(context.TODO(), client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", addAccessOpts).ExtractErr()
+	err := volumetypes.AddAccess(context.TODO(), client.ServiceClient(fakeServer), "a5082c24-2a27-43a4-b48e-fcec1240e36b", addAccessOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 }
 
 func TestVolumeTypeRemoveAccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "accept", "application/json")
@@ -273,16 +273,16 @@ func TestVolumeTypeRemoveAccess(t *testing.T) {
 		Project: "6f70656e737461636b20342065766572",
 	}
 
-	err := volumetypes.RemoveAccess(context.TODO(), client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", removeAccessOpts).ExtractErr()
+	err := volumetypes.RemoveAccess(context.TODO(), client.ServiceClient(fakeServer), "a5082c24-2a27-43a4-b48e-fcec1240e36b", removeAccessOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 }
 
 func TestCreateEncryption(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockEncryptionCreateResponse(t)
+	MockEncryptionCreateResponse(t, fakeServer)
 
 	options := &volumetypes.CreateEncryptionOpts{
 		KeySize:         256,
@@ -291,7 +291,7 @@ func TestCreateEncryption(t *testing.T) {
 		Cipher:          "aes-xts-plain64",
 	}
 	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
-	n, err := volumetypes.CreateEncryption(context.TODO(), client.ServiceClient(), id, options).Extract()
+	n, err := volumetypes.CreateEncryption(context.TODO(), client.ServiceClient(fakeServer), id, options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "a5082c24-2a27-43a4-b48e-fcec1240e36b", n.VolumeTypeID)
@@ -303,20 +303,20 @@ func TestCreateEncryption(t *testing.T) {
 }
 
 func TestDeleteEncryption(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteEncryptionResponse(t)
+	MockDeleteEncryptionResponse(t, fakeServer)
 
-	res := volumetypes.DeleteEncryption(context.TODO(), client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", "81e069c6-7394-4856-8df7-3b237ca61f74")
+	res := volumetypes.DeleteEncryption(context.TODO(), client.ServiceClient(fakeServer), "a5082c24-2a27-43a4-b48e-fcec1240e36b", "81e069c6-7394-4856-8df7-3b237ca61f74")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateEncryption(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockEncryptionUpdateResponse(t)
+	MockEncryptionUpdateResponse(t, fakeServer)
 
 	options := &volumetypes.UpdateEncryptionOpts{
 		KeySize:         256,
@@ -326,7 +326,7 @@ func TestUpdateEncryption(t *testing.T) {
 	}
 	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
 	encryptionID := "81e069c6-7394-4856-8df7-3b237ca61f74"
-	n, err := volumetypes.UpdateEncryption(context.TODO(), client.ServiceClient(), id, encryptionID, options).Extract()
+	n, err := volumetypes.UpdateEncryption(context.TODO(), client.ServiceClient(fakeServer), id, encryptionID, options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "front-end", n.ControlLocation)
@@ -336,12 +336,12 @@ func TestUpdateEncryption(t *testing.T) {
 }
 
 func TestGetEncryption(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockEncryptionGetResponse(t)
+	MockEncryptionGetResponse(t, fakeServer)
 	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
-	n, err := volumetypes.GetEncryption(context.TODO(), client.ServiceClient(), id).Extract()
+	n, err := volumetypes.GetEncryption(context.TODO(), client.ServiceClient(fakeServer), id).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "a5082c24-2a27-43a4-b48e-fcec1240e36b", n.VolumeTypeID)
@@ -357,12 +357,12 @@ func TestGetEncryption(t *testing.T) {
 }
 
 func TestGetEncryptionSpec(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockEncryptionGetSpecResponse(t)
+	MockEncryptionGetSpecResponse(t, fakeServer)
 	id := "a5082c24-2a27-43a4-b48e-fcec1240e36b"
-	n, err := volumetypes.GetEncryptionSpec(context.TODO(), client.ServiceClient(), id, "cipher").Extract()
+	n, err := volumetypes.GetEncryptionSpec(context.TODO(), client.ServiceClient(fakeServer), id, "cipher").Extract()
 	th.AssertNoErr(t, err)
 
 	key := "cipher"

@@ -108,8 +108,8 @@ var (
 )
 
 // HandleAllocationListSuccessfully sets up the test server to respond to a allocation List request.
-func HandleAllocationListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/allocations", func(w http.ResponseWriter, r *http.Request) {
+func HandleAllocationListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/allocations", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -132,8 +132,8 @@ func HandleAllocationListSuccessfully(t *testing.T) {
 
 // HandleAllocationCreationSuccessfully sets up the test server to respond to a allocation creation request
 // with a given response.
-func HandleAllocationCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/allocations", func(w http.ResponseWriter, r *http.Request) {
+func HandleAllocationCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/allocations", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -150,8 +150,8 @@ func HandleAllocationCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandleAllocationDeletionSuccessfully sets up the test server to respond to a allocation deletion request.
-func HandleAllocationDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/allocations/344a3e2-978a-444e-990a-cbf47c62ef88", func(w http.ResponseWriter, r *http.Request) {
+func HandleAllocationDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/allocations/344a3e2-978a-444e-990a-cbf47c62ef88", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -159,8 +159,8 @@ func HandleAllocationDeletionSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleAllocationGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/allocations/344a3e2-978a-444e-990a-cbf47c62ef88", func(w http.ResponseWriter, r *http.Request) {
+func HandleAllocationGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/allocations/344a3e2-978a-444e-990a-cbf47c62ef88", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

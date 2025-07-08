@@ -30,8 +30,8 @@ const ListOutput = `
 
 // HandleListExtensionsSuccessfully creates an HTTP handler that returns ListOutput for a List
 // call.
-func HandleListExtensionsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
+func HandleListExtensionsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

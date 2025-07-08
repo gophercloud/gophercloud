@@ -10,41 +10,41 @@ import (
 )
 
 func TestAssign(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAssignSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAssignSuccessfully(t, fakeServer)
 
-	err := osinherit.Assign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.AssignOpts{
+	err := osinherit.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.AssignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Assign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.AssignOpts{
+	err = osinherit.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.AssignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Assign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.AssignOpts{
+	err = osinherit.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.AssignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Assign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.AssignOpts{
+	err = osinherit.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.AssignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Assign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.AssignOpts{
+	err = osinherit.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.AssignOpts{
 		GroupID: "{group_id}",
 		UserID:  "{user_id}",
 	}).ExtractErr()
 	th.AssertErr(t, err)
 
-	err = osinherit.Assign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.AssignOpts{
+	err = osinherit.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.AssignOpts{
 		ProjectID: "{project_id}",
 		DomainID:  "{domain_id}",
 	}).ExtractErr()
@@ -52,41 +52,41 @@ func TestAssign(t *testing.T) {
 }
 
 func TestValidate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleValidateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleValidateSuccessfully(t, fakeServer)
 
-	err := osinherit.Validate(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+	err := osinherit.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.ValidateOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Validate(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+	err = osinherit.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.ValidateOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Validate(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+	err = osinherit.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.ValidateOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Validate(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+	err = osinherit.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.ValidateOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Validate(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+	err = osinherit.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.ValidateOpts{
 		GroupID: "{group_id}",
 		UserID:  "{user_id}",
 	}).ExtractErr()
 	th.AssertErr(t, err)
 
-	err = osinherit.Validate(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.ValidateOpts{
+	err = osinherit.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.ValidateOpts{
 		ProjectID: "{project_id}",
 		DomainID:  "{domain_id}",
 	}).ExtractErr()
@@ -94,41 +94,41 @@ func TestValidate(t *testing.T) {
 }
 
 func TestUnassign(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUnassignSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUnassignSuccessfully(t, fakeServer)
 
-	err := osinherit.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+	err := osinherit.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.UnassignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+	err = osinherit.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.UnassignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+	err = osinherit.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.UnassignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+	err = osinherit.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.UnassignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = osinherit.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+	err = osinherit.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.UnassignOpts{
 		GroupID: "{group_id}",
 		UserID:  "{user_id}",
 	}).ExtractErr()
 	th.AssertErr(t, err)
 
-	err = osinherit.Unassign(context.TODO(), client.ServiceClient(), "{role_id}", osinherit.UnassignOpts{
+	err = osinherit.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", osinherit.UnassignOpts{
 		ProjectID: "{project_id}",
 		DomainID:  "{domain_id}",
 	}).ExtractErr()

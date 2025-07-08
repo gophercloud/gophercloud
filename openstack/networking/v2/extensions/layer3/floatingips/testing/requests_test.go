@@ -14,10 +14,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := floatingips.List(fake.ServiceClient(fakeServer), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := floatingips.ExtractFloatingIPs(page)
 		if err != nil {
@@ -82,16 +82,16 @@ func TestList(t *testing.T) {
 }
 
 func TestInvalidNextPageURLs(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"floatingips": [{}], "floatingips_links": {}}`)
 	})
 
-	err := floatingips.List(fake.ServiceClient(), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := floatingips.List(fake.ServiceClient(fakeServer), floatingips.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		_, err := floatingips.ExtractFloatingIPs(page)
 		if err != nil {
 			return false, err
@@ -101,23 +101,26 @@ func TestInvalidNextPageURLs(t *testing.T) {
 	th.AssertErr(t, err)
 }
 
-func TestRequiredFieldsForCreate(t *testing.T) {
-	res1 := floatingips.Create(context.TODO(), fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: ""})
+func TestRequiredCreateOpts(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	res1 := floatingips.Create(context.TODO(), fake.ServiceClient(fakeServer), floatingips.CreateOpts{FloatingNetworkID: ""})
 	if res1.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 
-	res2 := floatingips.Create(context.TODO(), fake.ServiceClient(), floatingips.CreateOpts{FloatingNetworkID: "foo", PortID: ""})
+	res2 := floatingips.Create(context.TODO(), fake.ServiceClient(fakeServer), floatingips.CreateOpts{FloatingNetworkID: "foo", PortID: ""})
 	if res2.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -156,7 +159,7 @@ func TestCreate(t *testing.T) {
 		PortID:            "ce705c24-c1ef-408a-bda3-7bbd946164ab",
 	}
 
-	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).Extract()
+	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -170,10 +173,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateEmptyPort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -209,7 +212,7 @@ func TestCreateEmptyPort(t *testing.T) {
 		FloatingNetworkID: "376da547-b977-4cfe-9cba-275c80debf57",
 	}
 
-	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).Extract()
+	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -223,10 +226,10 @@ func TestCreateEmptyPort(t *testing.T) {
 }
 
 func TestCreateWithSubnetID(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -265,7 +268,7 @@ func TestCreateWithSubnetID(t *testing.T) {
 		SubnetID:          "37adf01c-24db-467a-b845-7ab1e8216c01",
 	}
 
-	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(), options).Extract()
+	ip, err := floatingips.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -279,10 +282,10 @@ func TestCreateWithSubnetID(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -307,7 +310,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	ip, err := floatingips.Get(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7").Extract()
+	ip, err := floatingips.Get(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "90f742b1-6d17-487b-ba95-71881dbc0b64", ip.FloatingNetworkID)
@@ -323,10 +326,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestAssociate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -358,17 +361,17 @@ func TestAssociate(t *testing.T) {
 	})
 
 	portID := "423abc8d-2991-4a55-ba98-2aaea84cc72e"
-	ip, err := floatingips.Update(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: &portID}).Extract()
+	ip, err := floatingips.Update(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: &portID}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, portID, ip.PortID)
 }
 
 func TestDisassociate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -399,7 +402,7 @@ func TestDisassociate(t *testing.T) {
     `)
 	})
 
-	ip, err := floatingips.Update(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: new(string)}).Extract()
+	ip, err := floatingips.Update(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: new(string)}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, "", ip.FixedIP)
@@ -407,15 +410,15 @@ func TestDisassociate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := floatingips.Delete(context.TODO(), fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7")
+	res := floatingips.Delete(context.TODO(), fake.ServiceClient(fakeServer), "2f245a7b-796b-4f26-9cf9-9e82d248fda7")
 	th.AssertNoErr(t, res.Err)
 }

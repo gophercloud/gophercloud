@@ -12,8 +12,8 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func setupVersionHandler() {
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+func setupVersionHandler(fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -35,10 +35,10 @@ func setupVersionHandler() {
 					]
 				}
 			}
-		`, th.Server.URL, th.Server.URL)
+		`, fakeServer.Server.URL, fakeServer.Server.URL)
 	})
 	// Compute v2.1 API
-	th.Mux.HandleFunc("/compute/v2.1/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/compute/v2.1/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"version": {
@@ -66,10 +66,10 @@ func setupVersionHandler() {
 					]
 				}
 			}
-		`, th.Server.URL)
+		`, fakeServer.Server.URL)
 	})
 	// Compute v2 API
-	th.Mux.HandleFunc("/compute/v2/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/compute/v2/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"version": {
@@ -97,10 +97,10 @@ func setupVersionHandler() {
 					]
 				}
 			}
-		`, th.Server.URL)
+		`, fakeServer.Server.URL)
 	})
 	// Ironic API
-	th.Mux.HandleFunc("/ironic/v1/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/ironic/v1/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 		{
 			"name": "OpenStack Ironic API",
@@ -132,10 +132,10 @@ func setupVersionHandler() {
 				}
 			]
 		}
-		`, th.Server.URL, th.Server.URL)
+		`, fakeServer.Server.URL, fakeServer.Server.URL)
 	})
 	// Ironic multi-version
-	th.Mux.HandleFunc("/ironic/v1.2/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/ironic/v1.2/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 		{
 			"name": "OpenStack Ironic API",
@@ -179,20 +179,20 @@ func setupVersionHandler() {
 				}
 			]
 		}
-		`, th.Server.URL, th.Server.URL, th.Server.URL)
+		`, fakeServer.Server.URL, fakeServer.Server.URL, fakeServer.Server.URL)
 	})
 }
 
 func TestChooseVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	setupVersionHandler()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	setupVersionHandler(fakeServer)
 
 	v2 := &utils.Version{ID: "v2.0", Priority: 2, Suffix: "blarg"}
 	v3 := &utils.Version{ID: "v3.0", Priority: 3, Suffix: "hargl"}
 
 	c := &gophercloud.ProviderClient{
-		IdentityBase:     th.Endpoint(),
+		IdentityBase:     fakeServer.Endpoint(),
 		IdentityEndpoint: "",
 	}
 	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
@@ -205,23 +205,23 @@ func TestChooseVersion(t *testing.T) {
 		t.Errorf("Expected %#v to win, but %#v did instead", v3, v)
 	}
 
-	expected := th.Endpoint() + "v3.0/"
+	expected := fakeServer.Endpoint() + "v3.0/"
 	if endpoint != expected {
 		t.Errorf("Expected endpoint [%s], but was [%s] instead", expected, endpoint)
 	}
 }
 
 func TestChooseVersionOpinionatedLink(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	setupVersionHandler()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	setupVersionHandler(fakeServer)
 
 	v2 := &utils.Version{ID: "v2.0", Priority: 2, Suffix: "nope"}
 	v3 := &utils.Version{ID: "v3.0", Priority: 3, Suffix: "northis"}
 
 	c := &gophercloud.ProviderClient{
-		IdentityBase:     th.Endpoint(),
-		IdentityEndpoint: th.Endpoint() + "v2.0/",
+		IdentityBase:     fakeServer.Endpoint(),
+		IdentityEndpoint: fakeServer.Endpoint() + "v2.0/",
 	}
 	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
 	if err != nil {
@@ -232,22 +232,22 @@ func TestChooseVersionOpinionatedLink(t *testing.T) {
 		t.Errorf("Expected %#v to win, but %#v did instead", v2, v)
 	}
 
-	expected := th.Endpoint() + "v2.0/"
+	expected := fakeServer.Endpoint() + "v2.0/"
 	if endpoint != expected {
 		t.Errorf("Expected endpoint [%s], but was [%s] instead", expected, endpoint)
 	}
 }
 
 func TestChooseVersionFromSuffix(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	v2 := &utils.Version{ID: "v2.0", Priority: 2, Suffix: "/v2.0/"}
 	v3 := &utils.Version{ID: "v3.0", Priority: 3, Suffix: "/v3.0/"}
 
 	c := &gophercloud.ProviderClient{
-		IdentityBase:     th.Endpoint(),
-		IdentityEndpoint: th.Endpoint() + "v2.0/",
+		IdentityBase:     fakeServer.Endpoint(),
+		IdentityEndpoint: fakeServer.Endpoint() + "v2.0/",
 	}
 	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
 	if err != nil {
@@ -258,7 +258,7 @@ func TestChooseVersionFromSuffix(t *testing.T) {
 		t.Errorf("Expected %#v to win, but %#v did instead", v2, v)
 	}
 
-	expected := th.Endpoint() + "v2.0/"
+	expected := fakeServer.Endpoint() + "v2.0/"
 	if endpoint != expected {
 		t.Errorf("Expected endpoint [%s], but was [%s] instead", expected, endpoint)
 	}
@@ -272,33 +272,33 @@ type getSupportedServiceMicroversions struct {
 }
 
 func TestGetSupportedVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	setupVersionHandler()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	setupVersionHandler(fakeServer)
 
 	tests := []getSupportedServiceMicroversions{
 		{
 			// v2 does not support microversions and returns error
-			Endpoint:    th.Endpoint() + "compute/v2/",
+			Endpoint:    fakeServer.Endpoint() + "compute/v2/",
 			ExpectedMax: "",
 			ExpectedMin: "",
 			ExpectedErr: true,
 		},
 		{
-			Endpoint:    th.Endpoint() + "compute/v2.1/",
+			Endpoint:    fakeServer.Endpoint() + "compute/v2.1/",
 			ExpectedMax: "2.90",
 			ExpectedMin: "2.1",
 			ExpectedErr: false,
 		},
 		{
-			Endpoint:    th.Endpoint() + "ironic/v1/",
+			Endpoint:    fakeServer.Endpoint() + "ironic/v1/",
 			ExpectedMax: "1.87",
 			ExpectedMin: "1.1",
 			ExpectedErr: false,
 		},
 		{
 			// This endpoint returns multiple versions, which is not supported
-			Endpoint:    th.Endpoint() + "ironic/v1.2/",
+			Endpoint:    fakeServer.Endpoint() + "ironic/v1.2/",
 			ExpectedMax: "not-relevant",
 			ExpectedMin: "not-relevant",
 			ExpectedErr: true,
@@ -307,8 +307,8 @@ func TestGetSupportedVersions(t *testing.T) {
 
 	for _, test := range tests {
 		c := &gophercloud.ProviderClient{
-			IdentityBase:     th.Endpoint(),
-			IdentityEndpoint: th.Endpoint() + "v2.0/",
+			IdentityBase:     fakeServer.Endpoint(),
+			IdentityEndpoint: fakeServer.Endpoint() + "v2.0/",
 		}
 
 		client := &gophercloud.ServiceClient{

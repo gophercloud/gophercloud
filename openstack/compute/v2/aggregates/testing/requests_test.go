@@ -11,12 +11,12 @@ import (
 )
 
 func TestListAggregates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := aggregates.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := aggregates.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := aggregates.ExtractAggregates(page)
@@ -41,9 +41,9 @@ func TestListAggregates(t *testing.T) {
 }
 
 func TestCreateAggregates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 
 	expected := CreatedAggregate
 
@@ -52,38 +52,38 @@ func TestCreateAggregates(t *testing.T) {
 		AvailabilityZone: "london",
 	}
 
-	actual, err := aggregates.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	actual, err := aggregates.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestDeleteAggregates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
-	err := aggregates.Delete(context.TODO(), client.ServiceClient(), AggregateIDtoDelete).ExtractErr()
+	err := aggregates.Delete(context.TODO(), client.ServiceClient(fakeServer), AggregateIDtoDelete).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGetAggregates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
 	expected := SecondFakeAggregate
 
-	actual, err := aggregates.Get(context.TODO(), client.ServiceClient(), AggregateIDtoGet).Extract()
+	actual, err := aggregates.Get(context.TODO(), client.ServiceClient(fakeServer), AggregateIDtoGet).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestUpdateAggregate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSuccessfully(t, fakeServer)
 
 	expected := UpdatedAggregate
 
@@ -92,16 +92,16 @@ func TestUpdateAggregate(t *testing.T) {
 		AvailabilityZone: "nova2",
 	}
 
-	actual, err := aggregates.Update(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.Update(context.TODO(), client.ServiceClient(fakeServer), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestAddHostAggregate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAddHostSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAddHostSuccessfully(t, fakeServer)
 
 	expected := AggregateWithAddedHost
 
@@ -109,16 +109,16 @@ func TestAddHostAggregate(t *testing.T) {
 		Host: "cmp1",
 	}
 
-	actual, err := aggregates.AddHost(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.AddHost(context.TODO(), client.ServiceClient(fakeServer), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestRemoveHostAggregate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleRemoveHostSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleRemoveHostSuccessfully(t, fakeServer)
 
 	expected := AggregateWithRemovedHost
 
@@ -126,16 +126,16 @@ func TestRemoveHostAggregate(t *testing.T) {
 		Host: "cmp1",
 	}
 
-	actual, err := aggregates.RemoveHost(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.RemoveHost(context.TODO(), client.ServiceClient(fakeServer), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
 func TestSetMetadataAggregate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleSetMetadataSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleSetMetadataSuccessfully(t, fakeServer)
 
 	expected := AggregateWithUpdatedMetadata
 
@@ -143,7 +143,7 @@ func TestSetMetadataAggregate(t *testing.T) {
 		Metadata: map[string]any{"key": "value"},
 	}
 
-	actual, err := aggregates.SetMetadata(context.TODO(), client.ServiceClient(), expected.ID, opts).Extract()
+	actual, err := aggregates.SetMetadata(context.TODO(), client.ServiceClient(fakeServer), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)

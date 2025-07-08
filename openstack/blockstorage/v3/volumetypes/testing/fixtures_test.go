@@ -6,13 +6,13 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -56,7 +56,7 @@ func MockListResponse(t *testing.T) {
         }
     ]
 }
-  `, th.Server.URL)
+  `, fakeServer.Server.URL)
 		case "1":
 			fmt.Fprint(w, `{"volume_types": []}`)
 		default:
@@ -65,10 +65,10 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -90,10 +90,10 @@ func MockGetResponse(t *testing.T) {
 	})
 }
 
-func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -130,18 +130,18 @@ func MockCreateResponse(t *testing.T) {
 	})
 }
 
-func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+func MockDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func MockUpdateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+func MockUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `
 {
@@ -195,10 +195,10 @@ var UpdatedExtraSpec = map[string]string{
 	"capabilities": "gpu-2",
 }
 
-func HandleExtraSpecsListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecsListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -207,10 +207,10 @@ func HandleExtraSpecsListSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -219,10 +219,10 @@ func HandleExtraSpecGetSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecsCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `{
 				"extra_specs": {
@@ -237,10 +237,10 @@ func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `{
 				"capabilities":        "gpu-2"
@@ -252,19 +252,19 @@ func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func MockEncryptionCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption", func(w http.ResponseWriter, r *http.Request) {
+func MockEncryptionCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -296,18 +296,18 @@ func MockEncryptionCreateResponse(t *testing.T) {
 	})
 }
 
-func MockDeleteEncryptionResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/81e069c6-7394-4856-8df7-3b237ca61f74", func(w http.ResponseWriter, r *http.Request) {
+func MockDeleteEncryptionResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/81e069c6-7394-4856-8df7-3b237ca61f74", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func MockEncryptionUpdateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/81e069c6-7394-4856-8df7-3b237ca61f74", func(w http.ResponseWriter, r *http.Request) {
+func MockEncryptionUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/81e069c6-7394-4856-8df7-3b237ca61f74", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -337,10 +337,10 @@ func MockEncryptionUpdateResponse(t *testing.T) {
 	})
 }
 
-func MockEncryptionGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption", func(w http.ResponseWriter, r *http.Request) {
+func MockEncryptionGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -362,10 +362,10 @@ func MockEncryptionGetResponse(t *testing.T) {
 	})
 }
 
-func MockEncryptionGetSpecResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/cipher", func(w http.ResponseWriter, r *http.Request) {
+func MockEncryptionGetSpecResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/encryption/cipher", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

@@ -8,18 +8,18 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/members"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 const createdAtString = "2013-09-20T19:22:19Z"
 const updatedAtString = "2013-09-20T19:25:31Z"
 
 func TestCreateMemberSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleCreateImageMemberSuccessfully(t)
-	im, err := members.Create(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	HandleCreateImageMemberSuccessfully(t, fakeServer)
+	im, err := members.Create(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7").Extract()
 	th.AssertNoErr(t, err)
 
@@ -41,12 +41,12 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 }
 
 func TestMemberListSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageMemberList(t)
+	HandleImageMemberList(t, fakeServer)
 
-	pager := members.List(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
+	pager := members.List(client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
 	t.Logf("Pager state %v", pager)
 	count, pages := 0, 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -71,12 +71,12 @@ func TestMemberListSuccessfully(t *testing.T) {
 }
 
 func TestMemberListEmpty(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageMemberEmptyList(t)
+	HandleImageMemberEmptyList(t, fakeServer)
 
-	pager := members.List(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
+	pager := members.List(client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea")
 	t.Logf("Pager state %v", pager)
 	count, pages := 0, 0
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
@@ -101,11 +101,11 @@ func TestMemberListEmpty(t *testing.T) {
 }
 
 func TestShowMemberDetails(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleImageMemberDetails(t)
-	md, err := members.Get(context.TODO(), fakeclient.ServiceClient(),
+	HandleImageMemberDetails(t, fakeServer)
+	md, err := members.Get(context.TODO(), client.ServiceClient(fakeServer),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7").Extract()
 
@@ -131,23 +131,23 @@ func TestShowMemberDetails(t *testing.T) {
 }
 
 func TestDeleteMember(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	counter := HandleImageMemberDeleteSuccessfully(t)
+	counter := HandleImageMemberDeleteSuccessfully(t, fakeServer)
 
-	result := members.Delete(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	result := members.Delete(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7")
 	th.AssertEquals(t, 1, counter.Counter)
 	th.AssertNoErr(t, result.Err)
 }
 
 func TestMemberUpdateSuccessfully(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	counter := HandleImageMemberUpdate(t)
-	im, err := members.Update(context.TODO(), fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+	counter := HandleImageMemberUpdate(t, fakeServer)
+	im, err := members.Update(context.TODO(), client.ServiceClient(fakeServer), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		"8989447062e04a818baf9e073fd04fa7",
 		members.UpdateOpts{
 			Status: "accepted",

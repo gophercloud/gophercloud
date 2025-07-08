@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/container/v1/capsules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fakeclient "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // ValidJSONTemplate is a valid OpenStack Capsule template in JSON format
@@ -455,157 +457,175 @@ const CapsuleV132ListBody = `
   ]
 }`
 
-var ExpectedContainer1 = capsules.Container{
-	Name:      "test-demo-omicron-13",
-	UUID:      "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
-	UserID:    "d33b18c384574fd2a3299447aac285f0",
-	ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
-	CPU:       float64(1),
-	Memory:    "1024M",
-	Host:      "test-host",
-	Status:    "Running",
-	Image:     "test",
-	Labels: map[string]string{
-		"foo": "bar",
-	},
-	WorkDir: "/root",
-	Disk:    0,
-	Command: []string{
-		"testcmd",
-	},
-	Ports: []int{
-		80,
-	},
-	SecurityGroups: []string{
-		"default",
-	},
-	ImagePullPolicy: "ifnotpresent",
-	Runtime:         "runc",
-	TaskState:       "Creating",
-	HostName:        "test-hostname",
-	Environment: map[string]string{
-		"USER1": "test",
-	},
-	StatusReason: "No reason",
-	StatusDetail: "Just created",
-	ImageDriver:  "docker",
-	Interactive:  true,
-	AutoRemove:   false,
-	AutoHeal:     false,
-	RestartPolicy: map[string]string{
-		"MaximumRetryCount": "0",
-		"Name":              "always",
-	},
-	Addresses: map[string][]capsules.Address{
-		"b1295212-64e1-471d-aa01-25ff46f9818d": {
-			{
-				PreserveOnDelete: false,
-				Addr:             "172.24.4.11",
-				Port:             "8439060f-381a-4386-a518-33d5a4058636",
-				Version:          float64(4),
-				SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
+func GetFakeContainer() capsules.Container {
+	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
+	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
+	startedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
+
+	return capsules.Container{
+		Name:      "test-demo-omicron-13",
+		UUID:      "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
+		UserID:    "d33b18c384574fd2a3299447aac285f0",
+		ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		StartedAt: startedAt,
+		CPU:       float64(1),
+		Memory:    "1024M",
+		Host:      "test-host",
+		Status:    "Running",
+		Image:     "test",
+		Labels: map[string]string{
+			"foo": "bar",
+		},
+		WorkDir: "/root",
+		Disk:    0,
+		Command: []string{
+			"testcmd",
+		},
+		Ports: []int{
+			80,
+		},
+		SecurityGroups: []string{
+			"default",
+		},
+		ImagePullPolicy: "ifnotpresent",
+		Runtime:         "runc",
+		TaskState:       "Creating",
+		HostName:        "test-hostname",
+		Environment: map[string]string{
+			"USER1": "test",
+		},
+		StatusReason: "No reason",
+		StatusDetail: "Just created",
+		ImageDriver:  "docker",
+		Interactive:  true,
+		AutoRemove:   false,
+		AutoHeal:     false,
+		RestartPolicy: map[string]string{
+			"MaximumRetryCount": "0",
+			"Name":              "always",
+		},
+		Addresses: map[string][]capsules.Address{
+			"b1295212-64e1-471d-aa01-25ff46f9818d": {
+				{
+					PreserveOnDelete: false,
+					Addr:             "172.24.4.11",
+					Port:             "8439060f-381a-4386-a518-33d5a4058636",
+					Version:          float64(4),
+					SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
+				},
 			},
 		},
-	},
+	}
 }
 
-var ExpectedCapsule = capsules.Capsule{
-	UUID:      "cc654059-1a77-47a3-bfcf-715bde5aad9e",
-	Status:    "Running",
-	UserID:    "d33b18c384574fd2a3299447aac285f0",
-	ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
-	CPU:       float64(1),
-	Memory:    "1024M",
-	MetaName:  "test",
-	Links: []any{
-		map[string]any{
-			"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
-			"rel":  "self",
-		},
-		map[string]any{
-			"href": "http://10.10.10.10/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
-			"rel":  "bookmark",
-		},
-	},
-	CapsuleVersion: "beta",
-	RestartPolicy:  "always",
-	MetaLabels: map[string]string{
-		"web": "app",
-	},
-	ContainersUUIDs: []string{
-		"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
-	},
-	Addresses: map[string][]capsules.Address{
-		"b1295212-64e1-471d-aa01-25ff46f9818d": {
-			{
-				PreserveOnDelete: false,
-				Addr:             "172.24.4.11",
-				Port:             "8439060f-381a-4386-a518-33d5a4058636",
-				Version:          float64(4),
-				SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
+func GetFakeCapsule() capsules.Capsule {
+	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
+	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
+
+	return capsules.Capsule{
+		UUID:      "cc654059-1a77-47a3-bfcf-715bde5aad9e",
+		Status:    "Running",
+		UserID:    "d33b18c384574fd2a3299447aac285f0",
+		ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		CPU:       float64(1),
+		Memory:    "1024M",
+		MetaName:  "test",
+		Links: []any{
+			map[string]any{
+				"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
+				"rel":  "self",
+			},
+			map[string]any{
+				"href": "http://10.10.10.10/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
+				"rel":  "bookmark",
 			},
 		},
-	},
-	VolumesInfo: map[string][]string{
-		"67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": {
+		CapsuleVersion: "beta",
+		RestartPolicy:  "always",
+		MetaLabels: map[string]string{
+			"web": "app",
+		},
+		ContainersUUIDs: []string{
 			"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 		},
-	},
-	Host:         "test-host",
-	StatusReason: "No reason",
-	Containers: []capsules.Container{
-		ExpectedContainer1,
-	},
-}
-
-var ExpectedCapsuleV132 = capsules.CapsuleV132{
-	UUID:      "cc654059-1a77-47a3-bfcf-715bde5aad9e",
-	Status:    "Running",
-	UserID:    "d33b18c384574fd2a3299447aac285f0",
-	ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
-	CPU:       float64(1),
-	Memory:    "1024M",
-	MetaName:  "test",
-	Links: []any{
-		map[string]any{
-			"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
-			"rel":  "self",
-		},
-		map[string]any{
-			"href": "http://10.10.10.10/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
-			"rel":  "bookmark",
-		},
-	},
-	RestartPolicy: map[string]string{
-		"MaximumRetryCount": "0",
-		"Name":              "always",
-	},
-	MetaLabels: map[string]string{
-		"web": "app",
-	},
-	Addresses: map[string][]capsules.Address{
-		"b1295212-64e1-471d-aa01-25ff46f9818d": {
-			{
-				PreserveOnDelete: false,
-				Addr:             "172.24.4.11",
-				Port:             "8439060f-381a-4386-a518-33d5a4058636",
-				Version:          float64(4),
-				SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
+		Addresses: map[string][]capsules.Address{
+			"b1295212-64e1-471d-aa01-25ff46f9818d": {
+				{
+					PreserveOnDelete: false,
+					Addr:             "172.24.4.11",
+					Port:             "8439060f-381a-4386-a518-33d5a4058636",
+					Version:          float64(4),
+					SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
+				},
 			},
 		},
-	},
-	Host:         "test-host",
-	StatusReason: "No reason",
-	Containers: []capsules.Container{
-		ExpectedContainer1,
-	},
+		VolumesInfo: map[string][]string{
+			"67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": {
+				"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
+			},
+		},
+		Host:         "test-host",
+		StatusReason: "No reason",
+		Containers: []capsules.Container{
+			GetFakeContainer(),
+		},
+	}
+}
+
+func GetFakeCapsuleV132() capsules.CapsuleV132 {
+	return capsules.CapsuleV132{
+		UUID:      "cc654059-1a77-47a3-bfcf-715bde5aad9e",
+		Status:    "Running",
+		UserID:    "d33b18c384574fd2a3299447aac285f0",
+		ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
+		CPU:       float64(1),
+		Memory:    "1024M",
+		MetaName:  "test",
+		Links: []any{
+			map[string]any{
+				"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
+				"rel":  "self",
+			},
+			map[string]any{
+				"href": "http://10.10.10.10/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
+				"rel":  "bookmark",
+			},
+		},
+		RestartPolicy: map[string]string{
+			"MaximumRetryCount": "0",
+			"Name":              "always",
+		},
+		MetaLabels: map[string]string{
+			"web": "app",
+		},
+		Addresses: map[string][]capsules.Address{
+			"b1295212-64e1-471d-aa01-25ff46f9818d": {
+				{
+					PreserveOnDelete: false,
+					Addr:             "172.24.4.11",
+					Port:             "8439060f-381a-4386-a518-33d5a4058636",
+					Version:          float64(4),
+					SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
+				},
+			},
+		},
+		Host:         "test-host",
+		StatusReason: "No reason",
+		Containers: []capsules.Container{
+			GetFakeContainer(),
+		},
+	}
 }
 
 // HandleCapsuleGetOldTimeSuccessfully test setup
-func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleGetOldTimeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
@@ -614,10 +634,10 @@ func HandleCapsuleGetOldTimeSuccessfully(t *testing.T) {
 }
 
 // HandleCapsuleGetNewTimeSuccessfully test setup
-func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleGetNewTimeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
@@ -627,10 +647,10 @@ func HandleCapsuleGetNewTimeSuccessfully(t *testing.T) {
 
 // HandleCapsuleCreateSuccessfully creates an HTTP handler at `/capsules` on the test handler mux
 // that responds with a `Create` response.
-func HandleCapsuleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 		fmt.Fprint(w, CapsuleGetBody_NewTime)
@@ -638,10 +658,10 @@ func HandleCapsuleCreateSuccessfully(t *testing.T) {
 }
 
 // HandleCapsuleListSuccessfully test setup
-func HandleCapsuleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -650,10 +670,10 @@ func HandleCapsuleListSuccessfully(t *testing.T) {
 }
 
 // HandleCapsuleV132ListSuccessfully test setup
-func HandleCapsuleV132ListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleV132ListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -661,10 +681,10 @@ func HandleCapsuleV132ListSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleCapsuleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/capsules/963a239d-3946-452b-be5a-055eab65a421", func(w http.ResponseWriter, r *http.Request) {
+func HandleCapsuleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/capsules/963a239d-3946-452b-be5a-055eab65a421", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }

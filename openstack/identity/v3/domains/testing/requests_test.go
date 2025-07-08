@@ -11,12 +11,12 @@ import (
 )
 
 func TestListAvailableDomains(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListAvailableDomainsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAvailableDomainsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := domains.ListAvailable(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := domains.ListAvailable(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := domains.ExtractDomains(page)
@@ -31,12 +31,12 @@ func TestListAvailableDomains(t *testing.T) {
 }
 
 func TestListDomains(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListDomainsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListDomainsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := domains.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := domains.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := domains.ExtractDomains(page)
@@ -51,11 +51,11 @@ func TestListDomains(t *testing.T) {
 }
 
 func TestListDomainsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListDomainsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListDomainsSuccessfully(t, fakeServer)
 
-	allPages, err := domains.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := domains.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := domains.ExtractDomains(allPages)
 	th.AssertNoErr(t, err)
@@ -63,49 +63,49 @@ func TestListDomainsAllPages(t *testing.T) {
 }
 
 func TestGetDomain(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetDomainSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetDomainSuccessfully(t, fakeServer)
 
-	actual, err := domains.Get(context.TODO(), client.ServiceClient(), "9fe1d3").Extract()
+	actual, err := domains.Get(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
 
 func TestCreateDomain(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateDomainSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateDomainSuccessfully(t, fakeServer)
 
 	createOpts := domains.CreateOpts{
 		Name: "domain two",
 	}
 
-	actual, err := domains.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := domains.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
 
 func TestDeleteDomain(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteDomainSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteDomainSuccessfully(t, fakeServer)
 
-	res := domains.Delete(context.TODO(), client.ServiceClient(), "9fe1d3")
+	res := domains.Delete(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateDomain(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateDomainSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateDomainSuccessfully(t, fakeServer)
 
 	var description = "Staging Domain"
 	updateOpts := domains.UpdateOpts{
 		Description: &description,
 	}
 
-	actual, err := domains.Update(context.TODO(), client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	actual, err := domains.Update(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomainUpdated, *actual)
 }

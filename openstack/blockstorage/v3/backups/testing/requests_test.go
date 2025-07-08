@@ -13,14 +13,14 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
 	count := 0
 
-	err := backups.List(client.ServiceClient(), &backups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := backups.List(client.ServiceClient(fakeServer), &backups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := backups.ExtractBackups(page)
 		if err != nil {
@@ -53,14 +53,14 @@ func TestList(t *testing.T) {
 }
 
 func TestListDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListDetailResponse(t)
+	MockListDetailResponse(t, fakeServer)
 
 	count := 0
 
-	err := backups.ListDetail(client.ServiceClient(), &backups.ListDetailOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := backups.ListDetail(client.ServiceClient(fakeServer), &backups.ListDetailOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := backups.ExtractBackups(page)
 		if err != nil {
@@ -103,12 +103,12 @@ func TestListDetail(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	v, err := backups.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := backups.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "backup-001")
@@ -116,13 +116,13 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := backups.CreateOpts{VolumeID: "1234", Name: "backup-001"}
-	n, err := backups.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := backups.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")
@@ -131,13 +131,13 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRestore(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockRestoreResponse(t)
+	MockRestoreResponse(t, fakeServer)
 
 	options := backups.RestoreOpts{VolumeID: "1234", Name: "vol-001"}
-	n, err := backups.RestoreFromBackup(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	n, err := backups.RestoreFromBackup(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")
@@ -146,22 +146,22 @@ func TestRestore(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := backups.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := backups.Delete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestExport(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockExportResponse(t)
+	MockExportResponse(t, fakeServer)
 
-	n, err := backups.Export(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	n, err := backups.Export(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.BackupService, "cinder.backup.drivers.swift.SwiftBackupDriver")
@@ -174,40 +174,40 @@ func TestExport(t *testing.T) {
 }
 
 func TestImport(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockImportResponse(t)
+	MockImportResponse(t, fakeServer)
 
 	options := backups.ImportOpts{
 		BackupService: "cinder.backup.drivers.swift.SwiftBackupDriver",
 		BackupURL:     backupURL,
 	}
-	n, err := backups.Import(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := backups.Import(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
 func TestResetStatus(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResetStatusResponse(t)
+	MockResetStatusResponse(t, fakeServer)
 
 	opts := &backups.ResetStatusOpts{
 		Status: "error",
 	}
-	res := backups.ResetStatus(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
+	res := backups.ResetStatus(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", opts)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestForceDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockForceDeleteResponse(t)
+	MockForceDeleteResponse(t, fakeServer)
 
-	res := backups.ForceDelete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := backups.ForceDelete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }

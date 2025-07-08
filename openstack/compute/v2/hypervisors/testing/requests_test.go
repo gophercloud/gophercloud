@@ -11,12 +11,12 @@ import (
 )
 
 func TestListHypervisorsPre253(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorListPre253Successfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorListPre253Successfully(t, fakeServer)
 
 	pages := 0
-	err := hypervisors.List(client.ServiceClient(),
+	err := hypervisors.List(client.ServiceClient(fakeServer),
 		hypervisors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
@@ -42,11 +42,11 @@ func TestListHypervisorsPre253(t *testing.T) {
 }
 
 func TestListAllHypervisorsPre253(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorListPre253Successfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorListPre253Successfully(t, fakeServer)
 
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages(context.TODO())
+	allPages, err := hypervisors.List(client.ServiceClient(fakeServer), hypervisors.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	th.AssertNoErr(t, err)
@@ -55,12 +55,12 @@ func TestListAllHypervisorsPre253(t *testing.T) {
 }
 
 func TestListHypervisors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := hypervisors.List(client.ServiceClient(),
+	err := hypervisors.List(client.ServiceClient(fakeServer),
 		hypervisors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
@@ -69,28 +69,27 @@ func TestListHypervisors(t *testing.T) {
 			return false, err
 		}
 
-		if len(actual) != 2 {
-			t.Fatalf("Expected 2 hypervisors, got %d", len(actual))
+		if len(actual) != 1 {
+			t.Fatalf("Expected 1 hypervisors on page %d, got %d", pages, len(actual))
 		}
 		th.CheckDeepEquals(t, HypervisorFake, actual[0])
-		th.CheckDeepEquals(t, HypervisorFake, actual[1])
 
 		return true, nil
 	})
 
 	th.AssertNoErr(t, err)
 
-	if pages != 1 {
-		t.Errorf("Expected 1 page, saw %d", pages)
+	if pages != 2 {
+		t.Errorf("Expected 2 pages, saw %d", pages)
 	}
 }
 
 func TestListAllHypervisors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorListSuccessfully(t, fakeServer)
 
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages(context.TODO())
+	allPages, err := hypervisors.List(client.ServiceClient(fakeServer), hypervisors.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	th.AssertNoErr(t, err)
@@ -99,12 +98,12 @@ func TestListAllHypervisors(t *testing.T) {
 }
 
 func TestListAllHypervisorsWithParameters(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorListWithParametersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorListWithParametersSuccessfully(t, fakeServer)
 
 	with_servers := true
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{WithServers: &with_servers}).AllPages(context.TODO())
+	allPages, err := hypervisors.List(client.ServiceClient(fakeServer), hypervisors.ListOpts{WithServers: &with_servers}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	th.AssertNoErr(t, err)
@@ -113,61 +112,61 @@ func TestListAllHypervisorsWithParameters(t *testing.T) {
 }
 
 func TestHypervisorsStatistics(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorsStatisticsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorsStatisticsSuccessfully(t, fakeServer)
 
 	expected := HypervisorsStatisticsExpected
 
-	actual, err := hypervisors.GetStatistics(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := hypervisors.GetStatistics(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
 
 func TestGetHypervisor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorGetSuccessfully(t, fakeServer)
 
 	expected := HypervisorFake
 
-	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(fakeServer), expected.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
 
 func TestGetHypervisorEmptyCPUInfo(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorGetEmptyCPUInfoSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorGetEmptyCPUInfoSuccessfully(t, fakeServer)
 
 	expected := HypervisorEmptyCPUInfo
 
-	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(fakeServer), expected.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
 
 func TestGetHypervisorAfterV287Response(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorAfterV287ResponseSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorAfterV287ResponseSuccessfully(t, fakeServer)
 
 	expected := HypervisorAfterV287Response
 
-	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(), expected.ID).Extract()
+	actual, err := hypervisors.Get(context.TODO(), client.ServiceClient(fakeServer), expected.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
 
 func TestHypervisorsUptime(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleHypervisorUptimeSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorUptimeSuccessfully(t, fakeServer)
 
 	expected := HypervisorUptimeExpected
 
-	actual, err := hypervisors.GetUptime(context.TODO(), client.ServiceClient(), HypervisorFake.ID).Extract()
+	actual, err := hypervisors.GetUptime(context.TODO(), client.ServiceClient(fakeServer), HypervisorFake.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }

@@ -264,8 +264,8 @@ var (
 	}
 )
 
-func HandlePoolsListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/scheduler-stats/pools", func(w http.ResponseWriter, r *http.Request) {
+func HandlePoolsListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/scheduler-stats/pools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -277,7 +277,7 @@ func HandlePoolsListSuccessfully(t *testing.T) {
 		fmt.Fprint(w, PoolsListBody)
 
 	})
-	th.Mux.HandleFunc("/scheduler-stats/pools/detail", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/scheduler-stats/pools/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

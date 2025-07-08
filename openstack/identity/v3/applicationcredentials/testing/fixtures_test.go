@@ -407,8 +407,8 @@ var ExpectedApplicationCredentialsSlice = []applicationcredentials.ApplicationCr
 
 // HandleListApplicationCredentialsSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a list of two applicationcredentials.
-func HandleListApplicationCredentialsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
+func HandleListApplicationCredentialsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -421,8 +421,8 @@ func HandleListApplicationCredentialsSuccessfully(t *testing.T) {
 
 // HandleGetApplicationCredentialSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a single application credential.
-func HandleGetApplicationCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetApplicationCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -435,8 +435,8 @@ func HandleGetApplicationCredentialSuccessfully(t *testing.T) {
 
 // HandleCreateApplicationCredentialSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests application credential creation.
-func HandleCreateApplicationCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateApplicationCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
@@ -448,8 +448,8 @@ func HandleCreateApplicationCredentialSuccessfully(t *testing.T) {
 
 // HandleCreateNoOptionsApplicationCredentialSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests application credential creation.
-func HandleCreateNoSecretApplicationCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateNoSecretApplicationCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateNoSecretRequest)
@@ -459,8 +459,8 @@ func HandleCreateNoSecretApplicationCredentialSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleCreateUnrestrictedApplicationCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateUnrestrictedApplicationCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateUnrestrictedRequest)
@@ -472,8 +472,8 @@ func HandleCreateUnrestrictedApplicationCredentialSuccessfully(t *testing.T) {
 
 // HandleDeleteApplicationCredentialSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests application credential deletion.
-func HandleDeleteApplicationCredentialSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteApplicationCredentialSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -483,8 +483,8 @@ func HandleDeleteApplicationCredentialSuccessfully(t *testing.T) {
 
 // HandleListAccessRulesSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a list of two applicationcredentials.
-func HandleListAccessRulesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules", func(w http.ResponseWriter, r *http.Request) {
+func HandleListAccessRulesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -497,8 +497,8 @@ func HandleListAccessRulesSuccessfully(t *testing.T) {
 
 // HandleGetAccessRuleSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a single application credential.
-func HandleGetAccessRuleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules/07d719df00f349ef8de77d542edf010c", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetAccessRuleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules/07d719df00f349ef8de77d542edf010c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -511,8 +511,8 @@ func HandleGetAccessRuleSuccessfully(t *testing.T) {
 
 // HandleDeleteAccessRuleSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests application credential deletion.
-func HandleDeleteAccessRuleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules/07d719df00f349ef8de77d542edf010c", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteAccessRuleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules/07d719df00f349ef8de77d542edf010c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

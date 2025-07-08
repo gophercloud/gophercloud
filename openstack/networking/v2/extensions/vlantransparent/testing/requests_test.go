@@ -13,10 +13,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -32,7 +32,7 @@ func TestList(t *testing.T) {
 	}
 	var actual []networkVLANTransparentExt
 
-	allPages, err := networks.List(fake.ServiceClient(), networks.ListOpts{}).AllPages(context.TODO())
+	allPages, err := networks.List(fake.ServiceClient(fakeServer), networks.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	err = networks.ExtractNetworksInto(allPages, &actual)
@@ -49,10 +49,10 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks/db193ab3-96e3-4cb3-8fc5-05f4296d0324", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks/db193ab3-96e3-4cb3-8fc5-05f4296d0324", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -67,7 +67,7 @@ func TestGet(t *testing.T) {
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Get(context.TODO(), fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&s)
+	err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
@@ -81,10 +81,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -112,7 +112,7 @@ func TestCreate(t *testing.T) {
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Create(context.TODO(), fake.ServiceClient(), vlanTransparentCreateOpts).ExtractInto(&s)
+	err := networks.Create(context.TODO(), fake.ServiceClient(fakeServer), vlanTransparentCreateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
@@ -126,10 +126,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -159,7 +159,7 @@ func TestUpdate(t *testing.T) {
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Update(context.TODO(), fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", vlanTransparentUpdateOpts).ExtractInto(&s)
+	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", vlanTransparentUpdateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
