@@ -122,6 +122,46 @@ func TestUpdate(t *testing.T) {
 	th.CheckEquals(t, true, v.IsPublic)
 }
 
+func TestListIsPublicParam(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	result := make(map[string]string)
+	HandleListIsPublicParam(t, result)
+
+	// An empty ListOpts should query both public and private volume types by default.
+	result["is_public"] = "None"
+	err := volumetypes.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	err = volumetypes.List(client.ServiceClient(), volumetypes.ListOpts{IsPublic: volumetypes.VisibilityDefault}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	// Specific visibility queries
+	result["is_public"] = "true"
+	err = volumetypes.List(client.ServiceClient(), volumetypes.ListOpts{IsPublic: volumetypes.VisibilityPublic}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	result["is_public"] = "false"
+	err = volumetypes.List(client.ServiceClient(), volumetypes.ListOpts{IsPublic: volumetypes.VisibilityPrivate}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	// Specific visibility query while ensuring other options are still considered.
+	result["is_public"] = "None"
+	result["sort"] = "asc"
+	err = volumetypes.List(client.ServiceClient(), volumetypes.ListOpts{IsPublic: volumetypes.VisibilityDefault, Sort: "asc"}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

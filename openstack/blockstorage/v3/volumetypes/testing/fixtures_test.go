@@ -377,3 +377,15 @@ func MockEncryptionGetSpecResponse(t *testing.T) {
     `)
 	})
 }
+
+func HandleListIsPublicParam(t *testing.T, values map[string]string) {
+	th.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestFormValues(t, r, values)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"volume_types": []}`)
+	})
+}
