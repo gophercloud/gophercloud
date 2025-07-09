@@ -12,6 +12,9 @@ import (
 )
 
 func TestVLANTransparentCRUD(t *testing.T) {
+	clients.SkipRelease(t, "master")
+	clients.SkipRelease(t, "stable/flamingo")
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
