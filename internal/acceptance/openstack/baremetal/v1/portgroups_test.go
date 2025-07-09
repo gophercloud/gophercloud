@@ -15,7 +15,7 @@ import (
 func TestPortGroupsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
 
-	client, err := clients.NewBareMetalV1NoAuthClient()
+	client, err := clients.NewBareMetalV1Client()
 	th.AssertNoErr(t, err)
 
 	// NOTE(sharpz7) - increased due to create fake node requiring it.
