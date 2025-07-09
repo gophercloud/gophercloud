@@ -195,6 +195,18 @@ var UpdatedExtraSpec = map[string]string{
 	"capabilities": "gpu-2",
 }
 
+func HandleListIsPublicParam(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, values)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"volume_types": []}`)
+	})
+}
+
 func HandleExtraSpecsListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
