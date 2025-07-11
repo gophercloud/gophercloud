@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/roles"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // ListOutput provides a single page of Role results.
@@ -342,11 +342,11 @@ var ExpectedRolesSlice = []roles.Role{FirstRole, SecondRole}
 
 // HandleListRolesSuccessfully creates an HTTP handler at `/roles` on the
 // test handler mux that responds with a list of two roles.
-func HandleListRolesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
+func HandleListRolesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -356,11 +356,11 @@ func HandleListRolesSuccessfully(t *testing.T) {
 
 // HandleGetRoleSuccessfully creates an HTTP handler at `/roles` on the
 // test handler mux that responds with a single role.
-func HandleGetRoleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetRoleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -370,10 +370,10 @@ func HandleGetRoleSuccessfully(t *testing.T) {
 
 // HandleCreateRoleSuccessfully creates an HTTP handler at `/roles` on the
 // test handler mux that tests role creation.
-func HandleCreateRoleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateRoleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
@@ -383,10 +383,10 @@ func HandleCreateRoleSuccessfully(t *testing.T) {
 
 // HandleUpdateRoleSuccessfully creates an HTTP handler at `/roles` on the
 // test handler mux that tests role update.
-func HandleUpdateRoleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateRoleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, UpdateRequest)
 
 		w.WriteHeader(http.StatusOK)
@@ -396,63 +396,63 @@ func HandleUpdateRoleSuccessfully(t *testing.T) {
 
 // HandleDeleteRoleSuccessfully creates an HTTP handler at `/roles` on the
 // test handler mux that tests role deletion.
-func HandleDeleteRoleSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteRoleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
-func HandleAssignSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+func HandleAssignSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
-func HandleUnassignSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+func HandleUnassignSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
@@ -491,11 +491,11 @@ var ExpectedRoleAssignmentsWithNamesSlice = []roles.RoleAssignment{ThirdRoleAssi
 
 // HandleListRoleAssignmentsSuccessfully creates an HTTP handler at `/role_assignments` on the
 // test handler mux that responds with a list of two role assignments.
-func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+func HandleListRoleAssignmentsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -505,11 +505,11 @@ func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
 
 // HandleListRoleAssignmentsSuccessfully creates an HTTP handler at `/role_assignments` on the
 // test handler mux that responds with a list of two role assignments.
-func HandleListRoleAssignmentsWithNamesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+func HandleListRoleAssignmentsWithNamesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.AssertEquals(t, "include_names=true", r.URL.RawQuery)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -520,11 +520,11 @@ func HandleListRoleAssignmentsWithNamesSuccessfully(t *testing.T) {
 
 // HandleListRoleAssignmentsWithSubtreeSuccessfully creates an HTTP handler at `/role_assignments` on the
 // test handler mux that responds with a list of two role assignments.
-func HandleListRoleAssignmentsWithSubtreeSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+func HandleListRoleAssignmentsWithSubtreeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.AssertEquals(t, "include_subtree=true", r.URL.RawQuery)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -549,60 +549,60 @@ var RoleOnResource = roles.Role{
 // from ListAssignmentsOnResourceOutput.
 var ExpectedRolesOnResourceSlice = []roles.Role{RoleOnResource}
 
-func HandleListAssignmentsOnResourceSuccessfully_ProjectsUsers(t *testing.T) {
+func HandleListAssignmentsOnResourceSuccessfully_ProjectsUsers(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
-	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles", fn)
+	fakeServer.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles", fn)
 }
 
-func HandleListAssignmentsOnResourceSuccessfully_ProjectsGroups(t *testing.T) {
+func HandleListAssignmentsOnResourceSuccessfully_ProjectsGroups(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
-	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles", fn)
+	fakeServer.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles", fn)
 }
 
-func HandleListAssignmentsOnResourceSuccessfully_DomainsUsers(t *testing.T) {
+func HandleListAssignmentsOnResourceSuccessfully_DomainsUsers(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
-	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles", fn)
+	fakeServer.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles", fn)
 }
 
-func HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t *testing.T) {
+func HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
 	}
 
-	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles", fn)
+	fakeServer.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles", fn)
 }
 
 var expectedRoleInferenceRule = roles.RoleInferenceRule{
@@ -627,18 +627,18 @@ var expectedRoleInferenceRule = roles.RoleInferenceRule{
 	},
 }
 
-func HandleCreateRoleInferenceRule(t *testing.T) {
+func HandleCreateRoleInferenceRule(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, CreateRoleInferenceRuleOutput)
 	}
 
-	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
+	fakeServer.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
 }
 
 var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
@@ -705,40 +705,40 @@ var expectedRoleInferenceRuleList = roles.RoleInferenceRuleList{
 	},
 }
 
-func HandleListRoleInferenceRules(t *testing.T) {
+func HandleListRoleInferenceRules(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ListRoleInferenceRulesOutput)
 	}
 
-	th.Mux.HandleFunc("/role_inferences", fn)
+	fakeServer.Mux.HandleFunc("/role_inferences", fn)
 }
 
-func HandleDeleteRoleInferenceRule(t *testing.T) {
+func HandleDeleteRoleInferenceRule(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	}
-	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
+	fakeServer.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
 }
 
-func HandleGetRoleInferenceRule(t *testing.T) {
+func HandleGetRoleInferenceRule(t *testing.T, fakeServer th.FakeServer) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, CreateRoleInferenceRuleOutput)
 	}
 
-	th.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
+	fakeServer.Mux.HandleFunc("/roles/7ceab6192ea34a548cc71b24f72e762c/implies/97e2f5d38bc94842bc3da818c16762ed", fn)
 }

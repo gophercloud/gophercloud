@@ -12,14 +12,14 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
 	count := 0
 
-	err := snapshots.List(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := snapshots.List(client.ServiceClient(fakeServer), &snapshots.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := snapshots.ExtractSnapshots(page)
 		if err != nil {
@@ -60,12 +60,12 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	v, err := snapshots.Get(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := snapshots.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "snapshot-001")
@@ -73,13 +73,13 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := snapshots.CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
-	n, err := snapshots.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := snapshots.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")
@@ -88,10 +88,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdateMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateMetadataResponse(t)
+	MockUpdateMetadataResponse(t, fakeServer)
 
 	expected := map[string]any{"key": "v1"}
 
@@ -101,18 +101,18 @@ func TestUpdateMetadata(t *testing.T) {
 		},
 	}
 
-	actual, err := snapshots.UpdateMetadata(context.TODO(), client.ServiceClient(), "123", options).ExtractMetadata()
+	actual, err := snapshots.UpdateMetadata(context.TODO(), client.ServiceClient(fakeServer), "123", options).ExtractMetadata()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, actual, expected)
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := snapshots.Delete(context.TODO(), client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := snapshots.Delete(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }

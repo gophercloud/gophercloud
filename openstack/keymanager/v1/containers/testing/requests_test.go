@@ -11,12 +11,12 @@ import (
 )
 
 func TestListContainers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListContainersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListContainersSuccessfully(t, fakeServer)
 
 	count := 0
-	err := containers.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := containers.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := containers.ExtractContainers(page)
@@ -31,11 +31,11 @@ func TestListContainers(t *testing.T) {
 }
 
 func TestListContainersAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListContainersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListContainersSuccessfully(t, fakeServer)
 
-	allPages, err := containers.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := containers.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractContainers(allPages)
 	th.AssertNoErr(t, err)
@@ -43,19 +43,19 @@ func TestListContainersAllPages(t *testing.T) {
 }
 
 func TestGetContainer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetContainerSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetContainerSuccessfully(t, fakeServer)
 
-	actual, err := containers.Get(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0").Extract()
+	actual, err := containers.Get(context.TODO(), client.ServiceClient(fakeServer), "dfdb88f3-4ddb-4525-9da6-066453caa9b0").Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstContainer, *actual)
 }
 
 func TestCreateContainer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateContainerSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateContainerSuccessfully(t, fakeServer)
 
 	createOpts := containers.CreateOpts{
 		Type: containers.GenericContainer,
@@ -68,27 +68,27 @@ func TestCreateContainer(t *testing.T) {
 		},
 	}
 
-	actual, err := containers.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := containers.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstContainer, *actual)
 }
 
 func TestDeleteContainer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteContainerSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteContainerSuccessfully(t, fakeServer)
 
-	res := containers.Delete(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0")
+	res := containers.Delete(context.TODO(), client.ServiceClient(fakeServer), "dfdb88f3-4ddb-4525-9da6-066453caa9b0")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestListConsumers(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListConsumersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListConsumersSuccessfully(t, fakeServer)
 
 	count := 0
-	err := containers.ListConsumers(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := containers.ListConsumers(client.ServiceClient(fakeServer), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := containers.ExtractConsumers(page)
@@ -103,11 +103,11 @@ func TestListConsumers(t *testing.T) {
 }
 
 func TestListConsumersAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListConsumersSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListConsumersSuccessfully(t, fakeServer)
 
-	allPages, err := containers.ListConsumers(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", nil).AllPages(context.TODO())
+	allPages, err := containers.ListConsumers(client.ServiceClient(fakeServer), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractConsumers(allPages)
 	th.AssertNoErr(t, err)
@@ -115,31 +115,31 @@ func TestListConsumersAllPages(t *testing.T) {
 }
 
 func TestCreateConsumer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateConsumerSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateConsumerSuccessfully(t, fakeServer)
 
 	createOpts := containers.CreateConsumerOpts{
 		Name: "CONSUMER-LZILN1zq",
 		URL:  "http://example.com",
 	}
 
-	actual, err := containers.CreateConsumer(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", createOpts).Extract()
+	actual, err := containers.CreateConsumer(context.TODO(), client.ServiceClient(fakeServer), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCreatedConsumer, *actual)
 }
 
 func TestDeleteConsumer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteConsumerSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteConsumerSuccessfully(t, fakeServer)
 
 	deleteOpts := containers.DeleteConsumerOpts{
 		Name: "CONSUMER-LZILN1zq",
 		URL:  "http://example.com",
 	}
 
-	actual, err := containers.DeleteConsumer(context.TODO(), client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", deleteOpts).Extract()
+	actual, err := containers.DeleteConsumer(context.TODO(), client.ServiceClient(fakeServer), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", deleteOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, FirstContainer, *actual)
 }

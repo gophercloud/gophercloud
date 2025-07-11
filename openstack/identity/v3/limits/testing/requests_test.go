@@ -11,22 +11,22 @@ import (
 )
 
 func TestGetEnforcementModel(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetEnforcementModelSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetEnforcementModelSuccessfully(t, fakeServer)
 
-	actual, err := limits.GetEnforcementModel(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := limits.GetEnforcementModel(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, Model, *actual)
 }
 
 func TestListLimits(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListLimitsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListLimitsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := limits.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := limits.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := limits.ExtractLimits(page)
@@ -41,11 +41,11 @@ func TestListLimits(t *testing.T) {
 }
 
 func TestListLimitsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListLimitsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListLimitsSuccessfully(t, fakeServer)
 
-	allPages, err := limits.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := limits.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := limits.ExtractLimits(allPages)
 	th.AssertNoErr(t, err)
@@ -53,9 +53,9 @@ func TestListLimitsAllPages(t *testing.T) {
 }
 
 func TestCreateLimits(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateLimitSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateLimitSuccessfully(t, fakeServer)
 
 	createOpts := limits.BatchCreateOpts{
 		limits.CreateOpts{
@@ -74,25 +74,25 @@ func TestCreateLimits(t *testing.T) {
 		},
 	}
 
-	actual, err := limits.BatchCreate(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := limits.BatchCreate(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedLimitsSlice, actual)
 }
 
 func TestGetLimit(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetLimitSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetLimitSuccessfully(t, fakeServer)
 
-	actual, err := limits.Get(context.TODO(), client.ServiceClient(), "25a04c7a065c430590881c646cdcdd58").Extract()
+	actual, err := limits.Get(context.TODO(), client.ServiceClient(fakeServer), "25a04c7a065c430590881c646cdcdd58").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstLimit, *actual)
 }
 
 func TestUpdateLimit(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateLimitSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateLimitSuccessfully(t, fakeServer)
 
 	var description = "Number of snapshots for project 3a705b9f56bb439381b43c4fe59dccce"
 	var resourceLimit = 5
@@ -101,16 +101,16 @@ func TestUpdateLimit(t *testing.T) {
 		ResourceLimit: &resourceLimit,
 	}
 
-	actual, err := limits.Update(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
+	actual, err := limits.Update(context.TODO(), client.ServiceClient(fakeServer), "3229b3849f584faea483d6851f7aab05", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondLimitUpdated, *actual)
 }
 
 func TestDeleteLimit(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteLimitSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteLimitSuccessfully(t, fakeServer)
 
-	err := limits.Delete(context.TODO(), client.ServiceClient(), "3229b3849f584faea483d6851f7aab05").ExtractErr()
+	err := limits.Delete(context.TODO(), client.ServiceClient(fakeServer), "3229b3849f584faea483d6851f7aab05").ExtractErr()
 	th.AssertNoErr(t, err)
 }

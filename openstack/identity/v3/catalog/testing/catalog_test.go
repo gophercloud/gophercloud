@@ -11,12 +11,12 @@ import (
 )
 
 func TestListCatalog(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListCatalogSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListCatalogSuccessfully(t, fakeServer)
 
 	count := 0
-	err := catalog.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := catalog.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := catalog.ExtractServiceCatalog(page)

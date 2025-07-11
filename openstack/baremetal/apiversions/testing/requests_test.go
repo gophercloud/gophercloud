@@ -10,24 +10,24 @@ import (
 )
 
 func TestListAPIVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	actual, err := apiversions.List(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := apiversions.List(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, IronicAllAPIVersionResults, *actual)
 }
 
 func TestGetAPIVersion(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(), "v1").Extract()
+	actual, err := apiversions.Get(context.TODO(), client.ServiceClient(fakeServer), "v1").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, IronicAPIVersion1Result, *actual)

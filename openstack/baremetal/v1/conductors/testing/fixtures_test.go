@@ -138,8 +138,8 @@ var (
 )
 
 // HandleConductorListSuccessfully sets up the test server to respond to a server List request.
-func HandleConductorListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/conductors", func(w http.ResponseWriter, r *http.Request) {
+func HandleConductorListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/conductors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -161,8 +161,8 @@ func HandleConductorListSuccessfully(t *testing.T) {
 }
 
 // HandleConductorListDetailSuccessfully sets up the test server to respond to a server List request.
-func HandleConductorListDetailSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/conductors", func(w http.ResponseWriter, r *http.Request) {
+func HandleConductorListDetailSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/conductors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -174,8 +174,8 @@ func HandleConductorListDetailSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleConductorGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/conductors/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleConductorGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/conductors/1234asdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

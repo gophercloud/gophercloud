@@ -7,20 +7,20 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/messaging/v2/messages"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	listOpts := messages.ListOpts{
 		Limit: 1,
 	}
 
 	count := 0
-	err := messages.List(fake.ServiceClient(), QueueName, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := messages.List(client.ServiceClient(fakeServer), QueueName, listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		actual, err := messages.ExtractMessages(page)
 		th.AssertNoErr(t, err)
 
@@ -35,9 +35,9 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 
 	createOpts := messages.BatchCreateOpts{
 		messages.CreateOpts{
@@ -57,71 +57,71 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	actual, err := messages.Create(context.TODO(), fake.ServiceClient(), QueueName, createOpts).Extract()
+	actual, err := messages.Create(context.TODO(), client.ServiceClient(fakeServer), QueueName, createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedResources, actual)
 }
 
 func TestGetMessages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetMessagesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetMessagesSuccessfully(t, fakeServer)
 
 	getMessagesOpts := messages.GetMessagesOpts{
 		IDs: []string{"9988776655"},
 	}
 
-	actual, err := messages.GetMessages(context.TODO(), fake.ServiceClient(), QueueName, getMessagesOpts).Extract()
+	actual, err := messages.GetMessages(context.TODO(), client.ServiceClient(fakeServer), QueueName, getMessagesOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedMessagesSet, actual)
 }
 
 func TestGetMessage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
-	actual, err := messages.Get(context.TODO(), fake.ServiceClient(), QueueName, MessageID).Extract()
+	actual, err := messages.Get(context.TODO(), client.ServiceClient(fakeServer), QueueName, MessageID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstMessage, actual)
 }
 
 func TestDeleteMessages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteMessagesSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteMessagesSuccessfully(t, fakeServer)
 
 	deleteMessagesOpts := messages.DeleteMessagesOpts{
 		IDs: []string{"9988776655"},
 	}
 
-	err := messages.DeleteMessages(context.TODO(), fake.ServiceClient(), QueueName, deleteMessagesOpts).ExtractErr()
+	err := messages.DeleteMessages(context.TODO(), client.ServiceClient(fakeServer), QueueName, deleteMessagesOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestPopMessages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePopSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePopSuccessfully(t, fakeServer)
 
 	popMessagesOpts := messages.PopMessagesOpts{
 		Pop: 1,
 	}
 
-	actual, err := messages.PopMessages(context.TODO(), fake.ServiceClient(), QueueName, popMessagesOpts).Extract()
+	actual, err := messages.PopMessages(context.TODO(), client.ServiceClient(fakeServer), QueueName, popMessagesOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedPopMessage, actual)
 }
 
 func TestDeleteMessage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
 	deleteOpts := messages.DeleteOpts{
 		ClaimID: "12345",
 	}
 
-	err := messages.Delete(context.TODO(), fake.ServiceClient(), QueueName, MessageID, deleteOpts).ExtractErr()
+	err := messages.Delete(context.TODO(), client.ServiceClient(fakeServer), QueueName, MessageID, deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -14,10 +14,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/network-ip-availabilities", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/network-ip-availabilities", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := networkipavailabilities.List(fake.ServiceClient(), networkipavailabilities.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := networkipavailabilities.List(fake.ServiceClient(fakeServer), networkipavailabilities.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := networkipavailabilities.ExtractNetworkIPAvailabilities(page)
 		if err != nil {
@@ -55,10 +55,10 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/network-ip-availabilities/cf11ab78-2302-49fa-870f-851a08c7afb8", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/network-ip-availabilities/cf11ab78-2302-49fa-870f-851a08c7afb8", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -68,7 +68,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, NetworkIPAvailabilityGetResult)
 	})
 
-	s, err := networkipavailabilities.Get(context.TODO(), fake.ServiceClient(), "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
+	s, err := networkipavailabilities.Get(context.TODO(), fake.ServiceClient(fakeServer), "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.NetworkID, "cf11ab78-2302-49fa-870f-851a08c7afb8")

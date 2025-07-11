@@ -6,16 +6,16 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/containerinfra/v1/certificates"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestGetCertificates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleGetCertificateSuccessfully(t)
+	HandleGetCertificateSuccessfully(t, fakeServer)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	actual, err := certificates.Get(context.TODO(), sc, "d564b18a-2890-4152-be3d-e05d784ff72").Extract()
@@ -24,12 +24,12 @@ func TestGetCertificates(t *testing.T) {
 }
 
 func TestCreateCertificates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleCreateCertificateSuccessfully(t)
+	HandleCreateCertificateSuccessfully(t, fakeServer)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	opts := certificates.CreateOpts{
@@ -43,12 +43,12 @@ func TestCreateCertificates(t *testing.T) {
 }
 
 func TestUpdateCertificates(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleUpdateCertificateSuccessfully(t)
+	HandleUpdateCertificateSuccessfully(t, fakeServer)
 
-	sc := fake.ServiceClient()
+	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	err := certificates.Update(context.TODO(), sc, "d564b18a-2890-4152-be3d-e05d784ff72").ExtractErr()

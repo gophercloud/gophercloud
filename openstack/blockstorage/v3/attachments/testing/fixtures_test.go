@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/attachments"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 var (
@@ -27,10 +27,10 @@ var (
 	}
 )
 
-func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments/detail", func(w http.ResponseWriter, r *http.Request) {
+func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -62,7 +62,7 @@ func MockListResponse(t *testing.T) {
 	}
     ]
 }
-  `, th.Server.URL)
+  `, fakeServer.Server.URL)
 		case "1":
 			fmt.Fprint(w, `{"volumes": []}`)
 		default:
@@ -71,10 +71,10 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -95,10 +95,10 @@ func MockGetResponse(t *testing.T) {
 	})
 }
 
-func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments", func(w http.ResponseWriter, r *http.Request) {
+func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -140,18 +140,18 @@ func MockCreateResponse(t *testing.T) {
 	})
 }
 
-func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
+func MockDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 	})
 }
 
-func MockUpdateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
+func MockUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -188,10 +188,10 @@ func MockUpdateResponse(t *testing.T) {
 	})
 }
 
-func MockUpdateEmptyResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
+func MockUpdateEmptyResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		th.TestJSONRequest(t, r, `
 {
@@ -225,10 +225,10 @@ var completeRequest = `
 }
 `
 
-func MockCompleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a/action", func(w http.ResponseWriter, r *http.Request) {
+func MockCompleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/attachments/05551600-a936-4d4a-ba42-79a037c1-c91a/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, completeRequest)
 		w.WriteHeader(http.StatusNoContent)
 	})

@@ -11,12 +11,12 @@ import (
 )
 
 func TestListCredentials(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListCredentialsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListCredentialsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := credentials.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := credentials.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := credentials.ExtractCredentials(page)
@@ -31,11 +31,11 @@ func TestListCredentials(t *testing.T) {
 }
 
 func TestListCredentialsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListCredentialsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListCredentialsSuccessfully(t, fakeServer)
 
-	allPages, err := credentials.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := credentials.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := credentials.ExtractCredentials(allPages)
 	th.AssertNoErr(t, err)
@@ -45,19 +45,19 @@ func TestListCredentialsAllPages(t *testing.T) {
 }
 
 func TestGetCredential(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetCredentialSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetCredentialSuccessfully(t, fakeServer)
 
-	actual, err := credentials.Get(context.TODO(), client.ServiceClient(), credentialID).Extract()
+	actual, err := credentials.Get(context.TODO(), client.ServiceClient(fakeServer), credentialID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, Credential, *actual)
 }
 
 func TestCreateCredential(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateCredentialSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateCredentialSuccessfully(t, fakeServer)
 
 	createOpts := credentials.CreateOpts{
 		ProjectID: projectID,
@@ -68,24 +68,24 @@ func TestCreateCredential(t *testing.T) {
 
 	CredentialResponse := Credential
 
-	actual, err := credentials.Create(context.TODO(), client.ServiceClient(), createOpts).Extract()
+	actual, err := credentials.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, CredentialResponse, *actual)
 }
 
 func TestDeleteCredential(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteCredentialSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteCredentialSuccessfully(t, fakeServer)
 
-	res := credentials.Delete(context.TODO(), client.ServiceClient(), credentialID)
+	res := credentials.Delete(context.TODO(), client.ServiceClient(fakeServer), credentialID)
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateCredential(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateCredentialSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateCredentialSuccessfully(t, fakeServer)
 
 	updateOpts := credentials.UpdateOpts{
 		ProjectID: "731fc6f265cd486d900f16e84c5cb594",
@@ -94,7 +94,7 @@ func TestUpdateCredential(t *testing.T) {
 		Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
 	}
 
-	actual, err := credentials.Update(context.TODO(), client.ServiceClient(), "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", updateOpts).Extract()
+	actual, err := credentials.Update(context.TODO(), client.ServiceClient(fakeServer), "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondCredentialUpdated, *actual)
 }

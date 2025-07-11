@@ -112,9 +112,9 @@ var SecondTransferRequest = transferRequests.TransferRequest{
 var ExpectedTransferRequestsSlice = []transferRequests.TransferRequest{FirstTransferRequest, SecondTransferRequest}
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	baseURL := "/zones/tasks/transfer_requests"
-	th.Mux.HandleFunc(baseURL,
+	fakeServer.Mux.HandleFunc(baseURL,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -124,9 +124,9 @@ func HandleListSuccessfully(t *testing.T) {
 }
 
 // HandleGetSuccessfully configures the test server to respond to a List request.
-func HandleGetSuccessfully(t *testing.T) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	baseURL := "/zones/tasks/transfer_requests"
-	th.Mux.HandleFunc(s.Join([]string{baseURL, FirstTransferRequest.ID}, "/"),
+	fakeServer.Mux.HandleFunc(s.Join([]string{baseURL, FirstTransferRequest.ID}, "/"),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -165,9 +165,9 @@ const CreateTransferRequestResponse = `
 var CreatedTransferRequest = FirstTransferRequest
 
 // HandleTransferRequestCreationSuccessfully configures the test server to respond to a Create request.
-func HandleCreateSuccessfully(t *testing.T) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	createURL := "/zones/a6a8515c-5d80-48c0-955b-fde631b59791/tasks/transfer_requests"
-	th.Mux.HandleFunc(createURL,
+	fakeServer.Mux.HandleFunc(createURL,
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -205,9 +205,9 @@ const UpdatedTransferRequestResponse = `
 `
 
 // HandleTransferRequestUpdateSuccessfully configures the test server to respond to an Update request.
-func HandleUpdateSuccessfully(t *testing.T) {
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	baseURL := "/zones/tasks/transfer_requests"
-	th.Mux.HandleFunc(s.Join([]string{baseURL, FirstTransferRequest.ID}, "/"),
+	fakeServer.Mux.HandleFunc(s.Join([]string{baseURL, FirstTransferRequest.ID}, "/"),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PATCH")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -220,9 +220,9 @@ func HandleUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleTransferRequestDeleteSuccessfully configures the test server to respond to an Delete request.
-func HandleDeleteSuccessfully(t *testing.T) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	baseURL := "/zones/tasks/transfer_requests"
-	th.Mux.HandleFunc(s.Join([]string{baseURL, FirstTransferRequest.ID}, "/"),
+	fakeServer.Mux.HandleFunc(s.Join([]string{baseURL, FirstTransferRequest.ID}, "/"),
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

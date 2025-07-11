@@ -17,14 +17,14 @@ const (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockListGroupsResponse(t)
+	mockListGroupsResponse(t, fakeServer)
 
 	count := 0
 
-	err := secgroups.List(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := secgroups.List(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := secgroups.ExtractSecurityGroups(page)
 		if err != nil {
@@ -52,14 +52,14 @@ func TestList(t *testing.T) {
 }
 
 func TestListByServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockListGroupsByServerResponse(t, serverID)
+	mockListGroupsByServerResponse(t, fakeServer, serverID)
 
 	count := 0
 
-	err := secgroups.ListByServer(client.ServiceClient(), serverID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := secgroups.ListByServer(client.ServiceClient(fakeServer), serverID).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := secgroups.ExtractSecurityGroups(page)
 		if err != nil {
@@ -87,17 +87,17 @@ func TestListByServer(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockCreateGroupResponse(t)
+	mockCreateGroupResponse(t, fakeServer)
 
 	opts := secgroups.CreateOpts{
 		Name:        "test",
 		Description: "something",
 	}
 
-	group, err := secgroups.Create(context.TODO(), client.ServiceClient(), opts).Extract()
+	group, err := secgroups.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -111,10 +111,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockUpdateGroupResponse(t, groupID)
+	mockUpdateGroupResponse(t, fakeServer, groupID)
 
 	description := "new_desc"
 	opts := secgroups.UpdateOpts{
@@ -122,7 +122,7 @@ func TestUpdate(t *testing.T) {
 		Description: &description,
 	}
 
-	group, err := secgroups.Update(context.TODO(), client.ServiceClient(), groupID, opts).Extract()
+	group, err := secgroups.Update(context.TODO(), client.ServiceClient(fakeServer), groupID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -136,12 +136,12 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockGetGroupsResponse(t, groupID)
+	mockGetGroupsResponse(t, fakeServer, groupID)
 
-	group, err := secgroups.Get(context.TODO(), client.ServiceClient(), groupID).Extract()
+	group, err := secgroups.Get(context.TODO(), client.ServiceClient(fakeServer), groupID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -166,14 +166,14 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetNumericID(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	numericGroupID := 12345
 
-	mockGetNumericIDGroupResponse(t, numericGroupID)
+	mockGetNumericIDGroupResponse(t, fakeServer, numericGroupID)
 
-	group, err := secgroups.Get(context.TODO(), client.ServiceClient(), "12345").Extract()
+	group, err := secgroups.Get(context.TODO(), client.ServiceClient(fakeServer), "12345").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{ID: "12345"}
@@ -181,14 +181,14 @@ func TestGetNumericID(t *testing.T) {
 }
 
 func TestGetNumericRuleID(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	numericGroupID := 12345
 
-	mockGetNumericIDGroupRuleResponse(t, numericGroupID)
+	mockGetNumericIDGroupRuleResponse(t, fakeServer, numericGroupID)
 
-	group, err := secgroups.Get(context.TODO(), client.ServiceClient(), "12345").Extract()
+	group, err := secgroups.Get(context.TODO(), client.ServiceClient(fakeServer), "12345").Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.SecurityGroup{
@@ -204,20 +204,20 @@ func TestGetNumericRuleID(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockDeleteGroupResponse(t, groupID)
+	mockDeleteGroupResponse(t, fakeServer, groupID)
 
-	err := secgroups.Delete(context.TODO(), client.ServiceClient(), groupID).ExtractErr()
+	err := secgroups.Delete(context.TODO(), client.ServiceClient(fakeServer), groupID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestAddRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockAddRuleResponse(t)
+	mockAddRuleResponse(t, fakeServer)
 
 	opts := secgroups.CreateRuleOpts{
 		ParentGroupID: groupID,
@@ -227,7 +227,7 @@ func TestAddRule(t *testing.T) {
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(context.TODO(), client.ServiceClient(), opts).Extract()
+	rule, err := secgroups.CreateRule(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.Rule{
@@ -244,10 +244,10 @@ func TestAddRule(t *testing.T) {
 }
 
 func TestAddRuleICMPZero(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockAddRuleResponseICMPZero(t)
+	mockAddRuleResponseICMPZero(t, fakeServer)
 
 	opts := secgroups.CreateRuleOpts{
 		ParentGroupID: groupID,
@@ -257,7 +257,7 @@ func TestAddRuleICMPZero(t *testing.T) {
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(context.TODO(), client.ServiceClient(), opts).Extract()
+	rule, err := secgroups.CreateRule(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &secgroups.Rule{
@@ -274,31 +274,31 @@ func TestAddRuleICMPZero(t *testing.T) {
 }
 
 func TestDeleteRule(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockDeleteRuleResponse(t, ruleID)
+	mockDeleteRuleResponse(t, fakeServer, ruleID)
 
-	err := secgroups.DeleteRule(context.TODO(), client.ServiceClient(), ruleID).ExtractErr()
+	err := secgroups.DeleteRule(context.TODO(), client.ServiceClient(fakeServer), ruleID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestAddServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockAddServerToGroupResponse(t, serverID)
+	mockAddServerToGroupResponse(t, fakeServer, serverID)
 
-	err := secgroups.AddServer(context.TODO(), client.ServiceClient(), serverID, "test").ExtractErr()
+	err := secgroups.AddServer(context.TODO(), client.ServiceClient(fakeServer), serverID, "test").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestRemoveServer(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	mockRemoveServerFromGroupResponse(t, serverID)
+	mockRemoveServerFromGroupResponse(t, fakeServer, serverID)
 
-	err := secgroups.RemoveServer(context.TODO(), client.ServiceClient(), serverID, "test").ExtractErr()
+	err := secgroups.RemoveServer(context.TODO(), client.ServiceClient(fakeServer), serverID, "test").ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -11,12 +11,12 @@ import (
 )
 
 func TestListMappings(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListMappingsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListMappingsSuccessfully(t, fakeServer)
 
 	count := 0
-	err := federation.ListMappings(client.ServiceClient()).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := federation.ListMappings(client.ServiceClient(fakeServer)).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := federation.ExtractMappings(page)
@@ -31,11 +31,11 @@ func TestListMappings(t *testing.T) {
 }
 
 func TestListMappingsAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListMappingsSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListMappingsSuccessfully(t, fakeServer)
 
-	allPages, err := federation.ListMappings(client.ServiceClient()).AllPages(context.TODO())
+	allPages, err := federation.ListMappings(client.ServiceClient(fakeServer)).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := federation.ExtractMappings(allPages)
 	th.AssertNoErr(t, err)
@@ -43,9 +43,9 @@ func TestListMappingsAllPages(t *testing.T) {
 }
 
 func TestCreateMappings(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateMappingSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateMappingSuccessfully(t, fakeServer)
 
 	createOpts := federation.CreateMappingOpts{
 		Rules: []federation.MappingRule{
@@ -78,25 +78,25 @@ func TestCreateMappings(t *testing.T) {
 		},
 	}
 
-	actual, err := federation.CreateMapping(context.TODO(), client.ServiceClient(), "ACME", createOpts).Extract()
+	actual, err := federation.CreateMapping(context.TODO(), client.ServiceClient(fakeServer), "ACME", createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingACME, *actual)
 }
 
 func TestGetMapping(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetMappingSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetMappingSuccessfully(t, fakeServer)
 
-	actual, err := federation.GetMapping(context.TODO(), client.ServiceClient(), "ACME").Extract()
+	actual, err := federation.GetMapping(context.TODO(), client.ServiceClient(fakeServer), "ACME").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingACME, *actual)
 }
 
 func TestUpdateMapping(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateMappingSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateMappingSuccessfully(t, fakeServer)
 
 	updateOpts := federation.UpdateMappingOpts{
 		Rules: []federation.MappingRule{
@@ -129,16 +129,16 @@ func TestUpdateMapping(t *testing.T) {
 		},
 	}
 
-	actual, err := federation.UpdateMapping(context.TODO(), client.ServiceClient(), "ACME", updateOpts).Extract()
+	actual, err := federation.UpdateMapping(context.TODO(), client.ServiceClient(fakeServer), "ACME", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MappingUpdated, *actual)
 }
 
 func TestDeleteMapping(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteMappingSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteMappingSuccessfully(t, fakeServer)
 
-	res := federation.DeleteMapping(context.TODO(), client.ServiceClient(), "ACME")
+	res := federation.DeleteMapping(context.TODO(), client.ServiceClient(fakeServer), "ACME")
 	th.AssertNoErr(t, res.Err)
 }

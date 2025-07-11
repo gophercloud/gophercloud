@@ -111,14 +111,14 @@ var myNovaExpected = map[string]any{
 }
 
 func TestGetFileContentsWithType(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
 
-	fakeURL := th.ServeFile(t, baseurl, "my_nova.yaml", "application/json", myNovaContent)
+	fakeURL := fakeServer.ServeFile(t, baseurl, "my_nova.yaml", "application/json", myNovaContent)
 
-	client := fakeClient{BaseClient: getHTTPClient()}
+	client := fakeClient{BaseClient: getHTTPClient(), FakeServer: fakeServer}
 	te := new(Template)
 	te.Bin = []byte(`heat_template_version: 2015-04-30
 resources:
@@ -148,15 +148,15 @@ resources:
 }
 
 func TestGetFileContentsWithFile(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
 
 	somefile := `Welcome!`
-	fakeURL := th.ServeFile(t, baseurl, "somefile", "text/plain", somefile)
+	fakeURL := fakeServer.ServeFile(t, baseurl, "somefile", "text/plain", somefile)
 
-	client := fakeClient{BaseClient: getHTTPClient()}
+	client := fakeClient{BaseClient: getHTTPClient(), FakeServer: fakeServer}
 	te := new(Template)
 	// Note: We include the path that should be replaced also as a not-to-be-replaced
 	// keyword ("path: somefile" below) to validate that no updates happen outside of
@@ -195,13 +195,13 @@ resources:
 }
 
 func TestGetFileContentsComposeRelativePath(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 	baseurl, err := getBasePath()
 	th.AssertNoErr(t, err)
 
 	novaPath := strings.Join([]string{"templates", "my_nova.yaml"}, "/")
-	novaURL := th.ServeFile(t, baseurl, novaPath, "application/json", myNovaContent)
+	novaURL := fakeServer.ServeFile(t, baseurl, novaPath, "application/json", myNovaContent)
 
 	mySubStackContent := `heat_template_version: 2015-04-30
 resources:
@@ -237,9 +237,9 @@ resources:
 		},
 	}
 	subStacksPath := strings.Join([]string{"substacks", "my_substack.yaml"}, "/")
-	subStackURL := th.ServeFile(t, baseurl, subStacksPath, "application/json", mySubStackContent)
+	subStackURL := fakeServer.ServeFile(t, baseurl, subStacksPath, "application/json", mySubStackContent)
 
-	client := fakeClient{BaseClient: getHTTPClient()}
+	client := fakeClient{BaseClient: getHTTPClient(), FakeServer: fakeServer}
 	te := new(Template)
 	te.Bin = []byte(`heat_template_version: 2015-04-30
 resources:

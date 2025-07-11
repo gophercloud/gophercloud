@@ -12,23 +12,23 @@ import (
 
 // Verifies that message deletion works
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	res := messages.Delete(context.TODO(), client.ServiceClient(), "messageID")
+	res := messages.Delete(context.TODO(), client.ServiceClient(fakeServer), "messageID")
 	th.AssertNoErr(t, res.Err)
 }
 
 // Verifies that messages can be listed correctly
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := messages.List(client.ServiceClient(), &messages.ListOpts{}).AllPages(context.TODO())
+	allPages, err := messages.List(client.ServiceClient(fakeServer), &messages.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := messages.ExtractMessages(allPages)
 	th.AssertNoErr(t, err)
@@ -66,16 +66,16 @@ func TestList(t *testing.T) {
 
 // Verifies that messages list can be called with query parameters
 func TestFilteredList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockFilteredListResponse(t)
+	MockFilteredListResponse(t, fakeServer)
 
 	options := &messages.ListOpts{
 		RequestID: "req-21767eee-22ca-40a4-b6c0-ae7d35cd434f",
 	}
 
-	allPages, err := messages.List(client.ServiceClient(), options).AllPages(context.TODO())
+	allPages, err := messages.List(client.ServiceClient(fakeServer), options).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := messages.ExtractMessages(allPages)
 	th.AssertNoErr(t, err)
@@ -100,10 +100,10 @@ func TestFilteredList(t *testing.T) {
 
 // Verifies that it is possible to get a message
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
 	expected := messages.Message{
 		ResourceID:   "4336d74f-3bdc-4f27-9657-c01ec63680bf",
@@ -119,7 +119,7 @@ func TestGet(t *testing.T) {
 		ActionID:     "002",
 	}
 
-	n, err := messages.Get(context.TODO(), client.ServiceClient(), "2076373e-13a7-4b84-9e67-15ce8cceaff8").Extract()
+	n, err := messages.Get(context.TODO(), client.ServiceClient(fakeServer), "2076373e-13a7-4b84-9e67-15ce8cceaff8").Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, &expected, n)

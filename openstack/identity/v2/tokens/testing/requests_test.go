@@ -11,19 +11,19 @@ import (
 )
 
 func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string) tokens.CreateResult {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleTokenPost(t, requestJSON)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleTokenPost(t, fakeServer, requestJSON)
 
-	return tokens.Create(context.TODO(), client.ServiceClient(), options)
+	return tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options)
 }
 
 func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleTokenPost(t, "")
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleTokenPost(t, fakeServer, "")
 
-	actualErr := tokens.Create(context.TODO(), client.ServiceClient(), options).Err
+	actualErr := tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options).Err
 	th.CheckDeepEquals(t, expectedErr, actualErr)
 }
 
@@ -94,10 +94,10 @@ func TestRequireUsername(t *testing.T) {
 }
 
 func tokenGet(t *testing.T, tokenId string) tokens.GetResult {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleTokenGet(t, tokenId)
-	return tokens.Get(context.TODO(), client.ServiceClient(), tokenId)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleTokenGet(t, fakeServer, tokenId)
+	return tokens.Get(context.TODO(), client.ServiceClient(fakeServer), tokenId)
 }
 
 func TestGetWithToken(t *testing.T) {

@@ -11,12 +11,12 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	count := 0
-	err := transferAccepts.List(client.ServiceClient(), nil).EachPage(
+	err := transferAccepts.List(client.ServiceClient(fakeServer), nil).EachPage(
 		context.TODO(),
 		func(_ context.Context, page pagination.Page) (bool, error) {
 			count++
@@ -30,15 +30,15 @@ func TestList(t *testing.T) {
 }
 
 func TestListWithOpts(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFilteredListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFilteredListSuccessfully(t, fakeServer)
 
 	listOpts := transferAccepts.ListOpts{
 		Status: "ACTIVE",
 	}
 
-	allPages, err := transferAccepts.List(client.ServiceClient(), listOpts).AllPages(context.TODO())
+	allPages, err := transferAccepts.List(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTransferAccepts, err := transferAccepts.ExtractTransferAccepts(allPages)
 	th.AssertNoErr(t, err)
@@ -46,11 +46,11 @@ func TestListWithOpts(t *testing.T) {
 }
 
 func TestListAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
-	allPages, err := transferAccepts.List(client.ServiceClient(), nil).AllPages(context.TODO())
+	allPages, err := transferAccepts.List(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	allTransferAccepts, err := transferAccepts.ExtractTransferAccepts(allPages)
 	th.AssertNoErr(t, err)
@@ -58,20 +58,20 @@ func TestListAllPages(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
 	actual, err := transferAccepts.Get(
-		context.TODO(), client.ServiceClient(), "92236f39-0fad-4f8f-bf25-fbdf027de34d").Extract()
+		context.TODO(), client.ServiceClient(fakeServer), "92236f39-0fad-4f8f-bf25-fbdf027de34d").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstTransferAccept, actual)
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateSuccessfully(t, fakeServer)
 
 	createOpts := transferAccepts.CreateOpts{
 		Key:                   "M2KA0Y20",
@@ -79,7 +79,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	actual, err := transferAccepts.Create(
-		context.TODO(), client.ServiceClient(), createOpts).Extract()
+		context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedTransferAccept, actual)
 }

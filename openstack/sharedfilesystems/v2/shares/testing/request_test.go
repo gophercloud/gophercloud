@@ -11,10 +11,10 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	options := &shares.CreateOpts{
 		Size:       1,
@@ -25,7 +25,7 @@ func TestCreate(t *testing.T) {
 			DifferentHost: "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
 		},
 	}
-	n, err := shares.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := shares.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "my_test_share")
@@ -36,10 +36,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateResponse(t)
+	MockUpdateResponse(t, fakeServer)
 
 	name := "my_new_test_share"
 	description := ""
@@ -49,7 +49,7 @@ func TestUpdate(t *testing.T) {
 		DisplayDescription: &description,
 		IsPublic:           &iFalse,
 	}
-	n, err := shares.Update(context.TODO(), client.ServiceClient(), shareID, options).Extract()
+	n, err := shares.Update(context.TODO(), client.ServiceClient(fakeServer), shareID, options).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "my_new_test_share")
@@ -58,22 +58,22 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
+	MockDeleteResponse(t, fakeServer)
 
-	result := shares.Delete(context.TODO(), client.ServiceClient(), shareID)
+	result := shares.Delete(context.TODO(), client.ServiceClient(fakeServer), shareID)
 	th.AssertNoErr(t, result.Err)
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	s, err := shares.Get(context.TODO(), client.ServiceClient(), shareID).Extract()
+	s, err := shares.Get(context.TODO(), client.ServiceClient(fakeServer), shareID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, s, &shares.Share{
 		AvailabilityZone:   "nova",
@@ -118,12 +118,12 @@ func TestGet(t *testing.T) {
 }
 
 func TestListDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListDetailResponse(t)
+	MockListDetailResponse(t, fakeServer)
 
-	allPages, err := shares.ListDetail(client.ServiceClient(), &shares.ListOpts{}).AllPages(context.TODO())
+	allPages, err := shares.ListDetail(client.ServiceClient(fakeServer), &shares.ListOpts{}).AllPages(context.TODO())
 
 	th.AssertNoErr(t, err)
 
@@ -175,12 +175,12 @@ func TestListDetail(t *testing.T) {
 }
 
 func TestListExportLocationsSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListExportLocationsResponse(t)
+	MockListExportLocationsResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for List Export Locations is 2.9
 	c.Microversion = "2.9"
 
@@ -199,12 +199,12 @@ func TestListExportLocationsSuccess(t *testing.T) {
 }
 
 func TestGetExportLocationSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetExportLocationResponse(t)
+	MockGetExportLocationResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Get Export Location is 2.9
 	c.Microversion = "2.9"
 
@@ -221,12 +221,12 @@ func TestGetExportLocationSuccess(t *testing.T) {
 }
 
 func TestGrantAcessSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGrantAccessResponse(t)
+	MockGrantAccessResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Grant Access is 2.7
 	c.Microversion = "2.7"
 
@@ -250,12 +250,12 @@ func TestGrantAcessSuccess(t *testing.T) {
 }
 
 func TestRevokeAccessSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockRevokeAccessResponse(t)
+	MockRevokeAccessResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Revoke Access is 2.7
 	c.Microversion = "2.7"
 
@@ -266,12 +266,12 @@ func TestRevokeAccessSuccess(t *testing.T) {
 }
 
 func TestListAccessRightsSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListAccessRightsResponse(t)
+	MockListAccessRightsResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Grant Access is 2.7
 	c.Microversion = "2.7"
 
@@ -292,12 +292,12 @@ func TestListAccessRightsSuccess(t *testing.T) {
 }
 
 func TestExtendSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockExtendResponse(t)
+	MockExtendResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Grant Access is 2.7
 	c.Microversion = "2.7"
 
@@ -306,12 +306,12 @@ func TestExtendSuccess(t *testing.T) {
 }
 
 func TestShrinkSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockShrinkResponse(t)
+	MockShrinkResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Grant Access is 2.7
 	c.Microversion = "2.7"
 
@@ -320,12 +320,12 @@ func TestShrinkSuccess(t *testing.T) {
 }
 
 func TestGetMetadataSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetMetadataResponse(t)
+	MockGetMetadataResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 
 	actual, err := shares.GetMetadata(context.TODO(), c, shareID).Extract()
 	th.AssertNoErr(t, err)
@@ -333,12 +333,12 @@ func TestGetMetadataSuccess(t *testing.T) {
 }
 
 func TestGetMetadatumSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetMetadatumResponse(t, "foo")
+	MockGetMetadatumResponse(t, fakeServer, "foo")
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 
 	actual, err := shares.GetMetadatum(context.TODO(), c, shareID, "foo").Extract()
 	th.AssertNoErr(t, err)
@@ -346,12 +346,12 @@ func TestGetMetadatumSuccess(t *testing.T) {
 }
 
 func TestSetMetadataSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockSetMetadataResponse(t)
+	MockSetMetadataResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 
 	actual, err := shares.SetMetadata(context.TODO(), c, shareID, &shares.SetMetadataOpts{Metadata: map[string]string{"foo": "bar"}}).Extract()
 	th.AssertNoErr(t, err)
@@ -359,12 +359,12 @@ func TestSetMetadataSuccess(t *testing.T) {
 }
 
 func TestUpdateMetadataSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUpdateMetadataResponse(t)
+	MockUpdateMetadataResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 
 	actual, err := shares.UpdateMetadata(context.TODO(), c, shareID, &shares.UpdateMetadataOpts{Metadata: map[string]string{"foo": "bar"}}).Extract()
 	th.AssertNoErr(t, err)
@@ -372,24 +372,24 @@ func TestUpdateMetadataSuccess(t *testing.T) {
 }
 
 func TestUnsetMetadataSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteMetadatumResponse(t, "foo")
+	MockDeleteMetadatumResponse(t, fakeServer, "foo")
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 
 	err := shares.DeleteMetadatum(context.TODO(), c, shareID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestRevertSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockRevertResponse(t)
+	MockRevertResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Revert is 2.27
 	c.Microversion = "2.27"
 
@@ -398,12 +398,12 @@ func TestRevertSuccess(t *testing.T) {
 }
 
 func TestResetStatusSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockResetStatusResponse(t)
+	MockResetStatusResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for ResetStatus is 2.7
 	c.Microversion = "2.7"
 
@@ -412,12 +412,12 @@ func TestResetStatusSuccess(t *testing.T) {
 }
 
 func TestForceDeleteSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockForceDeleteResponse(t)
+	MockForceDeleteResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for ForceDelete is 2.7
 	c.Microversion = "2.7"
 
@@ -426,12 +426,12 @@ func TestForceDeleteSuccess(t *testing.T) {
 }
 
 func TestUnmanageSuccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUnmanageResponse(t)
+	MockUnmanageResponse(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	// Client c must have Microversion set; minimum supported microversion for Unmanage is 2.7
 	c.Microversion = "2.7"
 
