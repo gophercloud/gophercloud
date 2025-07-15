@@ -14,6 +14,7 @@ type commonResult struct {
 
 // QueuePage contains a single page of all queues from a List operation.
 type QueuePage struct {
+	serviceURL string
 	pagination.LinkedPageBase
 }
 
@@ -173,7 +174,7 @@ func (r QueuePage) NextPageURL() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return nextPageURL(r.URL.String(), next)
+	return nextPageURL(r.serviceURL, next)
 }
 
 // GetCount value if it request was supplied `WithCount` param

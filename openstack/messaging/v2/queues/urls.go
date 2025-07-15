@@ -47,9 +47,9 @@ func purgeURL(client *gophercloud.ServiceClient, queueName string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "purge")
 }
 
-// builds next page full url based on current url
-func nextPageURL(currentURL string, next string) (string, error) {
-	base, err := url.Parse(currentURL)
+// builds next page full url based on service endpoint
+func nextPageURL(serviceURL string, next string) (string, error) {
+	base, err := url.Parse(serviceURL)
 	if err != nil {
 		return "", err
 	}
@@ -57,5 +57,7 @@ func nextPageURL(currentURL string, next string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return base.ResolveReference(rel).String(), nil
+	combined := base.JoinPath(rel.Path)
+	combined.RawQuery = rel.RawQuery
+	return combined.String(), nil
 }

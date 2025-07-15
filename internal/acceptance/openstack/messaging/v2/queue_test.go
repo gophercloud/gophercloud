@@ -74,10 +74,8 @@ func TestListQueues(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteQueue(t, client, secondQueueName)
 
-	listOpts := queues.ListOpts{
-		Limit:    10,
-		Detailed: true,
-	}
+	// We use limit=1 to regression test https://github.com/gophercloud/gophercloud/issues/3336
+	listOpts := queues.ListOpts{Limit: 1, Detailed: true}
 
 	pager := queues.List(client, listOpts)
 	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
