@@ -38,7 +38,8 @@ func TestListMessages(t *testing.T) {
 	client, err = clients.NewMessagingV2Client(clientID)
 	th.AssertNoErr(t, err)
 
-	listOpts := messages.ListOpts{}
+	// We use limit=1 to regression test https://github.com/gophercloud/gophercloud/issues/3336
+	listOpts := messages.ListOpts{Limit: 1}
 
 	pager := messages.List(client, createdQueueName, listOpts)
 	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
