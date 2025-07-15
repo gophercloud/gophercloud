@@ -11,7 +11,7 @@ import (
 type SinglePageBase PageResult
 
 // NextPageURL always returns "" to indicate that there are no more pages to return.
-func (current SinglePageBase) NextPageURL() (string, error) {
+func (current SinglePageBase) NextPageURL(endpointURL string) (string, error) {
 	return "", nil
 }
 

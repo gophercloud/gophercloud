@@ -33,7 +33,7 @@ type AddressGroupPage struct {
 // NextPageURL is invoked when a paginated collection of address groups has
 // reached the end of a page and the pager seeks to traverse over a new one. In
 // order to do this, it needs to construct the next page's URL.
-func (r AddressGroupPage) NextPageURL() (string, error) {
+func (r AddressGroupPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"address_groups_links"`
 	}

@@ -65,7 +65,7 @@ func (r CredentialPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r CredentialPage) NextPageURL() (string, error) {
+func (r CredentialPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

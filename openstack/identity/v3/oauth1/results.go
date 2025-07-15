@@ -61,7 +61,7 @@ func (c ConsumersPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (c ConsumersPage) NextPageURL() (string, error) {
+func (c ConsumersPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`
@@ -221,7 +221,7 @@ func (r AccessTokensPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r AccessTokensPage) NextPageURL() (string, error) {
+func (r AccessTokensPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`
@@ -268,7 +268,7 @@ func (r AccessTokenRolesPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r AccessTokenRolesPage) NextPageURL() (string, error) {
+func (r AccessTokenRolesPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

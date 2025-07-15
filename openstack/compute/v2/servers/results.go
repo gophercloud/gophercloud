@@ -387,7 +387,7 @@ func (r ServerPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (r ServerPage) NextPageURL() (string, error) {
+func (r ServerPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"servers_links"`
 	}

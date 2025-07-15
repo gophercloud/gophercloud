@@ -141,7 +141,7 @@ func (r ExecutionPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL finds the next page URL in a page in order to navigate to the next page of results.
-func (r ExecutionPage) NextPageURL() (string, error) {
+func (r ExecutionPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

@@ -214,7 +214,7 @@ func (r ImagePage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to
 // the next page of results.
-func (r ImagePage) NextPageURL() (string, error) {
+func (r ImagePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

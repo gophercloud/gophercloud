@@ -36,7 +36,7 @@ func (r TenantPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the tenants_links section of the result.
-func (r TenantPage) NextPageURL() (string, error) {
+func (r TenantPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"tenants_links"`
 	}

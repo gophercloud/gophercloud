@@ -117,7 +117,7 @@ func (r VolumePage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (r VolumePage) NextPageURL() (string, error) {
+func (r VolumePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"volumes_links"`
 	}

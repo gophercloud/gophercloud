@@ -115,7 +115,7 @@ func (r WorkflowPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL finds the next page URL in a page in order to navigate to the next page of results.
-func (r WorkflowPage) NextPageURL() (string, error) {
+func (r WorkflowPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

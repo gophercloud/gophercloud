@@ -91,7 +91,7 @@ func (r TaskPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to
 // the next page of results.
-func (r TaskPage) NextPageURL() (string, error) {
+func (r TaskPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}
