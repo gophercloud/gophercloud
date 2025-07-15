@@ -40,8 +40,8 @@ func deleteURL(c *gophercloud.ServiceClient, imageID string) string {
 }
 
 // builds next page full url based on current url
-func nextPageURL(serviceURL, requestedNext string) (string, error) {
-	base, err := utils.BaseEndpoint(serviceURL)
+func nextPageURL(endpointURL, requestedNext string) (string, error) {
+	base, err := utils.BaseEndpoint(endpointURL)
 	if err != nil {
 		return "", err
 	}

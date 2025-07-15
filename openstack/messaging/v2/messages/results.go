@@ -12,7 +12,6 @@ type CreateResult struct {
 
 // MessagePage contains a single page of all clusters from a ListDetails call.
 type MessagePage struct {
-	serviceURL string
 	pagination.LinkedPageBase
 }
 
@@ -128,5 +127,5 @@ func (r MessagePage) NextPageURL(endpointURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return nextPageURL(r.serviceURL, next)
+	return nextPageURL(endpointURL, next)
 }

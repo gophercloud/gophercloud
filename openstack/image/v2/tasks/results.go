@@ -75,7 +75,6 @@ func (r commonResult) Extract() (*Task, error) {
 
 // TaskPage represents the results of a List request.
 type TaskPage struct {
-	serviceURL string
 	pagination.LinkedPageBase
 }
 
@@ -104,7 +103,7 @@ func (r TaskPage) NextPageURL(endpointURL string) (string, error) {
 		return "", nil
 	}
 
-	return nextPageURL(r.serviceURL, s.Next)
+	return nextPageURL(endpointURL, s.Next)
 }
 
 // ExtractTasks interprets the results of a single page from a List() call,
