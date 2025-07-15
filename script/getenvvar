@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pyyaml>=6",
+# ]
+# ///
 
 """
 Set environment variables required for the CI jobs by inspection of the
@@ -14,22 +20,40 @@ To unset them:
 """
 
 import argparse
+import os
 from pathlib import Path
 import sys
 
 import yaml
 
-p = Path('~/.config/openstack/clouds.yaml').expanduser()
 parser = argparse.ArgumentParser()
 parser.add_argument(
     'cloud',
+    default=os.getenv('OS_CLOUD'),
+    nargs='?',
     help="Cloud to export credentials for",
 )
 
 args = parser.parse_args()
 
-with p.open() as fh:
-    data = yaml.safe_load(fh)
+for p in (
+    Path('clouds.yaml'),
+    Path('~/.config/openstack/clouds.yaml').expanduser(),
+    Path('/etc/openstack/clouds.yaml'),
+):
+    if not p.exists():
+        continue
+
+    with p.open() as fh:
+        data = yaml.safe_load(fh)
+        break
+else:
+    print('Could not find clouds.yaml file', file=sys.stderr)
+    sys.exit(1)
+
+if not args.cloud:
+    print('Need to provide cloud argument or set OS_CLOUD', file=sys.stderr)
+    sys.exit(1)
 
 if args.cloud not in data.get('clouds', {}) or {}:
     print(f'Could not find cloud {args.cloud} in {str(p)}', file=sys.stderr)
