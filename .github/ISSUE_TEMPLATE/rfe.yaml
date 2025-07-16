@@ -1,0 +1,18 @@
+name: Feature request
+description: Suggest an idea for this project.
+title: "[RFE]: "
+# type: Feature ## Not supported yet, despite docs saying otherwise: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms#top-level-syntax
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this enhancement request! Check out our [contributor guide](https://github.com/gophercloud/gophercloud/blob/main/docs/contributor-tutorial/step-02-issues.md) to create effective issues.
+  - type: textarea
+    id: what
+    attributes:
+      label: What is missing?
+      description: |
+        Is your feature request related to a problem? Please describe. Also feel free to describe the solution you'd like.
+        If you've found a missing field in an existing struct, please provide a link to the actual service's Python code which defines the missing field.
+    validations:
+      required: true
