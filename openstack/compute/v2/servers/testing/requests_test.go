@@ -1184,11 +1184,11 @@ func TestCreateServerWithHypervisorHostname(t *testing.T) {
 }
 
 func TestUpdateServerHostname(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleServerHostnameUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerHostnameUpdateSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	newHostname := "new-hostname"
 	actual, err := servers.Update(context.TODO(), client, "1234asdf", servers.UpdateOpts{Hostname: &newHostname}).Extract()
 	if err != nil {

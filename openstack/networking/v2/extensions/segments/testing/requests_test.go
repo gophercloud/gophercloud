@@ -12,10 +12,10 @@ import (
 )
 
 func TestGetSegment(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/segments/"+SegmentID1, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/segments/"+SegmentID1, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -23,16 +23,16 @@ func TestGetSegment(t *testing.T) {
 		th.AssertNoErr(t, err)
 	})
 
-	res, err := segments.Get(context.TODO(), fake.ServiceClient(), SegmentID1).Extract()
+	res, err := segments.Get(context.TODO(), fake.ServiceClient(fakeServer), SegmentID1).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, Segment1, *res)
 }
 
 func TestListSegments(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/segments", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/segments", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -41,7 +41,7 @@ func TestListSegments(t *testing.T) {
 	})
 
 	count := 0
-	pager := segments.List(fake.ServiceClient(), nil)
+	pager := segments.List(fake.ServiceClient(fakeServer), nil)
 	err := pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := segments.ExtractSegments(page)
@@ -56,10 +56,10 @@ func TestListSegments(t *testing.T) {
 }
 
 func TestCreateSegment(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/segments", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/segments", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, createRequest)
@@ -77,17 +77,17 @@ func TestCreateSegment(t *testing.T) {
 		Name:            "seg1",
 		Description:     "desc",
 	}
-	actual, err := segments.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	actual, err := segments.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, Segment1, *actual)
 }
 
 func TestUpdateSegment(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/segments/"+SegmentID1, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/segments/"+SegmentID1, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestJSONRequest(t, r, updateRequest)
 
@@ -103,7 +103,7 @@ func TestUpdateSegment(t *testing.T) {
 		Name:        &newName,
 		Description: &newDesc,
 	}
-	actual, err := segments.Update(context.TODO(), fake.ServiceClient(), SegmentID1, opts).Extract()
+	actual, err := segments.Update(context.TODO(), fake.ServiceClient(fakeServer), SegmentID1, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := Segment1
@@ -114,14 +114,14 @@ func TestUpdateSegment(t *testing.T) {
 }
 
 func TestDeleteSegment(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/segments/"+SegmentID1, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/segments/"+SegmentID1, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := segments.Delete(context.TODO(), fake.ServiceClient(), SegmentID1).ExtractErr()
+	err := segments.Delete(context.TODO(), fake.ServiceClient(fakeServer), SegmentID1).ExtractErr()
 	th.AssertNoErr(t, err)
 }
