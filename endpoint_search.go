@@ -119,7 +119,7 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 	if len(eo.Aliases) == 0 {
 		if aliases, ok := ServiceTypeAliases[eo.Type]; ok {
 			// happy path: user requested a service type by its official name
-			eo.Aliases = aliases
+			eo.Aliases = slices.Clone(aliases)
 		} else {
 			// unhappy path: user requested a service type by its alias or an
 			// invalid/unsupported service type
@@ -129,7 +129,7 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 					// we intentionally override the service type, even if it
 					// was explicitly requested by the user
 					eo.Type = t
-					eo.Aliases = aliases
+					eo.Aliases = slices.Clone(aliases)
 				}
 			}
 		}
