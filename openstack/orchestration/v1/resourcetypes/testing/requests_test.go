@@ -6,15 +6,15 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/orchestration/v1/resourcetypes"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestBasicListResourceTypes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
-	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), nil)
+	result := resourcetypes.List(context.TODO(), client.ServiceClient(fakeServer), nil)
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()
@@ -24,11 +24,11 @@ func TestBasicListResourceTypes(t *testing.T) {
 }
 
 func TestFullListResourceTypes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
-	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), resourcetypes.ListOpts{
+	result := resourcetypes.List(context.TODO(), client.ServiceClient(fakeServer), resourcetypes.ListOpts{
 		WithDescription: true,
 	})
 	th.AssertNoErr(t, result.Err)
@@ -40,11 +40,11 @@ func TestFullListResourceTypes(t *testing.T) {
 }
 
 func TestFilteredListResourceTypes(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
-	result := resourcetypes.List(context.TODO(), fake.ServiceClient(), resourcetypes.ListOpts{
+	result := resourcetypes.List(context.TODO(), client.ServiceClient(fakeServer), resourcetypes.ListOpts{
 		NameRegex:       listFilterRegex,
 		WithDescription: true,
 	})
@@ -57,11 +57,11 @@ func TestFilteredListResourceTypes(t *testing.T) {
 }
 
 func TestGetSchema(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSchemaSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSchemaSuccessfully(t, fakeServer)
 
-	result := resourcetypes.GetSchema(context.TODO(), fake.ServiceClient(), "OS::Test::TestServer")
+	result := resourcetypes.GetSchema(context.TODO(), client.ServiceClient(fakeServer), "OS::Test::TestServer")
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()
@@ -71,11 +71,11 @@ func TestGetSchema(t *testing.T) {
 }
 
 func TestGenerateTemplate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGenerateTemplateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGenerateTemplateSuccessfully(t, fakeServer)
 
-	result := resourcetypes.GenerateTemplate(context.TODO(), fake.ServiceClient(), "OS::Heat::None", nil)
+	result := resourcetypes.GenerateTemplate(context.TODO(), client.ServiceClient(fakeServer), "OS::Heat::None", nil)
 	th.AssertNoErr(t, result.Err)
 
 	actual, err := result.Extract()

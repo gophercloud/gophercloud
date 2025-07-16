@@ -178,8 +178,8 @@ var ManilaAllAPIVersionResults = []apiversions.APIVersion{
 	ManilaAPIVersion2Result,
 }
 
-func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -190,8 +190,8 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
-func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -202,8 +202,8 @@ func MockGetResponse(t *testing.T) {
 	})
 }
 
-func MockGetNoResponse(t *testing.T) {
-	th.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
+func MockGetNoResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -214,8 +214,8 @@ func MockGetNoResponse(t *testing.T) {
 	})
 }
 
-func MockGetMultipleResponses(t *testing.T) {
-	th.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
+func MockGetMultipleResponses(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

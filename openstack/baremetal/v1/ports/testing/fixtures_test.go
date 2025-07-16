@@ -169,8 +169,8 @@ var (
 )
 
 // HandlePortListSuccessfully sets up the test server to respond to a port List request.
-func HandlePortListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/ports", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -192,8 +192,8 @@ func HandlePortListSuccessfully(t *testing.T) {
 }
 
 // HandlePortListSuccessfully sets up the test server to respond to a port List request.
-func HandlePortListDetailSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/ports/detail", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortListDetailSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/ports/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -207,8 +207,8 @@ func HandlePortListDetailSuccessfully(t *testing.T) {
 
 // HandleSPortCreationSuccessfully sets up the test server to respond to a port creation request
 // with a given response.
-func HandlePortCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/ports", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -224,8 +224,8 @@ func HandlePortCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandlePortDeletionSuccessfully sets up the test server to respond to a port deletion request.
-func HandlePortDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -233,8 +233,8 @@ func HandlePortDeletionSuccessfully(t *testing.T) {
 	})
 }
 
-func HandlePortGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -243,8 +243,8 @@ func HandlePortGetSuccessfully(t *testing.T) {
 	})
 }
 
-func HandlePortUpdateSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", func(w http.ResponseWriter, r *http.Request) {
+func HandlePortUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")

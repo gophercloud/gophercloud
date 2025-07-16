@@ -153,9 +153,9 @@ var partiualUpdateExpectedQuotaSet = quotasets.QuotaSet{
 }
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
-func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string, uriQueryParams map[string]string) {
+func HandleSuccessfulRequest(t *testing.T, fakeServer th.FakeServer, httpMethod, uriPath, jsonOutput string, uriQueryParams map[string]string) {
 
-	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, httpMethod)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -169,8 +169,8 @@ func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput strin
 }
 
 // HandleDeleteSuccessfully tests quotaset deletion.
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

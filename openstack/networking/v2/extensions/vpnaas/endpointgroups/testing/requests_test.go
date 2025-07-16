@@ -13,10 +13,10 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/vpn/endpoint-groups", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/vpn/endpoint-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -62,7 +62,7 @@ func TestCreate(t *testing.T) {
 			"10.3.0.0/24",
 		},
 	}
-	actual, err := endpointgroups.Create(context.TODO(), fake.ServiceClient(), options).Extract()
+	actual, err := endpointgroups.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 	expected := endpointgroups.EndpointGroup{
 		Name:        "peers",
@@ -80,10 +80,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -108,7 +108,7 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	actual, err := endpointgroups.Get(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	actual, err := endpointgroups.Get(context.TODO(), fake.ServiceClient(fakeServer), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
 	th.AssertNoErr(t, err)
 	expected := endpointgroups.EndpointGroup{
 		Name:        "peers",
@@ -126,10 +126,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/vpn/endpoint-groups", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/vpn/endpoint-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -157,7 +157,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := endpointgroups.List(fake.ServiceClient(), endpointgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := endpointgroups.List(fake.ServiceClient(fakeServer), endpointgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := endpointgroups.ExtractEndpointGroups(page)
 		if err != nil {
@@ -190,24 +190,24 @@ func TestList(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := endpointgroups.Delete(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
+	res := endpointgroups.Delete(context.TODO(), fake.ServiceClient(fakeServer), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -249,7 +249,7 @@ func TestUpdate(t *testing.T) {
 		Description: &updatedDescription,
 	}
 
-	actual, err := endpointgroups.Update(context.TODO(), fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	actual, err := endpointgroups.Update(context.TODO(), fake.ServiceClient(fakeServer), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
 	th.AssertNoErr(t, err)
 	expected := endpointgroups.EndpointGroup{
 		Name:        "updatedname",

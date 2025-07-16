@@ -16,10 +16,10 @@ import (
 )
 
 func TestGetPort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -34,7 +34,7 @@ func TestGetPort(t *testing.T) {
 		ports.Port
 		policies.QoSPolicyExt
 	}
-	err := ports.Get(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d").ExtractInto(&p)
+	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d").ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, p.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
@@ -42,10 +42,10 @@ func TestGetPort(t *testing.T) {
 }
 
 func TestCreatePort(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -70,7 +70,7 @@ func TestCreatePort(t *testing.T) {
 		CreateOptsBuilder: portCreateOpts,
 		QoSPolicyID:       "591e0597-39a6-4665-8149-2111d8de9a08",
 	}
-	err := ports.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&p)
+	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, p.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -80,10 +80,10 @@ func TestCreatePort(t *testing.T) {
 }
 
 func TestUpdatePortWithPolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -108,7 +108,7 @@ func TestUpdatePortWithPolicy(t *testing.T) {
 		UpdateOptsBuilder: portUpdateOpts,
 		QoSPolicyID:       &policyID,
 	}
-	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
+	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, p.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -118,10 +118,10 @@ func TestUpdatePortWithPolicy(t *testing.T) {
 }
 
 func TestUpdatePortWithoutPolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -146,7 +146,7 @@ func TestUpdatePortWithoutPolicy(t *testing.T) {
 		UpdateOptsBuilder: portUpdateOpts,
 		QoSPolicyID:       &policyID,
 	}
-	err := ports.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
+	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, p.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
@@ -156,10 +156,10 @@ func TestUpdatePortWithoutPolicy(t *testing.T) {
 }
 
 func TestGetNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -174,7 +174,7 @@ func TestGetNetwork(t *testing.T) {
 		networks.Network
 		policies.QoSPolicyExt
 	}
-	err := networks.Get(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d").ExtractInto(&n)
+	err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d").ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
@@ -182,10 +182,10 @@ func TestGetNetwork(t *testing.T) {
 }
 
 func TestCreateNetwork(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -210,7 +210,7 @@ func TestCreateNetwork(t *testing.T) {
 		CreateOptsBuilder: networkCreateOpts,
 		QoSPolicyID:       "591e0597-39a6-4665-8149-2111d8de9a08",
 	}
-	err := networks.Create(context.TODO(), fake.ServiceClient(), createOpts).ExtractInto(&n)
+	err := networks.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
@@ -219,10 +219,10 @@ func TestCreateNetwork(t *testing.T) {
 }
 
 func TestUpdateNetworkWithPolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -250,7 +250,7 @@ func TestUpdateNetworkWithPolicy(t *testing.T) {
 		UpdateOptsBuilder: networkUpdateOpts,
 		QoSPolicyID:       &policyID,
 	}
-	err := networks.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&n)
+	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
@@ -260,10 +260,10 @@ func TestUpdateNetworkWithPolicy(t *testing.T) {
 }
 
 func TestUpdateNetworkWithoutPolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/networks/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/networks/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -288,7 +288,7 @@ func TestUpdateNetworkWithoutPolicy(t *testing.T) {
 		UpdateOptsBuilder: networkUpdateOpts,
 		QoSPolicyID:       &policyID,
 	}
-	err := networks.Update(context.TODO(), fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&n)
+	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
@@ -297,10 +297,10 @@ func TestUpdateNetworkWithoutPolicy(t *testing.T) {
 }
 
 func TestListPolicies(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/qos/policies", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -312,7 +312,7 @@ func TestListPolicies(t *testing.T) {
 
 	count := 0
 
-	err := policies.List(fake.ServiceClient(), policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := policies.List(fake.ServiceClient(fakeServer), policies.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := policies.ExtractPolicies(page)
 		if err != nil {
@@ -337,10 +337,10 @@ func TestListPolicies(t *testing.T) {
 }
 
 func TestGetPolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/qos/policies/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -350,7 +350,7 @@ func TestGetPolicy(t *testing.T) {
 		fmt.Fprint(w, GetPolicyResponse)
 	})
 
-	p, err := policies.Get(context.TODO(), fake.ServiceClient(), "30a57f4a-336b-4382-8275-d708babd2241").Extract()
+	p, err := policies.Get(context.TODO(), fake.ServiceClient(fakeServer), "30a57f4a-336b-4382-8275-d708babd2241").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "bw-limiter", p.Name)
@@ -374,10 +374,10 @@ func TestGetPolicy(t *testing.T) {
 }
 
 func TestCreatePolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/qos/policies", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -396,7 +396,7 @@ func TestCreatePolicy(t *testing.T) {
 		IsDefault:   true,
 		Description: "use-me",
 	}
-	p, err := policies.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	p, err := policies.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "shared-default-policy", p.Name)
@@ -412,10 +412,10 @@ func TestCreatePolicy(t *testing.T) {
 }
 
 func TestUpdatePolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/qos/policies/d6ae28ce-fcb5-4180-aa62-d260a27e09ae", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies/d6ae28ce-fcb5-4180-aa62-d260a27e09ae", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -435,7 +435,7 @@ func TestUpdatePolicy(t *testing.T) {
 		Shared:      &shared,
 		Description: &description,
 	}
-	p, err := policies.Update(context.TODO(), fake.ServiceClient(), "d6ae28ce-fcb5-4180-aa62-d260a27e09ae", opts).Extract()
+	p, err := policies.Update(context.TODO(), fake.ServiceClient(fakeServer), "d6ae28ce-fcb5-4180-aa62-d260a27e09ae", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "new-name", p.Name)
@@ -451,15 +451,15 @@ func TestUpdatePolicy(t *testing.T) {
 }
 
 func TestDeletePolicy(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/qos/policies/d6ae28ce-fcb5-4180-aa62-d260a27e09ae", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies/d6ae28ce-fcb5-4180-aa62-d260a27e09ae", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := policies.Delete(context.TODO(), fake.ServiceClient(), "d6ae28ce-fcb5-4180-aa62-d260a27e09ae")
+	res := policies.Delete(context.TODO(), fake.ServiceClient(fakeServer), "d6ae28ce-fcb5-4180-aa62-d260a27e09ae")
 	th.AssertNoErr(t, res.Err)
 }

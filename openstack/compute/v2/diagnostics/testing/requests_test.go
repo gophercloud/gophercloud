@@ -10,14 +10,14 @@ import (
 )
 
 func TestGetDiagnostics(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	HandleDiagnosticGetSuccessfully(t)
+	HandleDiagnosticGetSuccessfully(t, fakeServer)
 
 	expected := map[string]any{"cpu0_time": float64(173), "memory": float64(524288)}
 
-	res, err := diagnostics.Get(context.TODO(), client.ServiceClient(), "1234asdf").Extract()
+	res, err := diagnostics.Get(context.TODO(), client.ServiceClient(fakeServer), "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, expected, res)

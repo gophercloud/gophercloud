@@ -14,10 +14,10 @@ import (
 const ID = "0123456789"
 
 func TestAuthenticatedClientV3(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -39,10 +39,10 @@ func TestAuthenticatedClientV3(t *testing.T) {
 					]
 				}
 			}
-		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
+		`, fakeServer.Endpoint()+"v3/", fakeServer.Endpoint()+"v2.0/")
 	})
 
-	th.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", ID)
 
 		w.WriteHeader(http.StatusCreated)
@@ -54,7 +54,7 @@ func TestAuthenticatedClientV3(t *testing.T) {
 		Password:         "secret",
 		DomainName:       "default",
 		TenantName:       "project",
-		IdentityEndpoint: th.Endpoint(),
+		IdentityEndpoint: fakeServer.Endpoint(),
 	}
 	client, err := openstack.AuthenticatedClient(context.TODO(), options)
 	th.AssertNoErr(t, err)
@@ -62,10 +62,10 @@ func TestAuthenticatedClientV3(t *testing.T) {
 }
 
 func TestAuthenticatedClientV2(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -87,10 +87,10 @@ func TestAuthenticatedClientV2(t *testing.T) {
 					]
 				}
 			}
-		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
+		`, fakeServer.Endpoint()+"v3/", fakeServer.Endpoint()+"v2.0/")
 	})
 
-	th.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `
 			{
 				"access": {
@@ -157,7 +157,7 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username:         "me",
 		Password:         "secret",
-		IdentityEndpoint: th.Endpoint(),
+		IdentityEndpoint: fakeServer.Endpoint(),
 	}
 	client, err := openstack.AuthenticatedClient(context.TODO(), options)
 	th.AssertNoErr(t, err)
@@ -165,10 +165,10 @@ func TestAuthenticatedClientV2(t *testing.T) {
 }
 
 func TestIdentityAdminV3Client(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -190,10 +190,10 @@ func TestIdentityAdminV3Client(t *testing.T) {
 					]
 				}
 			}
-		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
+		`, fakeServer.Endpoint()+"v3/", fakeServer.Endpoint()+"v2.0/")
 	})
 
-	th.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", ID)
 
 		w.WriteHeader(http.StatusCreated)
@@ -282,7 +282,7 @@ func TestIdentityAdminV3Client(t *testing.T) {
 		Username:         "me",
 		Password:         "secret",
 		DomainID:         "12345",
-		IdentityEndpoint: th.Endpoint(),
+		IdentityEndpoint: fakeServer.Endpoint(),
 	}
 	pc, err := openstack.AuthenticatedClient(context.TODO(), options)
 	th.AssertNoErr(t, err)

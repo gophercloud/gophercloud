@@ -15,12 +15,12 @@ import (
 )
 
 func TestListFlavors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := flavors.List(fake.ServiceClient(), flavors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := flavors.List(fake.ServiceClient(fakeServer), flavors.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := flavors.ExtractFlavors(page)
@@ -45,8 +45,8 @@ func TestListFlavors(t *testing.T) {
 }
 
 func TestListFlavorsEnabled(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
 	func() {
 		testCases := []string{
@@ -56,7 +56,7 @@ func TestListFlavorsEnabled(t *testing.T) {
 		}
 
 		cases := 0
-		th.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
+		fakeServer.Mux.HandleFunc("/v2.0/lbaas/flavors", func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -81,7 +81,7 @@ func TestListFlavorsEnabled(t *testing.T) {
 		nilBool,
 	}
 	for _, filter := range filters {
-		allPages, err := flavors.List(fake.ServiceClient(), flavors.ListOpts{Enabled: filter}).AllPages(context.TODO())
+		allPages, err := flavors.List(fake.ServiceClient(fakeServer), flavors.ListOpts{Enabled: filter}).AllPages(context.TODO())
 		th.AssertNoErr(t, err)
 		_, err = flavors.ExtractFlavors(allPages)
 		th.AssertNoErr(t, err)
@@ -89,11 +89,11 @@ func TestListFlavorsEnabled(t *testing.T) {
 }
 
 func TestListAllFlavors(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorListSuccessfully(t, fakeServer)
 
-	allPages, err := flavors.List(fake.ServiceClient(), flavors.ListOpts{}).AllPages(context.TODO())
+	allPages, err := flavors.List(fake.ServiceClient(fakeServer), flavors.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := flavors.ExtractFlavors(allPages)
 	th.AssertNoErr(t, err)
@@ -102,11 +102,11 @@ func TestListAllFlavors(t *testing.T) {
 }
 
 func TestCreateFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorCreationSuccessfully(t, SingleFlavorBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorCreationSuccessfully(t, fakeServer, SingleFlavorBody)
 
-	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{
+	actual, err := flavors.Create(context.TODO(), fake.ServiceClient(fakeServer), flavors.CreateOpts{
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
 		Enabled:         true,
@@ -118,18 +118,21 @@ func TestCreateFlavor(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := flavors.Create(context.TODO(), fake.ServiceClient(), flavors.CreateOpts{})
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	res := flavors.Create(context.TODO(), fake.ServiceClient(fakeServer), flavors.CreateOpts{})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
 func TestGetFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorGetSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := flavors.Get(context.TODO(), client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
@@ -139,20 +142,20 @@ func TestGetFlavor(t *testing.T) {
 }
 
 func TestDeleteFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorDeletionSuccessfully(t, fakeServer)
 
-	res := flavors.Delete(context.TODO(), fake.ServiceClient(), "5548c807-e6e8-43d7-9ea4-b38d34dd74a0")
+	res := flavors.Delete(context.TODO(), fake.ServiceClient(fakeServer), "5548c807-e6e8-43d7-9ea4-b38d34dd74a0")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpdateFlavor(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleFlavorUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorUpdateSuccessfully(t, fakeServer)
 
-	client := fake.ServiceClient()
+	client := fake.ServiceClient(fakeServer)
 	actual, err := flavors.Update(context.TODO(), client, "5548c807-e6e8-43d7-9ea4-b38d34dd74a0", flavors.UpdateOpts{
 		Name:        "Basic v2",
 		Description: "Rename flavor",

@@ -63,8 +63,8 @@ var CreateInterfacesExpected = attachinterfaces.Interface{
 }
 
 // HandleInterfaceListSuccessfully sets up the test server to respond to a ListInterfaces request.
-func HandleInterfaceListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface", func(w http.ResponseWriter, r *http.Request) {
+func HandleInterfaceListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -93,8 +93,8 @@ func HandleInterfaceListSuccessfully(t *testing.T) {
 }
 
 // HandleInterfaceGetSuccessfully sets up the test server to respond to a GetInterface request.
-func HandleInterfaceGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface/0dde1598-b374-474e-986f-5b8dd1df1d4e", func(w http.ResponseWriter, r *http.Request) {
+func HandleInterfaceGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface/0dde1598-b374-474e-986f-5b8dd1df1d4e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -122,8 +122,8 @@ func HandleInterfaceGetSuccessfully(t *testing.T) {
 }
 
 // HandleInterfaceCreateSuccessfully sets up the test server to respond to a CreateInterface request.
-func HandleInterfaceCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface", func(w http.ResponseWriter, r *http.Request) {
+func HandleInterfaceCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -152,8 +152,8 @@ func HandleInterfaceCreateSuccessfully(t *testing.T) {
 }
 
 // HandleInterfaceDeleteSuccessfully sets up the test server to respond to a DeleteInterface request.
-func HandleInterfaceDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface/0dde1598-b374-474e-986f-5b8dd1df1d4e", func(w http.ResponseWriter, r *http.Request) {
+func HandleInterfaceDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface/0dde1598-b374-474e-986f-5b8dd1df1d4e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

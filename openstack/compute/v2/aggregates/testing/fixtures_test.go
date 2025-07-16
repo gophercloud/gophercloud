@@ -258,8 +258,8 @@ var (
 )
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-aggregates", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-aggregates", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -268,8 +268,8 @@ func HandleListSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-aggregates", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-aggregates", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -278,9 +278,9 @@ func HandleCreateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleDeleteSuccessfully(t *testing.T) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	v := strconv.Itoa(AggregateIDtoDelete)
-	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -288,9 +288,9 @@ func HandleDeleteSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleGetSuccessfully(t *testing.T) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	v := strconv.Itoa(AggregateIDtoGet)
-	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -299,9 +299,9 @@ func HandleGetSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleUpdateSuccessfully(t *testing.T) {
+func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	v := strconv.Itoa(AggregateIDtoUpdate)
-	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -310,9 +310,9 @@ func HandleUpdateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleAddHostSuccessfully(t *testing.T) {
+func HandleAddHostSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	v := strconv.Itoa(AggregateWithAddedHost.ID)
-	th.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -321,9 +321,9 @@ func HandleAddHostSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleRemoveHostSuccessfully(t *testing.T) {
+func HandleRemoveHostSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	v := strconv.Itoa(AggregateWithRemovedHost.ID)
-	th.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -332,9 +332,9 @@ func HandleRemoveHostSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleSetMetadataSuccessfully(t *testing.T) {
+func HandleSetMetadataSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	v := strconv.Itoa(AggregateWithUpdatedMetadata.ID)
-	th.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

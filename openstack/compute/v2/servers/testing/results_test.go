@@ -102,11 +102,11 @@ KSde3I0ybDz7iS2EtceKB7m4C0slYd+oBkm4efuF00rCOKDwpFq45m0=
 }
 
 func TestListAddressesAllPages(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAddressListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAddressListSuccessfully(t, fakeServer)
 
-	allPages, err := servers.ListAddresses(client.ServiceClient(), "asdfasdfasdf").AllPages(context.TODO())
+	allPages, err := servers.ListAddresses(client.ServiceClient(fakeServer), "asdfasdfasdf").AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	_, err = servers.ExtractAddresses(allPages)
 	th.AssertNoErr(t, err)

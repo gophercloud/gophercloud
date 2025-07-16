@@ -8,16 +8,16 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/remoteconsoles"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/servers/b16ba811-199d-4ffd-8839-ba96c1185a67/remote-consoles", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/servers/b16ba811-199d-4ffd-8839-ba96c1185a67/remote-consoles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, RemoteConsoleCreateRequest)
@@ -32,7 +32,7 @@ func TestCreate(t *testing.T) {
 		Protocol: remoteconsoles.ConsoleProtocolVNC,
 		Type:     remoteconsoles.ConsoleTypeNoVNC,
 	}
-	s, err := remoteconsoles.Create(context.TODO(), fake.ServiceClient(), "b16ba811-199d-4ffd-8839-ba96c1185a67", opts).Extract()
+	s, err := remoteconsoles.Create(context.TODO(), client.ServiceClient(fakeServer), "b16ba811-199d-4ffd-8839-ba96c1185a67", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Protocol, string(remoteconsoles.ConsoleProtocolVNC))

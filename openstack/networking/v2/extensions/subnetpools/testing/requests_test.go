@@ -14,10 +14,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/subnetpools", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := subnetpools.List(fake.ServiceClient(), subnetpools.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := subnetpools.List(fake.ServiceClient(fakeServer), subnetpools.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := subnetpools.ExtractSubnetPools(page)
 		if err != nil {
@@ -56,10 +56,10 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/subnetpools/0a738452-8057-4ad3-89c2-92f6a74afa76", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools/0a738452-8057-4ad3-89c2-92f6a74afa76", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -69,7 +69,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, SubnetPoolGetResult)
 	})
 
-	s, err := subnetpools.Get(context.TODO(), fake.ServiceClient(), "0a738452-8057-4ad3-89c2-92f6a74afa76").Extract()
+	s, err := subnetpools.Get(context.TODO(), fake.ServiceClient(fakeServer), "0a738452-8057-4ad3-89c2-92f6a74afa76").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ID, "0a738452-8057-4ad3-89c2-92f6a74afa76")
@@ -93,10 +93,10 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.RevisionNumber, 2)
 }
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/subnetpools", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -120,7 +120,7 @@ func TestCreate(t *testing.T) {
 		AddressScopeID: "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
 		Description:    "ipv4 prefixes",
 	}
-	s, err := subnetpools.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	s, err := subnetpools.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "my_ipv4_pool")
@@ -135,10 +135,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -164,7 +164,7 @@ func TestUpdate(t *testing.T) {
 		DefaultQuota:   &nullInt,
 		Description:    &nullString,
 	}
-	n, err := subnetpools.Update(context.TODO(), fake.ServiceClient(), "099546ca-788d-41e5-a76d-17d8cd282d3e", updateOpts).Extract()
+	n, err := subnetpools.Update(context.TODO(), fake.ServiceClient(fakeServer), "099546ca-788d-41e5-a76d-17d8cd282d3e", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_subnetpool_name")
@@ -181,15 +181,15 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := subnetpools.Delete(context.TODO(), fake.ServiceClient(), "099546ca-788d-41e5-a76d-17d8cd282d3e")
+	res := subnetpools.Delete(context.TODO(), fake.ServiceClient(fakeServer), "099546ca-788d-41e5-a76d-17d8cd282d3e")
 	th.AssertNoErr(t, res.Err)
 }

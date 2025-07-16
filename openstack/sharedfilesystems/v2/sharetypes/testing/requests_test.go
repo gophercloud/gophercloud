@@ -12,10 +12,10 @@ import (
 
 // Verifies that a share type can be created correctly
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockCreateResponse(t)
+	MockCreateResponse(t, fakeServer)
 
 	snapshotSupport := true
 	extraSpecs := sharetypes.ExtraSpecsOpts{
@@ -29,7 +29,7 @@ func TestCreate(t *testing.T) {
 		ExtraSpecs: extraSpecs,
 	}
 
-	st, err := sharetypes.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	st, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, st.Name, "my_new_share_type")
@@ -37,12 +37,15 @@ func TestCreate(t *testing.T) {
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
-func TestCreateFails(t *testing.T) {
+func TestRequiredCreateOpts(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
 	options := &sharetypes.CreateOpts{
 		Name: "my_new_share_type",
 	}
 
-	_, err := sharetypes.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	_, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
@@ -55,7 +58,7 @@ func TestCreateFails(t *testing.T) {
 		ExtraSpecs: extraSpecs,
 	}
 
-	_, err = sharetypes.Create(context.TODO(), client.ServiceClient(), options).Extract()
+	_, err = sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
@@ -63,22 +66,22 @@ func TestCreateFails(t *testing.T) {
 
 // Verifies that share type deletion works
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockDeleteResponse(t)
-	res := sharetypes.Delete(context.TODO(), client.ServiceClient(), "shareTypeID")
+	MockDeleteResponse(t, fakeServer)
+	res := sharetypes.Delete(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID")
 	th.AssertNoErr(t, res.Err)
 }
 
 // Verifies that share types can be listed correctly
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockListResponse(t)
+	MockListResponse(t, fakeServer)
 
-	allPages, err := sharetypes.List(client.ServiceClient(), &sharetypes.ListOpts{}).AllPages(context.TODO())
+	allPages, err := sharetypes.List(client.ServiceClient(fakeServer), &sharetypes.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	actual, err := sharetypes.ExtractShareTypes(allPages)
 	th.AssertNoErr(t, err)
@@ -104,10 +107,10 @@ func TestList(t *testing.T) {
 
 // Verifies that it is possible to get the default share type
 func TestGetDefault(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetDefaultResponse(t)
+	MockGetDefaultResponse(t, fakeServer)
 
 	expected := sharetypes.ShareType{
 		ID:                 "be27425c-f807-4500-a056-d00721db45cf",
@@ -116,19 +119,19 @@ func TestGetDefault(t *testing.T) {
 		RequiredExtraSpecs: map[string]any(nil),
 	}
 
-	actual, err := sharetypes.GetDefault(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := sharetypes.GetDefault(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
 
 // Verifies that it is possible to get the extra specifications for a share type
 func TestGetExtraSpecs(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetExtraSpecsResponse(t)
+	MockGetExtraSpecsResponse(t, fakeServer)
 
-	st, err := sharetypes.GetExtraSpecs(context.TODO(), client.ServiceClient(), "shareTypeID").Extract()
+	st, err := sharetypes.GetExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, st["snapshot_support"], "True")
@@ -138,16 +141,16 @@ func TestGetExtraSpecs(t *testing.T) {
 
 // Verifies that an extra specs can be added to a share type
 func TestSetExtraSpecs(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockSetExtraSpecsResponse(t)
+	MockSetExtraSpecsResponse(t, fakeServer)
 
 	options := &sharetypes.SetExtraSpecsOpts{
 		ExtraSpecs: map[string]any{"my_key": "my_value"},
 	}
 
-	es, err := sharetypes.SetExtraSpecs(context.TODO(), client.ServiceClient(), "shareTypeID", options).Extract()
+	es, err := sharetypes.SetExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, es["my_key"], "my_value")
@@ -155,20 +158,20 @@ func TestSetExtraSpecs(t *testing.T) {
 
 // Verifies that an extra specification can be unset for a share type
 func TestUnsetExtraSpecs(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockUnsetExtraSpecsResponse(t)
-	res := sharetypes.UnsetExtraSpecs(context.TODO(), client.ServiceClient(), "shareTypeID", "my_key")
+	MockUnsetExtraSpecsResponse(t, fakeServer)
+	res := sharetypes.UnsetExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID", "my_key")
 	th.AssertNoErr(t, res.Err)
 }
 
 // Verifies that it is possible to see the access for a share type
 func TestShowAccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockShowAccessResponse(t)
+	MockShowAccessResponse(t, fakeServer)
 
 	expected := []sharetypes.ShareTypeAccess{
 		{
@@ -181,7 +184,7 @@ func TestShowAccess(t *testing.T) {
 		},
 	}
 
-	shareType, err := sharetypes.ShowAccess(context.TODO(), client.ServiceClient(), "shareTypeID").Extract()
+	shareType, err := sharetypes.ShowAccess(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID").Extract()
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, expected, shareType)
@@ -189,30 +192,30 @@ func TestShowAccess(t *testing.T) {
 
 // Verifies that an access can be added to a share type
 func TestAddAccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockAddAccessResponse(t)
+	MockAddAccessResponse(t, fakeServer)
 
 	options := &sharetypes.AccessOpts{
 		Project: "e1284adea3ee4d2482af5ed214f3ad90",
 	}
 
-	err := sharetypes.AddAccess(context.TODO(), client.ServiceClient(), "shareTypeID", options).ExtractErr()
+	err := sharetypes.AddAccess(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 // Verifies that an access can be removed from a share type
 func TestRemoveAccess(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockRemoveAccessResponse(t)
+	MockRemoveAccessResponse(t, fakeServer)
 
 	options := &sharetypes.AccessOpts{
 		Project: "e1284adea3ee4d2482af5ed214f3ad90",
 	}
 
-	err := sharetypes.RemoveAccess(context.TODO(), client.ServiceClient(), "shareTypeID", options).ExtractErr()
+	err := sharetypes.RemoveAccess(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }

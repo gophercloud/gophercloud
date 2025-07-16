@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/fixture"
 )
 
@@ -48,14 +49,14 @@ var listDBsResp = `
 }
 `
 
-func HandleCreate(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "POST", createDBsReq, "", 202)
+func HandleCreate(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "POST", createDBsReq, "", 202)
 }
 
-func HandleList(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "GET", "", listDBsResp, 200)
+func HandleList(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "GET", "", listDBsResp, 200)
 }
 
-func HandleDelete(t *testing.T) {
-	fixture.SetupHandler(t, resURL+"/{dbName}", "DELETE", "", "", 202)
+func HandleDelete(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL+"/{dbName}", "DELETE", "", "", 202)
 }

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 // ExtraSpecsGetBody provides a GET result of the extra_specs for a flavor
@@ -49,10 +49,10 @@ var UpdatedExtraSpec = map[string]string{
 	"hw:cpu_policy": "CPU-POLICY-2",
 }
 
-func HandleExtraSpecsListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/flavors/1/os-extra_specs", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecsListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/flavors/1/os-extra_specs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -61,10 +61,10 @@ func HandleExtraSpecsListSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -73,10 +73,10 @@ func HandleExtraSpecGetSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/flavors/1/os-extra_specs", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecsCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/flavors/1/os-extra_specs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `{
 				"extra_specs": {
@@ -91,10 +91,10 @@ func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `{
 				"hw:cpu_policy":        "CPU-POLICY-2"
@@ -106,10 +106,10 @@ func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleExtraSpecDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
+func HandleExtraSpecDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
 	})

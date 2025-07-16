@@ -71,8 +71,8 @@ func TestIgnoreIfEnvironment(t *testing.T) {
 }
 
 func TestGetRRFileContents(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 	environmentContent := `
 heat_template_version: 2013-05-23
 
@@ -129,10 +129,10 @@ service_db:
 	th.AssertNoErr(t, err)
 
 	// Serve "my_env.yaml" and "my_db.yaml"
-	fakeEnvURL := th.ServeFile(t, baseurl, "my_env.yaml", "application/json", environmentContent)
-	fakeDBURL := th.ServeFile(t, baseurl, "my_db.yaml", "application/json", dbContent)
+	fakeEnvURL := fakeServer.ServeFile(t, baseurl, "my_env.yaml", "application/json", environmentContent)
+	fakeDBURL := fakeServer.ServeFile(t, baseurl, "my_db.yaml", "application/json", dbContent)
 
-	client := fakeClient{BaseClient: getHTTPClient()}
+	client := fakeClient{BaseClient: getHTTPClient(), FakeServer: fakeServer}
 	env := new(Environment)
 	env.Bin = []byte(`{"resource_registry": {"My::WP::Server": "my_env.yaml", "resources": {"my_db_server": {"OS::DBInstance": "my_db.yaml"}}}}`)
 	env.client = client

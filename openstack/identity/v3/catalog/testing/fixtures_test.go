@@ -77,8 +77,8 @@ var ExpectedCatalogSlice = []tokens.CatalogEntry{{
 
 // HandleListCatalogSuccessfully creates an HTTP handler at `/domains` on the
 // test handler mux that responds with a list of two domains.
-func HandleListCatalogSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/auth/catalog", func(w http.ResponseWriter, r *http.Request) {
+func HandleListCatalogSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/auth/catalog", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

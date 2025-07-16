@@ -7,13 +7,13 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/accounts"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestUpdateAccount(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateAccountSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateAccountSuccessfully(t, fakeServer)
 
 	options := &accounts.UpdateOpts{
 		Metadata:          map[string]string{"gophercloud-test": "accounts"},
@@ -21,7 +21,7 @@ func TestUpdateAccount(t *testing.T) {
 		ContentType:       new(string),
 		DetectContentType: new(bool),
 	}
-	res := accounts.Update(context.TODO(), fake.ServiceClient(), options)
+	res := accounts.Update(context.TODO(), client.ServiceClient(fakeServer), options)
 	th.AssertNoErr(t, res.Err)
 
 	expected := &accounts.UpdateHeader{
@@ -33,12 +33,12 @@ func TestUpdateAccount(t *testing.T) {
 }
 
 func TestGetAccount(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetAccountSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetAccountSuccessfully(t, fakeServer)
 
 	expectedMetadata := map[string]string{"Subject": "books", "Quota-Bytes": "42", "Temp-Url-Key": "testsecret"}
-	res := accounts.Get(context.TODO(), fake.ServiceClient(), &accounts.GetOpts{})
+	res := accounts.Get(context.TODO(), client.ServiceClient(fakeServer), &accounts.GetOpts{})
 	th.AssertNoErr(t, res.Err)
 	actualMetadata, _ := res.ExtractMetadata()
 	th.CheckDeepEquals(t, expectedMetadata, actualMetadata)
@@ -60,12 +60,12 @@ func TestGetAccount(t *testing.T) {
 }
 
 func TestGetAccountNoQuota(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetAccountNoQuotaSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetAccountNoQuotaSuccessfully(t, fakeServer)
 
 	expectedMetadata := map[string]string{"Subject": "books"}
-	res := accounts.Get(context.TODO(), fake.ServiceClient(), &accounts.GetOpts{})
+	res := accounts.Get(context.TODO(), client.ServiceClient(fakeServer), &accounts.GetOpts{})
 	th.AssertNoErr(t, res.Err)
 	actualMetadata, _ := res.ExtractMetadata()
 	th.CheckDeepEquals(t, expectedMetadata, actualMetadata)

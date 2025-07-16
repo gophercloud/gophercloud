@@ -13,10 +13,10 @@ import (
 )
 
 func TestList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-scopes", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-scopes", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := addressscopes.List(fake.ServiceClient(), addressscopes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := addressscopes.List(fake.ServiceClient(fakeServer), addressscopes.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 		actual, err := addressscopes.ExtractAddressScopes(page)
 		if err != nil {
@@ -53,10 +53,10 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -66,7 +66,7 @@ func TestGet(t *testing.T) {
 		fmt.Fprint(w, AddressScopesGetResult)
 	})
 
-	s, err := addressscopes.Get(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
+	s, err := addressscopes.Get(context.TODO(), fake.ServiceClient(fakeServer), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.ID, "9cc35860-522a-4d35-974d-51d4b011801e")
@@ -78,10 +78,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-scopes", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-scopes", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -99,7 +99,7 @@ func TestCreate(t *testing.T) {
 		Shared:    true,
 		Name:      "test0",
 	}
-	s, err := addressscopes.Create(context.TODO(), fake.ServiceClient(), opts).Extract()
+	s, err := addressscopes.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "test0")
@@ -111,10 +111,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -133,7 +133,7 @@ func TestUpdate(t *testing.T) {
 		Name:   &newName,
 		Shared: &shared,
 	}
-	s, err := addressscopes.Update(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e", updateOpts).Extract()
+	s, err := addressscopes.Update(context.TODO(), fake.ServiceClient(fakeServer), "9cc35860-522a-4d35-974d-51d4b011801e", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "test1")
@@ -141,15 +141,15 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := addressscopes.Delete(context.TODO(), fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e")
+	res := addressscopes.Delete(context.TODO(), fake.ServiceClient(fakeServer), "9cc35860-522a-4d35-974d-51d4b011801e")
 	th.AssertNoErr(t, res.Err)
 }

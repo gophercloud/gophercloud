@@ -1419,8 +1419,8 @@ var (
 )
 
 // HandleNodeListSuccessfully sets up the test server to respond to a server List request.
-func HandleNodeListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -1442,8 +1442,8 @@ func HandleNodeListSuccessfully(t *testing.T) {
 }
 
 // HandleNodeListSuccessfully sets up the test server to respond to a server List request.
-func HandleNodeListDetailSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/detail", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeListDetailSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
@@ -1457,8 +1457,8 @@ func HandleNodeListDetailSuccessfully(t *testing.T) {
 
 // HandleServerCreationSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
-func HandleNodeCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/nodes", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/nodes", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -1483,8 +1483,8 @@ func HandleNodeCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandleNodeDeletionSuccessfully sets up the test server to respond to a server deletion request.
-func HandleNodeDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1492,8 +1492,8 @@ func HandleNodeDeletionSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleNodeGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1502,8 +1502,8 @@ func HandleNodeGetSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleNodeUpdateSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/nodes/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PATCH")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1514,8 +1514,8 @@ func HandleNodeUpdateSuccessfully(t *testing.T, response string) {
 	})
 }
 
-func HandleNodeValidateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/validate", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeValidateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/validate", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1525,8 +1525,8 @@ func HandleNodeValidateSuccessfully(t *testing.T) {
 }
 
 // HandleInjectNMISuccessfully sets up the test server to respond to a node InjectNMI request
-func HandleInjectNMISuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/management/inject_nmi", func(w http.ResponseWriter, r *http.Request) {
+func HandleInjectNMISuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/management/inject_nmi", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, "{}")
@@ -1536,8 +1536,8 @@ func HandleInjectNMISuccessfully(t *testing.T) {
 }
 
 // HandleSetBootDeviceSuccessfully sets up the test server to respond to a set boot device request for a node
-func HandleSetBootDeviceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/management/boot_device", func(w http.ResponseWriter, r *http.Request) {
+func HandleSetBootDeviceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/management/boot_device", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeBootDeviceBody)
@@ -1547,8 +1547,8 @@ func HandleSetBootDeviceSuccessfully(t *testing.T) {
 }
 
 // HandleGetBootDeviceSuccessfully sets up the test server to respond to a get boot device request for a node
-func HandleGetBootDeviceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/management/boot_device", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetBootDeviceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/management/boot_device", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
@@ -1557,8 +1557,8 @@ func HandleGetBootDeviceSuccessfully(t *testing.T) {
 }
 
 // HandleGetBootDeviceSuccessfully sets up the test server to respond to a get boot device request for a node
-func HandleGetSupportedBootDeviceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/management/boot_device/supported", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSupportedBootDeviceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/management/boot_device/supported", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
@@ -1566,8 +1566,8 @@ func HandleGetSupportedBootDeviceSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleNodeChangeProvisionStateActive(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeChangeProvisionStateActive(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateActiveBody)
@@ -1575,8 +1575,8 @@ func HandleNodeChangeProvisionStateActive(t *testing.T) {
 	})
 }
 
-func HandleNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeChangeProvisionStateActiveWithSteps(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateActiveBodyWithSteps)
@@ -1584,8 +1584,8 @@ func HandleNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
 	})
 }
 
-func HandleNodeChangeProvisionStateClean(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeChangeProvisionStateClean(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateCleanBody)
@@ -1593,8 +1593,8 @@ func HandleNodeChangeProvisionStateClean(t *testing.T) {
 	})
 }
 
-func HandleNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeChangeProvisionStateCleanWithConflict(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateCleanBody)
@@ -1602,8 +1602,8 @@ func HandleNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 	})
 }
 
-func HandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeChangeProvisionStateConfigDrive(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateConfigDriveBody)
@@ -1611,8 +1611,8 @@ func HandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
 	})
 }
 
-func HandleNodeChangeProvisionStateService(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+func HandleNodeChangeProvisionStateService(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateServiceBody)
@@ -1621,8 +1621,8 @@ func HandleNodeChangeProvisionStateService(t *testing.T) {
 }
 
 // HandleChangePowerStateSuccessfully sets up the test server to respond to a change power state request for a node
-func HandleChangePowerStateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
+func HandleChangePowerStateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -1635,8 +1635,8 @@ func HandleChangePowerStateSuccessfully(t *testing.T) {
 }
 
 // HandleChangePowerStateWithConflict sets up the test server to respond to a change power state request for a node with a 409 error
-func HandleChangePowerStateWithConflict(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
+func HandleChangePowerStateWithConflict(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -1648,8 +1648,8 @@ func HandleChangePowerStateWithConflict(t *testing.T) {
 	})
 }
 
-func HandleSetRAIDConfig(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/raid", func(w http.ResponseWriter, r *http.Request) {
+func HandleSetRAIDConfig(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/raid", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
@@ -1668,8 +1668,8 @@ func HandleSetRAIDConfig(t *testing.T) {
 	})
 }
 
-func HandleSetRAIDConfigMaxSize(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/states/raid", func(w http.ResponseWriter, r *http.Request) {
+func HandleSetRAIDConfigMaxSize(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/raid", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
@@ -1688,8 +1688,8 @@ func HandleSetRAIDConfigMaxSize(t *testing.T) {
 	})
 }
 
-func HandleListBIOSSettingsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
+func HandleListBIOSSettingsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1698,8 +1698,8 @@ func HandleListBIOSSettingsSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleListDetailBIOSSettingsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
+func HandleListDetailBIOSSettingsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1708,8 +1708,8 @@ func HandleListDetailBIOSSettingsSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleGetBIOSSettingSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/bios/ProcVirtualization", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetBIOSSettingSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/bios/ProcVirtualization", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1718,8 +1718,8 @@ func HandleGetBIOSSettingSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleGetVendorPassthruMethodsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru/methods", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetVendorPassthruMethodsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru/methods", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1728,8 +1728,8 @@ func HandleGetVendorPassthruMethodsSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleGetAllSubscriptionsVendorPassthruSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetAllSubscriptionsVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1739,8 +1739,8 @@ func HandleGetAllSubscriptionsVendorPassthruSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleGetSubscriptionVendorPassthruSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubscriptionVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1755,8 +1755,8 @@ func HandleGetSubscriptionVendorPassthruSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1775,8 +1775,8 @@ func HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t *testing.
 	})
 }
 
-func HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1791,8 +1791,8 @@ func HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t *tes
 	})
 }
 
-func HandleDeleteSubscriptionVendorPassthruSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSubscriptionVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -1807,8 +1807,8 @@ func HandleDeleteSubscriptionVendorPassthruSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleSetNodeMaintenanceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/maintenance", func(w http.ResponseWriter, r *http.Request) {
+func HandleSetNodeMaintenanceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/maintenance", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeSetMaintenanceBody)
@@ -1817,8 +1817,8 @@ func HandleSetNodeMaintenanceSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleUnsetNodeMaintenanceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/maintenance", func(w http.ResponseWriter, r *http.Request) {
+func HandleUnsetNodeMaintenanceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/maintenance", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -1827,8 +1827,8 @@ func HandleUnsetNodeMaintenanceSuccessfully(t *testing.T) {
 }
 
 // HandleGetInventorySuccessfully sets up the test server to respond to a get inventory request for a node
-func HandleGetInventorySuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/inventory", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetInventorySuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/inventory", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
@@ -1837,8 +1837,8 @@ func HandleGetInventorySuccessfully(t *testing.T) {
 }
 
 // HandleListFirmware
-func HandleListFirmwareSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/firmware", func(w http.ResponseWriter, r *http.Request) {
+func HandleListFirmwareSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/firmware", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
@@ -1846,8 +1846,8 @@ func HandleListFirmwareSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleAttachVirtualMediaSuccessfully(t *testing.T, withSource bool) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
+func HandleAttachVirtualMediaSuccessfully(t *testing.T, fakeServer th.FakeServer, withSource bool) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		if withSource {
@@ -1859,8 +1859,8 @@ func HandleAttachVirtualMediaSuccessfully(t *testing.T, withSource bool) {
 	})
 }
 
-func HandleDetachVirtualMediaSuccessfully(t *testing.T, withType bool) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
+func HandleDetachVirtualMediaSuccessfully(t *testing.T, fakeServer th.FakeServer, withType bool) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		if withType {
@@ -1872,8 +1872,8 @@ func HandleDetachVirtualMediaSuccessfully(t *testing.T, withType bool) {
 	})
 }
 
-func HandleGetVirtualMediaSuccessfully(t *testing.T, attached bool) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetVirtualMediaSuccessfully(t *testing.T, fakeServer th.FakeServer, attached bool) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vmedia", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
@@ -1886,8 +1886,8 @@ func HandleGetVirtualMediaSuccessfully(t *testing.T, attached bool) {
 }
 
 // HandleListVirtualInterfacesSuccessfully sets up the test server to respond to a ListVirtualInterfaces request
-func HandleListVirtualInterfacesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+func HandleListVirtualInterfacesSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vifs",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -1907,8 +1907,8 @@ func HandleListVirtualInterfacesSuccessfully(t *testing.T) {
 }
 
 // HandleAttachVirtualInterfaceSuccessfully sets up the test server to respond to an AttachVirtualInterface request
-func HandleAttachVirtualInterfaceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+func HandleAttachVirtualInterfaceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vifs",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -1921,8 +1921,8 @@ func HandleAttachVirtualInterfaceSuccessfully(t *testing.T) {
 }
 
 // HandleAttachVirtualInterfaceWithPortSuccessfully sets up the test server to respond to an AttachVirtualInterface request with port
-func HandleAttachVirtualInterfaceWithPortSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+func HandleAttachVirtualInterfaceWithPortSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vifs",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -1935,8 +1935,8 @@ func HandleAttachVirtualInterfaceWithPortSuccessfully(t *testing.T) {
 }
 
 // HandleAttachVirtualInterfaceWithPortgroupSuccessfully sets up the test server to respond to an AttachVirtualInterface request with portgroup
-func HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vifs",
+func HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vifs",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -1949,8 +1949,8 @@ func HandleAttachVirtualInterfaceWithPortgroupSuccessfully(t *testing.T) {
 }
 
 // HandleDetachVirtualInterfaceSuccessfully sets up the test server to respond to a DetachVirtualInterface request
-func HandleDetachVirtualInterfaceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/nodes/1234asdf/vifs/1974dcfa-836f-41b2-b541-686c100900e5",
+func HandleDetachVirtualInterfaceSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vifs/1974dcfa-836f-41b2-b541-686c100900e5",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

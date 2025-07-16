@@ -10,11 +10,11 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetSuccessfully(t, fakeServer)
 
-	actual, err := limits.Get(context.TODO(), client.ServiceClient()).Extract()
+	actual, err := limits.Get(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &LimitsResult, actual)
 }

@@ -10,10 +10,10 @@ import (
 )
 
 func TestManageExisting(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockManageExistingResponse(t)
+	MockManageExistingResponse(t, fakeServer)
 
 	options := &manageablevolumes.ManageExistingOpts{
 		Host:             "host@lvm#LVM",
@@ -28,7 +28,7 @@ func TestManageExisting(t *testing.T) {
 			"key2": "value2",
 		},
 	}
-	n, err := manageablevolumes.ManageExisting(context.TODO(), client.ServiceClient(), options).Extract()
+	n, err := manageablevolumes.ManageExisting(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Host, "host@lvm#LVM")

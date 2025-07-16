@@ -9,8 +9,8 @@ import (
 	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func MockManageExistingResponse(t *testing.T) {
-	th.Mux.HandleFunc("/manageable_volumes", func(w http.ResponseWriter, r *http.Request) {
+func MockManageExistingResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/manageable_volumes", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")

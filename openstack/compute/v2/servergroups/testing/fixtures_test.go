@@ -57,9 +57,6 @@ const GetOutputMicroversion = `
     "server_group": {
         "id": "616fb98f-46ca-475e-917e-2563e5a8cd19",
         "name": "test",
-        "policies": [
-            "anti-affinity"
-        ],
         "policy": "anti-affinity",
         "rules": {
           "max_server_per_host": 3
@@ -91,9 +88,6 @@ const CreateOutputMicroversion = `
     "server_group": {
         "id": "616fb98f-46ca-475e-917e-2563e5a8cd19",
         "name": "test",
-        "policies": [
-            "anti-affinity"
-        ],
         "policy": "anti-affinity",
         "rules": {
           "max_server_per_host": 3
@@ -104,8 +98,10 @@ const CreateOutputMicroversion = `
 }
 `
 
-// FirstServerGroup is the first result in ListOutput.
-var FirstServerGroup = servergroups.ServerGroup{
+var policy = "anti-affinity"
+
+// ExpectedServerGroupGet is parsed result from GetOutput.
+var ExpectedServerGroupGet = servergroups.ServerGroup{
 	ID:   "616fb98f-46ca-475e-917e-2563e5a8cd19",
 	Name: "test",
 	Policies: []string{
@@ -115,35 +111,67 @@ var FirstServerGroup = servergroups.ServerGroup{
 	Metadata: map[string]any{},
 }
 
-// SecondServerGroup is the second result in ListOutput.
-var SecondServerGroup = servergroups.ServerGroup{
-	ID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
-	Name: "test2",
-	Policies: []string{
-		"affinity",
+// ExpectedServerGroupGet is parsed result from GetOutputMicroversion.
+var ExpectedServerGroupGetMicroversion = servergroups.ServerGroup{
+	ID:     "616fb98f-46ca-475e-917e-2563e5a8cd19",
+	Name:   "test",
+	Policy: &policy,
+	Rules: &servergroups.Rules{
+		MaxServerPerHost: 3,
 	},
 	Members:  []string{},
 	Metadata: map[string]any{},
 }
 
-// ExpectedServerGroupSlice is the slice of results that should be parsed
+// ExpectedServerGroupList is the slice of results that should be parsed
 // from ListOutput, in the expected order.
-var ExpectedServerGroupSlice = []servergroups.ServerGroup{FirstServerGroup, SecondServerGroup}
+var ExpectedServerGroupList = []servergroups.ServerGroup{
+	{
+		ID:   "616fb98f-46ca-475e-917e-2563e5a8cd19",
+		Name: "test",
+		Policies: []string{
+			"anti-affinity",
+		},
+		Members:  []string{},
+		Metadata: map[string]any{},
+	},
+	{
+		ID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
+		Name: "test2",
+		Policies: []string{
+			"affinity",
+		},
+		Members:  []string{},
+		Metadata: map[string]any{},
+	},
+}
 
-// CreatedServerGroup is the parsed result from CreateOutput.
-var CreatedServerGroup = servergroups.ServerGroup{
+// ExpectedServerGroupCreate is the parsed result from CreateOutput.
+var ExpectedServerGroupCreate = servergroups.ServerGroup{
 	ID:   "616fb98f-46ca-475e-917e-2563e5a8cd19",
 	Name: "test",
 	Policies: []string{
 		"anti-affinity",
+	},
+	Members:  []string{},
+	Metadata: map[string]any{},
+}
+
+// CreatedServerGroup is the parsed result from CreateOutputMicroversion.
+var ExpectedServerGroupCreateMicroversion = servergroups.ServerGroup{
+	ID:     "616fb98f-46ca-475e-917e-2563e5a8cd19",
+	Name:   "test",
+	Policy: &policy,
+	Rules: &servergroups.Rules{
+		MaxServerPerHost: 3,
 	},
 	Members:  []string{},
 	Metadata: map[string]any{},
 }
 
 // HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -154,8 +182,8 @@ func HandleListSuccessfully(t *testing.T) {
 
 // HandleGetSuccessfully configures the test server to respond to a Get request
 // for an existing server group
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -166,8 +194,8 @@ func HandleGetSuccessfully(t *testing.T) {
 
 // HandleGetMicroversionSuccessfully configures the test server to respond to a Get request
 // for an existing server group with microversion set to 2.64
-func HandleGetMicroversionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
+func HandleGetMicroversionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups/4d8c3732-a248-40ed-bebc-539a6ffd25c0", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -178,8 +206,8 @@ func HandleGetMicroversionSuccessfully(t *testing.T) {
 
 // HandleCreateSuccessfully configures the test server to respond to a Create request
 // for a new server group
-func HandleCreateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
@@ -200,17 +228,14 @@ func HandleCreateSuccessfully(t *testing.T) {
 
 // HandleCreateMicroversionSuccessfully configures the test server to respond to a Create request
 // for a new server group with microversion set to 2.64
-func HandleCreateMicroversionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
+func HandleCreateMicroversionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `
 {
     "server_group": {
         "name": "test",
-        "policies": [
-            "anti-affinity"
-        ],
         "policy": "anti-affinity",
         "rules": {
             "max_server_per_host": 3
@@ -226,8 +251,8 @@ func HandleCreateMicroversionSuccessfully(t *testing.T) {
 
 // HandleDeleteSuccessfully configures the test server to respond to a Delete request for a
 // an existing server group
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-server-groups/616fb98f-46ca-475e-917e-2563e5a8cd19", func(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-server-groups/616fb98f-46ca-475e-917e-2563e5a8cd19", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 

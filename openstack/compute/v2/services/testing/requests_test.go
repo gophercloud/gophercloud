@@ -11,12 +11,12 @@ import (
 )
 
 func TestListServicesPre253(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListPre253Successfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListPre253Successfully(t, fakeServer)
 
 	pages := 0
-	err := services.List(client.ServiceClient(), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)
@@ -43,16 +43,16 @@ func TestListServicesPre253(t *testing.T) {
 }
 
 func TestListServices(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListSuccessfully(t, fakeServer)
 
 	pages := 0
 	opts := services.ListOpts{
 		Binary: "fake-binary",
 		Host:   "host123",
 	}
-	err := services.List(client.ServiceClient(), opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(fakeServer), opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)
@@ -79,11 +79,11 @@ func TestListServices(t *testing.T) {
 }
 
 func TestUpdateService(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleUpdateSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	actual, err := services.Update(context.TODO(), client, "fake-service-id", services.UpdateOpts{Status: services.ServiceDisabled}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
@@ -93,11 +93,11 @@ func TestUpdateService(t *testing.T) {
 }
 
 func TestDeleteService(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteSuccessfully(t, fakeServer)
 
-	client := client.ServiceClient()
+	client := client.ServiceClient(fakeServer)
 	res := services.Delete(context.TODO(), client, "fake-service-id")
 
 	th.AssertNoErr(t, res.Err)

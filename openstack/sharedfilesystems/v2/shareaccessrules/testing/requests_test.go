@@ -10,16 +10,15 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/shareaccessrules"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
-	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	MockGetResponse(t)
+	MockGetResponse(t, fakeServer)
 
-	resp := shareaccessrules.Get(context.TODO(), client.ServiceClient(), "507bf114-36f2-4f56-8cf4-857985ca87c1")
+	resp := shareaccessrules.Get(context.TODO(), client.ServiceClient(fakeServer), "507bf114-36f2-4f56-8cf4-857985ca87c1")
 	th.AssertNoErr(t, resp.Err)
 
 	accessRule, err := resp.Extract()
@@ -42,10 +41,10 @@ func TestGet(t *testing.T) {
 	}, accessRule)
 }
 
-func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc(shareAccessRulesEndpoint, func(w http.ResponseWriter, r *http.Request) {
+func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(shareAccessRulesEndpoint, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/datastores"
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/instances"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/fixture"
 )
 
@@ -285,50 +286,50 @@ var expectedInstanceWithFault = instances.Instance{
 	},
 }
 
-func HandleCreate(t *testing.T) {
-	fixture.SetupHandler(t, rootURL, "POST", createReq, createResp, 200)
+func HandleCreate(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, rootURL, "POST", createReq, createResp, 200)
 }
 
-func HandleCreateWithFault(t *testing.T) {
-	fixture.SetupHandler(t, rootURL, "POST", createReq, createWithFaultResp, 200)
+func HandleCreateWithFault(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, rootURL, "POST", createReq, createWithFaultResp, 200)
 }
 
-func HandleList(t *testing.T) {
-	fixture.SetupHandler(t, rootURL, "GET", "", listInstancesResp, 200)
+func HandleList(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, rootURL, "GET", "", listInstancesResp, 200)
 }
 
-func HandleGet(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "GET", "", getInstanceResp, 200)
+func HandleGet(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "GET", "", getInstanceResp, 200)
 }
 
-func HandleDelete(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "DELETE", "", "", 202)
+func HandleDelete(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "DELETE", "", "", 202)
 }
 
-func HandleEnableRoot(t *testing.T) {
-	fixture.SetupHandler(t, uRootURL, "POST", "", enableUserResp, 200)
+func HandleEnableRoot(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, uRootURL, "POST", "", enableUserResp, 200)
 }
 
-func HandleIsRootEnabled(t *testing.T) {
-	fixture.SetupHandler(t, uRootURL, "GET", "", isUserEnabledResp, 200)
+func HandleIsRootEnabled(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, uRootURL, "GET", "", isUserEnabledResp, 200)
 }
 
-func HandleRestart(t *testing.T) {
-	fixture.SetupHandler(t, aURL, "POST", restartReq, "", 202)
+func HandleRestart(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, aURL, "POST", restartReq, "", 202)
 }
 
-func HandleResize(t *testing.T) {
-	fixture.SetupHandler(t, aURL, "POST", resizeReq, "", 202)
+func HandleResize(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, aURL, "POST", resizeReq, "", 202)
 }
 
-func HandleResizeVol(t *testing.T) {
-	fixture.SetupHandler(t, aURL, "POST", resizeVolReq, "", 202)
+func HandleResizeVol(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, aURL, "POST", resizeVolReq, "", 202)
 }
 
-func HandleAttachConfigurationGroup(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "PUT", attachConfigurationGroupReq, "", 202)
+func HandleAttachConfigurationGroup(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "PUT", attachConfigurationGroupReq, "", 202)
 }
 
-func HandleDetachConfigurationGroup(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "PUT", detachConfigurationGroupReq, "", 202)
+func HandleDetachConfigurationGroup(t *testing.T, fakeServer th.FakeServer) {
+	fixture.SetupHandler(t, fakeServer, resURL, "PUT", detachConfigurationGroupReq, "", 202)
 }

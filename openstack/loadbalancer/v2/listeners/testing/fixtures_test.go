@@ -206,8 +206,8 @@ var (
 )
 
 // HandleListenerListSuccessfully sets up the test server to respond to a listener List request.
-func HandleListenerListSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/listeners", func(w http.ResponseWriter, r *http.Request) {
+func HandleListenerListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/listeners", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -229,8 +229,8 @@ func HandleListenerListSuccessfully(t *testing.T) {
 
 // HandleListenerCreationSuccessfully sets up the test server to respond to a listener creation request
 // with a given response.
-func HandleListenerCreationSuccessfully(t *testing.T, response string) {
-	th.Mux.HandleFunc("/v2.0/lbaas/listeners", func(w http.ResponseWriter, r *http.Request) {
+func HandleListenerCreationSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/listeners", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
@@ -260,8 +260,8 @@ func HandleListenerCreationSuccessfully(t *testing.T, response string) {
 }
 
 // HandleListenerGetSuccessfully sets up the test server to respond to a listener Get request.
-func HandleListenerGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+func HandleListenerGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -271,8 +271,8 @@ func HandleListenerGetSuccessfully(t *testing.T) {
 }
 
 // HandleListenerDeletionSuccessfully sets up the test server to respond to a listener deletion request.
-func HandleListenerDeletionSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+func HandleListenerDeletionSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
@@ -281,8 +281,8 @@ func HandleListenerDeletionSuccessfully(t *testing.T) {
 }
 
 // HandleListenerUpdateSuccessfully sets up the test server to respond to a listener Update request.
-func HandleListenerUpdateSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+func HandleListenerUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
@@ -309,8 +309,8 @@ func HandleListenerUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleListenerGetStatsTree sets up the test server to respond to a listener Get stats tree request.
-func HandleListenerGetStatsTree(t *testing.T) {
-	th.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304/stats", func(w http.ResponseWriter, r *http.Request) {
+func HandleListenerGetStatsTree(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/listeners/4ec89087-d057-4e2c-911f-60a3b47ee304/stats", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
