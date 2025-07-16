@@ -103,7 +103,7 @@ type TransferPage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r TransferPage) NextPageURL() (string, error) {
+func (r TransferPage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {

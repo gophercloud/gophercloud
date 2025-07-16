@@ -123,7 +123,7 @@ type ClusterPage struct {
 	pagination.LinkedPageBase
 }
 
-func (r ClusterPage) NextPageURL() (string, error) {
+func (r ClusterPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

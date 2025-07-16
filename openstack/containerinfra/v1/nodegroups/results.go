@@ -74,7 +74,7 @@ type NodeGroupPage struct {
 	pagination.LinkedPageBase
 }
 
-func (r NodeGroupPage) NextPageURL() (string, error) {
+func (r NodeGroupPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

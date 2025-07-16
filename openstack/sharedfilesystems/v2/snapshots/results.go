@@ -81,7 +81,7 @@ type SnapshotPage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r SnapshotPage) NextPageURL() (string, error) {
+func (r SnapshotPage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {

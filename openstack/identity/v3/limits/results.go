@@ -113,7 +113,7 @@ func (r LimitPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r LimitPage) NextPageURL() (string, error) {
+func (r LimitPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

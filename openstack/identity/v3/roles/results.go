@@ -99,7 +99,7 @@ func (r RolePage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r RolePage) NextPageURL() (string, error) {
+func (r RolePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`
@@ -196,7 +196,7 @@ func (r RoleAssignmentPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to
 // the next page of results.
-func (r RoleAssignmentPage) NextPageURL() (string, error) {
+func (r RoleAssignmentPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next string `json:"next"`

@@ -184,7 +184,7 @@ func (c MappingsPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (c MappingsPage) NextPageURL() (string, error) {
+func (c MappingsPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

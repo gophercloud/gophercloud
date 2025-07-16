@@ -21,7 +21,7 @@ type LinkedPageBase struct {
 // NextPageURL extracts the pagination structure from a JSON response and returns the "next" link, if one is present.
 // It assumes that the links are available in a "links" element of the top-level response object.
 // If this is not the case, override NextPageURL on your result type.
-func (current LinkedPageBase) NextPageURL() (string, error) {
+func (current LinkedPageBase) NextPageURL(endpointURL string) (string, error) {
 	var path []string
 	var key string
 

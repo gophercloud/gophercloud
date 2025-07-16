@@ -49,11 +49,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	}
 
 	pager := pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return QueuePage{
-			serviceURL:     client.ServiceURL(),
-			LinkedPageBase: pagination.LinkedPageBase{PageResult: r},
-		}
-
+		return QueuePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 	return pager
 }

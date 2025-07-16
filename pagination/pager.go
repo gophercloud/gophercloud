@@ -25,7 +25,7 @@ var (
 type Page interface {
 	// NextPageURL generates the URL for the page of data that follows this collection.
 	// Return "" if no such page exists.
-	NextPageURL() (string, error)
+	NextPageURL(endpointURL string) (string, error)
 
 	// IsEmpty returns true if this Page has no items in it.
 	IsEmpty() (bool, error)
@@ -123,7 +123,7 @@ func (p Pager) EachPage(ctx context.Context, handler func(context.Context, Page)
 			return nil
 		}
 
-		currentURL, err = currentPage.NextPageURL()
+		currentURL, err = currentPage.NextPageURL(p.client.ServiceURL())
 		if err != nil {
 			return err
 		}

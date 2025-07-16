@@ -151,7 +151,7 @@ func (r DriverPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (r DriverPage) NextPageURL() (string, error) {
+func (r DriverPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"drivers_links"`
 	}

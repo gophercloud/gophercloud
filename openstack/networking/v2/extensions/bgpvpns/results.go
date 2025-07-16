@@ -89,7 +89,7 @@ type BGPVPNPage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r BGPVPNPage) NextPageURL() (string, error) {
+func (r BGPVPNPage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {
@@ -207,7 +207,7 @@ type NetworkAssociationPage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r NetworkAssociationPage) NextPageURL() (string, error) {
+func (r NetworkAssociationPage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {
@@ -316,7 +316,7 @@ type RouterAssociationPage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r RouterAssociationPage) NextPageURL() (string, error) {
+func (r RouterAssociationPage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {
@@ -432,7 +432,7 @@ type PortAssociationPage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r PortAssociationPage) NextPageURL() (string, error) {
+func (r PortAssociationPage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {

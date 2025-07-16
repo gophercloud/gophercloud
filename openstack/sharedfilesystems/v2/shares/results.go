@@ -122,7 +122,7 @@ type SharePage struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (r SharePage) NextPageURL() (string, error) {
+func (r SharePage) NextPageURL(endpointURL string) (string, error) {
 	currentURL := r.URL
 	mark, err := r.Owner.LastMarker()
 	if err != nil {

@@ -59,7 +59,7 @@ func (page QoSPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (page QoSPage) NextPageURL() (string, error) {
+func (page QoSPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"qos_specs_links"`
 	}

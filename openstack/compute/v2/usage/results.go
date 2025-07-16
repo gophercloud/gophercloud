@@ -132,7 +132,7 @@ func (r SingleTenantPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (r SingleTenantPage) NextPageURL() (string, error) {
+func (r SingleTenantPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"tenant_usage_links"`
 	}
@@ -179,7 +179,7 @@ func (r AllTenantsPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (r AllTenantsPage) NextPageURL() (string, error) {
+func (r AllTenantsPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"tenant_usages_links"`
 	}

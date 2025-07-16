@@ -94,7 +94,7 @@ func (r TransferPage) IsEmpty() (bool, error) {
 	return len(transfers) == 0, err
 }
 
-func (page TransferPage) NextPageURL() (string, error) {
+func (page TransferPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"transfers_links"`
 	}

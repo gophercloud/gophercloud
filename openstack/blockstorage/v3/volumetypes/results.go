@@ -38,7 +38,7 @@ func (r VolumeTypePage) IsEmpty() (bool, error) {
 	return len(volumetypes) == 0, err
 }
 
-func (page VolumeTypePage) NextPageURL() (string, error) {
+func (page VolumeTypePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"volume_type_links"`
 	}

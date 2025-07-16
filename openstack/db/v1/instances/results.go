@@ -182,7 +182,7 @@ func (page InstancePage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL will retrieve the next page URL.
-func (page InstancePage) NextPageURL() (string, error) {
+func (page InstancePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"instances_links"`
 	}

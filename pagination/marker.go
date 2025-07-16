@@ -25,7 +25,7 @@ type MarkerPageBase struct {
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (current MarkerPageBase) NextPageURL() (string, error) {
+func (current MarkerPageBase) NextPageURL(endpointURL string) (string, error) {
 	currentURL := current.URL
 
 	mark, err := current.Owner.LastMarker()

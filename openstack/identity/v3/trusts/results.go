@@ -45,7 +45,7 @@ func (t TrustPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (t TrustPage) NextPageURL() (string, error) {
+func (t TrustPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`
@@ -122,7 +122,7 @@ func (r RolesPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r RolesPage) NextPageURL() (string, error) {
+func (r RolesPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

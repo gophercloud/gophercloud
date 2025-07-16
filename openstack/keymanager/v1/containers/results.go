@@ -117,7 +117,7 @@ func (r ContainerPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r ContainerPage) NextPageURL() (string, error) {
+func (r ContainerPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next     string `json:"next"`
 		Previous string `json:"previous"`
@@ -206,7 +206,7 @@ func (r ConsumerPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r ConsumerPage) NextPageURL() (string, error) {
+func (r ConsumerPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next     string `json:"next"`
 		Previous string `json:"previous"`

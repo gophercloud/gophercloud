@@ -44,7 +44,7 @@ func (page DBPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL will retrieve the next page URL.
-func (page DBPage) NextPageURL() (string, error) {
+func (page DBPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"databases_links"`
 	}

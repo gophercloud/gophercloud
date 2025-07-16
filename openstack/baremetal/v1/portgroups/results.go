@@ -95,7 +95,7 @@ func (r PortGroupsPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (r PortGroupsPage) NextPageURL() (string, error) {
+func (r PortGroupsPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"portgroups_links"`
 	}

@@ -44,7 +44,7 @@ func (page UserPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL will retrieve the next page URL.
-func (page UserPage) NextPageURL() (string, error) {
+func (page UserPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"users_links"`
 	}
