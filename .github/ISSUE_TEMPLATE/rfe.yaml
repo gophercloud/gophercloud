@@ -1,7 +1,6 @@
 name: Feature request
 description: Suggest an idea for this project.
-title: "[RFE]: "
-# type: Feature ## Not supported yet, despite docs saying otherwise: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms#top-level-syntax
+type: Feature
 body:
   - type: markdown
     attributes:

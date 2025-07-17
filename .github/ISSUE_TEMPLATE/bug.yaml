@@ -1,7 +1,6 @@
 name: Bug Report
 description: File a bug report.
-title: "[Bug]: "
-# type: Bug ## Not supported yet, despite docs saying otherwise: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms#top-level-syntax
+type: Bug
 body:
   - type: markdown
     attributes:
