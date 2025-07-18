@@ -16,8 +16,6 @@ jobs:
       - name: Run linters
         run: |
           make lint
-      # TODO: Use 'go mod tidy -diff' instead once go 1.23 is out
-      # https://github.com/golang/go/issues/27005
       - name: Ensure go.mod is up-to-date
         run: |
-          if [ $(go mod tidy && git diff | wc -l) -gt 0 ]; then git diff && exit 1; fi
+          if [ $(go mod tidy -diff | wc -l) -gt 0 ]; then git diff && exit 1; fi
