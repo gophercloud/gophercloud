@@ -12,17 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        go-version:
-          - "1.23.0"
-          - "1"
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
-      - name: Setup Go ${{ matrix.go-version }}
+      - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version-file: 'go.mod'
+          cache: true
       - name: Setup environment
         run: |
           # Changing into a different directory to avoid polluting go.sum with "go get"
@@ -37,7 +34,6 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           file: cover.out
-          flag-name: Go-${{ matrix.go-version }}
           parallel: true
   finish:
     permissions:
@@ -50,4 +46,3 @@ jobs:
       uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true
-        carryforward: Go-${{ join(matrix.go-version.*, '-') }}
