@@ -36,7 +36,7 @@ jobs:
             ubuntu_version: "22.04"
             additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
-    name: Deploy OpenStack ${{ matrix.name }} with Heat and run orchestration acceptance tests
+    name: Heat on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
@@ -50,7 +50,8 @@ jobs:
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
-          go-version: '^1.23'
+          go-version-file: 'go.mod'
+          cache: true
       - name: Run Gophercloud acceptance tests
         run: |
           source ${{ github.workspace }}/script/stackenv
