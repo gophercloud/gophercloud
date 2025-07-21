@@ -70,8 +70,26 @@ type UpdateOpts struct {
 	ForcedDown bool `json:"forced_down,omitempty"`
 }
 
+// UpdateOpts2 specifies the base attributes that may be updated on a service.
+type UpdateOpts2 struct {
+	// Status represents the new service status. One of enabled or disabled.
+	Status ServiceStatus `json:"status,omitempty"`
+
+	// DisabledReason represents the reason for disabling a service.
+	DisabledReason string `json:"disabled_reason,omitempty"`
+
+	// ForcedDown is a manual override to tell nova that the service in question
+	// has been fenced manually by the operations team.
+	ForcedDown *bool `json:"forced_down,omitempty"`
+}
+
 // ToServiceUpdateMap formats an UpdateOpts structure into a request body.
 func (opts UpdateOpts) ToServiceUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// ToServiceUpdateMap formats an UpdateOpts2 structure into a request body.
+func (opts UpdateOpts2) ToServiceUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
