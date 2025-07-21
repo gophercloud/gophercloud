@@ -67,7 +67,7 @@ type UpdateOpts struct {
 
 	// ForcedDown is a manual override to tell nova that the service in question
 	// has been fenced manually by the operations team.
-	ForcedDown bool `json:"forced_down,omitempty"`
+	ForcedDown *bool `json:"forced_down,omitempty"`
 }
 
 // ToServiceUpdateMap formats an UpdateOpts structure into a request body.

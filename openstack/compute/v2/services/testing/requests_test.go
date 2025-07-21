@@ -92,6 +92,36 @@ func TestUpdateService(t *testing.T) {
 	th.CheckDeepEquals(t, FakeServiceUpdateBody, *actual)
 }
 
+func TestUpdateServiceForceDown(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleForceDownSuccessfully(t, fakeServer)
+
+	client := client.ServiceClient(fakeServer)
+	trueVal := true
+	actual, err := services.Update(context.TODO(), client, "fake-service-id", services.UpdateOpts{ForcedDown: &trueVal}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, FakeServiceUpdateForceDownBody, *actual)
+}
+
+func TestUpdateServiceDisableForceDown(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDisableForceDownSuccessfully(t, fakeServer)
+
+	client := client.ServiceClient(fakeServer)
+	falseVal := false
+	actual, err := services.Update(context.TODO(), client, "fake-service-id", services.UpdateOpts{ForcedDown: &falseVal}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, FakeServiceUpdateBody, *actual)
+}
+
 func TestDeleteService(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
