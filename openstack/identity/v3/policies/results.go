@@ -100,7 +100,7 @@ func (r PolicyPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r PolicyPage) NextPageURL() (string, error) {
+func (r PolicyPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

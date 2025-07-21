@@ -99,7 +99,7 @@ func (r RegionPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r RegionPage) NextPageURL() (string, error) {
+func (r RegionPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

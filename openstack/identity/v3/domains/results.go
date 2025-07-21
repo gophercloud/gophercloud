@@ -67,7 +67,7 @@ func (r DomainPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r DomainPage) NextPageURL() (string, error) {
+func (r DomainPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

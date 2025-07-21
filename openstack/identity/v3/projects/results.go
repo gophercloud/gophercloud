@@ -122,7 +122,7 @@ func (r ProjectPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r ProjectPage) NextPageURL() (string, error) {
+func (r ProjectPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

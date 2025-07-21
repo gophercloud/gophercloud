@@ -161,7 +161,7 @@ func (r UserPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r UserPage) NextPageURL() (string, error) {
+func (r UserPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

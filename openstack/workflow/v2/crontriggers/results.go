@@ -139,7 +139,7 @@ func (r CronTriggerPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL finds the next page URL in a page in order to navigate to the next page of results.
-func (r CronTriggerPage) NextPageURL() (string, error) {
+func (r CronTriggerPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

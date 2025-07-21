@@ -107,7 +107,7 @@ func (r RegisteredLimitPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r RegisteredLimitPage) NextPageURL() (string, error) {
+func (r RegisteredLimitPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

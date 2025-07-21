@@ -228,7 +228,7 @@ type Address struct {
 // NextPageURL is invoked when a paginated collection of capsules has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (r CapsulePage) NextPageURL() (string, error) {
+func (r CapsulePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}

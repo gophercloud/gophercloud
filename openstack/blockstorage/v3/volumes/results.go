@@ -123,7 +123,7 @@ func (r VolumePage) IsEmpty() (bool, error) {
 	return len(volumes) == 0, err
 }
 
-func (page VolumePage) NextPageURL() (string, error) {
+func (page VolumePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"volumes_links"`
 	}

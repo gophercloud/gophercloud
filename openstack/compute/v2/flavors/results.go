@@ -137,7 +137,7 @@ func (page FlavorPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (page FlavorPage) NextPageURL() (string, error) {
+func (page FlavorPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"flavors_links"`
 	}

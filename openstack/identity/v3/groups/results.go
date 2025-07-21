@@ -102,7 +102,7 @@ func (r GroupPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r GroupPage) NextPageURL() (string, error) {
+func (r GroupPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

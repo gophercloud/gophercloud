@@ -144,7 +144,7 @@ func (r OrderPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r OrderPage) NextPageURL() (string, error) {
+func (r OrderPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Next     string `json:"next"`
 		Previous string `json:"previous"`

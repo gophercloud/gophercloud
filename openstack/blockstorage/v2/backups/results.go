@@ -121,7 +121,7 @@ func (r BackupPage) IsEmpty() (bool, error) {
 	return len(volumes) == 0, err
 }
 
-func (page BackupPage) NextPageURL() (string, error) {
+func (page BackupPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"backups_links"`
 	}

@@ -109,7 +109,7 @@ func (p ServicePage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r ServicePage) NextPageURL() (string, error) {
+func (r ServicePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`

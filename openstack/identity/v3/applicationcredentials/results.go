@@ -114,7 +114,7 @@ func (r ApplicationCredentialPage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r ApplicationCredentialPage) NextPageURL() (string, error) {
+func (r ApplicationCredentialPage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`
@@ -168,7 +168,7 @@ func (r AccessRulePage) IsEmpty() (bool, error) {
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
-func (r AccessRulePage) NextPageURL() (string, error) {
+func (r AccessRulePage) NextPageURL(endpointURL string) (string, error) {
 	var s struct {
 		Links struct {
 			Next     string `json:"next"`
