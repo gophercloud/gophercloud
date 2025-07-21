@@ -238,11 +238,40 @@ const ServiceUpdate = `
 }
 `
 
+const ServiceUpdateForceDown = `
+{
+	"service":
+	{
+		"id": 1,
+		"binary": "nova-scheduler",
+		"disabled_reason": "test1",
+		"host": "host1",
+		"state": "up",
+		"status": "disabled",
+		"updated_at": "2012-10-29T13:42:02.000000",
+		"forced_down": true,
+		"zone": "internal"
+	}
+}
+`
+
 // FakeServiceUpdateBody represents the updated service
 var FakeServiceUpdateBody = services.Service{
 	Binary:         "nova-scheduler",
 	DisabledReason: "test1",
 	ForcedDown:     false,
+	Host:           "host1",
+	ID:             "1",
+	State:          "up",
+	Status:         "disabled",
+	UpdatedAt:      time.Date(2012, 10, 29, 13, 42, 2, 0, time.UTC),
+	Zone:           "internal",
+}
+
+var FakeServiceUpdateForceDownBody = services.Service{
+	Binary:         "nova-scheduler",
+	DisabledReason: "test1",
+	ForcedDown:     true,
 	Host:           "host1",
 	ID:             "1",
 	State:          "up",
@@ -284,6 +313,34 @@ func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, `{"status": "disabled"}`)
+
+		fmt.Fprint(w, ServiceUpdate)
+	})
+}
+
+// HandleForceDownSuccessfully configures the test server to respond to a Update
+// request to a Compute server with Pike+ release.
+func HandleForceDownSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{"forced_down": true}`)
+
+		fmt.Fprint(w, ServiceUpdateForceDown)
+	})
+}
+
+// HandleDisableForceDownSuccessfully configures the test server to respond to a Update
+// request to a Compute server with Pike+ release.
+func HandleDisableForceDownSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{"forced_down": false}`)
 
 		fmt.Fprint(w, ServiceUpdate)
 	})
