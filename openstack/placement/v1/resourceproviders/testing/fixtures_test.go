@@ -387,3 +387,29 @@ func HandleResourceProviderGetTraits(t *testing.T, fakeServer th.FakeServer) {
 			fmt.Fprint(w, TraitsBody)
 		})
 }
+
+func HandleResourceProviderPutTraits(t *testing.T, fakeServer th.FakeServer) {
+	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(traitsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, TraitsBody)
+		})
+}
+
+func HandleResourceProviderDeleteTraits(t *testing.T, fakeServer th.FakeServer) {
+	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(traitsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
