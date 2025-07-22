@@ -175,3 +175,38 @@ func GetTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceP
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// UpdateTraitsOptsBuilder allows extensions to add additional parameters to the
+// UpdateTraits request.
+type UpdateTraitsOptsBuilder interface {
+	ToResourceProviderUpdateTraitsMap() (map[string]any, error)
+}
+
+// UpdateTraitsOpts represents options used to update traits of a resource provider.
+type UpdateTraitsOpts = ResourceProviderTraits
+
+// ToResourceProviderUpdateTraitsMap constructs a request body from UpdateTraitsOpts.
+func (opts UpdateTraitsOpts) ToResourceProviderUpdateTraitsMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func UpdateTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateTraitsOptsBuilder) (r GetTraitsResult) {
+	b, err := opts.ToResourceProviderUpdateTraitsMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, getResourceProviderTraitsURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func DeleteTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, getResourceProviderTraitsURL(client, resourceProviderID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
