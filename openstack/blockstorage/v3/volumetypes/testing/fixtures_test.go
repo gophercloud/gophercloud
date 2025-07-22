@@ -378,10 +378,10 @@ func MockEncryptionGetSpecResponse(t *testing.T, fakeServer th.FakeServer) {
 	})
 }
 
-func HandleListIsPublicParam(t *testing.T, values map[string]string) {
-	th.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+func HandleListIsPublicParam(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestFormValues(t, r, values)
 
 		w.Header().Add("Content-Type", "application/json")
