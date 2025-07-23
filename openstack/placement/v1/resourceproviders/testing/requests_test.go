@@ -145,3 +145,25 @@ func TestGetResourceProvidersTraits(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedTraits, *actual)
 }
+
+func TestUpdateResourceProvidersTraits(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderPutTraits(t, fakeServer)
+
+	opts := resourceproviders.UpdateTraitsOpts(ExpectedTraits)
+	actual, err := resourceproviders.UpdateTraits(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedTraits, *actual)
+}
+
+func TestDeleteResourceProvidersTraits(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderDeleteTraits(t, fakeServer)
+
+	err := resourceproviders.DeleteTraits(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
