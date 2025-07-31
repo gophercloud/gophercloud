@@ -135,6 +135,18 @@ func TestGetHypervisor(t *testing.T) {
 	th.CheckDeepEquals(t, &expected, actual)
 }
 
+func TestGetWithServersHypervisor(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleHypervisorGetPost253Successfully(t, fakeServer)
+
+	expected := HypervisorFakeWithServers
+	withServers := true
+	actual, err := hypervisors.GetExt(context.TODO(), client.ServiceClient(fakeServer), expected.ID, hypervisors.GetOpts{WithServers: &withServers}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expected, actual)
+}
+
 func TestGetHypervisorEmptyCPUInfo(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
