@@ -329,6 +329,62 @@ const HypervisorGetBody = `
 }
 `
 
+// HypervisorGetPost253Body represents a raw hypervisor GET result with Pike+
+// release with optional server list
+const HypervisorGetPost253Body = `
+{
+    "hypervisor":{
+        "cpu_info":{
+            "arch":"x86_64",
+            "model":"Nehalem",
+            "vendor":"Intel",
+            "features":[
+                "pge",
+                "clflush"
+            ],
+            "topology":{
+                "cores":1,
+                "threads":1,
+                "sockets":4
+            }
+        },
+        "current_workload":0,
+        "status":"enabled",
+        "state":"up",
+        "servers": [
+            {
+                "name": "test_server1",
+                "uuid": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+            },
+            {
+                "name": "test_server2",
+                "uuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+            }
+        ],
+        "disk_available_least":0,
+        "host_ip":"1.1.1.1",
+        "free_disk_gb":1028,
+        "free_ram_mb":7680,
+        "hypervisor_hostname":"fake-mini",
+        "hypervisor_type":"fake",
+        "hypervisor_version":2002000,
+        "id":"c48f6247-abe4-4a24-824e-ea39e108874f",
+        "local_gb":1028,
+        "local_gb_used":0,
+        "memory_mb":8192,
+        "memory_mb_used":512,
+        "running_vms":2,
+        "service":{
+            "host":"e6a37ee802d74863ab8b91ade8f12a67",
+            "id":"9c2566e7-7a54-4777-a1ae-c2662f0c407c",
+            "disabled_reason":null
+        },
+        "vcpus":1,
+        "vcpus_used":0
+    }
+}
+`
+
 // HypervisorGetEmptyCPUInfoBody represents a raw hypervisor GET result with
 // no cpu_info
 const HypervisorGetEmptyCPUInfoBody = `
@@ -478,6 +534,56 @@ var (
 		MemoryMB:           8192,
 		MemoryMBUsed:       512,
 		RunningVMs:         0,
+		Service: hypervisors.Service{
+			Host:           "e6a37ee802d74863ab8b91ade8f12a67",
+			ID:             "9c2566e7-7a54-4777-a1ae-c2662f0c407c",
+			DisabledReason: "",
+		},
+		VCPUs:     1,
+		VCPUsUsed: 0,
+	}
+
+	HypervisorFakeWithServers = hypervisors.Hypervisor{
+		CPUInfo: hypervisors.CPUInfo{
+			Arch:   "x86_64",
+			Model:  "Nehalem",
+			Vendor: "Intel",
+			Features: []string{
+				"pge",
+				"clflush",
+			},
+			Topology: hypervisors.Topology{
+				Cores:   1,
+				Threads: 1,
+				Sockets: 4,
+			},
+		},
+		CurrentWorkload: 0,
+		Status:          "enabled",
+		State:           "up",
+		Servers: &[]hypervisors.Server{
+			{
+				Name: "test_server1",
+				UUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+			},
+			{
+				Name: "test_server2",
+				UUID: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+			},
+		},
+		DiskAvailableLeast: 0,
+		HostIP:             "1.1.1.1",
+		FreeDiskGB:         1028,
+		FreeRamMB:          7680,
+		HypervisorHostname: "fake-mini",
+		HypervisorType:     "fake",
+		HypervisorVersion:  2002000,
+		ID:                 "c48f6247-abe4-4a24-824e-ea39e108874f",
+		LocalGB:            1028,
+		LocalGBUsed:        0,
+		MemoryMB:           8192,
+		MemoryMBUsed:       512,
+		RunningVMs:         2,
 		Service: hypervisors.Service{
 			Host:           "e6a37ee802d74863ab8b91ade8f12a67",
 			ID:             "9c2566e7-7a54-4777-a1ae-c2662f0c407c",
@@ -673,6 +779,20 @@ func HandleHypervisorGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprint(w, HypervisorGetBody)
+	})
+}
+
+func HandleHypervisorGetPost253Successfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hypervisors/"+HypervisorFake.ID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		if r.URL.Query().Get("with_servers") == "true" {
+			fmt.Fprint(w, HypervisorGetPost253Body)
+		} else {
+			fmt.Fprint(w, HypervisorGetBody)
+		}
 	})
 }
 
