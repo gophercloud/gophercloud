@@ -1,3 +1,17 @@
+## v2.8.0 (2025-06-12)
+
+* [GH-3348](https://github.com/gophercloud/gophercloud/pull/3348) [v2] [networking] add ExtractRoutersInto func helper to routers
+* [GH-3361](https://github.com/gophercloud/gophercloud/pull/3361) [v2] octavia: fix http_version type to float
+* [GH-3375](https://github.com/gophercloud/gophercloud/pull/3375) [v2] core: add missing Builder interfaces
+* [GH-3387](https://github.com/gophercloud/gophercloud/pull/3387) [v2] Update the doc of openstack.AuthOptionsFromEnv function
+* [GH-3389](https://github.com/gophercloud/gophercloud/pull/3389) [v2] networking: add constants for statuses
+* [GH-3393](https://github.com/gophercloud/gophercloud/pull/3393) [v2] dns: implement shared zones list
+* [GH-3396](https://github.com/gophercloud/gophercloud/pull/3396) [v2] identity: add support for string boolean in users' enabled member
+* [GH-3397](https://github.com/gophercloud/gophercloud/pull/3397) [v2] Adjust List func to accept a Builder in tenants, routers and security groups packages
+* [GH-3399](https://github.com/gophercloud/gophercloud/pull/3399) [v2] blockstorage: add manage-existing and unmanage api call
+* [GH-3401](https://github.com/gophercloud/gophercloud/pull/3401) [v2] Added address groups to Networking extensions, with tests.
+* [GH-3407](https://github.com/gophercloud/gophercloud/pull/3407) [v2] neutron: add segment_id support to subnets
+
 ## v2.7.0 (2025-04-03)
 
 * [GH-3306](https://github.com/gophercloud/gophercloud/pull/3306) [v2] identity: Add Get endpoint by ID
