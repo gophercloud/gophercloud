@@ -734,7 +734,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile
 	createOpts := flavors.CreateOpts{
 		Name:            flavorName,
 		Description:     description,
-		FlavorProfileId: flavorProfile.ID,
+		FlavorProfileID: flavorProfile.ID,
 		Enabled:         ptr.To(false),
 	}
 
@@ -747,7 +747,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile
 
 	th.AssertEquals(t, flavorName, flavor.Name)
 	th.AssertEquals(t, description, flavor.Description)
-	th.AssertEquals(t, flavorProfile.ID, flavor.FlavorProfileId)
+	th.AssertEquals(t, flavorProfile.ID, flavor.FlavorProfileID)
 	th.AssertEquals(t, false, flavor.Enabled)
 
 	return flavor, nil

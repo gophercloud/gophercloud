@@ -20,7 +20,7 @@ type Flavor struct {
 	Enabled bool `json:"enabled"`
 
 	// Flavor Profile apply to this Flavor.
-	FlavorProfileId string `json:"flavor_profile_id"`
+	FlavorProfileID string `json:"flavor_profile_id"`
 }
 
 // FlavorPage is the page returned by a pager when traversing over a

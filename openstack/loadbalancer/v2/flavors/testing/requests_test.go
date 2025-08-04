@@ -111,7 +111,7 @@ func TestCreateFlavor(t *testing.T) {
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
 		Enabled:         ptr.To(true),
-		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
+		FlavorProfileID: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}).Extract()
 	th.AssertNoErr(t, err)
 
@@ -127,7 +127,7 @@ func TestCreateFlavorDisabled(t *testing.T) {
 		Name:            "Basic",
 		Description:     "A basic standalone Octavia load balancer.",
 		Enabled:         ptr.To(false),
-		FlavorProfileId: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
+		FlavorProfileID: "9daa2768-74e7-4d13-bf5d-1b8e0dc239e1",
 	}).Extract()
 	th.AssertNoErr(t, err)
 
