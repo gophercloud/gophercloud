@@ -123,7 +123,7 @@ type ListConsumersOpts struct {
 
 // ToContainerListConsumersQuery formats a ListConsumersOpts into a query
 // string.
-func (opts ListOpts) ToContainerListConsumersQuery() (string, error) {
+func (opts ListConsumersOpts) ToContainerListConsumersQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
