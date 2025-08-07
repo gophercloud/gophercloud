@@ -163,7 +163,7 @@ func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		}
 	}
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return V2Endpoint(ctx, client, catalog, opts)
+		return V2Endpoint(context.TODO(), client, catalog, opts)
 	}
 
 	return nil
@@ -284,7 +284,7 @@ func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		}
 	}
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return V3Endpoint(ctx, client, catalog, opts)
+		return V3Endpoint(context.TODO(), client, catalog, opts)
 	}
 
 	return nil
