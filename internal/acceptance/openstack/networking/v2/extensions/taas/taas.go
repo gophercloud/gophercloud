@@ -36,9 +36,23 @@ func CreateTapMirror(t *testing.T, client *gophercloud.ServiceClient, portID str
 		return nil, err
 	}
 
-	th.AssertEquals(t, mirror.Name, mirrorName)
-	th.AssertEquals(t, mirror.Description, mirrorDescription)
+	th.AssertEquals(t, mirrorName, mirror.Name)
+	th.AssertEquals(t, mirrorDescription, mirror.Description)
 
 	t.Logf("Created Tap Mirror: %s", mirror.ID)
 	return mirror, nil
+}
+
+// DeleteTapMirror will delete a Tap Mirror with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeleteTapMirror(t *testing.T, client *gophercloud.ServiceClient, mirrorID string) {
+	t.Logf("Attempting to delete Tap Mirror: %s", mirrorID)
+
+	err := tapmirrors.Delete(context.TODO(), client, mirrorID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete Tap Mirror %s: %v", mirrorID, err)
+	}
+
+	t.Logf("Deleted Tap Mirror: %s", mirrorID)
 }
