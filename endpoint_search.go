@@ -79,6 +79,11 @@ type EndpointOpts struct {
 	// Required only for services that span multiple regions.
 	Region string
 
+	// Version [optional] is the major version of the service required. It it not
+	// a microversion. Use this to ensure the correct endpoint is selected when
+	// multiple API versions are available.
+	Version int
+
 	// Availability [optional] is the visibility of the endpoint to be returned.
 	// Valid types include the constants AvailabilityPublic, AvailabilityInternal,
 	// or AvailabilityAdmin from this package.
