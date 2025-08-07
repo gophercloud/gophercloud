@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 type MirrorType string
@@ -62,6 +63,93 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts CreateOptsBu
 		return
 	}
 	resp, err := c.Post(ctx, rootURL(c), b, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Get retrieves a particular Tap Mirror on its ID.
+func Get(ctx context.Context, c *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := c.Get(ctx, resourceURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToTapMirrorListQuery() (string, error)
+}
+
+// ListOpts allows the filtering of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the Endpoint group attributes you want to see returned.
+type ListOpts struct {
+	ProjectID   string     `q:"project_id"`
+	Name        string     `q:"name"`
+	Description string     `q:"description"`
+	TenantID    string     `q:"tenant_id"`
+	PortID      string     `q:"port_id"`
+	MirrorType  MirrorType `q:"mirror_type"`
+	RemoteIP    string     `q:"remote_ip"`
+}
+
+// ToTapMirrorListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToTapMirrorListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// Tap Mirrors. It accepts a ListOpts struct, which allows you to filter
+// the returned collection for greater efficiency.
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := rootURL(c)
+	if opts != nil {
+		query, err := opts.ToTapMirrorListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return TapMirrorPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// Delete will permanently delete a Tap Mirror based on its ID.
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, resourceURL(c, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToTapMirrorUpdateMap() (map[string]any, error)
+}
+
+// UpdateOpts contains the values used when updating a Tap Mirror.
+type UpdateOpts struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
+
+// ToTapMirrorUpdateMap casts an UpdateOpts struct to a map.
+func (opts UpdateOpts) ToTapMirrorUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "tap_mirror")
+}
+
+// Update allows Tap Mirrors to be updated.
+func Update(ctx context.Context, c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToTapMirrorUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(ctx, resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
