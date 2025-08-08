@@ -68,8 +68,8 @@ func TestCreate(t *testing.T) {
 		MirrorType:  tapmirrors.MirrorTypeErspanv1,
 		RemoteIP:    "192.168.54.217",
 		Directions: tapmirrors.Directions{
-			In:  "1",
-			Out: "2",
+			In:  1,
+			Out: 2,
 		},
 	}
 	actual, err := tapmirrors.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
@@ -84,8 +84,8 @@ func TestCreate(t *testing.T) {
 		MirrorType:  "erspanv1",
 		RemoteIP:    "192.168.54.217",
 		Directions: tapmirrors.Directions{
-			In:  "1",
-			Out: "2",
+			In:  1,
+			Out: 2,
 		},
 	}
 	th.AssertDeepEquals(t, expected, *actual)
@@ -134,8 +134,8 @@ func TestGet(t *testing.T) {
 		MirrorType:  "erspanv1",
 		RemoteIP:    "192.168.54.217",
 		Directions: tapmirrors.Directions{
-			In:  "1",
-			Out: "2",
+			In:  1,
+			Out: 2,
 		},
 	}
 	th.AssertDeepEquals(t, expected, *actual)
@@ -207,8 +207,8 @@ func TestList(t *testing.T) {
 				MirrorType:  "erspanv1",
 				RemoteIP:    "192.168.54.217",
 				Directions: tapmirrors.Directions{
-					In:  "1",
-					Out: "2",
+					In:  1,
+					Out: 2,
 				},
 			},
 		}
@@ -283,8 +283,8 @@ func TestUpdate(t *testing.T) {
 		MirrorType:  "erspanv1",
 		RemoteIP:    "192.168.54.217",
 		Directions: tapmirrors.Directions{
-			In:  "1",
-			Out: "2",
+			In:  1,
+			Out: 2,
 		},
 	}
 	th.AssertDeepEquals(t, expected, *actual)

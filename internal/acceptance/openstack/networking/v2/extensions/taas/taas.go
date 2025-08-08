@@ -2,7 +2,6 @@ package taas
 
 import (
 	"context"
-	"strconv"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -26,8 +25,8 @@ func CreateTapMirror(t *testing.T, client *gophercloud.ServiceClient, portID str
 		MirrorType:  tapmirrors.MirrorTypeErspanv1,
 		RemoteIP:    remoteIP,
 		Directions: tapmirrors.Directions{
-			In:  strconv.Itoa(mirrorDirectionIN),
-			Out: strconv.Itoa(mirrorDirectionIN + 1),
+			In:  mirrorDirectionIN,
+			Out: mirrorDirectionIN + 1,
 		},
 	}
 
