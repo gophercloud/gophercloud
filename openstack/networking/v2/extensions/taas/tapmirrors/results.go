@@ -36,18 +36,18 @@ type TapMirror struct {
 	// A dictionary of direction and tunnel_id. Directions are In and Out. In specifies
 	// ingress traffic to the port will be mirrored, Out specifies egress traffic will be mirrored.
 	// The values of the directions are the identifiers of the ERSPAN or GRE session between
-	// the source and destination, these must be unique within the project and must be convertible to int.
+	// the source and destination, these must be unique within the project.
 	Directions Directions `json:"directions"`
 }
 
 type Directions struct {
-	// Unique identifier of the tunnel with ingress traffic. Must be convertible to int.
-	// Omit to not capture ingress traffic.
-	In string `json:"IN,omitempty"`
+	// Unique identifier of the tunnel with ingress traffic. Omit to not capture ingress traffic.
+	// Encoded as JSON string to be compatible with python tap-as-a-service client.
+	In int `json:"IN,omitempty,string"`
 
-	// Unique identifier of the tunnel with egress traffic. Must be convertible to int.
-	// Omit to not capture egress traffic.
-	Out string `json:"OUT,omitempty"`
+	// Unique identifier of the tunnel with egress traffic. Omit to not capture egress traffic.
+	// Encoded as JSON string to be compatible with python tap-as-a-service client.
+	Out int `json:"OUT,omitempty,string"`
 }
 
 type commonResult struct {

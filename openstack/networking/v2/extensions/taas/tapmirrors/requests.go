@@ -44,9 +44,10 @@ type CreateOpts struct {
 	// The remote IP of the Tap Mirror, this will be the remote end of the GRE or ERSPAN v1 tunnel.
 	RemoteIP string `json:"remote_ip"`
 
-	// A dictionary of direction and tunnel_id. Directions are IN and OUT.
-	// The values of the directions must be unique within the project and
-	// must be convertible to int.
+	// A dictionary of direction and tunnel_id. Directions are In and Out. In specifies
+	// ingress traffic to the port will be mirrored, Out specifies egress traffic will be mirrored.
+	// The values of the directions are the identifiers of the ERSPAN or GRE session between
+	// the source and destination, these must be unique within the project.
 	Directions Directions `json:"directions"`
 }
 
