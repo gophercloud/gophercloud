@@ -2,16 +2,6 @@ name: functional-baremetal
 on:
   merge_group:
   pull_request:
-    paths:
-      - 'openstack/auth_env.go'
-      - 'openstack/client.go'
-      - 'openstack/endpoint.go'
-      - 'openstack/endpoint_location.go'
-      - 'openstack/config/provider_client.go'
-      - 'openstack/utils/choose_version.go'
-      - 'openstack/utils/discovery.go'
-      - '**baremetal**'
-      - '.github/workflows/functional-baremetal.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
@@ -39,11 +29,38 @@ jobs:
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Ironic on OpenStack ${{ matrix.name }}
     steps:
+      - name: Check file changes
+        uses: stephenfin/file-filter-action@cc9627a75885166f14ba829ccc12439fdece2006
+        id: changes
+        with:
+          patterns: |
+            openstack/auth_env.go
+            openstack/client.go
+            openstack/endpoint.go
+            openstack/endpoint_location.go
+            openstack/config/provider_client.go
+            openstack/utils/choose_version.go
+            openstack/utils/discovery.go
+            **baremetal**
+            .github/workflows/functional-baremetal.yaml
+
+      - name: Skip tests for unrelated changes
+        # FIXME: Can we move this event_name logic into the plugin?
+        if: ${{ github.event_name != 'schedule' && ! fromJSON(steps.changes.outputs.matches) }}
+        run: |
+          echo "No relevant files changed - skipping tests for ${{ matrix.name }}"
+          echo "TESTS_SKIPPED=true" >> $GITHUB_ENV
+
       - name: Checkout Gophercloud
+        if: ${{ github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches) }}
         uses: actions/checkout@v4
+
       - name: Work around broken dnsmasq
+        if: ${{ github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches) }}
         run: sudo apt-get purge -y dnsmasq-base
+
       - name: Deploy devstack
+        if: ${{ github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches) }}
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
         with:
           branch: ${{ matrix.openstack_version }}
@@ -82,25 +99,42 @@ jobs:
             SWIFT_ENABLE_TEMPURLS=True
             SWIFT_TEMPURL_KEY=secretkey
           enabled_services: "ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,-c-sch,-c-api,-c-vol,-c-bak,-ovn,-ovn-controller,-ovn-northd,-q-ovn-metadata-agent,${{ matrix.additional_services }}"
+
       - name: Checkout go
+        if: ${{ github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches) }}
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
           cache: true
+
       - name: Run Gophercloud acceptance tests
+        if: ${{ github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches) }}
         run: |
           source ${{ github.workspace }}/script/stackenv
           make acceptance-baremetal
+          echo "TESTS_RUN=true" >> $GITHUB_ENV
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
           OS_BRANCH: ${{ matrix.openstack_version }}
           USE_SYSTEM_SCOPE: true
+
       - name: Generate logs on failure
         run: ./script/collectlogs
-        if: failure()
+        if: ${{ failure() && (github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches)) }}
+
       - name: Upload logs artifacts on failure
-        if: failure()
+        if: ${{ failure() && (github.event_name == 'schedule' || fromJSON(steps.changes.outputs.matches)) }}
         uses: actions/upload-artifact@v4
         with:
           name: functional-baremetal-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
+
+      - name: Set job status
+        run: |
+          if [[ "${{ env.TESTS_SKIPPED }}" == "true" || "${{ env.TESTS_RUN }}" == "true" ]]; then
+            echo "Job completed successfully (either ran tests or skipped appropriately)"
+            exit 0
+          else
+            echo "Job failed - neither tests ran nor were properly skipped"
+            exit 1
+          fi
