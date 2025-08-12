@@ -39,7 +39,7 @@ jobs:
     name: Glance on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Deploy devstack
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
         with:
