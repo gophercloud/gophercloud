@@ -32,7 +32,7 @@ jobs:
     name: Ironic on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Work around broken dnsmasq
         run: sudo apt-get purge -y dnsmasq-base
       - name: Deploy devstack
