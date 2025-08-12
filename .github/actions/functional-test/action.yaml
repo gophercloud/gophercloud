@@ -1,0 +1,102 @@
+name: 'Functional Test'
+description: 'Run functional tests for a specific OpenStack service'
+inputs:
+  target:
+    description: 'Name of the functional test suite (e.g., basic, compute, identity, ...)'
+    required: true
+  openstack_version:
+    description: 'OpenStack version/branch to test against'
+    required: true
+  additional_services:
+    description: 'Additional services to enable in devstack'
+    required: false
+    default: ''
+  conf_overrides:
+    description: 'Configuration overrides for devstack'
+    required: false
+    default: ''
+  enabled_services:
+    description: 'Services to enable in devstack'
+    required: false
+    default: ''
+  pre_devstack_setup:
+    description: 'Shell commands to run before devstack deployment'
+    required: false
+    default: ''
+  test_env_vars:
+    description: 'Additional environment variables for tests (JSON format)'
+    required: false
+    default: '{}'
+  use_system_scope:
+    description: 'Whether to use system scope for tests'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Pre-devstack setup
+      if: ${{ inputs.pre_devstack_setup != '' }}
+      shell: bash
+      run: ${{ inputs.pre_devstack_setup }}
+
+    - name: Work around broken dnsmasq (baremetal only)
+      if: ${{ inputs.target == 'baremetal' }}
+      shell: bash
+      run: sudo apt-get purge -y dnsmasq-base
+
+    - name: Prepare devstack configuration
+      shell: bash
+      run: |
+        # Replace placeholder with actual OpenStack version in conf_overrides
+        CONF_OVERRIDES="${{ inputs.devstack_conf_overrides }}"
+        CONF_OVERRIDES="${CONF_OVERRIDES//\$OPENSTACK_VERSION/${{ inputs.openstack_version }}}"
+        echo "PROCESSED_CONF_OVERRIDES<<EOF" >> $GITHUB_ENV
+        echo "$CONF_OVERRIDES" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+        # Prepare enabled services
+        ENABLED_SERVICES="${{ inputs.devstack_enabled_services }}"
+        if [[ -n "${{ inputs.additional_services }}" ]]; then
+          if [[ -n "$ENABLED_SERVICES" ]]; then
+            ENABLED_SERVICES="$ENABLED_SERVICES,${{ inputs.additional_services }}"
+          else
+            ENABLED_SERVICES="${{ inputs.additional_services }}"
+          fi
+        fi
+        echo "PROCESSED_ENABLED_SERVICES=$ENABLED_SERVICES" >> $GITHUB_ENV
+
+    - name: Deploy devstack
+      uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
+      with:
+        branch: ${{ inputs.openstack_version }}
+        conf_overrides: ${{ env.PROCESSED_CONF_OVERRIDES }}
+        enabled_services: ${{ env.PROCESSED_ENABLED_SERVICES }}
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+
+    - name: Run Gophercloud acceptance tests
+      shell: bash
+      run: |
+        source ${{ github.workspace }}/script/stackenv
+        make acceptance-${{ inputs.target }}
+      env:
+        DEVSTACK_PATH: ${{ github.workspace }}/devstack
+        OS_BRANCH: ${{ inputs.openstack_version }}
+        USE_SYSTEM_SCOPE: ${{ inputs.use_system_scope }}
+
+    - name: Generate logs on failure
+      if: failure()
+      shell: bash
+      run: ./script/collectlogs
+
+    - name: Upload logs artifacts on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: functional-${{ inputs.target }}-${{ github.run.id }}
+        path: /tmp/devstack-logs/*

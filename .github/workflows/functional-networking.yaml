@@ -13,6 +13,7 @@ on:
       - '.github/workflows/functional-networking.yaml'
   schedule:
     - cron: '0 0 */3 * *'
+
 jobs:
   functional-networking:
     strategy:
@@ -40,47 +41,28 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v4
-      - name: Create additional neutron policies
-        run: |
-          mkdir /tmp/neutron-policies
-          cat << EOF >> /tmp/neutron-policies/port_binding.yaml
-          ---
-          "create_port:binding:profile": "rule:admin_only or rule:service_api"
-          "update_port:binding:profile": "rule:admin_only or rule:service_api"
-          EOF
-      - name: Deploy devstack
-        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
+
+      - name: Run functional tests
+        uses: ./.github/actions/functional-test
         with:
-          branch: ${{ matrix.openstack_version }}
+          target: "networking"
+          openstack_version: ${{ matrix.openstack_version }}
+          additional_services: ${{ matrix.additional_services }}
+          pre_devstack_setup: |
+            mkdir /tmp/neutron-policies
+            cat << EOF >> /tmp/neutron-policies/port_binding.yaml
+            ---
+            "create_port:binding:profile": "rule:admin_only or rule:service_api"
+            "update_port:binding:profile": "rule:admin_only or rule:service_api"
+            EOF
           conf_overrides: |
-            enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing ${{ matrix.openstack_version }}
-            enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas ${{ matrix.openstack_version }}
-            enable_plugin networking-bgpvpn https://github.com/openstack/networking-bgpvpn.git ${{ matrix.openstack_version }}
+            enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing $OPENSTACK_VERSION
+            enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas $OPENSTACK_VERSION
+            enable_plugin networking-bgpvpn https://github.com/openstack/networking-bgpvpn.git $OPENSTACK_VERSION
             Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
             BGP_SCHEDULER_DRIVER=neutron_dynamic_routing.services.bgp.scheduler.bgp_dragent_scheduler.StaticScheduler
 
             [[post-config|\$NEUTRON_CONF]]
             [oslo_policy]
             policy_dirs = /tmp/neutron-policies
-          enabled_services: "neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding,${{ matrix.additional_services }}"
-      - name: Checkout go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-      - name: Run Gophercloud acceptance tests
-        run: |
-          source ${{ github.workspace }}/script/stackenv
-          make acceptance-networking
-        env:
-          DEVSTACK_PATH: ${{ github.workspace }}/devstack
-          OS_BRANCH: ${{ matrix.openstack_version }}
-      - name: Generate logs on failure
-        run: ./script/collectlogs
-        if: failure()
-      - name: Upload logs artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: functional-networking-${{ matrix.name }}-${{ github.run_id }}
-          path: /tmp/devstack-logs/*
+          enabled_services: "neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding"
