@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/rules"
@@ -35,6 +36,8 @@ func TestList(t *testing.T) {
             "protocol": null,
             "remote_group_id": null,
             "remote_ip_prefix": null,
+            "created_at": "2017-12-28T07:21:40Z",
+            "updated_at": "2017-12-28T07:21:40Z",
             "security_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
             "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
         },
@@ -47,6 +50,8 @@ func TestList(t *testing.T) {
             "protocol": null,
             "remote_group_id": null,
             "remote_ip_prefix": null,
+            "created_at": "2017-12-28T07:21:40",
+            "updated_at": "2017-12-28T07:21:40",
             "security_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
             "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
         }
@@ -76,6 +81,8 @@ func TestList(t *testing.T) {
 				Protocol:       "",
 				RemoteGroupID:  "",
 				RemoteIPPrefix: "",
+				CreatedAt:      time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
+				UpdatedAt:      time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
 				SecGroupID:     "85cc3048-abc3-43cc-89b3-377341426ac5",
 				TenantID:       "e4f50856753b4dc6afee5fa6b9b6c550",
 			},
@@ -88,6 +95,8 @@ func TestList(t *testing.T) {
 				Protocol:       "",
 				RemoteGroupID:  "",
 				RemoteIPPrefix: "",
+				CreatedAt:      time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
+				UpdatedAt:      time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
 				SecGroupID:     "85cc3048-abc3-43cc-89b3-377341426ac5",
 				TenantID:       "e4f50856753b4dc6afee5fa6b9b6c550",
 			},
@@ -372,6 +381,8 @@ func TestGet(t *testing.T) {
         "protocol": null,
         "remote_group_id": null,
         "remote_ip_prefix": null,
+        "created_at": "2017-12-28T07:21:40Z",
+        "updated_at": "2017-12-28T07:21:40Z",
         "security_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
         "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
     }
@@ -390,6 +401,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "", sr.Protocol)
 	th.AssertEquals(t, "", sr.RemoteGroupID)
 	th.AssertEquals(t, "", sr.RemoteIPPrefix)
+	th.AssertEquals(t, time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC), sr.UpdatedAt)
+	th.AssertEquals(t, time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC), sr.CreatedAt)
 	th.AssertEquals(t, "85cc3048-abc3-43cc-89b3-377341426ac5", sr.SecGroupID)
 	th.AssertEquals(t, "e4f50856753b4dc6afee5fa6b9b6c550", sr.TenantID)
 }

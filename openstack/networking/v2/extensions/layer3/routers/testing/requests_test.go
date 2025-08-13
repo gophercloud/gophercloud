@@ -34,6 +34,8 @@ func TestList(t *testing.T) {
             "admin_state_up": true,
             "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
             "distributed": false,
+            "created_at": "2017-12-28T07:21:40Z",
+            "updated_at": "2017-12-28T07:21:40Z",
             "id": "7177abc4-5ae9-4bb7-b0d4-89e94a4abf3b"
         },
         {
@@ -45,6 +47,8 @@ func TestList(t *testing.T) {
             "admin_state_up": true,
             "tenant_id": "33a40233088643acb66ff6eb0ebea679",
             "distributed": false,
+            "created_at": "2017-12-28T07:21:40",
+            "updated_at": "2017-12-28T07:21:40",
             "id": "a9254bdb-2613-4a13-ac4c-adc581fba50d"
         },
         {
@@ -86,6 +90,8 @@ func TestList(t *testing.T) {
 				Distributed:  false,
 				Name:         "second_routers",
 				ID:           "7177abc4-5ae9-4bb7-b0d4-89e94a4abf3b",
+				CreatedAt:    time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
+				UpdatedAt:    time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
 				TenantID:     "6b96ff0cb17a4b859e1e575d221683d3",
 			},
 			{
@@ -95,6 +101,8 @@ func TestList(t *testing.T) {
 				Distributed:  false,
 				Name:         "router1",
 				ID:           "a9254bdb-2613-4a13-ac4c-adc581fba50d",
+				CreatedAt:    time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
+				UpdatedAt:    time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
 				TenantID:     "33a40233088643acb66ff6eb0ebea679",
 			},
 			{
