@@ -1,6 +1,8 @@
 package testing
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/subnets"
 )
 
@@ -24,6 +26,8 @@ const SubnetListResult = `
 			"ip_version": 4,
 			"gateway_ip": "10.0.0.1",
 			"cidr": "10.0.0.0/24",
+			"created_at": "2017-12-28T07:21:40Z",
+			"updated_at": "2017-12-28T07:21:40Z",
 			"id": "08eae331-0402-425a-923c-34f7cfe39c1b"
 		},
 		{
@@ -43,6 +47,8 @@ const SubnetListResult = `
 			"ip_version": 4,
 			"gateway_ip": "192.0.0.1",
 			"cidr": "192.0.0.0/8",
+			"created_at": "2017-12-28T07:21:40",
+			"updated_at": "2017-12-28T07:21:40",
 			"id": "54d6f61d-db07-451c-9ab3-b9609b6b6f0b"
 		},
 		{
@@ -104,6 +110,8 @@ var Subnet1 = subnets.Subnet{
 	IPVersion:  4,
 	GatewayIP:  "10.0.0.1",
 	CIDR:       "10.0.0.0/24",
+	CreatedAt:  time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
+	UpdatedAt:  time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
 	ID:         "08eae331-0402-425a-923c-34f7cfe39c1b",
 }
 
@@ -125,6 +133,8 @@ var Subnet2 = subnets.Subnet{
 	IPVersion:  4,
 	GatewayIP:  "192.0.0.1",
 	CIDR:       "192.0.0.0/8",
+	CreatedAt:  time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
+	UpdatedAt:  time.Date(2017, 12, 28, 07, 21, 40, 0, time.UTC),
 	ID:         "54d6f61d-db07-451c-9ab3-b9609b6b6f0b",
 }
 
