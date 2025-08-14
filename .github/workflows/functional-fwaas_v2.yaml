@@ -36,7 +36,7 @@ jobs:
     name: FWaaS_v2 on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Create additional neutron policies
         run: |
           mkdir /tmp/neutron-policies
