@@ -6,6 +6,13 @@ name: functional-fwaas_v2
 on:
   pull_request:
     paths:
+      - 'openstack/auth_env.go'
+      - 'openstack/client.go'
+      - 'openstack/endpoint.go'
+      - 'openstack/endpoint_location.go'
+      - 'openstack/config/provider_client.go'
+      - 'openstack/utils/choose_version.go'
+      - 'openstack/utils/discovery.go'
       - '**networking/v2/extensions/fwaas_v2**'
       - '.github/workflows/functional-fwaas_v2.yaml'
   schedule:
