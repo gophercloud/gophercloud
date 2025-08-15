@@ -139,6 +139,38 @@ func (f *reauthFuture) Get() error {
 	return f.err
 }
 
+// DeepCopy creates a deep copy of the ProviderClient.
+func (client *ProviderClient) DeepCopy() *ProviderClient {
+	newClient := &ProviderClient{
+		IdentityBase:      client.IdentityBase,
+		IdentityEndpoint:  client.IdentityEndpoint,
+		TokenID:           client.TokenID,
+		EndpointLocator:   client.EndpointLocator,
+		HTTPClient:        client.HTTPClient,
+		ReauthFunc:        client.ReauthFunc,
+		RetryBackoffFunc:  client.RetryBackoffFunc,
+		RetryFunc:         client.RetryFunc,
+		Throwaway:         client.Throwaway,
+		MaxBackoffRetries: client.MaxBackoffRetries,
+		authResult:        client.authResult,
+	}
+
+	if len(client.UserAgent.prepend) > 0 {
+		newClient.UserAgent.prepend = make([]string, len(client.UserAgent.prepend))
+		copy(newClient.UserAgent.prepend, client.UserAgent.prepend)
+	}
+
+	if client.mut != nil {
+		newClient.mut = new(sync.RWMutex)
+	}
+
+	if client.reauthmut != nil {
+		newClient.reauthmut = new(reauthlock)
+	}
+
+	return newClient
+}
+
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests. Blocks if Reauthenticate is in progress.
 func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
