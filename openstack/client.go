@@ -15,6 +15,8 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
+// Dumb change to validate CI
+
 const (
 	// v2 represents Keystone v2.
 	// It should never increase beyond 2.0.
