@@ -214,7 +214,7 @@ func TestNodesFirmwareInterface(t *testing.T) {
 }
 
 func TestNodesVirtualMedia(t *testing.T) {
-	clients.SkipReleasesBelow(t, "master") // 2024.1
+	clients.SkipReleasesBelow(t, "stable/2024.2")
 	clients.RequireLong(t)
 
 	client, err := clients.NewBareMetalV1Client()
