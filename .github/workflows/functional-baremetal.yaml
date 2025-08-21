@@ -106,4 +106,4 @@ jobs:
         if: failure()
         uses: lhotari/action-upterm@v1
         with:
-          limit-access-to-users: jayofdoom, Sharpz7
+          limit-access-to-users: Sharpz7, jayofdoom
