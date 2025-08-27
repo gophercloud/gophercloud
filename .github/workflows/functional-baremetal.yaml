@@ -51,7 +51,7 @@ jobs:
             PYGHMI_REPO=https://opendev.org/x/pyghmi
             enable_plugin ironic https://github.com/openstack/ironic ${{ matrix.openstack_version }}
             LIBS_FROM_GIT=pyghmi,virtualbmc
-            FORCE_CONFIG_DRIVE=False
+            FORCE_CONFIG_DRIVE=True
             Q_AGENT=openvswitch
             Q_ML2_TENANT_NETWORK_TYPE=vxlan
             Q_ML2_PLUGIN_MECHANISM_DRIVERS=openvswitch
@@ -67,7 +67,7 @@ jobs:
             IRONIC_BUILD_DEPLOY_RAMDISK=False
             IRONIC_AUTOMATED_CLEAN_ENABLED=False
             IRONIC_CALLBACK_TIMEOUT=600
-            IRONIC_DEPLOY_DRIVER=fake
+            IRONIC_DEPLOY_DRIVER=ipmi
             IRONIC_INSPECTOR_BUILD_RAMDISK=False
             IRONIC_RAMDISK_TYPE=tinyipa
             IRONIC_TEMPEST_BUILD_TIMEOUT=720
@@ -80,7 +80,7 @@ jobs:
             IRONIC_ENABLED_DEPLOY_INTERFACES=direct,fake
             SWIFT_ENABLE_TEMPURLS=True
             SWIFT_TEMPURL_KEY=secretkey
-          enabled_services: "ir-api,ir-cond,atop,${{ matrix.additional_services }}"
+          enabled_services: "ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,${{ matrix.additional_services }}"
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
