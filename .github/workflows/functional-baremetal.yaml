@@ -72,7 +72,7 @@ jobs:
             IRONIC_RAMDISK_TYPE=tinyipa
             IRONIC_TEMPEST_BUILD_TIMEOUT=720
             IRONIC_TEMPEST_WHOLE_DISK_IMAGE=False
-            IRONIC_VM_COUNT=1
+            IRONIC_VM_COUNT=0
             IRONIC_VM_EPHEMERAL_DISK=1
             IRONIC_VM_LOG_DIR=/opt/stack/new/ironic-bm-logs
             IRONIC_VM_SPECS_RAM=1024
@@ -102,8 +102,3 @@ jobs:
         with:
           name: functional-baremetal-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
-      - name: Setup upterm session
-        if: failure()
-        uses: lhotari/action-upterm@v1
-        with:
-          limit-access-to-users: Sharpz7, jayofdoom
