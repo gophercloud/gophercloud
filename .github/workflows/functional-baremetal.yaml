@@ -80,7 +80,7 @@ jobs:
             IRONIC_ENABLED_DEPLOY_INTERFACES=direct,fake
             SWIFT_ENABLE_TEMPURLS=True
             SWIFT_TEMPURL_KEY=secretkey
-            NEUTRON_ENDPOINT_SERVICE_NAME: networking
+            NEUTRON_ENDPOINT_SERVICE_NAME=networking
           enabled_services: "ir-api,ir-cond,s-account,s-container,s-object,s-proxy,q-svc,q-agt,q-dhcp,q-l3,q-meta,-cinder,${{ matrix.additional_services }}"
       - name: Checkout go
         uses: actions/setup-go@v5
