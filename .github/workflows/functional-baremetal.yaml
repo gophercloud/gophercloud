@@ -52,11 +52,9 @@ jobs:
             enable_plugin ironic https://github.com/openstack/ironic ${{ matrix.openstack_version }}
             LIBS_FROM_GIT=pyghmi,virtualbmc
             FORCE_CONFIG_DRIVE=True
-            Q_AGENT=openvswitch
-            Q_ML2_TENANT_NETWORK_TYPE=vxlan
-            Q_ML2_PLUGIN_MECHANISM_DRIVERS=openvswitch
             DEFAULT_INSTANCE_TYPE=baremetal
-            OVERRIDE_PUBLIC_BRIDGE_MTU=1400
+            IPV4_ADDRS_SAFE_TO_USE=10.0.0.0/22
+            FLOATING_RANGE=172.24.4.0/24
             VIRT_DRIVER=ironic
             BUILD_TIMEOUT=1800
             SERVICE_TIMEOUT=90
@@ -72,7 +70,7 @@ jobs:
             IRONIC_RAMDISK_TYPE=tinyipa
             IRONIC_TEMPEST_BUILD_TIMEOUT=720
             IRONIC_TEMPEST_WHOLE_DISK_IMAGE=False
-            IRONIC_VM_COUNT=1
+            IRONIC_VM_COUNT=0
             IRONIC_VM_EPHEMERAL_DISK=1
             IRONIC_VM_LOG_DIR=/opt/stack/new/ironic-bm-logs
             IRONIC_VM_SPECS_RAM=1024
