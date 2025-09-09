@@ -27,8 +27,10 @@ var goodStatus = map[string]bool{
 // endpoint that is among the recognized versions, it will be used regardless of priority.
 // It returns the highest-Priority Version, OR exact match with client endpoint,
 // among the alternatives that are provided, as well as its corresponding endpoint.
+//
+// Deprecated: This function is specific to the identity service as is no longer used internally
+// in Gophercloud. Consider using GetServiceVersions instead.
 func ChooseVersion(ctx context.Context, client *gophercloud.ProviderClient, recognized []*Version) (*Version, string, error) {
-	// TODO(stephenfin): This could be removed since we can accomplish this with GetServiceVersions now.
 	type linkResp struct {
 		Href string `json:"href"`
 		Rel  string `json:"rel"`
