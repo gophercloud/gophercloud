@@ -25,7 +25,7 @@ jobs:
             additional_services: "openstack-cli-server"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
-            ubuntu_version: "22.04"
+            ubuntu_version: "24.04"
             additional_services: "openstack-cli-server"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
@@ -63,7 +63,7 @@ jobs:
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             Q_USE_SECGROUP=False
             API_WORKERS=1
-            IRONIC_BAREMETAL_BASIC_OPS=True
+            IRONIC_BAREMETAL_BASIC_OPS=False
             IRONIC_BUILD_DEPLOY_RAMDISK=False
             IRONIC_AUTOMATED_CLEAN_ENABLED=False
             IRONIC_CALLBACK_TIMEOUT=600
