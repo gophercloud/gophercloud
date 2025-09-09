@@ -1,16 +1,7 @@
 name: functional-containerinfra
 on:
+  merge_group:
   pull_request:
-    paths:
-      - 'openstack/auth_env.go'
-      - 'openstack/client.go'
-      - 'openstack/endpoint.go'
-      - 'openstack/endpoint_location.go'
-      - 'openstack/config/provider_client.go'
-      - 'openstack/utils/choose_version.go'
-      - 'openstack/utils/discovery.go'
-      - '**containerinfra**'
-      - '.github/workflows/functional-containerinfra.yaml'
   schedule:
     - cron: '0 0 */3 * *'
 jobs:
@@ -64,7 +55,30 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v5
+
+      - name: Check changed files
+        uses: ./.github/actions/file-filter
+        id: changed-files
+        with:
+          patterns: |
+            openstack/auth_env.go
+            openstack/client.go
+            openstack/endpoint.go
+            openstack/endpoint_location.go
+            openstack/config/provider_client.go
+            openstack/utils/choose_version.go
+            openstack/utils/discovery.go
+            **containerinfra**
+            .github/workflows/functional-containerinfra.yaml
+
+      - name: Skip tests for unrelated changed-files
+        if: ${{ ! fromJSON(steps.changed-files.outputs.matches) }}
+        run: |
+          echo "No relevant files changed - skipping tests for ${{ matrix.name }}"
+          echo "TESTS_SKIPPED=true" >> $GITHUB_ENV
+
       - name: Deploy devstack
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
         with:
           branch: ${{ matrix.openstack_version }}
@@ -77,24 +91,41 @@ jobs:
 
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: "h-eng,h-api,h-api-cfn,h-api-cw,${{ matrix.additional_services }}"
+
       - name: Checkout go
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
           cache: true
+
       - name: Run Gophercloud acceptance tests
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         run: |
           source ${{ github.workspace }}/script/stackenv
           make acceptance-containerinfra
+          echo "TESTS_RUN=true" >> $GITHUB_ENV
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
           OS_BRANCH: ${{ matrix.openstack_version }}
+
       - name: Generate logs on failure
         run: ./script/collectlogs
-        if: failure()
+        if: ${{ failure() && fromJSON(steps.changed-files.outputs.matches) }}
+
       - name: Upload logs artifacts on failure
-        if: failure()
+        if: ${{ failure() && fromJSON(steps.changed-files.outputs.matches) }}
         uses: actions/upload-artifact@v4
         with:
           name: functional-containerinfra-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
+
+      - name: Set job status
+        run: |
+          if [[ "${{ env.TESTS_SKIPPED }}" == "true" || "${{ env.TESTS_RUN }}" == "true" ]]; then
+            echo "Job completed successfully (either ran tests or skipped appropriately)"
+            exit 0
+          else
+            echo "Job failed - neither tests ran nor were properly skipped"
+            exit 1
+          fi
