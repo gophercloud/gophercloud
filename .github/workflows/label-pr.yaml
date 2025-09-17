@@ -24,7 +24,7 @@ jobs:
       env:
         GIT_SEQUENCE_EDITOR: '/usr/bin/true'
 
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@v6
       with:
         go-version: '1'
 
