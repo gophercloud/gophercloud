@@ -57,6 +57,10 @@ jobs:
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         run: sudo apt-get purge -y dnsmasq-base
 
+      # NOTE(sharpz7) IRONIC_BAREMETAL_BASIC_OPS was originally set to false as it
+      # was failing (https://review.opendev.org/c/openstack/ironic/+/960299)
+      # See https://github.com/gophercloud/gophercloud/pull/3500
+      # This change however is suitable longer-term as it is not necessary for SDK testing.
       - name: Deploy devstack
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
