@@ -24,14 +24,6 @@ jobs:
             openstack_version: "stable/2025.1"
             ubuntu_version: "22.04"
             additional_services: "openstack-cli-server"
-          - name: "dalmatian"
-            openstack_version: "stable/2024.2"
-            ubuntu_version: "22.04"
-            additional_services: "openstack-cli-server"
-          - name: "caracal"
-            openstack_version: "stable/2024.1"
-            ubuntu_version: "22.04"
-            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Octavia on OpenStack ${{ matrix.name }}
     steps:
@@ -88,12 +80,12 @@ jobs:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
           OS_BRANCH: ${{ matrix.openstack_version }}
 
-      - name: Generate logs on failure
+      - name: Generate logs
         run: ./script/collectlogs
-        if: ${{ failure() && fromJSON(steps.changed-files.outputs.matches) }}
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
 
-      - name: Upload logs artifacts on failure
-        if: ${{ failure() && fromJSON(steps.changed-files.outputs.matches) }}
+      - name: Upload logs artifacts
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         uses: actions/upload-artifact@v4
         with:
           name: functional-loadbalancer-${{ matrix.name }}-${{ github.run_id }}
