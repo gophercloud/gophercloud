@@ -58,7 +58,8 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	createOpts := roles.CreateOpts{
-		Name: "testrole",
+		Name:     "testrole",
+		DomainID: "default",
 		Extra: map[string]any{
 			"description": "test role description",
 		},
@@ -72,7 +73,9 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
 
-	listOpts := roles.ListOpts{}
+	listOpts := roles.ListOpts{
+		DomainID: "default",
+	}
 	allPages, err := roles.List(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
