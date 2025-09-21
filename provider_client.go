@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"sync"
 )
@@ -437,16 +438,8 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 		okc = defaultOkCodes(method)
 	}
 
-	// Validate the HTTP response status.
-	var ok bool
-	for _, code := range okc {
-		if resp.StatusCode == code {
-			ok = true
-			break
-		}
-	}
-
-	if !ok {
+	// Check the response code against the acceptable codes
+	if !slices.Contains(okc, resp.StatusCode) {
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		respErr := ErrUnexpectedResponseCode{
