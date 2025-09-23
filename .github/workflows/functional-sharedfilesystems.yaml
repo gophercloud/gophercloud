@@ -4,6 +4,9 @@ on:
   pull_request:
   schedule:
     - cron: '0 0 */3 * *'
+  workflow_run:
+    workflows: ["Unit Tests"]
+    types: ["completed"]
 jobs:
   functional-sharedfilesystems:
     strategy:
@@ -33,6 +36,7 @@ jobs:
             ubuntu_version: "22.04"
             additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Manila on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud

@@ -1,4 +1,4 @@
-name: Unit Testing
+name: Unit Tests
 on:
   - merge_group
   - push
@@ -11,6 +11,7 @@ jobs:
       checks: write  # for coverallsapp/github-action to create a new check based on the results
       contents: read  # for actions/checkout to fetch code
     runs-on: ubuntu-latest
+    name: Unit Tests
     strategy:
       fail-fast: false
     steps:
