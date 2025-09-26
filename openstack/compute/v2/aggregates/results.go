@@ -39,6 +39,10 @@ type Aggregate struct {
 	// A boolean indicates whether this aggregate is deleted or not,
 	// if it has not been deleted, false will appear.
 	Deleted bool `json:"deleted"`
+
+	// The UUID of the aggregate.
+	// The requires microversion 2.41 or later.
+	UUID string `json:"uuid"`
 }
 
 // UnmarshalJSON to override default
