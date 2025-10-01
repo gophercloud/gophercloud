@@ -80,3 +80,13 @@ func TestQuotasUpdate(t *testing.T) {
 
 	tools.PrintResource(t, restoredQuotas)
 }
+
+func TestQuotasDelete(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewLoadBalancerV2Client()
+	th.AssertNoErr(t, err)
+
+	err = quotas.Delete(context.TODO(), client, os.Getenv("OS_PROJECT_NAME")).ExtractErr()
+	th.AssertNoErr(t, err)
+}

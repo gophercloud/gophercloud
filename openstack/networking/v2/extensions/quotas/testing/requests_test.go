@@ -80,3 +80,13 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, q, &UpdateResponse)
 }
+
+func TestDelete(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockDeleteResponse(t, fakeServer)
+
+	res := quotas.Delete(context.TODO(), fake.ServiceClient(fakeServer), "0a73845280574ad389c292f6a74afa76")
+	th.AssertNoErr(t, res.Err)
+}

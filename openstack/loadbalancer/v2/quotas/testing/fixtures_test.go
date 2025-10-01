@@ -1,6 +1,13 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/quotas"
+import (
+	"net/http"
+	"testing"
+
+	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/quotas"
+	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+)
 
 const GetResponseRaw_1 = `
 {
@@ -76,4 +83,13 @@ var UpdateResponse = quotas.Quota{
 	Healthmonitor: -1,
 	L7Policy:      50,
 	L7Rule:        100,
+}
+
+func MockDeleteResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/quotas/0a73845280574ad389c292f6a74afa76", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
 }
