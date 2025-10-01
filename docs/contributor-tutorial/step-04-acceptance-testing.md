@@ -17,8 +17,12 @@ And, to be frank, submitting untested code will inevitably cause someone else
 to have to spend time fixing it.
 
 If you don't have an OpenStack environment to test with, we have lots of
-documentation [here](/acceptance) to help you build your own small OpenStack
+documentation [here](/internal/acceptance) to help you build your own small OpenStack
 environment for testing.
+
+If you add new API calls/actions e.g. also make sure to include them into the
+respective [acceptance tests](/internal/acceptance/openstack) for the code to be
+validated against all the supported OpenStack versions.
 
 ---
 
