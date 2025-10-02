@@ -39,3 +39,29 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.Type, string(remoteconsoles.ConsoleTypeNoVNC))
 	th.AssertEquals(t, s.URL, "http://192.168.0.4:6080/vnc_auto.html?token=9a2372b9-6a0e-4f71-aca1-56020e6bb677")
 }
+
+func TestGetConsoleInfo(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/os-console-auth-tokens/33e269e0-4a18-42a0-9dd5-1f1da031e058", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ConsoleGetResult)
+	})
+
+	tokenID := "33e269e0-4a18-42a0-9dd5-1f1da031e058"
+	auth, err := remoteconsoles.Get(context.TODO(), client.ServiceClient(fakeServer), tokenID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, auth.InstanceUUID, "933c8963-8a83-43bb-9618-98ee8025044d")
+	th.AssertEquals(t, auth.Host, "10.0.2.224")
+	th.AssertEquals(t, auth.Port, 5900)
+	th.AssertEquals(t, auth.TLSPort, 5901)
+	th.AssertEquals(t, auth.InternalAccessPath, "null")
+}
