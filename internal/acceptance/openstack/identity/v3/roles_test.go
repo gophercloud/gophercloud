@@ -94,19 +94,16 @@ func TestRolesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
+	description := ""
 	updateOpts := roles.UpdateOpts{
-		Extra: map[string]any{
-			"description": "updated test role description",
-		},
+		Description: &description,
 	}
 
 	newRole, err := roles.Update(context.TODO(), client, role.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRole)
-	tools.PrintResource(t, newRole.Extra)
-
-	th.AssertEquals(t, newRole.Extra["description"], "updated test role description")
+	th.AssertEquals(t, newRole.Description, description)
 }
 
 func TestRolesFilterList(t *testing.T) {

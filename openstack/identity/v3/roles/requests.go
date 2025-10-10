@@ -86,6 +86,9 @@ type CreateOpts struct {
 	// DomainID is the ID of the domain the role belongs to.
 	DomainID string `json:"domain_id,omitempty"`
 
+	// Description is the description of the project
+	Description string `json:"description,omitempty"`
+
 	// Extra is free-form extra key/value pairs to describe the role.
 	Extra map[string]any `json:"-"`
 }
@@ -132,6 +135,9 @@ type UpdateOptsBuilder interface {
 type UpdateOpts struct {
 	// Name is the name of the new role.
 	Name string `json:"name,omitempty"`
+
+	// Description is the description of the new role.
+	Description *string `json:"description,omitempty"`
 
 	// Extra is free-form extra key/value pairs to describe the role.
 	Extra map[string]any `json:"-"`
