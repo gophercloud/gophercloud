@@ -21,6 +21,9 @@ type Role struct {
 	// Name is the role name
 	Name string `json:"name"`
 
+	// Description is the description of the role.
+	Description string `json:"description"`
+
 	// Extra is a collection of miscellaneous key/values.
 	Extra map[string]any `json:"-"`
 
