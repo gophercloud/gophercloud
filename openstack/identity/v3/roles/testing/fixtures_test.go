@@ -34,8 +34,9 @@ const ListOutput = `
                 "self": "https://example.com/identity/v3/roles/9fe1d3"
             },
             "name": "support",
+			"description": "read-only support role",
             "extra": {
-                "description": "read-only support role"
+                "test": "this is for the test"
             }
         }
     ]
@@ -52,7 +53,10 @@ const GetOutput = `
             "self": "https://example.com/identity/v3/roles/9fe1d3"
         },
         "name": "support",
-        "description": "read-only support role"
+        "description": "read-only support role",
+		"extra": {
+			"test": "this is for the test"
+		} 
     }
 }
 `
@@ -70,6 +74,9 @@ const GetOutputWithOptions = `
         "description": "read-only support role",
 		"options": {
 			"immutable": true
+		},
+		"extra": {
+			"test": "this is for the test"
 		}
     }
 }
@@ -81,7 +88,8 @@ const CreateRequest = `
     "role": {
         "domain_id": "1789d1",
         "name": "support",
-		"description": "read-only support role"
+		"description": "read-only support role",
+		"test": "this is for the test"
 	}
 }
 `
@@ -93,6 +101,7 @@ const CreateRequestWithOptions = `
         "domain_id": "1789d1",
         "name": "support",
 		"description": "read-only support role",
+		"test": "this is for the test",
 		"options": {
 			"immutable": true
 		}
@@ -354,9 +363,10 @@ var SecondRole = roles.Role{
 	Links: map[string]any{
 		"self": "https://example.com/identity/v3/roles/9fe1d3",
 	},
-	Name: "support",
+	Name:        "support",
+	Description: "read-only support role",
 	Extra: map[string]any{
-		"description": "read-only support role",
+		"test": "this is for the test",
 	},
 }
 
@@ -367,9 +377,10 @@ var SecondRoleWithOptions = roles.Role{
 	Links: map[string]any{
 		"self": "https://example.com/identity/v3/roles/9fe1d3",
 	},
-	Name: "support",
+	Name:        "support",
+	Description: "read-only support role",
 	Extra: map[string]any{
-		"description": "read-only support role",
+		"test": "this is for the test",
 	},
 	Options: map[roles.Option]any{
 		roles.Immutable: true,

@@ -58,10 +58,11 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	createOpts := roles.CreateOpts{
-		Name:     "testrole",
-		DomainID: "default",
+		Name:        "role-test",
+		DomainID:    "default",
+		Description: "test description",
 		Extra: map[string]any{
-			"description": "test role description",
+			"email": "testrole@example.com",
 		},
 		Options: map[roles.Option]any{
 			"immutable": false,
@@ -96,10 +97,11 @@ func TestRolesCRUD(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
-
+	description := "updated role test"
 	updateOpts := roles.UpdateOpts{
+		Description: &description,
 		Extra: map[string]any{
-			"description": "updated test role description",
+			"email": "updatedtestrole@example.com",
 		},
 		Options: map[roles.Option]any{
 			"immutable": nil,
@@ -112,7 +114,9 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, newRole)
 	tools.PrintResource(t, newRole.Extra)
 
-	th.AssertEquals(t, newRole.Extra["description"], "updated test role description")
+	th.AssertEquals(t, newRole.Description, description)
+	th.AssertEquals(t, newRole.Extra["email"], "updatedtestrole@example.com")
+
 }
 
 func TestRolesFilterList(t *testing.T) {
