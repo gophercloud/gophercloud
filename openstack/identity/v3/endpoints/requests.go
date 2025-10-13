@@ -18,9 +18,6 @@ type CreateOpts struct {
 	// or public), referenced by the gophercloud.Availability type.
 	Availability gophercloud.Availability `json:"interface" required:"true"`
 
-	// Name is the name of the Endpoint.
-	Name string `json:"name" required:"true"`
-
 	// Region is the region the Endpoint is located in.
 	// This field can be omitted or left as a blank string.
 	Region string `json:"region,omitempty"`
@@ -108,9 +105,6 @@ type UpdateOpts struct {
 	// Availability is the interface type of the Endpoint (admin, internal,
 	// or public), referenced by the gophercloud.Availability type.
 	Availability gophercloud.Availability `json:"interface,omitempty"`
-
-	// Name is the name of the Endpoint.
-	Name string `json:"name,omitempty"`
 
 	// Region is the region the Endpoint is located in.
 	// This field can be omitted or left as a blank string.
