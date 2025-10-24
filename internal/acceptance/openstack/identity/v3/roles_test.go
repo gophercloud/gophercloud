@@ -63,6 +63,9 @@ func TestRolesCRUD(t *testing.T) {
 		Extra: map[string]any{
 			"description": "test role description",
 		},
+		Options: map[roles.Option]any{
+			"immutable": false,
+		},
 	}
 
 	// Create Role in the default domain
@@ -97,6 +100,9 @@ func TestRolesCRUD(t *testing.T) {
 	updateOpts := roles.UpdateOpts{
 		Extra: map[string]any{
 			"description": "updated test role description",
+		},
+		Options: map[roles.Option]any{
+			"immutable": nil,
 		},
 	}
 
