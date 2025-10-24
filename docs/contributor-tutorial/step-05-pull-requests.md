@@ -99,7 +99,10 @@ generate your own fixtures using the OpenStack environment you're
 Since unit tests are not run against an actual OpenStack environment,
 acceptance tests can arguably be more important. The acceptance tests that you
 include in your Pull Request should confirm that your implemented code works
-as intended with an actual OpenStack environment.
+as intended with an actual OpenStack environment. We run our functional jobs
+against all supported Skip Level Upgrade Release Process (SLURP) releases as
+well as `master`. This information is sourced from
+[releases.openstack.org](https://releases.openstack.org/).
 
 ### Documentation
 
