@@ -52,9 +52,25 @@ const GetOutput = `
             "self": "https://example.com/identity/v3/roles/9fe1d3"
         },
         "name": "support",
-        "extra": {
-            "description": "read-only support role"
-        }
+        "description": "read-only support role"
+    }
+}
+`
+
+// GetOutputWithOptions provides a Get result of a role with options.
+const GetOutputWithOptions = `
+{
+    "role": {
+        "domain_id": "1789d1",
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/roles/9fe1d3"
+        },
+        "name": "support",
+        "description": "read-only support role",
+		"options": {
+			"immutable": true
+		}
     }
 }
 `
@@ -65,8 +81,22 @@ const CreateRequest = `
     "role": {
         "domain_id": "1789d1",
         "name": "support",
-        "description": "read-only support role"
-    }
+		"description": "read-only support role"
+	}
+}
+`
+
+// CreateRequestWithOptions provides the input to a Create request with Options.
+const CreateRequestWithOptions = `
+{
+    "role": {
+        "domain_id": "1789d1",
+        "name": "support",
+		"description": "read-only support role",
+		"options": {
+			"immutable": true
+		}
+	}
 }
 `
 
@@ -74,7 +104,10 @@ const CreateRequest = `
 const UpdateRequest = `
 {
     "role": {
-        "description": "admin read-only support role"
+        "description": "admin read-only support role",
+		"options": {
+			"immutable": false
+		}
     }
 }
 `
@@ -91,7 +124,10 @@ const UpdateOutput = `
         "name": "support",
         "extra": {
             "description": "admin read-only support role"
-        }
+        },
+		"options": {
+			"immutable": false
+		}
     }
 }
 `
@@ -324,6 +360,22 @@ var SecondRole = roles.Role{
 	},
 }
 
+// SecondRoleWithOptions is the second role in the List request
+var SecondRoleWithOptions = roles.Role{
+	DomainID: "1789d1",
+	ID:       "9fe1d3",
+	Links: map[string]any{
+		"self": "https://example.com/identity/v3/roles/9fe1d3",
+	},
+	Name: "support",
+	Extra: map[string]any{
+		"description": "read-only support role",
+	},
+	Options: map[roles.Option]any{
+		roles.Immutable: true,
+	},
+}
+
 // SecondRoleUpdated is how SecondRole should look after an Update.
 var SecondRoleUpdated = roles.Role{
 	DomainID: "1789d1",
@@ -334,6 +386,9 @@ var SecondRoleUpdated = roles.Role{
 	Name: "support",
 	Extra: map[string]any{
 		"description": "admin read-only support role",
+	},
+	Options: map[roles.Option]any{
+		roles.Immutable: false,
 	},
 }
 
@@ -378,6 +433,19 @@ func HandleCreateRoleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, GetOutput)
+	})
+}
+
+// HandleCreateRoleWithOptionsSuccessfully creates an HTTP handler at `/roles` on the
+// test handler mux that tests role creation.
+func HandleCreateWithOptionsRoleSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequestWithOptions)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprint(w, GetOutputWithOptions)
 	})
 }
 
