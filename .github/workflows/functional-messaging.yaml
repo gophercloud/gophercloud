@@ -22,10 +22,6 @@ jobs:
             openstack_version: "stable/2024.2"
             ubuntu_version: "22.04"
             additional_services: "openstack-cli-server"
-          - name: "caracal"
-            openstack_version: "stable/2024.1"
-            ubuntu_version: "22.04"
-            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Zaqar on OpenStack ${{ matrix.name }}
     steps:
