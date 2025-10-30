@@ -23,17 +23,14 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "24.04"
             mistral_plugin_version: "master"
-            additional_services: "openstack-cli-server"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
             mistral_plugin_version: "stable/2025.1"
-            additional_services: "openstack-cli-server"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
             ubuntu_version: "22.04"
             mistral_plugin_version: "stable/2024.2"
-            additional_services: "openstack-cli-server"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Mistral on Deploy OpenStack ${{ matrix.name }}
     steps:
@@ -45,7 +42,7 @@ jobs:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin mistral https://github.com/openstack/mistral ${{ matrix.mistral_plugin_version }}
-          enabled_services: "mistral,mistral-api,mistral-engine,mistral-executor,mistral-event-engine,${{ matrix.additional_services }}"
+          enabled_services: "mistral,mistral-api,mistral-engine,mistral-executor,mistral-event-engine,openstack-cli-server"
       - name: Checkout go
         uses: actions/setup-go@v5
         with:

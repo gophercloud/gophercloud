@@ -17,15 +17,12 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "24.04"
-            additional_services: "openstack-cli-server"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
-            additional_services: "openstack-cli-server"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
             ubuntu_version: "22.04"
-            additional_services: "openstack-cli-server"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: basic tests on OpenStack ${{ matrix.name }}
     steps:
@@ -35,7 +32,7 @@ jobs:
         uses: gophercloud/devstack-action@v0.19
         with:
           branch: ${{ matrix.openstack_version }}
-          enabled_services: 's-account,s-container,s-object,s-proxy,${{ matrix.additional_services }}'
+          enabled_services: 's-account,s-container,s-object,s-proxy,openstack-cli-server'
       - name: Checkout go
         uses: actions/setup-go@v5
         with:
