@@ -1092,13 +1092,24 @@ func TestListAddressesByNetwork(t *testing.T) {
 	th.CheckEquals(t, 1, pages)
 }
 
-func TestCreateServerImage(t *testing.T) {
+func TestCreateServerImageBeforeMicroversion_2_45(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
-	HandleCreateServerImageSuccessfully(t, fakeServer)
+	expected := HandleCreateServerImageSuccessfullyBeforeMicroversion_2_45(t, fakeServer)
 
-	_, err := servers.CreateImage(context.TODO(), client.ServiceClient(fakeServer), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
+	imageID, err := servers.CreateImage(context.TODO(), client.ServiceClient(fakeServer), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, imageID)
+}
+
+func TestCreateServerImageSinceMicroversion_2_45(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	expected := HandleCreateServerImageSuccessfullySinceMicroversion_2_45(t, fakeServer)
+
+	imageID, err := servers.CreateImage(context.TODO(), client.ServiceClient(fakeServer), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, imageID)
 }
 
 func TestMarshalPersonality(t *testing.T) {
