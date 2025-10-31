@@ -104,6 +104,27 @@ func TestCreateRole(t *testing.T) {
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
 
+func TestCreateWithOptionsRole(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateWithOptionsRoleSuccessfully(t, fakeServer)
+
+	createOpts := roles.CreateOpts{
+		Name:     "support",
+		DomainID: "1789d1",
+		Options: map[roles.Option]any{
+			roles.Immutable: true,
+		},
+		Extra: map[string]any{
+			"description": "read-only support role",
+		},
+	}
+
+	actual, err := roles.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRoleWithOptions, *actual)
+}
+
 func TestUpdateRole(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -112,6 +133,9 @@ func TestUpdateRole(t *testing.T) {
 	updateOpts := roles.UpdateOpts{
 		Extra: map[string]any{
 			"description": "admin read-only support role",
+		},
+		Options: map[roles.Option]any{
+			roles.Immutable: false,
 		},
 	}
 
