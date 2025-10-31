@@ -92,11 +92,9 @@ func TestCreateRole(t *testing.T) {
 	HandleCreateRoleSuccessfully(t, fakeServer)
 
 	createOpts := roles.CreateOpts{
-		Name:     "support",
-		DomainID: "1789d1",
-		Extra: map[string]any{
-			"description": "read-only support role",
-		},
+		Name:        "support",
+		DomainID:    "1789d1",
+		Description: "read-only support role",
 	}
 
 	actual, err := roles.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
