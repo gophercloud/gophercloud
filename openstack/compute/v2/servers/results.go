@@ -283,6 +283,9 @@ type Server struct {
 	// Locked indicates the lock status of the server
 	// This requires microversion 2.9 or later
 	Locked *bool `json:"locked"`
+
+	// ConfigDrive enables metadata injection through a configuration drive.
+	ConfigDrive string `json:"config_drive"`
 }
 
 type AttachedVolume struct {
