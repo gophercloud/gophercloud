@@ -19,19 +19,12 @@ jobs:
                 sed -i 's/setuptools\[core\]$/setuptools[core]==79.0.1/g' \$TOP_DIR/lib/infra \$TOP_DIR/inc/python
                 sed -i 's/pip_install "-U" "pbr"/pip_install "-U" "pbr" "setuptools[core]==79.0.1"/g' \$TOP_DIR/lib/infra
               fi
-            additional_services: "openstack-cli-server"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
-            ubuntu_version: "22.04"
-            additional_services: "openstack-cli-server"
+            ubuntu_version: "24.04"
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
             ubuntu_version: "22.04"
-            additional_services: "openstack-cli-server"
-          - name: "caracal"
-            openstack_version: "stable/2024.1"
-            ubuntu_version: "22.04"
-            additional_services: ""
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Designate on OpenStack ${{ matrix.name }}
     steps:
@@ -68,7 +61,7 @@ jobs:
             enable_plugin designate https://github.com/openstack/designate ${{ matrix.openstack_version }}
 
             ${{ matrix.devstack_conf_overrides }}
-          enabled_services: "designate,designate-central,designate-api,designate-worker,designate-producer,designate-mdns,${{ matrix.additional_services }}"
+          enabled_services: "designate,designate-central,designate-api,designate-worker,designate-producer,designate-mdns,openstack-cli-server"
 
       - name: Checkout go
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
