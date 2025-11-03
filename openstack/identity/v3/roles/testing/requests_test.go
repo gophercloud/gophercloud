@@ -40,7 +40,7 @@ func TestListRolesAllPages(t *testing.T) {
 	actual, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedRolesSlice, actual)
-	th.AssertEquals(t, ExpectedRolesSlice[1].Extra["description"], "read-only support role")
+	th.AssertEquals(t, ExpectedRolesSlice[1].Extra["test"], "this is for the test")
 }
 
 func TestListUsersFiltersCheck(t *testing.T) {
@@ -92,10 +92,11 @@ func TestCreateRole(t *testing.T) {
 	HandleCreateRoleSuccessfully(t, fakeServer)
 
 	createOpts := roles.CreateOpts{
-		Name:     "support",
-		DomainID: "1789d1",
+		Name:        "support",
+		DomainID:    "1789d1",
+		Description: "read-only support role",
 		Extra: map[string]any{
-			"description": "read-only support role",
+			"test": "this is for the test",
 		},
 	}
 
@@ -110,13 +111,14 @@ func TestCreateWithOptionsRole(t *testing.T) {
 	HandleCreateWithOptionsRoleSuccessfully(t, fakeServer)
 
 	createOpts := roles.CreateOpts{
-		Name:     "support",
-		DomainID: "1789d1",
+		Name:        "support",
+		DomainID:    "1789d1",
+		Description: "read-only support role",
 		Options: map[roles.Option]any{
 			roles.Immutable: true,
 		},
 		Extra: map[string]any{
-			"description": "read-only support role",
+			"test": "this is for the test",
 		},
 	}
 
