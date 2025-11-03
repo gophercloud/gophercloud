@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -283,6 +284,9 @@ type Server struct {
 	// Locked indicates the lock status of the server
 	// This requires microversion 2.9 or later
 	Locked *bool `json:"locked"`
+
+	// ConfigDrive enables metadata injection through a configuration drive.
+	ConfigDrive bool `json:"-"`
 }
 
 type AttachedVolume struct {
@@ -343,6 +347,7 @@ func (r *Server) UnmarshalJSON(b []byte) error {
 		Image        any                             `json:"image"`
 		LaunchedAt   gophercloud.JSONRFC3339MilliNoZ `json:"OS-SRV-USG:launched_at"`
 		TerminatedAt gophercloud.JSONRFC3339MilliNoZ `json:"OS-SRV-USG:terminated_at"`
+		ConfigDrive  any                             `json:"config_drive"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -363,6 +368,24 @@ func (r *Server) UnmarshalJSON(b []byte) error {
 
 	r.LaunchedAt = time.Time(s.LaunchedAt)
 	r.TerminatedAt = time.Time(s.TerminatedAt)
+
+	switch t := s.ConfigDrive.(type) {
+	case nil:
+		r.ConfigDrive = false
+	case bool:
+		r.ConfigDrive = t
+	case string:
+		if t == "" {
+			r.ConfigDrive = false
+		} else {
+			r.ConfigDrive, err = strconv.ParseBool(t)
+			if err != nil {
+				return fmt.Errorf("failed to parse ConfigDrive %q: %v", t, err)
+			}
+		}
+	default:
+		return fmt.Errorf("unknown type for ConfigDrive: %T (value: %v)", t, t)
+	}
 
 	return err
 }
