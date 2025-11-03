@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload logs artifacts on failure
         if: ${{ failure() && fromJSON(steps.changed-files.outputs.matches) }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: functional-placement-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
