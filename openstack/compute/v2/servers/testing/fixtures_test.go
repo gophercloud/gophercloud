@@ -1303,14 +1303,39 @@ func HandleNetworkAddressListSuccessfully(t *testing.T, fakeServer th.FakeServer
 	})
 }
 
-// HandleCreateServerImageSuccessfully sets up the test server to respond to a TestCreateServerImage request.
-func HandleCreateServerImageSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+// HandleCreateServerImageSuccessfullyBeforeMicroversion_2_45 sets up the test server to respond to a TestCreateServerImageBeforeMicroversion_2_45 request.
+func HandleCreateServerImageSuccessfullyBeforeMicroversion_2_45(t *testing.T, fakeServer th.FakeServer) string {
+	imageID := "xxxx-xxxxx-xxxxx-xxxx"
+
 	fakeServer.Mux.HandleFunc("/servers/serverimage/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		w.Header().Add("Location", "https://0.0.0.0/images/xxxx-xxxxx-xxxxx-xxxx")
+
+		w.Header().Set("Location", fmt.Sprintf("https://0.0.0.0/images/%s", imageID))
+		w.Header().Set("X-OpenStack-Nova-API-Version", "2.44")
 		w.WriteHeader(http.StatusAccepted)
 	})
+
+	return imageID
+}
+
+// HandleCreateServerImageSuccessfullySinceMicroversion_2_45 sets up the test server to respond to a TestCreateServerImageSinceMicroversion_2_45 request.
+func HandleCreateServerImageSuccessfullySinceMicroversion_2_45(t *testing.T, fakeServer th.FakeServer) string {
+	imageID := "yyyy-yyyyy-yyyyy-yyyyy"
+
+	fakeServer.Mux.HandleFunc("/servers/serverimage/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-OpenStack-Nova-API-Version", "2.45")
+		w.WriteHeader(http.StatusAccepted)
+
+		_, err := w.Write(fmt.Appendf(nil, `{"image_id":"%s"}`, imageID))
+		th.AssertNoErr(t, err)
+	})
+
+	return imageID
 }
 
 // HandlePasswordGetSuccessfully sets up the test server to respond to a password Get request.
