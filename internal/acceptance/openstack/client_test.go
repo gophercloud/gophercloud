@@ -94,7 +94,8 @@ func TestEC2AuthMethod(t *testing.T) {
 	defer credentials.Delete(context.TODO(), client, credential.ID)
 	tools.PrintResource(t, credential)
 
-	newClient, err := clients.NewIdentityV3UnauthenticatedClient()
+	// Create a new provider client for EC2 authentication using the existing token
+	newClient, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
 	ec2AuthOptions := &ec2tokens.AuthOptions{
