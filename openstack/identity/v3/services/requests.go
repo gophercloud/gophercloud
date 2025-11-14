@@ -109,7 +109,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts provides options for updating a service.
 type UpdateOpts struct {
 	// Type is the type of the service.
-	Type string `json:"type"`
+	Type string `json:"type,omitempty"`
 
 	// Enabled is whether or not the service is enabled.
 	Enabled *bool `json:"enabled,omitempty"`
