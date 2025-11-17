@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
@@ -133,16 +134,47 @@ func (r CreateImageResult) ExtractImageID() (string, error) {
 	if r.Err != nil {
 		return "", r.Err
 	}
-	// Get the image id from the header
+
+	microversion := r.Header.Get("X-OpenStack-Nova-API-Version")
+
+	major, minor, err := utils.ParseMicroversion(microversion)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse X-OpenStack-Nova-API-Version header: %s", err)
+	}
+
+	// In microversions prior to 2.45, the image ID was provided in the Location header.
+	if major < 2 || (major == 2 && minor < 45) {
+		return r.extractImageIDFromLocationHeader()
+	}
+
+	// Starting from 2.45, it is included in the response body.
+	return r.extractImageIDFromResponseBody()
+}
+
+func (r CreateImageResult) extractImageIDFromLocationHeader() (string, error) {
 	u, err := url.ParseRequestURI(r.Header.Get("Location"))
 	if err != nil {
 		return "", err
 	}
+
 	imageID := path.Base(u.Path)
 	if imageID == "." || imageID == "/" {
 		return "", fmt.Errorf("failed to parse the ID of newly created image: %s", u)
 	}
+
 	return imageID, nil
+}
+
+func (r CreateImageResult) extractImageIDFromResponseBody() (string, error) {
+	var response struct {
+		ImageID string `json:"image_id"`
+	}
+
+	if err := r.ExtractInto(&response); err != nil {
+		return "", err
+	}
+
+	return response.ImageID, nil
 }
 
 // Server represents a server/instance in the OpenStack cloud.
