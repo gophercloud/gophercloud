@@ -4,6 +4,7 @@ package v3
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -13,7 +14,7 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func TestVolumeTypes(t *testing.T) {
+func TestVolumeTypesCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewBlockStorageV3Client()
@@ -39,9 +40,9 @@ func TestVolumeTypes(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
+	name := vt.Name + "-updated"
+	description := vt.Description + "-updated"
 	isPublic := false
-	name := vt.Name + "-UPDATED"
-	description := ""
 	updateOpts := volumetypes.UpdateOpts{
 		Name:        &name,
 		Description: &description,
@@ -55,6 +56,69 @@ func TestVolumeTypes(t *testing.T) {
 	th.AssertEquals(t, name, newVT.Name)
 	th.AssertEquals(t, description, newVT.Description)
 	th.AssertEquals(t, isPublic, newVT.IsPublic)
+	newVisibility := volumetypes.VisibilityPrivate
+
+	for _, tt := range []struct {
+		name                string
+		opts                volumetypes.ListOpts
+		expectedVolumeTypes int
+	}{
+		{
+			name: "Volume Type Name",
+			opts: volumetypes.ListOpts{
+				Name: newVT.Name,
+			},
+			expectedVolumeTypes: 1,
+		},
+		{
+			name: "Description",
+			opts: volumetypes.ListOpts{
+				Description: "create_from_gophercloud-updated",
+			},
+			expectedVolumeTypes: 1,
+		},
+		{
+			name: "Is Public",
+			opts: volumetypes.ListOpts{
+				IsPublic: newVisibility,
+			},
+			expectedVolumeTypes: 1,
+		},
+	} {
+		t.Run(fmt.Sprintf("List volumetypes by %s", tt.name), func(t *testing.T) {
+			allPages, err := volumetypes.List(client, tt.opts).AllPages(context.TODO())
+			th.AssertNoErr(t, err)
+
+			allVolumeTypes, err := volumetypes.ExtractVolumeTypes(allPages)
+			th.AssertNoErr(t, err)
+
+			logVolumeTypes := func() {
+				for _, volumetype := range allVolumeTypes {
+					tools.PrintResource(t, volumetype)
+				}
+			}
+
+			if len(allVolumeTypes) != tt.expectedVolumeTypes {
+				if len(allVolumeTypes) == 0 {
+					t.Fatalf("Volume type not found")
+				}
+			} else {
+				if len(allVolumeTypes) > 1 {
+					logVolumeTypes()
+					t.Fatalf("Expected %d volume type but got %d", tt.expectedVolumeTypes, len(allVolumeTypes))
+				}
+			}
+			func() {
+				for _, volumetype := range allVolumeTypes {
+					if volumetype.ID == newVT.ID {
+						return
+					}
+				}
+				logVolumeTypes()
+				t.Fatalf("Returned volume types did not contain expected volume type")
+			}()
+		})
+	}
 }
 
 func TestVolumeTypesExtraSpecs(t *testing.T) {

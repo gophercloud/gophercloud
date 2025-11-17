@@ -195,6 +195,121 @@ var UpdatedExtraSpec = map[string]string{
 	"capabilities": "gpu-2",
 }
 
+func HandleListIsPublicParam(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, values)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"volume_types": []}`)
+	})
+}
+
+func HandleListWithNameFilter(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, values)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `
+{
+    "volume_types": [
+        {
+            "name": "test-type",
+            "qos_specs_id": null,
+            "os-volume-type-access:is_public": true,
+            "extra_specs": {
+                "storage_protocol": "nfs"
+            },
+            "is_public": true,
+            "id": "996af3df-92fd-4814-a0ee-ba5f899aa1ec",
+            "description": "test"
+        }
+    ]
+}
+`)
+	})
+}
+
+func HandleListWithDescriptionFilter(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, values)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `
+{
+    "volume_types": [
+        {
+            "name": "test-type",
+            "qos_specs_id": null,
+            "os-volume-type-access:is_public": true,
+            "extra_specs": {
+                "multiattach": "<is> True"
+            },
+            "is_public": true,
+            "id": "ab948f0a-13ed-47c8-b9be-cade0beb0706",
+            "description": "test"
+        }
+    ]
+}
+`)
+	})
+}
+
+func HandleListWithExtraSpecsFilter(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, values)
+
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		extraSpecsFilter := r.Form.Get("extra_specs")
+
+		// Determine which volume type to return based on extra_specs filter.
+		// Note: We only test with a single extra_spec value because testing multiple
+		// values is not feasible due to the non-deterministic order of map keys in Go.
+		// The order of keys in the serialized string can vary between runs, making
+		// it impossible to reliably match the expected string without adding complex
+		// normalization code that would clutter the test.
+		if extraSpecsFilter == "{'storage_protocol':'nfs'}" {
+			// Return only nfs-type
+			fmt.Fprint(w, `
+{
+    "volume_types": [
+        {
+            "name": "nfs-type",
+            "qos_specs_id": null,
+            "os-volume-type-access:is_public": true,
+            "extra_specs": {
+                "storage_protocol": "nfs"
+            },
+            "is_public": true,
+            "id": "6b0cfee7-48b6-41b7-9d68-0d74cbdc08de",
+            "description": "NFS storage type"
+        }
+    ]
+}
+`)
+		} else {
+			// Default: return empty list
+			fmt.Fprint(w, `{"volume_types": []}`)
+		}
+	})
+}
+
 func HandleExtraSpecsListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -375,17 +490,5 @@ func MockEncryptionGetSpecResponse(t *testing.T, fakeServer th.FakeServer) {
     "cipher": "aes-xts-plain64"
 }
     `)
-	})
-}
-
-func HandleListIsPublicParam(t *testing.T, fakeServer th.FakeServer, values map[string]string) {
-	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestFormValues(t, r, values)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, `{"volume_types": []}`)
 	})
 }
