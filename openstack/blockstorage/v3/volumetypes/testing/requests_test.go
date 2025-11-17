@@ -162,6 +162,98 @@ func TestListIsPublicParam(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestListNameParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	result := make(map[string]string)
+	HandleListIsPublicParam(t, fakeServer, result)
+
+	// Test with name filter
+	result["is_public"] = "None"
+	result["name"] = "test-type"
+	err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		Name: "test-type",
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	// Test with name, description, is_public, and extra_specs together
+	result["is_public"] = "true"
+	result["name"] = "test-type"
+	result["description"] = "test"
+	result["extra_specs"] = "{'storage_protocol':'nfs'}"
+	err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		Name:        "test-type",
+		Description: "test",
+		IsPublic:    volumetypes.VisibilityPublic,
+		ExtraSpecs:  map[string]string{"storage_protocol": "nfs"},
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
+func TestListDescriptionParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	result := make(map[string]string)
+	HandleListIsPublicParam(t, fakeServer, result)
+
+	// Test with description filter
+	result["is_public"] = "None"
+	result["description"] = "test"
+	err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		Description: "test",
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	// Test with description, is_public, and extra_specs together
+	result["is_public"] = "true"
+	result["description"] = "test"
+	result["extra_specs"] = "{'multiattach':'<is> True'}"
+	err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		Description: "test",
+		IsPublic:    volumetypes.VisibilityPublic,
+		ExtraSpecs:  map[string]string{"multiattach": "<is> True"},
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
+func TestListExtraSpecsParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	result := make(map[string]string)
+	HandleListIsPublicParam(t, fakeServer, result)
+
+	// Test with extra_specs filter
+	result["is_public"] = "None"
+	result["extra_specs"] = "{'storage_protocol':'nfs'}"
+	err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		ExtraSpecs: map[string]string{"storage_protocol": "nfs"},
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	// Test with multiple extra_specs
+	result["extra_specs"] = "{'multiattach':'<is> True', 'replication_enabled':'<is> True', 'RESKEY:availability_zones':'zone'}"
+	err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		ExtraSpecs: map[string]string{
+			"multiattach":               "<is> True",
+			"replication_enabled":       "<is> True",
+			"RESKEY:availability_zones": "zone",
+		},
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
