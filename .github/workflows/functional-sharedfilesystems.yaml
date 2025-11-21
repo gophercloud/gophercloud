@@ -29,7 +29,7 @@ jobs:
     name: Manila on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Check changed files
         uses: ./.github/actions/file-filter
