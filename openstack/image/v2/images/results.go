@@ -3,6 +3,7 @@ package images
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"reflect"
 	"strings"
 	"time"
@@ -70,7 +71,7 @@ type Image struct {
 
 	// Properties is a set of key-value pairs, if any, that are associated with
 	// the image.
-	Properties map[string]any
+	Properties map[string]any `json:"properties"`
 
 	// CreatedAt is the date when the image has been created.
 	CreatedAt time.Time `json:"created_at"`
@@ -134,7 +135,13 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 		delete(resultMap, "size")
 		delete(resultMap, "openstack-image-import-methods")
 		delete(resultMap, "openstack-image-store-ids")
-		r.Properties = gophercloud.RemainingKeys(Image{}, resultMap)
+		properties := gophercloud.RemainingKeys(Image{}, resultMap)
+
+		if r.Properties == nil {
+			r.Properties = properties
+		} else {
+			maps.Copy(r.Properties, properties)
+		}
 	}
 
 	if v := strings.FieldsFunc(strings.TrimSpace(s.OpenStackImageImportMethods), splitFunc); len(v) > 0 {

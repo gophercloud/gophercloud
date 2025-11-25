@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -475,4 +476,30 @@ func TestUpdateImageProperties(t *testing.T) {
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
+}
+
+func TestImageMarshalUnmarshalRoundTrip(t *testing.T) {
+	// This test verifies that marshalling an Image to JSON and unmarshalling
+	// it back produces the same Properties. Previously, Properties had no json
+	// tag, so it would marshal to "Properties" (capital P). On unmarshal,
+	// RemainingKeys would not exclude it (since it only deleted lowercase
+	// "properties"), causing the Properties map to be nested inside itself.
+
+	originalImage := images.Image{
+		ID:   "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		Name: "Test Image",
+		Properties: map[string]any{
+			"hw_disk_bus": "scsi",
+			"custom_prop": "value",
+		},
+	}
+
+	jsonData, err := json.Marshal(originalImage)
+	th.AssertNoErr(t, err)
+
+	var unmarshaledImage images.Image
+	err = json.Unmarshal(jsonData, &unmarshaledImage)
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, originalImage.Properties, unmarshaledImage.Properties)
 }
