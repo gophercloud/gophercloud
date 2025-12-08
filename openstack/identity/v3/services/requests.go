@@ -15,6 +15,12 @@ type CreateOptsBuilder interface {
 
 // CreateOpts provides options used to create a service.
 type CreateOpts struct {
+	// Name is the name of the service.
+	Name string `json:"name,omitempty"`
+
+	// Description is the description of the service.
+	Description string `json:"description,omitempty"`
+
 	// Type is the type of the service.
 	Type string `json:"type"`
 
@@ -108,6 +114,12 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts provides options for updating a service.
 type UpdateOpts struct {
+	// Name is an updated name for the service.
+	Name *string `json:"name,omitempty"`
+
+	// Description is an update description for the service.
+	Description *string `json:"description,omitempty"`
+
 	// Type is the type of the service.
 	Type string `json:"type,omitempty"`
 

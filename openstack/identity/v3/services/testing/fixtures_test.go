@@ -23,11 +23,11 @@ const ListOutput = `
             "links": {
                 "self": "https://example.com/identity/v3/services/1234"
             },
+            "name": "service-one",
             "type": "identity",
             "enabled": false,
             "extra": {
-                "name": "service-one",
-                "description": "Service One"
+                "email": "service-one@example.com"
             }
         },
         {
@@ -35,11 +35,11 @@ const ListOutput = `
             "links": {
                 "self": "https://example.com/identity/v3/services/9876"
             },
+            "name": "service-two",
+            "description": "Service Two",
             "type": "compute",
             "enabled": false,
             "extra": {
-                "name": "service-two",
-                "description": "Service Two",
                 "email": "service@example.com"
             }
         }
@@ -55,11 +55,11 @@ const GetOutput = `
         "links": {
             "self": "https://example.com/identity/v3/services/9876"
         },
+        "name": "service-two",
+        "description": "Service Two",
         "type": "compute",
         "enabled": false,
         "extra": {
-            "name": "service-two",
-            "description": "Service Two",
             "email": "service@example.com"
         }
     }
@@ -96,11 +96,11 @@ const UpdateOutput = `
         "links": {
             "self": "https://example.com/identity/v3/services/9876"
         },
+        "name": "service-two",
+        "description": "Service Two Updated",
         "type": "compute2",
         "enabled": false,
         "extra": {
-            "name": "service-two",
-            "description": "Service Two Updated",
             "email": "service@example.com"
         }
     }
@@ -113,11 +113,11 @@ var FirstService = services.Service{
 	Links: map[string]any{
 		"self": "https://example.com/identity/v3/services/1234",
 	},
+	Name:    "service-one",
 	Type:    "identity",
 	Enabled: false,
 	Extra: map[string]any{
-		"name":        "service-one",
-		"description": "Service One",
+		"email": "service-one@example.com",
 	},
 }
 
@@ -127,12 +127,12 @@ var SecondService = services.Service{
 	Links: map[string]any{
 		"self": "https://example.com/identity/v3/services/9876",
 	},
-	Type:    "compute",
-	Enabled: false,
+	Name:        "service-two",
+	Description: "Service Two",
+	Type:        "compute",
+	Enabled:     false,
 	Extra: map[string]any{
-		"name":        "service-two",
-		"description": "Service Two",
-		"email":       "service@example.com",
+		"email": "service@example.com",
 	},
 }
 
@@ -142,12 +142,12 @@ var SecondServiceUpdated = services.Service{
 	Links: map[string]any{
 		"self": "https://example.com/identity/v3/services/9876",
 	},
-	Type:    "compute2",
-	Enabled: false,
+	Name:        "service-two",
+	Description: "Service Two Updated",
+	Type:        "compute2",
+	Enabled:     false,
 	Extra: map[string]any{
-		"name":        "service-two",
-		"description": "Service Two Updated",
-		"email":       "service@example.com",
+		"email": "service@example.com",
 	},
 }
 

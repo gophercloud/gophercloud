@@ -17,11 +17,11 @@ func TestCreateSuccessful(t *testing.T) {
 	HandleCreateServiceSuccessfully(t, fakeServer)
 
 	createOpts := services.CreateOpts{
-		Type: "compute",
+		Name:        "service-two",
+		Description: "Service Two",
+		Type:        "compute",
 		Extra: map[string]any{
-			"name":        "service-two",
-			"description": "Service Two",
-			"email":       "service@example.com",
+			"email": "service@example.com",
 		},
 	}
 
@@ -60,7 +60,7 @@ func TestListServicesAllPages(t *testing.T) {
 	actual, err := services.ExtractServices(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedServicesSlice, actual)
-	th.AssertEquals(t, ExpectedServicesSlice[0].Extra["name"], "service-one")
+	th.AssertEquals(t, ExpectedServicesSlice[0].Extra["email"], "service-one@example.com")
 	th.AssertEquals(t, ExpectedServicesSlice[1].Extra["email"], "service@example.com")
 }
 
@@ -81,16 +81,15 @@ func TestUpdateSuccessful(t *testing.T) {
 	defer fakeServer.Teardown()
 	HandleUpdateServiceSuccessfully(t, fakeServer)
 
+	updatedDescription := "Service Two Updated"
 	updateOpts := services.UpdateOpts{
-		Type: "compute2",
-		Extra: map[string]any{
-			"description": "Service Two Updated",
-		},
+		Description: &updatedDescription,
+		Type:        "compute2",
 	}
 	actual, err := services.Update(context.TODO(), client.ServiceClient(fakeServer), "9876", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondServiceUpdated, *actual)
-	th.AssertEquals(t, SecondServiceUpdated.Extra["description"], "Service Two Updated")
+	th.AssertEquals(t, SecondServiceUpdated.Description, "Service Two Updated")
 }
 
 func TestDeleteSuccessful(t *testing.T) {
