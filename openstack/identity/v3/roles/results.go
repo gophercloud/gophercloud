@@ -55,6 +55,12 @@ func (r *Role) UnmarshalJSON(b []byte) error {
 		}
 		if resultMap, ok := result.(map[string]any); ok {
 			r.Extra = gophercloud.RemainingKeys(Role{}, resultMap)
+
+			// the following code is required for backward compatibility with the
+			// old behavior, when description was in extra
+			if description, ok := resultMap["description"]; ok {
+				r.Extra["description"] = description
+			}
 		}
 	}
 
