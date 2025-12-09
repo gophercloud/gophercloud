@@ -3,6 +3,7 @@ package gophercloud
 import (
 	"context"
 	"io"
+	"maps"
 	"net/http"
 	"strings"
 )
@@ -58,6 +59,27 @@ func (client *ServiceClient) initReqOpts(JSONBody any, JSONResponse any, opts *R
 	if JSONResponse != nil {
 		opts.JSONResponse = JSONResponse
 	}
+}
+
+// DeepCopy creates a deep copy of the ServiceClient.
+func (client *ServiceClient) DeepCopy() *ServiceClient {
+	newClient := &ServiceClient{
+		Endpoint:     client.Endpoint,
+		ResourceBase: client.ResourceBase,
+		Type:         client.Type,
+		Microversion: client.Microversion,
+	}
+
+	if client.ProviderClient != nil {
+		newClient.ProviderClient = client.ProviderClient.DeepCopy()
+	}
+
+	if client.MoreHeaders != nil {
+		newClient.MoreHeaders = make(map[string]string, len(client.MoreHeaders))
+		maps.Copy(newClient.MoreHeaders, client.MoreHeaders)
+	}
+
+	return newClient
 }
 
 // Get calls `Request` with the "GET" HTTP verb.
