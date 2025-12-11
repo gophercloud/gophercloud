@@ -20,6 +20,9 @@ type ListOpts struct {
 
 	// Name filters the response by domain name.
 	Name string `q:"name"`
+
+	// Limit limits the number of projects returned per page.
+	Limit int `q:"limit"`
 }
 
 // ToDomainListQuery formats a ListOpts into a query string.
