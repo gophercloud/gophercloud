@@ -323,3 +323,73 @@ func getGetDomainResult(t *testing.T) tokens.GetResult {
 	th.AssertNoErr(t, err)
 	return result
 }
+
+// ApplicationCredentialTokenOutput is a sample response to a Token call
+// using application credentials with access rules.
+const ApplicationCredentialTokenOutput = `
+{
+   "token":{
+      "methods":["application_credential"],
+      "expires_at":"2017-06-03T02:19:49.000000Z",
+      "user":{
+         "domain":{
+            "id":"default",
+            "name":"Default"
+         },
+         "id":"0fe36e73809d46aeae6705c39077b1b3",
+         "name":"admin"
+      },
+      "application_credential":{
+         "id":"d832f05beee743c696672ef65ee073ff",
+         "name":"test",
+         "restricted":true,
+         "access_rules":[
+            {
+               "id":"4641f614301d48bfae1ad323e3e1c44c",
+               "service":"identity",
+               "path":"/v3/auth/tokens",
+               "method":"GET"
+            },
+            {
+               "id":"968c404cb9b44672a574e5ee9d3db987",
+               "service":"identity",
+               "path":"/v3/**",
+               "method":"HEAD"
+            }
+         ]
+      },
+      "issued_at":"2017-06-03T01:19:49.000000Z"
+   }
+}`
+
+// ExpectedApplicationCredential contains expected application credential
+// extracted from token response.
+var ExpectedApplicationCredential = tokens.ApplicationCredential{
+	ID:         "d832f05beee743c696672ef65ee073ff",
+	Name:       "test",
+	Restricted: true,
+	AccessRules: []tokens.AccessRule{
+		{
+			ID:      "4641f614301d48bfae1ad323e3e1c44c",
+			Service: "identity",
+			Path:    "/v3/auth/tokens",
+			Method:  "GET",
+		},
+		{
+			ID:      "968c404cb9b44672a574e5ee9d3db987",
+			Service: "identity",
+			Path:    "/v3/**",
+			Method:  "HEAD",
+		},
+	},
+}
+
+func getGetApplicationCredentialResult(t *testing.T) tokens.GetResult {
+	result := tokens.GetResult{}
+	result.Header = http.Header{
+		"X-Subject-Token": []string{testTokenID},
+	}
+	err := json.Unmarshal([]byte(ApplicationCredentialTokenOutput), &result.Body)
+	th.AssertNoErr(t, err)
+	return result
+}

@@ -40,19 +40,19 @@ func TestTokensGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	catalog, err := tokens.Get(context.TODO(), client, token.ID).ExtractServiceCatalog()
+	catalog, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractServiceCatalog()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, catalog)
 
-	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	roles, err := tokens.Get(context.TODO(), client, token.ID).ExtractRoles()
+	roles, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractRoles()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, roles)
 
-	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 }

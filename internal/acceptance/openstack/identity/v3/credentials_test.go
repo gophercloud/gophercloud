@@ -39,11 +39,11 @@ func TestCredentialsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -116,11 +116,11 @@ func TestCredentialsValidateS3(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
-	user, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(context.TODO(), client, token.ID).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 

@@ -59,3 +59,23 @@ func TestExtractDomain(t *testing.T) {
 
 	th.CheckDeepEquals(t, &ExpectedDomain, domain)
 }
+
+func TestExtractApplicationCredential(t *testing.T) {
+	result := getGetApplicationCredentialResult(t)
+
+	appCred, err := result.ExtractApplicationCredential()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, &ExpectedApplicationCredential, appCred)
+}
+
+func TestExtractApplicationCredentialNotPresent(t *testing.T) {
+	result := getGetResult(t)
+
+	appCred, err := result.ExtractApplicationCredential()
+	th.AssertNoErr(t, err)
+
+	if appCred != nil {
+		t.Errorf("Expected nil application credential, got %v", appCred)
+	}
+}

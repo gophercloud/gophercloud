@@ -675,7 +675,7 @@ func TestGetRequest(t *testing.T) {
 		`)
 	})
 
-	token, err := tokens.Get(context.TODO(), &client, "abcdef12345").Extract()
+	token, err := tokens.Get(context.TODO(), &client, "abcdef12345", nil).Extract()
 	if err != nil {
 		t.Errorf("Info returned an error: %v", err)
 	}
@@ -712,7 +712,7 @@ func TestValidateRequestSuccessful(t *testing.T) {
 	defer fakeServer.Teardown()
 	client := prepareAuthTokenHandler(t, fakeServer, "HEAD", http.StatusNoContent)
 
-	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
+	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345", nil)
 	if err != nil {
 		t.Errorf("Unexpected error from Validate: %v", err)
 	}
@@ -727,7 +727,7 @@ func TestValidateRequestFailure(t *testing.T) {
 	defer fakeServer.Teardown()
 	client := prepareAuthTokenHandler(t, fakeServer, "HEAD", http.StatusNotFound)
 
-	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
+	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345", nil)
 	if err != nil {
 		t.Errorf("Unexpected error from Validate: %v", err)
 	}
@@ -742,7 +742,7 @@ func TestValidateRequestError(t *testing.T) {
 	defer fakeServer.Teardown()
 	client := prepareAuthTokenHandler(t, fakeServer, "HEAD", http.StatusMethodNotAllowed)
 
-	_, err := tokens.Validate(context.TODO(), &client, "abcdef12345")
+	_, err := tokens.Validate(context.TODO(), &client, "abcdef12345", nil)
 	if err == nil {
 		t.Errorf("Missing expected error from Validate")
 	}
@@ -765,6 +765,76 @@ func TestRevokeRequestError(t *testing.T) {
 	res := tokens.Revoke(context.TODO(), &client, "abcdef12345")
 	if res.Err == nil {
 		t.Errorf("Missing expected error from Revoke")
+	}
+}
+
+func TestGetRequestWithAccessRules(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	client := gophercloud.ServiceClient{
+		ProviderClient: &gophercloud.ProviderClient{
+			TokenID: "12345abcdef",
+		},
+		Endpoint: fakeServer.Endpoint(),
+	}
+
+	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
+		th.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
+		th.TestHeader(t, r, "OpenStack-Identity-Access-Rules", "1")
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `
+			{ "token": { "expires_at": "2014-08-29T13:10:01.000000Z" } }
+		`)
+	})
+
+	getOpts := tokens.GetOpts{
+		AccessRulesVersion: "1",
+	}
+	token, err := tokens.Get(context.TODO(), &client, "abcdef12345", getOpts).Extract()
+	if err != nil {
+		t.Errorf("Get returned an error: %v", err)
+	}
+
+	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
+	if token.ExpiresAt != expected {
+		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), time.Time(token.ExpiresAt).Format(time.UnixDate))
+	}
+}
+
+func TestValidateRequestWithAccessRules(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	client := gophercloud.ServiceClient{
+		ProviderClient: &gophercloud.ProviderClient{
+			TokenID: "12345abcdef",
+		},
+		Endpoint: fakeServer.Endpoint(),
+	}
+
+	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "HEAD")
+		th.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
+		th.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
+		th.TestHeader(t, r, "OpenStack-Identity-Access-Rules", "1")
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	validateOpts := tokens.ValidateOpts{
+		AccessRulesVersion: "1",
+	}
+	ok, err := tokens.Validate(context.TODO(), &client, "abcdef12345", validateOpts)
+	if err != nil {
+		t.Errorf("Unexpected error from Validate: %v", err)
+	}
+
+	if !ok {
+		t.Errorf("Validate returned false for a valid token")
 	}
 }
 

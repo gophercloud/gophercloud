@@ -103,5 +103,53 @@ Example to Create a Token from a Username and Password with Project Name Scope
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get a Token
+
+	token, err := tokens.Get(context.TODO(), identityClient, "token_id", nil).ExtractToken()
+	if err != nil {
+		panic(err)
+	}
+
+# Example to Get a Token Created with Application Credentials Access Rules
+
+When validating or retrieving tokens that were created using application
+credentials with access rules, the OpenStack-Identity-Access-Rules header
+must be sent. Without this header, Keystone will return a 404 Not Found error.
+
+See https://docs.openstack.org/keystone/latest/user/application_credentials.html
+
+	getOpts := tokens.GetOpts{
+		AccessRulesVersion: "1.0",
+	}
+	token, err := tokens.Get(context.TODO(), identityClient, "token_id", getOpts).ExtractToken()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Validate a Token
+
+	ok, err := tokens.Validate(context.TODO(), identityClient, "token_id", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	if ok {
+		fmt.Println("Token is valid")
+	}
+
+Example to Validate a Token Created with Application Credentials Access Rules
+
+	validateOpts := tokens.ValidateOpts{
+		AccessRulesVersion: "1.0",
+	}
+	ok, err := tokens.Validate(context.TODO(), identityClient, "token_id", validateOpts)
+	if err != nil {
+		panic(err)
+	}
+
+	if ok {
+		fmt.Println("Token is valid")
+	}
 */
 package tokens

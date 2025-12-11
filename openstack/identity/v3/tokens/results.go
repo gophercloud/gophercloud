@@ -88,6 +88,33 @@ type Trust struct {
 	TrustorUserID TrustUser `json:"trustor_user"`
 }
 
+// AccessRule represents an access rule for an application credential.
+type AccessRule struct {
+	// The ID of the access rule.
+	ID string `json:"id"`
+	// The API path that the application credential is permitted to access.
+	Path string `json:"path"`
+	// The request method that the application credential is permitted to use
+	// for a given API endpoint.
+	Method string `json:"method"`
+	// The service type identifier for the service that the application
+	// credential is permitted to access.
+	Service string `json:"service"`
+}
+
+// ApplicationCredential represents the application credential information
+// included in a token when the token was created using an application credential.
+type ApplicationCredential struct {
+	// The ID of the application credential.
+	ID string `json:"id"`
+	// The name of the application credential.
+	Name string `json:"name"`
+	// A flag indicating whether the application credential is restricted.
+	Restricted bool `json:"restricted"`
+	// A list of access rules for the application credential.
+	AccessRules []AccessRule `json:"access_rules"`
+}
+
 // commonResult is the response from a request. A commonResult has various
 // methods which can be used to extract different details about the result.
 type commonResult struct {
@@ -179,6 +206,17 @@ func (r commonResult) ExtractTrust() (*Trust, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Trust, err
+}
+
+// ExtractApplicationCredential returns the ApplicationCredential that was used
+// to create the token. This is only present when the token was created using
+// an application credential.
+func (r commonResult) ExtractApplicationCredential() (*ApplicationCredential, error) {
+	var s struct {
+		ApplicationCredential *ApplicationCredential `json:"application_credential"`
+	}
+	err := r.ExtractInto(&s)
+	return s.ApplicationCredential, err
 }
 
 // CreateResult is the response from a Create request. Use ExtractToken()

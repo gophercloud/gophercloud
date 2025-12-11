@@ -206,7 +206,7 @@ func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint st
 		}
 
 		v3Client.SetToken(tokenID)
-		result := tokens3.Get(ctx, v3Client, tokenID)
+		result := tokens3.Get(ctx, v3Client, tokenID, nil)
 		if result.Err != nil {
 			return result.Err
 		}
