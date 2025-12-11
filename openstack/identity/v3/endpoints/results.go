@@ -66,6 +66,9 @@ type Endpoint struct {
 
 	// Enabled is whether or not the endpoint is enabled.
 	Enabled bool `json:"enabled"`
+
+	// Description is the description of the Endpoint.
+	Description string `json:"description"`
 }
 
 // EndpointPage is a single page of Endpoint results.
