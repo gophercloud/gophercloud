@@ -7,6 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/domains"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/endpoints"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/regions"
@@ -16,6 +17,38 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/users"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
+
+// CreateEndpoint will create an endpoint with a random name.  It only define
+// endpoint name and description, and receive from CreateOpts others parameters,
+// such as URL, Availability and ServiceID. An error will be returned if the
+// endpoint was unabled to be created.
+func CreateEndpoint(t *testing.T, client *gophercloud.ServiceClient, c *endpoints.CreateOpts) (*endpoints.Endpoint, error) {
+	name := tools.RandomString("ACPTTEST", 8)
+	description := tools.RandomString("ACPTTEST-DESC", 8)
+	t.Logf("Attempting to create endpoint: %s", name)
+
+	var createOpts endpoints.CreateOpts
+	if c != nil {
+		createOpts = *c
+	} else {
+		createOpts = endpoints.CreateOpts{}
+	}
+
+	createOpts.Name = name
+	createOpts.Description = description
+
+	endpoint, err := endpoints.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return endpoint, err
+	}
+
+	t.Logf("Successfully created endpoint %s with ID %s", name, endpoint.ID)
+
+	th.AssertEquals(t, endpoint.Name, name)
+	th.AssertEquals(t, endpoint.Description, description)
+
+	return endpoint, nil
+}
 
 // CreateProject will create a project with a random name.
 // It takes an optional createOpts parameter since creating a project
@@ -226,6 +259,18 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, c *services.
 	th.AssertEquals(t, service.Extra["name"], name)
 
 	return service, nil
+}
+
+// DeleteEndpoint will delete the specified Endpoint using its ID. A fatal error
+// will occur if the endpoint failed to be deleted. This works best when using
+// it as a deferred function.
+func DeleteEndpoint(t *testing.T, client *gophercloud.ServiceClient, endpointID string) {
+	err := endpoints.Delete(context.TODO(), client, endpointID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete endpoint %s: %v", endpointID, err)
+	}
+
+	t.Logf("Deleted endpoint: %s", endpointID)
 }
 
 // DeleteProject will delete a project by ID. A fatal error will occur if
