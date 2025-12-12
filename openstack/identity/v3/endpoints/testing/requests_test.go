@@ -23,7 +23,6 @@ func TestCreateSuccessful(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"endpoint": {
 				"interface": "public",
-				"name": "the-endiest-of-points",
 				"region": "underground",
 				"url": "https://1.2.3.4:9000/",
 				"service_id": "asdfasdfasdfasdf",
@@ -40,7 +39,6 @@ func TestCreateSuccessful(t *testing.T) {
 				"links": {
 					"self": "https://localhost:5000/v3/endpoints/12"
 				},
-				"name": "the-endiest-of-points",
 				"region": "underground",
 				"service_id": "asdfasdfasdfasdf",
 				"url": "https://1.2.3.4:9000/",
@@ -51,7 +49,6 @@ func TestCreateSuccessful(t *testing.T) {
 
 	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(fakeServer), endpoints.CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
-		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		URL:          "https://1.2.3.4:9000/",
 		ServiceID:    "asdfasdfasdfasdf",
@@ -63,7 +60,6 @@ func TestCreateSuccessful(t *testing.T) {
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
 		Enabled:      true,
-		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
