@@ -6,6 +6,11 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 )
 
+const (
+	subjectTokenHeader        = "X-Subject-Token"
+	accessRulesHeader         = "OpenStack-Identity-Access-Rules"
+)
+
 // Scope allows a created token to be limited to a specific domain or project.
 type Scope struct {
 	ProjectID   string
@@ -118,10 +123,12 @@ func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]any) (map[string]string,
 	return nil, nil
 }
 
-func subjectTokenHeaders(subjectToken string) map[string]string {
-	return map[string]string{
-		"X-Subject-Token": subjectToken,
+func headers(token, accessRuleVersion string) map[string]string {
+	h := map[string]string{subjectTokenHeader: token}
+	if accessRuleVersion != "" {
+		h[accessRulesHeader] = accessRuleVersion
 	}
+	return h
 }
 
 // Create authenticates and either generates a new token, or changes the Scope
@@ -147,9 +154,9 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts AuthOptionsB
 }
 
 // Get validates and retrieves information about another token.
-func Get(ctx context.Context, c *gophercloud.ServiceClient, token string) (r GetResult) {
+func Get(ctx context.Context, c *gophercloud.ServiceClient, token, accessRuleVersion string) (r GetResult) {
 	resp, err := c.Get(ctx, tokenURL(c), &r.Body, &gophercloud.RequestOpts{
-		MoreHeaders: subjectTokenHeaders(token),
+		MoreHeaders: headers(token, accessRuleVersion),
 		OkCodes:     []int{200, 203},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -157,9 +164,9 @@ func Get(ctx context.Context, c *gophercloud.ServiceClient, token string) (r Get
 }
 
 // Validate determines if a specified token is valid or not.
-func Validate(ctx context.Context, c *gophercloud.ServiceClient, token string) (bool, error) {
+func Validate(ctx context.Context, c *gophercloud.ServiceClient, token, accessRuleVersion string) (bool, error) {
 	resp, err := c.Head(ctx, tokenURL(c), &gophercloud.RequestOpts{
-		MoreHeaders: subjectTokenHeaders(token),
+		MoreHeaders: headers(token, accessRuleVersion),
 		OkCodes:     []int{200, 204, 404},
 	})
 	if err != nil {
@@ -172,7 +179,7 @@ func Validate(ctx context.Context, c *gophercloud.ServiceClient, token string) (
 // Revoke immediately makes specified token invalid.
 func Revoke(ctx context.Context, c *gophercloud.ServiceClient, token string) (r RevokeResult) {
 	resp, err := c.Delete(ctx, tokenURL(c), &gophercloud.RequestOpts{
-		MoreHeaders: subjectTokenHeaders(token),
+		MoreHeaders: headers(token, ""),
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
