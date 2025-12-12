@@ -19,7 +19,7 @@ type CreateOpts struct {
 	Availability gophercloud.Availability `json:"interface" required:"true"`
 
 	// Name is the name of the Endpoint.
-	Name string `json:"name" required:"true"`
+	Name string `json:"name,omitempty"`
 
 	// Region is the region the Endpoint is located in.
 	// This field can be omitted or left as a blank string.
