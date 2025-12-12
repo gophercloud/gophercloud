@@ -538,6 +538,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	name := "new_port_name"
+	newMACAddress := "fa:16:3e:c9:cb:f4"
 	options := ports.UpdateOpts{
 		Name: &name,
 		FixedIPs: []ports.IP{
@@ -547,6 +548,7 @@ func TestUpdate(t *testing.T) {
 		AllowedAddressPairs: &[]ports.AddressPair{
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
+		MACAddress: &newMACAddress,
 	}
 
 	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
@@ -727,6 +729,7 @@ func TestUpdateRevision(t *testing.T) {
 	})
 
 	name := "new_port_name"
+	newMACAddress := "fa:16:3e:c9:cb:f4"
 	options := ports.UpdateOpts{
 		Name: &name,
 		FixedIPs: []ports.IP{
@@ -736,6 +739,7 @@ func TestUpdateRevision(t *testing.T) {
 		AllowedAddressPairs: &[]ports.AddressPair{
 			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 		},
+		MACAddress: &newMACAddress,
 	}
 	_, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
