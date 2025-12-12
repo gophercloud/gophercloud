@@ -30,6 +30,9 @@ type CreateOpts struct {
 
 	// ServiceID is the ID of the service the Endpoint refers to.
 	ServiceID string `json:"service_id" required:"true"`
+
+	// Description is the description of the Endpoint.
+	Description string `json:"description,omitempty"`
 }
 
 // ToEndpointCreateMap builds a request body from the Endpoint Create options.
@@ -121,6 +124,9 @@ type UpdateOpts struct {
 
 	// ServiceID is the ID of the service the Endpoint refers to.
 	ServiceID string `json:"service_id,omitempty"`
+
+	// Description is an updated description of the endpoint.
+	Description string `json:"description,omitempty"`
 }
 
 // ToEndpointUpdateMap builds an update request body from the Update options.

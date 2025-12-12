@@ -100,3 +100,39 @@ func TestEndpointsNavigateCatalog(t *testing.T) {
 
 	tools.PrintResource(t, allEndpoints[0])
 }
+
+func TestEndpointCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	service, err := CreateService(t, client, &services.CreateOpts{
+		Type:  "endpoint-test",
+		Name:  tools.RandomString("ACPTTEST", 8),
+		Extra: map[string]any{},
+	})
+	th.AssertNoErr(t, err)
+	defer DeleteService(t, client, service.ID)
+
+	endpoint, err := CreateEndpoint(t, client, &endpoints.CreateOpts{
+		Availability: gophercloud.Availability("internal"),
+		ServiceID:    service.ID,
+		URL:          "https://example.com",
+	})
+	th.AssertNoErr(t, err)
+	defer DeleteEndpoint(t, client, endpoint.ID)
+
+	tools.PrintResource(t, endpoint)
+	tools.PrintResource(t, endpoint.URL)
+
+	newEndpoint, err := endpoints.Update(context.TODO(), client, endpoint.ID, &endpoints.UpdateOpts{
+		Name:        "new-endpoint",
+		URL:         "https://example-updated.com",
+		Description: "Updated Endpoint",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, newEndpoint.URL, "https://example-updated.com")
+	th.AssertEquals(t, newEndpoint.Description, "Updated Endpoint")
+}

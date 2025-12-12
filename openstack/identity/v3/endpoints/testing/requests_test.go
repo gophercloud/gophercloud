@@ -26,7 +26,8 @@ func TestCreateSuccessful(t *testing.T) {
 				"name": "the-endiest-of-points",
 				"region": "underground",
 				"url": "https://1.2.3.4:9000/",
-				"service_id": "asdfasdfasdfasdf"
+				"service_id": "asdfasdfasdfasdf",
+				"description": "Test description"
 			}
 		}`)
 
@@ -42,7 +43,8 @@ func TestCreateSuccessful(t *testing.T) {
 				"name": "the-endiest-of-points",
 				"region": "underground",
 				"service_id": "asdfasdfasdfasdf",
-				"url": "https://1.2.3.4:9000/"
+				"url": "https://1.2.3.4:9000/",
+				"description": "Test description"
 			}
 		}`)
 	})
@@ -53,6 +55,7 @@ func TestCreateSuccessful(t *testing.T) {
 		Region:       "underground",
 		URL:          "https://1.2.3.4:9000/",
 		ServiceID:    "asdfasdfasdfasdf",
+		Description:  "Test description",
 	}).Extract()
 	th.AssertNoErr(t, err)
 
@@ -64,6 +67,7 @@ func TestCreateSuccessful(t *testing.T) {
 		Region:       "underground",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
+		Description:  "Test description",
 	}
 
 	th.AssertDeepEquals(t, expected, actual)
@@ -90,7 +94,8 @@ func TestListEndpoints(t *testing.T) {
 					"name": "the-endiest-of-points",
 					"region": "underground",
 					"service_id": "asdfasdfasdfasdf",
-					"url": "https://1.2.3.4:9000/"
+					"url": "https://1.2.3.4:9000/",
+					"description": "List endpoint1 test"
 				},
 				{
 					"id": "13",
@@ -102,7 +107,8 @@ func TestListEndpoints(t *testing.T) {
 					"name": "shhhh",
 					"region": "underground",
 					"service_id": "asdfasdfasdfasdf",
-					"url": "https://1.2.3.4:9001/"
+					"url": "https://1.2.3.4:9001/",
+					"description": "List endpoint2 test"
 				}
 			],
 			"links": {
@@ -130,6 +136,7 @@ func TestListEndpoints(t *testing.T) {
 				Region:       "underground",
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9000/",
+				Description:  "List endpoint1 test",
 			},
 			{
 				ID:           "13",
@@ -139,6 +146,7 @@ func TestListEndpoints(t *testing.T) {
 				Region:       "underground",
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9001/",
+				Description:  "List endpoint2 test",
 			},
 		}
 		th.AssertDeepEquals(t, expected, actual)
@@ -167,7 +175,8 @@ func TestGetEndpoint(t *testing.T) {
 				"name": "the-endiest-of-points",
 				"region": "underground",
 				"service_id": "asdfasdfasdfasdf",
-				"url": "https://1.2.3.4:9000/"
+				"url": "https://1.2.3.4:9000/",
+				"description": "Get endpoint test"
 			}
 		}`)
 	})
@@ -185,6 +194,7 @@ func TestGetEndpoint(t *testing.T) {
 		Region:       "underground",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
+		Description:  "Get endpoint test",
 	}
 	th.AssertDeepEquals(t, expected, actual)
 }
@@ -199,7 +209,8 @@ func TestUpdateEndpoint(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"endpoint": {
 				"name": "renamed",
-				"region": "somewhere-else"
+				"region": "somewhere-else",
+				"description": "Changed description"
 			}
 		}`)
 
@@ -214,14 +225,16 @@ func TestUpdateEndpoint(t *testing.T) {
 				"name": "renamed",
 				"region": "somewhere-else",
 				"service_id": "asdfasdfasdfasdf",
-				"url": "https://1.2.3.4:9000/"
+				"url": "https://1.2.3.4:9000/",
+				"description": "Changed description"
 			}
 		}`)
 	})
 
 	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(fakeServer), "12", endpoints.UpdateOpts{
-		Name:   "renamed",
-		Region: "somewhere-else",
+		Name:        "renamed",
+		Region:      "somewhere-else",
+		Description: "Changed description",
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Update: %v", err)
@@ -235,6 +248,7 @@ func TestUpdateEndpoint(t *testing.T) {
 		Region:       "somewhere-else",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
+		Description:  "Changed description",
 	}
 	th.AssertDeepEquals(t, expected, actual)
 }
