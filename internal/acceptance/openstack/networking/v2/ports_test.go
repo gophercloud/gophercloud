@@ -45,9 +45,11 @@ func TestPortsCRUD(t *testing.T) {
 	// Update port
 	newPortName := ""
 	newPortDescription := ""
+	newMACAddress := "aa:bb:cc:dd:ee:ff"
 	updateOpts := ports.UpdateOpts{
 		Name:        &newPortName,
 		Description: &newPortDescription,
+		MACAddress:  &newMACAddress,
 	}
 	newPort, err := ports.Update(context.TODO(), client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -56,6 +58,7 @@ func TestPortsCRUD(t *testing.T) {
 
 	th.AssertEquals(t, newPort.Name, newPortName)
 	th.AssertEquals(t, newPort.Description, newPortDescription)
+	th.AssertEquals(t, newPort.MACAddress, newMACAddress)
 
 	allPages, err := ports.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
