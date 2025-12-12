@@ -35,19 +35,26 @@ func TestListProjects(t *testing.T) {
 	defer fakeServer.Teardown()
 	HandleListProjectsSuccessfully(t, fakeServer)
 
+	actualProjects := make([]projects.Project, 0, 2)
 	count := 0
-	err := projects.List(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	opts := projects.ListOpts{
+		Limit: 1,
+	}
+	err := projects.List(client.ServiceClient(fakeServer), opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := projects.ExtractProjects(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedProjectSlice, actual)
+		actualProjects = append(actualProjects, actual...)
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, count, 2)
+
+	th.CheckEquals(t, len(actualProjects), 2)
+	th.CheckDeepEquals(t, ExpectedProjectSlice, actualProjects)
 }
 
 func TestListGroupsFiltersCheck(t *testing.T) {
