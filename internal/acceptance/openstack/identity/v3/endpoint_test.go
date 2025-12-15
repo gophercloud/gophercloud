@@ -115,10 +115,12 @@ func TestEndpointCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteService(t, client, service.ID)
 
+	enabled := false
 	endpoint, err := CreateEndpoint(t, client, &endpoints.CreateOpts{
 		Availability: gophercloud.Availability("internal"),
 		ServiceID:    service.ID,
 		URL:          "https://example.com",
+		Enabled:      &enabled,
 	})
 	th.AssertNoErr(t, err)
 	defer DeleteEndpoint(t, client, endpoint.ID)
@@ -126,10 +128,12 @@ func TestEndpointCRUD(t *testing.T) {
 	tools.PrintResource(t, endpoint)
 	tools.PrintResource(t, endpoint.URL)
 
+	enabled = true
 	newEndpoint, err := endpoints.Update(context.TODO(), client, endpoint.ID, &endpoints.UpdateOpts{
 		Name:        "new-endpoint",
 		URL:         "https://example-updated.com",
 		Description: "Updated Endpoint",
+		Enabled:     &enabled,
 	}).Extract()
 	th.AssertNoErr(t, err)
 
