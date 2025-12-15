@@ -18,6 +18,13 @@ type CreateOpts struct {
 	// or public), referenced by the gophercloud.Availability type.
 	Availability gophercloud.Availability `json:"interface" required:"true"`
 
+	// Description is the description of the Endpoint.
+	Description string `json:"description,omitempty"`
+
+	// Enabled indicates whether the Endpoint appears in the service
+	// or not.
+	Enabled *bool `json:"enabled,omitempty"`
+
 	// Name is the name of the Endpoint.
 	Name string `json:"name" required:"true"`
 
@@ -30,9 +37,6 @@ type CreateOpts struct {
 
 	// ServiceID is the ID of the service the Endpoint refers to.
 	ServiceID string `json:"service_id" required:"true"`
-
-	// Description is the description of the Endpoint.
-	Description string `json:"description,omitempty"`
 }
 
 // ToEndpointCreateMap builds a request body from the Endpoint Create options.
@@ -114,6 +118,10 @@ type UpdateOpts struct {
 
 	// Name is the name of the Endpoint.
 	Name string `json:"name,omitempty"`
+
+	// Enabled indicates whether the Endpoint appears in the service
+	// or not.
+	Enabled *bool `json:"enabled,omitempty"`
 
 	// Region is the region the Endpoint is located in.
 	// This field can be omitted or left as a blank string.

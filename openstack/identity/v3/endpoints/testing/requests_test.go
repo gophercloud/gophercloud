@@ -27,7 +27,8 @@ func TestCreateSuccessful(t *testing.T) {
 				"region": "underground",
 				"url": "https://1.2.3.4:9000/",
 				"service_id": "asdfasdfasdfasdf",
-				"description": "Test description"
+				"description": "Test description",
+				"enabled": false
 			}
 		}`)
 
@@ -36,7 +37,7 @@ func TestCreateSuccessful(t *testing.T) {
 			"endpoint": {
 				"id": "12",
 				"interface": "public",
-				"enabled": true,
+				"enabled": false,
 				"links": {
 					"self": "https://localhost:5000/v3/endpoints/12"
 				},
@@ -49,6 +50,7 @@ func TestCreateSuccessful(t *testing.T) {
 		}`)
 	})
 
+	enabled := false
 	actual, err := endpoints.Create(context.TODO(), client.ServiceClient(fakeServer), endpoints.CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
 		Name:         "the-endiest-of-points",
@@ -56,14 +58,15 @@ func TestCreateSuccessful(t *testing.T) {
 		URL:          "https://1.2.3.4:9000/",
 		ServiceID:    "asdfasdfasdfasdf",
 		Description:  "Test description",
+		Enabled:      &enabled,
 	}).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &endpoints.Endpoint{
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
-		Enabled:      true,
 		Name:         "the-endiest-of-points",
+		Enabled:      false,
 		Region:       "underground",
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
@@ -210,7 +213,8 @@ func TestUpdateEndpoint(t *testing.T) {
 			"endpoint": {
 				"name": "renamed",
 				"region": "somewhere-else",
-				"description": "Changed description"
+				"description": "Changed description",
+				"enabled": false
 			}
 		}`)
 
@@ -218,7 +222,7 @@ func TestUpdateEndpoint(t *testing.T) {
 			"endpoint": {
 				"id": "12",
 				"interface": "public",
-				"enabled": true,
+				"enabled": false,
 				"links": {
 					"self": "https://localhost:5000/v3/endpoints/12"
 				},
@@ -231,10 +235,12 @@ func TestUpdateEndpoint(t *testing.T) {
 		}`)
 	})
 
+	enabled := false
 	actual, err := endpoints.Update(context.TODO(), client.ServiceClient(fakeServer), "12", endpoints.UpdateOpts{
 		Name:        "renamed",
 		Region:      "somewhere-else",
 		Description: "Changed description",
+		Enabled:     &enabled,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Update: %v", err)
@@ -243,7 +249,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	expected := &endpoints.Endpoint{
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
-		Enabled:      true,
+		Enabled:      false,
 		Name:         "renamed",
 		Region:       "somewhere-else",
 		ServiceID:    "asdfasdfasdfasdf",
