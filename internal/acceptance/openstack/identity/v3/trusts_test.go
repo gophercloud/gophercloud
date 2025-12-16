@@ -43,7 +43,7 @@ func TestTrustCRUD(t *testing.T) {
 
 	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
 	th.AssertNoErr(t, err)
-	adminUser, err := tokens.Get(context.TODO(), client, token.ID).ExtractUser()
+	adminUser, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 
 	// Get the admin and member role IDs.
