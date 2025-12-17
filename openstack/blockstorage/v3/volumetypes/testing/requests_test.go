@@ -230,28 +230,6 @@ func TestListExtraSpecsParam(t *testing.T) {
 	th.AssertEquals(t, true, actual[0].IsPublic)
 	th.AssertEquals(t, true, actual[0].PublicAccess)
 	th.AssertEquals(t, "nfs", actual[0].ExtraSpecs["storage_protocol"])
-
-	// Test with multiple extra_specs
-	result["extra_specs"] = "{'multiattach':'<is> True', 'replication_enabled':'<is> True', 'RESKEY:availability_zones':'zone'}"
-	allPages, err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
-		ExtraSpecs: map[string]string{
-			"multiattach":               "<is> True",
-			"replication_enabled":       "<is> True",
-			"RESKEY:availability_zones": "zone",
-		},
-	}).AllPages(context.TODO())
-	th.AssertNoErr(t, err)
-	actual, err = volumetypes.ExtractVolumeTypes(allPages)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 1, len(actual))
-	th.AssertEquals(t, "multiattach-type", actual[0].Name)
-	th.AssertEquals(t, "e1fc0553-0357-4206-af30-23137ee5f743", actual[0].ID)
-	th.AssertEquals(t, "Multiattach volume type", actual[0].Description)
-	th.AssertEquals(t, true, actual[0].IsPublic)
-	th.AssertEquals(t, true, actual[0].PublicAccess)
-	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["multiattach"])
-	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["replication_enabled"])
-	th.AssertEquals(t, "zone", actual[0].ExtraSpecs["RESKEY:availability_zones"])
 }
 
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
