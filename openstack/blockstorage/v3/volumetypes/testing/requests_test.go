@@ -166,92 +166,92 @@ func TestListNameParam(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	result := make(map[string]string)
-	HandleListIsPublicParam(t, fakeServer, result)
+	HandleListWithNameFilter(t, fakeServer, result)
 
-	// Test with name filter
 	result["is_public"] = "None"
 	result["name"] = "test-type"
-	err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+	allPages, err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
 		Name: "test-type",
-	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-		return true, nil
-	})
+	}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
-
-	// Test with name, description, is_public, and extra_specs together
-	result["is_public"] = "true"
-	result["name"] = "test-type"
-	result["description"] = "test"
-	result["extra_specs"] = "{'storage_protocol':'nfs'}"
-	err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
-		Name:        "test-type",
-		Description: "test",
-		IsPublic:    volumetypes.VisibilityPublic,
-		ExtraSpecs:  map[string]string{"storage_protocol": "nfs"},
-	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-		return true, nil
-	})
+	actual, err := volumetypes.ExtractVolumeTypes(allPages)
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "test-type", actual[0].Name)
+	th.AssertEquals(t, "996af3df-92fd-4814-a0ee-ba5f899aa1ec", actual[0].ID)
+	th.AssertEquals(t, "test", actual[0].Description)
+	th.AssertEquals(t, true, actual[0].IsPublic)
+	th.AssertEquals(t, true, actual[0].PublicAccess)
+	th.AssertEquals(t, "nfs", actual[0].ExtraSpecs["storage_protocol"])
 }
 
 func TestListDescriptionParam(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	result := make(map[string]string)
-	HandleListIsPublicParam(t, fakeServer, result)
+	HandleListWithDescriptionFilter(t, fakeServer, result)
 
-	// Test with description filter
 	result["is_public"] = "None"
 	result["description"] = "test"
-	err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+	allPages, err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
 		Description: "test",
-	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-		return true, nil
-	})
+	}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
-
-	// Test with description, is_public, and extra_specs together
-	result["is_public"] = "true"
-	result["description"] = "test"
-	result["extra_specs"] = "{'multiattach':'<is> True'}"
-	err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
-		Description: "test",
-		IsPublic:    volumetypes.VisibilityPublic,
-		ExtraSpecs:  map[string]string{"multiattach": "<is> True"},
-	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-		return true, nil
-	})
+	actual, err := volumetypes.ExtractVolumeTypes(allPages)
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "test", actual[0].Description)
+	th.AssertEquals(t, "test-type", actual[0].Name)
+	th.AssertEquals(t, "ab948f0a-13ed-47c8-b9be-cade0beb0706", actual[0].ID)
+	th.AssertEquals(t, true, actual[0].IsPublic)
+	th.AssertEquals(t, true, actual[0].PublicAccess)
+	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["multiattach"])
 }
 
 func TestListExtraSpecsParam(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	result := make(map[string]string)
-	HandleListIsPublicParam(t, fakeServer, result)
-
-	// Test with extra_specs filter
 	result["is_public"] = "None"
 	result["extra_specs"] = "{'storage_protocol':'nfs'}"
-	err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+	HandleListWithExtraSpecsFilter(t, fakeServer, result)
+
+	// Test with extra_specs filter
+	allPages, err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
 		ExtraSpecs: map[string]string{"storage_protocol": "nfs"},
-	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-		return true, nil
-	})
+	}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
+	actual, err := volumetypes.ExtractVolumeTypes(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "nfs-type", actual[0].Name)
+	th.AssertEquals(t, "6b0cfee7-48b6-41b7-9d68-0d74cbdc08de", actual[0].ID)
+	th.AssertEquals(t, "NFS storage type", actual[0].Description)
+	th.AssertEquals(t, true, actual[0].IsPublic)
+	th.AssertEquals(t, true, actual[0].PublicAccess)
+	th.AssertEquals(t, "nfs", actual[0].ExtraSpecs["storage_protocol"])
 
 	// Test with multiple extra_specs
 	result["extra_specs"] = "{'multiattach':'<is> True', 'replication_enabled':'<is> True', 'RESKEY:availability_zones':'zone'}"
-	err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+	allPages, err = volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
 		ExtraSpecs: map[string]string{
 			"multiattach":               "<is> True",
 			"replication_enabled":       "<is> True",
 			"RESKEY:availability_zones": "zone",
 		},
-	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
-		return true, nil
-	})
+	}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
+	actual, err = volumetypes.ExtractVolumeTypes(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "multiattach-type", actual[0].Name)
+	th.AssertEquals(t, "e1fc0553-0357-4206-af30-23137ee5f743", actual[0].ID)
+	th.AssertEquals(t, "Multiattach volume type", actual[0].Description)
+	th.AssertEquals(t, true, actual[0].IsPublic)
+	th.AssertEquals(t, true, actual[0].PublicAccess)
+	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["multiattach"])
+	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["replication_enabled"])
+	th.AssertEquals(t, "zone", actual[0].ExtraSpecs["RESKEY:availability_zones"])
 }
 
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
