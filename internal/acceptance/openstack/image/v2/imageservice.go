@@ -38,6 +38,7 @@ func CreateEmptyImage(t *testing.T, client *gophercloud.ServiceClient) (*images.
 		Visibility:      &visibility,
 		Properties: map[string]string{
 			"architecture": "x86_64",
+			"properties":   "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
 		},
 		Tags: []string{"foo", "bar", "baz"},
 	}
@@ -56,6 +57,7 @@ func CreateEmptyImage(t *testing.T, client *gophercloud.ServiceClient) (*images.
 
 	th.CheckEquals(t, newImage.Name, name)
 	th.CheckEquals(t, newImage.Properties["architecture"], "x86_64")
+	th.CheckEquals(t, newImage.Properties["properties"], "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}")
 	return newImage, nil
 }
 

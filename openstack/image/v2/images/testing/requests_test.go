@@ -40,8 +40,8 @@ func TestListImage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("--------\n%d images listed on %d pages.\n", count, pages)
-	th.AssertEquals(t, 3, pages)
-	th.AssertEquals(t, 3, count)
+	th.AssertEquals(t, 4, pages)
+	th.AssertEquals(t, 4, count)
 }
 
 func TestAllPagesImage(t *testing.T) {
@@ -54,7 +54,7 @@ func TestAllPagesImage(t *testing.T) {
 	th.AssertNoErr(t, err)
 	images, err := images.ExtractImages(pages)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 3, len(images))
+	th.AssertEquals(t, 4, len(images))
 }
 
 func TestCreateImage(t *testing.T) {
@@ -239,6 +239,7 @@ func TestGetImage(t *testing.T) {
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
+			"properties":        "{\"test\": true}",
 		},
 	}
 

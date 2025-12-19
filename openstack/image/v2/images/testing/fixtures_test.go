@@ -19,7 +19,7 @@ type imageEntry struct {
 // HandleImageListSuccessfully test setup
 func HandleImageListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 
-	images := make([]imageEntry, 3)
+	images := make([]imageEntry, 4)
 
 	images[0] = imageEntry{"cirros-0.3.4-x86_64-uec",
 		`{
@@ -98,6 +98,46 @@ func HandleImageListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
             "hw_disk_bus_model": "virtio-scsi",
             "hw_scsi_model": "virtio-scsi"
         }`}
+	images[3] = imageEntry{"ubuntu-24.04-server-cloudimg-amd64.img",
+		`{
+			"owner_specified.openstack.md5": "",
+			"owner_specified.openstack.object": "images/johndoe-noble-iso-test",
+			"owner_specified.openstack.sha256": "",
+			"properties": "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}",
+			"additional_property": "{\"name\": \"noble\", \"size\": 100, \"hidden\": false}",
+			"name": "johndoe-noble-iso-test",
+			"disk_format": "iso",
+			"container_format": "bare",
+			"visibility": "shared",
+			"size": 3303444480,
+			"virtual_size": null,
+			"status": "active",
+			"checksum": "19fe5793f7411cfe124d9fa0c0f4d449",
+			"protected": false,
+			"min_ram": 0,
+			"min_disk": 0,
+			"owner": "dfdfed1a51504178abe8c5eeaeb8343b",
+			"os_hidden": false,
+			"os_hash_algo": "sha256",
+			"os_hash_value": "c3514bf0056180d09376462a7a1b4f213c1d6e8ea67fae5c25099c6fd3d8274b",
+			"id": "370ba8b7-3e72-4f9d-8623-7d9c95e4c28d",
+			"created_at": "2025-12-18T02:05:15Z",
+			"updated_at": "2025-12-18T02:42:05Z",
+			"locations": [
+				{
+				"url": "rbd://eea9d068-c18c-11ed-8dc0-013aacb71b80/glance/370ba8b7-3e72-4f9d-8623-7d9c95e4c28d/snap",
+				"metadata": {
+					"store": "ceph"
+				}
+				}
+			],
+			"direct_url": "rbd://eea9d068-c18c-11ed-8dc0-013aacb71b80/glance/370ba8b7-3e72-4f9d-8623-7d9c95e4c28d/snap",
+			"tags": [],
+			"self": "/v2/images/370ba8b7-3e72-4f9d-8623-7d9c95e4c28d",
+			"file": "/v2/images/370ba8b7-3e72-4f9d-8623-7d9c95e4c28d/file",
+			"schema": "/v2/schemas/image",
+			"stores": "ceph"
+		}`}
 
 	fakeServer.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -281,7 +321,8 @@ func HandleImageGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 			"virtual_size": null,
 			"hw_disk_bus": "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
-			"hw_scsi_model": "virtio-scsi"
+			"hw_scsi_model": "virtio-scsi",
+			"properties": "{\"test\": true}"
 		}`)
 	})
 }
