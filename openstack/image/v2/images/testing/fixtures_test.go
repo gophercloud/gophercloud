@@ -321,8 +321,8 @@ func HandleImageGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 			"virtual_size": null,
 			"hw_disk_bus": "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
-			"hw_scsi_model": "virtio-scsi"
-			"properties": "{\"test\": true}",
+			"hw_scsi_model": "virtio-scsi",
+			"properties": "{\"test\": true}"
 		}`)
 	})
 }
