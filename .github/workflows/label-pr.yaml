@@ -43,19 +43,44 @@ jobs:
 
     - name: Add label semver:patch
       if: steps.go-apidiff.outputs.semver-type == 'patch'
-      run: gh pr edit "$NUMBER" --add-label "semver:patch,backport-v2" --remove-label "semver:major,semver:minor"
+      run: |
+        LABELS="semver:patch"
+        REMOVE_LABELS="semver:major,semver:minor"
+
+        # Only add backport-v2 if not already targeting v2 or lower
+        if [[ "$BASE_REF" != "v2" && "$BASE_REF" != "v1" ]]; then
+          LABELS="$LABELS,backport-v2"
+        else
+          REMOVE_LABELS="$REMOVE_LABELS,backport-v2"
+        fi
+
+        gh pr edit "$NUMBER" --add-label "$LABELS" --remove-label "$REMOVE_LABELS"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
         NUMBER: ${{ github.event.pull_request.number }}
+        BASE_REF: ${{ github.base_ref }}
 
     - name: Add label semver:minor
       if: steps.go-apidiff.outputs.semver-type == 'minor'
-      run: gh pr edit "$NUMBER" --add-label "semver:minor,backport-v2" --remove-label "semver:major,semver:patch,backport-v1"
+      run: |
+        LABELS="semver:minor"
+        REMOVE_LABELS="semver:major,semver:patch"
+
+        # Only add backport-v2 if not already targeting v2 or lower
+        if [[ "$BASE_REF" != "v2" && "$BASE_REF" != "v1" ]]; then
+          LABELS="$LABELS,backport-v2"
+          REMOVE_LABELS="$REMOVE_LABELS,backport-v1"
+        else
+          REMOVE_LABELS="$REMOVE_LABELS,backport-v2,backport-v1"
+        fi
+
+        gh pr edit "$NUMBER" --add-label "$LABELS" --remove-label "$REMOVE_LABELS"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
         NUMBER: ${{ github.event.pull_request.number }}
+        BASE_REF: ${{ github.base_ref }}
 
     - name: Add label semver:major
       if: steps.go-apidiff.outputs.semver-type == 'major'
