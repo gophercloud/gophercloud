@@ -56,6 +56,7 @@ func TestVolumeTypesCRUD(t *testing.T) {
 	th.AssertEquals(t, name, newVT.Name)
 	th.AssertEquals(t, description, newVT.Description)
 	th.AssertEquals(t, isPublic, newVT.IsPublic)
+	newVisibility := volumetypes.VisibilityPrivate
 
 	for _, tt := range []struct {
 		name                string
@@ -77,37 +78,11 @@ func TestVolumeTypesCRUD(t *testing.T) {
 			expectedVolumeTypes: 1,
 		},
 		{
-			name: "Partitial Extra Specs",
+			name: "Is Public",
 			opts: volumetypes.ListOpts{
-				ExtraSpecs: map[string]string{
-					"volume_backend_name":       "fake_backend_name",
-					"RESKEY:availability_zones": "zone",
-				},
+				IsPublic: newVisibility,
 			},
 			expectedVolumeTypes: 1,
-		},
-		{
-			name: "Full Extra Specs",
-			opts: volumetypes.ListOpts{
-				ExtraSpecs: map[string]string{
-					"volume_backend_name":       "fake_backend_name",
-					"RESKEY:availability_zones": "zone",
-					"multiattach":               "<is> True",
-				},
-			},
-			expectedVolumeTypes: 1,
-		},
-		{
-			name: "Extra Specs Not Found",
-			opts: volumetypes.ListOpts{
-				ExtraSpecs: map[string]string{
-					"volume_backend_name":       "fake_backend_name",
-					"RESKEY:availability_zones": "zone",
-					"multiattach":               "<is> True",
-					"another_one_spec":          "another_one_value",
-				},
-			},
-			expectedVolumeTypes: 0,
 		},
 	} {
 		t.Run(fmt.Sprintf("List volumetypes by %s", tt.name), func(t *testing.T) {
@@ -123,29 +98,24 @@ func TestVolumeTypesCRUD(t *testing.T) {
 				}
 			}
 
-			if tt.name != "Extra Specs Not Found" {
-				if len(allVolumeTypes) != tt.expectedVolumeTypes {
-					if len(allVolumeTypes) == 0 {
-						t.Fatalf("Volume type not found")
-					}
+			if len(allVolumeTypes) != tt.expectedVolumeTypes {
+				if len(allVolumeTypes) == 0 {
+					t.Fatalf("Volume type not found")
 				}
 			} else {
-				if len(allVolumeTypes) != 0 {
+				if len(allVolumeTypes) > 1 {
 					logVolumeTypes()
 					t.Fatalf("Expected %d volume type but got %d", tt.expectedVolumeTypes, len(allVolumeTypes))
 				}
 			}
 			func() {
 				for _, volumetype := range allVolumeTypes {
-					if tt.name != "Extra Specs Not Found" {
-						if volumetype.ID == newVT.ID {
-							return
-						} else {
-							logVolumeTypes()
-							t.Fatalf("Returned volume types did not contain expected volume type")
-						}
+					if volumetype.ID == newVT.ID {
+						return
 					}
 				}
+				logVolumeTypes()
+				t.Fatalf("Returned volume types did not contain expected volume type")
 			}()
 		})
 	}

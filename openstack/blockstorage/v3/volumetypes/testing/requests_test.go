@@ -208,30 +208,6 @@ func TestListDescriptionParam(t *testing.T) {
 	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["multiattach"])
 }
 
-func TestListExtraSpecsParam(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-	result := make(map[string]string)
-	result["is_public"] = "None"
-	result["extra_specs"] = "{'storage_protocol':'nfs'}"
-	HandleListWithExtraSpecsFilter(t, fakeServer, result)
-
-	// Test with extra_specs filter
-	allPages, err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
-		ExtraSpecs: map[string]string{"storage_protocol": "nfs"},
-	}).AllPages(context.TODO())
-	th.AssertNoErr(t, err)
-	actual, err := volumetypes.ExtractVolumeTypes(allPages)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 1, len(actual))
-	th.AssertEquals(t, "nfs-type", actual[0].Name)
-	th.AssertEquals(t, "6b0cfee7-48b6-41b7-9d68-0d74cbdc08de", actual[0].ID)
-	th.AssertEquals(t, "NFS storage type", actual[0].Description)
-	th.AssertEquals(t, true, actual[0].IsPublic)
-	th.AssertEquals(t, true, actual[0].PublicAccess)
-	th.AssertEquals(t, "nfs", actual[0].ExtraSpecs["storage_protocol"])
-}
-
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

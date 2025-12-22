@@ -80,10 +80,6 @@ type ListOpts struct {
 	// Specifies whether the query should include public or private Volume Types.
 	// By default, it queries both types.
 	IsPublic visibility `q:"is_public"`
-	// ExtraSpecs will filter results based on specified extra specs.
-	// The map key is the extra spec name, and the value is the filter value.
-	// For example: map[string]string{"multiattach": "<is> True", "storage_protocol": "nfs"}
-	ExtraSpecs map[string]string `q:"extra_specs"`
 	// Comma-separated list of sort keys and optional sort directions in the
 	// form of <key>[:<direction>].
 	Sort string `q:"sort"`
