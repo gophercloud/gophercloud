@@ -1,4 +1,4 @@
-//go:build acceptance || networking || loadbalancer || flavorprofiles
+//go:build acceptance || networking || loadbalancer || availabilityzoneprofiles
 
 package v2
 
