@@ -24,7 +24,7 @@ const AvailabilityZoneProfilesListBody = `
             "id": "56f45d00-86e4-4bea-8525-19e835776c4e",
             "name": "availability-zone-profile-second",
             "provider_name": "amphora",
-            "availability_zone_data": "{\"compute_zone\": \"not_nova\", \"volume_zone\": \"not_nova\"}"
+            "availability_zone_data": "{\"compute_zone\": \"nova\", \"volume_zone\": \"nova\"}"
         }
     ]
 }
@@ -64,7 +64,7 @@ var (
 		ID:                   "56f45d00-86e4-4bea-8525-19e835776c4e",
 		Name:                 "availability-zone-profile-second",
 		ProviderName:         "amphora",
-		AvailabilityZoneData: "{\"compute_zone\": \"not_nova\", \"volume_zone\": \"not_nova\"}",
+		AvailabilityZoneData: "{\"compute_zone\": \"nova\", \"volume_zone\": \"nova\"}",
 	}
 
 	AvailabilityZoneProfileDb = availabilityzoneprofiles.AvailabilityZoneProfile{
