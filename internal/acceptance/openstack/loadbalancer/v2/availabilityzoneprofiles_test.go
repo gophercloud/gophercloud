@@ -21,7 +21,7 @@ func TestAvailabilityZoneProfilesList(t *testing.T) {
 	allPages, err := availabilityzoneprofiles.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
-	allAvailabilityZoneProfiles, err := availabilityzoneprofiles.ExtractAvailabilityZones(allPages)
+	allAvailabilityZoneProfiles, err := availabilityzoneprofiles.ExtractAvailabilityZoneProfiles(allPages)
 	th.AssertNoErr(t, err)
 
 	for _, availabilityzoneprofile := range allAvailabilityZoneProfiles {
