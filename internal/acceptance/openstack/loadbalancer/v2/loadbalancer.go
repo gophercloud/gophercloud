@@ -766,7 +766,7 @@ func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavo
 func CreateAvailabilityZoneProfile(t *testing.T, client *gophercloud.ServiceClient) (*availabilityzoneprofiles.AvailabilityZoneProfile, error) {
 	availabilityZoneProfileName := tools.RandomString("TESTACCT-", 8)
 	availabilityZoneProfileDriver := "amphora"
-	availabilityZoneData := "{\"compute_zone\": \"nova\", \"volume_zone\": \"nova\"}"
+	availabilityZoneData := "{\"compute_zone\": \"nova\"}"
 
 	createOpts := availabilityzoneprofiles.CreateOpts{
 		Name:                 availabilityZoneProfileName,

@@ -25,7 +25,7 @@ Example to Create a AvailabilityZoneProfile
 	createOpts := availabilityzoneprofiles.CreateOpts{
 		Name:                 "availability-zone-profile",
 		ProviderName:         "amphora",
-		AvailabilityZoneData: "{\"compute_zone\": \"nova\", \"volume_zone\": \"nova\"}",
+		AvailabilityZoneData: "{\"compute_zone\": \"nova\"}",
 	}
 
 	availabilityZoneProfile, err := availabilityzoneprofiles.Create(context.TODO(), octaviaClient, createOpts).Extract()

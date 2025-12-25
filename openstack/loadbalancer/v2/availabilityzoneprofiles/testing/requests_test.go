@@ -63,7 +63,7 @@ func TestCreateAvailabilityZoneProfile(t *testing.T) {
 	actual, err := availabilityzoneprofiles.Create(context.TODO(), fake.ServiceClient(fakeServer), availabilityzoneprofiles.CreateOpts{
 		Name:                 "availability-zone-profile",
 		ProviderName:         "amphora",
-		AvailabilityZoneData: "{\"compute_zone\": \"nova\", \"volume_zone\": \"nova\"}",
+		AvailabilityZoneData: "{\"compute_zone\": \"nova\"}",
 	}).Extract()
 	th.AssertNoErr(t, err)
 
@@ -112,7 +112,7 @@ func TestUpdateAvailabililtyZoneProfile(t *testing.T) {
 	actual, err := availabilityzoneprofiles.Update(context.TODO(), client, "dcd65be5-f117-4260-ab3d-b32cc5bd1272", availabilityzoneprofiles.UpdateOpts{
 		Name:                ptr.To("availability-zone-profile-updated"),
 		ProviderName:        ptr.To("amphora"),
-		AvailabiltyZoneData: ptr.To(`{"compute_zone": "nova", "volume_zone": "nova"}`),
+		AvailabiltyZoneData: ptr.To(`{"compute_zone": "nova"}`),
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
