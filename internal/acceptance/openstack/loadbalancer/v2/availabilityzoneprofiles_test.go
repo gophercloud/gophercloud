@@ -21,7 +21,7 @@ func TestAvailabilityZoneProfilesList(t *testing.T) {
 	allPages, err := availabilityzoneprofiles.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
-	allAvailabilityZoneProfiles, err := availabilityzoneprofiles.ExtractFlavorProfiles(allPages)
+	allAvailabilityZoneProfiles, err := availabilityzoneprofiles.ExtractAvailabilityZones(allPages)
 	th.AssertNoErr(t, err)
 
 	for _, availabilityzoneprofile := range allAvailabilityZoneProfiles {
@@ -33,7 +33,7 @@ func TestAvailabilityZoneProfilesCRUD(t *testing.T) {
 	lbClient, err := clients.NewLoadBalancerV2Client()
 	th.AssertNoErr(t, err)
 
-	availabilityZoneProfile, err := CreateAvailabilityZonerProfile(t, lbClient)
+	availabilityZoneProfile, err := CreateAvailabilityZoneProfile(t, lbClient)
 	th.AssertNoErr(t, err)
 	defer DeleteAvailabilityZoneProfile(t, lbClient, availabilityZoneProfile)
 
