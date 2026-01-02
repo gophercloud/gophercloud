@@ -162,6 +162,52 @@ func TestListIsPublicParam(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestListNameParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	result := make(map[string]string)
+	HandleListWithNameFilter(t, fakeServer, result)
+
+	result["is_public"] = "None"
+	result["name"] = "test-type"
+	allPages, err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		Name: "test-type",
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	actual, err := volumetypes.ExtractVolumeTypes(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "test-type", actual[0].Name)
+	th.AssertEquals(t, "996af3df-92fd-4814-a0ee-ba5f899aa1ec", actual[0].ID)
+	th.AssertEquals(t, "test", actual[0].Description)
+	th.AssertEquals(t, true, actual[0].IsPublic)
+	th.AssertEquals(t, true, actual[0].PublicAccess)
+	th.AssertEquals(t, "nfs", actual[0].ExtraSpecs["storage_protocol"])
+}
+
+func TestListDescriptionParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	result := make(map[string]string)
+	HandleListWithDescriptionFilter(t, fakeServer, result)
+
+	result["is_public"] = "None"
+	result["description"] = "test"
+	allPages, err := volumetypes.List(client.ServiceClient(fakeServer), volumetypes.ListOpts{
+		Description: "test",
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	actual, err := volumetypes.ExtractVolumeTypes(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "test", actual[0].Description)
+	th.AssertEquals(t, "test-type", actual[0].Name)
+	th.AssertEquals(t, "ab948f0a-13ed-47c8-b9be-cade0beb0706", actual[0].ID)
+	th.AssertEquals(t, true, actual[0].IsPublic)
+	th.AssertEquals(t, true, actual[0].PublicAccess)
+	th.AssertEquals(t, "<is> True", actual[0].ExtraSpecs["multiattach"])
+}
+
 func TestVolumeTypeExtraSpecsList(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
