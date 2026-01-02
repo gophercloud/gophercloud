@@ -59,7 +59,19 @@ const ListOutput = `
       "parent_id": null,
       "tags": ["Red", "Team"],
       "test": "old"
-    },
+    }
+  ],
+  "links": {
+    "next": "%sprojects?limit=1&marker=1234",
+    "self": "%sprojects?limit=1",
+    "previous": null
+  }
+}
+`
+
+const ListOutputSecondPage = `
+{
+  "projects": [
     {
       "is_domain": false,
       "description": "The team that is blue",
@@ -74,7 +86,20 @@ const ListOutput = `
     }
   ],
   "links": {
+    "next": "%sprojects?limit=1&marker=9876",
+    "self": "%sprojects?limit=1&marker=1234",
+    "previous": null
+  }
+}
+`
+
+const ListOutputThirdPage = `
+{
+  "projects": [
+  ],
+  "links": {
     "next": null,
+    "self": "%sprojects?limit=1&marker=9876",
     "previous": null
   }
 }
@@ -299,7 +324,15 @@ func HandleListProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, ListOutput)
+
+		switch r.URL.Query().Get("marker") {
+		case "":
+			fmt.Fprintf(w, ListOutput, fakeServer.Endpoint(), fakeServer.Endpoint())
+		case "1234":
+			fmt.Fprintf(w, ListOutputSecondPage, fakeServer.Endpoint(), fakeServer.Endpoint())
+		case "9876":
+			fmt.Fprintf(w, ListOutputThirdPage, fakeServer.Endpoint())
+		}
 	})
 }
 
