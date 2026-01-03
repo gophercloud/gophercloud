@@ -26,7 +26,7 @@ type CreateOpts struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Name is the name of the Endpoint.
-	Name string `json:"name" required:"true"`
+	Name string `json:"name,omitempty"`
 
 	// Region is the region the Endpoint is located in.
 	// This field can be omitted or left as a blank string.
