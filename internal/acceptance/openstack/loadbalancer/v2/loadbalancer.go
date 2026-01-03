@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/internal/ptr"
+	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/availabilityzoneprofiles"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavorprofiles"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/l7policies"
@@ -760,4 +761,38 @@ func DeleteFlavor(t *testing.T, client *gophercloud.ServiceClient, flavor *flavo
 	}
 
 	t.Logf("Successfully deleted flavor %s", flavor.Name)
+}
+
+func CreateAvailabilityZoneProfile(t *testing.T, client *gophercloud.ServiceClient) (*availabilityzoneprofiles.AvailabilityZoneProfile, error) {
+	availabilityZoneProfileName := tools.RandomString("TESTACCT-", 8)
+	availabilityZoneProfileDriver := "amphora"
+	availabilityZoneData := "{\"compute_zone\": \"nova\"}"
+
+	createOpts := availabilityzoneprofiles.CreateOpts{
+		Name:                 availabilityZoneProfileName,
+		ProviderName:         availabilityZoneProfileDriver,
+		AvailabilityZoneData: availabilityZoneData,
+	}
+
+	availabilityZoneProfile, err := availabilityzoneprofiles.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return availabilityZoneProfile, err
+	}
+
+	t.Logf("Successfully created availabilityzoneprofile %s", availabilityZoneProfileName)
+
+	th.AssertEquals(t, availabilityZoneProfileName, availabilityZoneProfile.Name)
+	th.AssertEquals(t, availabilityZoneProfileDriver, availabilityZoneProfile.ProviderName)
+	th.AssertEquals(t, availabilityZoneData, availabilityZoneProfile.AvailabilityZoneData)
+
+	return availabilityZoneProfile, nil
+}
+
+func DeleteAvailabilityZoneProfile(t *testing.T, client *gophercloud.ServiceClient, availabilityZoneProfile *availabilityzoneprofiles.AvailabilityZoneProfile) {
+	err := availabilityzoneprofiles.Delete(context.TODO(), client, availabilityZoneProfile.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete availabilityzoneprofile: %v", err)
+	}
+
+	t.Logf("Successfully deleted availabilityzoneprofile %s", availabilityZoneProfile.Name)
 }
