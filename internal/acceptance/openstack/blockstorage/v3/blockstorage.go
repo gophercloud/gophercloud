@@ -158,7 +158,7 @@ func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumet
 
 	createOpts := volumetypes.CreateOpts{
 		Name:        name,
-		ExtraSpecs:  map[string]string{"volume_backend_name": "fake_backend_name"},
+		ExtraSpecs:  map[string]string{"volume_backend_name": "fake_backend_name", "RESKEY:availability_zones": "zone", "multiattach": "<is> True"},
 		Description: description,
 	}
 
