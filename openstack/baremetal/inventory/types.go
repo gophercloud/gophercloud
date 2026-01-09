@@ -24,6 +24,7 @@ type InterfaceType struct {
 	Product     string `json:"product"`
 	SpeedMbps   int    `json:"speed_mbps"`
 	Vendor      string `json:"vendor"`
+	PCIAddress  string `json:"pci_address"`
 }
 
 type MemoryType struct {
