@@ -129,14 +129,15 @@ func TestEndpointCRUD(t *testing.T) {
 	tools.PrintResource(t, endpoint.URL)
 
 	enabled = true
+	description := ""
 	newEndpoint, err := endpoints.Update(context.TODO(), client, endpoint.ID, &endpoints.UpdateOpts{
 		Name:        "new-endpoint",
 		URL:         "https://example-updated.com",
-		Description: "Updated Endpoint",
+		Description: &description,
 		Enabled:     &enabled,
 	}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, newEndpoint.URL, "https://example-updated.com")
-	th.AssertEquals(t, newEndpoint.Description, "Updated Endpoint")
+	th.AssertEquals(t, newEndpoint.Description, description)
 }
