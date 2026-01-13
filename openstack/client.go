@@ -500,3 +500,9 @@ func NewWorkflowV2(ctx context.Context, client *gophercloud.ProviderClient, eo g
 func NewPlacementV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	return initClientOpts(ctx, client, eo, "placement", 1)
 }
+
+func NewReservationV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	sc, err := initClientOpts(client, eo, "reservation")
+	sc.ResourceBase = sc.Endpoint + "v1/"
+	return sc, err
+}
