@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
-	"reflect"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	yaml "go.yaml.in/yaml/v3"
@@ -113,10 +113,20 @@ func (t *TE) Parse() error {
 	if err := t.Fetch(); err != nil {
 		return err
 	}
-	if jerr := json.Unmarshal(t.Bin, &t.Parsed); jerr != nil {
-		if yerr := yaml.Unmarshal(t.Bin, &t.Parsed); yerr != nil {
-			return ErrInvalidDataFormat{}
-		}
+
+	// either parse as JSON...
+	if jerr := json.Unmarshal(t.Bin, &t.Parsed); jerr == nil {
+		return nil
+	}
+
+	// ... or as YAML (but in this case, take extra care because yaml.Unmarshal()
+	// might incorrectly decode the `heat_template_version` attribute as a
+	// time.Time instead of as a string because it looks like "YYYY-MM-DD")
+	if yerr := yaml.Unmarshal(t.Bin, &t.Parsed); yerr != nil {
+		return ErrInvalidDataFormat{}
+	}
+	if versionAsTime, ok := t.Parsed["heat_template_version"].(time.Time); ok {
+		t.Parsed["heat_template_version"] = versionAsTime.Format(time.DateOnly)
 	}
 	return nil
 }
@@ -124,21 +134,3 @@ func (t *TE) Parse() error {
 // igfunc is a parameter used by GetFileContents and GetRRFileContents to check
 // for valid URL's.
 type igFunc func(string, any) bool
-
-// convert map[any]any to map[string]any
-func toStringKeys(m any) (map[string]any, error) {
-	switch m.(type) {
-	case map[string]any, map[any]any:
-		typedMap := make(map[string]any)
-		if _, ok := m.(map[any]any); ok {
-			for k, v := range m.(map[any]any) {
-				typedMap[k.(string)] = v
-			}
-		} else {
-			typedMap = m.(map[string]any)
-		}
-		return typedMap, nil
-	default:
-		return nil, gophercloud.ErrUnexpectedType{Expected: "map[string]any/map[any]any", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
-	}
-}

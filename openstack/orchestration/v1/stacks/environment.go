@@ -46,87 +46,68 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 		e.fileMaps = make(map[string]string)
 	}
 
-	// get the resource registry
-	rr := e.Parsed["resource_registry"]
-
-	// search the resource registry for URLs
-	switch rr.(type) {
-	// process further only if the resource registry is a map
-	case map[string]any, map[any]any:
-		rrMap, err := toStringKeys(rr)
-		if err != nil {
-			return err
-		}
-		// the resource registry might contain a base URL for the resource. If
-		// such a field is present, use it. Otherwise, use the default base URL.
-		var baseURL string
-		if val, ok := rrMap["base_url"]; ok {
-			baseURL = val.(string)
-		} else {
-			baseURL = e.baseURL
-		}
-
-		// The contents of the resource may be located in a remote file, which
-		// will be a template. Instantiate a temporary template to manage the
-		// contents.
-		tempTemplate := new(Template)
-		tempTemplate.baseURL = baseURL
-		tempTemplate.client = e.client
-
-		// Fetch the contents of remote resource URL's
-		if err = tempTemplate.getFileContents(rr, ignoreIf, false); err != nil {
-			return err
-		}
-		// check the `resources` section (if it exists) for more URL's. Note that
-		// the previous call to GetFileContents was (deliberately) not recursive
-		// as we want more control over where to look for URL's
-		if val, ok := rrMap["resources"]; ok {
-			switch val.(type) {
-			// process further only if the contents are a map
-			case map[string]any, map[any]any:
-				resourcesMap, err := toStringKeys(val)
-				if err != nil {
-					return err
-				}
-				for _, v := range resourcesMap {
-					switch v.(type) {
-					case map[string]any, map[any]any:
-						resourceMap, err := toStringKeys(v)
-						if err != nil {
-							return err
-						}
-						var resourceBaseURL string
-						// if base_url for the resource type is defined, use it
-						if val, ok := resourceMap["base_url"]; ok {
-							resourceBaseURL = val.(string)
-						} else {
-							resourceBaseURL = baseURL
-						}
-						tempTemplate.baseURL = resourceBaseURL
-						if err := tempTemplate.getFileContents(v, ignoreIf, false); err != nil {
-							return err
-						}
-					}
-				}
-			}
-		}
-		// if the resource registry contained any URL's, store them. This can
-		// then be passed as parameter to api calls to Heat api.
-		e.Files = tempTemplate.Files
-
-		// In case some element was updated, regenerate the string representation
-		if len(e.Files) > 0 {
-			var err error
-			e.Bin, err = yaml.Marshal(&e.Parsed)
-			if err != nil {
-				return fmt.Errorf("failed to marshal updated environment: %w", err)
-			}
-		}
-
-		return nil
-	default:
+	// get the resource registry, only process further if it is a map
+	rr, ok := e.Parsed["resource_registry"].(map[string]any)
+	if !ok {
 		return nil
 	}
+
+	// search the resource registry for URLs
+	//
+	// the resource registry might contain a base URL for the resource. If
+	// such a field is present, use it. Otherwise, use the default base URL.
+	var baseURL string
+	if val, ok := rr["base_url"]; ok {
+		baseURL = val.(string)
+	} else {
+		baseURL = e.baseURL
+	}
+
+	// The contents of the resource may be located in a remote file, which
+	// will be a template. Instantiate a temporary template to manage the
+	// contents.
+	tempTemplate := new(Template)
+	tempTemplate.baseURL = baseURL
+	tempTemplate.client = e.client
+
+	// Fetch the contents of remote resource URL's
+	if err := tempTemplate.getFileContents(rr, ignoreIf, false); err != nil {
+		return err
+	}
+	// check the `resources` section (if it exists) for more URL's. Note that
+	// the previous call to GetFileContents was (deliberately) not recursive
+	// as we want more control over where to look for URL's
+	if resourcesMap, ok := rr["resources"].(map[string]any); ok {
+		for _, v := range resourcesMap {
+			if resourceMap, ok := v.(map[string]any); ok {
+				var resourceBaseURL string
+				// if base_url for the resource type is defined, use it
+				if val, ok := resourceMap["base_url"]; ok {
+					resourceBaseURL = val.(string)
+				} else {
+					resourceBaseURL = baseURL
+				}
+				tempTemplate.baseURL = resourceBaseURL
+				if err := tempTemplate.getFileContents(v, ignoreIf, false); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	// if the resource registry contained any URL's, store them. This can
+	// then be passed as parameter to api calls to Heat api.
+	e.Files = tempTemplate.Files
+
+	// In case some element was updated, regenerate the string representation
+	if len(e.Files) > 0 {
+		var err error
+		e.Bin, err = yaml.Marshal(&e.Parsed)
+		if err != nil {
+			return fmt.Errorf("failed to marshal updated environment: %w", err)
+		}
+	}
+
+	return nil
 }
 
 // function to choose keys whose values are other environment files

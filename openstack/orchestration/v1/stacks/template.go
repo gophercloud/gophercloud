@@ -84,12 +84,7 @@ func (t *Template) makeChildTemplate(childURL string, ignoreIf igFunc, recurse b
 
 // Applies the transformation for getFileContents() to just one element of a map.
 // In case the element requires transforming, the function returns its new value.
-func (t *Template) mapElemFileContents(k any, v any, ignoreIf igFunc, recurse bool) (any, error) {
-	key, ok := k.(string)
-	if !ok {
-		return nil, fmt.Errorf("can't convert map key to string: %v", k)
-	}
-
+func (t *Template) mapElemFileContents(key string, v any, ignoreIf igFunc, recurse bool) (any, error) {
 	value, ok := v.(string)
 	if !ok {
 		// if the value is not a string, recursively parse that value
@@ -144,18 +139,6 @@ func (t *Template) getFileContents(te any, ignoreIf igFunc, recurse bool) error 
 	switch teTyped := (te).(type) {
 	// if te is a map[string], go check all elements for URLs to replace
 	case map[string]any:
-		for k, v := range teTyped {
-			newVal, err := t.mapElemFileContents(k, v, ignoreIf, recurse)
-			if err != nil {
-				return err
-			} else if newVal != nil {
-				teTyped[k] = newVal
-				updated = true
-			}
-		}
-	// same if te is a map[non-string] (can't group with above case because we
-	// can't range over and update 'te' without knowing its key type)
-	case map[any]any:
 		for k, v := range teTyped {
 			newVal, err := t.mapElemFileContents(k, v, ignoreIf, recurse)
 			if err != nil {
