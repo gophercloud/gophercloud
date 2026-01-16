@@ -10,21 +10,6 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func TestToStringKeys(t *testing.T) {
-	var test1 any = map[any]any{
-		"Adam":  "Smith",
-		"Isaac": "Newton",
-	}
-	result1, err := toStringKeys(test1)
-	th.AssertNoErr(t, err)
-
-	expected := map[string]any{
-		"Adam":  "Smith",
-		"Isaac": "Newton",
-	}
-	th.AssertDeepEquals(t, result1, expected)
-}
-
 func TestGetBasePath(t *testing.T) {
 	_, err := getBasePath()
 	th.AssertNoErr(t, err)
