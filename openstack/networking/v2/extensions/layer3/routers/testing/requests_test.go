@@ -697,3 +697,203 @@ func TestListL3Agents(t *testing.T) {
 	}
 	th.CheckDeepEquals(t, expected, actual)
 }
+
+func TestAddExternalGateways(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/add_external_gateways", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "router": {
+        "external_gateways": [
+            {
+                "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+                "external_fixed_ips": [
+                    {"subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
+                ]
+            }
+        ]
+    }
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, `
+{
+    "router": {
+        "status": "ACTIVE",
+        "external_gateway_info": {
+            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+            "external_fixed_ips": [
+                {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
+            ]
+        },
+        "name": "router1",
+        "admin_state_up": true,
+        "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
+        "id": "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
+    }
+}
+		`)
+	})
+
+	efi := []routers.ExternalFixedIP{
+		{SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+	}
+	opts := routers.AddExternalGatewaysOpts{
+		ExternalGateways: []routers.GatewayInfo{
+			{
+				NetworkID:        "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+				ExternalFixedIPs: efi,
+			},
+		},
+	}
+
+	n, err := routers.AddExternalGateways(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "router1")
+	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertEquals(t, n.GatewayInfo.NetworkID, "8ca37218-28ff-41cb-9b10-039601ea7e6b")
+}
+
+func TestUpdateExternalGateways(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/update_external_gateways", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "router": {
+        "external_gateways": [
+            {
+                "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+                "enable_snat": true,
+                "external_fixed_ips": [
+                    {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
+                ]
+            }
+        ]
+    }
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, `
+{
+    "router": {
+        "status": "ACTIVE",
+        "external_gateway_info": {
+            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+            "enable_snat": true,
+            "external_fixed_ips": [
+                {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
+            ]
+        },
+        "name": "router1",
+        "admin_state_up": true,
+        "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
+        "id": "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
+    }
+}
+		`)
+	})
+
+	enableSNAT := true
+	efi := []routers.ExternalFixedIP{
+		{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+	}
+	opts := routers.UpdateExternalGatewaysOpts{
+		ExternalGateways: []routers.GatewayInfo{
+			{
+				NetworkID:        "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+				EnableSNAT:       &enableSNAT,
+				ExternalFixedIPs: efi,
+			},
+		},
+	}
+
+	n, err := routers.UpdateExternalGateways(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "router1")
+	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertEquals(t, *n.GatewayInfo.EnableSNAT, true)
+}
+
+func TestRemoveExternalGateways(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/remove_external_gateways", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "router": {
+        "external_gateways": [
+            {
+                "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+                "external_fixed_ips": [
+                    {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
+                ]
+            }
+        ]
+    }
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, `
+{
+    "router": {
+        "status": "ACTIVE",
+        "external_gateway_info": null,
+        "name": "router1",
+        "admin_state_up": true,
+        "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
+        "id": "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
+    }
+}
+		`)
+	})
+
+	efi := []routers.ExternalFixedIP{
+		{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+	}
+	opts := routers.RemoveExternalGatewaysOpts{
+		ExternalGateways: []routers.GatewayInfo{
+			{
+				NetworkID:        "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+				ExternalFixedIPs: efi,
+			},
+		},
+	}
+
+	n, err := routers.RemoveExternalGateways(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "router1")
+	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertEquals(t, n.GatewayInfo.NetworkID, "")
+}
