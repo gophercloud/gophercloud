@@ -136,9 +136,7 @@ Example to List an L3 agents for a Router
 		fmt.Printf("%+v\n", agent)
 	}
 
-Example to Add External Gateways to a Router
-
-This requires the external-gateway-multihoming extension.
+Example to Add External Gateways to a Router: This requires the external-gateway-multihoming extension.
 
 	routerID := "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
 
@@ -158,9 +156,7 @@ This requires the external-gateway-multihoming extension.
 		panic(err)
 	}
 
-Example to Update External Gateways of a Router
-
-This requires the external-gateway-multihoming extension.
+Example to Update External Gateways of a Router: This requires the external-gateway-multihoming extension.
 
 	routerID := "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
 
@@ -182,9 +178,7 @@ This requires the external-gateway-multihoming extension.
 		panic(err)
 	}
 
-Example to Remove External Gateways from a Router
-
-This requires the external-gateway-multihoming extension.
+Example to Remove External Gateways from a Router: This requires the external-gateway-multihoming extension.
 
 	routerID := "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
 

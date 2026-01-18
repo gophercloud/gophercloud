@@ -327,14 +327,25 @@ func TestLayer3RouterExternalGateways(t *testing.T) {
 	tools.PrintResource(t, updatedRouter)
 
 	// Test UpdateExternalGateways
+	// Note: UpdateExternalGateways requires external_fixed_ips to identify which gateway to update
 	t.Logf("Attempting to update external gateways of router %s", router.ID)
 
-	enableSNAT := true
+	// Get current external_fixed_ips from the router to identify the gateway
+	currentFixedIPs := make([]routers.ExternalFixedIP, len(updatedRouter.GatewayInfo.ExternalFixedIPs))
+	for i, ip := range updatedRouter.GatewayInfo.ExternalFixedIPs {
+		currentFixedIPs[i] = routers.ExternalFixedIP{
+			IPAddress: ip.IPAddress,
+			SubnetID:  ip.SubnetID,
+		}
+	}
+
+	enableSNAT := false
 	updateOpts := routers.UpdateExternalGatewaysOpts{
 		ExternalGateways: []routers.GatewayInfo{
 			{
-				NetworkID:  choices.ExternalNetworkID,
-				EnableSNAT: &enableSNAT,
+				NetworkID:        updatedRouter.GatewayInfo.NetworkID,
+				EnableSNAT:       &enableSNAT,
+				ExternalFixedIPs: currentFixedIPs,
 			},
 		},
 	}
@@ -351,12 +362,23 @@ func TestLayer3RouterExternalGateways(t *testing.T) {
 	tools.PrintResource(t, updatedRouter)
 
 	// Test RemoveExternalGateways
+	// Note: RemoveExternalGateways requires external_fixed_ips to identify which gateway to remove
 	t.Logf("Attempting to remove external gateways from router %s", router.ID)
+
+	// Get current external_fixed_ips from the updated router
+	currentFixedIPs = make([]routers.ExternalFixedIP, len(updatedRouter.GatewayInfo.ExternalFixedIPs))
+	for i, ip := range updatedRouter.GatewayInfo.ExternalFixedIPs {
+		currentFixedIPs[i] = routers.ExternalFixedIP{
+			IPAddress: ip.IPAddress,
+			SubnetID:  ip.SubnetID,
+		}
+	}
 
 	removeOpts := routers.RemoveExternalGatewaysOpts{
 		ExternalGateways: []routers.GatewayInfo{
 			{
-				NetworkID: choices.ExternalNetworkID,
+				NetworkID:        updatedRouter.GatewayInfo.NetworkID,
+				ExternalFixedIPs: currentFixedIPs,
 			},
 		},
 	}
