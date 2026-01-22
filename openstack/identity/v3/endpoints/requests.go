@@ -134,7 +134,7 @@ type UpdateOpts struct {
 	ServiceID string `json:"service_id,omitempty"`
 
 	// Description is an updated description of the endpoint.
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 }
 
 // ToEndpointUpdateMap builds an update request body from the Update options.
