@@ -13,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/extradhcpopts"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/portsecurity"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/portstrustedvif"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -465,6 +466,59 @@ func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
+}
+
+func TestPortsTrustedVIFCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	// Create Network
+	network, err := CreateNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create network: %v", err)
+	}
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create Subnet
+	subnet, err := CreateSubnet(t, client, network.ID)
+	if err != nil {
+		t.Fatalf("Unable to create subnet: %v", err)
+	}
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	// Create port
+	port, err := CreatePort(t, client, network.ID, subnet.ID)
+	if err != nil {
+		t.Fatalf("Unable to create port: %v", err)
+	}
+	defer DeletePort(t, client, port.ID)
+
+	var portWithExt struct {
+		ports.Port
+		portstrustedvif.PortTrustedVIFExt
+	}
+
+	err = ports.Get(context.TODO(), client, port.ID).ExtractInto(&portWithExt)
+	if err != nil {
+		t.Fatalf("Unable to create port: %v", err)
+	}
+
+	tools.PrintResource(t, portWithExt)
+
+	// Update Port Trusted VIF status as true
+	iTrue := true
+	portUpdateOpts := ports.UpdateOpts{}
+	updateOpts := portstrustedvif.PortUpdateOptsExt{
+		UpdateOptsBuilder: portUpdateOpts,
+		PortTrustedVIF:    &iTrue,
+	}
+
+	err = ports.Update(context.TODO(), client, port.ID, updateOpts).ExtractInto(&portWithExt)
+	if err != nil {
+		t.Fatalf("Unable to update port: %v", err)
+	}
 }
 
 func TestPortsRevision(t *testing.T) {
