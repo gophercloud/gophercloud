@@ -4,11 +4,9 @@ package layer3
 
 import (
 	"context"
-	"net/http"
 	"strings"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -315,13 +313,7 @@ func TestLayer3RouterExternalGateways(t *testing.T) {
 	}
 
 	updatedRouter, err := routers.AddExternalGateways(context.TODO(), client, router.ID, addOpts).Extract()
-	if err != nil {
-		// If we get a 404, the extension might not be fully functional
-		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
-			t.Skipf("AddExternalGateways not supported: %v", err)
-		}
-		th.AssertNoErr(t, err)
-	}
+	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully added external gateways to router %s", router.ID)
 	tools.PrintResource(t, updatedRouter)
@@ -351,12 +343,7 @@ func TestLayer3RouterExternalGateways(t *testing.T) {
 	}
 
 	updatedRouter, err = routers.UpdateExternalGateways(context.TODO(), client, router.ID, updateOpts).Extract()
-	if err != nil {
-		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
-			t.Skipf("UpdateExternalGateways not supported: %v", err)
-		}
-		th.AssertNoErr(t, err)
-	}
+	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully updated external gateways of router %s", router.ID)
 	tools.PrintResource(t, updatedRouter)
@@ -384,12 +371,7 @@ func TestLayer3RouterExternalGateways(t *testing.T) {
 	}
 
 	updatedRouter, err = routers.RemoveExternalGateways(context.TODO(), client, router.ID, removeOpts).Extract()
-	if err != nil {
-		if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
-			t.Skipf("RemoveExternalGateways not supported: %v", err)
-		}
-		th.AssertNoErr(t, err)
-	}
+	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully removed external gateways from router %s", router.ID)
 	tools.PrintResource(t, updatedRouter)
