@@ -93,6 +93,12 @@ type AuthOptions struct {
 	ApplicationCredentialID     string `json:"-"`
 	ApplicationCredentialName   string `json:"-"`
 	ApplicationCredentialSecret string `json:"-"`
+
+	// IdentityProvider is the name of the identity provider for federated auth
+	IdentityProvider string `json:"-"`
+
+	// Protocol is the federation protocol (e.g., "openid")
+	Protocol string `json:"-"`
 }
 
 // AuthScope allows a created token to be limited to a specific domain or project.

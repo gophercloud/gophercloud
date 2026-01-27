@@ -169,6 +169,8 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			ApplicationCredentialID:     coalesce(options.applicationCredentialID, cloud.AuthInfo.ApplicationCredentialID),
 			ApplicationCredentialName:   coalesce(options.applicationCredentialName, cloud.AuthInfo.ApplicationCredentialName),
 			ApplicationCredentialSecret: coalesce(options.applicationCredentialSecret, cloud.AuthInfo.ApplicationCredentialSecret),
+			IdentityProvider:            coalesce(cloud.IdentityProvider, cloud.AuthInfo.IdentityProvider),
+			Protocol:                    coalesce(cloud.Protocol, cloud.AuthInfo.Protocol),
 		}, gophercloud.EndpointOpts{
 			Region:       coalesce(options.region, cloud.RegionName),
 			Availability: computeAvailability(endpointType),
