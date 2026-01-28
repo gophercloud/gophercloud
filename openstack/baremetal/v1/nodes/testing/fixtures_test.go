@@ -102,6 +102,7 @@ const NodeListDetailBody = `
       "extra": {},
       "fault": null,
       "firmware_interface": "no-firmware",
+      "health": "OK",
       "inspect_interface": "no-inspect",
       "inspection_finished_at": null,
       "inspection_started_at": null,
@@ -417,6 +418,7 @@ const SingleNodeBody = `
   "extra": {},
   "fault": null,
   "firmware_interface": "no-firmware",
+  "health": "OK",
   "inspect_interface": "no-inspect",
   "inspection_finished_at": null,
   "inspection_started_at": null,
@@ -929,6 +931,8 @@ var (
 	updatedAt, _         = time.Parse(time.RFC3339, "2019-02-15T19:59:29+00:00")
 	provisonUpdatedAt, _ = time.Parse(time.RFC3339, "2019-02-15T17:21:29+00:00")
 
+	healthOK = "OK"
+
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
 		Name:                 "foo",
@@ -939,6 +943,7 @@ var (
 		Maintenance:          false,
 		MaintenanceReason:    "",
 		Fault:                "",
+		Health:               &healthOK,
 		LastError:            "",
 		Reservation:          "",
 		Driver:               "ipmi",
