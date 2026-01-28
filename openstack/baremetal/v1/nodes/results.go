@@ -139,6 +139,11 @@ type Node struct {
 	// node. There are other possible types, e.g., “clean failure” and “rescue abort failure”.
 	Fault string `json:"fault"`
 
+	// Health indicates the hardware health status reported by the BMC.
+	// Possible values are "OK", "Warning", "Critical", or empty if not available.
+	// This field is read-only and requires microversion 1.109 or later.
+	Health string `json:"health"`
+
 	// Error from the most recent (last) transaction that started but failed to finish.
 	LastError string `json:"last_error"`
 
