@@ -113,6 +113,10 @@ type ListOpts struct {
 	// Filter the list with the specified fault.
 	Fault string `q:"fault"`
 
+	// Filter the list with the specified health status.
+	// Requires microversion 1.109 or later.
+	Health string `q:"health"`
+
 	// One or more fields to be returned in the response.
 	Fields []string `q:"fields" format:"comma-separated"`
 
