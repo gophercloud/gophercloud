@@ -49,7 +49,7 @@ jobs:
             enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing ${{ matrix.openstack_version }}
             enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas ${{ matrix.openstack_version }}
             enable_plugin networking-bgpvpn https://github.com/openstack/networking-bgpvpn.git ${{ matrix.openstack_version }}
-            Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords
+            Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords,port_trusted
             BGP_SCHEDULER_DRIVER=neutron_dynamic_routing.services.bgp.scheduler.bgp_dragent_scheduler.StaticScheduler
 
             [[post-config|\$NEUTRON_CONF]]
