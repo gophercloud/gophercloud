@@ -254,6 +254,33 @@ func HandleCreateTypelessObjectSuccessfully(t *testing.T, fakeServer th.FakeServ
 	})
 }
 
+// HandleCreateObjectWithSlashes creates an HTTP handler at `/testContainer/testObject/file.txt` on the test handler mux
+// that responds with a `Create` response. A Content-Type of "text/plain" is expected.
+func HandleCreateObjectWithSlashes(t *testing.T, fakeServer th.FakeServer, content string, options ...option) {
+	ho := handlerOptions{
+		path: "/testContainer/testObject/file.txt",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	fakeServer.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "text/plain")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestBody(t, r, `Lorem ipsum.`)
+
+		hash := md5.New()
+		_, err := io.WriteString(hash, content)
+		th.AssertNoErr(t, err)
+		localChecksum := hash.Sum(nil)
+
+		w.Header().Set("ETag", fmt.Sprintf("%x", localChecksum))
+		w.WriteHeader(http.StatusCreated)
+	})
+}
+
 // HandleCopyObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Copy` response.
 func HandleCopyObjectSuccessfully(t *testing.T, fakeServer th.FakeServer, destination string) {

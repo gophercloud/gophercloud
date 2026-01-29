@@ -330,6 +330,18 @@ func TestCreateObjectWithoutContentType(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestCreateObjectWithSlashes(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	content := "Lorem ipsum."
+
+	HandleCreateObjectWithSlashes(t, fakeServer, content)
+
+	res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject/file.txt", &objects.CreateOpts{Content: strings.NewReader(content)})
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestCopyObject(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 		fakeServer := th.SetupHTTP()
