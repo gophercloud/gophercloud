@@ -23,6 +23,8 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "24.04"
             devstack_conf_overrides: |
+              LIBVIRT_CPU_MODE=host-passthrough
+              OCTAVIA_AMP_DISTRIBUTION_RELEASE_ID=jammy
               # ensure we're using a working version of setuptools
               if [ -n "\$TOP_DIR" ]; then
                 sed -i 's/setuptools\[core\]$/setuptools[core]==79.0.1/g' \$TOP_DIR/lib/infra \$TOP_DIR/inc/python
