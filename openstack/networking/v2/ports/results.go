@@ -111,9 +111,6 @@ type Port struct {
 	// Tags optionally set via extensions/attributestags
 	Tags []string `json:"tags"`
 
-	// PropagateUplinkStatus enables/disables propagate uplink status on the port.
-	PropagateUplinkStatus bool `json:"propagate_uplink_status"`
-
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber int `json:"revision_number"`
 
