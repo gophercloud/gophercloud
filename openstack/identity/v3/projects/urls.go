@@ -37,3 +37,15 @@ func modifyTagsURL(client *gophercloud.ServiceClient, projectID string) string {
 func deleteTagsURL(client *gophercloud.ServiceClient, projectID string) string {
 	return client.ServiceURL("projects", projectID, "tags")
 }
+
+func getTagURL(client *gophercloud.ServiceClient, projectID string, tag string) string {
+	return client.ServiceURL("projects", projectID, "tags", tag)
+}
+
+func addTagURL(client *gophercloud.ServiceClient, projectID string, tag string) string {
+	return client.ServiceURL("projects", projectID, "tags", tag)
+}
+
+func deleteTagURL(client *gophercloud.ServiceClient, projectID string, tag string) string {
+	return client.ServiceURL("projects", projectID, "tags", tag)
+}
