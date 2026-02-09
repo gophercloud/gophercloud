@@ -50,6 +50,9 @@ type LoadBalancer struct {
 	// The ID of the QoS Policy which will apply to the Virtual IP
 	VipQosPolicyID string `json:"vip_qos_policy_id"`
 
+	// The ID of the Security Group which will apply to the Virtual IP
+	VipSecGroupID string `json:"vip_sg_id,omitempty"`
+
 	// The unique ID for the LoadBalancer.
 	ID string `json:"id"`
 
