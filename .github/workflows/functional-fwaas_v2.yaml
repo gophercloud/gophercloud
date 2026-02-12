@@ -89,7 +89,7 @@ jobs:
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         run: |
           source ${{ github.workspace }}/script/stackenv
-          make acceptance-networking
+          make acceptance-fwaas
           echo "TESTS_RUN=true" >> $GITHUB_ENV
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
