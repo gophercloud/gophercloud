@@ -69,7 +69,7 @@ jobs:
       - name: Run Gophercloud acceptance tests
         run: |
           source ${{ github.workspace }}/script/stackenv
-          make acceptance-networking
+          make acceptance-fwaas
         env:
           DEVSTACK_PATH: ${{ github.workspace }}/devstack
           OS_BRANCH: ${{ matrix.openstack_version }}
