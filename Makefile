@@ -78,6 +78,10 @@ acceptance-dns:
 	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance" ./internal/acceptance/openstack/dns/...
 .PHONY: acceptance-dns
 
+acceptance-fwaas:
+	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance" ./internal/acceptance/openstack/networking/v2/extensions/fwaas_v2/...
+.PHONY: acceptance-fwaas
+
 acceptance-identity:
 	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance" ./internal/acceptance/openstack/identity/...
 .PHONY: acceptance-identity
