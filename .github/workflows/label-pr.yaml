@@ -26,7 +26,8 @@ jobs:
 
     - uses: actions/setup-go@v5
       with:
-        go-version: '1'
+        go-version-file: 'go.mod'
+        cache: true
 
     - name: Checking Go API Compatibility
       id: go-apidiff
