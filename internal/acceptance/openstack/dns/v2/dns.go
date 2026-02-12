@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/recordsets"
 	transferAccepts "github.com/gophercloud/gophercloud/v2/openstack/dns/v2/transfer/accept"
 	transferRequests "github.com/gophercloud/gophercloud/v2/openstack/dns/v2/transfer/request"
+	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/tsigkeys"
 	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/zones"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -307,4 +308,47 @@ func WaitForZoneStatus(client *gophercloud.ServiceClient, zone *zones.Zone, stat
 
 		return false, nil
 	})
+}
+
+// CreateTSIGKey will create a TSIG key with a random name. An error will
+// be returned if the TSIG key was unable to be created.
+func CreateTSIGKey(t *testing.T, client *gophercloud.ServiceClient) (*tsigkeys.TSIGKey, error) {
+	keyName := tools.RandomString("ACPTTEST", 8)
+
+	t.Logf("Attempting to create TSIG key: %s", keyName)
+	createOpts := tsigkeys.CreateOpts{
+		Name:      keyName,
+		Algorithm: "hmac-sha256",
+		Secret:    "example-test-secret-key==",
+		Scope:     "POOL",
+	}
+
+	tsigkey, err := tsigkeys.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return tsigkey, err
+	}
+
+	newTSIGKey, err := tsigkeys.Get(context.TODO(), client, tsigkey.ID).Extract()
+	if err != nil {
+		return tsigkey, err
+	}
+
+	t.Logf("Created TSIG key: %s", keyName)
+
+	th.AssertEquals(t, newTSIGKey.Name, keyName)
+	th.AssertEquals(t, newTSIGKey.Algorithm, "hmac-sha256")
+
+	return newTSIGKey, nil
+}
+
+// DeleteTSIGKey will delete a specified TSIG key. A fatal error will occur if
+// the TSIG key failed to be deleted. This works best when used as a deferred
+// function.
+func DeleteTSIGKey(t *testing.T, client *gophercloud.ServiceClient, tsigkey *tsigkeys.TSIGKey) {
+	err := tsigkeys.Delete(context.TODO(), client, tsigkey.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete TSIG key %s: %v", tsigkey.ID, err)
+	}
+
+	t.Logf("Deleted TSIG key: %s", tsigkey.ID)
 }
