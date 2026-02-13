@@ -30,7 +30,7 @@ func (r commonResult) Extract() (*QoS, error) {
 
 // ExtractInto converts our response data into a QoS struct
 func (r commonResult) ExtractInto(qos any) error {
-	return r.Result.ExtractIntoStructPtr(qos, "qos_specs")
+	return r.ExtractIntoStructPtr(qos, "qos_specs")
 }
 
 // CreateResult contains the response body and error from a Create request.

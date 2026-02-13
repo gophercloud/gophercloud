@@ -161,7 +161,7 @@ func TestReauthEndLoop(t *testing.T) {
 
 		if info.reauthAttempts > 5 {
 			info.maxReauthReached = true
-			return fmt.Errorf("Max reauthentication attempts reached")
+			return fmt.Errorf("max reauthentication attempts reached")
 		}
 		p.SetThrowaway(true)
 		p.AuthenticatedHeaders()

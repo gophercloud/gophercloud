@@ -8,7 +8,7 @@ Please see our dedicated document [here](MICROVERSIONS.md).
 
 You can implement custom logging and/or limit re-auth attempts by creating a custom HTTP client
 like the following and setting it as the provider client's HTTP Client (via the
-`gophercloud.ProviderClient.HTTPClient` field):
+`gophercloud.HTTPClient` field):
 
 ```go
 //...
@@ -41,7 +41,7 @@ func (lrt *LogRoundTripper) RoundTrip(request *http.Request) (*http.Response, er
 
 	if response.StatusCode == http.StatusUnauthorized {
 		if lrt.numReauthAttempts == 3 {
-			return response, fmt.Errorf("Tried to re-authenticate 3 times with no success.")
+			return response, fmt.Errorf("tried to re-authenticate 3 times with no success")
 		}
 		lrt.numReauthAttempts++
 	}

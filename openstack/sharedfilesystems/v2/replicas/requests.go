@@ -90,7 +90,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := ReplicaPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }
@@ -108,7 +108,7 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := ReplicaPage{pagination.MarkerPageBase{PageResult: r}}
-		p.MarkerPageBase.Owner = p
+		p.Owner = p
 		return p
 	})
 }

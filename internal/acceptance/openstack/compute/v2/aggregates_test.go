@@ -146,5 +146,5 @@ func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (string, err
 		return host, nil
 	}
 
-	return "", fmt.Errorf("Unable to get hypervisor")
+	return "", fmt.Errorf("unable to get hypervisor")
 }

@@ -127,5 +127,5 @@ func ExtractPolicies(r pagination.Page) ([]Policy, error) {
 
 // ExtractPoliciesInto extracts the elements into a slice of RBAC Policy structs.
 func ExtractPolicysInto(r pagination.Page, v any) error {
-	return r.(PolicyPage).Result.ExtractIntoSlicePtr(v, "policies")
+	return r.(PolicyPage).ExtractIntoSlicePtr(v, "policies")
 }
