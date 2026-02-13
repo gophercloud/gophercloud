@@ -1023,6 +1023,20 @@ func CreateRemoteConsole(t *testing.T, client *gophercloud.ServiceClient, server
 	return remoteConsole, nil
 }
 
+// GetConsole retrieves connecton information for a remote console session.
+// Using the provided console authentication token.
+// It returns a console object with the following fields:
+// instance uuid, host, port, tls_port, internal access path.
+func GetConsole(t *testing.T, client *gophercloud.ServiceClient, consoleToken string) (*remoteconsoles.Console, error) {
+	auth, err := remoteconsoles.Get(context.TODO(), client, consoleToken).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	t.Logf("Console details: instance=%s host=%s port=%d tls_port=%d internal_access_path=%s", auth.InstanceUUID, auth.Host, auth.Port, auth.TLSPort, auth.InternalAccessPath)
+	return auth, nil
+}
+
 // CreateNoNetworkServer creates a basic instance with a randomly generated name.
 // The flavor of the instance will be the value of the OS_FLAVOR_ID environment variable.
 // The image will be the value of the OS_IMAGE_ID environment variable.
