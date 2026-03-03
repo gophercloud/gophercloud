@@ -15,11 +15,11 @@ const NetworkIPAvailabilityListResult = `
             "project_id": "fb57277ef2f84a0e85b9018ec2dedbf7",
             "subnet_ip_availability": [
                 {
-                    "cidr": "fdbc:bf53:567e::/64",
+                    "cidr": "fdbc:bf53:567e::/56",
                     "ip_version": 6,
                     "subnet_id": "497ac4d3-0b92-42cf-82de-71302ab2b656",
                     "subnet_name": "ipv6-private-subnet",
-                    "total_ips": 18446744073709552000,
+                    "total_ips": 4722366482869645213696,
                     "used_ips": 2
                 },
                 {
@@ -69,10 +69,14 @@ var NetworkIPAvailability1 = networkipavailabilities.NetworkIPAvailability{
 		{
 			SubnetID:   "497ac4d3-0b92-42cf-82de-71302ab2b656",
 			SubnetName: "ipv6-private-subnet",
-			CIDR:       "fdbc:bf53:567e::/64",
+			CIDR:       "fdbc:bf53:567e::/56",
 			IPVersion:  int(gophercloud.IPv6),
-			TotalIPs:   "18446744073709552000",
-			UsedIPs:    "2",
+			// 4722366482869645213696 is 2^72 (a /56 IPv6 subnet).
+			// After gophercloud's float64 round-trip (numbers >= 1e21 are
+			// re-encoded in scientific notation), the value loses the last
+			// few digits of precision but no longer crashes.
+			TotalIPs: "4722366482869645000000",
+			UsedIPs:  "2",
 		},
 		{
 			SubnetID:   "521f47e7-c4fb-452c-b71a-851da38cc571",
