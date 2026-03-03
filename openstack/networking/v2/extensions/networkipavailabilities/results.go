@@ -2,6 +2,7 @@ package networkipavailabilities
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/big"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -52,12 +53,35 @@ type NetworkIPAvailability struct {
 	UsedIPs string `json:"-"`
 }
 
+// Go's encoding/json decodes all JSON numbers into float64 when the target is
+// interface{}. For large integers (abs >= 1e21), re-encoding that float64
+// produces scientific notation (e.g. "1.1805916207174113e+21"), which
+// big.Int.UnmarshalJSON cannot parse. This function handles both plain integer
+// and scientific notation forms.
+func parseBigIntFromNumber(n json.Number) (*big.Int, error) {
+	s := string(n)
+
+	// Fast path: plain integer notation
+	bi := new(big.Int)
+	if _, ok := bi.SetString(s, 10); ok {
+		return bi, nil
+	}
+
+	// Slow path: scientific notation from float64 round-trip
+	bf := new(big.Float).SetPrec(256)
+	if _, _, err := bf.Parse(s, 10); err != nil {
+		return nil, fmt.Errorf("networkipavailabilities: cannot parse %q as an integer: %w", s, err)
+	}
+	result, _ := bf.Int(nil)
+	return result, nil
+}
+
 func (r *NetworkIPAvailability) UnmarshalJSON(b []byte) error {
 	type tmp NetworkIPAvailability
 	var s struct {
 		tmp
-		TotalIPs big.Int `json:"total_ips"`
-		UsedIPs  big.Int `json:"used_ips"`
+		TotalIPs json.Number `json:"total_ips"`
+		UsedIPs  json.Number `json:"used_ips"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -66,10 +90,19 @@ func (r *NetworkIPAvailability) UnmarshalJSON(b []byte) error {
 	}
 	*r = NetworkIPAvailability(s.tmp)
 
-	r.TotalIPs = s.TotalIPs.String()
-	r.UsedIPs = s.UsedIPs.String()
+	totalIPs, err := parseBigIntFromNumber(s.TotalIPs)
+	if err != nil {
+		return err
+	}
+	r.TotalIPs = totalIPs.String()
 
-	return err
+	usedIPs, err := parseBigIntFromNumber(s.UsedIPs)
+	if err != nil {
+		return err
+	}
+	r.UsedIPs = usedIPs.String()
+
+	return nil
 }
 
 // SubnetIPAvailability represents availability details for a single subnet.
@@ -97,8 +130,8 @@ func (r *SubnetIPAvailability) UnmarshalJSON(b []byte) error {
 	type tmp SubnetIPAvailability
 	var s struct {
 		tmp
-		TotalIPs big.Int `json:"total_ips"`
-		UsedIPs  big.Int `json:"used_ips"`
+		TotalIPs json.Number `json:"total_ips"`
+		UsedIPs  json.Number `json:"used_ips"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -107,10 +140,19 @@ func (r *SubnetIPAvailability) UnmarshalJSON(b []byte) error {
 	}
 	*r = SubnetIPAvailability(s.tmp)
 
-	r.TotalIPs = s.TotalIPs.String()
-	r.UsedIPs = s.UsedIPs.String()
+	totalIPs, err := parseBigIntFromNumber(s.TotalIPs)
+	if err != nil {
+		return err
+	}
+	r.TotalIPs = totalIPs.String()
 
-	return err
+	usedIPs, err := parseBigIntFromNumber(s.UsedIPs)
+	if err != nil {
+		return err
+	}
+	r.UsedIPs = usedIPs.String()
+
+	return nil
 }
 
 // NetworkIPAvailabilityPage stores a single page of NetworkIPAvailabilities
