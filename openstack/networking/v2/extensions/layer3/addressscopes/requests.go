@@ -20,17 +20,16 @@ type ListOptsBuilder interface {
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
 type ListOpts struct {
-	ID          string `q:"id"`
-	Name        string `q:"name"`
-	TenantID    string `q:"tenant_id"`
-	ProjectID   string `q:"project_id"`
-	IPVersion   int    `q:"ip_version"`
-	Shared      *bool  `q:"shared"`
-	Description string `q:"description"`
-	Limit       int    `q:"limit"`
-	Marker      string `q:"marker"`
-	SortKey     string `q:"sort_key"`
-	SortDir     string `q:"sort_dir"`
+	ID        string `q:"id"`
+	Name      string `q:"name"`
+	TenantID  string `q:"tenant_id"`
+	ProjectID string `q:"project_id"`
+	IPVersion int    `q:"ip_version"`
+	Shared    *bool  `q:"shared"`
+	Limit     int    `q:"limit"`
+	Marker    string `q:"marker"`
+	SortKey   string `q:"sort_key"`
+	SortDir   string `q:"sort_dir"`
 }
 
 // ToAddressScopeListQuery formats a ListOpts into a query string.
