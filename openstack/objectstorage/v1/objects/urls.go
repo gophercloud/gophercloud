@@ -2,6 +2,7 @@ package objects
 
 import (
 	"net/url"
+	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
 	v1 "github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1"
@@ -29,7 +30,7 @@ func copyURL(c *gophercloud.ServiceClient, container, object string) (string, er
 	if err := v1.CheckObjectName(object); err != nil {
 		return "", err
 	}
-	return c.ServiceURL(url.PathEscape(container), url.PathEscape(object)), nil
+	return c.ServiceURL(url.PathEscape(container), url.PathEscape(strings.TrimPrefix(object, "/"))), nil
 }
 
 func createURL(c *gophercloud.ServiceClient, container, object string) (string, error) {
