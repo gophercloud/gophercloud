@@ -258,7 +258,7 @@ func HandleCreateTypelessObjectSuccessfully(t *testing.T, fakeServer th.FakeServ
 // that responds with a `Create` response. A Content-Type of "text/plain" is expected.
 func HandleCreateObjectWithSlashes(t *testing.T, fakeServer th.FakeServer, content string, options ...option) {
 	ho := handlerOptions{
-		path: "/testContainer/testObject/file.txt",
+		path: "/testContainer/testObject%2Ffile.txt",
 	}
 	for _, apply := range options {
 		apply(&ho)

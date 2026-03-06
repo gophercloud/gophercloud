@@ -338,7 +338,9 @@ func TestCreateObjectWithSlashes(t *testing.T) {
 
 	HandleCreateObjectWithSlashes(t, fakeServer, content)
 
-	res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject/file.txt", &objects.CreateOpts{Content: strings.NewReader(content)})
+	options := &objects.CreateOpts{ContentType: "text/plain", Content: strings.NewReader(content)}
+
+	res := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "/testObject/file.txt", options)
 	th.AssertNoErr(t, res.Err)
 }
 
