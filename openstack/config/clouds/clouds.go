@@ -81,9 +81,15 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			if err != nil {
 				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the current working directory: %w", err)
 			}
-			userConfig, err := os.UserConfigDir()
-			if err != nil {
-				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the user config directory: %w", err)
+			// Use XDG_CONFIG_HOME or fall back to ~/.config, matching the
+			// OpenStack convention for clouds.yaml location on all platforms.
+			userConfig := os.Getenv("XDG_CONFIG_HOME")
+			if userConfig == "" {
+				homeDir, err := os.UserHomeDir()
+				if err != nil {
+					return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the user home directory: %w", err)
+				}
+				userConfig = path.Join(homeDir, ".config")
 			}
 			options.locations = []string{path.Join(cwd, "clouds.yaml"), path.Join(userConfig, "openstack", "clouds.yaml"), path.Join("/etc", "openstack", "clouds.yaml")}
 		}
