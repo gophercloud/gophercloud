@@ -21,6 +21,9 @@ func CheckObjectName(s string) error {
 	if s == "" {
 		return ErrEmptyObjectName{}
 	}
+	if strings.HasPrefix(s, "/") {
+		return ErrLeadingSlashInObjectName{name: s}
+	}
 	return nil
 }
 
@@ -47,6 +50,16 @@ func (e ErrEmptyContainerName) Error() string {
 // ErrEmptyObjectName signals an empty container name.
 type ErrEmptyObjectName struct {
 	gophercloud.BaseError
+}
+
+// ErrLeadingSlashInObjectName signals a leading forward slash in the object name.
+type ErrLeadingSlashInObjectName struct {
+	name string
+	gophercloud.BaseError
+}
+
+func (e ErrLeadingSlashInObjectName) Error() string {
+	return "an object name must not start with a leading forward slash"
 }
 
 func (e ErrEmptyObjectName) Error() string {
