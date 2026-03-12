@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -21,8 +22,12 @@ func CheckObjectName(s string) error {
 	if s == "" {
 		return ErrEmptyObjectName{}
 	}
-	if strings.HasPrefix(s, "/") {
-		return ErrLeadingSlashInObjectName{name: s}
+	// Check if objet name has a leading slash or two or more consecutive slashes
+	// anywhere in the string
+	re := regexp.MustCompile(`^\/|\/{2,}`)
+	match := re.MatchString(s)
+	if match {
+		return ErrInvalidObjectName{name: s}
 	}
 	return nil
 }
@@ -52,14 +57,14 @@ type ErrEmptyObjectName struct {
 	gophercloud.BaseError
 }
 
-// ErrLeadingSlashInObjectName signals a leading forward slash in the object name.
-type ErrLeadingSlashInObjectName struct {
+// ErrInvalidObjectName signals an invalid object name.
+type ErrInvalidObjectName struct {
 	name string
 	gophercloud.BaseError
 }
 
-func (e ErrLeadingSlashInObjectName) Error() string {
-	return "an object name must not start with a leading forward slash"
+func (e ErrInvalidObjectName) Error() string {
+	return "an object name must not start with a leading slash or have two or more consecutive slashes"
 }
 
 func (e ErrEmptyObjectName) Error() string {
