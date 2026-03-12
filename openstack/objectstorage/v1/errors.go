@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -20,6 +21,13 @@ func CheckContainerName(s string) error {
 func CheckObjectName(s string) error {
 	if s == "" {
 		return ErrEmptyObjectName{}
+	}
+	// Check if objet name has a leading slash or two or more consecutive slashes
+	// anywhere in the string
+	re := regexp.MustCompile(`^\/|\/{2,}`)
+	match := re.MatchString(s)
+	if match {
+		return ErrInvalidObjectName{name: s}
 	}
 	return nil
 }
@@ -47,6 +55,16 @@ func (e ErrEmptyContainerName) Error() string {
 // ErrEmptyObjectName signals an empty container name.
 type ErrEmptyObjectName struct {
 	gophercloud.BaseError
+}
+
+// ErrInvalidObjectName signals an invalid object name.
+type ErrInvalidObjectName struct {
+	name string
+	gophercloud.BaseError
+}
+
+func (e ErrInvalidObjectName) Error() string {
+	return "an object name must not start with a leading slash or have two or more consecutive slashes"
 }
 
 func (e ErrEmptyObjectName) Error() string {

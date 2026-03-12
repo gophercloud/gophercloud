@@ -330,6 +330,51 @@ func TestCreateObjectWithoutContentType(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestCreateObjectWithInvalidName(t *testing.T) {
+
+	for _, tc := range [...]struct {
+		name       string
+		objectName string
+	}{
+		{
+			"rejects_a_leading_slash",
+			"/testObject",
+		},
+		{
+			"rejects_leading_triple_slashes",
+			"///testObject",
+		},
+		{
+			"rejects_leading_double_slashes",
+			"//testObject",
+		},
+		{
+			"rejects_non_leading_double_slashes",
+			"test//Object",
+		},
+		{
+			"rejects_non_leading_triple_slashes",
+			"test///Object",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			fakeServer := th.SetupHTTP()
+			defer fakeServer.Teardown()
+
+			content := "Lorem slashium."
+
+			HandleCreateTextObjectSuccessfully(t, fakeServer, content)
+
+			options := &objects.CreateOpts{ContentType: "text/plain", Content: strings.NewReader(content)}
+
+			_, err := objects.Create(context.TODO(), client.ServiceClient(fakeServer), "testContainer", tc.objectName, options).Extract()
+
+			th.CheckErr(t, err, &v1.ErrInvalidObjectName{})
+
+		})
+	}
+}
+
 func TestCopyObject(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 		fakeServer := th.SetupHTTP()

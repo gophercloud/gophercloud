@@ -254,6 +254,12 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 // Create is a function that creates a new object or replaces an existing
 // object.
 func Create(ctx context.Context, c *gophercloud.ServiceClient, containerName, objectName string, opts CreateOptsBuilder) (r CreateResult) {
+	err := v1.CheckObjectName(objectName)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
 	url, err := createURL(c, containerName, objectName)
 	if err != nil {
 		r.Err = err
