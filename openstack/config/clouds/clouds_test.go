@@ -173,6 +173,119 @@ func TestParse(t *testing.T) {
 		}
 	})
 
+	t.Run("uses XDG_CONFIG_HOME for clouds.yaml location", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/xdg-config:13000`
+
+		// Create a temp dir to use as XDG_CONFIG_HOME with clouds.yaml inside.
+		xdgDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		if err != nil {
+			t.Fatalf("unable to create a temporary directory: %v", err)
+		}
+		defer rmTmpDirOrPanic(xdgDir)
+
+		openstackDir := path.Join(xdgDir, "openstack")
+		if err := os.MkdirAll(openstackDir, 0755); err != nil {
+			t.Fatalf("unable to create openstack config directory: %v", err)
+		}
+		if err := os.WriteFile(path.Join(openstackDir, "clouds.yaml"), []byte(cloudsYAML), 0644); err != nil {
+			t.Fatalf("unable to create a mock clouds.yaml file: %v", err)
+		}
+
+		// Change to an empty temp dir so cwd has no clouds.yaml.
+		emptyDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		if err != nil {
+			t.Fatalf("unable to create a temporary directory: %v", err)
+		}
+		defer rmTmpDirOrPanic(emptyDir)
+
+		cwd, err := os.Getwd()
+		if err != nil {
+			t.Fatalf("unable to determine the current working directory: %v", err)
+		}
+		if err := os.Chdir(emptyDir); err != nil {
+			t.Fatalf("unable to move to a temporary directory: %v", err)
+		}
+		defer func() {
+			if err := os.Chdir(cwd); err != nil {
+				panic("unable to reset the current working directory: " + err.Error())
+			}
+		}()
+
+		t.Setenv("XDG_CONFIG_HOME", xdgDir)
+		t.Setenv("OS_CLIENT_CONFIG_FILE", "")
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if got := ao.IdentityEndpoint; got != "https://example.com/xdg-config:13000" {
+			t.Errorf("unexpected identity endpoint: %q", got)
+		}
+	})
+
+	t.Run("falls back to ~/.config when XDG_CONFIG_HOME is not set", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/home-config:13000`
+
+		// Create a temp dir to use as HOME with clouds.yaml in .config/openstack/.
+		homeDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		if err != nil {
+			t.Fatalf("unable to create a temporary directory: %v", err)
+		}
+		defer rmTmpDirOrPanic(homeDir)
+
+		openstackDir := path.Join(homeDir, ".config", "openstack")
+		if err := os.MkdirAll(openstackDir, 0755); err != nil {
+			t.Fatalf("unable to create openstack config directory: %v", err)
+		}
+		if err := os.WriteFile(path.Join(openstackDir, "clouds.yaml"), []byte(cloudsYAML), 0644); err != nil {
+			t.Fatalf("unable to create a mock clouds.yaml file: %v", err)
+		}
+
+		// Change to an empty temp dir so cwd has no clouds.yaml.
+		emptyDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		if err != nil {
+			t.Fatalf("unable to create a temporary directory: %v", err)
+		}
+		defer rmTmpDirOrPanic(emptyDir)
+
+		cwd, err := os.Getwd()
+		if err != nil {
+			t.Fatalf("unable to determine the current working directory: %v", err)
+		}
+		if err := os.Chdir(emptyDir); err != nil {
+			t.Fatalf("unable to move to a temporary directory: %v", err)
+		}
+		defer func() {
+			if err := os.Chdir(cwd); err != nil {
+				panic("unable to reset the current working directory: " + err.Error())
+			}
+		}()
+
+		t.Setenv("XDG_CONFIG_HOME", "")
+		t.Setenv("HOME", homeDir)
+		t.Setenv("OS_CLIENT_CONFIG_FILE", "")
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if got := ao.IdentityEndpoint; got != "https://example.com/home-config:13000" {
+			t.Errorf("unexpected identity endpoint: %q", got)
+		}
+	})
+
 	t.Run("falls back to the next location if clouds.yaml is not found", func(t *testing.T) {
 		const cloudsYAML1 = `clouds:
   gophercloud-test:
