@@ -33,6 +33,9 @@ jobs:
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
+            devstack_conf_overrides: |
+              LIBVIRT_CPU_MODE=host-passthrough
+              OCTAVIA_AMP_DISTRIBUTION_RELEASE_ID=jammy
           - name: "dalmatian"
             openstack_version: "stable/2024.2"
             ubuntu_version: "22.04"
