@@ -1,49 +1,76 @@
 name: Label PR
 on:
-  pull_request_target:
+  # Safe: the edits job does not checkout or execute any PR code.
+  # It only runs the pinned actions/labeler action which reads event
+  # metadata and the base branch .github/labeler.yml configuration.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     types:
       - opened
       - synchronize
       - reopened
+  # Safe: the semver-label job never checks out or executes PR code.
+  # It only reads a data artifact produced by the unprivileged
+  # "Semver analysis" workflow and uses the GitHub API to apply labels.
+  workflow_run: # zizmor: ignore[dangerous-triggers]
+    workflows: ["Semver analysis"]
+    types:
+      - completed
+
+permissions: {}
 
 jobs:
-  semver:
+  semver-label:
+    if: github.event_name == 'workflow_run'
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      issues: write
+      pull-requests: write
     steps:
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-        ref: ${{ github.event.pull_request.head.sha }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Rebase the PR against origin/github.base_ref to ensure actual API compatibility
+    - name: Get PR number and base ref
+      id: pr
       run: |
-        git config --global user.email "localrebase@gophercloud.io"
-        git config --global user.name "Local rebase"
-        git rebase -i origin/${{ github.base_ref }}
+        PR_DATA=$(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" --jq '.[0] | {number, base_ref: .base.ref}')
+        PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number')
+        BASE_REF=$(echo "$PR_DATA" | jq -r '.base_ref')
+        if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+          echo "Could not determine PR number" >&2
+          exit 1
+        fi
+        echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+        echo "base-ref=$BASE_REF" >> "$GITHUB_OUTPUT"
       env:
-        GIT_SEQUENCE_EDITOR: '/usr/bin/true'
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
 
-    - uses: actions/setup-go@v6
+    - name: Report failure
+      if: github.event.workflow_run.conclusion == 'failure'
+      run: |
+        gh pr edit "$NUMBER" --remove-label "semver:major,semver:minor,semver:patch,backport-v2,backport-v1"
+        gh issue comment "$NUMBER" --body "$BODY"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ steps.pr.outputs.number }}
+        BODY: >
+          Failed to assess the semver bump. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
+
+    - name: Download semver results
+      if: github.event.workflow_run.conclusion == 'success'
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
       with:
-        go-version-file: 'go.mod'
-        cache: true
+        name: semver-results
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Checking Go API Compatibility
-      id: go-apidiff
-      # if semver=major, this will return RC=1, so let's ignore the failure so label
-      # can be set later. We check for actual errors in the next step.
-      continue-on-error: true
-      uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685
-
-    # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
-    # a failure. Instead let's just return a failure if go-apidiff failed to run.
-    - name: Return an error if Go API Compatibility couldn't be verified
-      if: steps.go-apidiff.outcome != 'success' && steps.go-apidiff.outputs.semver-type != 'major'
-      run: exit 1
+    - name: Read semver type
+      if: github.event.workflow_run.conclusion == 'success'
+      id: semver
+      run: echo "type=$(cat semver-type)" >> "$GITHUB_OUTPUT"
 
     - name: Add label semver:patch
-      if: steps.go-apidiff.outputs.semver-type == 'patch'
+      if: github.event.workflow_run.conclusion == 'success' && steps.semver.outputs.type == 'patch'
       run: |
         LABELS="semver:patch"
         REMOVE_LABELS="semver:major,semver:minor"
@@ -59,11 +86,11 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ github.event.pull_request.number }}
-        BASE_REF: ${{ github.base_ref }}
+        NUMBER: ${{ steps.pr.outputs.number }}
+        BASE_REF: ${{ steps.pr.outputs.base-ref }}
 
     - name: Add label semver:minor
-      if: steps.go-apidiff.outputs.semver-type == 'minor'
+      if: github.event.workflow_run.conclusion == 'success' && steps.semver.outputs.type == 'minor'
       run: |
         LABELS="semver:minor"
         REMOVE_LABELS="semver:major,semver:patch"
@@ -80,34 +107,22 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ github.event.pull_request.number }}
-        BASE_REF: ${{ github.base_ref }}
+        NUMBER: ${{ steps.pr.outputs.number }}
+        BASE_REF: ${{ steps.pr.outputs.base-ref }}
 
     - name: Add label semver:major
-      if: steps.go-apidiff.outputs.semver-type == 'major'
+      if: github.event.workflow_run.conclusion == 'success' && steps.semver.outputs.type == 'major'
       run: gh pr edit "$NUMBER" --add-label "semver:major" --remove-label "semver:minor,semver:patch,backport-v2,backport-v1"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ github.event.pull_request.number }}
-
-    - name: Report failure
-      if: failure()
-      run: |
-        gh pr edit "$NUMBER" --remove-label "semver:major,semver:minor,semver:patch,backport-v2,backport-v1"
-        gh issue comment "$NUMBER" --body "$BODY"
-        exit 1
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ github.event.pull_request.number }}
-        BODY: >
-          Failed to assess the semver bump. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+        NUMBER: ${{ steps.pr.outputs.number }}
 
   edits:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
-    runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v6
+    - uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6

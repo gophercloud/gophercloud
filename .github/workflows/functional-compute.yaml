@@ -6,6 +6,8 @@ on:
     - cron: '0 0 */3 * *'
 jobs:
   functional-compute:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -23,7 +25,9 @@ jobs:
     name: Nova on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
       - name: Check changed files
         uses: ./.github/actions/file-filter
@@ -48,7 +52,7 @@ jobs:
 
       - name: Deploy devstack
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
-        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1
+        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1 # v0.19
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
@@ -57,7 +61,7 @@ jobs:
 
       - name: Checkout go
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6
         with:
           go-version-file: 'go.mod'
           cache: true
@@ -78,14 +82,14 @@ jobs:
 
       - name: Upload logs artifacts on failure
         if: ${{ failure() && fromJSON(steps.changed-files.outputs.matches) }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: functional-compute-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*
 
       - name: Set job status
         run: |
-          if [[ "${{ env.TESTS_SKIPPED }}" == "true" || "${{ env.TESTS_RUN }}" == "true" ]]; then
+          if [[ "$TESTS_SKIPPED" == "true" || "$TESTS_RUN" == "true" ]]; then
             echo "Job completed successfully (either ran tests or skipped appropriately)"
             exit 0
           else
