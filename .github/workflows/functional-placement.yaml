@@ -87,7 +87,7 @@ jobs:
 
       - name: Set job status
         run: |
-          if [[ "${{ env.TESTS_SKIPPED }}" == "true" || "${{ env.TESTS_RUN }}" == "true" ]]; then
+          if [[ "$TESTS_SKIPPED" == "true" || "$TESTS_RUN" == "true" ]]; then
             echo "Job completed successfully (either ran tests or skipped appropriately)"
             exit 0
           else
