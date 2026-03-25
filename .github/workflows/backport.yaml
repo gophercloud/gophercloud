@@ -9,6 +9,10 @@ on:
 jobs:
   backport_v1:
     name: "Backport to v1"
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
     # Only react to merged PRs for security reasons.
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >
@@ -70,6 +74,10 @@ jobs:
 
   backport_v2:
     name: "Backport to v2"
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
     # Only react to merged PRs for security reasons.
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >

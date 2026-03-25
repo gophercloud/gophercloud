@@ -8,6 +8,9 @@ on:
       - .github/workflows/ensure-labels.yaml
 jobs:
   ensure:
+    permissions:
+      contents: read
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

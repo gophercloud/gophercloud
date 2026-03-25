@@ -6,6 +6,8 @@ on:
     - cron: '0 0 */3 * *'
 jobs:
   functional-messaging:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
