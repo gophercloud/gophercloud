@@ -38,7 +38,7 @@ jobs:
         if: >
           contains(github.event.pull_request.labels.*.name, 'semver:patch')
           || contains(github.event.label.name, 'semver:patch')
-        uses: kiegroup/git-backporting@baae3fe1e3c71bc6b1a2699b3bc1e153a19d5ac7
+        uses: kiegroup/git-backporting@baae3fe1e3c71bc6b1a2699b3bc1e153a19d5ac7 # v4.8.7
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
@@ -105,7 +105,7 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'semver:minor')
           || contains(github.event.label.name, 'semver:patch')
           || contains(github.event.label.name, 'semver:minor')
-        uses: kiegroup/git-backporting@baae3fe1e3c71bc6b1a2699b3bc1e153a19d5ac7
+        uses: kiegroup/git-backporting@baae3fe1e3c71bc6b1a2699b3bc1e153a19d5ac7 # v4.8.7
         with:
           target-branch: v2
           pull-request: ${{ github.event.pull_request.url }}

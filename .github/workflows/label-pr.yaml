@@ -14,7 +14,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
@@ -30,7 +30,7 @@ jobs:
         GIT_SEQUENCE_EDITOR: '/usr/bin/true'
         BASE_REF: ${{ github.base_ref }}
 
-    - uses: actions/setup-go@v6
+    - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6
       with:
         go-version-file: 'go.mod'
         cache: true
@@ -40,7 +40,7 @@ jobs:
       # if semver=major, this will return RC=1, so let's ignore the failure so label
       # can be set later. We check for actual errors in the next step.
       continue-on-error: true
-      uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685
+      uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685 # v0.8.3
 
     # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
     # a failure. Instead let's just return a failure if go-apidiff failed to run.
@@ -116,4 +116,4 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v6
+    - uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
