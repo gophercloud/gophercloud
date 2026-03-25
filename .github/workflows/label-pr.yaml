@@ -15,6 +15,7 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
         token: ${{ secrets.GITHUB_TOKEN }}
+        persist-credentials: false
 
     - name: Rebase the PR against origin/github.base_ref to ensure actual API compatibility
       run: |
