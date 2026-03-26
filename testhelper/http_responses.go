@@ -50,7 +50,7 @@ func SetupPersistentPortHTTP(t *testing.T, port int) FakeServer {
 	server := httptest.NewUnstartedServer(mux)
 	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
-		t.Errorf("Failed to listen to 127.0.0.1:%d: %s", port, err)
+		t.Fatalf("Failed to listen to 127.0.0.1:%d: %s", port, err)
 	}
 	server.Listener = l
 	server.Start()
