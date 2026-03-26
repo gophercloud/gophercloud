@@ -65,9 +65,7 @@ func TestSnapshotUpdate(t *testing.T) {
 	defer DeleteSnapshot(t, client, snapshot)
 
 	expectedSnapshot, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve snapshot: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	name := "NewName"
 	description := ""
@@ -80,14 +78,10 @@ func TestSnapshotUpdate(t *testing.T) {
 	expectedSnapshot.Description = description
 
 	_, err = snapshots.Update(context.TODO(), client, snapshot.ID, options).Extract()
-	if err != nil {
-		t.Errorf("Unable to update snapshot: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	updatedSnapshot, err := snapshots.Get(context.TODO(), client, snapshot.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve snapshot: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, snapshot)
 
