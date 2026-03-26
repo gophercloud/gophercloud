@@ -93,8 +93,7 @@ func TestContainerNames(t *testing.T) {
 				th.CheckErr(t, res.Err, &tc.expectedError)
 			})
 			t.Run("createTempURL", func(t *testing.T) {
-				port := 33201
-				fakeServer := th.SetupPersistentPortHTTP(t, port)
+				fakeServer := th.SetupHTTP()
 				defer fakeServer.Teardown()
 
 				// Handle fetching of secret key inside of CreateTempURL
@@ -503,8 +502,7 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 }
 
 func TestCreateTempURL(t *testing.T) {
-	port := 33200
-	fakeServer := th.SetupPersistentPortHTTP(t, port)
+	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
 	// Handle fetching of secret key inside of CreateTempURL
@@ -522,7 +520,7 @@ func TestCreateTempURL(t *testing.T) {
 
 	sig := "89be454a9c7e2e9f3f50a8441815e0b5801cba5b"
 	expiry := "1593565980"
-	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject%%2FtestFile.txt?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
+	expectedURL := fmt.Sprintf("%sv1/testContainer/testObject%%2FtestFile.txt?temp_url_sig=%v&temp_url_expires=%v", fakeServer.Endpoint(), sig, expiry)
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedURL, tempURL)

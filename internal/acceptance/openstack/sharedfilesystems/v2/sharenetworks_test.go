@@ -25,9 +25,7 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 	}
 
 	newShareNetwork, err := sharenetworks.Get(context.TODO(), client, shareNetwork.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve shareNetwork: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	if newShareNetwork.Name != shareNetwork.Name {
 		t.Fatalf("Share network name was expeted to be: %s", shareNetwork.Name)
@@ -56,9 +54,7 @@ func TestShareNetworkUpdate(t *testing.T) {
 	}
 
 	expectedShareNetwork, err := sharenetworks.Get(context.TODO(), client, shareNetwork.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve shareNetwork: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	name := "NewName"
 	description := ""
@@ -76,9 +72,7 @@ func TestShareNetworkUpdate(t *testing.T) {
 	}
 
 	updatedShareNetwork, err := sharenetworks.Get(context.TODO(), client, shareNetwork.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve shareNetwork: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Update time has to be set in order to get the assert equal to pass
 	expectedShareNetwork.UpdatedAt = updatedShareNetwork.UpdatedAt
