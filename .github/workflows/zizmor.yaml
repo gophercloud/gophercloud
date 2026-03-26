@@ -5,10 +5,10 @@ on:
     branches:
       - master
     paths:
-      - '.github/workflows/**'
+      - '.github/**'
   pull_request:
     paths:
-      - '.github/workflows/**'
+      - '.github/**'
 
 permissions: {}
 
