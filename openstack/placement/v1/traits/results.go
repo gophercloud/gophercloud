@@ -22,6 +22,12 @@ type CreateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // IsEmpty satisfies the IsEmpty method of the Page interface. It returns true
 // if a List contains no results.
 func (r TraitsPage) IsEmpty() (bool, error) {
