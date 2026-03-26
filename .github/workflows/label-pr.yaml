@@ -27,22 +27,19 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-    - name: Get PR number and base ref
-      id: pr
+    - name: Download semver results
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      with:
+        name: semver-results
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Read semver results
+      id: semver
       run: |
-        PR_DATA=$(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" --jq '.[0] | {number, base_ref: .base.ref}')
-        PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number')
-        BASE_REF=$(echo "$PR_DATA" | jq -r '.base_ref')
-        if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
-          echo "Could not determine PR number" >&2
-          exit 1
-        fi
-        echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-        echo "base-ref=$BASE_REF" >> "$GITHUB_OUTPUT"
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO: ${{ github.repository }}
-        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        echo "type=$(cat semver-type)" >> "$GITHUB_OUTPUT"
+        echo "pr-number=$(cat pr-number)" >> "$GITHUB_OUTPUT"
+        echo "base-ref=$(cat base-ref)" >> "$GITHUB_OUTPUT"
 
     - name: Report failure
       if: github.event.workflow_run.conclusion == 'failure'
@@ -52,22 +49,9 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ steps.pr.outputs.number }}
+        NUMBER: ${{ steps.semver.outputs.pr-number }}
         BODY: >
           Failed to assess the semver bump. See [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
-
-    - name: Download semver results
-      if: github.event.workflow_run.conclusion == 'success'
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-      with:
-        name: semver-results
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Read semver type
-      if: github.event.workflow_run.conclusion == 'success'
-      id: semver
-      run: echo "type=$(cat semver-type)" >> "$GITHUB_OUTPUT"
 
     - name: Add label semver:patch
       if: github.event.workflow_run.conclusion == 'success' && steps.semver.outputs.type == 'patch'
@@ -86,8 +70,8 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ steps.pr.outputs.number }}
-        BASE_REF: ${{ steps.pr.outputs.base-ref }}
+        NUMBER: ${{ steps.semver.outputs.pr-number }}
+        BASE_REF: ${{ steps.semver.outputs.base-ref }}
 
     - name: Add label semver:minor
       if: github.event.workflow_run.conclusion == 'success' && steps.semver.outputs.type == 'minor'
@@ -107,8 +91,8 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ steps.pr.outputs.number }}
-        BASE_REF: ${{ steps.pr.outputs.base-ref }}
+        NUMBER: ${{ steps.semver.outputs.pr-number }}
+        BASE_REF: ${{ steps.semver.outputs.base-ref }}
 
     - name: Add label semver:major
       if: github.event.workflow_run.conclusion == 'success' && steps.semver.outputs.type == 'major'
@@ -116,7 +100,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_REPO: ${{ github.repository }}
-        NUMBER: ${{ steps.pr.outputs.number }}
+        NUMBER: ${{ steps.semver.outputs.pr-number }}
 
   edits:
     if: github.event_name == 'pull_request_target'

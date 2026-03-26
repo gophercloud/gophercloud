@@ -51,8 +51,12 @@ jobs:
       run: |
         mkdir -p semver-results
         echo "$SEMVER_TYPE" > semver-results/semver-type
+        echo "$PR_NUMBER" > semver-results/pr-number
+        echo "$BASE_REF" > semver-results/base-ref
       env:
         SEMVER_TYPE: ${{ steps.go-apidiff.outputs.semver-type }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        BASE_REF: ${{ github.base_ref }}
 
     - name: Upload semver results
       if: always()
