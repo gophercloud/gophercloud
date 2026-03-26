@@ -99,3 +99,33 @@ func TestGetTraitNotFound(t *testing.T) {
 	err := traits.Get(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
+
+func TestCreateTraitSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleCreateTraitSuccess(t, fakeServer)
+
+	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), CustomTraitToCreate, traits.CreateOpts{}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestCreateTraitThatAlreadyExists(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleCreateTraitThatAlreadyExists(t, fakeServer)
+
+	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), PresentTrait, traits.CreateOpts{}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestCreateTraitInvalidName(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleCreateTraitInvalidName(t, fakeServer)
+
+	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait, traits.CreateOpts{}).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+}

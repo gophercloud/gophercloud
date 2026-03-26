@@ -16,6 +16,12 @@ type TraitsPage struct {
 	pagination.SinglePageBase
 }
 
+// CreateResult is the response from a Create operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type CreateResult struct {
+	gophercloud.ErrResult
+}
+
 // IsEmpty satisfies the IsEmpty method of the Page interface. It returns true
 // if a List contains no results.
 func (r TraitsPage) IsEmpty() (bool, error) {
