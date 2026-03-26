@@ -38,5 +38,18 @@ Example to check if a trait exists
 	} else {
 		fmt.Println("Trait exists!")
 	}
+
+Example to create a trait
+
+	placementClient.Microversion = "1.6"
+
+	traitName := "CUSTOM_HW_FPGA_CLASS1"
+	createOpts := traits.CreateOpts{}
+	err := traits.Create(context.TODO(), placementClient, traitName, createOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	} else {
+		fmt.Println("Trait created successfully!")
+	}
 */
 package traits
