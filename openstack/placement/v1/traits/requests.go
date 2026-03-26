@@ -67,3 +67,12 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, traitName st
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Delete deletes the trait specified by name.
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, traitName string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, traitName), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
