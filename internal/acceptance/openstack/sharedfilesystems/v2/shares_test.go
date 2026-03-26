@@ -53,15 +53,11 @@ func TestShareExportLocations(t *testing.T) {
 	client.Microversion = "2.9"
 
 	exportLocations, err := shares.ListExportLocations(context.TODO(), client, share.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to list share export locations: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	tools.PrintResource(t, exportLocations)
 
 	exportLocation, err := shares.GetExportLocation(context.TODO(), client, share.ID, exportLocations[0].ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to get share export location: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	tools.PrintResource(t, exportLocation)
 	th.AssertEquals(t, exportLocations[0], *exportLocation)
 }
@@ -80,9 +76,7 @@ func TestShareUpdate(t *testing.T) {
 	defer DeleteShare(t, client, share)
 
 	expectedShare, err := shares.Get(context.TODO(), client, share.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve share: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	name := "NewName"
 	description := ""
@@ -98,14 +92,10 @@ func TestShareUpdate(t *testing.T) {
 	expectedShare.IsPublic = iFalse
 
 	_, err = shares.Update(context.TODO(), client, share.ID, options).Extract()
-	if err != nil {
-		t.Errorf("Unable to update share: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	updatedShare, err := shares.Get(context.TODO(), client, share.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve share: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Update time has to be set in order to get the assert equal to pass
 	expectedShare.UpdatedAt = updatedShare.UpdatedAt

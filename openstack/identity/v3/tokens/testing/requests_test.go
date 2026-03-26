@@ -383,18 +383,14 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 	rsp := tokens.Create(context.TODO(), client.ServiceClient(fakeServer), &ao)
 
 	token, err := rsp.Extract()
-	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	expectedToken := &tokens.Token{
 		ExpiresAt: time.Date(2024, 02, 28, 12, 10, 39, 0, time.UTC),
 	}
 	th.AssertDeepEquals(t, expectedToken, token)
 
 	trust, err := rsp.ExtractTrust()
-	if err != nil {
-		t.Errorf("ExtractTrust returned an error: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	expectedTrust := &tokens.Trust{
 		ID:            "95946f9eef864fdc993079d8fe3e5747",
 		Impersonation: false,
@@ -676,9 +672,7 @@ func TestGetRequest(t *testing.T) {
 	})
 
 	token, err := tokens.Get(context.TODO(), &client, "abcdef12345", nil).Extract()
-	if err != nil {
-		t.Errorf("Info returned an error: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
 	if token.ExpiresAt != expected {
@@ -795,9 +789,7 @@ func TestGetRequestWithAccessRules(t *testing.T) {
 		AccessRulesVersion: "1",
 	}
 	token, err := tokens.Get(context.TODO(), &client, "abcdef12345", getOpts).Extract()
-	if err != nil {
-		t.Errorf("Get returned an error: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
 	if token.ExpiresAt != expected {
