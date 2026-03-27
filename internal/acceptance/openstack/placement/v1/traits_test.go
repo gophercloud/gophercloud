@@ -17,9 +17,7 @@ import (
 
 func TestTraitsList(t *testing.T) {
 	// The Traits API requires microversion 1.6 or later
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipReleasesBelow(t, "stable/pike")
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
@@ -39,9 +37,7 @@ func TestTraitsList(t *testing.T) {
 
 func TestTraitGet(t *testing.T) {
 	// The Traits API requires microversion 1.6 or later
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipReleasesBelow(t, "stable/pike")
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
@@ -56,9 +52,7 @@ func TestTraitGet(t *testing.T) {
 
 func TestTraitGetNegative(t *testing.T) {
 	// The Traits API requires microversion 1.6 or later
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipReleasesBelow(t, "stable/pike")
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
@@ -72,9 +66,7 @@ func TestTraitGetNegative(t *testing.T) {
 
 func TestTraitsListFiltering(t *testing.T) {
 	// The Traits API requires microversion 1.6 or later
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipReleasesBelow(t, "stable/pike")
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
