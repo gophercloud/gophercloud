@@ -59,29 +59,9 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, traitName strin
 	return
 }
 
-// CreateOptsBuilder allows extensions to add additional parameters to
-// the Create request.
-type CreateOptsBuilder interface {
-	ToTraitCreateMap() (map[string]any, error)
-}
-
-// CreateOpts provides options used to create a trait.
-type CreateOpts struct {
-}
-
-// ToTraitCreateMap formats a CreateOpts into a create request.
-func (opts CreateOpts) ToTraitCreateMap() (map[string]any, error) {
-	return gophercloud.BuildRequestBody(opts, "")
-}
-
 // Create creates a new trait.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, traitName string, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToTraitCreateMap()
-	if err != nil {
-		r.Err = err
-		return
-	}
-	resp, err := client.Put(ctx, createURL(client, traitName), b, nil, &gophercloud.RequestOpts{
+func Create(ctx context.Context, client *gophercloud.ServiceClient, traitName string) (r CreateResult) {
+	resp, err := client.Put(ctx, createURL(client, traitName), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 204},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

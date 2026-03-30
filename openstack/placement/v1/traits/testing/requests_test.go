@@ -106,7 +106,7 @@ func TestCreateTraitSuccess(t *testing.T) {
 
 	HandleCreateTraitSuccess(t, fakeServer)
 
-	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), CustomTraitToCreate, traits.CreateOpts{}).ExtractErr()
+	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), CustomTraitToCreate).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -116,7 +116,7 @@ func TestCreateTraitThatAlreadyExists(t *testing.T) {
 
 	HandleCreateTraitThatAlreadyExists(t, fakeServer)
 
-	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), PresentTrait, traits.CreateOpts{}).ExtractErr()
+	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), PresentTrait).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -126,6 +126,6 @@ func TestCreateTraitInvalidName(t *testing.T) {
 
 	HandleCreateTraitInvalidName(t, fakeServer)
 
-	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait, traits.CreateOpts{}).ExtractErr()
+	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
