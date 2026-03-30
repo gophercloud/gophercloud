@@ -1,5 +1,5 @@
 /*
-Package traits lists traits from the OpenStack Placement service.
+Package traits manages traits from the OpenStack Placement service.
 
 Traits API requests are available starting from microversion 1.6.
 
