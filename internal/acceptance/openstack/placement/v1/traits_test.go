@@ -100,9 +100,8 @@ func TestTraitsCreateSuccess(t *testing.T) {
 	client.Microversion = "1.6"
 
 	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
-	createOpts := traits.CreateOpts{}
 
-	err = traits.Create(context.TODO(), client, traitName, createOpts).ExtractErr()
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Assert that the trait now exists
@@ -120,14 +119,13 @@ func TestTraitsCreateDuplicate(t *testing.T) {
 	client.Microversion = "1.6"
 
 	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
-	createOpts := traits.CreateOpts{}
 
 	// Create the trait for the first time
-	err = traits.Create(context.TODO(), client, traitName, createOpts).ExtractErr()
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	// Creating the same trait again results in 204 (no error)
-	err = traits.Create(context.TODO(), client, traitName, createOpts).ExtractErr()
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -142,8 +140,7 @@ func TestTraitsCreateInvalidName(t *testing.T) {
 	client.Microversion = "1.6"
 
 	traitName := "HW_WE_CANNOT_CREATE_THIS_TRAIT"
-	createOpts := traits.CreateOpts{}
 
-	err = traits.Create(context.TODO(), client, traitName, createOpts).ExtractErr()
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }

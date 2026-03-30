@@ -44,8 +44,7 @@ Example to create a trait
 	placementClient.Microversion = "1.6"
 
 	traitName := "CUSTOM_HW_FPGA_CLASS1"
-	createOpts := traits.CreateOpts{}
-	err := traits.Create(context.TODO(), placementClient, traitName, createOpts).ExtractErr()
+	err := traits.Create(context.TODO(), placementClient, traitName).ExtractErr()
 	if err != nil {
 		panic(err)
 	} else {
