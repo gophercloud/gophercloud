@@ -19,3 +19,7 @@ func getURL(client *gophercloud.ServiceClient, name string) string {
 func updateURL(client *gophercloud.ServiceClient, name string) string {
 	return client.ServiceURL("resource_classes", name)
 }
+
+func deleteURL(client *gophercloud.ServiceClient, name string) string {
+	return client.ServiceURL("resource_classes", name)
+}

@@ -169,3 +169,33 @@ func HandleUpdateResourceClassNonCustom(t *testing.T, fakeServer th.FakeServer) 
 			w.WriteHeader(http.StatusBadRequest)
 		})
 }
+
+func HandleDeleteResourceClassSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes/"+PresentResourceClass,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleDeleteResourceClassNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes/"+AbsentResourceClass,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleDeleteResourceClassStandardClass(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes/VCPU",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusBadRequest)
+		})
+}
