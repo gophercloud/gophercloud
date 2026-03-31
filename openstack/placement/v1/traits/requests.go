@@ -58,3 +58,12 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, traitName strin
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Create creates a new trait.
+func Create(ctx context.Context, client *gophercloud.ServiceClient, traitName string) (r CreateResult) {
+	resp, err := client.Put(ctx, createURL(client, traitName), nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{201, 204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

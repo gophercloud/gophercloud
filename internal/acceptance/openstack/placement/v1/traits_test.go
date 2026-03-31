@@ -11,6 +11,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/traits"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -87,4 +88,59 @@ func TestTraitsListFiltering(t *testing.T) {
 	for _, trait := range filteredTraits {
 		th.AssertEquals(t, true, strings.HasPrefix(trait, "HW_"))
 	}
+}
+
+func TestTraitsCreateSuccess(t *testing.T) {
+	// The Traits API requires microversion 1.6 or later
+	clients.SkipReleasesBelow(t, "stable/pike")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.6"
+
+	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Assert that the trait now exists
+	err = traits.Get(context.TODO(), client, traitName).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestTraitsCreateDuplicate(t *testing.T) {
+	// The Traits API requires microversion 1.6 or later
+	clients.SkipReleasesBelow(t, "stable/pike")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.6"
+
+	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+
+	// Create the trait for the first time
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Creating the same trait again results in 204 (no error)
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+// Test of creating a trait name that cannot be created in an API
+func TestTraitsCreateInvalidName(t *testing.T) {
+	// The Traits API requires microversion 1.6 or later
+	clients.SkipReleasesBelow(t, "stable/pike")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.6"
+
+	traitName := "HW_WE_CANNOT_CREATE_THIS_TRAIT"
+
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
