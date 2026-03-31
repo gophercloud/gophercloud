@@ -19,6 +19,8 @@ on:
     - cron: '0 0 */3 * *'
 jobs:
   functional-fwaas_v2:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:

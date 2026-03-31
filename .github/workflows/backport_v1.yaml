@@ -9,6 +9,10 @@ on:
 jobs:
   backporting:
     name: "Backporting"
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
     # Only react to merged PRs for security reasons.
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >
