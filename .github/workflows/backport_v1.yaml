@@ -31,8 +31,8 @@ jobs:
         id: generate_token
         uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
         with:
-          app_id: ${{ secrets.BACKPORT_APP_ID }}
-          private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
+          app_id: ${{ secrets.BACKPORT_APP_ID }} # zizmor: ignore[secrets-outside-env]
+          private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }} # zizmor: ignore[secrets-outside-env]
 
       - name: Backporting
         if: >
