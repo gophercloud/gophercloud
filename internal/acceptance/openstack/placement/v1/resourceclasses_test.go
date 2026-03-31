@@ -157,3 +157,65 @@ func TestResourceClassCreateByUpdateNonCustomName(t *testing.T) {
 	// Assert: We get 400
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
+
+func TestResourceClassDeleteSuccess(t *testing.T) {
+	// Resource classes were introduced in 1.2
+	clients.SkipReleasesBelow(t, "stable/ocata")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.2"
+
+	name := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+	createOpts := resourceclasses.CreateOpts{
+		Name: name,
+	}
+
+	// Arrange: Create a resource class to delete
+	err = resourceclasses.Create(context.TODO(), client, createOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Arrange: Sanity check, the newly created resource class exists
+	rc, err := resourceclasses.Get(context.TODO(), client, name).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, name, rc.Name)
+
+	// Act: Delete the resource class
+	err = resourceclasses.Delete(context.TODO(), client, name).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Assert: The resource class no longer exists
+	_, err = resourceclasses.Get(context.TODO(), client, name).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceClassDeleteNotFound(t *testing.T) {
+	// Resource classes were introduced in 1.2
+	clients.SkipReleasesBelow(t, "stable/ocata")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.2"
+
+	// Act: Try to delete a non-existent resource class
+	err = resourceclasses.Delete(context.TODO(), client, "CUSTOM_NON_EXISTENT_RC").ExtractErr()
+	// Assert: We get 404
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceClassDeleteStandardClass(t *testing.T) {
+	// Resource classes were introduced in 1.2
+	clients.SkipReleasesBelow(t, "stable/ocata")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.2"
+
+	// Act: Try to delete a standard resource class
+	err = resourceclasses.Delete(context.TODO(), client, "VCPU").ExtractErr()
+	// Assert: We get 400
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+}

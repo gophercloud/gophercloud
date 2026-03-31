@@ -54,5 +54,14 @@ Example to ensure the existence of a resource class using PUT (idempotent creati
 	if err != nil {
 		panic(err)
 	}
+
+Example to delete a resource class
+
+	placementClient.Microversion = "1.2"
+
+	err := resourceclasses.Delete(context.TODO(), placementClient, "CUSTOM_RESOURCE_CLASS").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package resourceclasses
