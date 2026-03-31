@@ -18,16 +18,8 @@ environment. Additionally, you may incur bandwidth and service charges for
 the resources used, as mentioned in the note above.
 
 Therefore, it is usually best to first practice running acceptance tests in
-an isolated test environment. Two options to easily create a testing
-environment are [DevStack](https://docs.openstack.org/devstack/latest/)
-and [PackStack](https://www.rdoproject.org/install/packstack/).
-
-The following blog posts detail how to create reusable PackStack environments.
-These posts were written with Gophercloud in mind:
-
-* http://terrarum.net/blog/building-openstack-environments.html
-* http://terrarum.net/blog/building-openstack-environments-2.html
-* http://terrarum.net/blog/building-openstack-environments-3.html
+an isolated test environment. The best option to easily create a testing
+environment is [DevStack](https://docs.openstack.org/devstack/latest/).
 
 ### Step 2. Set environment variables
 
