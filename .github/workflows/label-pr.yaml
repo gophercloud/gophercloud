@@ -25,9 +25,10 @@ jobs:
       run: |
         git config --global user.email "localrebase@gophercloud.io"
         git config --global user.name "Local rebase"
-        git rebase -i origin/${{ github.base_ref }}
+        git rebase -i origin/$BASE_REF
       env:
         GIT_SEQUENCE_EDITOR: '/usr/bin/true'
+        BASE_REF: ${{ github.base_ref }}
 
     - uses: actions/setup-go@v5
       with:
