@@ -1,0 +1,62 @@
+name: Semver analysis
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+        persist-credentials: false
+
+    - name: Rebase the PR against base ref to ensure actual API compatibility
+      run: |
+        git config --global user.email "localrebase@gophercloud.io"
+        git config --global user.name "Local rebase"
+        git rebase -i origin/$BASE_REF
+      env:
+        GIT_SEQUENCE_EDITOR: '/usr/bin/true'
+        BASE_REF: ${{ github.base_ref }}
+
+    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+
+    - name: Checking Go API Compatibility
+      id: go-apidiff
+      # if semver=major, this will return RC=1, so let's ignore the failure so label
+      # can be set later. We check for actual errors in the next step.
+      continue-on-error: true
+      uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685 # v0.8.3
+
+    # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
+    # a failure. Instead let's just return a failure if go-apidiff failed to run.
+    - name: Return an error if Go API Compatibility couldn't be verified
+      if: steps.go-apidiff.outcome != 'success' && steps.go-apidiff.outputs.semver-type != 'major'
+      run: exit 1
+
+    - name: Save semver result
+      if: always()
+      run: |
+        mkdir -p semver-results
+        echo "$SEMVER_TYPE" > semver-results/semver-type
+      env:
+        SEMVER_TYPE: ${{ steps.go-apidiff.outputs.semver-type }}
+
+    - name: Upload semver results
+      if: always()
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      with:
+        name: semver-results
+        path: semver-results/
