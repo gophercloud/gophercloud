@@ -1,7 +1,9 @@
 name: Pull Request backporting
 
 on:
-  pull_request_target:
+  # Safe: only runs on merged PRs, does not checkout PR code, and
+  # needs secrets to generate the backport bot token.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     types:
       - closed
       - labeled
