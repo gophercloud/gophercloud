@@ -37,6 +37,8 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Create additional neutron policies
         run: |
           mkdir /tmp/neutron-policies

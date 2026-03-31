@@ -44,6 +44,8 @@ jobs:
     steps:
       - name: Checkout Gophercloud
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Deploy devstack
         uses: gophercloud/devstack-action@v0.19
         with:
