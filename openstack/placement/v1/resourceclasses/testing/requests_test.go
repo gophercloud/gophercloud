@@ -45,3 +45,61 @@ func TestGetResourceClassNotFound(t *testing.T) {
 	_, err := resourceclasses.Get(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceClass).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
+
+func TestCreateResourceClassSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleCreateResourceClassSuccess(t, fakeServer)
+
+	createOpts := resourceclasses.CreateOpts{
+		Name: NewResourceClass,
+	}
+
+	err := resourceclasses.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestCreateResourceClassConflict(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleCreateResourceClassConflict(t, fakeServer)
+
+	createOpts := resourceclasses.CreateOpts{
+		Name: PresentResourceClass,
+	}
+
+	err := resourceclasses.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}
+
+func TestUpdateResourceClassCreateSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleUpdateResourceClassSuccess(t, fakeServer)
+
+	err := resourceclasses.Update(context.TODO(), client.ServiceClient(fakeServer), NewResourceClass).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUpdateResourceClassExists(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleUpdateResourceClassExists(t, fakeServer)
+
+	err := resourceclasses.Update(context.TODO(), client.ServiceClient(fakeServer), PresentResourceClass).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUpdateResourceClassNonCustom(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleUpdateResourceClassNonCustom(t, fakeServer)
+
+	err := resourceclasses.Update(context.TODO(), client.ServiceClient(fakeServer), "VCPU").ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+}
