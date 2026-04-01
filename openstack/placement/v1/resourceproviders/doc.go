@@ -75,6 +75,13 @@ Example to get resource providers inventories
 		panic(err)
 	}
 
+Example to get one resource provider inventory
+
+	rpInventory, err := resourceproviders.GetInventory(context.TODO(), placementClient, resourceProviderID, "VCPU").Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to update (replace) all resource provider inventories
 
 	inventories, err := resourceproviders.GetInventories(context.TODO(), placementClient, resourceProviderID).Extract()

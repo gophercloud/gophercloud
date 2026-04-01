@@ -13,6 +13,7 @@ import (
 
 const ResourceProviderTestID = "99c09379-6e52-4ef8-9a95-b9ce6f68452e"
 const PresentInventoryResourceClass = "VCPU"
+const MissingInventoryResourceClass = "NO_SUCH_CLASS"
 const NonExistentRPID = "00000000-0000-0000-0000-000000000000"
 
 const ResourceProvidersBody = `
@@ -425,6 +426,32 @@ func HandleResourceProviderGetInventories(t *testing.T, fakeServer th.FakeServer
 			w.WriteHeader(http.StatusOK)
 
 			fmt.Fprint(w, InventoriesBody)
+		})
+}
+
+func HandleResourceProviderGetInventory(t *testing.T, fakeServer th.FakeServer) {
+	inventoryTestURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, InventoryBody)
+		})
+}
+
+func HandleResourceProviderGetInventoryNotFound(t *testing.T, fakeServer th.FakeServer) {
+	inventoryNotFoundURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, MissingInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryNotFoundURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.WriteHeader(http.StatusNotFound)
 		})
 }
 
