@@ -2,8 +2,10 @@ package testing
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
 
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -122,6 +124,52 @@ func TestGetResourceProvidersInventories(t *testing.T) {
 	actual, err := resourceproviders.GetInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedInventories, *actual)
+}
+
+func TestUpdateResourceProvidersInventories(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderPutInventories(t, fakeServer)
+
+	opts := resourceproviders.UpdateInventoriesOpts(ExpectedInventories)
+	actual, err := resourceproviders.UpdateInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedInventories, *actual)
+}
+
+func TestUpdateResourceProvidersInventoriesNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderPutInventoriesNotFound(t, fakeServer)
+
+	opts := resourceproviders.UpdateInventoriesOpts(ExpectedInventories)
+	_, err := resourceproviders.UpdateInventories(context.TODO(), client.ServiceClient(fakeServer), NonExistentRPID, opts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestUpdateResourceProviderInventory(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderPutInventory(t, fakeServer)
+
+	opts := resourceproviders.UpdateInventoryOpts(ExpectedInventory)
+	actual, err := resourceproviders.UpdateInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, PresentInventoryResourceClass, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedInventory, *actual)
+}
+
+func TestUpdateResourceProviderInventoryNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderPutInventoryNotFound(t, fakeServer)
+
+	opts := resourceproviders.UpdateInventoryOpts(ExpectedInventory)
+	_, err := resourceproviders.UpdateInventory(context.TODO(), client.ServiceClient(fakeServer), NonExistentRPID, PresentInventoryResourceClass, opts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestGetResourceProvidersAllocations(t *testing.T) {
