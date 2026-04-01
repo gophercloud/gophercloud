@@ -164,6 +164,64 @@ func GetInventories(ctx context.Context, client *gophercloud.ServiceClient, reso
 	return
 }
 
+// UpdateInventoriesOptsBuilder allows extensions to add additional parameters to the
+// UpdateInventories request.
+type UpdateInventoriesOptsBuilder interface {
+	ToResourceProviderUpdateInventoriesMap() (map[string]any, error)
+}
+
+// UpdateInventoriesOpts represents options used to update all inventories of a resource provider.
+type UpdateInventoriesOpts = ResourceProviderInventories
+
+// ToResourceProviderUpdateInventoriesMap constructs a request body from UpdateInventoriesOpts.
+func (opts UpdateInventoriesOpts) ToResourceProviderUpdateInventoriesMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// UpdateInventories updates all inventories of a resource provider.
+func UpdateInventories(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateInventoriesOptsBuilder) (r GetInventoriesResult) {
+	b, err := opts.ToResourceProviderUpdateInventoriesMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, getResourceProviderInventoriesURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateInventoryOptsBuilder allows extensions to add additional parameters to the
+// UpdateInventory request.
+type UpdateInventoryOptsBuilder interface {
+	ToResourceProviderUpdateInventoryMap() (map[string]any, error)
+}
+
+// UpdateInventoryOpts represents options used to update one inventory of a resource provider.
+type UpdateInventoryOpts = ResourceProviderInventory
+
+// ToResourceProviderUpdateInventoryMap constructs a request body from UpdateInventoryOpts.
+func (opts UpdateInventoryOpts) ToResourceProviderUpdateInventoryMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// UpdateInventory updates one inventory of a resource provider.
+func UpdateInventory(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID, resourceClass string, opts UpdateInventoryOptsBuilder) (r UpdateInventoryResult) {
+	b, err := opts.ToResourceProviderUpdateInventoryMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, getResourceProviderInventoryURL(client, resourceProviderID, resourceClass), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 func GetAllocations(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetAllocationsResult) {
 	resp, err := client.Get(ctx, getResourceProviderAllocationsURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
