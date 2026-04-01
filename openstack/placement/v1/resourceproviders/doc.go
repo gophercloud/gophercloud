@@ -75,6 +75,57 @@ Example to get resource providers inventories
 		panic(err)
 	}
 
+Example to update (replace) all resource provider inventories
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	updateInventoriesOpts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			"VCPU": {
+				Total:           4,
+				Reserved:        0,
+				MinUnit:         1,
+				MaxUnit:         4,
+				StepSize:        1,
+				AllocationRatio: 16.0,
+			},
+		},
+	}
+
+	rp, err = resourceproviders.UpdateInventories(context.TODO(), placementClient, resourceProviderID, updateInventoriesOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to update one existing resource provider inventory
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	// UpdateInventory updates an existing resource class inventory.
+	updateInventoryOpts := resourceproviders.UpdateInventoryOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventory: resourceproviders.Inventory{
+			Total:           4,
+			Reserved:        0,
+			MinUnit:         1,
+			MaxUnit:         4,
+			StepSize:        1,
+			AllocationRatio: 16.0,
+		},
+	}
+
+	rpInventory, err := resourceproviders.UpdateInventory(context.TODO(), placementClient, resourceProviderID, "VCPU", updateInventoryOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to get resource providers traits
 
 	rp, err := resourceproviders.GetTraits(context.TODO(), placementClient, resourceProviderID).Extract()

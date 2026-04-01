@@ -4,13 +4,18 @@ package v1
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
+
+const InventoryResourceClass = "VCPU"
+const NonExistentRPUUID = "00000000-0000-0000-0000-000000000000"
 
 func TestResourceProviderList(t *testing.T) {
 	clients.RequireAdmin(t)
@@ -98,6 +103,148 @@ func TestResourceProviderInventories(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)
+}
+
+func TestResourceProviderUpdateInventory(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	// Arrange: Get the current inventory to retrieve the generation
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	// Arrange: The resource class on this provider must exist first
+	seedOpts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			InventoryResourceClass: {
+				AllocationRatio: 1.0,
+				MaxUnit:         4,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           4,
+			},
+		},
+	}
+
+	seededInventories, err := resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, seedOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	expectedInventory := resourceproviders.Inventory{
+		AllocationRatio: 1.0,
+		MaxUnit:         8,
+		MinUnit:         1,
+		Reserved:        0,
+		StepSize:        1,
+		Total:           8,
+	}
+
+	updateOpts := resourceproviders.UpdateInventoryOpts{
+		ResourceProviderGeneration: seededInventories.ResourceProviderGeneration,
+		Inventory:                  expectedInventory,
+	}
+
+	_, err = resourceproviders.UpdateInventory(context.TODO(), client, resourceProvider.UUID, InventoryResourceClass, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	updatedInventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	actualInventory, ok := updatedInventories.Inventories[InventoryResourceClass]
+	th.AssertEquals(t, true, ok)
+	th.AssertDeepEquals(t, expectedInventory, actualInventory)
+}
+
+func TestResourceProviderUpdateInventoryNotFound(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	updateOpts := resourceproviders.UpdateInventoryOpts{
+		ResourceProviderGeneration: 0,
+		Inventory: resourceproviders.Inventory{
+			AllocationRatio: 1.0,
+			MaxUnit:         1,
+			MinUnit:         1,
+			Reserved:        0,
+			StepSize:        1,
+			Total:           1,
+		},
+	}
+
+	_, err = resourceproviders.UpdateInventory(context.TODO(), client, NonExistentRPUUID, InventoryResourceClass, updateOpts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceProviderUpdateInventories(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	// Arrange: Get the current inventory to retrieve the generation
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	expectedInventories := map[string]resourceproviders.Inventory{
+		"DISK_GB": {
+			AllocationRatio: 1.0,
+			MaxUnit:         100,
+			MinUnit:         1,
+			Reserved:        0,
+			StepSize:        1,
+			Total:           100,
+		},
+	}
+
+	updateOpts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories:                expectedInventories,
+	}
+
+	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	updatedInventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, expectedInventories, updatedInventories.Inventories)
+}
+
+func TestResourceProviderUpdateInventoriesNotFound(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	updateOpts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: 0,
+		Inventories: map[string]resourceproviders.Inventory{
+			InventoryResourceClass: {
+				AllocationRatio: 1.0,
+				MaxUnit:         1,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           1,
+			},
+		},
+	}
+
+	_, err = resourceproviders.UpdateInventories(context.TODO(), client, NonExistentRPUUID, updateOpts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderTraits(t *testing.T) {
