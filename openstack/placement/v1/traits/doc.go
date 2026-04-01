@@ -50,5 +50,17 @@ Example to create a trait
 	} else {
 		fmt.Println("Trait created successfully!")
 	}
+
+Example to delete a trait
+
+	placementClient.Microversion = "1.6"
+
+	traitName := "CUSTOM_HW_FPGA_CLASS1"
+	err := traits.Delete(context.TODO(), placementClient, traitName).ExtractErr()
+	if err != nil {
+		panic(err)
+	} else {
+		fmt.Println("Trait deleted successfully!")
+	}
 */
 package traits

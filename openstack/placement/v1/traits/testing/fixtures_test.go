@@ -12,6 +12,8 @@ import (
 const PresentTrait = "CUSTOM_HW_FPGA_CLASS1"
 const AbsentTrait = "NON_EXISTENT_TRAIT"
 const CustomTraitToCreate = "CUSTOM_TRAIT_TO_CREATE"
+const CustomTraitToDelete = CustomTraitToCreate
+const StandardHardwareTrait = "HW_CPU_X86_AVX"
 
 const TraitsListResultAll = `
 {
@@ -136,5 +138,45 @@ func HandleCreateTraitInvalidName(t *testing.T, fakeServer th.FakeServer) {
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusBadRequest)
+		})
+}
+
+func HandleDeleteTraitSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+CustomTraitToDelete,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleDeleteTraitNotFound(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+AbsentTrait,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleDeleteStandardTraitFailure(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+StandardHardwareTrait,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusBadRequest)
+		})
+}
+
+func HandleDeleteTraitInUseFailure(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+PresentTrait,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusConflict)
 		})
 }

@@ -129,3 +129,43 @@ func TestCreateTraitInvalidName(t *testing.T) {
 	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
+
+func TestDeleteTraitSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteTraitSuccess(t, fakeServer)
+
+	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), CustomTraitToDelete).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteTraitNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteTraitNotFound(t, fakeServer)
+
+	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestDeleteStandardTraitFailure(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteStandardTraitFailure(t, fakeServer)
+
+	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), StandardHardwareTrait).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+}
+
+func TestDeleteTraitInUseFailure(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteTraitInUseFailure(t, fakeServer)
+
+	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), PresentTrait).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}

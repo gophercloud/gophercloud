@@ -144,3 +144,59 @@ func TestTraitsCreateInvalidName(t *testing.T) {
 	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
+
+func TestTraitsDeleteSuccess(t *testing.T) {
+	// The Traits API requires microversion 1.6 or later
+	clients.SkipReleasesBelow(t, "stable/pike")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.6"
+
+	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+
+	// Prepare: Create the trait
+	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Act: Delete the trait
+	err = traits.Delete(context.TODO(), client, traitName).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Assert: The trait no longer exists
+	err = traits.Get(context.TODO(), client, traitName).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestTraitsDeleteNotFound(t *testing.T) {
+	// The Traits API requires microversion 1.6 or later
+	clients.SkipReleasesBelow(t, "stable/pike")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.6"
+
+	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+
+	err = traits.Delete(context.TODO(), client, traitName).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+// API does allow manipulation solely of custom traits,
+// so trying to delete a standard trait should fail.
+func TestTraitsDeleteStandardTraitFailure(t *testing.T) {
+	// The Traits API requires microversion 1.6 or later
+	clients.SkipReleasesBelow(t, "stable/pike")
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.6"
+
+	traitName := "COMPUTE_NODE"
+
+	err = traits.Delete(context.TODO(), client, traitName).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+}

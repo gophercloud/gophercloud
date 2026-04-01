@@ -17,3 +17,7 @@ func getURL(client *gophercloud.ServiceClient, traitName string) string {
 func createURL(client *gophercloud.ServiceClient, traitName string) string {
 	return client.ServiceURL(apiName, traitName)
 }
+
+func deleteURL(client *gophercloud.ServiceClient, traitName string) string {
+	return client.ServiceURL(apiName, traitName)
+}
