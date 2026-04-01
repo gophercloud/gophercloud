@@ -126,6 +126,27 @@ func TestGetResourceProvidersInventories(t *testing.T) {
 	th.AssertDeepEquals(t, ExpectedInventories, *actual)
 }
 
+func TestGetResourceProviderInventory(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetInventory(t, fakeServer)
+
+	actual, err := resourceproviders.GetInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, PresentInventoryResourceClass).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedInventory, *actual)
+}
+
+func TestGetResourceProviderInventoryNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetInventoryNotFound(t, fakeServer)
+
+	_, err := resourceproviders.GetInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, MissingInventoryResourceClass).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
 func TestUpdateResourceProvidersInventories(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

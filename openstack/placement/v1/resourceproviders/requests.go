@@ -164,6 +164,12 @@ func GetInventories(ctx context.Context, client *gophercloud.ServiceClient, reso
 	return
 }
 
+func GetInventory(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID, resourceClass string) (r GetInventoryResult) {
+	resp, err := client.Get(ctx, getResourceProviderInventoryURL(client, resourceProviderID, resourceClass), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // UpdateInventoriesOptsBuilder allows extensions to add additional parameters to the
 // UpdateInventories request.
 type UpdateInventoriesOptsBuilder interface {

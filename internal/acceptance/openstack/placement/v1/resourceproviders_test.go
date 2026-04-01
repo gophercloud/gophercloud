@@ -15,6 +15,7 @@ import (
 )
 
 const InventoryResourceClass = "VCPU"
+const MissingInventoryResourceClass = "NO_SUCH_CLASS"
 const NonExistentRPUUID = "00000000-0000-0000-0000-000000000000"
 
 func TestResourceProviderList(t *testing.T) {
@@ -103,6 +104,72 @@ func TestResourceProviderInventories(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)
+}
+
+func TestResourceProviderInventory(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	seededInventories, err := resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			InventoryResourceClass: {
+				AllocationRatio: 1.0,
+				MaxUnit:         4,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           4,
+			},
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	inventory, err := resourceproviders.GetInventory(context.TODO(), client, resourceProvider.UUID, InventoryResourceClass).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, seededInventories.ResourceProviderGeneration, inventory.ResourceProviderGeneration)
+	th.AssertDeepEquals(t, seededInventories.Inventories[InventoryResourceClass], inventory.Inventory)
+}
+
+func TestResourceProviderInventoryNotFound(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			InventoryResourceClass: {
+				AllocationRatio: 1.0,
+				MaxUnit:         4,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           4,
+			},
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	_, err = resourceproviders.GetInventory(context.TODO(), client, resourceProvider.UUID, MissingInventoryResourceClass).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderUpdateInventory(t *testing.T) {
