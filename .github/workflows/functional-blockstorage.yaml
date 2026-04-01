@@ -15,6 +15,8 @@ on:
     - cron: '0 0 */3 * *'
 jobs:
   functional-blockstorage:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -32,16 +34,18 @@ jobs:
     name: Cinder on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@v5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - name: Deploy devstack
-        uses: gophercloud/devstack-action@v0.19
+        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1 # v0.19
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             CINDER_ISCSI_HELPER=lioadm
           enabled_services: "s-account,s-container,s-object,s-proxy,c-bak,openstack-cli-server"
       - name: Checkout go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version-file: 'go.mod'
           cache: true
@@ -57,7 +61,7 @@ jobs:
         if: failure()
       - name: Upload logs artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: functional-blockstorage-${{ matrix.name }}-${{ github.run_id }}
           path: /tmp/devstack-logs/*

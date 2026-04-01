@@ -1,7 +1,7 @@
 name: Ready
 on:
   merge_group:
-  pull_request_target:
+  pull_request:
     types:
       - labeled
       - opened
@@ -11,6 +11,7 @@ on:
 
 jobs:
   hold:
+    permissions: {}
     if: github.event.pull_request.merged == false
     runs-on: ubuntu-latest
     steps:

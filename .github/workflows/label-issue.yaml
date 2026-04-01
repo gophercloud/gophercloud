@@ -7,7 +7,7 @@ on:
 jobs:
   clear_needinfo:
     name: Clear needinfo
-    if: ${{ github.event.issue.user.login }} == ${{ github.event.comment.user.login }}
+    if: ${{ github.event.issue.user.login == github.event.comment.user.login }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
