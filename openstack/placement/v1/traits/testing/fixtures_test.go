@@ -11,6 +11,7 @@ import (
 
 const PresentTrait = "CUSTOM_HW_FPGA_CLASS1"
 const AbsentTrait = "NON_EXISTENT_TRAIT"
+const CustomTraitToCreate = "CUSTOM_TRAIT_TO_CREATE"
 
 const TraitsListResultAll = `
 {
@@ -104,5 +105,36 @@ func HandleGetTraitNotFound(t *testing.T, fakeServer th.FakeServer) {
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleCreateTraitSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+CustomTraitToCreate,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusCreated)
+		})
+}
+
+func HandleCreateTraitThatAlreadyExists(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+PresentTrait,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+// Trait names created via the API must be prefixed with CUSTOM_.
+func HandleCreateTraitInvalidName(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/traits/"+AbsentTrait,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusBadRequest)
 		})
 }
