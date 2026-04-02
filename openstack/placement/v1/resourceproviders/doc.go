@@ -133,6 +133,22 @@ Example to update one existing resource provider inventory
 		panic(err)
 	}
 
+Example to delete one existing resource provider inventory
+Since this request does not accept the resource provider generation, it is not safe to use when multiple threads are managing inventories for a single provider. In such situations use UpdateInventories with the empty inventory.
+
+	err = resourceproviders.DeleteInventory(context.TODO(), placementClient, resourceProviderID, "VCPU").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to delete all resource provider inventories
+Since this request does not accept the resource provider generation, it is not safe to use when multiple threads are managing inventories for a single provider. In such situations use UpdateInventories with an empty inventory map.
+
+	err = resourceproviders.DeleteInventories(context.TODO(), placementClient, resourceProviderID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 Example to get resource providers traits
 
 	rp, err := resourceproviders.GetTraits(context.TODO(), placementClient, resourceProviderID).Extract()

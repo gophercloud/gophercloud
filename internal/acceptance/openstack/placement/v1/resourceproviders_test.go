@@ -251,6 +251,108 @@ func TestResourceProviderUpdateInventoryNotFound(t *testing.T) {
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
+func TestResourceProviderDeleteInventorySuccess(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	// Arrange: Get the current inventory to retrieve the generation
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			InventoryResourceClass: {
+				AllocationRatio: 1.0,
+				MaxUnit:         4,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           4,
+			},
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	err = resourceproviders.DeleteInventory(context.TODO(), client, resourceProvider.UUID, InventoryResourceClass).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Assert: The inventory should no longer be found
+	updatedInventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	_, found := updatedInventories.Inventories[InventoryResourceClass]
+	th.AssertEquals(t, false, found)
+}
+
+func TestResourceProviderDeleteInventoryNotFound(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	err = resourceproviders.DeleteInventory(context.TODO(), client, resourceProvider.UUID, MissingInventoryResourceClass).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceProviderDeleteInventoriesSuccess(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			InventoryResourceClass: {
+				AllocationRatio: 1.0,
+				MaxUnit:         4,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           4,
+			},
+			"MEMORY_MB": {
+				AllocationRatio: 1.0,
+				MaxUnit:         1024,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           1024,
+			},
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	seededInventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 2, len(seededInventories.Inventories))
+
+	err = resourceproviders.DeleteInventories(context.TODO(), client, resourceProvider.UUID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	updatedInventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(updatedInventories.Inventories))
+}
+
 func TestResourceProviderUpdateInventories(t *testing.T) {
 	clients.RequireAdmin(t)
 

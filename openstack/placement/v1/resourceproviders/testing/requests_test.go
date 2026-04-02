@@ -193,6 +193,46 @@ func TestUpdateResourceProviderInventoryNotFound(t *testing.T) {
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
+func TestDeleteResourceProviderInventorySuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderDeleteInventorySuccess(t, fakeServer)
+
+	err := resourceproviders.DeleteInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, PresentInventoryResourceClass).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteResourceProviderInventoryInUse(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderDeleteInventoryInUse(t, fakeServer)
+
+	err := resourceproviders.DeleteInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, PresentInventoryResourceClass).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}
+
+func TestDeleteResourceProviderInventoriesSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderDeleteInventoriesSuccess(t, fakeServer)
+
+	err := resourceproviders.DeleteInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteResourceProviderInventoriesConflict(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderDeleteInventoriesConflict(t, fakeServer)
+
+	err := resourceproviders.DeleteInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}
+
 func TestGetResourceProvidersAllocations(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
