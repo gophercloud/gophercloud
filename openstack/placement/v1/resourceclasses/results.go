@@ -35,6 +35,18 @@ type GetResult struct {
 	resourceClassResult
 }
 
+// CreateResult is the response from a Create operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type CreateResult struct {
+	gophercloud.ErrResult
+}
+
+// UpdateResult is the response from an Update operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type UpdateResult struct {
+	gophercloud.ErrResult
+}
+
 // ResourceClassesPage contains a single page of all resource classes from a List call.
 type ResourceClassesPage struct {
 	pagination.SinglePageBase

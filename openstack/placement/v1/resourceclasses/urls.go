@@ -8,6 +8,14 @@ func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("resource_classes")
 }
 
+func createURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL("resource_classes")
+}
+
 func getURL(client *gophercloud.ServiceClient, name string) string {
+	return client.ServiceURL("resource_classes", name)
+}
+
+func updateURL(client *gophercloud.ServiceClient, name string) string {
 	return client.ServiceURL("resource_classes", name)
 }
