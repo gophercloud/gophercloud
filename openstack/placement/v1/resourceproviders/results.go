@@ -66,6 +66,12 @@ type ResourceProviderTraits struct {
 	Traits                     []string `json:"traits"`
 }
 
+type ResourceProviderAggregates struct {
+	// ResourceProviderGeneration is available from microversion 1.19 and later.
+	ResourceProviderGeneration *int     `json:"resource_provider_generation"`
+	Aggregates                 []string `json:"aggregates"`
+}
+
 // resourceProviderResult is the response of a base ResourceProvider result.
 type resourceProviderResult struct {
 	gophercloud.Result
@@ -175,6 +181,19 @@ type GetTraitsResult struct {
 // Extract interprets a GetTraitsResult as a ResourceProviderTraits.
 func (r GetTraitsResult) Extract() (*ResourceProviderTraits, error) {
 	var s ResourceProviderTraits
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// GetAggregatesResult is the response of a Get aggregates operations. Call its Extract method
+// to interpret it as a ResourceProviderAggregates.
+type GetAggregatesResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetAggregatesResult as a ResourceProviderAggregates.
+func (r GetAggregatesResult) Extract() (*ResourceProviderAggregates, error) {
+	var s ResourceProviderAggregates
 	err := r.ExtractInto(&s)
 	return &s, err
 }

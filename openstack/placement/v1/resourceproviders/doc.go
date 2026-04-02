@@ -88,5 +88,14 @@ Example to get resource providers allocations
 	if err != nil {
 		panic(err)
 	}
+
+Example to get resource providers aggregates
+
+	placementClient.Microversion = "1.1"
+
+	rp, err := resourceproviders.GetAggregates(context.TODO(), placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package resourceproviders
