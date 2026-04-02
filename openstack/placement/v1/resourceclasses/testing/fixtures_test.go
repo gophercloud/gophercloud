@@ -12,6 +12,7 @@ import (
 
 const PresentResourceClass = "CUSTOM_RESOURCE_CLASS"
 const AbsentResourceClass = "NON_EXISTENT_RC"
+const NewResourceClass = "CUSTOM_NEW_RC"
 
 const ResourceClassGetResult = `
 {
@@ -114,5 +115,57 @@ func HandleGetResourceClassNotFound(t *testing.T, fakeServer th.FakeServer) {
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleCreateResourceClassSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestJSONRequest(t, r, `{"name": "CUSTOM_NEW_RC"}`)
+
+			w.WriteHeader(http.StatusCreated)
+		})
+}
+
+func HandleCreateResourceClassConflict(t *testing.T, fakeServer th.FakeServer) {
+	// We simulate a conflict by trying to create a resource class that already exists.
+	fakeServer.Mux.HandleFunc("/resource_classes",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusConflict)
+		})
+}
+
+func HandleUpdateResourceClassSuccess(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes/"+NewResourceClass,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusCreated)
+		})
+}
+
+func HandleUpdateResourceClassExists(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes/"+PresentResourceClass,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleUpdateResourceClassNonCustom(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_classes/VCPU",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusBadRequest)
 		})
 }

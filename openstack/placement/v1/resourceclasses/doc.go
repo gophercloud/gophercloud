@@ -32,5 +32,27 @@ Example to Get a resource class
 	}
 
 	fmt.Printf("%+v\n", resourceClass)
+
+Example to Create a resource class using POST
+
+	placementClient.Microversion = "1.2"
+
+	createOpts := resourceclasses.CreateOpts{
+		Name: "CUSTOM_RESOURCE_CLASS",
+	}
+
+	err := resourceclasses.Create(context.TODO(), placementClient, createOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to ensure the existence of a resource class using PUT (idempotent creation)
+
+	placementClient.Microversion = "1.7"
+
+	err := resourceclasses.Update(context.TODO(), placementClient, "CUSTOM_RESOURCE_CLASS").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package resourceclasses
