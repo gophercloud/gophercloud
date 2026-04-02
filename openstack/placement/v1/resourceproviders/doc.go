@@ -171,5 +171,22 @@ Example to get resource providers aggregates
 	if err != nil {
 		panic(err)
 	}
+
+Example to update resource providers aggregates
+
+	placementClient.Microversion = "1.1"
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: rp.ResourceProviderGeneration,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	rp, err = resourceproviders.UpdateAggregates(context.TODO(), placementClient, resourceProviderID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package resourceproviders

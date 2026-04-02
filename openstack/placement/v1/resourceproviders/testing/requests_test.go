@@ -288,6 +288,17 @@ func TestGetResourceProviderAggregatesSuccess(t *testing.T) {
 	th.AssertDeepEquals(t, ExpectedAggregates, *actual)
 }
 
+func TestGetResourceProviderAggregatesPreGenerationSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetAggregatesPreGenerationSuccess(t, fakeServer)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedAggregatesPreGeneration, *actual)
+}
+
 func TestGetResourceProviderAggregatesNotFound(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -296,4 +307,47 @@ func TestGetResourceProviderAggregatesNotFound(t *testing.T) {
 
 	_, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceProviderID).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestUpdateResourceProviderAggregatesSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderUpdateAndGetAggregatesSuccess(t, fakeServer)
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts(ExpectedUpdatedAggregates)
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdatedAggregates, *actual)
+}
+
+func TestUpdateResourceProviderAggregatesPreGenerationSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t, fakeServer)
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		Aggregates: ExpectedUpdatedAggregatesPreGeneration.Aggregates,
+	}
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdatedAggregatesPreGeneration, *actual)
+}
+
+func TestUpdateResourceProviderAggregatesConflict(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderUpdateAggregatesConflict(t, fakeServer)
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts(ExpectedUpdatedAggregates)
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
