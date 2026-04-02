@@ -174,7 +174,35 @@ const AggregatesBody = `
 }
 `
 
-const AbsentResourceProviderID = "non-existent-rp"
+const AggregatesBodyPreGeneration = `
+{
+	"aggregates": [
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4"
+	]
+}
+`
+
+const AggregatesUpdateBody = `
+{
+	"resource_provider_generation": 1,
+	"aggregates": [
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd"
+	]
+}
+`
+
+const AggregatesUpdateBodyPreGeneration = `
+{
+	"aggregates": [
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd"
+	]
+}
+`
+
+const AbsentResourceProviderID = "00000000-0000-0000-0000-000000000000"
 
 var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
 	Generation: 1,
@@ -280,11 +308,38 @@ var ExpectedTraits = resourceproviders.ResourceProviderTraits{
 	},
 }
 
+var expectedAggregatesGeneration = 1
+
 var ExpectedAggregates = resourceproviders.ResourceProviderAggregates{
-	ResourceProviderGeneration: 1,
+	ResourceProviderGeneration: &expectedAggregatesGeneration,
 	Aggregates: []string{
 		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
 		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+	},
+}
+
+var ExpectedAggregatesPreGeneration = resourceproviders.ResourceProviderAggregates{
+	ResourceProviderGeneration: nil,
+	Aggregates: []string{
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+	},
+}
+
+var expectedUpdatedAggregatesGeneration = 1
+
+var ExpectedUpdatedAggregates = resourceproviders.ResourceProviderAggregates{
+	ResourceProviderGeneration: &expectedUpdatedAggregatesGeneration,
+	Aggregates: []string{
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd",
+	},
+}
+
+var ExpectedUpdatedAggregatesPreGeneration = resourceproviders.ResourceProviderAggregates{
+	Aggregates: []string{
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd",
 	},
 }
 
@@ -449,6 +504,21 @@ func HandleResourceProviderGetAggregatesSuccess(t *testing.T, fakeServer th.Fake
 		})
 }
 
+func HandleResourceProviderGetAggregatesPreGenerationSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AggregatesBodyPreGeneration)
+		})
+}
+
 func HandleResourceProviderGetAggregatesNotFound(t *testing.T, fakeServer th.FakeServer) {
 	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", AbsentResourceProviderID)
 
@@ -458,5 +528,81 @@ func HandleResourceProviderGetAggregatesNotFound(t *testing.T, fakeServer th.Fak
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleResourceProviderUpdateAndGetAggregatesSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	// This handler must cover PUT and GET because the test updates and then fetches on the same path.
+	body := AggregatesBody
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case http.MethodGet:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			case http.MethodPut:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+				th.TestHeader(t, r, "Content-Type", "application/json")
+				th.TestHeader(t, r, "Accept", "application/json")
+				th.TestJSONRequest(t, r, AggregatesUpdateBody)
+
+				body = AggregatesUpdateBody
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		})
+}
+
+func HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	// Pre-generation variant of the same update-then-fetch flow on a shared endpoint.
+	body := AggregatesBodyPreGeneration
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case http.MethodGet:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			case http.MethodPut:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+				th.TestHeader(t, r, "Content-Type", "application/json")
+				th.TestHeader(t, r, "Accept", "application/json")
+				th.TestJSONRequest(t, r, AggregatesUpdateBodyPreGeneration)
+
+				body = AggregatesUpdateBodyPreGeneration
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		})
+}
+
+func HandleResourceProviderUpdateAggregatesConflict(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusConflict)
 		})
 }

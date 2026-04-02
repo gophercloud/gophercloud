@@ -5,6 +5,7 @@ package v1
 import (
 	"context"
 	"net/http"
+	"slices"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -203,4 +204,72 @@ func TestResourceProviderAggregatesGetPreGenerationNegative(t *testing.T) {
 
 	_, err = resourceproviders.GetAggregates(context.TODO(), client, "00000000-0000-0000-0000-000000000000").Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceProviderAggregatesUpdateSuccess(t *testing.T) {
+	// resource_provider_generation is required in the PUT request body from microversion 1.19.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.19"
+
+	before, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, before.ResourceProviderGeneration != nil)
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: before.ResourceProviderGeneration,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	after, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
+
+	for _, aggregate := range updateOpts.Aggregates {
+		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+	}
+}
+
+func TestResourceProviderAggregatesUpdateNegative(t *testing.T) {
+	// resource_provider_generation is required in the PUT request body from microversion 1.19.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.19"
+
+	current, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, current.ResourceProviderGeneration != nil)
+	wrongGeneration := *current.ResourceProviderGeneration + 100
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: &wrongGeneration,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }

@@ -41,3 +41,7 @@ func getResourceProviderTraitsURL(client *gophercloud.ServiceClient, resourcePro
 func getResourceProviderAggregatesURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
 	return client.ServiceURL(apiName, resourceProviderID, "aggregates")
 }
+
+func updateResourceProviderAggregatesURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
+	return client.ServiceURL(apiName, resourceProviderID, "aggregates")
+}

@@ -182,6 +182,38 @@ func GetAggregates(ctx context.Context, client *gophercloud.ServiceClient, resou
 	return
 }
 
+// UpdateAggregatesOptsBuilder allows extensions to add additional parameters to the
+// UpdateAggregates request.
+type UpdateAggregatesOptsBuilder interface {
+	ToResourceProviderUpdateAggregatesMap() (map[string]any, error)
+}
+
+// UpdateAggregatesOpts represents options used to update aggregates of a resource provider.
+type UpdateAggregatesOpts struct {
+	// ResourceProviderGeneration is required from microversion 1.19 and later.
+	ResourceProviderGeneration *int     `json:"resource_provider_generation,omitempty"`
+	Aggregates                 []string `json:"aggregates"`
+}
+
+// ToResourceProviderUpdateAggregatesMap constructs a request body from UpdateAggregatesOpts.
+func (opts UpdateAggregatesOpts) ToResourceProviderUpdateAggregatesMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func UpdateAggregates(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateAggregatesOptsBuilder) (r GetAggregatesResult) {
+	b, err := opts.ToResourceProviderUpdateAggregatesMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, updateResourceProviderAggregatesURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // UpdateTraitsOptsBuilder allows extensions to add additional parameters to the
 // UpdateTraits request.
 type UpdateTraitsOptsBuilder interface {
