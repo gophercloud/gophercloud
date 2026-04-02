@@ -199,6 +199,13 @@ func UpdateInventories(ctx context.Context, client *gophercloud.ServiceClient, r
 	return
 }
 
+// DeleteInventories deletes all inventories from a resource provider.
+func DeleteInventories(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteResourceProviderInventoriesURL(client, resourceProviderID), &gophercloud.RequestOpts{OkCodes: []int{204}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // UpdateInventoryOptsBuilder allows extensions to add additional parameters to the
 // UpdateInventory request.
 type UpdateInventoryOptsBuilder interface {
@@ -224,6 +231,13 @@ func UpdateInventory(ctx context.Context, client *gophercloud.ServiceClient, res
 	resp, err := client.Put(ctx, updateResourceProviderInventoryURL(client, resourceProviderID, resourceClass), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteInventory deletes one inventory from a resource provider.
+func DeleteInventory(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID, resourceClass string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteResourceProviderInventoryURL(client, resourceProviderID, resourceClass), &gophercloud.RequestOpts{OkCodes: []int{204}})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

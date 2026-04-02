@@ -517,6 +517,58 @@ func HandleResourceProviderPutInventoryNotFound(t *testing.T, fakeServer th.Fake
 		})
 }
 
+func HandleResourceProviderDeleteInventorySuccess(t *testing.T, fakeServer th.FakeServer) {
+	inventoryDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleResourceProviderDeleteInventoryInUse(t *testing.T, fakeServer th.FakeServer) {
+	inventoryDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprint(w, `{"errors":[{"status":409,"title":"Conflict","detail":"Inventory is in use.","code":"placement.inventory.inuse"}]}`)
+		})
+}
+
+func HandleResourceProviderDeleteInventoriesSuccess(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(inventoriesDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleResourceProviderDeleteInventoriesConflict(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(inventoriesDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprint(w, `{"errors":[{"status":409,"title":"Conflict","detail":"Inventory is in use.","code":"placement.inventory.inuse"}]}`)
+		})
+}
+
 func HandleResourceProviderGetAllocations(t *testing.T, fakeServer th.FakeServer) {
 	allocationsTestUrl := fmt.Sprintf("/resource_providers/%s/allocations", ResourceProviderTestID)
 
