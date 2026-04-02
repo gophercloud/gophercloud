@@ -62,3 +62,12 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, name string)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Delete deletes the resource class with the provided name.
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, name string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, name), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
