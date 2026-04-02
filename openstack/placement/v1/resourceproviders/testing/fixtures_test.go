@@ -223,6 +223,18 @@ const TraitsBody = `
 }
 `
 
+const AggregatesBody = `
+{
+	"resource_provider_generation": 1,
+	"aggregates": [
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4"
+	]
+}
+`
+
+const AbsentResourceProviderID = "non-existent-rp"
+
 var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
 	Generation: 1,
 	UUID:       "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
@@ -336,6 +348,14 @@ var ExpectedTraits = resourceproviders.ResourceProviderTraits{
 	Traits: []string{
 		"CUSTOM_HW_FPGA_CLASS1",
 		"CUSTOM_HW_FPGA_CLASS3",
+	},
+}
+
+var ExpectedAggregates = resourceproviders.ResourceProviderAggregates{
+	ResourceProviderGeneration: 1,
+	Aggregates: []string{
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
 	},
 }
 
@@ -622,5 +642,32 @@ func HandleResourceProviderDeleteTraits(t *testing.T, fakeServer th.FakeServer) 
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleResourceProviderGetAggregatesSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AggregatesBody)
+		})
+}
+
+func HandleResourceProviderGetAggregatesNotFound(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", AbsentResourceProviderID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNotFound)
 		})
 }

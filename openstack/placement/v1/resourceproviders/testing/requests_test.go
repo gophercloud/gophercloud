@@ -276,3 +276,24 @@ func TestDeleteResourceProvidersTraits(t *testing.T) {
 	err := resourceproviders.DeleteTraits(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetResourceProviderAggregatesSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetAggregatesSuccess(t, fakeServer)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedAggregates, *actual)
+}
+
+func TestGetResourceProviderAggregatesNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetAggregatesNotFound(t, fakeServer)
+
+	_, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceProviderID).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}

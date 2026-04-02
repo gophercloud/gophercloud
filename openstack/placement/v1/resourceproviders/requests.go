@@ -254,6 +254,12 @@ func GetTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceP
 	return
 }
 
+func GetAggregates(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetAggregatesResult) {
+	resp, err := client.Get(ctx, getResourceProviderAggregatesURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // UpdateTraitsOptsBuilder allows extensions to add additional parameters to the
 // UpdateTraits request.
 type UpdateTraitsOptsBuilder interface {
