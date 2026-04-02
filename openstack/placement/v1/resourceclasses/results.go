@@ -47,6 +47,12 @@ type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // ResourceClassesPage contains a single page of all resource classes from a List call.
 type ResourceClassesPage struct {
 	pagination.SinglePageBase

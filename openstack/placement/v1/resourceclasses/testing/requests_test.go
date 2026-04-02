@@ -103,3 +103,34 @@ func TestUpdateResourceClassNonCustom(t *testing.T) {
 	err := resourceclasses.Update(context.TODO(), client.ServiceClient(fakeServer), "VCPU").ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
+
+func TestDeleteResourceClassSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteResourceClassSuccess(t, fakeServer)
+
+	err := resourceclasses.Delete(context.TODO(), client.ServiceClient(fakeServer), PresentResourceClass).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteResourceClassNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteResourceClassNotFound(t, fakeServer)
+
+	err := resourceclasses.Delete(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceClass).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestDeleteResourceClassStandardClass(t *testing.T) {
+	// Removing standard resource classes is not allowed.
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteResourceClassStandardClass(t, fakeServer)
+
+	err := resourceclasses.Delete(context.TODO(), client.ServiceClient(fakeServer), "VCPU").ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+}
