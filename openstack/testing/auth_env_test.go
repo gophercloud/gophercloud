@@ -10,17 +10,71 @@ import (
 
 // Test for ErrEnvironmentVarsExpectedEqual to be returned where there
 // is ambiguity between OS_USER_DOMAIN_X and OS_USER_PROJECT_X. Pairs
-// are expected to be equal
-func TestErrorAmbiguousEnvVarsEqual(t *testing.T) {
+// are expected to be equal. OS_DOMAIN_X is added for backwards compatibility
+func TestEnvVarsExpectedEqual(t *testing.T) {
 
 	cases := []map[string]string{
 		{
-			"OS_USER_DOMAIN_ID":    "user-domain",
-			"OS_PROJECT_DOMAIN_ID": "project-domain",
+			"OS_TENANT_ID":  "tenant-id",
+			"OS_PROJECT_ID": "project-id",
+		},
+		{
+			"OS_TENANT_NAME":  "tenant-name",
+			"OS_PROJECT_NAME": "project-name",
+		},
+		{
+			"OS_USER_DOMAIN_ID":    "user-domain-id",
+			"OS_PROJECT_DOMAIN_ID": "project-domain-id",
+		},
+		{
+			"OS_USER_DOMAIN_ID": "user-domain-id",
+			"OS_DOMAIN_ID":      "domain-id",
+		},
+		{
+			"OS_DOMAIN_ID":         "domain-id",
+			"OS_PROJECT_DOMAIN_ID": "project-domain-id",
+		},
+		{
+			"OS_USER_DOMAIN_ID":    "user-domain-id",
+			"OS_PROJECT_DOMAIN_ID": "domain-id",
+			"OS_DOMAIN_ID":         "domain-id",
+		},
+		{
+			"OS_USER_DOMAIN_ID":    "domain-id",
+			"OS_PROJECT_DOMAIN_ID": "project-domain-id",
+			"OS_DOMAIN_ID":         "domain-id",
+		},
+		{
+			"OS_USER_DOMAIN_ID":    "user-domain-id",
+			"OS_PROJECT_DOMAIN_ID": "project-domain-id",
+			"OS_DOMAIN_ID":         "domain-id",
 		},
 		{
 			"OS_USER_DOMAIN_NAME":    "user-domain",
 			"OS_PROJECT_DOMAIN_NAME": "project-domain",
+		},
+		{
+			"OS_USER_DOMAIN_NAME": "user-domain",
+			"OS_DOMAIN_NAME":      "domain",
+		},
+		{
+			"OS_DOMAIN_NAME":         "domain",
+			"OS_PROJECT_DOMAIN_NAME": "project-domain",
+		},
+		{
+			"OS_USER_DOMAIN_NAME":    "user-domain",
+			"OS_PROJECT_DOMAIN_NAME": "project-domain",
+			"OS_DOMAIN_NAME":         "domain",
+		},
+		{
+			"OS_USER_DOMAIN_NAME":    "domain",
+			"OS_PROJECT_DOMAIN_NAME": "project-domain",
+			"OS_DOMAIN_NAME":         "domain",
+		},
+		{
+			"OS_USER_DOMAIN_NAME":    "user-domain",
+			"OS_PROJECT_DOMAIN_NAME": "domain",
+			"OS_DOMAIN_NAME":         "domain",
 		},
 	}
 
@@ -51,10 +105,26 @@ func TestErrorAmbiguousEnvVarsEqual(t *testing.T) {
 }
 
 // Test that setting OS_USER_DOMAIN_X with its OS_PROJECT_DOMAIN_X
-// with the same value is ok and does not return an error
+// with the same value is ok and does not return an error. Includes OS_DOMAIN_X for backward
+// compatibility
 func TestUnambiguousEnvVars(t *testing.T) {
 
 	cases := []map[string]string{
+		{
+			"OS_AUTH_URL":   "somedomain.com",
+			"OS_USERNAME":   "someuser",
+			"OS_PASSWORD":   "somepassword",
+			"OS_TENANT_ID":  "project",
+			"OS_PROJECT_ID": "project",
+		},
+		{
+			"OS_AUTH_URL":          "somedomain.com",
+			"OS_USERNAME":          "someuser",
+			"OS_PASSWORD":          "somepassword",
+			"OS_TENANT_NAME":       "project",
+			"OS_PROJECT_NAME":      "project",
+			"OS_PROJECT_DOMAIN_ID": "domain",
+		},
 		{
 			"OS_AUTH_URL":          "somedomain.com",
 			"OS_USERNAME":          "someuser",
@@ -63,11 +133,55 @@ func TestUnambiguousEnvVars(t *testing.T) {
 			"OS_PROJECT_DOMAIN_ID": "domain",
 		},
 		{
+			"OS_AUTH_URL":       "somedomain.com",
+			"OS_USERNAME":       "someuser",
+			"OS_PASSWORD":       "somepassword",
+			"OS_USER_DOMAIN_ID": "domain",
+			"OS_DOMAIN_ID":      "domain",
+		},
+		{
+			"OS_AUTH_URL":          "somedomain.com",
+			"OS_USERNAME":          "someuser",
+			"OS_PASSWORD":          "somepassword",
+			"OS_PROJECT_DOMAIN_ID": "domain",
+			"OS_DOMAIN_ID":         "domain",
+		},
+		{
+			"OS_AUTH_URL":          "somedomain.com",
+			"OS_USERNAME":          "someuser",
+			"OS_PASSWORD":          "somepassword",
+			"OS_USER_DOMAIN_ID":    "domain",
+			"OS_PROJECT_DOMAIN_ID": "domain",
+			"OS_DOMAIN_ID":         "domain",
+		},
+		{
 			"OS_AUTH_URL":            "somedomain.com",
 			"OS_USERNAME":            "someuser",
 			"OS_PASSWORD":            "somepassword",
 			"OS_USER_DOMAIN_NAME":    "domain",
 			"OS_PROJECT_DOMAIN_NAME": "domain",
+		},
+		{
+			"OS_AUTH_URL":         "somedomain.com",
+			"OS_USERNAME":         "someuser",
+			"OS_PASSWORD":         "somepassword",
+			"OS_USER_DOMAIN_NAME": "domain",
+			"OS_DOMAIN_NAME":      "domain",
+		},
+		{
+			"OS_AUTH_URL":            "somedomain.com",
+			"OS_USERNAME":            "someuser",
+			"OS_PASSWORD":            "somepassword",
+			"OS_PROJECT_DOMAIN_NAME": "domain",
+			"OS_DOMAIN_NAME":         "domain",
+		},
+		{
+			"OS_AUTH_URL":            "somedomain.com",
+			"OS_USERNAME":            "someuser",
+			"OS_PASSWORD":            "somepassword",
+			"OS_USER_DOMAIN_NAME":    "domain",
+			"OS_PROJECT_DOMAIN_NAME": "domain",
+			"OS_DOMAIN_NAME":         "domain",
 		},
 	}
 
@@ -98,35 +212,27 @@ func TestErrorAmbiguousEnvVarsClash(t *testing.T) {
 
 	cases := []map[string]string{
 		{
-			"OS_USER_DOMAIN_ID":      "user-domain",
+			"OS_USER_DOMAIN_ID":      "user-domain-id",
 			"OS_PROJECT_DOMAIN_NAME": "project-domain",
 		},
 		{
-			"OS_USER_DOMAIN_ID": "user-domain",
+			"OS_USER_DOMAIN_ID": "user-domain-id",
 			"OS_DOMAIN_NAME":    "domain",
 		},
 		{
-			"OS_USER_DOMAIN_ID": "user-domain",
-			"OS_DOMAIN_ID":      "domain",
-		},
-		{
-			"OS_USER_DOMAIN_ID":   "user-domain",
+			"OS_USER_DOMAIN_ID":   "user-domain-id",
 			"OS_USER_DOMAIN_NAME": "user-domain",
 		},
 		{
-			"OS_PROJECT_DOMAIN_ID":   "project-domain",
+			"OS_PROJECT_DOMAIN_ID":   "project-domain-id",
 			"OS_PROJECT_DOMAIN_NAME": "project-domain",
 		},
 		{
-			"OS_PROJECT_DOMAIN_ID": "project-domain",
+			"OS_PROJECT_DOMAIN_ID": "project-domain-id",
 			"OS_DOMAIN_NAME":       "domain",
 		},
 		{
-			"OS_PROJECT_DOMAIN_ID": "project-domain",
-			"OS_DOMAIN_ID":         "domain",
-		},
-		{
-			"OS_PROJECT_DOMAIN_ID": "project-domain",
+			"OS_PROJECT_DOMAIN_ID": "project-domain-id",
 			"OS_USER_DOMAIN_NAME":  "user-domain",
 		},
 	}
