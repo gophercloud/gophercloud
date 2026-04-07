@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/securityservices"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestSecurityServiceCreateDelete(t *testing.T) {
@@ -23,9 +24,7 @@ func TestSecurityServiceCreateDelete(t *testing.T) {
 	}
 
 	newSecurityService, err := securityservices.Get(context.TODO(), client, securityService.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve the security service: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	if newSecurityService.Name != securityService.Name {
 		t.Fatalf("Security service name was expeted to be: %s", securityService.Name)
@@ -125,14 +124,10 @@ func TestSecurityServiceUpdate(t *testing.T) {
 	}
 
 	_, err = securityservices.Update(context.TODO(), client, securityService.ID, options).Extract()
-	if err != nil {
-		t.Errorf("Unable to update the security service: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	newSecurityService, err := securityservices.Get(context.TODO(), client, securityService.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve the security service: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	if newSecurityService.Name != name {
 		t.Fatalf("Security service name was expeted to be: %s", name)

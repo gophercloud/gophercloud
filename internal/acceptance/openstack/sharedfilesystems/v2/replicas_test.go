@@ -181,15 +181,11 @@ func TestReplicaExportLocations(t *testing.T) {
 	}
 
 	exportLocations, err = replicas.ListExportLocations(context.TODO(), client, activeReplicaID).Extract()
-	if err != nil {
-		t.Errorf("Unable to list replica export locations: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	tools.PrintResource(t, exportLocations)
 
 	exportLocation, err := replicas.GetExportLocation(context.TODO(), client, activeReplicaID, exportLocations[0].ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to get replica export location: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	tools.PrintResource(t, exportLocation)
 	// unset CreatedAt and UpdatedAt
 	exportLocation.CreatedAt = time.Time{}
