@@ -75,6 +75,80 @@ Example to get resource providers inventories
 		panic(err)
 	}
 
+Example to get one resource provider inventory
+
+	rpInventory, err := resourceproviders.GetInventory(context.TODO(), placementClient, resourceProviderID, "VCPU").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to update (replace) all resource provider inventories
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	updateInventoriesOpts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			"VCPU": {
+				Total:           4,
+				Reserved:        0,
+				MinUnit:         1,
+				MaxUnit:         4,
+				StepSize:        1,
+				AllocationRatio: 16.0,
+			},
+		},
+	}
+
+	rp, err = resourceproviders.UpdateInventories(context.TODO(), placementClient, resourceProviderID, updateInventoriesOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to update one existing resource provider inventory
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	// UpdateInventory updates an existing resource class inventory.
+	updateInventoryOpts := resourceproviders.UpdateInventoryOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventory: resourceproviders.Inventory{
+			Total:           4,
+			Reserved:        0,
+			MinUnit:         1,
+			MaxUnit:         4,
+			StepSize:        1,
+			AllocationRatio: 16.0,
+		},
+	}
+
+	rpInventory, err := resourceproviders.UpdateInventory(context.TODO(), placementClient, resourceProviderID, "VCPU", updateInventoryOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to delete one existing resource provider inventory
+Since this request does not accept the resource provider generation, it is not safe to use when multiple threads are managing inventories for a single provider. In such situations use UpdateInventories with the empty inventory.
+
+	err = resourceproviders.DeleteInventory(context.TODO(), placementClient, resourceProviderID, "VCPU").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to delete all resource provider inventories
+Since this request does not accept the resource provider generation, it is not safe to use when multiple threads are managing inventories for a single provider. In such situations use UpdateInventories with an empty inventory map.
+
+	err = resourceproviders.DeleteInventories(context.TODO(), placementClient, resourceProviderID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 Example to get resource providers traits
 
 	rp, err := resourceproviders.GetTraits(context.TODO(), placementClient, resourceProviderID).Extract()
