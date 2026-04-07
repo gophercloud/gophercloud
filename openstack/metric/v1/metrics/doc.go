@@ -8,7 +8,7 @@ under /api/v1/ with OpenStack authentication.
 
 Example to Create a Metric Service Client
 
-	metricClient, err := openstack.NewMetricV1(ctx, providerClient, gophercloud.EndpointOpts{
+	metricClient, err := openstack.NewMetricV1(providerClient, gophercloud.EndpointOpts{
 		Region: "RegionOne",
 	})
 	if err != nil {

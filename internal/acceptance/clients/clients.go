@@ -601,7 +601,7 @@ func NewMetricV1Client() (*gophercloud.ServiceClient, error) {
 
 	client = configureDebug(client)
 
-	return openstack.NewMetricV1(context.TODO(), client, gophercloud.EndpointOpts{
+	return openstack.NewMetricV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
