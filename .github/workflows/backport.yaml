@@ -19,6 +19,7 @@ jobs:
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >
       github.event.pull_request.merged
+      && !contains(github.event.pull_request.labels.*.name, 'dependencies')
       && (
         github.event.action == 'closed'
           && contains(github.event.pull_request.labels.*.name, 'backport-v1')
@@ -84,6 +85,7 @@ jobs:
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >
       github.event.pull_request.merged
+      && !contains(github.event.pull_request.labels.*.name, 'dependencies')
       && (
         github.event.action == 'closed'
           && contains(github.event.pull_request.labels.*.name, 'backport-v2')
