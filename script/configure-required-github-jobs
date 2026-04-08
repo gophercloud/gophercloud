@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WORKFLOWS_DIR="${REPO_ROOT}/.github/workflows"
+DRY_RUN=false
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [--dry-run] [--help]
+
+Configure required status checks for gophercloud/gophercloud:main by deriving
+them from workflow files. Any job in a workflow with an 'on: merge_group'
+trigger is required, except those listed in SKIP_CHECKS in this script.
+
+Options:
+  --dry-run  Print the list of required checks without applying them.
+  --help     Show this help message and exit.
+
+Dependencies: yq (mikefarah v4), jq, gh (authenticated via 'gh auth login').
+EOF
+}
+
+for arg in "$@"; do
+    case "$arg" in
+        --dry-run) DRY_RUN=true ;;
+        --help) usage; exit 0 ;;
+        *) echo "Unknown argument: $arg" >&2; usage >&2; exit 1 ;;
+    esac
+done
+
+command -v yq  &>/dev/null || { echo "ERROR: yq not installed (https://github.com/mikefarah/yq)"; exit 1; }
+command -v jq  &>/dev/null || { echo "ERROR: jq not installed"; exit 1; }
+command -v gh  &>/dev/null || { echo "ERROR: gh CLI not installed"; exit 1; }
+gh auth status &>/dev/null || { echo "ERROR: run 'gh auth login' first"; exit 1; }
+
+# Check names listed here are excluded from required status checks even if
+# their workflow has an `on: merge_group` trigger. Add entries using the exact
+# name format: "<Workflow name> / <Job name>" (with resolved matrix values).
+SKIP_CHECKS=(
+    "finish"   # coveralls parallel-finish job, not a test gate
+)
+
+current_contexts=()
+while IFS= read -r ctx; do
+    current_contexts+=("${ctx}")
+done < <(gh api \
+    -H "Accept: application/vnd.github+json" \
+    "/repos/gophercloud/gophercloud/branches/main/protection" \
+    --jq '.required_status_checks.contexts[]?' 2>/dev/null | sort)
+
+updated_contexts=()
+for f in "${WORKFLOWS_DIR}"/*.yaml; do
+    # Only consider workflows that run in the merge queue
+    grep -q "merge_group" "${f}" || continue
+
+    while IFS= read -r job_id; do
+        # Use the job's display name if set, otherwise fall back to the job ID
+        job_name="$(yq ".jobs[\"${job_id}\"].name // \"${job_id}\"" "${f}")"
+
+        # Check whether this job has a matrix 'include' with a 'name' field
+        matrix_names="$(yq ".jobs[\"${job_id}\"].strategy.matrix.include[].name" "${f}" 2>/dev/null || true)"
+
+        if [[ -n "${matrix_names}" ]]; then
+            # Expand each matrix entry, replacing ${{ matrix.name }} in the job name
+            while IFS= read -r matrix_val; do
+                resolved="${job_name//\$\{\{ matrix.name \}\}/${matrix_val}}"
+                updated_contexts+=("${resolved}")
+            done <<< "${matrix_names}"
+        else
+            updated_contexts+=("${job_name}")
+        fi
+    done < <(yq '.jobs | keys | .[]' "${f}")
+done
+
+filtered_contexts=()
+for ctx in "${updated_contexts[@]}"; do
+    skip=false
+    for skip_ctx in "${SKIP_CHECKS[@]}"; do
+        [[ "${ctx}" == "${skip_ctx}" ]] && { skip=true; break; }
+    done
+    "${skip}" || filtered_contexts+=("${ctx}")
+done
+
+added_contexts=()
+removed_contexts=()
+
+for ctx in "${filtered_contexts[@]}"; do
+    found=false
+    for cur in "${current_contexts[@]}"; do
+        [[ "${ctx}" == "${cur}" ]] && { found=true; break; }
+    done
+    "${found}" || added_contexts+=("${ctx}")
+done
+
+for cur in "${current_contexts[@]}"; do
+    found=false
+    for ctx in "${filtered_contexts[@]}"; do
+        [[ "${cur}" == "${ctx}" ]] && { found=true; break; }
+    done
+    "${found}" || removed_contexts+=("${cur}")
+done
+
+if [[ ${#added_contexts[@]} -eq 0 && ${#removed_contexts[@]} -eq 0 ]]; then
+    echo "Required status checks: no changes (${#filtered_contexts[@]} checks already configured)."
+else
+    echo "Required status checks diff:"
+    for ctx in "${removed_contexts[@]}"; do printf '  - %s\n' "${ctx}"; done
+    for ctx in "${added_contexts[@]}";   do printf '  + %s\n' "${ctx}"; done
+fi
+
+if "${DRY_RUN}"; then
+    echo ""
+    echo "Dry-run mode — not applying."
+    exit 0
+fi
+
+echo ""
+echo "Applying to gophercloud/gophercloud:main ..."
+
+contexts_json="$(printf '%s\n' "${filtered_contexts[@]}" | jq -R . | jq -s .)"
+
+payload="$(jq -n \
+    --argjson contexts "${contexts_json}" \
+    '{
+        required_status_checks: {strict: false, contexts: $contexts},
+        enforce_admins: false,
+        required_pull_request_reviews: {
+            required_approving_review_count: 1,
+            dismiss_stale_reviews: true,
+            require_last_push_approval: true
+        },
+        restrictions: null,
+        required_linear_history: true,
+        allow_force_pushes: false,
+        allow_deletions: false,
+        required_conversation_resolution: true
+    }')"
+
+gh api \
+    --method PUT \
+    -H "Accept: application/vnd.github+json" \
+    "/repos/gophercloud/gophercloud/branches/main/protection" \
+    --input - <<< "${payload}"
+
+echo "Done. Verify at: https://github.com/gophercloud/gophercloud/settings/branches"
