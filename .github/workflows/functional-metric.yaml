@@ -1,0 +1,79 @@
+name: functional-metric
+on:
+  pull_request:
+    paths:
+      - 'openstack/auth_env.go'
+      - 'openstack/client.go'
+      - 'openstack/endpoint.go'
+      - 'openstack/endpoint_location.go'
+      - 'openstack/config/provider_client.go'
+      - 'openstack/utils/choose_version.go'
+      - 'openstack/utils/discovery.go'
+      - '**metric**'
+      - '.github/workflows/functional-metric.yaml'
+  schedule:
+    - cron: '0 0 */3 * *'
+jobs:
+  functional-metric:
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "master"
+            openstack_version: "master"
+            ubuntu_version: "24.04"
+            devstack_conf_overrides: |
+              # ensure we're using a working version of setuptools
+              if [ -n "\$TOP_DIR" ]; then
+                sed -i 's/setuptools\[core\]$/setuptools[core]==79.0.1/g' \$TOP_DIR/lib/infra \$TOP_DIR/inc/python
+                sed -i 's/pip_install "-U" "pbr"/pip_install "-U" "pbr" "setuptools[core]==79.0.1"/g' \$TOP_DIR/lib/infra
+              fi
+    runs-on: ubuntu-${{ matrix.ubuntu_version }}
+    name: Aetos on OpenStack ${{ matrix.name }}
+    steps:
+      - name: Checkout Gophercloud
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Deploy devstack
+        uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1 # v0.19
+        with:
+          branch: ${{ matrix.openstack_version }}
+          conf_overrides: |
+            enable_plugin devstack-plugin-prometheus https://opendev.org/openstack/devstack-plugin-prometheus ${{ matrix.openstack_version }}
+            enable_plugin ceilometer https://opendev.org/openstack/ceilometer ${{ matrix.openstack_version }}
+            CEILOMETER_BACKEND=sg-core
+            PROMETHEUS_CUSTOM_SCRAPE_TARGETS="localhost:3000"
+            enable_plugin sg-core https://github.com/openstack-k8s-operators/sg-core main
+            enable_plugin aetos https://opendev.org/openstack/aetos ${{ matrix.openstack_version }}
+
+            ${{ matrix.devstack_conf_overrides }}
+          enabled_services: "prometheus,node_exporter,openstack_exporter,ceilometer-acompute,ceilometer-acentral,ceilometer-anotification,sg-core,aetos,openstack-cli-server"
+
+      - name: Checkout go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Run Gophercloud acceptance tests
+        run: |
+          source ${{ github.workspace }}/script/stackenv
+          make acceptance-metric
+        env:
+          DEVSTACK_PATH: ${{ github.workspace }}/devstack
+          OS_BRANCH: ${{ matrix.openstack_version }}
+
+      - name: Generate logs on failure
+        run: ./script/collectlogs
+        if: failure()
+
+      - name: Upload logs artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: functional-metric-${{ matrix.name }}-${{ github.run_id }}
+          path: /tmp/devstack-logs/*
