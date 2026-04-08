@@ -45,7 +45,6 @@ jobs:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin ironic https://github.com/openstack/ironic ${{ matrix.openstack_version }}
-            LIBS_FROM_GIT=virtualbmc
             FORCE_CONFIG_DRIVE=True
             Q_AGENT=openvswitch
             Q_ML2_TENANT_NETWORK_TYPE=vxlan
