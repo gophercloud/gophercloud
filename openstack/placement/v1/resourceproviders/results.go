@@ -56,6 +56,11 @@ type ResourceProviderInventories struct {
 	Inventories                map[string]Inventory `json:"inventories"`
 }
 
+type ResourceProviderInventory struct {
+	ResourceProviderGeneration int `json:"resource_provider_generation"`
+	Inventory
+}
+
 type ResourceProviderAllocations struct {
 	ResourceProviderGeneration int                   `json:"resource_provider_generation"`
 	Allocations                map[string]Allocation `json:"allocations"`
@@ -149,6 +154,32 @@ type GetInventoriesResult struct {
 // Extract interprets a GetInventoriesResult as a ResourceProviderInventories.
 func (r GetInventoriesResult) Extract() (*ResourceProviderInventories, error) {
 	var s ResourceProviderInventories
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// GetInventoryResult is the response of a Get inventory operation. Call its Extract method
+// to interpret it as a ResourceProviderInventory.
+type GetInventoryResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetInventoryResult as a ResourceProviderInventory.
+func (r GetInventoryResult) Extract() (*ResourceProviderInventory, error) {
+	var s ResourceProviderInventory
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// UpdateInventoryResult is the response of an Update inventory operation. Call its Extract method
+// to interpret it as a ResourceProviderInventory.
+type UpdateInventoryResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a UpdateInventoryResult as a ResourceProviderInventory.
+func (r UpdateInventoryResult) Extract() (*ResourceProviderInventory, error) {
+	var s ResourceProviderInventory
 	err := r.ExtractInto(&s)
 	return &s, err
 }
