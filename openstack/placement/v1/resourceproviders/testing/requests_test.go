@@ -315,11 +315,14 @@ func TestUpdateResourceProviderAggregatesSuccess(t *testing.T) {
 
 	HandleResourceProviderUpdateAndGetAggregatesSuccess(t, fakeServer)
 
+	sc := client.ServiceClient(fakeServer)
+	sc.Microversion = "1.19"
+
 	updateOpts := resourceproviders.UpdateAggregatesOpts(ExpectedUpdatedAggregates)
-	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), sc, ResourceProviderTestID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	actual, err := resourceproviders.GetAggregates(context.TODO(), sc, ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUpdatedAggregates, *actual)
 }
@@ -330,13 +333,42 @@ func TestUpdateResourceProviderAggregatesPreGenerationSuccess(t *testing.T) {
 
 	HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t, fakeServer)
 
+	sc := client.ServiceClient(fakeServer)
+	sc.Microversion = "1.10"
+
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		Aggregates: ExpectedUpdatedAggregatesPreGeneration.Aggregates,
 	}
-	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), sc, ResourceProviderTestID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	actual, err := resourceproviders.GetAggregates(context.TODO(), sc, ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdatedAggregatesPreGeneration, *actual)
+}
+
+// TestUpdateResourceProviderAggregatesPreGenerationWithGenerationInOptsSuccess validates that
+// when the microversion is < 1.19 but the caller supplies ResourceProviderGeneration in opts,
+// the generation field is stripped from the request body and the operation succeeds.
+func TestUpdateResourceProviderAggregatesPreGenerationWithGenerationInOptsSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	// Reuse the same handler: it validates the request body contains only aggregates (no generation).
+	HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t, fakeServer)
+
+	sc := client.ServiceClient(fakeServer)
+	sc.Microversion = "1.10"
+
+	gen := 1
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: &gen,
+		Aggregates:                 ExpectedUpdatedAggregatesPreGeneration.Aggregates,
+	}
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), sc, ResourceProviderTestID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), sc, ResourceProviderTestID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUpdatedAggregatesPreGeneration, *actual)
 }

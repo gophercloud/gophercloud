@@ -252,7 +252,13 @@ const AggregatesUpdateBody = `
 }
 `
 
-const AggregatesUpdateBodyPreGeneration = `
+// AggregatesUpdateRequestPreGeneration is the raw JSON array sent as the PUT request body
+// for microversions < 1.19, where the payload is just a list of aggregate UUIDs.
+const AggregatesUpdateRequestPreGeneration = `["89f68995-4fd8-4f8b-a03e-7d5980762ff2","16d0e5f2-7f66-4f32-9040-b09de2f40afd"]`
+
+// AggregatesUpdateBodyWithoutGeneration is the pre-1.19 server response body for an aggregates update.
+// Unlike the request, the response is not flat.
+const AggregatesUpdateBodyWithoutGeneration = `
 {
 	"aggregates": [
 		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
@@ -793,9 +799,9 @@ func HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t *testing
 				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 				th.TestHeader(t, r, "Content-Type", "application/json")
 				th.TestHeader(t, r, "Accept", "application/json")
-				th.TestJSONRequest(t, r, AggregatesUpdateBodyPreGeneration)
+				th.TestJSONRequest(t, r, AggregatesUpdateRequestPreGeneration)
 
-				body = AggregatesUpdateBodyPreGeneration
+				body = AggregatesUpdateBodyWithoutGeneration
 
 				w.Header().Add("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

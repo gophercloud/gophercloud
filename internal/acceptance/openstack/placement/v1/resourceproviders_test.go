@@ -587,3 +587,72 @@ func TestResourceProviderAggregatesUpdateNegative(t *testing.T) {
 	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
+
+func TestResourceProviderAggregatesUpdatePreGenerationSuccess(t *testing.T) {
+	// Before microversion 1.19, the PUT request body is just a list of aggregate UUIDs.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.1"
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	after, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
+
+	for _, aggregate := range updateOpts.Aggregates {
+		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+	}
+}
+
+func TestResourceProviderAggregatesUpdatePreGenerationWithGenerationSuccess(t *testing.T) {
+	// Before microversion 1.19, ResourceProviderGeneration in opts is silently stripped from
+	// the request body, so the operation must succeed even when the caller supplies it.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.1"
+
+	gen := 1
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: &gen,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	after, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
+
+	for _, aggregate := range updateOpts.Aggregates {
+		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+	}
+}

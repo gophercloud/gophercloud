@@ -172,9 +172,12 @@ Example to get resource providers aggregates
 		panic(err)
 	}
 
-Example to update resource providers aggregates
+# Example to update resource providers aggregates
 
-	placementClient.Microversion = "1.1"
+For microversion 1.18 and earlier the ResourceProviderGeneration is optional and would be ignored if provided,
+as it was not supported pre-1.19. For greater safety, it is recommended to use the newer microversion.
+
+	placementClient.Microversion = "1.19"
 
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		ResourceProviderGeneration: rp.ResourceProviderGeneration,
