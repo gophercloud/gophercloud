@@ -2,6 +2,7 @@ version: 2
 updates:
 - package-ecosystem: gomod
   directory: "/"
+  target-branch: "main"
   schedule:
     interval: daily
   cooldown:
@@ -9,6 +10,23 @@ updates:
   open-pull-requests-limit: 10
 - package-ecosystem: "github-actions"
   directory: "/"
+  target-branch: "main"
+  schedule:
+    interval: daily
+  cooldown:
+    default-days: 7
+  open-pull-requests-limit: 10
+- package-ecosystem: gomod
+  directory: "/"
+  target-branch: "v2"
+  schedule:
+    interval: daily
+  cooldown:
+    default-days: 7
+  open-pull-requests-limit: 10
+- package-ecosystem: "github-actions"
+  directory: "/"
+  target-branch: "v2"
   schedule:
     interval: daily
   cooldown:

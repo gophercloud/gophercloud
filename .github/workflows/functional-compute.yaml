@@ -15,17 +15,17 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "24.04"
+          - name: "gazpacho"
+            openstack_version: "stable/2026.1"
+            ubuntu_version: "24.04"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
-          - name: "dalmatian"
-            openstack_version: "stable/2024.2"
-            ubuntu_version: "22.04"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Nova on OpenStack ${{ matrix.name }}
     steps:
       - name: Checkout Gophercloud
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
@@ -61,7 +61,7 @@ jobs:
 
       - name: Checkout go
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: 'go.mod'
           cache: true

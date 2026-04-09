@@ -19,6 +19,7 @@ jobs:
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >
       github.event.pull_request.merged
+      && !contains(github.event.pull_request.labels.*.name, 'dependencies')
       && (
         github.event.action == 'closed'
           && contains(github.event.pull_request.labels.*.name, 'backport-v1')
@@ -31,7 +32,7 @@ jobs:
     steps:
       - name: Generate a token from the gophercloud-backport-bot github-app
         id: generate_token
-        uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
+        uses: getsentry/action-github-app-token@5c1e90706fe007857338ac1bfbd7a4177db2f789 # v4.0.0
         with:
           app_id: ${{ secrets.BACKPORT_APP_ID }} # zizmor: ignore[secrets-outside-env]
           private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }} # zizmor: ignore[secrets-outside-env]
@@ -84,6 +85,7 @@ jobs:
     # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
     if: >
       github.event.pull_request.merged
+      && !contains(github.event.pull_request.labels.*.name, 'dependencies')
       && (
         github.event.action == 'closed'
           && contains(github.event.pull_request.labels.*.name, 'backport-v2')
@@ -96,7 +98,7 @@ jobs:
     steps:
       - name: Generate a token from the gophercloud-backport-bot github-app
         id: generate_token
-        uses: getsentry/action-github-app-token@a0061014b82a6a5d6aeeb3b824aced47e3c3a7ef
+        uses: getsentry/action-github-app-token@5c1e90706fe007857338ac1bfbd7a4177db2f789 # v4.0.0
         with:
           app_id: ${{ secrets.BACKPORT_APP_ID }} # zizmor: ignore[secrets-outside-env]
           private_key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }} # zizmor: ignore[secrets-outside-env]
