@@ -55,6 +55,9 @@ declare -A EXPECTED_SETTINGS=(
 # their workflow has an `on: merge_group` trigger. Add entries using the exact
 # name format: "<Job name>" (with resolved matrix values).
 SKIP_CHECKS=(
+    # FIXME(stephenfin): Re-enable this once [1] merges
+    # [1] https://review.opendev.org/c/openstack/project-config/+/983728
+    "Aetos on OpenStack master"
     "finish"   # coveralls parallel-finish job, not a test gate
 )
 
