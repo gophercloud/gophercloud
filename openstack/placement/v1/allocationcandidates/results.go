@@ -1,6 +1,10 @@
 package allocationcandidates
 
-import "github.com/gophercloud/gophercloud/v2/pagination"
+import (
+	"encoding/json"
+
+	"github.com/gophercloud/gophercloud/v2/pagination"
+)
 
 // AllocationCandidates represents the response from a List allocation
 // candidates request for microversions 1.12 and above.
@@ -69,12 +73,16 @@ type AllocationCandidatesPage struct {
 }
 
 // IsEmpty determines if an AllocationCandidatesPage contains any results.
+// It avoids full deserialization so that it works across all microversions,
 func (page AllocationCandidatesPage) IsEmpty() (bool, error) {
-	candidates, err := ExtractAllocationCandidates(page)
+	var s struct {
+		AllocationRequests []json.RawMessage `json:"allocation_requests"`
+	}
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return false, err
 	}
-	return len(candidates.AllocationRequests) == 0, nil
+	return len(s.AllocationRequests) == 0, nil
 }
 
 // ExtractAllocationCandidates interprets an AllocationCandidatesPage as AllocationCandidates (microversion 1.12+).
