@@ -43,12 +43,12 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin devstack-plugin-prometheus https://opendev.org/openstack/devstack-plugin-prometheus ${{ matrix.openstack_version }}
-            enable_plugin ceilometer https://opendev.org/openstack/ceilometer ${{ matrix.openstack_version }}
+            enable_plugin devstack-plugin-prometheus https://github.com/openstack/devstack-plugin-prometheus ${{ matrix.openstack_version }}
+            enable_plugin ceilometer https://github.com/openstack/ceilometer ${{ matrix.openstack_version }}
             CEILOMETER_BACKEND=sg-core
             PROMETHEUS_CUSTOM_SCRAPE_TARGETS="localhost:3000"
             enable_plugin sg-core https://github.com/openstack-k8s-operators/sg-core main
-            enable_plugin aetos https://opendev.org/openstack/aetos ${{ matrix.openstack_version }}
+            enable_plugin aetos https://github.com/openstack/aetos ${{ matrix.openstack_version }}
 
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: "prometheus,node_exporter,openstack_exporter,ceilometer-acompute,ceilometer-acentral,ceilometer-anotification,sg-core,aetos,openstack-cli-server"
