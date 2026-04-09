@@ -100,6 +100,26 @@ func TestListAllocationCandidatesEmptySuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(actual.AllocationRequests))
 	th.AssertEquals(t, 0, len(actual.ProviderSummaries))
+
+	isEmpty, err := page.IsEmpty()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, isEmpty)
+}
+
+func TestIsEmpty110Success(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleListAllocationCandidates110Success(t, fakeServer)
+
+	page, err := allocationcandidates.List(client.ServiceClient(fakeServer), allocationcandidates.ListOpts{
+		Resources: "VCPU:1,MEMORY_MB:1024",
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	isEmpty, err := page.IsEmpty()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, isEmpty)
 }
 
 func TestListAllocationCandidatesBadRequest(t *testing.T) {

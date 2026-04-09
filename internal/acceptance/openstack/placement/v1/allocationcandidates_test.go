@@ -187,6 +187,28 @@ func TestAllocationCandidatesList110(t *testing.T) {
 	th.AssertEquals(t, 0, vcpuSummary.Used)
 }
 
+func TestAllocationCandidatesIsEmpty110(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/pike")
+	clients.RequireAdmin(t)
+
+	microversion := "1.10"
+	_, cleanup := createRPWithVCPUInventory(t, microversion)
+	defer cleanup()
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = microversion
+
+	page, err := allocationcandidates.List(client, allocationcandidates.ListOpts{
+		Resources: "VCPU:1",
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	isEmpty, err := page.IsEmpty()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, isEmpty)
+}
+
 func TestAllocationCandidatesListEmpty(t *testing.T) {
 	clients.SkipReleasesBelow(t, "stable/pike")
 	clients.RequireAdmin(t)
@@ -205,4 +227,8 @@ func TestAllocationCandidatesListEmpty(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(result.AllocationRequests))
 	th.AssertEquals(t, 0, len(result.ProviderSummaries))
+
+	isEmpty, err := page.IsEmpty()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, isEmpty)
 }
