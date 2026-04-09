@@ -285,7 +285,11 @@ func UpdateAggregates(ctx context.Context, client *gophercloud.ServiceClient, re
 		return
 	}
 
-	resp, err := client.Put(ctx, updateResourceProviderAggregatesURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+	var body any = b
+	if useGenerations := microversionAtLeast(client, 1, 19); !useGenerations {
+		body = b["aggregates"]
+	}
+	resp, err := client.Put(ctx, updateResourceProviderAggregatesURL(client, resourceProviderID), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
