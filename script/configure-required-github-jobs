@@ -9,9 +9,12 @@ usage() {
     cat <<EOF
 Usage: $(basename "$0") [--dry-run] [--help]
 
-Configure required status checks for gophercloud/gophercloud:main by deriving
-them from workflow files. Any job in a workflow with an 'on: merge_group'
-trigger is required, except those listed in SKIP_CHECKS in this script.
+Manage branch protection rules for gophercloud/gophercloud:main, verifying that
+the required status check branch protection setting aligns with the workflows
+available on this branch and that all other settings match our hardcoded values.
+
+If a mismatch is found in the required status checks, these will optionally be
+updated. If any other mismatch is found, the script will exit.
 
 Options:
   --dry-run  Print the list of required checks without applying them.
@@ -34,20 +37,52 @@ command -v jq  &>/dev/null || { echo "ERROR: jq not installed"; exit 1; }
 command -v gh  &>/dev/null || { echo "ERROR: gh CLI not installed"; exit 1; }
 gh auth status &>/dev/null || { echo "ERROR: run 'gh auth login' first"; exit 1; }
 
+# Our non-required status check settings are defined here. These should likely
+# never change.
+declare -A EXPECTED_SETTINGS=(
+    [".enforce_admins.enabled"]="true"
+    [".required_linear_history.enabled"]="false"
+    [".allow_force_pushes.enabled"]="false"
+    [".allow_deletions.enabled"]="false"
+    [".required_conversation_resolution.enabled"]="true"
+    [".required_status_checks.strict"]="false"
+    [".required_pull_request_reviews.required_approving_review_count"]="1"
+    [".required_pull_request_reviews.dismiss_stale_reviews"]="true"
+    [".required_pull_request_reviews.require_last_push_approval"]="true"
+)
+
 # Check names listed here are excluded from required status checks even if
 # their workflow has an `on: merge_group` trigger. Add entries using the exact
-# name format: "<Workflow name> / <Job name>" (with resolved matrix values).
+# name format: "<Job name>" (with resolved matrix values).
 SKIP_CHECKS=(
     "finish"   # coveralls parallel-finish job, not a test gate
 )
 
+protection="$(gh api \
+    -H "Accept: application/vnd.github+json" \
+    "/repos/gophercloud/gophercloud/branches/main/protection")"
+
+settings_ok=true
+for path in "${!EXPECTED_SETTINGS[@]}"; do
+    actual="$(jq -r "${path}" <<< "${protection}")"
+    expected="${EXPECTED_SETTINGS[${path}]}"
+    if [[ "${actual}" != "${expected}" ]]; then
+        echo "ERROR: branch protection drift: ${path} = ${actual} (expected ${expected})" >&2
+        settings_ok=false
+    fi
+done
+if ! "${settings_ok}"; then
+    echo "Branch protection settings have drifted." >&2
+    exit 1
+fi
+
+echo "Non-required status check branch protection settings are as expected."
+echo
+
 current_contexts=()
 while IFS= read -r ctx; do
     current_contexts+=("${ctx}")
-done < <(gh api \
-    -H "Accept: application/vnd.github+json" \
-    "/repos/gophercloud/gophercloud/branches/main/protection" \
-    --jq '.required_status_checks.contexts[]?' 2>/dev/null | sort)
+done < <(jq -r '.required_status_checks.contexts[]?' <<< "${protection}" | sort)
 
 updated_contexts=()
 for f in "${WORKFLOWS_DIR}"/*.yaml; do
@@ -124,14 +159,14 @@ payload="$(jq -n \
     --argjson contexts "${contexts_json}" \
     '{
         required_status_checks: {strict: false, contexts: $contexts},
-        enforce_admins: false,
+        enforce_admins: true,
         required_pull_request_reviews: {
             required_approving_review_count: 1,
             dismiss_stale_reviews: true,
             require_last_push_approval: true
         },
         restrictions: null,
-        required_linear_history: true,
+        required_linear_history: false,
         allow_force_pushes: false,
         allow_deletions: false,
         required_conversation_resolution: true
