@@ -71,5 +71,39 @@ do not need that protection.
 	if err != nil {
 		panic(err)
 	}
+
+# Example to atomically set allocations for multiple consumers (microversion 1.13+)
+
+Manage sets allocations for any number of consumers in a single atomic
+request. The map key is the consumer UUID. Use microversion 1.28 or later
+for generation-safe writes.
+
+	placementClient.Microversion = "1.28"
+
+	err = allocations.Manage(context.TODO(), placementClient, allocations.ManageOpts{
+		consumer1UUID: {
+			Allocations: map[string]allocations.ProviderAllocationsOpts{
+				providerUUID: {
+					Resources: map[string]int{"VCPU": 2},
+				},
+			},
+			ProjectID:          projectID,
+			UserID:             userID,
+			ConsumerGeneration: nil,
+		},
+		consumer2UUID: {
+			Allocations: map[string]allocations.ProviderAllocationsOpts{
+				providerUUID: {
+					Resources: map[string]int{"VCPU": 1},
+				},
+			},
+			ProjectID:          projectID,
+			UserID:             userID,
+			ConsumerGeneration: nil,
+		},
+	}).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package allocations

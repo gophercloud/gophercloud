@@ -2,6 +2,7 @@ package allocations
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/gophercloud/gophercloud/v2"
 )
@@ -84,6 +85,53 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, consumerUUID
 // deletion under concurrent updates.
 func Delete(ctx context.Context, client *gophercloud.ServiceClient, consumerUUID string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, consumerUUID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ManageOptsBuilder allows extensions to add additional parameters to the
+// Manage request.
+type ManageOptsBuilder interface {
+	ToAllocationManageMap() (map[string]any, error)
+}
+
+// ManageOpts specifies allocations for multiple consumers in a single atomic
+// operation. The map key is the consumer UUID; the value describes the
+// allocations and consumer metadata for that consumer.
+//
+// This requires microversion 1.13 or later. For generation-safe writes, use
+// microversion 1.28 or later and set ConsumerGeneration on each entry.
+//
+// Set ConsumerGeneration to nil for new consumers (serializes as JSON null).
+// For existing consumers, set it to the generation returned by a prior Get
+// call. A mismatch on any entry causes a 409 Conflict for the entire batch.
+type ManageOpts map[string]UpdateOpts
+
+// ToAllocationManageMap constructs a request body from ManageOpts.
+func (opts ManageOpts) ToAllocationManageMap() (map[string]any, error) {
+	b, err := json.Marshal(opts)
+	if err != nil {
+		return nil, err
+	}
+	var m map[string]any
+	err = json.Unmarshal(b, &m)
+	return m, err
+}
+
+// Manage atomically sets allocations for one or more consumers in a single
+// request.
+//
+// Requires microversion 1.13 or later. For generation-safe writes, use
+// microversion 1.28 or later.
+func Manage(ctx context.Context, client *gophercloud.ServiceClient, opts ManageOptsBuilder) (r ManageResult) {
+	b, err := opts.ToAllocationManageMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, manageURL(client), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
