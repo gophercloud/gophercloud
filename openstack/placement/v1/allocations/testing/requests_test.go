@@ -99,3 +99,28 @@ func TestUpdateConflict(t *testing.T) {
 	}).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
+
+func TestDeleteSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteAndGetAllocationsSuccess(t, fakeServer)
+
+	err := allocations.Delete(context.TODO(), client.ServiceClient(fakeServer), ConsumerUUID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Assert: Consumer now has no allocations.
+	actual, err := allocations.Get(context.TODO(), client.ServiceClient(fakeServer), ConsumerUUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedEmptyAllocations, *actual)
+}
+
+func TestDeleteNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteAllocationsNotFound(t, fakeServer)
+
+	err := allocations.Delete(context.TODO(), client.ServiceClient(fakeServer), NotFoundConsumerUUID).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}

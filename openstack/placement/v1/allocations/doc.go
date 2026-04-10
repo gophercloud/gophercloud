@@ -60,5 +60,16 @@ generation first and pass it in.
 	if err != nil {
 		panic(err)
 	}
+
+# Example to delete all allocations for a consumer
+
+Note: using Update with an empty Allocations map is generally safer because
+it is protected by the consumer generation check. Use Delete only when you
+do not need that protection.
+
+	err = allocations.Delete(context.TODO(), placementClient, consumerUUID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package allocations

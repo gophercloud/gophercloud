@@ -13,6 +13,7 @@ import (
 const ConsumerUUID = "ba8f2c8e-0bf7-4a32-aacf-7c11f7f9a321"
 const EmptyConsumerUUID = "00000000-0000-0000-0000-000000000000"
 const ConflictConsumerUUID = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+const NotFoundConsumerUUID = "11111111-1111-1111-1111-111111111111"
 const ProviderUUID1 = "7d4f1abe-2f91-4f7a-8872-b70d9fb5c3dd"
 const ProviderUUID2 = "f3f97e00-13e1-4c88-a7cd-db3bb4f99357"
 const ProjectID = "42a2b0fa980d4f7f873e8f0d8b4e1b0e"
@@ -236,5 +237,40 @@ func HandleUpdateAllocationsConflict(t *testing.T, fakeServer th.FakeServer) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
 		fmt.Fprint(w, `{"errors":[{"status":409,"title":"Conflict","code":"placement.concurrent_update"}]}`)
+	})
+}
+
+// HandleDeleteAndGetAllocationsSuccess handles DELETE followed by GET on the same URL.
+// DELETE returns 204; the subsequent GET returns an empty allocations body.
+func HandleDeleteAndGetAllocationsSuccess(t *testing.T, fakeServer th.FakeServer) {
+	url := fmt.Sprintf("/allocations/%s", ConsumerUUID)
+
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		switch r.Method {
+		case http.MethodDelete:
+			w.WriteHeader(http.StatusNoContent)
+		case http.MethodGet:
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprint(w, GetEmptyAllocationsBody)
+		default:
+			t.Fatalf("unexpected method: %s", r.Method)
+		}
+	})
+}
+
+// HandleDeleteAllocationsNotFound simulates a 404 when the consumer does not exist.
+func HandleDeleteAllocationsNotFound(t *testing.T, fakeServer th.FakeServer) {
+	url := fmt.Sprintf("/allocations/%s", NotFoundConsumerUUID)
+
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, `{"errors":[{"status":404,"title":"Not Found","code":"placement.undefined_code"}]}`)
 	})
 }
