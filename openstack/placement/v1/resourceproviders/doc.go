@@ -162,5 +162,34 @@ Example to get resource providers allocations
 	if err != nil {
 		panic(err)
 	}
+
+Example to get resource providers aggregates
+
+	placementClient.Microversion = "1.1"
+
+	rp, err := resourceproviders.GetAggregates(context.TODO(), placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+# Example to update resource providers aggregates
+
+For microversion 1.18 and earlier the ResourceProviderGeneration is optional and would be ignored if provided,
+as it was not supported pre-1.19. For greater safety, it is recommended to use the newer microversion.
+
+	placementClient.Microversion = "1.19"
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: rp.ResourceProviderGeneration,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	rp, err = resourceproviders.UpdateAggregates(context.TODO(), placementClient, resourceProviderID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package resourceproviders
