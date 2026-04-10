@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
@@ -286,8 +287,16 @@ func UpdateAggregates(ctx context.Context, client *gophercloud.ServiceClient, re
 	}
 
 	var body any = b
-	if useGenerations := microversionAtLeast(client, 1, 19); !useGenerations {
-		body = b["aggregates"]
+	if client.Microversion != "" {
+		_, minor, err := utils.ParseMicroversion(client.Microversion)
+		if err != nil {
+			r.Err = err
+			return
+		}
+		// In microversions prior to 1.19, the body was not enveloped.
+		if minor < 19 {
+			body = b["aggregates"]
+		}
 	}
 	resp, err := client.Put(ctx, updateResourceProviderAggregatesURL(client, resourceProviderID), body, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
