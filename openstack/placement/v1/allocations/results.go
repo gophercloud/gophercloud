@@ -44,3 +44,9 @@ func (r GetResult) Extract() (*Allocations, error) {
 	err := r.ExtractInto(&s)
 	return &s, err
 }
+
+// UpdateResult is the result of an Update operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type UpdateResult struct {
+	gophercloud.ErrResult
+}
