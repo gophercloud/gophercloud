@@ -124,3 +124,62 @@ func TestDeleteNotFound(t *testing.T) {
 	err := allocations.Delete(context.TODO(), client.ServiceClient(fakeServer), NotFoundConsumerUUID).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
+
+func TestManageSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleManageAllocationsSuccess(t, fakeServer)
+
+	err := allocations.Manage(context.TODO(), client.ServiceClient(fakeServer), allocations.ManageOpts{
+		ManageConsumerUUID1: {
+			Allocations: map[string]allocations.ProviderAllocationsOpts{
+				ProviderUUID1: {
+					Resources: map[string]int{"VCPU": 1},
+				},
+			},
+			ProjectID:          ProjectID,
+			UserID:             UserID,
+			ConsumerGeneration: nil,
+		},
+		ManageConsumerUUID2: {
+			Allocations: map[string]allocations.ProviderAllocationsOpts{
+				ProviderUUID1: {
+					Resources: map[string]int{"VCPU": 1},
+				},
+			},
+			ProjectID:          ProjectID,
+			UserID:             UserID,
+			ConsumerGeneration: nil,
+		},
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	for _, uuid := range []string{ManageConsumerUUID1, ManageConsumerUUID2} {
+		actual, err := allocations.Get(context.TODO(), client.ServiceClient(fakeServer), uuid).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, ExpectedAllocationsAfterManage, *actual)
+	}
+}
+
+func TestManageConflict(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleManageAllocationsConflict(t, fakeServer)
+
+	staleGeneration := 0
+	err := allocations.Manage(context.TODO(), client.ServiceClient(fakeServer), allocations.ManageOpts{
+		ConflictConsumerUUID: {
+			Allocations: map[string]allocations.ProviderAllocationsOpts{
+				ProviderUUID1: {
+					Resources: map[string]int{"VCPU": 1},
+				},
+			},
+			ProjectID:          ProjectID,
+			UserID:             UserID,
+			ConsumerGeneration: &staleGeneration,
+		},
+	}).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}

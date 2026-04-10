@@ -56,3 +56,9 @@ type UpdateResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// ManageResult is the result of a Manage operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type ManageResult struct {
+	gophercloud.ErrResult
+}
