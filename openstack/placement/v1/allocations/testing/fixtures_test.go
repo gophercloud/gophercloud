@@ -1,0 +1,110 @@
+package testing
+
+import (
+	"fmt"
+	"net/http"
+	"testing"
+
+	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/allocations"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
+)
+
+const ConsumerUUID = "ba8f2c8e-0bf7-4a32-aacf-7c11f7f9a321"
+const EmptyConsumerUUID = "00000000-0000-0000-0000-000000000000"
+const ProviderUUID1 = "7d4f1abe-2f91-4f7a-8872-b70d9fb5c3dd"
+const ProviderUUID2 = "f3f97e00-13e1-4c88-a7cd-db3bb4f99357"
+const ProjectID = "42a2b0fa980d4f7f873e8f0d8b4e1b0e"
+const UserID = "b29d880b2c114d5d9a55748b26b2e41e"
+
+var GetAllocationsBody = fmt.Sprintf(`
+{
+    "allocations": {
+        "%s": {
+            "generation": 3,
+            "resources": {
+                "VCPU": 2,
+                "MEMORY_MB": 2048
+            }
+        },
+        "%s": {
+            "generation": 7,
+            "resources": {
+                "DISK_GB": 50
+            }
+        }
+    },
+    "project_id": "%s",
+    "user_id": "%s",
+    "consumer_generation": 2,
+    "consumer_type": "INSTANCE"
+}
+`, ProviderUUID1, ProviderUUID2, ProjectID, UserID)
+
+// GetEmptyAllocationsBody is the response for a consumer UUID that has no
+// allocations. Per the Placement API, only the "allocations" key is present;
+// project_id, user_id, consumer_generation, and consumer_type are absent.
+const GetEmptyAllocationsBody = `
+{
+    "allocations": {}
+}
+`
+
+var consumerGeneration = 2
+var consumerType = "INSTANCE"
+var projectID = ProjectID
+var userID = UserID
+
+var ExpectedAllocations = allocations.Allocations{
+	Allocations: map[string]allocations.ProviderAllocations{
+		ProviderUUID1: {
+			Generation: 3,
+			Resources: map[string]int{
+				"VCPU":      2,
+				"MEMORY_MB": 2048,
+			},
+		},
+		ProviderUUID2: {
+			Generation: 7,
+			Resources: map[string]int{
+				"DISK_GB": 50,
+			},
+		},
+	},
+	ProjectID:          &projectID,
+	UserID:             &userID,
+	ConsumerGeneration: &consumerGeneration,
+	ConsumerType:       &consumerType,
+}
+
+var ExpectedEmptyAllocations = allocations.Allocations{
+	Allocations: map[string]allocations.ProviderAllocations{},
+}
+
+func HandleGetAllocationsSuccess(t *testing.T, fakeServer th.FakeServer) {
+	url := fmt.Sprintf("/allocations/%s", ConsumerUUID)
+
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, GetAllocationsBody)
+	})
+}
+
+func HandleGetEmptyAllocationsSuccess(t *testing.T, fakeServer th.FakeServer) {
+	url := fmt.Sprintf("/allocations/%s", EmptyConsumerUUID)
+
+	fakeServer.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, GetEmptyAllocationsBody)
+	})
+}
