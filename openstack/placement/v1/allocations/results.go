@@ -50,3 +50,9 @@ func (r GetResult) Extract() (*Allocations, error) {
 type UpdateResult struct {
 	gophercloud.ErrResult
 }
+
+// DeleteResult is the result of a Delete operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

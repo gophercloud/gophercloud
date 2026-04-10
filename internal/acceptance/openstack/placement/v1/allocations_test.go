@@ -43,6 +43,7 @@ func TestUpdateAllocationsNewConsumerSuccess(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000000", rand.Int31())
+	defer allocations.Delete(context.TODO(), client, consumerUUID)
 
 	client.Microversion = "1.28"
 
@@ -64,16 +65,6 @@ func TestUpdateAllocationsNewConsumerSuccess(t *testing.T) {
 	th.AssertEquals(t, 1, len(allocs.Allocations))
 	th.AssertEquals(t, 2, allocs.Allocations[resourceProvider.UUID].Resources["VCPU"])
 	th.AssertEquals(t, 1024, allocs.Allocations[resourceProvider.UUID].Resources["MEMORY_MB"])
-
-	// Clean up: remove allocations using PUT with empty allocations and the
-	// current generation (safe deletion, recommended over DELETE).
-	err = allocations.Update(context.TODO(), client, consumerUUID, allocations.UpdateOpts{
-		Allocations:        map[string]allocations.ProviderAllocationsOpts{},
-		ProjectID:          "test-project",
-		UserID:             "test-user",
-		ConsumerGeneration: allocs.ConsumerGeneration,
-	}).ExtractErr()
-	th.AssertNoErr(t, err)
 }
 
 func TestUpdateAllocationsSuccess(t *testing.T) {
@@ -88,6 +79,7 @@ func TestUpdateAllocationsSuccess(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000001", rand.Int31())
+	defer allocations.Delete(context.TODO(), client, consumerUUID)
 
 	client.Microversion = "1.28"
 
@@ -126,15 +118,6 @@ func TestUpdateAllocationsSuccess(t *testing.T) {
 	th.AssertEquals(t, 1024, updated.Allocations[resourceProvider.UUID].Resources["MEMORY_MB"])
 
 	tools.PrintResource(t, updated)
-
-	// Clean up.
-	err = allocations.Update(context.TODO(), client, consumerUUID, allocations.UpdateOpts{
-		Allocations:        map[string]allocations.ProviderAllocationsOpts{},
-		ProjectID:          updated.ProjectID,
-		UserID:             updated.UserID,
-		ConsumerGeneration: updated.ConsumerGeneration,
-	}).ExtractErr()
-	th.AssertNoErr(t, err)
 }
 
 func TestUpdateAllocationsConflict(t *testing.T) {
@@ -149,6 +132,7 @@ func TestUpdateAllocationsConflict(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000002", rand.Int31())
+	defer allocations.Delete(context.TODO(), client, consumerUUID)
 
 	client.Microversion = "1.28"
 
@@ -178,15 +162,57 @@ func TestUpdateAllocationsConflict(t *testing.T) {
 		ConsumerGeneration: &staleGeneration,
 	}).ExtractErr()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}
 
-	// Clean up with correct generation.
-	existing, err := allocations.Get(context.TODO(), client, consumerUUID).Extract()
+func TestDeleteAllocationsSuccess(t *testing.T) {
+	clients.RequireAdmin(t)
+	clients.SkipReleasesBelow(t, "stable/rocky")
+
+	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
+
+	resourceProvider, _, err := CreateResourceProviderWithVCPUInventory(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000003", rand.Int31())
+
+	client.Microversion = "1.28"
+
+	// Arrange: Create allocations for the consumer.
 	err = allocations.Update(context.TODO(), client, consumerUUID, allocations.UpdateOpts{
-		Allocations:        map[string]allocations.ProviderAllocationsOpts{},
-		ProjectID:          *existing.ProjectID,
-		UserID:             *existing.UserID,
-		ConsumerGeneration: existing.ConsumerGeneration,
+		Allocations: map[string]allocations.ProviderAllocationsOpts{
+			resourceProvider.UUID: {
+				Resources: map[string]int{"VCPU": 1},
+			},
+		},
+		ProjectID:          "test-project",
+		UserID:             "test-user",
+		ConsumerGeneration: nil,
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	// Act: Delete all allocations for the consumer.
+	err = allocations.Delete(context.TODO(), client, consumerUUID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Assert: Consumer now returns an empty allocations map.
+	allocs, err := allocations.Get(context.TODO(), client, consumerUUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(allocs.Allocations))
+}
+
+func TestDeleteAllocationsNotFound(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	// Assert: An RP that was never a consumer returns 404 on DELETE.
+	err = allocations.Delete(context.TODO(), client, resourceProvider.UUID).ExtractErr()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }

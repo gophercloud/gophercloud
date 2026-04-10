@@ -75,3 +75,15 @@ func Update(ctx context.Context, client *gophercloud.ServiceClient, consumerUUID
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Delete removes all allocations for a consumer. Returns 204 on success or
+// 404 if the consumer does not exist.
+//
+// Note: using Update with an empty Allocations map is generally safer because
+// it is protected by the consumer generation check, preventing accidental
+// deletion under concurrent updates.
+func Delete(ctx context.Context, client *gophercloud.ServiceClient, consumerUUID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteURL(client, consumerUUID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
