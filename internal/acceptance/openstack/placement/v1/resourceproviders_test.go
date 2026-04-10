@@ -5,6 +5,7 @@ package v1
 import (
 	"context"
 	"net/http"
+	"slices"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -450,4 +451,208 @@ func TestResourceProviderAllocations(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, usage)
+}
+
+func TestResourceProviderAggregatesGetSuccess(t *testing.T) {
+	// Resource_provider_generation in the aggregates response was introduced in microversion 1.19.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.19"
+
+	aggregates, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, aggregates.ResourceProviderGeneration != nil)
+}
+
+func TestResourceProviderAggregatesGetPreGenerationSuccess(t *testing.T) {
+	// Resource provider aggregates operations were introduced in microversion 1.1.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.1"
+
+	aggregates, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(aggregates.Aggregates))
+	th.AssertDeepEquals(t, (*int)(nil), aggregates.ResourceProviderGeneration)
+}
+
+func TestResourceProviderAggregatesGetNegative(t *testing.T) {
+	// Resource_provider_generation in the aggregates response was introduced in microversion 1.19.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.19"
+
+	_, err = resourceproviders.GetAggregates(context.TODO(), client, "00000000-0000-0000-0000-000000000000").Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceProviderAggregatesGetPreGenerationNegative(t *testing.T) {
+	// Resource provider aggregates operations were introduced in microversion 1.1.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.1"
+
+	_, err = resourceproviders.GetAggregates(context.TODO(), client, "00000000-0000-0000-0000-000000000000").Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestResourceProviderAggregatesUpdateSuccess(t *testing.T) {
+	// resource_provider_generation is required in the PUT request body from microversion 1.19.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.19"
+
+	before, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, before.ResourceProviderGeneration != nil)
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: before.ResourceProviderGeneration,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	after, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
+
+	for _, aggregate := range updateOpts.Aggregates {
+		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+	}
+}
+
+func TestResourceProviderAggregatesUpdateNegative(t *testing.T) {
+	// resource_provider_generation is required in the PUT request body from microversion 1.19.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.19"
+
+	current, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, current.ResourceProviderGeneration != nil)
+	wrongGeneration := *current.ResourceProviderGeneration + 100
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: &wrongGeneration,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}
+
+func TestResourceProviderAggregatesUpdatePreGenerationSuccess(t *testing.T) {
+	// Before microversion 1.19, the PUT request body is just a list of aggregate UUIDs.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.1"
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	after, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
+
+	for _, aggregate := range updateOpts.Aggregates {
+		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+	}
+}
+
+func TestResourceProviderAggregatesUpdatePreGenerationWithGenerationSuccess(t *testing.T) {
+	// Before microversion 1.19, ResourceProviderGeneration in opts is silently stripped from
+	// the request body, so the operation must succeed even when the caller supplies it.
+	clients.SkipReleasesBelow(t, "stable/ocata")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	client.Microversion = "1.1"
+
+	gen := 1
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: &gen,
+		Aggregates: []string{
+			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+		},
+	}
+
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	after, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
+
+	for _, aggregate := range updateOpts.Aggregates {
+		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+	}
 }

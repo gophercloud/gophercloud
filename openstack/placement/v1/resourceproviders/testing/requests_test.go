@@ -276,3 +276,110 @@ func TestDeleteResourceProvidersTraits(t *testing.T) {
 	err := resourceproviders.DeleteTraits(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetResourceProviderAggregatesSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetAggregatesSuccess(t, fakeServer)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedAggregates, *actual)
+}
+
+func TestGetResourceProviderAggregatesPreGenerationSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetAggregatesPreGenerationSuccess(t, fakeServer)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedAggregatesPreGeneration, *actual)
+}
+
+func TestGetResourceProviderAggregatesNotFound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderGetAggregatesNotFound(t, fakeServer)
+
+	_, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceProviderID).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+}
+
+func TestUpdateResourceProviderAggregatesSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderUpdateAndGetAggregatesSuccess(t, fakeServer)
+
+	sc := client.ServiceClient(fakeServer)
+	sc.Microversion = "1.19"
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts(ExpectedUpdatedAggregates)
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), sc, ResourceProviderTestID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), sc, ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdatedAggregates, *actual)
+}
+
+func TestUpdateResourceProviderAggregatesPreGenerationSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t, fakeServer)
+
+	sc := client.ServiceClient(fakeServer)
+	sc.Microversion = "1.10"
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		Aggregates: ExpectedUpdatedAggregatesPreGeneration.Aggregates,
+	}
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), sc, ResourceProviderTestID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), sc, ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdatedAggregatesPreGeneration, *actual)
+}
+
+// TestUpdateResourceProviderAggregatesPreGenerationWithGenerationInOptsSuccess validates that
+// when the microversion is < 1.19 but the caller supplies ResourceProviderGeneration in opts,
+// the generation field is stripped from the request body and the operation succeeds.
+func TestUpdateResourceProviderAggregatesPreGenerationWithGenerationInOptsSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	// Reuse the same handler: it validates the request body contains only aggregates (no generation).
+	HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t, fakeServer)
+
+	sc := client.ServiceClient(fakeServer)
+	sc.Microversion = "1.10"
+
+	gen := 1
+	updateOpts := resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: &gen,
+		Aggregates:                 ExpectedUpdatedAggregatesPreGeneration.Aggregates,
+	}
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), sc, ResourceProviderTestID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	actual, err := resourceproviders.GetAggregates(context.TODO(), sc, ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdatedAggregatesPreGeneration, *actual)
+}
+
+func TestUpdateResourceProviderAggregatesConflict(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderUpdateAggregatesConflict(t, fakeServer)
+
+	updateOpts := resourceproviders.UpdateAggregatesOpts(ExpectedUpdatedAggregates)
+	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+}
