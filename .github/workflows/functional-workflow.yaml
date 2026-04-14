@@ -25,14 +25,14 @@ jobs:
             openstack_version: "master"
             ubuntu_version: "24.04"
             mistral_plugin_version: "master"
+          - name: "gazpacho"
+            openstack_version: "stable/2026.1"
+            ubuntu_version: "24.04"
+            mistral_plugin_version: "stable/2026.1"
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
             mistral_plugin_version: "stable/2025.1"
-          - name: "dalmatian"
-            openstack_version: "stable/2024.2"
-            ubuntu_version: "22.04"
-            mistral_plugin_version: "stable/2024.2"
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Mistral on Deploy OpenStack ${{ matrix.name }}
     steps:
