@@ -50,8 +50,9 @@ type LoadBalancer struct {
 	// The ID of the QoS Policy which will apply to the Virtual IP
 	VipQosPolicyID string `json:"vip_qos_policy_id"`
 
-	// The ID of the Security Group which will apply to the Virtual IP
-	VipSecGroupID string `json:"vip_sg_id,omitempty"`
+	// The IDs of the Security Groups which apply to the Virtual IP.
+	// Requires Octavia API version 2.29 or later (OpenStack 2025.1).
+	VipSecGroupIDs []string `json:"vip_sg_ids"`
 
 	// The unique ID for the LoadBalancer.
 	ID string `json:"id"`

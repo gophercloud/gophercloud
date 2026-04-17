@@ -84,6 +84,35 @@ const SingleLoadbalancerBody = `
 }
 `
 
+// SingleLoadbalancerVIPSecGroupsBody is the canned body of a Get request on an existing loadbalancer with VIP security groups.
+const SingleLoadbalancerVIPSecGroupsBody = `
+{
+	"loadbalancer": {
+		"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
+		"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
+		"created_at": "2019-06-30T04:15:37",
+		"updated_at": "2019-06-30T05:18:49",
+		"name": "db_lb",
+		"description": "lb config for the db tier",
+		"vip_subnet_id": "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
+		"vip_address": "10.30.176.48",
+		"vip_port_id": "2bf413c8-41a9-4477-b505-333d5cbe8b55",
+		"vip_sg_ids": [
+			"7af5d90d-0abf-4f45-ae09-15f2fc9f4cc8",
+			"f4f6cf44-8360-448a-88e8-a27f8958f143"
+		],
+		"flavor_id": "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
+		"availability_zone": "db_az",
+		"provider": "haproxy",
+		"admin_state_up": true,
+		"provisioning_status": "PENDING_CREATE",
+		"operating_status": "OFFLINE",
+		"tags": ["test", "stage"],
+		"additional_vips": [{"subnet_id": "0d4f6a08-60b7-44ab-8903-f7d76ec54095", "ip_address" : "192.168.10.10"}]
+	}
+}
+`
+
 // PostUpdateLoadbalancerBody is the canned response body of a Update request on an existing loadbalancer.
 const PostUpdateLoadbalancerBody = `
 {
@@ -103,6 +132,30 @@ const PostUpdateLoadbalancerBody = `
 		"provisioning_status": "PENDING_CREATE",
 		"operating_status": "OFFLINE",
 		"tags": ["test"]
+	}
+}
+`
+
+// PostUpdateLoadbalancerVIPSecGroupsClearedBody is the canned response body of an Update request that clears VIP security groups.
+const PostUpdateLoadbalancerVIPSecGroupsClearedBody = `
+{
+	"loadbalancer": {
+		"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
+		"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
+		"created_at": "2019-06-30T04:15:37",
+		"updated_at": "2019-06-30T05:18:49",
+		"name": "db_lb",
+		"description": "lb config for the db tier",
+		"vip_subnet_id": "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
+		"vip_address": "10.30.176.48",
+		"vip_port_id": "2bf413c8-41a9-4477-b505-333d5cbe8b55",
+		"vip_sg_ids": [],
+		"flavor_id": "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
+		"provider": "haproxy",
+		"admin_state_up": true,
+		"provisioning_status": "PENDING_CREATE",
+		"operating_status": "OFFLINE",
+		"tags": ["test", "stage"]
 	}
 }
 `
@@ -563,6 +616,36 @@ func HandleLoadbalancerCreationSuccessfully(t *testing.T, fakeServer th.FakeServ
 	})
 }
 
+// HandleLoadbalancerCreationWithVIPSecurityGroupsSuccessfully sets up the test server to respond to a
+// loadbalancer creation request with VIP security groups and a given response.
+func HandleLoadbalancerCreationWithVIPSecurityGroupsSuccessfully(t *testing.T, fakeServer th.FakeServer, response string) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"loadbalancer": {
+				"name": "db_lb",
+				"vip_port_id": "2bf413c8-41a9-4477-b505-333d5cbe8b55",
+				"vip_subnet_id": "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
+				"vip_address": "10.30.176.48",
+				"vip_sg_ids": [
+					"7af5d90d-0abf-4f45-ae09-15f2fc9f4cc8",
+					"f4f6cf44-8360-448a-88e8-a27f8958f143"
+				],
+				"flavor_id": "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
+				"provider": "haproxy",
+				"admin_state_up": true,
+				"tags": ["test", "stage"],
+				"additional_vips": [{"subnet_id": "0d4f6a08-60b7-44ab-8903-f7d76ec54095", "ip_address" : "192.168.10.10"}]
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, response)
+	})
+}
+
 // HandleLoadbalancerGetSuccessfully sets up the test server to respond to a loadbalancer Get request.
 func HandleLoadbalancerGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
@@ -610,6 +693,24 @@ func HandleLoadbalancerUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer
 		}`)
 
 		fmt.Fprint(w, PostUpdateLoadbalancerBody)
+	})
+}
+
+// HandleLoadbalancerUpdateClearVIPSecurityGroupsSuccessfully sets up the test server to respond to a
+// loadbalancer Update request that clears VIP security groups.
+func HandleLoadbalancerUpdateClearVIPSecurityGroupsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{
+			"loadbalancer": {
+				"vip_sg_ids": []
+			}
+		}`)
+
+		fmt.Fprint(w, PostUpdateLoadbalancerVIPSecGroupsClearedBody)
 	})
 }
 
