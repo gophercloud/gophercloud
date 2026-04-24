@@ -76,6 +76,38 @@ func (e ErrMissingAnyoneOfEnvironmentVariables) Error() string {
 	return e.choseErrString()
 }
 
+// ErrEnvironmentVarsExpectedEqual is an error where there are ambiguous
+// environment variables which conflict with one another and they must be equal
+// if both are set
+type ErrEnvironmentVarsExpectedEqual struct {
+	BaseError
+	EnvironmentVariables []string
+}
+
+func (e ErrEnvironmentVarsExpectedEqual) Error() string {
+	e.DefaultErrString = fmt.Sprintf(
+		"The following environment variables must be equal if both are set [%s]",
+		strings.Join(e.EnvironmentVariables, ", "),
+	)
+	return e.choseErrString()
+}
+
+// ErrAmbiguousEnvironmentVarsClash is an error where there are ambiguous
+// environment variables which conflict with one another and only one can
+// be set at a time
+type ErrAmbiguousEnvironmentVarsClash struct {
+	BaseError
+	EnvironmentVariables []string
+}
+
+func (e ErrAmbiguousEnvironmentVarsClash) Error() string {
+	e.DefaultErrString = fmt.Sprintf(
+		"The following environment variables cannot be set at the same time [%s]",
+		strings.Join(e.EnvironmentVariables, ", "),
+	)
+	return e.choseErrString()
+}
+
 // ErrUnexpectedResponseCode is returned by the Request method when a response code other than
 // those listed in OkCodes is encountered.
 type ErrUnexpectedResponseCode struct {
