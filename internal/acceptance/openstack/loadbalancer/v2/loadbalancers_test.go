@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2"
+	extensions "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/loadbalancer/v2/l7policies"
@@ -274,6 +275,74 @@ func TestLoadBalancerWithAdditionalVips(t *testing.T) {
 	th.AssertEquals(t, 1, len(lb.AdditionalVips))
 	th.AssertEquals(t, additionalSubnetIP, lb.AdditionalVips[0].IPAddress)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
+}
+
+func TestLoadBalancerWithVIPSecurityGroups(t *testing.T) {
+	clients.SkipReleasesBelow(t, "2025.1")
+
+	netClient, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	lbClient, err := clients.NewLoadBalancerV2Client()
+	th.AssertNoErr(t, err)
+	lbClient.Microversion = "2.29"
+
+	network, err := networking.CreateNetwork(t, netClient)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, netClient, network.ID)
+
+	subnet, err := networking.CreateSubnetWithCIDR(t, netClient, network.ID, "192.168.1.0/24", "192.168.1.1")
+	th.AssertNoErr(t, err)
+	defer networking.DeleteSubnet(t, netClient, subnet.ID)
+
+	sg1, err := extensions.CreateSecurityGroup(t, netClient)
+	th.AssertNoErr(t, err)
+	defer extensions.DeleteSecurityGroup(t, netClient, sg1.ID)
+
+	sg2, err := extensions.CreateSecurityGroup(t, netClient)
+	th.AssertNoErr(t, err)
+	defer extensions.DeleteSecurityGroup(t, netClient, sg2.ID)
+
+	initialVIPSecGroupIDs := []string{sg1.ID}
+	lb, err := CreateLoadBalancerWithVIPSecurityGroups(t, lbClient, subnet.ID, nil, initialVIPSecGroupIDs)
+	th.AssertNoErr(t, err)
+	defer DeleteLoadBalancer(t, lbClient, lb.ID)
+
+	th.AssertDeepEquals(t, initialVIPSecGroupIDs, lb.VipSecGroupIDs)
+
+	updatedVIPSecGroupIDs := []string{sg2.ID}
+	updateLoadBalancerOpts := loadbalancers.UpdateOpts{
+		VipSecGroupIDs: &updatedVIPSecGroupIDs,
+	}
+	_, err = loadbalancers.Update(context.TODO(), lbClient, lb.ID, updateLoadBalancerOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newLB, err := loadbalancers.Get(context.TODO(), lbClient, lb.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newLB)
+	th.AssertDeepEquals(t, updatedVIPSecGroupIDs, newLB.VipSecGroupIDs)
+
+	clearedVIPSecGroupIDs := []string{}
+	updateLoadBalancerOpts = loadbalancers.UpdateOpts{
+		VipSecGroupIDs: &clearedVIPSecGroupIDs,
+	}
+	_, err = loadbalancers.Update(context.TODO(), lbClient, lb.ID, updateLoadBalancerOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE"); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newLB, err = loadbalancers.Get(context.TODO(), lbClient, lb.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newLB)
+	th.AssertEquals(t, 0, len(newLB.VipSecGroupIDs))
 }
 
 func TestLoadbalancersCRUD(t *testing.T) {

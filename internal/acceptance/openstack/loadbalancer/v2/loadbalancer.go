@@ -117,6 +117,15 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 // CreateLoadBalancer will create a load balancer with a random name on a given
 // subnet. An error will be returned if the loadbalancer could not be created.
 func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string, policyID string, additionalVips []loadbalancers.AdditionalVip) (*loadbalancers.LoadBalancer, error) {
+	return createLoadBalancer(t, client, subnetID, tags, policyID, additionalVips, nil)
+}
+
+// CreateLoadBalancerWithVIPSecurityGroups will create a load balancer with custom VIP security groups.
+func CreateLoadBalancerWithVIPSecurityGroups(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string, vipSecGroupIDs []string) (*loadbalancers.LoadBalancer, error) {
+	return createLoadBalancer(t, client, subnetID, tags, "", nil, vipSecGroupIDs)
+}
+
+func createLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string, policyID string, additionalVips []loadbalancers.AdditionalVip, vipSecGroupIDs []string) (*loadbalancers.LoadBalancer, error) {
 	lbName := tools.RandomString("TESTACCT-", 8)
 	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
@@ -135,6 +144,10 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 
 	if len(policyID) > 0 {
 		createOpts.VipQosPolicyID = policyID
+	}
+
+	if len(vipSecGroupIDs) > 0 {
+		createOpts.VipSecGroupIDs = vipSecGroupIDs
 	}
 
 	lb, err := loadbalancers.Create(context.TODO(), client, createOpts).Extract()
@@ -162,6 +175,10 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 
 	if len(policyID) > 0 {
 		th.AssertEquals(t, lb.VipQosPolicyID, policyID)
+	}
+
+	if len(vipSecGroupIDs) > 0 {
+		th.AssertDeepEquals(t, lb.VipSecGroupIDs, vipSecGroupIDs)
 	}
 
 	return lb, nil
