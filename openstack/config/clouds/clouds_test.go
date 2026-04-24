@@ -66,6 +66,108 @@ func ExampleWithRegion() {
 	// Output: mars
 }
 
+func TestParseProjectDomain(t *testing.T) {
+	t.Run("project_domain_id with user_domain_name builds correct scope", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  test:
+    auth:
+      auth_url: https://example.com/v3
+      username: alice
+      password: secret
+      user_domain_name: corp.example.com
+      project_name: myproject
+      project_domain_id: default`
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
+			clouds.WithCloudName("test"),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if got := ao.DomainName; got != "corp.example.com" {
+			t.Errorf("DomainName: want %q, got %q", "corp.example.com", got)
+		}
+		if got := ao.DomainID; got != "" {
+			t.Errorf("DomainID: want empty, got %q", got)
+		}
+
+		if ao.Scope == nil {
+			t.Fatal("Scope is nil; expected a pre-built scope with project domain")
+		}
+		if got := ao.Scope.ProjectName; got != "myproject" {
+			t.Errorf("Scope.ProjectName: want %q, got %q", "myproject", got)
+		}
+		if got := ao.Scope.DomainID; got != "default" {
+			t.Errorf("Scope.DomainID: want %q, got %q", "default", got)
+		}
+	})
+
+	t.Run("project_domain_name with differing user_domain_name builds correct scope", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  test:
+    auth:
+      auth_url: https://example.com/v3
+      username: alice
+      password: secret
+      user_domain_name: corp.example.com
+      project_name: myproject
+      project_domain_name: Default`
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
+			clouds.WithCloudName("test"),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if got := ao.DomainName; got != "corp.example.com" {
+			t.Errorf("DomainName: want %q, got %q", "corp.example.com", got)
+		}
+		if got := ao.DomainID; got != "" {
+			t.Errorf("DomainID: want empty, got %q", got)
+		}
+
+		if ao.Scope == nil {
+			t.Fatal("Scope is nil; expected a pre-built scope with project domain")
+		}
+		if got := ao.Scope.ProjectName; got != "myproject" {
+			t.Errorf("Scope.ProjectName: want %q, got %q", "myproject", got)
+		}
+		if got := ao.Scope.DomainName; got != "Default" {
+			t.Errorf("Scope.DomainName: want %q, got %q", "Default", got)
+		}
+	})
+
+	t.Run("project_domain_name does not populate user DomainName", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  test:
+    auth:
+      auth_url: https://example.com/v3
+      username: bob
+      password: secret
+      project_name: myproject
+      project_domain_name: Default`
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
+			clouds.WithCloudName("test"),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if got := ao.DomainName; got != "" {
+			t.Errorf("DomainName: want empty, got %q", got)
+		}
+		if got := ao.DomainID; got != "" {
+			t.Errorf("DomainID: want empty, got %q", got)
+		}
+	})
+}
+
 func TestParse(t *testing.T) {
 	const tempDirPrefix = "gophercloud-test-"
 
