@@ -50,7 +50,7 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
-            enable_plugin devstack-plugin-prometheus https://github.com/openstack/devstack-plugin-prometheus ${{ matrix.openstack_version }}
+            enable_plugin devstack-plugin-prometheus https://opendev.org/openstack/devstack-plugin-prometheus ${{ matrix.openstack_version }}
             enable_plugin ceilometer https://github.com/openstack/ceilometer ${{ matrix.openstack_version }}
             CEILOMETER_BACKEND=sg-core
             PROMETHEUS_CUSTOM_SCRAPE_TARGETS="localhost:3000"
