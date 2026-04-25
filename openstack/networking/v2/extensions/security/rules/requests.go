@@ -126,13 +126,13 @@ type CreateOpts struct {
 	// The maximum port number in the range that is matched by the security group
 	// rule. The PortRangeMin attribute constrains the PortRangeMax attribute. If
 	// the protocol is ICMP, this value must be an ICMP code.
-	PortRangeMax int `json:"port_range_max,omitempty"`
+	PortRangeMax *int `json:"port_range_max,omitempty"`
 
 	// The minimum port number in the range that is matched by the security group
 	// rule. If the protocol is TCP or UDP, this value must be less than or equal
 	// to the value of the PortRangeMax attribute. If the protocol is ICMP, this
 	// value must be an ICMP type.
-	PortRangeMin int `json:"port_range_min,omitempty"`
+	PortRangeMin *int `json:"port_range_min,omitempty"`
 
 	// The protocol that is matched by the security group rule. Valid values are
 	// "tcp", "udp", "icmp" or an empty string.

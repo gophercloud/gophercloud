@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/rules"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -162,9 +163,9 @@ func TestCreate(t *testing.T) {
 	opts := rules.CreateOpts{
 		Description:   "test description of rule",
 		Direction:     "ingress",
-		PortRangeMin:  80,
+		PortRangeMin:  ptr.To(80),
 		EtherType:     rules.EtherType4,
-		PortRangeMax:  80,
+		PortRangeMax:  ptr.To(80),
 		Protocol:      "tcp",
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
@@ -220,15 +221,78 @@ func TestCreateAnyProtocol(t *testing.T) {
 	opts := rules.CreateOpts{
 		Description:   "test description of rule",
 		Direction:     "ingress",
-		PortRangeMin:  80,
+		PortRangeMin:  ptr.To(80),
 		EtherType:     rules.EtherType4,
-		PortRangeMax:  80,
+		PortRangeMax:  ptr.To(80),
 		Protocol:      rules.ProtocolAny,
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}
 	_, err := rules.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
+}
+
+func TestCreateEchoReply(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "security_group_rule": {
+        "description": "test description of rule",
+        "direction": "ingress",
+        "port_range_min": 0,
+        "ethertype": "IPv4",
+        "port_range_max": 0,
+        "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+        "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a",
+		"protocol": "icmp"
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprint(w, `
+{
+    "security_group_rule": {
+        "description": "test description of rule",
+        "direction": "ingress",
+        "ethertype": "IPv4",
+		"protocol": "icmp",
+        "id": "2bc0accf-312e-429a-956e-e4407625eb62",
+        "port_range_max": 0,
+        "port_range_min": 0,
+        "remote_group_id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+        "remote_ip_prefix": null,
+        "security_group_id": "a7734e61-b545-452d-a3cd-0189cbd9747a",
+        "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+    }
+}
+    `)
+	})
+
+	opts := rules.CreateOpts{
+		Description:   "test description of rule",
+		Direction:     "ingress",
+		PortRangeMin:  ptr.To(0),
+		EtherType:     rules.EtherType4,
+		PortRangeMax:  ptr.To(0),
+		Protocol:      rules.ProtocolICMP,
+		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
+		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
+	}
+	rule, err := rules.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, rule.PortRangeMax)
+	th.AssertEquals(t, 0, rule.PortRangeMin)
 }
 
 func TestCreateBulk(t *testing.T) {
@@ -305,9 +369,9 @@ func TestCreateBulk(t *testing.T) {
 		{
 			Description:   "test description of rule",
 			Direction:     "ingress",
-			PortRangeMin:  80,
+			PortRangeMin:  ptr.To(80),
 			EtherType:     rules.EtherType4,
-			PortRangeMax:  80,
+			PortRangeMax:  ptr.To(80),
 			Protocol:      "tcp",
 			RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 			SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
@@ -315,9 +379,9 @@ func TestCreateBulk(t *testing.T) {
 		{
 			Description:  "test description of rule",
 			Direction:    "ingress",
-			PortRangeMin: 443,
+			PortRangeMin: ptr.To(443),
 			EtherType:    rules.EtherType4,
-			PortRangeMax: 443,
+			PortRangeMax: ptr.To(443),
 			Protocol:     "tcp",
 			SecGroupID:   "a7734e61-b545-452d-a3cd-0189cbd9747a",
 		},
