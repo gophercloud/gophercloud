@@ -42,6 +42,12 @@ type Cloud struct {
 	// ClientKeyFile a path to a client key to use as part of the SSL
 	// transaction.
 	ClientKeyFile string `yaml:"key,omitempty" json:"key,omitempty"`
+
+	// IdentityProvider is the name of the identity provider for federated auth
+	IdentityProvider string `yaml:"identity_provider,omitempty" json:"identity_provider,omitempty"`
+
+	// Protocol is the federation protocol (e.g., "openid")
+	Protocol string `yaml:"protocol,omitempty" json:"protocol,omitempty"`
 }
 
 // AuthInfo represents the auth section of a cloud entry or
@@ -132,6 +138,12 @@ type AuthInfo struct {
 	// false, it will not cache these settings, but re-authentication will not be
 	// possible.  This setting defaults to false.
 	AllowReauth bool `yaml:"allow_reauth,omitempty" json:"allow_reauth,omitempty"`
+
+	// IdentityProvider is the name of the identity provider for federated auth
+	IdentityProvider string `yaml:"identity_provider,omitempty" json:"identity_provider,omitempty"`
+
+	// Protocol is the federation protocol (e.g., "openid")
+	Protocol string `yaml:"protocol,omitempty" json:"protocol,omitempty"`
 }
 
 // Region represents a region included as part of cloud in clouds.yaml
@@ -203,4 +215,7 @@ const (
 
 	// AuthV3ApplicationCredential defines version 3 of the application credential
 	AuthV3ApplicationCredential AuthType = "v3applicationcredential"
+
+	// AuthV3WebSSO defines version 3 of websso authentication
+	AuthV3WebSSO AuthType = "v3websso"
 )
