@@ -69,3 +69,46 @@ func DeleteResourceProvider(t *testing.T, client *gophercloud.ServiceClient, res
 
 	t.Logf("Deleted resourceProvider: %s.", resourceProviderID)
 }
+
+// CreateResourceProviderWithVCPUInventory creates a resource provider and seeds it
+// with a VCPU inventory, returning the provider and the inventory generation.
+// This is used by acceptance tests that need a resource provider with available
+// capacity before setting allocations against it.
+func CreateResourceProviderWithVCPUInventory(t *testing.T, client *gophercloud.ServiceClient) (*resourceproviders.ResourceProvider, int, error) {
+	resourceProvider, err := CreateResourceProvider(t, client)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	inventories, err := resourceproviders.GetInventories(context.TODO(), client, resourceProvider.UUID).Extract()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	updatedInventories, err := resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories: map[string]resourceproviders.Inventory{
+			"VCPU": {
+				AllocationRatio: 1.0,
+				MaxUnit:         8,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           8,
+			},
+			"MEMORY_MB": {
+				AllocationRatio: 1.0,
+				MaxUnit:         8192,
+				MinUnit:         1,
+				Reserved:        0,
+				StepSize:        1,
+				Total:           8192,
+			},
+		},
+	}).Extract()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return resourceProvider, updatedInventories.ResourceProviderGeneration, nil
+}
