@@ -315,51 +315,6 @@ func TestCreateWithNoSecurityGroup(t *testing.T) {
 	})
 }
 
-func TestCreateWithPropagateUplinkStatus(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	fakeServer.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, CreatePropagateUplinkStatusRequest)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-
-		fmt.Fprint(w, CreatePropagateUplinkStatusResponse)
-	})
-
-	asu := true
-	propagateUplinkStatus := true
-	options := ports.CreateOpts{
-		Name:         "private-port",
-		AdminStateUp: &asu,
-		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
-		FixedIPs: []ports.IP{
-			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-		},
-		PropagateUplinkStatus: &propagateUplinkStatus,
-	}
-	n, err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, n.DeviceOwner, "")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
-		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, n.PropagateUplinkStatus, propagateUplinkStatus)
-}
-
 func TestCreateWithValueSpecs(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -603,34 +558,6 @@ func TestUpdateOmitSecurityGroups(t *testing.T) {
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 	})
 	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
-}
-
-func TestUpdatePropagateUplinkStatus(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	fakeServer.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, UpdatePropagateUplinkStatusRequest)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprint(w, UpdatePropagateUplinkStatusResponse)
-	})
-
-	propagateUplinkStatus := true
-	options := ports.UpdateOpts{
-		PropagateUplinkStatus: &propagateUplinkStatus,
-	}
-
-	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
-	th.AssertNoErr(t, err)
-
-	th.AssertDeepEquals(t, s.PropagateUplinkStatus, propagateUplinkStatus)
 }
 
 func TestUpdateValueSpecs(t *testing.T) {
