@@ -1,5 +1,4 @@
-Step 5: Writing the Code
-========================
+# Step 5: Writing the Code
 
 At this point, you should have:
 
@@ -20,8 +19,7 @@ to be implementing something that hasn't already been done.
 Use the existing packages as templates and mirror the style, naming, and
 logic.
 
-Types of Pull Requests
-----------------------
+## Types of Pull Requests
 
 The amount of changes you plan to make will determine how much code you should
 submit as Pull Requests.
@@ -73,8 +71,7 @@ implementing multiple API suites.
 An example of this can be seen from the Pull Requests referenced in
 [#723](https://github.com/gophercloud/gophercloud/issues/723).
 
-What to Include in a Pull Request
----------------------------------
+## What to Include in a Pull Request
 
 Each Pull Request should contain the following:
 
@@ -82,6 +79,7 @@ Each Pull Request should contain the following:
 2. Unit tests
 3. Acceptance tests
 4. Documentation
+5. Release note
 
 Whether you want to bundle all of the above into a single commit or multiple
 commits is up to you. Use your preferred style.
@@ -111,8 +109,43 @@ sure to document all fields, functions, and methods appropriately. In addition,
 each package has a `doc.go` file which should be created or amended with
 details of your Pull Request, where appropriate.
 
-Dealing with Related Pull Requests
-----------------------------------
+### Release note
+
+Release notes are handled via [towncrier](https://towncrier.readthedocs.io/).
+This allows you to create a news fragment. `towncrier` can be installed like
+any of other Python executable, using tools like `pip`, `pipx`, or your
+distro's package manager if on Linux. For example, using `pipx`:
+
+```shell
+pipx install towncrier
+```
+
+Once installed, release notes can be created using the `towncrier create`
+command. This expects a single argument, `FILENAME`, which should be either an
+issue number or a random string prefixed with `+`, followed by a category. The
+available categories can be seen by using `towncrier create --help`.
+
+For example, if you are addressing a feature request, reported as issue #1234,
+run:
+
+```shell
+towncrier create 1234.feature
+```
+
+For example, if you are adding a minor feature that doesn't warrant an issue,
+run:
+
+```shell
+towncrier create +add-tiny-feature.feature
+```
+
+> *Note*
+> Bugfixes should always have an issue.
+
+In all cases, a news fragment will be created in the `news` directory. These
+fragments will be squashed into the `CHANGELOG.md` file when releasing.
+
+## Dealing with Related Pull Requests
 
 If you plan to open more than one Pull Request, it's only natural that code
 from one Pull Request will be dependent on code from the prior Pull Request.
