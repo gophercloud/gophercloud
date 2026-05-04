@@ -54,30 +54,12 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	applicationCredentialSecret := os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET")
 	systemScope := os.Getenv("OS_SYSTEM_SCOPE")
 
-	// Disambiguate between OS_TENANT_ID and OS_PROJECT_ID
-	if v1, v2 := os.Getenv("OS_TENANT_ID"), os.Getenv("OS_PROJECT_ID"); v1 != v2 {
-		// Allow setting OS_TENANT_ID and OS_PROJECT_ID if they are equal
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_TENANT_ID", "OS_PROJECT_ID"},
-			}
-			return nilOptions, err
-		}
-
+	// Disambiguate deprecated OS_TENANT_* vars with their OS_PROJECT_* equivalents
+	if err := requireEnvVarsMatch("OS_TENANT_ID", "OS_PROJECT_ID"); err != nil {
+		return nilOptions, err
 	}
-
-	// Disambiguate between OS_TENANT_NAME and OS_PROJECT_NAME
-	if v1, v2 := os.Getenv("OS_TENANT_NAME"), os.Getenv("OS_PROJECT_NAME"); v1 != v2 {
-		// Allow setting OS_TENANT_NAME and OS_PROJECT_NAME if they are equal
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_TENANT_NAME", "OS_PROJECT_NAME"},
-			}
-			return nilOptions, err
-		}
-
+	if err := requireEnvVarsMatch("OS_TENANT_NAME", "OS_PROJECT_NAME"); err != nil {
+		return nilOptions, err
 	}
 
 	// If OS_PROJECT_ID is set, overwrite tenantID with the value.
@@ -92,95 +74,11 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 
 	// Disambiguate between OS_USER_DOMAIN_ID/OS_PROJECT_DOMAIN_ID/OS_DOMAIN_ID
 	// and OS_USER_DOMAIN_NAME/OS_PROJECT_DOMAIN_NAME/OS_DOMAIN_NAME
-	// Allow setting OS_USER_DOMAIN_ID and OS_PROJECT_DOMAIN_ID if they are equal
-	if v1, v2 := os.Getenv("OS_USER_DOMAIN_ID"), os.Getenv("OS_PROJECT_DOMAIN_ID"); v1 != v2 {
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_USER_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID"},
-			}
-			return nilOptions, err
-		}
+	if err := requireEnvVarsMatch("OS_USER_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID", "OS_DOMAIN_ID"); err != nil {
+		return nilOptions, err
 	}
-
-	// Allow setting OS_USER_DOMAIN_ID and OS_DOMAIN_ID if they are equal
-	if v1, v2 := os.Getenv("OS_USER_DOMAIN_ID"), os.Getenv("OS_DOMAIN_ID"); v1 != v2 {
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_USER_DOMAIN_ID", "OS_DOMAIN_ID"},
-			}
-			return nilOptions, err
-		}
-	}
-
-	// Allow setting OS_DOMAIN_ID and OS_PROJECT_DOMAIN_ID if they are equal
-	if v1, v2 := os.Getenv("OS_DOMAIN_ID"), os.Getenv("OS_PROJECT_DOMAIN_ID"); v1 != v2 {
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID"},
-			}
-			return nilOptions, err
-		}
-	}
-
-	// Allow setting OS_USER_DOMAIN_ID, OS_PROJECT_DOMAIN_ID, and OS_DOMAIN_ID if they are equal
-	if v1, v2, v3 := os.Getenv("OS_USER_DOMAIN_ID"), os.Getenv("OS_PROJECT_DOMAIN_ID"), os.Getenv("OS_DOMAIN_ID"); v1 != v2 || v2 != v3 {
-		// Do nothing if any one is not set
-		if v1 != "" && v2 != "" && v3 != "" {
-			// If you get here, it's because all three have been set and they aren't all equal
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_DOMAIN_ID", "OS_USER_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID"},
-			}
-			return nilOptions, err
-		}
-	}
-
-	// Allow setting OS_USER_DOMAIN_NAME and OS_PROJECT_DOMAIN_NAME if they are equal
-	if v1, v2 := os.Getenv("OS_USER_DOMAIN_NAME"), os.Getenv("OS_PROJECT_DOMAIN_NAME"); v1 != v2 {
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_USER_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME"},
-			}
-			return nilOptions, err
-		}
-	}
-
-	// Allow setting OS_USER_DOMAIN_NAME and OS_DOMAIN_NAME if they are equal
-	if v1, v2 := os.Getenv("OS_USER_DOMAIN_NAME"), os.Getenv("OS_DOMAIN_NAME"); v1 != v2 {
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_USER_DOMAIN_NAME", "OS_DOMAIN_NAME"},
-			}
-			return nilOptions, err
-		}
-	}
-
-	// Allow setting OS_DOMAIN_NAME and OS_PROJECT_DOMAIN_NAME if they are equal
-	if v1, v2 := os.Getenv("OS_DOMAIN_NAME"), os.Getenv("OS_PROJECT_DOMAIN_NAME"); v1 != v2 {
-		// Do nothing if one is set and the other isn't
-		if v1 != "" && v2 != "" {
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME"},
-			}
-			return nilOptions, err
-		}
-	}
-
-	// Allow setting OS_USER_DOMAIN_NAME, OS_PROJECT_DOMAIN_NAME, and OS_DOMAIN_NAME if they are equal
-	if v1, v2, v3 := os.Getenv("OS_USER_DOMAIN_NAME"), os.Getenv("OS_PROJECT_DOMAIN_NAME"), os.Getenv("OS_DOMAIN_NAME"); v1 != v2 || v2 != v3 {
-
-		// Do nothing if any one is not set
-		if v1 != "" && v2 != "" && v3 != "" {
-			// If you get here, it's because all three have been set and they aren't all equal
-			err := gophercloud.ErrEnvironmentVarsExpectedEqual{
-				EnvironmentVariables: []string{"OS_DOMAIN_NAME", "OS_USER_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME"},
-			}
-			return nilOptions, err
-		}
+	if err := requireEnvVarsMatch("OS_USER_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME", "OS_DOMAIN_NAME"); err != nil {
+		return nilOptions, err
 	}
 
 	// Keep track of how domainID or domainName is overwritten
@@ -204,16 +102,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 
 	// Check for cross-type conflicts: OS_DOMAIN_NAME.
 	// Mirrors downstream logic where ID and NAME cannot be used together
-	if (userDomainID != "" || projectDomainID != "") && domainName != "" {
-		var conflictingVar string
-		if userDomainID != "" {
-			conflictingVar = "OS_USER_DOMAIN_ID"
-		} else {
-			conflictingVar = "OS_PROJECT_DOMAIN_ID"
-		}
-		err := gophercloud.ErrAmbiguousEnvironmentVarsClash{
-			EnvironmentVariables: []string{"OS_DOMAIN_NAME", conflictingVar},
-		}
+	if err := requireNoCrossTypeConflict("OS_DOMAIN_NAME", []string{"OS_USER_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID"}); err != nil {
 		return nilOptions, err
 	}
 
@@ -233,16 +122,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 
 	// Check for cross-type conflicts: OS_DOMAIN_ID
 	// Mirrors downstream logic where ID and NAME cannot be used together
-	if (userDomainName != "" || projectDomainName != "") && domainID != "" {
-		var conflictingVar string
-		if userDomainName != "" {
-			conflictingVar = "OS_USER_DOMAIN_NAME"
-		} else {
-			conflictingVar = "OS_PROJECT_DOMAIN_NAME"
-		}
-		err := gophercloud.ErrAmbiguousEnvironmentVarsClash{
-			EnvironmentVariables: []string{"OS_DOMAIN_ID", conflictingVar},
-		}
+	if err := requireNoCrossTypeConflict("OS_DOMAIN_ID", []string{"OS_USER_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME"}); err != nil {
 		return nilOptions, err
 	}
 
@@ -336,4 +216,42 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	}
 
 	return ao, nil
+}
+
+// requireEnvVarsMatch checks that all non-empty env vars in the list share the same value.
+// Returns ErrEnvironmentVarsExpectedEqual naming the first conflicting pair found.
+func requireEnvVarsMatch(varNames ...string) error {
+	var refVal, refName string
+	for _, name := range varNames {
+		v := os.Getenv(name)
+		if v == "" {
+			continue
+		}
+		if refVal == "" {
+			refVal, refName = v, name
+			continue
+		}
+		if v != refVal {
+			return gophercloud.ErrEnvironmentVarsExpectedEqual{
+				EnvironmentVariables: []string{refName, name},
+			}
+		}
+	}
+	return nil
+}
+
+// requireNoCrossTypeConflict checks that vars are not set
+// at the same time as baseVarName (typically an ID var conflicting with a Name var or vice-versa).
+// Returns ErrAmbiguousEnvironmentVarsClash if there is a cross-type conflict
+func requireNoCrossTypeConflict(baseVarName string, varNames []string) error {
+	for _, v := range varNames {
+		if os.Getenv(v) != "" && os.Getenv(baseVarName) != "" {
+			return gophercloud.ErrAmbiguousEnvironmentVarsClash{
+				EnvironmentVariables: []string{baseVarName, v},
+			}
+		}
+
+	}
+
+	return nil
 }
