@@ -3,6 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"strings"
 	"testing"
@@ -67,6 +68,10 @@ func randomString(charset []rune, length int) string {
 // RandomInt will return a random integer between a specified range.
 func RandomInt(min, max int) int {
 	return rand.Intn(max-min) + min
+}
+
+func RandomUUID() string {
+	return fmt.Sprintf("%08x-0000-0000-0000-000000000000", rand.Int31())
 }
 
 // Elide returns the first bit of its input string with a suffix of "..." if it's longer than

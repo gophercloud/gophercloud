@@ -4,8 +4,6 @@ package v1
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
 	"net/http"
 	"testing"
 
@@ -22,7 +20,7 @@ func TestGetAllocationsSuccess(t *testing.T) {
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
-	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000000", rand.Int31())
+	consumerUUID := tools.RandomUUID()
 
 	// Assert: We don't have any allocations for this random UUID.
 	// We get an empty allocations map, not 404.
@@ -42,7 +40,7 @@ func TestUpdateAllocationsNewConsumerSuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000000", rand.Int31())
+	consumerUUID := tools.RandomUUID()
 	defer allocations.Delete(context.TODO(), client, consumerUUID)
 
 	client.Microversion = "1.28"
@@ -78,7 +76,7 @@ func TestUpdateAllocationsSuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000001", rand.Int31())
+	consumerUUID := tools.RandomUUID()
 	defer allocations.Delete(context.TODO(), client, consumerUUID)
 
 	client.Microversion = "1.28"
@@ -131,7 +129,7 @@ func TestUpdateAllocationsConflict(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000002", rand.Int31())
+	consumerUUID := tools.RandomUUID()
 	defer allocations.Delete(context.TODO(), client, consumerUUID)
 
 	client.Microversion = "1.28"
@@ -175,7 +173,7 @@ func TestDeleteAllocationsSuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	consumerUUID := fmt.Sprintf("%08x-0000-0000-0000-000000000003", rand.Int31())
+	consumerUUID := tools.RandomUUID()
 
 	client.Microversion = "1.28"
 
@@ -228,8 +226,8 @@ func TestManageAllocationsSuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
-	consumer1UUID := fmt.Sprintf("%08x-0000-0000-0000-000000000004", rand.Int31())
-	consumer2UUID := fmt.Sprintf("%08x-0000-0000-0000-000000000005", rand.Int31())
+	consumer1UUID := tools.RandomUUID()
+	consumer2UUID := tools.RandomUUID()
 	defer allocations.Delete(context.TODO(), client, consumer1UUID)
 	defer allocations.Delete(context.TODO(), client, consumer2UUID)
 
