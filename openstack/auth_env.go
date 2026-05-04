@@ -91,7 +91,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	}
 
 	// Disambiguate between OS_USER_DOMAIN_ID/OS_PROJECT_DOMAIN_ID/OS_DOMAIN_ID
-	// 		and OS_USER_DOMAIN_NAME/OS_PROJECT_DOMAIN_NAME/OS_DOMAIN_NAME
+	// and OS_USER_DOMAIN_NAME/OS_PROJECT_DOMAIN_NAME/OS_DOMAIN_NAME
 	// Allow setting OS_USER_DOMAIN_ID and OS_PROJECT_DOMAIN_ID if they are equal
 	if v1, v2 := os.Getenv("OS_USER_DOMAIN_ID"), os.Getenv("OS_PROJECT_DOMAIN_ID"); v1 != v2 {
 		// Do nothing if one is set and the other isn't
