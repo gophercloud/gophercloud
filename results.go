@@ -117,6 +117,9 @@ func (r Result) extractIntoPtr(to any, label string) error {
 						// a struct that is never used, but it's good enough to
 						// trigger the UnmarshalJSON method.
 						for i := 0; i < newType.NumField(); i++ {
+							if newType.Field(i).Kind() != reflect.Struct {
+								continue
+							}
 							s := newType.Field(i).Addr().Interface()
 
 							// Unmarshal is used rather than NewDecoder to also work
