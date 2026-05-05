@@ -78,6 +78,32 @@ func TestCreateWithFault(t *testing.T) {
 	th.AssertDeepEquals(t, &expectedInstanceWithFault, instance)
 }
 
+func TestCreateOptsToInstanceCreateMapAllowsSizeAbove300(t *testing.T) {
+	opts := instances.CreateOpts{
+		FlavorRef: "1",
+		Size:      301,
+	}
+
+	body, err := opts.ToInstanceCreateMap()
+	th.AssertNoErr(t, err)
+
+	instance := body["instance"].(map[string]any)
+	volume := instance["volume"].(map[string]any)
+	th.AssertEquals(t, 301, volume["size"])
+}
+
+func TestCreateOptsToInstanceCreateMapRejectsSizeBelow1(t *testing.T) {
+	opts := instances.CreateOpts{
+		FlavorRef: "1",
+		Size:      0,
+	}
+
+	_, err := opts.ToInstanceCreateMap()
+	if err == nil {
+		t.Fatalf("expected error for invalid size, got nil")
+	}
+}
+
 func TestInstanceList(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
