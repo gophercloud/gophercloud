@@ -56,8 +56,8 @@ type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
 	// reference as specified in the response from the List() call. Required.
 	FlavorRef string
-	// Specifies the volume size in gigabytes (GB). The value must be between 1
-	// and 300. Required.
+	// Specifies the volume size in gigabytes (GB). The value must be > 1.
+	// Required.
 	Size int
 	// Specifies the volume type.
 	VolumeType string
@@ -77,11 +77,11 @@ type CreateOpts struct {
 
 // ToInstanceCreateMap will render a JSON map.
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]any, error) {
-	if opts.Size > 300 || opts.Size < 1 {
+	if opts.Size < 1 {
 		err := gophercloud.ErrInvalidInput{}
 		err.Argument = "instances.CreateOpts.Size"
 		err.Value = opts.Size
-		err.Info = "Size (GB) must be between 1-300"
+		err.Info = "Size (GB) must be >= 1"
 		return nil, err
 	}
 
