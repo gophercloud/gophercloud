@@ -57,12 +57,6 @@ func ListByZone(client *gophercloud.ServiceClient, zoneID string, opts ListOptsB
 	})
 }
 
-// listAllRecordSetsURL builds the base URL for listing recordsets across all
-// zones.
-func listAllRecordSetsURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL("recordsets")
-}
-
 // ListAll implements the recordset list request across all zones.
 func ListAll(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listAllRecordSetsURL(client)
