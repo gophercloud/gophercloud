@@ -82,8 +82,7 @@ func TestRecordSetsListAll(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	listOpts := recordsets.ListOpts{
-		Limit:  1,
-		ZoneID: zone.ID,
+		Limit: 1,
 	}
 
 	pager := recordsets.ListAll(client, listOpts)
@@ -91,7 +90,7 @@ func TestRecordSetsListAll(t *testing.T) {
 		rr, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, len(rr), 1)
-		return true, nil
+		return false, nil
 	})
 	th.AssertNoErr(t, err)
 }
