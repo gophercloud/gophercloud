@@ -84,7 +84,7 @@ func (r Result) extractIntoPtr(to any, label string) error {
 	}
 
 	toValue := reflect.ValueOf(to)
-	if toValue.Kind() == reflect.Ptr {
+	if toValue.Kind() == reflect.Pointer {
 		toValue = toValue.Elem()
 	}
 
@@ -192,7 +192,7 @@ func (r Result) ExtractIntoStructPtr(to any, label string) error {
 	}
 
 	t := reflect.TypeOf(to)
-	if k := t.Kind(); k != reflect.Ptr {
+	if k := t.Kind(); k != reflect.Pointer {
 		return fmt.Errorf("expected pointer, got %v", k)
 	}
 
@@ -227,7 +227,7 @@ func (r Result) ExtractIntoSlicePtr(to any, label string) error {
 	}
 
 	t := reflect.TypeOf(to)
-	if k := t.Kind(); k != reflect.Ptr {
+	if k := t.Kind(); k != reflect.Pointer {
 		return fmt.Errorf("expected pointer, got %v", k)
 	}
 

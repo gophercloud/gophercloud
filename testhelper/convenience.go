@@ -142,7 +142,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 		}
 		deepDiffEqual(expected.Elem(), actual.Elem(), visited, path, logDifference)
 		return
-	case reflect.Ptr:
+	case reflect.Pointer:
 		deepDiffEqual(expected.Elem(), actual.Elem(), visited, path, logDifference)
 		return
 	case reflect.Struct:
