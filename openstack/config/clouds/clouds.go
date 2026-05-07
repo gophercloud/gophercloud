@@ -153,20 +153,57 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 
 	endpointType := coalesce(options.endpointType, cloud.EndpointType, cloud.Interface)
 
+	// Build the scope with proper project domain separation
 	var scope *gophercloud.AuthScope
 	if trustID := cloud.AuthInfo.TrustID; trustID != "" {
 		scope = &gophercloud.AuthScope{
 			TrustID: trustID,
 		}
+	} else if systemScope := cloud.AuthInfo.SystemScope; systemScope != "" {
+		// System scoping for admin operations
+		if systemScope != "all" {
+			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("only system scope of all is supported")
+		}
+		scope = &gophercloud.AuthScope{
+			System: true,
+		}
+	} else if projectID := coalesce(options.projectID, cloud.AuthInfo.ProjectID); projectID != "" {
+		// Project scoping by ID
+		scope = &gophercloud.AuthScope{
+			ProjectID: projectID,
+		}
+	} else if projectName := coalesce(options.projectName, cloud.AuthInfo.ProjectName); projectName != "" {
+		// Project scoping by name requires project domain
+		scope = &gophercloud.AuthScope{
+			ProjectName: projectName,
+			// The follow UP PR will remove the fallback to
+			// DomainID and DomainName, and will require the user
+			// to specify the project domain explicitly.
+			DomainID:   coalesce(cloud.AuthInfo.ProjectDomainID, cloud.AuthInfo.DomainID),
+			DomainName: coalesce(cloud.AuthInfo.ProjectDomainName, cloud.AuthInfo.DomainName),
+		}
+	} else if domainID := coalesce(options.domainID, cloud.AuthInfo.DomainID); domainID != "" {
+		// Domain scoping by ID (when no project is specified)
+		scope = &gophercloud.AuthScope{
+			DomainID: domainID,
+		}
+	} else if domainName := coalesce(options.domainName, cloud.AuthInfo.DomainName); domainName != "" {
+		// Domain scoping by name (when no project is specified)
+		scope = &gophercloud.AuthScope{
+			DomainName: domainName,
+		}
 	}
 
 	return gophercloud.AuthOptions{
-			IdentityEndpoint:            coalesce(options.authURL, cloud.AuthInfo.AuthURL),
-			Username:                    coalesce(options.username, cloud.AuthInfo.Username),
-			UserID:                      coalesce(options.userID, cloud.AuthInfo.UserID),
-			Password:                    coalesce(options.password, cloud.AuthInfo.Password),
-			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.UserDomainID, cloud.AuthInfo.ProjectDomainID, cloud.AuthInfo.DomainID),
-			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.UserDomainName, cloud.AuthInfo.ProjectDomainName, cloud.AuthInfo.DomainName),
+			IdentityEndpoint: coalesce(options.authURL, cloud.AuthInfo.AuthURL),
+			Username:         coalesce(options.username, cloud.AuthInfo.Username),
+			UserID:           coalesce(options.userID, cloud.AuthInfo.UserID),
+			Password:         coalesce(options.password, cloud.AuthInfo.Password),
+			// The follow UP PR will remove the fallback to
+			// DomainID and DomainName, and will require the user
+			// to specify the project domain explicitly.
+			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.UserDomainID, cloud.AuthInfo.DomainID),
+			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.UserDomainName, cloud.AuthInfo.DomainName),
 			TenantID:                    coalesce(options.projectID, cloud.AuthInfo.ProjectID),
 			TenantName:                  coalesce(options.projectName, cloud.AuthInfo.ProjectName),
 			TokenID:                     coalesce(options.token, cloud.AuthInfo.Token),
