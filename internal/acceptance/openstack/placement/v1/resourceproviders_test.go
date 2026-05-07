@@ -17,7 +17,6 @@ import (
 
 const InventoryResourceClass = "VCPU"
 const MissingInventoryResourceClass = "NO_SUCH_CLASS"
-const NonExistentRPUUID = "00000000-0000-0000-0000-000000000000"
 
 func TestResourceProviderList(t *testing.T) {
 	clients.RequireAdmin(t)
@@ -248,7 +247,7 @@ func TestResourceProviderUpdateInventoryNotFound(t *testing.T) {
 		},
 	}
 
-	_, err = resourceproviders.UpdateInventory(context.TODO(), client, NonExistentRPUUID, InventoryResourceClass, updateOpts).Extract()
+	_, err = resourceproviders.UpdateInventory(context.TODO(), client, tools.RandomUUID(), InventoryResourceClass, updateOpts).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
@@ -413,7 +412,7 @@ func TestResourceProviderUpdateInventoriesNotFound(t *testing.T) {
 		},
 	}
 
-	_, err = resourceproviders.UpdateInventories(context.TODO(), client, NonExistentRPUUID, updateOpts).Extract()
+	_, err = resourceproviders.UpdateInventories(context.TODO(), client, tools.RandomUUID(), updateOpts).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
@@ -487,11 +486,11 @@ func TestResourceProviderAggregatesNotFound(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	client.Microversion = "1.19"
-	_, err = resourceproviders.GetAggregates(context.TODO(), client, "00000000-0000-0000-0000-000000000000").Extract()
+	_, err = resourceproviders.GetAggregates(context.TODO(), client, tools.RandomUUID()).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 
 	client.Microversion = "1.1"
-	_, err = resourceproviders.GetAggregates(context.TODO(), client, "00000000-0000-0000-0000-000000000000").Extract()
+	_, err = resourceproviders.GetAggregates(context.TODO(), client, tools.RandomUUID()).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
@@ -515,8 +514,8 @@ func TestResourceProviderUpdateAggregates(t *testing.T) {
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		ResourceProviderGeneration: before.ResourceProviderGeneration,
 		Aggregates: []string{
-			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
-			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+			tools.RandomUUID(),
+			tools.RandomUUID(),
 		},
 	}
 
@@ -553,7 +552,7 @@ func TestResourceProviderUpdateAggregateMismatch(t *testing.T) {
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		ResourceProviderGeneration: &wrongGeneration,
 		Aggregates: []string{
-			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+			tools.RandomUUID(),
 		},
 	}
 
@@ -576,8 +575,8 @@ func TestResourceProviderUpdateAggregatesPreGeneration(t *testing.T) {
 
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		Aggregates: []string{
-			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
-			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+			tools.RandomUUID(),
+			tools.RandomUUID(),
 		},
 	}
 
@@ -612,8 +611,8 @@ func TestResourceProviderUpdateAggregatesPreGenerationWithGenerationSuccess(t *t
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		ResourceProviderGeneration: &gen,
 		Aggregates: []string{
-			"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
-			"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+			tools.RandomUUID(),
+			tools.RandomUUID(),
 		},
 	}
 
