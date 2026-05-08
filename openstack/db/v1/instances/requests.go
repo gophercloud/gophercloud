@@ -56,7 +56,7 @@ type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
 	// reference as specified in the response from the List() call. Required.
 	FlavorRef string
-	// Specifies the volume size in gigabytes (GB). The value must be > 1.
+	// Specifies the volume size in gigabytes (GB). The value must be >= 1. The upper limit is specific to each OpenStack environment.
 	// Required.
 	Size int
 	// Specifies the volume type.
