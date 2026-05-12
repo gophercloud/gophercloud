@@ -153,7 +153,7 @@ func TestUpdateResourceProvidersInventories(t *testing.T) {
 
 	HandleResourceProviderPutInventories(t, fakeServer)
 
-	opts := resourceproviders.UpdateInventoriesOpts(ExpectedInventories)
+	opts := ToUpdateInventoriesOpts(ExpectedInventories)
 	actual, err := resourceproviders.UpdateInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedInventories, *actual)
@@ -165,7 +165,7 @@ func TestUpdateResourceProvidersInventoriesNotFound(t *testing.T) {
 
 	HandleResourceProviderPutInventoriesNotFound(t, fakeServer)
 
-	opts := resourceproviders.UpdateInventoriesOpts(ExpectedInventories)
+	opts := ToUpdateInventoriesOpts(ExpectedInventories)
 	_, err := resourceproviders.UpdateInventories(context.TODO(), client.ServiceClient(fakeServer), NonExistentRPID, opts).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
@@ -176,7 +176,7 @@ func TestUpdateResourceProviderInventory(t *testing.T) {
 
 	HandleResourceProviderPutInventory(t, fakeServer)
 
-	opts := resourceproviders.UpdateInventoryOpts(ExpectedInventory)
+	opts := ToUpdateInventoryOpts(ExpectedInventory)
 	actual, err := resourceproviders.UpdateInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, PresentInventoryResourceClass, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedInventory, *actual)
@@ -188,7 +188,7 @@ func TestUpdateResourceProviderInventoryNotFound(t *testing.T) {
 
 	HandleResourceProviderPutInventoryNotFound(t, fakeServer)
 
-	opts := resourceproviders.UpdateInventoryOpts(ExpectedInventory)
+	opts := ToUpdateInventoryOpts(ExpectedInventory)
 	_, err := resourceproviders.UpdateInventory(context.TODO(), client.ServiceClient(fakeServer), NonExistentRPID, PresentInventoryResourceClass, opts).Extract()
 	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
