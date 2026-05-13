@@ -126,16 +126,24 @@ type UpdateOptsBuilder interface {
 type UpdateOpts struct {
 	Name *string `json:"name,omitempty"`
 	// Available in version >= 1.37. It can be set to any existing provider UUID
-	// except to providers that would cause a loop. Also it can be set to null
-	// to transform the provider to a new root provider. This operation needs to
-	// be used carefully. Moving providers can mean that the original rules used
-	// to create the existing resource allocations may be invalidated by that move.
+	// except to providers that would cause a loop. Using an empty string
+	// transforms the provider to a new root provider.
 	ParentProviderUUID *string `json:"parent_provider_uuid,omitempty"`
 }
 
 // ToResourceProviderUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToResourceProviderUpdateMap() (map[string]any, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	// In order to set this to null, use an empty string as a value.
+	if opts.ParentProviderUUID != nil && *opts.ParentProviderUUID == "" {
+		b["parent_provider_uuid"] = nil
+	}
+
+	return b, nil
 }
 
 // Update makes a request against the API to create a resource provider
