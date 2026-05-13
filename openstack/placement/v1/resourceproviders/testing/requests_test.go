@@ -104,6 +104,39 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, rp.ParentProviderUUID, parentProviderUUID)
 }
 
+func TestUpdateParentProviderUUID(t *testing.T) {
+	// 1. Test non-empty UUID
+	uuid := "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+	opts := resourceproviders.UpdateOpts{
+		ParentProviderUUID: &uuid,
+	}
+	actual, err := opts.ToResourceProviderUpdateMap()
+	th.AssertNoErr(t, err)
+	expected := map[string]any{
+		"parent_provider_uuid": uuid,
+	}
+	th.AssertDeepEquals(t, expected, actual)
+
+	// 2. Test empty string sentinel (should be null)
+	empty := ""
+	opts = resourceproviders.UpdateOpts{
+		ParentProviderUUID: &empty,
+	}
+	actual, err = opts.ToResourceProviderUpdateMap()
+	th.AssertNoErr(t, err)
+	expected = map[string]any{
+		"parent_provider_uuid": nil,
+	}
+	th.AssertDeepEquals(t, expected, actual)
+
+	// 3. Test nil (should be omitted)
+	opts = resourceproviders.UpdateOpts{}
+	actual, err = opts.ToResourceProviderUpdateMap()
+	th.AssertNoErr(t, err)
+	expected = map[string]any{}
+	th.AssertDeepEquals(t, expected, actual)
+}
+
 func TestGetResourceProvidersUsages(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
