@@ -18,6 +18,7 @@ type PortForwarding struct {
 
 	// The TCP/UDP/other protocol port number of the port forwarding’s floating IP address.
 	ExternalPort int `json:"external_port"`
+	ExternalPortRange string `json:"external_port_range"`
 
 	// The IP protocol used in the floating IP port forwarding.
 	Protocol string `json:"protocol"`
@@ -25,6 +26,7 @@ type PortForwarding struct {
 	// The TCP/UDP/other protocol port number of the Neutron port fixed
 	// IP address associated to the floating ip port forwarding.
 	InternalPort int `json:"internal_port"`
+	InternalPortRange string `json:"internal_port_range"`
 
 	// The fixed IPv4 address of the Neutron port associated
 	// to the floating IP port forwarding.
