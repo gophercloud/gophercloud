@@ -61,7 +61,9 @@ func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecp
 	t.Logf("Attempting to create IPSec policy %s", policyName)
 
 	createOpts := ipsecpolicies.CreateOpts{
-		Name: policyName,
+		Name:                policyName,
+		EncryptionAlgorithm: ipsecpolicies.EncryptionAlgorithmAES128,
+		AuthAlgorithm:       ipsecpolicies.AuthAlgorithmAESCMAC,
 	}
 
 	policy, err := ipsecpolicies.Create(context.TODO(), client, createOpts).Extract()
@@ -85,8 +87,9 @@ func CreateIKEPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ikepolic
 
 	createOpts := ikepolicies.CreateOpts{
 		Name:                policyName,
-		EncryptionAlgorithm: ikepolicies.EncryptionAlgorithm3DES,
+		EncryptionAlgorithm: ikepolicies.EncryptionAlgorithmAES128,
 		PFS:                 ikepolicies.PFSGroup5,
+		AuthAlgorithm:       ikepolicies.AuthAlgorithmSHA256,
 	}
 
 	policy, err := ikepolicies.Create(context.TODO(), client, createOpts).Extract()
@@ -195,7 +198,6 @@ func DeleteEndpointGroup(t *testing.T, client *gophercloud.ServiceClient, epGrou
 	}
 
 	t.Logf("Deleted endpoint group: %s", epGroupID)
-
 }
 
 // CreateEndpointGroupWithSubnet will create an endpoint group with a random name.
