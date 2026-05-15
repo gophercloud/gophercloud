@@ -97,6 +97,35 @@ func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 	return pf, err
 }
 
+// CreatePortRangeForwarding creates a port range forwarding for a given floating IP
+// and port. An error will be returned if the creation failed.
+func CreatePortRangeForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, portID string, portFixedIPs []ports.IP) (*portforwarding.PortForwarding, error) {
+	t.Logf("Attempting to create Port Range forwarding for floating IP with ID: %s", fipID)
+
+	fixedIP := portFixedIPs[0]
+	internalIP := fixedIP.IPAddress
+	pfDescription := "Test description range"
+	createOpts := &portforwarding.CreateOpts{
+		Description:       pfDescription,
+		Protocol:          "tcp",
+		InternalPortRange: "1200:1299",
+		ExternalPortRange: "1200:1299",
+		InternalIPAddress: internalIP,
+		InternalPortID:    portID,
+	}
+
+	pf, err := portforwarding.Create(context.TODO(), client, fipID, createOpts).Extract()
+	if err != nil {
+		return pf, err
+	}
+
+	t.Logf("Created Port Range Forwarding.")
+
+	th.AssertEquals(t, pf.Protocol, "tcp")
+
+	return pf, err
+}
+
 // DeletePortForwarding deletes a Port Forwarding with a given ID and a given floating IP ID.
 // A fatal error is returned if the deletion fails. Works best as a deferred function
 func DeletePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, pfID string) {
