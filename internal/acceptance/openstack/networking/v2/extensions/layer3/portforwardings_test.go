@@ -60,6 +60,13 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
 
+	pfRange, err := CreatePortRangeForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, pfRange.Description, "Test description range")
+	defer DeletePortForwarding(t, client, fip.ID, pfRange.ID)
+	tools.PrintResource(t, pfRange)
+
+	// Test updating port
 	newPf, err := portforwarding.Get(context.TODO(), client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
 
@@ -77,6 +84,27 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newPf.Description, "")
 
+	// Test updating port range
+	newRangePf, err := portforwarding.Get(context.TODO(), client, fip.ID, pfRange.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	updateOpts = portforwarding.UpdateOpts{
+		Description:       new(string),
+		Protocol:          "tcp",
+		InternalPortRange: "1300:1399",
+		ExternalPortRange: "1300:1399",
+	}
+
+	_, err = portforwarding.Update(context.TODO(), client, fip.ID, newRangePf.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	newRangePf, err = portforwarding.Get(context.TODO(), client, fip.ID, pfRange.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newRangePf.Description, "")
+	th.AssertEquals(t, newRangePf.Protocol, "tcp")
+	th.AssertEquals(t, newRangePf.InternalPortRange, "1300:1399")
+	th.AssertEquals(t, newRangePf.ExternalPortRange, "1300:1399")
+
 	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
@@ -86,6 +114,15 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	var found bool
 	for _, pf := range allPFs {
 		if pf.ID == newPf.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, true, found)
+
+	found = false
+	for _, pf := range allPFs {
+		if pf.ID == newRangePf.ID {
 			found = true
 		}
 	}

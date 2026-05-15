@@ -20,11 +20,21 @@ const PoFw_second = `{
       "id": "e0a0274e-4d19-4eab-9e12-9e77a8caf3ea"
     }`
 
+const PoFw_third = `{
+      "protocol": "tcp",
+      "internal_ip_address": "10.0.0.19",
+      "internal_port_range": "1200:1299",
+      "internal_port_id": "dba563d2-aa9e-4a21-8cc2-3e0bdec9015a",
+      "external_port_range": "1100:1199",
+      "id": "f3a9f921-6bed-492b-a3fa-32a76fdd0159"
+    }`
+
 var ListResponse = fmt.Sprintf(`
 {
     "port_forwardings": [
 %s,
+%s,
 %s
     ]
 }
-`, PoFw, PoFw_second)
+`, PoFw, PoFw_second, PoFw_third)
