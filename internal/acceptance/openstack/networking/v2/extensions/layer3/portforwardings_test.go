@@ -60,6 +60,12 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
 
+	pfRange, err := CreatePortRangeForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, pfRange.Description, "Test description range")
+	defer DeletePortForwarding(t, client, fip.ID, pfRange.ID)
+	tools.PrintResource(t, pfRange)
+
 	newPf, err := portforwarding.Get(context.TODO(), client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
 
@@ -86,6 +92,15 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	var found bool
 	for _, pf := range allPFs {
 		if pf.ID == newPf.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, true, found)
+
+	found = false
+	for _, pf := range allPFs {
+		if pf.ID == pfRange.ID {
 			found = true
 		}
 	}

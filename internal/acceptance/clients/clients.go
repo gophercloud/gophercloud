@@ -496,8 +496,15 @@ func NewNetworkV2Client() (*gophercloud.ServiceClient, error) {
 
 	client = configureDebug(client)
 
+	// Read the interface type from environment, fallback to public if empty
+        endpointInterface := os.Getenv("OS_INTERFACE")
+        if endpointInterface == "" {
+                endpointInterface = os.Getenv("OS_ENDPOINT_TYPE")
+        }
+
 	return openstack.NewNetworkV2(context.TODO(), client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
+		Availability: gophercloud.Availability(endpointInterface), // Converts string to gophercloud.Availability type
 	})
 }
 
