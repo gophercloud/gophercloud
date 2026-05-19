@@ -29,7 +29,7 @@ type PortForwarding struct {
 	// IP address associated to the floating ip port forwarding.
 	InternalPort int `json:"internal_port"`
 
-	// The TCP/UDP/other protocol port number of the Neutron port fixed
+	// The TCP/UDP/other protocol port range of the Neutron port fixed
 	// IP address associated to the floating ip port forwarding.
 	InternalPortRange string `json:"internal_port_range"`
 
