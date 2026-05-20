@@ -89,8 +89,8 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	updateOpts = portforwarding.UpdateOpts{
-		Description:  new(string),
-		Protocol:     "udp",
+		Description:       new(string),
+		Protocol:          "udp",
 		InternalPortRange: "1300:1399",
 		ExternalPortRange: "1300:1399",
 	}
@@ -101,7 +101,6 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	newRangePf, err = portforwarding.Get(context.TODO(), client, fip.ID, pfRange.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newRangePf.Description, "")
-
 
 	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
