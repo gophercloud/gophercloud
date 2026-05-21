@@ -6,6 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -87,21 +88,21 @@ func CreateResourceProviderWithVCPUInventory(t *testing.T, client *gophercloud.S
 
 	updatedInventories, err := resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			"VCPU": {
-				AllocationRatio: 1.0,
-				MaxUnit:         8,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(8),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           8,
 			},
 			"MEMORY_MB": {
-				AllocationRatio: 1.0,
-				MaxUnit:         8192,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(8192),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           8192,
 			},
 		},
