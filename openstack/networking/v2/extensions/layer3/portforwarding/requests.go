@@ -21,6 +21,7 @@ type ListOpts struct {
 	Description       string `q:"description"`
 	InternalPortID    string `q:"internal_port_id"`
 	ExternalPort      string `q:"external_port"`
+	ExternalPortRange string `q:"external_port_range"`
 	InternalIPAddress string `q:"internal_ip_address"`
 	Protocol          string `q:"protocol"`
 	InternalPort      string `q:"internal_port"`
@@ -67,8 +68,10 @@ type CreateOpts struct {
 	Description       string `json:"description,omitempty"`
 	InternalPortID    string `json:"internal_port_id"`
 	InternalIPAddress string `json:"internal_ip_address"`
-	InternalPort      int    `json:"internal_port"`
-	ExternalPort      int    `json:"external_port"`
+	InternalPort      int    `json:"internal_port,omitempty"`
+	InternalPortRange string `json:"internal_port_range,omitempty"`
+	ExternalPort      int    `json:"external_port,omitempty"`
+	ExternalPortRange string `json:"external_port_range,omitempty"`
 	Protocol          string `json:"protocol"`
 }
 
@@ -103,7 +106,9 @@ type UpdateOpts struct {
 	InternalPortID    string  `json:"internal_port_id,omitempty"`
 	InternalIPAddress string  `json:"internal_ip_address,omitempty"`
 	InternalPort      int     `json:"internal_port,omitempty"`
+	InternalPortRange string  `json:"internal_port_range,omitempty"`
 	ExternalPort      int     `json:"external_port,omitempty"`
+	ExternalPortRange string  `json:"external_port_range,omitempty"`
 	Protocol          string  `json:"protocol,omitempty"`
 }
 
