@@ -6,6 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/external"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/addressgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/groups"
@@ -123,8 +124,8 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 		Direction:    "ingress",
 		EtherType:    "IPv4",
 		SecGroupID:   secGroupID,
-		PortRangeMin: fromPort,
-		PortRangeMax: toPort,
+		PortRangeMin: ptr.To(fromPort),
+		PortRangeMax: ptr.To(toPort),
 		Protocol:     rules.ProtocolTCP,
 	}
 
@@ -156,8 +157,8 @@ func CreateSecurityGroupRulesBulk(t *testing.T, client *gophercloud.ServiceClien
 			Direction:    "ingress",
 			EtherType:    "IPv4",
 			SecGroupID:   secGroupID,
-			PortRangeMin: fromPort,
-			PortRangeMax: toPort,
+			PortRangeMin: ptr.To(fromPort),
+			PortRangeMax: ptr.To(toPort),
 			Protocol:     rules.ProtocolTCP,
 		}
 	}
