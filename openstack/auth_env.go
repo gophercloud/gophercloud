@@ -24,8 +24,14 @@ OS_PROJECT_NAME and the latter are expected against a v3 auth api.
 If OS_PROJECT_ID and OS_PROJECT_NAME are set, they will still be referred
 as "tenant" in Gophercloud.
 
-If OS_PROJECT_NAME is set, it requires OS_DOMAIN_ID or OS_DOMAIN_NAME to be
-set as well to handle projects not on the default domain.
+If OS_PROJECT_NAME is set, it requires OS_PROJECT_DOMAIN_ID or OS_PROJECT_DOMAIN_NAME
+to be set as well to handle projects not on the default domain. Previous versions of
+gophercloud allowed OS_DOMAIN_ID and OS_DOMAIN_NAME to be used, so they are
+still accepted for backwards compatibility.
+
+Previous versions of gophercloud did not require OS_USER_DOMAIN_ID or OS_USER_DOMAIN_NAME
+when using OS_USERNAME - instead it relied solely on OS_DOMAIN_NAME and OS_DOMAIN_ID. Now,
+all the above are accepted for backwards compatibility.
 
 To use this function, first set the OS_* environment variables (for example,
 by sourcing an `openrc` file), then:
@@ -48,6 +54,14 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	applicationCredentialSecret := os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET")
 	systemScope := os.Getenv("OS_SYSTEM_SCOPE")
 
+	// Disambiguate deprecated OS_TENANT_* vars with their OS_PROJECT_* equivalents
+	if err := requireEnvVarsMatch("OS_TENANT_ID", "OS_PROJECT_ID"); err != nil {
+		return nilOptions, err
+	}
+	if err := requireEnvVarsMatch("OS_TENANT_NAME", "OS_PROJECT_NAME"); err != nil {
+		return nilOptions, err
+	}
+
 	// If OS_PROJECT_ID is set, overwrite tenantID with the value.
 	if v := os.Getenv("OS_PROJECT_ID"); v != "" {
 		tenantID = v
@@ -56,6 +70,74 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	// If OS_PROJECT_NAME is set, overwrite tenantName with the value.
 	if v := os.Getenv("OS_PROJECT_NAME"); v != "" {
 		tenantName = v
+	}
+
+	// Disambiguate between OS_USER_DOMAIN_ID/OS_PROJECT_DOMAIN_ID/OS_DOMAIN_ID
+	// and OS_USER_DOMAIN_NAME/OS_PROJECT_DOMAIN_NAME/OS_DOMAIN_NAME
+	if err := requireEnvVarsMatch("OS_USER_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID", "OS_DOMAIN_ID"); err != nil {
+		return nilOptions, err
+	}
+	if err := requireEnvVarsMatch("OS_USER_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME", "OS_DOMAIN_NAME"); err != nil {
+		return nilOptions, err
+	}
+
+	// Keep track of how domainID or domainName is overwritten
+	domainSources := map[string]string{
+		"domainID":   "OS_DOMAIN_ID",
+		"domainName": "OS_DOMAIN_NAME",
+	}
+
+	userDomainID := os.Getenv("OS_USER_DOMAIN_ID")
+	projectDomainID := os.Getenv("OS_PROJECT_DOMAIN_ID")
+
+	// If OS_USER_DOMAIN_ID or OS_PROJECT_DOMAIN_ID is set, overwrite domainID with the value.
+	if userDomainID != "" && domainID == "" {
+		domainID = userDomainID
+		domainSources["domainID"] = "OS_USER_DOMAIN_ID"
+		// No conflicts, OS_PROJECT_DOMAIN_ID provided
+	} else if projectDomainID != "" && domainID == "" {
+		domainID = projectDomainID
+		domainSources["domainID"] = "OS_PROJECT_DOMAIN_ID"
+	}
+
+	// Check for cross-type conflicts: OS_DOMAIN_NAME.
+	// Mirrors downstream logic where ID and NAME cannot be used together
+	if err := requireNoCrossTypeConflict("OS_DOMAIN_NAME", []string{"OS_USER_DOMAIN_ID", "OS_PROJECT_DOMAIN_ID"}); err != nil {
+		return nilOptions, err
+	}
+
+	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
+	projectDomainName := os.Getenv("OS_PROJECT_DOMAIN_NAME")
+
+	// If OS_USER_DOMAIN_NAME or OS_PROJECT_DOMAIN_NAME is set, overwrite domainName with the value.
+	if userDomainName != "" && domainName == "" {
+		domainName = userDomainName
+		domainSources["domainName"] = "OS_USER_DOMAIN_NAME"
+		// No conflicts, OS_PROJECT_DOMAIN_NAME provided
+	} else if projectDomainName != "" && domainName == "" {
+		domainName = projectDomainName
+		domainSources["domainName"] = "OS_PROJECT_DOMAIN_NAME"
+
+	}
+
+	// Check for cross-type conflicts: OS_DOMAIN_ID
+	// Mirrors downstream logic where ID and NAME cannot be used together
+	if err := requireNoCrossTypeConflict("OS_DOMAIN_ID", []string{"OS_USER_DOMAIN_NAME", "OS_PROJECT_DOMAIN_NAME"}); err != nil {
+		return nilOptions, err
+	}
+
+	// Flag case where both domainID and domainName are both set by either OS_USER_DOMAIN_X or OS_PROJECT_DOMAIN_X
+	// Mirrors downstream logic where ID and NAME cannot be used together
+	// Downstream error handling deals with the case where OS_DOMAIN_ID and OS_DOMAIN_NAME are both set
+	if domainID != "" && domainName != "" &&
+		domainSources["domainID"] != "OS_DOMAIN_ID" &&
+		domainSources["domainName"] != "OS_DOMAIN_NAME" {
+		// One of OS_USER_DOMAIN_ID/OS_PROJECT_DOMAIN_ID or
+		// OS_USER_DOMAIN_NAME/OS_PROJECT_DOMAIN_NAME can be used
+		err := gophercloud.ErrAmbiguousEnvironmentVarsClash{
+			EnvironmentVariables: []string{domainSources["domainName"], domainSources["domainID"]},
+		}
+		return nilOptions, err
 	}
 
 	if authURL == "" {
@@ -134,4 +216,42 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	}
 
 	return ao, nil
+}
+
+// requireEnvVarsMatch checks that all non-empty env vars in the list share the same value.
+// Returns ErrEnvironmentVarsExpectedEqual naming the first conflicting pair found.
+func requireEnvVarsMatch(varNames ...string) error {
+	var refVal, refName string
+	for _, name := range varNames {
+		v := os.Getenv(name)
+		if v == "" {
+			continue
+		}
+		if refVal == "" {
+			refVal, refName = v, name
+			continue
+		}
+		if v != refVal {
+			return gophercloud.ErrEnvironmentVarsExpectedEqual{
+				EnvironmentVariables: []string{refName, name},
+			}
+		}
+	}
+	return nil
+}
+
+// requireNoCrossTypeConflict checks that vars are not set
+// at the same time as baseVarName (typically an ID var conflicting with a Name var or vice-versa).
+// Returns ErrAmbiguousEnvironmentVarsClash if there is a cross-type conflict
+func requireNoCrossTypeConflict(baseVarName string, varNames []string) error {
+	for _, v := range varNames {
+		if os.Getenv(v) != "" && os.Getenv(baseVarName) != "" {
+			return gophercloud.ErrAmbiguousEnvironmentVarsClash{
+				EnvironmentVariables: []string{baseVarName, v},
+			}
+		}
+
+	}
+
+	return nil
 }
