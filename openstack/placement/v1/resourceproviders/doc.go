@@ -17,6 +17,29 @@ Example to list resource providers
 		fmt.Printf("%+v\n", r)
 	}
 
+Example to list resource providers with repeating member_of and required parameters (microversion >= 1.39)
+
+	placementClient.Microversion = "1.39"
+
+	listOpts := resourceproviders.ListOpts139{
+		MemberOf: []string{"42896e0d-205d-4fe3-bd1e-100924931787", "in:7834d585-31d4-486f-be8c-b3c1a58ca710,5e08ea53-c4c6-448e-9334-ac4953de3cfa"},
+		Required: []string{"CUSTOM_TRAIT1", "CUSTOM_TRAIT2"},
+	}
+
+	allPages, err := resourceproviders.List(placementClient, listOpts).AllPages(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+
+	allResourceProviders, err := resourceproviders.ExtractResourceProviders(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, r := range allResourceProviders {
+		fmt.Printf("%+v\n", r)
+	}
+
 Example to create resource providers
 
 	createOpts := resourceproviders.CreateOpts{
