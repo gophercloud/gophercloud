@@ -6,6 +6,8 @@ const (
 	rootPath = "servers"
 
 	resourcePath = "remote-consoles"
+
+	consolePath = "os-console-auth-tokens"
 )
 
 func rootURL(c *gophercloud.ServiceClient, serverID string) string {
@@ -14,4 +16,8 @@ func rootURL(c *gophercloud.ServiceClient, serverID string) string {
 
 func createURL(c *gophercloud.ServiceClient, serverID string) string {
 	return rootURL(c, serverID)
+}
+
+func getConsoleURL(c *gophercloud.ServiceClient, console string) string {
+	return c.ServiceURL(consolePath, console)
 }
