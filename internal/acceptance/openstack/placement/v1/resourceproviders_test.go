@@ -627,3 +627,41 @@ func TestResourceProviderUpdateAggregatesPreGenerationWithGenerationSuccess(t *t
 		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
 	}
 }
+
+func TestResourceProviderParentDetach(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	// Arrange: Create a parent resource provider
+	parentProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, parentProvider.UUID)
+
+	// Arrange: Create a child resource provider with that parent
+	childProvider, err := CreateResourceProviderWithParent(t, client, parentProvider.UUID)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, childProvider.UUID)
+
+	// Sanity check: Verify that the child provider has the correct parent before the update
+	th.AssertEquals(t, parentProvider.UUID, childProvider.ParentProviderUUID)
+
+	// Act: Update the child resource provider to remove the parent (transform to root)
+	client.Microversion = "1.37"
+	empty := ""
+	updateOpts := resourceproviders.UpdateOpts{
+		Name:               &childProvider.Name,
+		ParentProviderUUID: &empty,
+	}
+	updatedChild, err := resourceproviders.Update(context.TODO(), client, childProvider.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	// Assert: Verify that the ParentProviderUUID is now null (empty string in Gophercloud result struct)
+	th.AssertEquals(t, "", updatedChild.ParentProviderUUID)
+
+	// Assert: Double check with a Get request
+	childGet, err := resourceproviders.Get(context.TODO(), client, childProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", childGet.ParentProviderUUID)
+}
