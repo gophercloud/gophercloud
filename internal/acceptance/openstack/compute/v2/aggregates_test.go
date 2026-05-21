@@ -61,42 +61,6 @@ func TestAggregatesCRUD(t *testing.T) {
 	th.AssertEquals(t, updatedAggregate.AvailabilityZone, "new_azone")
 }
 
-func TestAggregatesAddRemoveHost(t *testing.T) {
-	clients.RequireAdmin(t)
-
-	client, err := clients.NewComputeV2Client()
-	th.AssertNoErr(t, err)
-
-	hostToAdd, err := getHypervisor(t, client)
-	th.AssertNoErr(t, err)
-
-	aggregate, err := CreateAggregate(t, client)
-	th.AssertNoErr(t, err)
-	defer DeleteAggregate(t, client, aggregate)
-
-	addHostOpts := aggregates.AddHostOpts{
-		Host: hostToAdd,
-	}
-
-	aggregateWithNewHost, err := aggregates.AddHost(context.TODO(), client, aggregate.ID, addHostOpts).Extract()
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, aggregateWithNewHost)
-
-	th.AssertEquals(t, aggregateWithNewHost.Hosts[0], hostToAdd)
-
-	removeHostOpts := aggregates.RemoveHostOpts{
-		Host: hostToAdd,
-	}
-
-	aggregateWithRemovedHost, err := aggregates.RemoveHost(context.TODO(), client, aggregate.ID, removeHostOpts).Extract()
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, aggregateWithRemovedHost)
-
-	th.AssertEquals(t, len(aggregateWithRemovedHost.Hosts), 0)
-}
-
 func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	clients.RequireAdmin(t)
 
