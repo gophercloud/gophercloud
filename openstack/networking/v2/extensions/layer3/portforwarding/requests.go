@@ -25,7 +25,6 @@ type ListOpts struct {
 	InternalIPAddress string `q:"internal_ip_address"`
 	Protocol          string `q:"protocol"`
 	InternalPort      string `q:"internal_port"`
-	InternalPortRange string `q:"internal_port_range"`
 	SortKey           string `q:"sort_key"`
 	SortDir           string `q:"sort_dir"`
 	Fields            string `q:"fields"`
