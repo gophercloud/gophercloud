@@ -71,10 +71,7 @@ EOL
 fi
 
 if _=$(openstack service list | grep container-infra); then
-    _MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep coreos | cut -d ' ' -f 1)
-    if [ -z "$_MAGNUM_IMAGE_ID" ]; then
-        _MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep -i atomic | cut -d ' ' -f 1)
-    fi
+    _MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep ubuntu | cut -d ' ' -f 1)
     cat >> "openrc" <<EOL
 export OS_MAGNUM_IMAGE_ID="$_MAGNUM_IMAGE_ID"
 export OS_MAGNUM_KEYPAIR=magnum
