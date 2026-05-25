@@ -120,6 +120,92 @@ func Replace(ctx context.Context, client *gophercloud.ServiceClient, configID st
 	return
 }
 
+// CreateParamOptsBuilder is the top-level interface for create parameter
+// options.
+type CreateParamOptsBuilder interface {
+	ToParamCreateMap() (map[string]any, error)
+}
+
+// CreateParamOpts represents options for registering a configuration parameter
+// for a datastore version.
+type CreateParamOpts struct {
+	// The name of the configuration parameter.
+	Name string
+	// The configuration parameter data type, for example "integer", "string",
+	// "float", or "boolean".
+	DataType string
+	// The minimum value for integer parameters.
+	MinSize *int
+	// The maximum value for integer parameters.
+	MaxSize *int
+	// Whether the database service needs to restart after this parameter
+	// changes.
+	RestartRequired bool
+}
+
+// ToParamCreateMap converts a CreateParamOpts struct into a request body.
+func (opts CreateParamOpts) ToParamCreateMap() (map[string]any, error) {
+	if opts.Name == "" {
+		return nil, gophercloud.ErrMissingInput{Argument: "Name"}
+	}
+	if opts.DataType == "" {
+		return nil, gophercloud.ErrMissingInput{Argument: "DataType"}
+	}
+
+	restartRequired := 0
+	if opts.RestartRequired {
+		restartRequired = 1
+	}
+
+	param := map[string]any{
+		"name":             opts.Name,
+		"data_type":        opts.DataType,
+		"restart_required": restartRequired,
+	}
+	if opts.MinSize != nil {
+		param["min_size"] = *opts.MinSize
+	}
+	if opts.MaxSize != nil {
+		param["max_size"] = *opts.MaxSize
+	}
+
+	return map[string]any{"configuration-parameter": param}, nil
+}
+
+// CreateDatastoreVersionParam registers a configuration parameter for a
+// datastore version. This is an admin-only API.
+func CreateDatastoreVersionParam(ctx context.Context, client *gophercloud.ServiceClient, versionID string, opts CreateParamOptsBuilder) (r CreateParamResult) {
+	b, err := opts.ToParamCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, createDSParamURL(client, versionID), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateDatastoreVersionParam updates a configuration parameter for a
+// datastore version. This is an admin-only API.
+func UpdateDatastoreVersionParam(ctx context.Context, client *gophercloud.ServiceClient, versionID, paramID string, opts CreateParamOptsBuilder) (r UpdateParamResult) {
+	b, err := opts.ToParamCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, updateDSParamURL(client, versionID, paramID), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteDatastoreVersionParam deletes a configuration parameter for a
+// datastore version. This is an admin-only API.
+func DeleteDatastoreVersionParam(ctx context.Context, client *gophercloud.ServiceClient, versionID, paramID string) (r DeleteParamResult) {
+	resp, err := client.Delete(ctx, updateDSParamURL(client, versionID, paramID), &gophercloud.RequestOpts{OkCodes: []int{204}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // Delete will permanently delete a configuration group. Please note that
 // config groups cannot be deleted whilst still attached to running instances -
 // you must detach and then delete them.
