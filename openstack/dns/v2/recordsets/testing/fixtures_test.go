@@ -199,23 +199,34 @@ var ExpectedRecordSetSlice = []recordsets.RecordSet{FirstRecordSet, SecondRecord
 // from ListByZoneOutput.
 var ExpectedRecordSetSliceLimited = []recordsets.RecordSet{SecondRecordSet}
 
+func handleListSuccessfully(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	th.TestMethod(t, r, "GET")
+	th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+	w.Header().Add("Content-Type", "application/json")
+	if err := r.ParseForm(); err != nil {
+		t.Errorf("Failed to parse request form %v", err)
+	}
+	marker := r.Form.Get("marker")
+	switch marker {
+	case "f7b10e9b-0cae-4a91-b162-562bc6096648":
+		fmt.Fprint(w, ListByZoneOutputLimited)
+	case "":
+		fmt.Fprint(w, ListByZoneOutput)
+	}
+}
+
 // HandleListByZoneSuccessfully configures the test server to respond to a ListByZone request.
 func HandleListByZoneSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		handleListSuccessfully(t, w, r)
+	})
+}
 
-		w.Header().Add("Content-Type", "application/json")
-		if err := r.ParseForm(); err != nil {
-			t.Errorf("Failed to parse request form %v", err)
-		}
-		marker := r.Form.Get("marker")
-		switch marker {
-		case "f7b10e9b-0cae-4a91-b162-562bc6096648":
-			fmt.Fprint(w, ListByZoneOutputLimited)
-		case "":
-			fmt.Fprint(w, ListByZoneOutput)
-		}
+// HandleListAllSuccessfully configures the test server to respond to a ListAll request.
+func HandleListAllSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/recordsets", func(w http.ResponseWriter, r *http.Request) {
+		handleListSuccessfully(t, w, r)
 	})
 }
 
