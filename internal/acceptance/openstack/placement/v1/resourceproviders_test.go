@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/traits"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -193,13 +194,13 @@ func TestResourceProviderInventory(t *testing.T) {
 
 	seededInventories, err := resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			InventoryResourceClass: {
-				AllocationRatio: 1.0,
-				MaxUnit:         4,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(4),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           4,
 			},
 		},
@@ -227,13 +228,13 @@ func TestResourceProviderInventoryNotFound(t *testing.T) {
 
 	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			InventoryResourceClass: {
-				AllocationRatio: 1.0,
-				MaxUnit:         4,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(4),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           4,
 			},
 		},
@@ -261,14 +262,14 @@ func TestResourceProviderUpdateInventory(t *testing.T) {
 	// Arrange: The resource class on this provider must exist first
 	seedOpts := resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			InventoryResourceClass: {
-				AllocationRatio: 1.0,
-				MaxUnit:         4,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
-				Total:           4,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(4),
+				MinUnit:         ptr.To(1),
+				// Skipping Reserved on purpose
+				StepSize: ptr.To(1),
+				Total:    4,
 			},
 		},
 	}
@@ -287,7 +288,13 @@ func TestResourceProviderUpdateInventory(t *testing.T) {
 
 	updateOpts := resourceproviders.UpdateInventoryOpts{
 		ResourceProviderGeneration: seededInventories.ResourceProviderGeneration,
-		Inventory:                  expectedInventory,
+		InventoryUpdateBase: resourceproviders.InventoryUpdateBase{
+			AllocationRatio: ptr.To(expectedInventory.AllocationRatio),
+			MaxUnit:         ptr.To(expectedInventory.MaxUnit),
+			MinUnit:         ptr.To(expectedInventory.MinUnit),
+			StepSize:        ptr.To(expectedInventory.StepSize),
+			Total:           expectedInventory.Total,
+		},
 	}
 
 	_, err = resourceproviders.UpdateInventory(context.TODO(), client, resourceProvider.UUID, InventoryResourceClass, updateOpts).Extract()
@@ -309,12 +316,12 @@ func TestResourceProviderUpdateInventoryNotFound(t *testing.T) {
 
 	updateOpts := resourceproviders.UpdateInventoryOpts{
 		ResourceProviderGeneration: 0,
-		Inventory: resourceproviders.Inventory{
-			AllocationRatio: 1.0,
-			MaxUnit:         1,
-			MinUnit:         1,
-			Reserved:        0,
-			StepSize:        1,
+		InventoryUpdateBase: resourceproviders.InventoryUpdateBase{
+			AllocationRatio: ptr.To(float32(1.0)),
+			MaxUnit:         ptr.To(1),
+			MinUnit:         ptr.To(1),
+			Reserved:        ptr.To(0),
+			StepSize:        ptr.To(1),
 			Total:           1,
 		},
 	}
@@ -339,13 +346,13 @@ func TestResourceProviderDeleteInventorySuccess(t *testing.T) {
 
 	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			InventoryResourceClass: {
-				AllocationRatio: 1.0,
-				MaxUnit:         4,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(4),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           4,
 			},
 		},
@@ -394,21 +401,21 @@ func TestResourceProviderDeleteInventoriesSuccess(t *testing.T) {
 
 	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			InventoryResourceClass: {
-				AllocationRatio: 1.0,
-				MaxUnit:         4,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(4),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           4,
 			},
 			"MEMORY_MB": {
-				AllocationRatio: 1.0,
-				MaxUnit:         1024,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(1024),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           1024,
 			},
 		},
@@ -454,7 +461,16 @@ func TestResourceProviderUpdateInventories(t *testing.T) {
 
 	updateOpts := resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
-		Inventories:                expectedInventories,
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
+			"DISK_GB": {
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(100),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
+				Total:           100,
+			},
+		},
 	}
 
 	_, err = resourceproviders.UpdateInventories(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
@@ -474,13 +490,13 @@ func TestResourceProviderUpdateInventoriesNotFound(t *testing.T) {
 
 	updateOpts := resourceproviders.UpdateInventoriesOpts{
 		ResourceProviderGeneration: 0,
-		Inventories: map[string]resourceproviders.Inventory{
+		Inventories: map[string]resourceproviders.InventoryUpdateBase{
 			InventoryResourceClass: {
-				AllocationRatio: 1.0,
-				MaxUnit:         1,
-				MinUnit:         1,
-				Reserved:        0,
-				StepSize:        1,
+				AllocationRatio: ptr.To(float32(1.0)),
+				MaxUnit:         ptr.To(1),
+				MinUnit:         ptr.To(1),
+				Reserved:        ptr.To(0),
+				StepSize:        ptr.To(1),
 				Total:           1,
 			},
 		},

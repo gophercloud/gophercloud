@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -841,4 +842,41 @@ func HandleResourceProviderUpdateAggregatesConflict(t *testing.T, fakeServer th.
 
 			w.WriteHeader(http.StatusConflict)
 		})
+}
+
+// ToInventoryUpdateBase converts a ResourceProvider Inventory result into its
+// corresponding Update (pointer) version. This is used in tests to facilitate
+// the mapping between API results (which contain values) and Update operations
+// (which use pointers for optionality).
+func ToInventoryUpdateBase(inv resourceproviders.Inventory) resourceproviders.InventoryUpdateBase {
+	return resourceproviders.InventoryUpdateBase{
+		AllocationRatio: ptr.To(inv.AllocationRatio),
+		MaxUnit:         ptr.To(inv.MaxUnit),
+		MinUnit:         ptr.To(inv.MinUnit),
+		Reserved:        ptr.To(inv.Reserved),
+		StepSize:        ptr.To(inv.StepSize),
+		Total:           inv.Total,
+	}
+}
+
+// ToUpdateInventoriesOpts converts a ResourceProviderInventories result into UpdateInventoriesOpts.
+func ToUpdateInventoriesOpts(inventories resourceproviders.ResourceProviderInventories) resourceproviders.UpdateInventoriesOpts {
+	opts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories:                make(map[string]resourceproviders.InventoryUpdateBase, len(inventories.Inventories)),
+	}
+
+	for resourceClass, inv := range inventories.Inventories {
+		opts.Inventories[resourceClass] = ToInventoryUpdateBase(inv)
+	}
+
+	return opts
+}
+
+// ToUpdateInventoryOpts converts a ResourceProviderInventory result into UpdateInventoryOpts.
+func ToUpdateInventoryOpts(inventory resourceproviders.ResourceProviderInventory) resourceproviders.UpdateInventoryOpts {
+	return resourceproviders.UpdateInventoryOpts{
+		ResourceProviderGeneration: inventory.ResourceProviderGeneration,
+		InventoryUpdateBase:        ToInventoryUpdateBase(inventory.Inventory),
+	}
 }
