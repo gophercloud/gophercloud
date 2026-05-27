@@ -10,6 +10,13 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
+func restoreClientMicroversion(client *gophercloud.ServiceClient) func() {
+	originalMicroversion := client.Microversion
+	return func() {
+		client.Microversion = originalMicroversion
+	}
+}
+
 func CreateResourceProvider(t *testing.T, client *gophercloud.ServiceClient) (*resourceproviders.ResourceProvider, error) {
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create resource provider: %s", name)
@@ -17,6 +24,8 @@ func CreateResourceProvider(t *testing.T, client *gophercloud.ServiceClient) (*r
 	createOpts := resourceproviders.CreateOpts{
 		Name: name,
 	}
+
+	defer restoreClientMicroversion(client)()
 
 	client.Microversion = "1.20"
 	resourceProvider, err := resourceproviders.Create(context.TODO(), client, createOpts).Extract()
@@ -40,6 +49,8 @@ func CreateResourceProviderWithParent(t *testing.T, client *gophercloud.ServiceC
 		Name:               name,
 		ParentProviderUUID: parentUUID,
 	}
+
+	defer restoreClientMicroversion(client)()
 
 	client.Microversion = "1.20"
 	resourceProvider, err := resourceproviders.Create(context.TODO(), client, createOpts).Extract()

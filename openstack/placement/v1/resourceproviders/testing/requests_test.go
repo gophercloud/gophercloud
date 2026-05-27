@@ -40,6 +40,33 @@ func TestListResourceProviders(t *testing.T) {
 	}
 }
 
+func TestListResourceProviders139(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleResourceProviderList139(t, fakeServer)
+
+	count := 0
+	opts := resourceproviders.ListOpts139{
+		MemberOf: []string{"a09ba171-9405-40ca-bfe1-a8d1208af2ed", "47abce38-8a58-47b3-81e0-c647e37e03ae"},
+		Required: []string{"HW:A_TRAIT", "CUSTOM_TRAIT"},
+	}
+	err := resourceproviders.List(client.ServiceClient(fakeServer), opts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := resourceproviders.ExtractResourceProviders(page)
+		if err != nil {
+			t.Errorf("Failed to extract resource providers: %v", err)
+			return false, err
+		}
+		th.AssertDeepEquals(t, ExpectedResourceProviders, actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+}
+
 func TestCreateResourceProvider(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

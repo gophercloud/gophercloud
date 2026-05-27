@@ -6,12 +6,14 @@ import (
 	"context"
 	"net/http"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
+	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/traits"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -33,6 +35,76 @@ func TestResourceProviderList(t *testing.T) {
 	for _, v := range allResourceProviders {
 		tools.PrintResource(t, v)
 	}
+}
+
+func TestResourceProviderList139(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.39"
+
+	// Arrange: Create a resource provider, traits, and aggregates.
+	// Assign them to the created RP.
+	resourceProvider, err := CreateResourceProvider(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
+
+	trait1 := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+	trait2 := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
+	err = traits.Create(context.TODO(), client, trait1).ExtractErr()
+	th.AssertNoErr(t, err)
+	defer traits.Delete(context.TODO(), client, trait1)
+	err = traits.Create(context.TODO(), client, trait2).ExtractErr()
+	th.AssertNoErr(t, err)
+	defer traits.Delete(context.TODO(), client, trait2)
+
+	currentTraits, err := resourceproviders.GetTraits(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	_, err = resourceproviders.UpdateTraits(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateTraitsOpts{
+		ResourceProviderGeneration: currentTraits.ResourceProviderGeneration,
+		Traits:                     []string{trait1, trait2},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	currentAggregates, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	aggregate1 := tools.RandomUUID()
+	aggregate2 := tools.RandomUUID()
+	aggregate3 := tools.RandomUUID()
+	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, resourceproviders.UpdateAggregatesOpts{
+		ResourceProviderGeneration: currentAggregates.ResourceProviderGeneration,
+		Aggregates:                 []string{aggregate1, aggregate2},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	listOpts := resourceproviders.ListOpts139{
+		// Repeating member_of means AND: provider must be in aggregate1 and in any of (aggregate2, aggregate3).
+		// We'll expect list to return our provider.
+		MemberOf: []string{aggregate1, "in:" + aggregate2 + "," + aggregate3},
+		Required: []string{trait1, trait2},
+	}
+
+	// Act: List resource providers with the above traits and aggregates as filters.
+	allPages, err := resourceproviders.List(client, listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	// Assert: Our resource provider is in the results and has the traits and aggregates we set.
+	allResourceProviders, err := resourceproviders.ExtractResourceProviders(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, len(allResourceProviders) > 0)
+
+	found := false
+	for _, rp := range allResourceProviders {
+		if rp.UUID == resourceProvider.UUID {
+			found = true
+			break
+		}
+	}
+	th.AssertEquals(t, true, found)
 }
 
 func TestResourceProvider(t *testing.T) {
@@ -311,6 +383,8 @@ func TestResourceProviderDeleteInventoriesSuccess(t *testing.T) {
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
+	client.Microversion = "1.20"
+
 	resourceProvider, err := CreateResourceProvider(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
@@ -421,6 +495,8 @@ func TestResourceProviderTraits(t *testing.T) {
 
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.20"
 
 	// first create new resource provider
 	resourceProvider, err := CreateResourceProvider(t, client)

@@ -433,6 +433,25 @@ func HandleResourceProviderList(t *testing.T, fakeServer th.FakeServer) {
 		})
 }
 
+func HandleResourceProviderList139(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			q := r.URL.Query()
+			th.AssertDeepEquals(t,
+				[]string{"a09ba171-9405-40ca-bfe1-a8d1208af2ed", "47abce38-8a58-47b3-81e0-c647e37e03ae"},
+				q["member_of"])
+			th.AssertDeepEquals(t, []string{"HW:A_TRAIT", "CUSTOM_TRAIT"}, q["required"])
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, ResourceProvidersBody)
+		})
+}
+
 func HandleResourceProviderCreate(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/resource_providers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
