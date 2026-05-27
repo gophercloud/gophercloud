@@ -52,6 +52,49 @@ func TestRecordSetsListByZone(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestRecordSetsListAll(t *testing.T) {
+	client, err := clients.NewDNSV2Client()
+	th.AssertNoErr(t, err)
+
+	zone, err := CreateZone(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteZone(t, client, zone)
+
+	rs, err := CreateRecordSet(t, client, zone)
+	th.AssertNoErr(t, err)
+	defer DeleteRecordSet(t, client, rs)
+
+	allPages, err := recordsets.ListAll(client, nil).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, recordset := range allRecordSets {
+		tools.PrintResource(t, &recordset)
+
+		if recordset.ID == rs.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts := recordsets.ListOpts{
+		Limit: 1,
+	}
+
+	pager := recordsets.ListAll(client, listOpts)
+	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		rr, err := recordsets.ExtractRecordSets(page)
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, len(rr), 1)
+		return false, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
 func TestRecordSetsCRUD(t *testing.T) {
 	client, err := clients.NewDNSV2Client()
 	th.AssertNoErr(t, err)
