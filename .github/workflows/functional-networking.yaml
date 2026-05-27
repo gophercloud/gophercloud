@@ -50,16 +50,16 @@ jobs:
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
+            enable_plugin neutron https://opendev.org/openstack/neutron ${{ matrix.openstack_version }}
             enable_plugin neutron-dynamic-routing https://github.com/openstack/neutron-dynamic-routing ${{ matrix.openstack_version }}
             enable_plugin neutron-vpnaas https://github.com/openstack/neutron-vpnaas ${{ matrix.openstack_version }}
             enable_plugin networking-bgpvpn https://github.com/openstack/networking-bgpvpn.git ${{ matrix.openstack_version }}
-            Q_ML2_PLUGIN_EXT_DRIVERS=qos,port_security,dns_domain_keywords,port_trusted
             BGP_SCHEDULER_DRIVER=neutron_dynamic_routing.services.bgp.scheduler.bgp_dragent_scheduler.StaticScheduler
 
             [[post-config|\$NEUTRON_CONF]]
             [oslo_policy]
             policy_dirs = /tmp/neutron-policies
-          enabled_services: "neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding,openstack-cli-server"
+          enabled_services: "neutron-dns,neutron-qos,neutron-segments,neutron-trunk,neutron-port-trusted-vif,neutron-uplink-status-propagation,neutron-network-segment-range,neutron-port-forwarding,openstack-cli-server"
       - name: Checkout go
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
