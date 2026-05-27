@@ -63,6 +63,58 @@ func TestListByZoneAllPages(t *testing.T) {
 	th.CheckEquals(t, 2, len(allRecordSets))
 }
 
+func TestListAll(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAllSuccessfully(t, fakeServer)
+
+	count := 0
+	err := recordsets.ListAll(client.ServiceClient(fakeServer), nil).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+		actual, err := recordsets.ExtractRecordSets(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRecordSetSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
+}
+
+func TestListAllLimited(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAllSuccessfully(t, fakeServer)
+
+	count := 0
+	listOpts := recordsets.ListOpts{
+		Limit:  1,
+		Marker: "f7b10e9b-0cae-4a91-b162-562bc6096648",
+	}
+	err := recordsets.ListAll(client.ServiceClient(fakeServer), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+		actual, err := recordsets.ExtractRecordSets(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRecordSetSliceLimited, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
+}
+
+func TestListAllPages(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAllSuccessfully(t, fakeServer)
+
+	allPages, err := recordsets.ListAll(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 2, len(allRecordSets))
+}
+
 func TestGet(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
