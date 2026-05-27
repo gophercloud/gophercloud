@@ -15,21 +15,21 @@ jobs:
           - name: "master"
             openstack_version: "master"
             ubuntu_version: "24.04"
+            amphora_image_url: "https://tarballs.opendev.org/openstack/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-noble.qcow2"
             devstack_conf_overrides: |
               LIBVIRT_CPU_MODE=host-passthrough
-              OCTAVIA_AMP_DISTRIBUTION_RELEASE_ID=jammy
           - name: "gazpacho"
             openstack_version: "stable/2026.1"
             ubuntu_version: "24.04"
+            amphora_image_url: "https://tarballs.opendev.org/openstack/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-noble.qcow2"
             devstack_conf_overrides: |
               LIBVIRT_CPU_MODE=host-passthrough
-              OCTAVIA_AMP_DISTRIBUTION_RELEASE_ID=jammy
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
+            amphora_image_url: "https://tarballs.opendev.org/openstack/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-jammy.qcow2"
             devstack_conf_overrides: |
               LIBVIRT_CPU_MODE=host-passthrough
-              OCTAVIA_AMP_DISTRIBUTION_RELEASE_ID=jammy
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Octavia on OpenStack ${{ matrix.name }}
     steps:
@@ -59,6 +59,11 @@ jobs:
           echo "No relevant files changed - skipping tests for ${{ matrix.name }}"
           echo "TESTS_SKIPPED=true" >> $GITHUB_ENV
 
+      - name: Download pre-built amphora image
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
+        run: |
+          wget -q "${{ matrix.amphora_image_url }}" -O /tmp/amphora-x64-haproxy.qcow2
+
       - name: Deploy devstack
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1 # v0.19
@@ -67,6 +72,7 @@ jobs:
           conf_overrides: |
             enable_plugin octavia https://github.com/openstack/octavia ${{ matrix.openstack_version }}
             enable_plugin neutron https://github.com/openstack/neutron ${{ matrix.openstack_version }}
+            OCTAVIA_AMP_IMAGE_FILE=/tmp/amphora-x64-haproxy.qcow2
 
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: "octavia,o-api,o-cw,o-hk,o-hm,o-da,neutron-qos,openstack-cli-server"
