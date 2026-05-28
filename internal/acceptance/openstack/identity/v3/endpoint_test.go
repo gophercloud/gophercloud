@@ -59,7 +59,7 @@ func TestEndpointsGet(t *testing.T) {
 
 	tools.PrintResource(t, e)
 
-	th.AssertEquals(t, e.Name, e.Name)
+	th.AssertEquals(t, endpoint.Name, e.Name)
 }
 
 func TestEndpointsNavigateCatalog(t *testing.T) {

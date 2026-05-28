@@ -70,7 +70,7 @@ func TestPortsbindingCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
-	th.AssertEquals(t, newPortName, newPort.Description)
+	th.AssertEquals(t, newPortName, newPort.Name)
 	th.AssertEquals(t, newPortDescription, newPort.Description)
 	th.AssertEquals(t, newHostID, newPort.HostID)
 	th.AssertEquals(t, "normal", newPort.VNICType)
