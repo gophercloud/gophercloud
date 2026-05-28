@@ -97,7 +97,7 @@ func TestGetTraitNotFound(t *testing.T) {
 	HandleGetTraitNotFound(t, fakeServer)
 
 	err := traits.Get(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestCreateTraitSuccess(t *testing.T) {
@@ -127,7 +127,7 @@ func TestCreateTraitInvalidName(t *testing.T) {
 	HandleCreateTraitInvalidName(t, fakeServer)
 
 	err := traits.Create(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 func TestDeleteTraitSuccess(t *testing.T) {
@@ -147,7 +147,7 @@ func TestDeleteTraitNotFound(t *testing.T) {
 	HandleDeleteTraitNotFound(t, fakeServer)
 
 	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), AbsentTrait).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestDeleteStandardTraitFailure(t *testing.T) {
@@ -157,7 +157,7 @@ func TestDeleteStandardTraitFailure(t *testing.T) {
 	HandleDeleteStandardTraitFailure(t, fakeServer)
 
 	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), StandardHardwareTrait).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 func TestDeleteTraitInUseFailure(t *testing.T) {
@@ -167,5 +167,5 @@ func TestDeleteTraitInUseFailure(t *testing.T) {
 	HandleDeleteTraitInUseFailure(t, fakeServer)
 
 	err := traits.Delete(context.TODO(), client.ServiceClient(fakeServer), PresentTrait).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }

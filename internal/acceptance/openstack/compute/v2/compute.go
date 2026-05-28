@@ -173,7 +173,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 	th.AssertEquals(t, 1, flavor.RAM)
 	th.AssertEquals(t, 1, flavor.Disk)
 	th.AssertEquals(t, 1, flavor.VCPUs)
-	th.AssertEquals(t, true, flavor.IsPublic)
+	th.AssertTrue(t, flavor.IsPublic)
 	th.AssertEquals(t, flavorDescription, flavor.Description)
 
 	return flavor, nil
@@ -296,7 +296,7 @@ func CreatePrivateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flav
 	th.AssertEquals(t, 1, flavor.RAM)
 	th.AssertEquals(t, 1, flavor.Disk)
 	th.AssertEquals(t, 1, flavor.VCPUs)
-	th.AssertEquals(t, false, flavor.IsPublic)
+	th.AssertFalse(t, flavor.IsPublic)
 
 	return flavor, nil
 }

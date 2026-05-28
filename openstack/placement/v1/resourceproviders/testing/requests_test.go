@@ -204,7 +204,7 @@ func TestGetResourceProviderInventoryNotFound(t *testing.T) {
 	HandleResourceProviderGetInventoryNotFound(t, fakeServer)
 
 	_, err := resourceproviders.GetInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, MissingInventoryResourceClass).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestUpdateResourceProvidersInventories(t *testing.T) {
@@ -227,7 +227,7 @@ func TestUpdateResourceProvidersInventoriesNotFound(t *testing.T) {
 
 	opts := ToUpdateInventoriesOpts(ExpectedInventories)
 	_, err := resourceproviders.UpdateInventories(context.TODO(), client.ServiceClient(fakeServer), NonExistentRPID, opts).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestUpdateResourceProviderInventory(t *testing.T) {
@@ -250,7 +250,7 @@ func TestUpdateResourceProviderInventoryNotFound(t *testing.T) {
 
 	opts := ToUpdateInventoryOpts(ExpectedInventory)
 	_, err := resourceproviders.UpdateInventory(context.TODO(), client.ServiceClient(fakeServer), NonExistentRPID, PresentInventoryResourceClass, opts).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestDeleteResourceProviderInventorySuccess(t *testing.T) {
@@ -270,7 +270,7 @@ func TestDeleteResourceProviderInventoryInUse(t *testing.T) {
 	HandleResourceProviderDeleteInventoryInUse(t, fakeServer)
 
 	err := resourceproviders.DeleteInventory(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, PresentInventoryResourceClass).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestDeleteResourceProviderInventoriesSuccess(t *testing.T) {
@@ -290,7 +290,7 @@ func TestDeleteResourceProviderInventoriesConflict(t *testing.T) {
 	HandleResourceProviderDeleteInventoriesConflict(t, fakeServer)
 
 	err := resourceproviders.DeleteInventories(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestGetResourceProvidersAllocations(t *testing.T) {
@@ -366,7 +366,7 @@ func TestGetResourceProviderAggregatesNotFound(t *testing.T) {
 	HandleResourceProviderGetAggregatesNotFound(t, fakeServer)
 
 	_, err := resourceproviders.GetAggregates(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceProviderID).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestUpdateResourceProviderAggregatesSuccess(t *testing.T) {
@@ -441,5 +441,5 @@ func TestUpdateResourceProviderAggregatesConflict(t *testing.T) {
 
 	updateOpts := resourceproviders.UpdateAggregatesOpts(ExpectedUpdatedAggregates)
 	_, err := resourceproviders.UpdateAggregates(context.TODO(), client.ServiceClient(fakeServer), ResourceProviderTestID, updateOpts).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }

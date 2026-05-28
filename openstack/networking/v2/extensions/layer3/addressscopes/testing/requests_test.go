@@ -74,7 +74,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.TenantID)
 	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.ProjectID)
 	th.AssertEquals(t, 4, s.IPVersion)
-	th.AssertEquals(t, false, s.Shared)
+	th.AssertFalse(t, s.Shared)
 }
 
 func TestCreate(t *testing.T) {
@@ -103,7 +103,7 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "test0", s.Name)
-	th.AssertEquals(t, true, s.Shared)
+	th.AssertTrue(t, s.Shared)
 	th.AssertEquals(t, 4, s.IPVersion)
 	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.TenantID)
 	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.ProjectID)
@@ -137,7 +137,7 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "test1", s.Name)
-	th.AssertEquals(t, true, s.Shared)
+	th.AssertTrue(t, s.Shared)
 }
 
 func TestDelete(t *testing.T) {

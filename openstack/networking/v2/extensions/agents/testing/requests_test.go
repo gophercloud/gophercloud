@@ -74,8 +74,8 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", s.ID)
 	th.AssertEquals(t, "neutron-openvswitch-agent", s.Binary)
-	th.AssertEquals(t, true, s.AdminStateUp)
-	th.AssertEquals(t, true, s.Alive)
+	th.AssertTrue(t, s.AdminStateUp)
+	th.AssertTrue(t, s.Alive)
 	th.AssertEquals(t, "N/A", s.Topic)
 	th.AssertEquals(t, "compute3", s.Host)
 	th.AssertEquals(t, "Open vSwitch agent", s.AgentType)
@@ -158,9 +158,9 @@ func TestListDHCPNetworks(t *testing.T) {
 	var nilSlice []string
 	th.AssertEquals(t, 1, len(s))
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s[0].ID)
-	th.AssertEquals(t, true, s[0].AdminStateUp)
+	th.AssertTrue(t, s[0].AdminStateUp)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s[0].ProjectID)
-	th.AssertEquals(t, false, s[0].Shared)
+	th.AssertFalse(t, s[0].Shared)
 	th.AssertEquals(t, "net1", s[0].Name)
 	th.AssertEquals(t, "ACTIVE", s[0].Status)
 	th.AssertDeepEquals(t, s[0].Tags, nilSlice)
@@ -375,7 +375,7 @@ func TestListL3Routers(t *testing.T) {
 	var nilSlice []string
 	th.AssertEquals(t, 2, len(s))
 	th.AssertEquals(t, "915a14a6-867b-4af7-83d1-70efceb146f9", s[0].ID)
-	th.AssertEquals(t, true, s[0].AdminStateUp)
+	th.AssertTrue(t, s[0].AdminStateUp)
 	th.AssertEquals(t, "0bd18306d801447bb457a46252d82d13", s[0].ProjectID)
 	th.AssertEquals(t, "router2", s[0].Name)
 	th.AssertEquals(t, "ACTIVE", s[0].Status)

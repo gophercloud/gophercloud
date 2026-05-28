@@ -39,7 +39,7 @@ func TestInstanceActions(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestInstanceActionsMicroversions(t *testing.T) {
@@ -88,7 +88,7 @@ func TestInstanceActionsMicroversions(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts = instanceactions.ListOpts{
 		Limit:         1,

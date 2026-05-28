@@ -36,7 +36,7 @@ func TestEndpointsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestEndpointsGet(t *testing.T) {

@@ -103,7 +103,7 @@ func TestListWithExtensions(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", allPorts[0].Status)
-	th.AssertEquals(t, false, allPorts[0].PortSecurityEnabled)
+	th.AssertFalse(t, allPorts[0].PortSecurityEnabled)
 }
 
 func TestGet(t *testing.T) {
@@ -125,7 +125,7 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, "ACTIVE", n.Status)
 	th.AssertEquals(t, "", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
 	th.AssertEquals(t, "7e02058126cc4950b75f9970368ba177", n.TenantID)
 	th.AssertEquals(t, "network:router_interface", n.DeviceOwner)
@@ -164,7 +164,7 @@ func TestGetWithExtensions(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", portWithExtensions.Status)
-	th.AssertEquals(t, false, portWithExtensions.PortSecurityEnabled)
+	th.AssertFalse(t, portWithExtensions.PortSecurityEnabled)
 }
 
 func TestCreate(t *testing.T) {
@@ -202,7 +202,7 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", n.Status)
 	th.AssertEquals(t, "private-port", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
 	th.AssertEquals(t, "", n.DeviceOwner)
@@ -251,7 +251,7 @@ func TestCreateOmitSecurityGroups(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", n.Status)
 	th.AssertEquals(t, "private-port", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
 	th.AssertEquals(t, "", n.DeviceOwner)
@@ -301,7 +301,7 @@ func TestCreateWithNoSecurityGroup(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", n.Status)
 	th.AssertEquals(t, "private-port", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
 	th.AssertEquals(t, "", n.DeviceOwner)
@@ -348,7 +348,7 @@ func TestCreateWithPropagateUplinkStatus(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", n.Status)
 	th.AssertEquals(t, "private-port", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
 	th.AssertEquals(t, "", n.DeviceOwner)
@@ -398,7 +398,7 @@ func TestCreateWithValueSpecs(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", n.Status)
 	th.AssertEquals(t, "private-port", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
 	th.AssertEquals(t, "", n.DeviceOwner)
@@ -517,7 +517,7 @@ func TestCreatePortSecurity(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "DOWN", portWithExt.Status)
-	th.AssertEquals(t, false, portWithExt.PortSecurityEnabled)
+	th.AssertFalse(t, portWithExt.PortSecurityEnabled)
 }
 
 func TestUpdate(t *testing.T) {
@@ -694,7 +694,7 @@ func TestUpdatePortSecurity(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", portWithExt.Status)
 	th.AssertEquals(t, "private-port", portWithExt.Name)
-	th.AssertEquals(t, false, portWithExt.PortSecurityEnabled)
+	th.AssertFalse(t, portWithExt.PortSecurityEnabled)
 }
 
 func TestUpdateRevision(t *testing.T) {
@@ -908,7 +908,7 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, "ACTIVE", s.Status)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "port-with-extra-dhcp-opts", s.Name)
 	th.AssertEquals(t, "", s.DeviceOwner)
 	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
@@ -974,7 +974,7 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, "DOWN", s.Status)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "port-with-extra-dhcp-opts", s.Name)
 	th.AssertEquals(t, "", s.DeviceOwner)
 	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
@@ -1039,7 +1039,7 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, "DOWN", s.Status)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "updated-port-with-dhcp-opts", s.Name)
 	th.AssertEquals(t, "", s.DeviceOwner)
 	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)

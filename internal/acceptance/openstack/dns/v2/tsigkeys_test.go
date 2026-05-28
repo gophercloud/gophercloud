@@ -39,7 +39,7 @@ func TestTSIGKeysCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	updateOpts := tsigkeys.UpdateOpts{
 		Name:   tsigkey.Name + "-updated",

@@ -58,7 +58,7 @@ func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, c
 	}
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")
-	th.AssertEquals(t, true, requestID != "")
+	th.AssertTrue(t, requestID != "")
 
 	t.Logf("Cluster Template %s request ID: %s", name, requestID)
 
@@ -235,7 +235,7 @@ func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quota
 	}
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")
-	th.AssertEquals(t, true, requestID != "")
+	th.AssertTrue(t, requestID != "")
 
 	t.Logf("Quota %s request ID: %s", name, requestID)
 

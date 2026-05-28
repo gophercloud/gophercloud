@@ -47,7 +47,7 @@ func TestObjectsVersioning(t *testing.T) {
 	get, err := containers.Get(context.TODO(), client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Get container headers: %+v\n", get)
-	th.AssertEquals(t, true, get.VersionsEnabled)
+	th.AssertTrue(t, get.VersionsEnabled)
 
 	// Create a slice of buffers to hold the test object content.
 	oContents := make([]string, numObjects)
@@ -85,7 +85,7 @@ func TestObjectsVersioning(t *testing.T) {
 		get, err := containers.Get(context.TODO(), client, cName, nil).Extract()
 		th.AssertNoErr(t, err)
 		t.Logf("Get container headers: %+v\n", get)
-		th.AssertEquals(t, false, get.VersionsEnabled)
+		th.AssertFalse(t, get.VersionsEnabled)
 
 		// delete all object versions before deleting the container
 		currentVersionIDs := make([]string, numObjects)
@@ -154,9 +154,9 @@ func TestObjectsVersioning(t *testing.T) {
 	// ensure proper versioning attributes are set
 	for i, obj := range ois {
 		if i%2 == 0 {
-			th.AssertEquals(t, true, obj.IsLatest)
+			th.AssertTrue(t, obj.IsLatest)
 		} else {
-			th.AssertEquals(t, false, obj.IsLatest)
+			th.AssertFalse(t, obj.IsLatest)
 		}
 		if obj.VersionID == "" {
 			t.Fatalf("Unexpected empty version_id for the %s object", obj.Name)

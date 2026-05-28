@@ -37,7 +37,7 @@ func TestServicesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestServicesCRUD(t *testing.T) {

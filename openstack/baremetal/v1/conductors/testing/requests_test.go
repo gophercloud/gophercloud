@@ -58,9 +58,9 @@ func TestListDetailConductors(t *testing.T) {
 			t.Fatalf("Expected 2 conductors, got %d", len(actual))
 		}
 		th.AssertEquals(t, "compute1.localdomain", actual[0].Hostname)
-		th.AssertEquals(t, false, actual[0].Alive)
+		th.AssertFalse(t, actual[0].Alive)
 		th.AssertEquals(t, "compute2.localdomain", actual[1].Hostname)
-		th.AssertEquals(t, true, actual[1].Alive)
+		th.AssertTrue(t, actual[1].Alive)
 
 		return true, nil
 	})

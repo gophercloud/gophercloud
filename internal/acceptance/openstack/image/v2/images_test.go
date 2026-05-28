@@ -66,7 +66,7 @@ func TestImagesListAllPages(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestImagesListByDate(t *testing.T) {
@@ -175,7 +175,7 @@ func TestImagesUpdate(t *testing.T) {
 	tools.PrintResource(t, newImage.Properties)
 
 	th.AssertEquals(t, newImage.Name, image.Name+"foo")
-	th.AssertEquals(t, true, newImage.Protected)
+	th.AssertTrue(t, newImage.Protected)
 
 	sort.Strings(newTags)
 	sort.Strings(newImage.Tags)

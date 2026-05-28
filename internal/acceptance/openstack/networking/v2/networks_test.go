@@ -51,7 +51,7 @@ func TestNetworksExternalList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	iFalse := false
 	networkListOpts = networks.ListOpts{
@@ -118,7 +118,7 @@ func TestNetworksCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestNetworksPortSecurityCRUD(t *testing.T) {

@@ -44,7 +44,7 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {

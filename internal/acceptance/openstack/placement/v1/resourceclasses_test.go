@@ -32,7 +32,7 @@ func TestResourceClassesList(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Ensure VCPU is in the list
-	th.AssertEquals(t, true, slices.ContainsFunc(allResourceClasses, func(rc resourceclasses.ResourceClass) bool {
+	th.AssertTrue(t, slices.ContainsFunc(allResourceClasses, func(rc resourceclasses.ResourceClass) bool {
 		return rc.Name == "VCPU"
 	}))
 }
@@ -63,7 +63,7 @@ func TestResourceClassGetNegative(t *testing.T) {
 	client.Microversion = "1.2"
 
 	_, err = resourceclasses.Get(context.TODO(), client, "NON_EXISTENT_RC").Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceClassCreateByPostSuccess(t *testing.T) {
@@ -111,7 +111,7 @@ func TestResourceClassCreateByPostDuplicate(t *testing.T) {
 	// Act: Try to create the same resource class again
 	err = resourceclasses.Create(context.TODO(), client, createOpts).ExtractErr()
 	// Assert: The error is a conflict
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestResourceClassCreateByUpdateSuccess(t *testing.T) {
@@ -155,7 +155,7 @@ func TestResourceClassCreateByUpdateNonCustomName(t *testing.T) {
 	// Act: Try to create a resource class with a non-custom name using PUT (Update)
 	err = resourceclasses.Update(context.TODO(), client, name).ExtractErr()
 	// Assert: We get 400
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 func TestResourceClassDeleteSuccess(t *testing.T) {
@@ -187,7 +187,7 @@ func TestResourceClassDeleteSuccess(t *testing.T) {
 
 	// Assert: The resource class no longer exists
 	_, err = resourceclasses.Get(context.TODO(), client, name).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceClassDeleteNotFound(t *testing.T) {
@@ -202,7 +202,7 @@ func TestResourceClassDeleteNotFound(t *testing.T) {
 	// Act: Try to delete a non-existent resource class
 	err = resourceclasses.Delete(context.TODO(), client, "CUSTOM_NON_EXISTENT_RC").ExtractErr()
 	// Assert: We get 404
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceClassDeleteStandardClass(t *testing.T) {
@@ -217,5 +217,5 @@ func TestResourceClassDeleteStandardClass(t *testing.T) {
 	// Act: Try to delete a standard resource class
 	err = resourceclasses.Delete(context.TODO(), client, "VCPU").ExtractErr()
 	// Assert: We get 400
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }

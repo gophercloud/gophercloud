@@ -166,7 +166,7 @@ func TestIsRootEnabled(t *testing.T) {
 	isEnabled, err := instances.IsRootEnabled(context.TODO(), client.ServiceClient(fakeServer), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, isEnabled)
+	th.AssertTrue(t, isEnabled)
 }
 
 func TestRestart(t *testing.T) {

@@ -32,7 +32,7 @@ func TestSecGroupsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestSecGroupsCRUD(t *testing.T) {
@@ -120,7 +120,7 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	t.Logf("Removing group %s from server %s", securityGroup.ID, server.ID)
 	err = secgroups.RemoveServer(context.TODO(), client, server.ID, securityGroup.Name).ExtractErr()
@@ -139,5 +139,5 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 }

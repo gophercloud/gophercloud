@@ -154,7 +154,7 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	th.AssertEquals(t, lb.Name, lbName)
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
-	th.AssertEquals(t, true, lb.AdminStateUp)
+	th.AssertTrue(t, lb.AdminStateUp)
 
 	if len(tags) > 0 {
 		th.AssertDeepEquals(t, lb.Tags, tags)
@@ -252,7 +252,7 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 	th.AssertEquals(t, lb.Name, lbName)
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
-	th.AssertEquals(t, true, lb.AdminStateUp)
+	th.AssertTrue(t, lb.AdminStateUp)
 
 	th.AssertEquals(t, 1, len(lb.Listeners))
 	th.AssertEquals(t, lb.Listeners[0].Name, listenerName)
@@ -749,7 +749,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile
 	th.AssertEquals(t, flavorName, flavor.Name)
 	th.AssertEquals(t, description, flavor.Description)
 	th.AssertEquals(t, flavorProfile.ID, flavor.FlavorProfileID)
-	th.AssertEquals(t, false, flavor.Enabled)
+	th.AssertFalse(t, flavor.Enabled)
 
 	return flavor, nil
 }

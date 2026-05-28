@@ -211,5 +211,5 @@ func TestUpdateClusterTemplateInvalidUpdate(t *testing.T) {
 	sc := client.ServiceClient(fakeServer)
 	sc.Endpoint = sc.Endpoint + "v1/"
 	_, err := clustertemplates.Update(context.TODO(), sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
-	th.AssertEquals(t, true, err != nil)
+	th.AssertTrue(t, err != nil)
 }

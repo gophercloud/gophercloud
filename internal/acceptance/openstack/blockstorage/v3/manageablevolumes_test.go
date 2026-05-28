@@ -53,5 +53,5 @@ func TestManageableVolumes(t *testing.T) {
 			break
 		}
 	}
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }

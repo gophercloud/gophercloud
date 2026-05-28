@@ -54,7 +54,7 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "my_new_test_share", n.Name)
 	th.AssertEquals(t, "", n.Description)
-	th.AssertEquals(t, false, n.IsPublic)
+	th.AssertFalse(t, n.IsPublic)
 }
 
 func TestDelete(t *testing.T) {

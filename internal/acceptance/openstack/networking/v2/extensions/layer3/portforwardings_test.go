@@ -118,7 +118,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	found = false
 	for _, pf := range allPFs {
@@ -127,6 +127,6 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 }

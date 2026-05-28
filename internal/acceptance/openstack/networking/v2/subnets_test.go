@@ -62,7 +62,7 @@ func TestSubnetCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestSubnetsServiceType(t *testing.T) {

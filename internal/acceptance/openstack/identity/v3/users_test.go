@@ -41,7 +41,7 @@ func TestUsersList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "dmi",
@@ -63,7 +63,7 @@ func TestUsersList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "foo",
@@ -85,7 +85,7 @@ func TestUsersList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 }
 
 func TestUsersGet(t *testing.T) {
@@ -251,7 +251,7 @@ func TestUsersGroups(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	found = false
 	allUserPages, err := users.ListInGroup(client, group.ID, nil).AllPages(context.TODO())
@@ -269,7 +269,7 @@ func TestUsersGroups(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	ok, err := users.IsMemberOfGroup(context.TODO(), client, group.ID, user.ID).Extract()
 	if err != nil {
@@ -298,7 +298,7 @@ func TestUsersGroups(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 
 	found = false
 	allUserPages, err = users.ListInGroup(client, group.ID, nil).AllPages(context.TODO())
@@ -316,7 +316,7 @@ func TestUsersGroups(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 
 }
 

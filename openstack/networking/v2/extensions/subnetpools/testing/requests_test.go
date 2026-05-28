@@ -87,9 +87,9 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, 128, s.MaxPrefixLen)
 	th.AssertEquals(t, "", s.AddressScopeID)
 	th.AssertEquals(t, 6, s.IPversion)
-	th.AssertEquals(t, false, s.Shared)
+	th.AssertFalse(t, s.Shared)
 	th.AssertEquals(t, "ipv6 prefixes", s.Description)
-	th.AssertEquals(t, true, s.IsDefault)
+	th.AssertTrue(t, s.IsDefault)
 	th.AssertEquals(t, 2, s.RevisionNumber)
 }
 func TestCreate(t *testing.T) {
