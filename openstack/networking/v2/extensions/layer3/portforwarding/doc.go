@@ -44,6 +44,22 @@ Example to Create a Port Forwarding for a floating IP
 		panic(err)
 	}
 
+or, for port ranges
+
+	createOpts := &portforwarding.CreateOpts{
+		Protocol:          "tcp",
+		InternalPortRange: "100:199",
+		ExternalPortRange: "1500:1599",
+		InternalIPAddress: internalIP,
+		InternalPortID:    portID,
+	}
+
+	pf, err := portforwarding.Create(context.TODO(), networkingClient, floatingIPID, createOpts).Extract()
+
+	if err != nil {
+		panic(err)
+	}
+
 Example to Update a Port Forwarding
 
 	updateOpts := portforwarding.UpdateOpts{
