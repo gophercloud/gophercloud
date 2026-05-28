@@ -71,7 +71,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts.Filters = map[string]string{
 		"type__contains": "json",
@@ -93,7 +93,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts.Filters = map[string]string{
 		"type__contains": "foobar",
@@ -115,7 +115,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 
 	gotPolicy, err := policies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)

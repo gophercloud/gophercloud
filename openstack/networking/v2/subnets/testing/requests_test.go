@@ -72,7 +72,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "my_subnet", s.Name)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertDeepEquals(t, []string{}, s.DNSNameservers)
@@ -132,8 +132,8 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.DNSPublishFixedIP)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.DNSPublishFixedIP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertDeepEquals(t, []string{"foo"}, s.DNSNameservers)
@@ -187,7 +187,7 @@ func TestCreateNoGateway(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a23", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertDeepEquals(t, []subnets.AllocationPool{
@@ -236,7 +236,7 @@ func TestCreateDefaultGateway(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a23", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertDeepEquals(t, []subnets.AllocationPool{
@@ -282,7 +282,7 @@ func TestCreateIPv6RaAddressMode(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertEquals(t, 6, s.IPVersion)
@@ -323,8 +323,8 @@ func TestCreateWithNoCIDR(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.DNSPublishFixedIP)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.DNSPublishFixedIP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertDeepEquals(t, []string{"foo"}, s.DNSNameservers)
@@ -373,8 +373,8 @@ func TestCreateWithPrefixlen(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.DNSPublishFixedIP)
-	th.AssertEquals(t, true, s.EnableDHCP)
+	th.AssertTrue(t, s.DNSPublishFixedIP)
+	th.AssertTrue(t, s.EnableDHCP)
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
 	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
 	th.AssertDeepEquals(t, []string{"foo"}, s.DNSNameservers)

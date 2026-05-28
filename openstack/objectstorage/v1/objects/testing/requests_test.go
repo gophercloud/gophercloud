@@ -431,7 +431,7 @@ func TestGetObject(t *testing.T) {
 	}
 	actualHeaders, err := objects.Get(context.TODO(), client.ServiceClient(fakeServer), "testContainer", "testObject", getOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, actualHeaders.StaticLargeObject)
+	th.AssertTrue(t, actualHeaders.StaticLargeObject)
 }
 
 func TestETag(t *testing.T) {
@@ -444,7 +444,7 @@ func TestETag(t *testing.T) {
 	_, headers, _, err := createOpts.ToObjectCreateParams()
 	th.AssertNoErr(t, err)
 	_, ok := headers["ETag"]
-	th.AssertEquals(t, false, ok)
+	th.AssertFalse(t, ok)
 
 	hash := md5.New()
 	_, err = io.WriteString(hash, content)
@@ -471,7 +471,7 @@ func TestObjectCreateParamsWithoutSeek(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, ok := reader.(io.ReadSeeker)
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 
 	c, err := io.ReadAll(reader)
 	th.AssertNoErr(t, err)
@@ -479,7 +479,7 @@ func TestObjectCreateParamsWithoutSeek(t *testing.T) {
 	th.AssertEquals(t, content, string(c))
 
 	_, ok = headers["ETag"]
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 }
 
 func TestObjectCreateParamsWithSeek(t *testing.T) {
@@ -490,7 +490,7 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, ok := reader.(io.ReadSeeker)
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 
 	c, err := io.ReadAll(reader)
 	th.AssertNoErr(t, err)
@@ -498,7 +498,7 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 	th.AssertEquals(t, content, string(c))
 
 	_, ok = headers["ETag"]
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 }
 
 func TestCreateTempURL(t *testing.T) {

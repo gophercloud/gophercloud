@@ -159,7 +159,7 @@ func TestUpdateAllocationsConflict(t *testing.T) {
 		UserID:             "test-user",
 		ConsumerGeneration: &staleGeneration,
 	}).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestDeleteAllocationsSuccess(t *testing.T) {
@@ -212,7 +212,7 @@ func TestDeleteAllocationsNotFound(t *testing.T) {
 
 	// Assert: An RP that was never a consumer returns 404 on DELETE.
 	err = allocations.Delete(context.TODO(), client, resourceProvider.UUID).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestManageAllocationsSuccess(t *testing.T) {

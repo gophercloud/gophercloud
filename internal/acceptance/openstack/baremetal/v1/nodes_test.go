@@ -42,7 +42,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 		return false, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	th.AssertEquals(t, node.ProvisionState, string(nodes.Enroll))
 
@@ -110,7 +110,7 @@ func TestNodesUpdate(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, updated.Maintenance)
+	th.AssertTrue(t, updated.Maintenance)
 }
 
 func TestNodesMaintenance(t *testing.T) {
@@ -132,7 +132,7 @@ func TestNodesMaintenance(t *testing.T) {
 	updated, err := nodes.Get(context.TODO(), client, node.UUID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, updated.Maintenance)
+	th.AssertTrue(t, updated.Maintenance)
 	th.AssertEquals(t, "I'm tired", updated.MaintenanceReason)
 
 	err = nodes.UnsetMaintenance(context.TODO(), client, node.UUID).ExtractErr()
@@ -141,7 +141,7 @@ func TestNodesMaintenance(t *testing.T) {
 	updated, err = nodes.Get(context.TODO(), client, node.UUID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, false, updated.Maintenance)
+	th.AssertFalse(t, updated.Maintenance)
 	th.AssertEquals(t, "", updated.MaintenanceReason)
 }
 

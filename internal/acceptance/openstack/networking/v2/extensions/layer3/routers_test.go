@@ -59,7 +59,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
@@ -212,7 +212,7 @@ func TestLayer3RouterAgents(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestLayer3RouterRevision(t *testing.T) {

@@ -166,11 +166,11 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "some information", group.Description)
 	th.AssertEquals(t, "e3f11142-3792-454b-8d3e-91ac1bf127b4", group.IngressFirewallPolicyID)
 	th.AssertEquals(t, "", group.EgressFirewallPolicyID)
-	th.AssertEquals(t, true, group.AdminStateUp)
+	th.AssertTrue(t, group.AdminStateUp)
 	th.AssertEquals(t, 1, len(group.Ports))
 	th.AssertEquals(t, "a6af1e56-b12b-4733-8f77-49166afd5719", group.Ports[0])
 	th.AssertEquals(t, "ACTIVE", group.Status)
-	th.AssertEquals(t, false, group.Shared)
+	th.AssertFalse(t, group.Shared)
 	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", group.TenantID)
 }
 

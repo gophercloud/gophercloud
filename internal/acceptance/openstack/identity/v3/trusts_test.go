@@ -112,7 +112,7 @@ func TestTrustCRUD(t *testing.T) {
 	p, err := trusts.Get(context.TODO(), client, trust.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.ExpiresAt, expiresAt)
-	th.AssertEquals(t, true, p.DeletedAt.IsZero())
+	th.AssertTrue(t, p.DeletedAt.IsZero())
 
 	tools.PrintResource(t, p)
 

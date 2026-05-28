@@ -74,7 +74,7 @@ func TestPortsCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	ipAddress := port.FixedIPs[0].IPAddress
 	t.Logf("Port has IP address: %s", ipAddress)

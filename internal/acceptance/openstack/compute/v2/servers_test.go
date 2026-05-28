@@ -45,7 +45,7 @@ func TestServersCreateDestroy(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -97,8 +97,8 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, servers.RUNNING, int(created.PowerState))
 	th.AssertEquals(t, "", created.TaskState)
 	th.AssertEquals(t, "active", created.VmState)
-	th.AssertEquals(t, false, created.LaunchedAt.IsZero())
-	th.AssertEquals(t, true, created.TerminatedAt.IsZero())
+	th.AssertFalse(t, created.LaunchedAt.IsZero())
+	th.AssertTrue(t, created.TerminatedAt.IsZero())
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
@@ -447,7 +447,7 @@ func TestServersActionLock(t *testing.T) {
 
 	t.Logf("Attempting to delete locked server %s", server.ID)
 	err = servers.Delete(context.TODO(), client, server.ID).ExtractErr()
-	th.AssertEquals(t, true, err != nil)
+	th.AssertTrue(t, err != nil)
 
 	t.Logf("Attempting to unlock server %s", server.ID)
 	err = servers.Unlock(context.TODO(), client, server.ID).ExtractErr()
@@ -513,7 +513,7 @@ func TestServersTags(t *testing.T) {
 	// Check single tag.
 	exists, err := tags.Check(context.TODO(), client, server.ID, "tag2").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, exists)
+	th.AssertTrue(t, exists)
 
 	// Add new tag.
 	newTags, err := tags.ReplaceAll(context.TODO(), client, server.ID, tags.ReplaceAllOpts{Tags: []string{"tag3", "tag4"}}).Extract()
@@ -536,7 +536,7 @@ func TestServersTags(t *testing.T) {
 	// Check that tag doesn't exist anymore.
 	exists, err = tags.Check(context.TODO(), client, server.ID, "tag4").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, exists)
+	th.AssertFalse(t, exists)
 
 	// Remove all tags.
 	err = tags.DeleteAll(context.TODO(), client, server.ID).ExtractErr()
@@ -565,13 +565,13 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 
 	t.Logf("Server With Extended Attributes: %#v", created)
 
-	th.AssertEquals(t, true, *created.ReservationID != "")
+	th.AssertTrue(t, *created.ReservationID != "")
 	th.AssertEquals(t, 0, *created.LaunchIndex)
-	th.AssertEquals(t, true, *created.RAMDiskID == "")
-	th.AssertEquals(t, true, *created.KernelID == "")
-	th.AssertEquals(t, true, *created.Hostname != "")
-	th.AssertEquals(t, true, *created.RootDeviceName != "")
-	th.AssertEquals(t, true, created.Userdata == nil)
+	th.AssertTrue(t, *created.RAMDiskID == "")
+	th.AssertTrue(t, *created.KernelID == "")
+	th.AssertTrue(t, *created.Hostname != "")
+	th.AssertTrue(t, *created.RootDeviceName != "")
+	th.AssertTrue(t, created.Userdata == nil)
 }
 
 func TestServerNoNetworkCreateDestroy(t *testing.T) {
@@ -604,7 +604,7 @@ func TestServerNoNetworkCreateDestroy(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)

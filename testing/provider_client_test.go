@@ -211,9 +211,9 @@ func TestReauthEndLoop(t *testing.T) {
 
 	wg.Wait()
 	th.AssertEquals(t, 6, info.reauthAttempts)
-	th.AssertEquals(t, true, info.maxReauthReached)
-	th.AssertEquals(t, true, errAfter > 1)
-	th.AssertEquals(t, true, errUnable < 20)
+	th.AssertTrue(t, info.maxReauthReached)
+	th.AssertTrue(t, errAfter > 1)
+	th.AssertTrue(t, errUnable < 20)
 }
 
 func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {

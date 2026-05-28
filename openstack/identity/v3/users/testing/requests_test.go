@@ -209,7 +209,7 @@ func TestIsMemberOfGroup(t *testing.T) {
 	HandleIsMemberOfGroupSuccessfully(t, fakeServer)
 	ok, err := users.IsMemberOfGroup(context.TODO(), client.ServiceClient(fakeServer), "ea167b", "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 }
 
 func TestRemoveFromGroup(t *testing.T) {

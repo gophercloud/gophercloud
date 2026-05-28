@@ -118,5 +118,5 @@ func TestMappingsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	resp := federation.GetMapping(context.TODO(), client, mappingName)
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(resp.Err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(resp.Err, http.StatusNotFound))
 }

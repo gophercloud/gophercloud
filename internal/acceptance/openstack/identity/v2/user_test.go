@@ -34,7 +34,7 @@ func TestUsersList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestUsersCreateUpdateDelete(t *testing.T) {

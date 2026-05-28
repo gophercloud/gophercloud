@@ -168,7 +168,7 @@ func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumet
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, true, vt.IsPublic)
+	th.AssertTrue(t, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 	// TODO: For some reason returned extra_specs are empty even in API reference: https://developer.openstack.org/api-ref/block-storage/v3/?expanded=create-a-volume-type-detail#volume-types-types
@@ -201,7 +201,7 @@ func CreateVolumeTypeNoExtraSpecs(t *testing.T, client *gophercloud.ServiceClien
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, true, vt.IsPublic)
+	th.AssertTrue(t, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 
@@ -230,7 +230,7 @@ func CreateVolumeTypeMultiAttach(t *testing.T, client *gophercloud.ServiceClient
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, true, vt.IsPublic)
+	th.AssertTrue(t, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 	th.AssertEquals(t, "<is> True", vt.ExtraSpecs["multiattach"])
@@ -262,7 +262,7 @@ func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, false, vt.IsPublic)
+	th.AssertFalse(t, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 

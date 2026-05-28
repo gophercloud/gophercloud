@@ -95,7 +95,7 @@ func TestResourceProviderList139(t *testing.T) {
 	// Assert: Our resource provider is in the results and has the traits and aggregates we set.
 	allResourceProviders, err := resourceproviders.ExtractResourceProviders(allPages)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, len(allResourceProviders) > 0)
+	th.AssertTrue(t, len(allResourceProviders) > 0)
 
 	found := false
 	for _, rp := range allResourceProviders {
@@ -104,7 +104,7 @@ func TestResourceProviderList139(t *testing.T) {
 			break
 		}
 	}
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestResourceProvider(t *testing.T) {
@@ -241,7 +241,7 @@ func TestResourceProviderInventoryNotFound(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, err = resourceproviders.GetInventory(context.TODO(), client, resourceProvider.UUID, MissingInventoryResourceClass).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderUpdateInventory(t *testing.T) {
@@ -297,7 +297,7 @@ func TestResourceProviderUpdateInventory(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	actualInventory, ok := updatedInventories.Inventories[InventoryResourceClass]
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 	th.AssertDeepEquals(t, expectedInventory, actualInventory)
 }
 
@@ -320,7 +320,7 @@ func TestResourceProviderUpdateInventoryNotFound(t *testing.T) {
 	}
 
 	_, err = resourceproviders.UpdateInventory(context.TODO(), client, tools.RandomUUID(), InventoryResourceClass, updateOpts).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderDeleteInventorySuccess(t *testing.T) {
@@ -360,7 +360,7 @@ func TestResourceProviderDeleteInventorySuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, found := updatedInventories.Inventories[InventoryResourceClass]
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 }
 
 func TestResourceProviderDeleteInventoryNotFound(t *testing.T) {
@@ -374,7 +374,7 @@ func TestResourceProviderDeleteInventoryNotFound(t *testing.T) {
 	defer DeleteResourceProvider(t, client, resourceProvider.UUID)
 
 	err = resourceproviders.DeleteInventory(context.TODO(), client, resourceProvider.UUID, MissingInventoryResourceClass).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderDeleteInventoriesSuccess(t *testing.T) {
@@ -487,7 +487,7 @@ func TestResourceProviderUpdateInventoriesNotFound(t *testing.T) {
 	}
 
 	_, err = resourceproviders.UpdateInventories(context.TODO(), client, tools.RandomUUID(), updateOpts).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderTraits(t *testing.T) {
@@ -544,7 +544,7 @@ func TestResourceProviderAggregates(t *testing.T) {
 	client.Microversion = "1.19"
 	aggregates, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, aggregates.ResourceProviderGeneration != nil)
+	th.AssertTrue(t, aggregates.ResourceProviderGeneration != nil)
 
 	// ensure that we handle older microversions where generation is missing
 	client.Microversion = "1.1"
@@ -563,11 +563,11 @@ func TestResourceProviderAggregatesNotFound(t *testing.T) {
 
 	client.Microversion = "1.19"
 	_, err = resourceproviders.GetAggregates(context.TODO(), client, tools.RandomUUID()).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 
 	client.Microversion = "1.1"
 	_, err = resourceproviders.GetAggregates(context.TODO(), client, tools.RandomUUID()).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestResourceProviderUpdateAggregates(t *testing.T) {
@@ -585,7 +585,7 @@ func TestResourceProviderUpdateAggregates(t *testing.T) {
 
 	before, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, before.ResourceProviderGeneration != nil)
+	th.AssertTrue(t, before.ResourceProviderGeneration != nil)
 
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
 		ResourceProviderGeneration: before.ResourceProviderGeneration,
@@ -603,7 +603,7 @@ func TestResourceProviderUpdateAggregates(t *testing.T) {
 	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
 
 	for _, aggregate := range updateOpts.Aggregates {
-		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+		th.AssertTrue(t, slices.Contains(after.Aggregates, aggregate))
 	}
 }
 
@@ -622,7 +622,7 @@ func TestResourceProviderUpdateAggregateMismatch(t *testing.T) {
 
 	current, err := resourceproviders.GetAggregates(context.TODO(), client, resourceProvider.UUID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, current.ResourceProviderGeneration != nil)
+	th.AssertTrue(t, current.ResourceProviderGeneration != nil)
 	wrongGeneration := *current.ResourceProviderGeneration + 100
 
 	updateOpts := resourceproviders.UpdateAggregatesOpts{
@@ -633,7 +633,7 @@ func TestResourceProviderUpdateAggregateMismatch(t *testing.T) {
 	}
 
 	_, err = resourceproviders.UpdateAggregates(context.TODO(), client, resourceProvider.UUID, updateOpts).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestResourceProviderUpdateAggregatesPreGeneration(t *testing.T) {
@@ -664,7 +664,7 @@ func TestResourceProviderUpdateAggregatesPreGeneration(t *testing.T) {
 	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
 
 	for _, aggregate := range updateOpts.Aggregates {
-		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+		th.AssertTrue(t, slices.Contains(after.Aggregates, aggregate))
 	}
 }
 
@@ -700,7 +700,7 @@ func TestResourceProviderUpdateAggregatesPreGenerationWithGenerationSuccess(t *t
 	th.AssertEquals(t, len(updateOpts.Aggregates), len(after.Aggregates))
 
 	for _, aggregate := range updateOpts.Aggregates {
-		th.AssertEquals(t, true, slices.Contains(after.Aggregates, aggregate))
+		th.AssertTrue(t, slices.Contains(after.Aggregates, aggregate))
 	}
 }
 

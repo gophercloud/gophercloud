@@ -47,7 +47,7 @@ func TestPortsCreateDestroy(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestPortsUpdate(t *testing.T) {

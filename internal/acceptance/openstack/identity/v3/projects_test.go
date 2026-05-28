@@ -55,7 +55,7 @@ func TestProjectsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "dmi",
@@ -76,7 +76,7 @@ func TestProjectsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "foo",
@@ -97,7 +97,7 @@ func TestProjectsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 }
 
 func TestProjectsGet(t *testing.T) {
@@ -247,7 +247,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	// Search using all tags, including a not existing one
 	listOpts = projects.ListOpts{
@@ -282,7 +282,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	// Search not matching any single tag
 	listOpts = projects.ListOpts{
@@ -304,7 +304,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, false, found)
+	th.AssertFalse(t, found)
 
 	// Search matching not all tags
 	listOpts = projects.ListOpts{
@@ -326,7 +326,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	// Update the tags
 	updateOpts := projects.UpdateOpts{

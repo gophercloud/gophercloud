@@ -39,7 +39,7 @@ func TestClustersCRUD(t *testing.T) {
 			found = true
 		}
 	}
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 	updateOpts := []clusters.UpdateOptsBuilder{
 		clusters.UpdateOpts{
 			Op:    clusters.ReplaceOp,
@@ -63,7 +63,7 @@ func TestClustersCRUD(t *testing.T) {
 	newCluster, err := clusters.Get(context.TODO(), client, clusterID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.UUID, clusterID)
-	th.AssertEquals(t, false, newCluster.MasterLBEnabled)
+	th.AssertFalse(t, newCluster.MasterLBEnabled)
 
 	allPagesDetail, err := clusters.ListDetail(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -77,7 +77,7 @@ func TestClustersCRUD(t *testing.T) {
 			foundDetail = true
 		}
 	}
-	th.AssertEquals(t, true, foundDetail)
+	th.AssertTrue(t, foundDetail)
 
 	tools.PrintResource(t, newCluster)
 }

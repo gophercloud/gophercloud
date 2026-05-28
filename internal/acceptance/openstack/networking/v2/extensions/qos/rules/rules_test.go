@@ -58,7 +58,7 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestDSCPMarkingRulesCRUD(t *testing.T) {
@@ -104,7 +104,7 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestMinimumBandwidthRulesCRUD(t *testing.T) {
@@ -150,5 +150,5 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }

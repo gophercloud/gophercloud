@@ -60,7 +60,7 @@ func TestVolumes(t *testing.T) {
 			}
 		}
 
-		th.AssertEquals(t, true, found)
+		th.AssertTrue(t, found)
 
 		return true, nil
 	})
@@ -98,7 +98,7 @@ func TestVolumesMultiAttach(t *testing.T) {
 	err = volumes.WaitForStatus(ctx, client, vol.ID, "available")
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, vol.Multiattach)
+	th.AssertTrue(t, vol.Multiattach)
 }
 
 func TestVolumesCascadeDelete(t *testing.T) {

@@ -53,13 +53,13 @@ func TestTransferRequestCRUD(t *testing.T) {
 			foundRequest = true
 		}
 	}
-	th.AssertEquals(t, true, foundRequest)
+	th.AssertTrue(t, foundRequest)
 
 	// checking get
 	tr, err := sharetransfers.Get(context.TODO(), client, transferRequest.ID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, transferRequest.ID == tr.ID)
+	th.AssertTrue(t, transferRequest.ID == tr.ID)
 
 	// Accept Share Transfer Request
 	err = AcceptTransfer(t, client, transferRequest)

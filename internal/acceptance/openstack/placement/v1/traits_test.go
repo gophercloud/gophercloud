@@ -33,7 +33,7 @@ func TestTraitsList(t *testing.T) {
 
 	// Ensure COMPUTE_NODE is in the list
 	// os-traits never removes traits, so this should always pass
-	th.AssertEquals(t, true, slices.Contains(allTraits, "COMPUTE_NODE"))
+	th.AssertTrue(t, slices.Contains(allTraits, "COMPUTE_NODE"))
 }
 
 func TestTraitGet(t *testing.T) {
@@ -62,7 +62,7 @@ func TestTraitGetNegative(t *testing.T) {
 
 	// Verify that Get returns an error for a non-existent trait
 	err = traits.Get(context.TODO(), client, "CUSTOM_NON_EXISTENT_TRAIT").ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestTraitsListFiltering(t *testing.T) {
@@ -86,7 +86,7 @@ func TestTraitsListFiltering(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	for _, trait := range filteredTraits {
-		th.AssertEquals(t, true, strings.HasPrefix(trait, "HW_"))
+		th.AssertTrue(t, strings.HasPrefix(trait, "HW_"))
 	}
 }
 
@@ -142,7 +142,7 @@ func TestTraitsCreateInvalidName(t *testing.T) {
 	traitName := "HW_WE_CANNOT_CREATE_THIS_TRAIT"
 
 	err = traits.Create(context.TODO(), client, traitName).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 func TestTraitsDeleteSuccess(t *testing.T) {
@@ -166,7 +166,7 @@ func TestTraitsDeleteSuccess(t *testing.T) {
 
 	// Assert: The trait no longer exists
 	err = traits.Get(context.TODO(), client, traitName).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestTraitsDeleteNotFound(t *testing.T) {
@@ -181,7 +181,7 @@ func TestTraitsDeleteNotFound(t *testing.T) {
 	traitName := strings.ToUpper(tools.RandomString("CUSTOM_", 8))
 
 	err = traits.Delete(context.TODO(), client, traitName).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 // API does allow manipulation solely of custom traits,
@@ -198,5 +198,5 @@ func TestTraitsDeleteStandardTraitFailure(t *testing.T) {
 	traitName := "COMPUTE_NODE"
 
 	err = traits.Delete(context.TODO(), client, traitName).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }

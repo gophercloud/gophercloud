@@ -36,7 +36,7 @@ func TestRecordSetsListByZone(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts := recordsets.ListOpts{
 		Limit: 1,
@@ -79,7 +79,7 @@ func TestRecordSetsListAll(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	listOpts := recordsets.ListOpts{
 		Limit: 1,

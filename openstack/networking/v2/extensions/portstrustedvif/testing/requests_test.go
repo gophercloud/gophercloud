@@ -95,7 +95,7 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", s.Status)
 	th.AssertEquals(t, "private-port", s.Name)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
 	th.AssertEquals(t, "", s.DeviceOwner)
@@ -109,7 +109,7 @@ func TestGet(t *testing.T) {
 	if s.PortTrustedVIF == nil {
 		t.Fatalf("Expected s.PortTrustedVIF to be not nil")
 	}
-	th.AssertEquals(t, false, *s.PortTrustedVIF)
+	th.AssertFalse(t, *s.PortTrustedVIF)
 }
 
 func TestGetUnset(t *testing.T) {
@@ -136,7 +136,7 @@ func TestGetUnset(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", s.Status)
 	th.AssertEquals(t, "private-port", s.Name)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
 	th.AssertEquals(t, "", s.DeviceOwner)
@@ -193,7 +193,7 @@ func TestCreateWithPortTrustedVIF(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", portWithExt.Status)
 	th.AssertEquals(t, "private-port", portWithExt.Name)
-	th.AssertEquals(t, true, portWithExt.AdminStateUp)
+	th.AssertTrue(t, portWithExt.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", portWithExt.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", portWithExt.TenantID)
 	th.AssertEquals(t, "", portWithExt.DeviceOwner)
@@ -202,7 +202,7 @@ func TestCreateWithPortTrustedVIF(t *testing.T) {
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
 	}, portWithExt.FixedIPs)
 	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", portWithExt.ID)
-	th.AssertEquals(t, true, *portWithExt.PortTrustedVIF)
+	th.AssertTrue(t, *portWithExt.PortTrustedVIF)
 }
 
 func TestUpdatePortTrustedVIF(t *testing.T) {

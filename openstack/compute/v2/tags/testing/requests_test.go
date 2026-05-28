@@ -47,7 +47,7 @@ func TestCheckOk(t *testing.T) {
 
 	exists, err := tags.Check(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "foo").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, exists)
+	th.AssertTrue(t, exists)
 }
 
 func TestCheckFail(t *testing.T) {
@@ -64,7 +64,7 @@ func TestCheckFail(t *testing.T) {
 
 	exists, err := tags.Check(context.TODO(), client.ServiceClient(fakeServer), "uuid1", "bar").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, exists)
+	th.AssertFalse(t, exists)
 }
 
 func TestReplaceAll(t *testing.T) {

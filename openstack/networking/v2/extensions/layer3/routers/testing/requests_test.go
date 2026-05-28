@@ -216,7 +216,7 @@ func TestCreate(t *testing.T) {
 	}}
 
 	th.AssertEquals(t, "foo_router", r.Name)
-	th.AssertEquals(t, false, r.AdminStateUp)
+	th.AssertFalse(t, r.AdminStateUp)
 	th.AssertDeepEquals(t, gwi, r.GatewayInfo)
 	th.AssertDeepEquals(t, []string{"zone1", "zone2"}, r.AvailabilityZoneHints)
 }
@@ -272,7 +272,7 @@ func TestGet(t *testing.T) {
 		QoSPolicyID: "6601bae5-f15a-4687-8be9-ddec9a2f8a8b",
 	}, n.GatewayInfo)
 	th.AssertEquals(t, "router1", n.Name)
-	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertTrue(t, n.AdminStateUp)
 	th.AssertEquals(t, "d6554fe62e2f41efbb6e026fad5c1542", n.TenantID)
 	th.AssertEquals(t, "a07eea83-7710-4860-931b-5fe220fae533", n.ID)
 	th.AssertDeepEquals(t, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}, n.Routes)
@@ -833,7 +833,7 @@ func TestUpdateExternalGateways(t *testing.T) {
 
 	th.AssertEquals(t, "router1", n.Name)
 	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", n.ID)
-	th.AssertEquals(t, true, *n.GatewayInfo.EnableSNAT)
+	th.AssertTrue(t, *n.GatewayInfo.EnableSNAT)
 }
 
 func TestRemoveExternalGateways(t *testing.T) {

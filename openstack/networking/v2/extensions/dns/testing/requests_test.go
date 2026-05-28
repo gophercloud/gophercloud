@@ -101,7 +101,7 @@ func TestPortGet(t *testing.T) {
 
 	th.AssertEquals(t, "ACTIVE", s.Status)
 	th.AssertEquals(t, "", s.Name)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "7e02058126cc4950b75f9970368ba177", s.TenantID)
 	th.AssertEquals(t, "network:router_interface", s.DeviceOwner)
@@ -152,7 +152,7 @@ func TestPortCreate(t *testing.T) {
 
 	th.AssertEquals(t, "DOWN", s.Status)
 	th.AssertEquals(t, "private-port", s.Name)
-	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertTrue(t, s.AdminStateUp)
 	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
 	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
 	th.AssertEquals(t, "", s.DeviceOwner)

@@ -53,7 +53,7 @@ func TestGenericContainersCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestCertificateContainer(t *testing.T) {
@@ -197,5 +197,5 @@ func TestContainerConsumersCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }

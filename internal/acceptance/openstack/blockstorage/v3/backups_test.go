@@ -37,7 +37,7 @@ func TestBackupsCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestBackupsResetStatus(t *testing.T) {

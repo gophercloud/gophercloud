@@ -400,8 +400,8 @@ func TestCreatePolicy(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "shared-default-policy", p.Name)
-	th.AssertEquals(t, true, p.Shared)
-	th.AssertEquals(t, true, p.IsDefault)
+	th.AssertTrue(t, p.Shared)
+	th.AssertTrue(t, p.IsDefault)
 	th.AssertEquals(t, "use-me", p.Description)
 	th.AssertEquals(t, "a77cbe0998374aed9a6798ad6c61677e", p.TenantID)
 	th.AssertEquals(t, "a77cbe0998374aed9a6798ad6c61677e", p.ProjectID)
@@ -439,8 +439,8 @@ func TestUpdatePolicy(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "new-name", p.Name)
-	th.AssertEquals(t, true, p.Shared)
-	th.AssertEquals(t, false, p.IsDefault)
+	th.AssertTrue(t, p.Shared)
+	th.AssertFalse(t, p.IsDefault)
 	th.AssertEquals(t, "", p.Description)
 	th.AssertEquals(t, "a77cbe0998374aed9a6798ad6c61677e", p.TenantID)
 	th.AssertEquals(t, "a77cbe0998374aed9a6798ad6c61677e", p.ProjectID)

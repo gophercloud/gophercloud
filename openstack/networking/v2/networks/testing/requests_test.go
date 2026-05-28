@@ -81,7 +81,7 @@ func TestListWithExtensions(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", allNetworks[0].Status)
-	th.AssertEquals(t, true, allNetworks[0].PortSecurityEnabled)
+	th.AssertTrue(t, allNetworks[0].PortSecurityEnabled)
 	th.AssertEquals(t, "54d6f61d-db07-451c-9ab3-b9609b6b6f0b", allNetworks[0].Subnets[0])
 	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", allNetworks[1].Subnets[0])
 	th.AssertEquals(t, "2019-06-30T04:15:37Z", allNetworks[0].CreatedAt.Format(time.RFC3339))
@@ -134,7 +134,7 @@ func TestGetWithExtensions(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", networkWithExtensions.Status)
-	th.AssertEquals(t, true, networkWithExtensions.PortSecurityEnabled)
+	th.AssertTrue(t, networkWithExtensions.PortSecurityEnabled)
 }
 
 func TestCreate(t *testing.T) {
@@ -215,8 +215,8 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "new_network_name", n.Name)
-	th.AssertEquals(t, false, n.AdminStateUp)
-	th.AssertEquals(t, true, n.Shared)
+	th.AssertFalse(t, n.AdminStateUp)
+	th.AssertTrue(t, n.Shared)
 	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", n.ID)
 	th.AssertEquals(t, "2019-06-30T04:15:37Z", n.CreatedAt.Format(time.RFC3339))
 	th.AssertEquals(t, "2019-06-30T05:18:49Z", n.UpdatedAt.Format(time.RFC3339))
@@ -313,7 +313,7 @@ func TestCreatePortSecurity(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", networkWithExtensions.Status)
-	th.AssertEquals(t, false, networkWithExtensions.PortSecurityEnabled)
+	th.AssertFalse(t, networkWithExtensions.PortSecurityEnabled)
 }
 
 func TestUpdatePortSecurity(t *testing.T) {
@@ -349,8 +349,8 @@ func TestUpdatePortSecurity(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "private", networkWithExtensions.Name)
-	th.AssertEquals(t, true, networkWithExtensions.AdminStateUp)
-	th.AssertEquals(t, false, networkWithExtensions.Shared)
+	th.AssertTrue(t, networkWithExtensions.AdminStateUp)
+	th.AssertFalse(t, networkWithExtensions.Shared)
 	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", networkWithExtensions.ID)
-	th.AssertEquals(t, false, networkWithExtensions.PortSecurityEnabled)
+	th.AssertFalse(t, networkWithExtensions.PortSecurityEnabled)
 }

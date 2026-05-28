@@ -38,7 +38,7 @@ func TestVolumeTypesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	name := vt.Name + "-updated"
 	description := vt.Description + "-updated"
