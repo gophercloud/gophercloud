@@ -29,7 +29,7 @@ func TestListUsers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListUsersAllPages(t *testing.T) {
@@ -42,8 +42,8 @@ func TestListUsersAllPages(t *testing.T) {
 	actual, err := users.ExtractUsers(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedUsersSlice, actual)
-	th.AssertEquals(t, ExpectedUsersSlice[0].Extra["email"], "glance@localhost")
-	th.AssertEquals(t, ExpectedUsersSlice[1].Extra["email"], "jsmith@example.com")
+	th.AssertEquals(t, "glance@localhost", ExpectedUsersSlice[0].Extra["email"])
+	th.AssertEquals(t, "jsmith@example.com", ExpectedUsersSlice[1].Extra["email"])
 }
 
 func TestListUsersFiltersCheck(t *testing.T) {
@@ -86,7 +86,7 @@ func TestGetUser(t *testing.T) {
 	actual, err := users.Get(context.TODO(), client.ServiceClient(fakeServer), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
-	th.AssertEquals(t, SecondUser.Extra["email"], "jsmith@example.com")
+	th.AssertEquals(t, "jsmith@example.com", SecondUser.Extra["email"])
 }
 
 func TestCreateUser(t *testing.T) {

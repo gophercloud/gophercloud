@@ -73,7 +73,7 @@ func TestGroupCRUD(t *testing.T) {
 		t.Fatalf("Unable to remove ingress firewall policy from firewall group %s: %v", removeIngressPolicy.ID, err)
 	}
 
-	th.AssertEquals(t, removeIngressPolicy.IngressFirewallPolicyID, "")
+	th.AssertEquals(t, "", removeIngressPolicy.IngressFirewallPolicyID)
 	th.AssertEquals(t, removeIngressPolicy.EgressFirewallPolicyID, firewall_policy_id)
 
 	t.Logf("Ingress policy removed from firewall group %s", updatedGroup.ID)
@@ -83,7 +83,7 @@ func TestGroupCRUD(t *testing.T) {
 		t.Fatalf("Unable to remove egress firewall policy from firewall group %s: %v", removeEgressPolicy.ID, err)
 	}
 
-	th.AssertEquals(t, removeEgressPolicy.EgressFirewallPolicyID, "")
+	th.AssertEquals(t, "", removeEgressPolicy.EgressFirewallPolicyID)
 
 	t.Logf("Egress policy removed from firewall group %s", updatedGroup.ID)
 
@@ -102,5 +102,5 @@ func TestGroupCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }

@@ -27,7 +27,7 @@ func TestListContainers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, count, 1)
+	th.AssertEquals(t, 1, count)
 }
 
 func TestListContainersAllPages(t *testing.T) {
@@ -99,7 +99,7 @@ func TestListConsumers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, count, 1)
+	th.AssertEquals(t, 1, count)
 }
 
 func TestListConsumersAllPages(t *testing.T) {

@@ -42,7 +42,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 		return false, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	th.AssertEquals(t, node.ProvisionState, string(nodes.Enroll))
 
@@ -110,7 +110,7 @@ func TestNodesUpdate(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.Maintenance, true)
+	th.AssertEquals(t, true, updated.Maintenance)
 }
 
 func TestNodesMaintenance(t *testing.T) {
@@ -132,8 +132,8 @@ func TestNodesMaintenance(t *testing.T) {
 	updated, err := nodes.Get(context.TODO(), client, node.UUID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.Maintenance, true)
-	th.AssertEquals(t, updated.MaintenanceReason, "I'm tired")
+	th.AssertEquals(t, true, updated.Maintenance)
+	th.AssertEquals(t, "I'm tired", updated.MaintenanceReason)
 
 	err = nodes.UnsetMaintenance(context.TODO(), client, node.UUID).ExtractErr()
 	th.AssertNoErr(t, err)
@@ -141,8 +141,8 @@ func TestNodesMaintenance(t *testing.T) {
 	updated, err = nodes.Get(context.TODO(), client, node.UUID).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.Maintenance, false)
-	th.AssertEquals(t, updated.MaintenanceReason, "")
+	th.AssertEquals(t, false, updated.Maintenance)
+	th.AssertEquals(t, "", updated.MaintenanceReason)
 }
 
 func TestNodesRAIDConfig(t *testing.T) {
@@ -206,11 +206,11 @@ func TestNodesFirmwareInterface(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node)
 
-	th.AssertEquals(t, node.FirmwareInterface, "no-firmware")
+	th.AssertEquals(t, "no-firmware", node.FirmwareInterface)
 
 	nodeFirmwareCmps, err := nodes.ListFirmware(context.TODO(), client, node.UUID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, nodeFirmwareCmps, []nodes.FirmwareComponent{})
+	th.AssertDeepEquals(t, []nodes.FirmwareComponent{}, nodeFirmwareCmps)
 }
 
 func TestNodesVirtualMedia(t *testing.T) {

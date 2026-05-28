@@ -102,8 +102,8 @@ func TestListWithExtensions(t *testing.T) {
 	err = ports.ExtractPortsInto(allPages, &allPorts)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, allPorts[0].Status, "ACTIVE")
-	th.AssertEquals(t, allPorts[0].PortSecurityEnabled, false)
+	th.AssertEquals(t, "ACTIVE", allPorts[0].Status)
+	th.AssertEquals(t, false, allPorts[0].PortSecurityEnabled)
 }
 
 func TestGet(t *testing.T) {
@@ -123,20 +123,20 @@ func TestGet(t *testing.T) {
 	n, err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "ACTIVE")
-	th.AssertEquals(t, n.Name, "")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "7e02058126cc4950b75f9970368ba177")
-	th.AssertEquals(t, n.DeviceOwner, "network:router_interface")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:23:fd:d7")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "ACTIVE", n.Status)
+	th.AssertEquals(t, "", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
+	th.AssertEquals(t, "7e02058126cc4950b75f9970368ba177", n.TenantID)
+	th.AssertEquals(t, "network:router_interface", n.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:23:fd:d7", n.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.1"},
-	})
-	th.AssertEquals(t, n.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
-	th.AssertDeepEquals(t, n.SecurityGroups, []string{})
-	th.AssertEquals(t, n.Status, "ACTIVE")
-	th.AssertEquals(t, n.DeviceID, "5e3898d7-11be-483e-9732-b2f5eccd2b2e")
+	}, n.FixedIPs)
+	th.AssertEquals(t, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", n.ID)
+	th.AssertDeepEquals(t, []string{}, n.SecurityGroups)
+	th.AssertEquals(t, "ACTIVE", n.Status)
+	th.AssertEquals(t, "5e3898d7-11be-483e-9732-b2f5eccd2b2e", n.DeviceID)
 	th.AssertEquals(t, n.CreatedAt, time.Date(2019, time.June, 30, 4, 15, 37, 0, time.UTC))
 	th.AssertEquals(t, n.UpdatedAt, time.Date(2019, time.June, 30, 5, 18, 49, 0, time.UTC))
 }
@@ -163,8 +163,8 @@ func TestGetWithExtensions(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&portWithExtensions)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExtensions.Status, "ACTIVE")
-	th.AssertEquals(t, portWithExtensions.PortSecurityEnabled, false)
+	th.AssertEquals(t, "ACTIVE", portWithExtensions.Status)
+	th.AssertEquals(t, false, portWithExtensions.PortSecurityEnabled)
 }
 
 func TestCreate(t *testing.T) {
@@ -200,21 +200,21 @@ func TestCreate(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, n.DeviceOwner, "")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", n.Status)
+	th.AssertEquals(t, "private-port", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
+	th.AssertEquals(t, "", n.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", n.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertDeepEquals(t, n.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
-	th.AssertDeepEquals(t, n.AllowedAddressPairs, []ports.AddressPair{
+	}, n.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, n.SecurityGroups)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
+	}, n.AllowedAddressPairs)
 }
 
 func TestCreateOmitSecurityGroups(t *testing.T) {
@@ -249,21 +249,21 @@ func TestCreateOmitSecurityGroups(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, n.DeviceOwner, "")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", n.Status)
+	th.AssertEquals(t, "private-port", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
+	th.AssertEquals(t, "", n.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", n.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertDeepEquals(t, n.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
-	th.AssertDeepEquals(t, n.AllowedAddressPairs, []ports.AddressPair{
+	}, n.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, n.SecurityGroups)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
+	}, n.AllowedAddressPairs)
 }
 
 func TestCreateWithNoSecurityGroup(t *testing.T) {
@@ -299,20 +299,20 @@ func TestCreateWithNoSecurityGroup(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, n.DeviceOwner, "")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", n.Status)
+	th.AssertEquals(t, "private-port", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
+	th.AssertEquals(t, "", n.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", n.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertDeepEquals(t, n.AllowedAddressPairs, []ports.AddressPair{
+	}, n.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
+	}, n.AllowedAddressPairs)
 }
 
 func TestCreateWithPropagateUplinkStatus(t *testing.T) {
@@ -346,17 +346,17 @@ func TestCreateWithPropagateUplinkStatus(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, n.DeviceOwner, "")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", n.Status)
+	th.AssertEquals(t, "private-port", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
+	th.AssertEquals(t, "", n.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", n.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
+	}, n.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
 	th.AssertEquals(t, n.PropagateUplinkStatus, propagateUplinkStatus)
 }
 
@@ -396,21 +396,21 @@ func TestCreateWithValueSpecs(t *testing.T) {
 	n, err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, n.DeviceOwner, "")
-	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", n.Status)
+	th.AssertEquals(t, "private-port", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", n.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", n.TenantID)
+	th.AssertEquals(t, "", n.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", n.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertDeepEquals(t, n.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
-	th.AssertDeepEquals(t, n.AllowedAddressPairs, []ports.AddressPair{
+	}, n.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, n.SecurityGroups)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
+	}, n.AllowedAddressPairs)
 }
 
 func TestCreateWithInvalidValueSpecs(t *testing.T) {
@@ -516,8 +516,8 @@ func TestCreatePortSecurity(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExt.Status, "DOWN")
-	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
+	th.AssertEquals(t, "DOWN", portWithExt.Status)
+	th.AssertEquals(t, false, portWithExt.PortSecurityEnabled)
 }
 
 func TestUpdate(t *testing.T) {
@@ -554,14 +554,14 @@ func TestUpdate(t *testing.T) {
 	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "new_port_name")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "new_port_name", s.Name)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
-	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair{
+	}, s.FixedIPs)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+	}, s.AllowedAddressPairs)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, s.SecurityGroups)
 }
 
 func TestUpdateOmitSecurityGroups(t *testing.T) {
@@ -595,14 +595,14 @@ func TestUpdateOmitSecurityGroups(t *testing.T) {
 	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "new_port_name")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "new_port_name", s.Name)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
-	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair{
+	}, s.FixedIPs)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+	}, s.AllowedAddressPairs)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, s.SecurityGroups)
 }
 
 func TestUpdatePropagateUplinkStatus(t *testing.T) {
@@ -692,9 +692,9 @@ func TestUpdatePortSecurity(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExt.Status, "DOWN")
-	th.AssertEquals(t, portWithExt.Name, "private-port")
-	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
+	th.AssertEquals(t, "DOWN", portWithExt.Status)
+	th.AssertEquals(t, "private-port", portWithExt.Name)
+	th.AssertEquals(t, false, portWithExt.PortSecurityEnabled)
 }
 
 func TestUpdateRevision(t *testing.T) {
@@ -782,13 +782,13 @@ func TestRemoveSecurityGroups(t *testing.T) {
 	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "new_port_name")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "new_port_name", s.Name)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
-	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair{
+	}, s.FixedIPs)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
+	}, s.AllowedAddressPairs)
 	th.AssertDeepEquals(t, s.SecurityGroups, []string(nil))
 }
 
@@ -822,12 +822,12 @@ func TestRemoveAllowedAddressPairs(t *testing.T) {
 	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "new_port_name")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "new_port_name", s.Name)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
+	}, s.FixedIPs)
 	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair(nil))
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, s.SecurityGroups)
 }
 
 func TestDontUpdateAllowedAddressPairs(t *testing.T) {
@@ -859,14 +859,14 @@ func TestDontUpdateAllowedAddressPairs(t *testing.T) {
 	s, err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "new_port_name")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "new_port_name", s.Name)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
-	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair{
+	}, s.FixedIPs)
+	th.AssertDeepEquals(t, []ports.AddressPair{
 		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
-	})
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+	}, s.AllowedAddressPairs)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, s.SecurityGroups)
 }
 
 func TestDelete(t *testing.T) {
@@ -905,25 +905,25 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "ACTIVE")
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.Name, "port-with-extra-dhcp-opts")
-	th.AssertEquals(t, s.DeviceOwner, "")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "ACTIVE", s.Status)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
+	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertEquals(t, "port-with-extra-dhcp-opts", s.Name)
+	th.AssertEquals(t, "", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.4"},
-	})
-	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, s.DeviceID, "")
+	}, s.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", s.ID)
+	th.AssertEquals(t, "", s.DeviceID)
 
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptName, "option1")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptValue, "value1")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].IPVersion, 4)
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[1].OptName, "option2")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[1].OptValue, "value2")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[1].IPVersion, 4)
+	th.AssertDeepEquals(t, "option1", s.ExtraDHCPOpts[0].OptName)
+	th.AssertDeepEquals(t, "value1", s.ExtraDHCPOpts[0].OptValue)
+	th.AssertDeepEquals(t, 4, s.ExtraDHCPOpts[0].IPVersion)
+	th.AssertDeepEquals(t, "option2", s.ExtraDHCPOpts[1].OptName)
+	th.AssertDeepEquals(t, "value2", s.ExtraDHCPOpts[1].OptValue)
+	th.AssertDeepEquals(t, 4, s.ExtraDHCPOpts[1].IPVersion)
 }
 
 func TestCreateWithExtraDHCPOpts(t *testing.T) {
@@ -971,22 +971,22 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.Name, "port-with-extra-dhcp-opts")
-	th.AssertEquals(t, s.DeviceOwner, "")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", s.Status)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
+	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertEquals(t, "port-with-extra-dhcp-opts", s.Name)
+	th.AssertEquals(t, "", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, s.DeviceID, "")
+	}, s.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", s.ID)
+	th.AssertEquals(t, "", s.DeviceID)
 
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptName, "option1")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptValue, "value1")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].IPVersion, 4)
+	th.AssertDeepEquals(t, "option1", s.ExtraDHCPOpts[0].OptName)
+	th.AssertDeepEquals(t, "value1", s.ExtraDHCPOpts[0].OptValue)
+	th.AssertDeepEquals(t, 4, s.ExtraDHCPOpts[0].IPVersion)
 }
 
 func TestUpdateWithExtraDHCPOpts(t *testing.T) {
@@ -1036,22 +1036,22 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.Name, "updated-port-with-dhcp-opts")
-	th.AssertEquals(t, s.DeviceOwner, "")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", s.Status)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
+	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertEquals(t, "updated-port-with-dhcp-opts", s.Name)
+	th.AssertEquals(t, "", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
-	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, s.DeviceID, "")
+	}, s.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", s.ID)
+	th.AssertEquals(t, "", s.DeviceID)
 
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptName, "option2")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptValue, "value2")
-	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].IPVersion, 4)
+	th.AssertDeepEquals(t, "option2", s.ExtraDHCPOpts[0].OptName)
+	th.AssertDeepEquals(t, "value2", s.ExtraDHCPOpts[0].OptValue)
+	th.AssertDeepEquals(t, 4, s.ExtraDHCPOpts[0].IPVersion)
 }
 
 func TestPortsListOpts(t *testing.T) {

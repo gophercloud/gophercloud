@@ -27,7 +27,7 @@ func TestListCredentials(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListCredentialsAllPages(t *testing.T) {
@@ -40,8 +40,8 @@ func TestListCredentialsAllPages(t *testing.T) {
 	actual, err := credentials.ExtractCredentials(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedCredentialsSlice, actual)
-	th.AssertDeepEquals(t, ExpectedCredentialsSlice[0].Blob, "{\"access\":\"181920\",\"secret\":\"secretKey\"}")
-	th.AssertDeepEquals(t, ExpectedCredentialsSlice[1].Blob, "{\"access\":\"7da79ff0aa364e1396f067e352b9b79a\",\"secret\":\"7a18d68ba8834b799d396f3ff6f1e98c\"}")
+	th.AssertDeepEquals(t, "{\"access\":\"181920\",\"secret\":\"secretKey\"}", ExpectedCredentialsSlice[0].Blob)
+	th.AssertDeepEquals(t, "{\"access\":\"7da79ff0aa364e1396f067e352b9b79a\",\"secret\":\"7a18d68ba8834b799d396f3ff6f1e98c\"}", ExpectedCredentialsSlice[1].Blob)
 }
 
 func TestGetCredential(t *testing.T) {

@@ -48,7 +48,7 @@ func TestListAll(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, pages, 1)
+	th.AssertEquals(t, 1, pages)
 }
 
 func TestGet(t *testing.T) {
@@ -60,11 +60,11 @@ func TestGet(t *testing.T) {
 	v, err := volumetypes.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, v.Name, "vol-type-001")
-	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, v.ExtraSpecs["capabilities"], "gpu")
-	th.AssertEquals(t, v.QosSpecID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, v.PublicAccess, true)
+	th.AssertEquals(t, "vol-type-001", v.Name)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", v.ID)
+	th.AssertEquals(t, "gpu", v.ExtraSpecs["capabilities"])
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", v.QosSpecID)
+	th.AssertEquals(t, true, v.PublicAccess)
 }
 
 func TestCreate(t *testing.T) {
@@ -85,12 +85,12 @@ func TestCreate(t *testing.T) {
 	n, err := volumetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "test_type")
-	th.AssertEquals(t, n.Description, "test_type_desc")
-	th.AssertEquals(t, n.IsPublic, true)
-	th.AssertEquals(t, n.PublicAccess, true)
-	th.AssertEquals(t, n.ID, "6d0ff92a-0007-4780-9ece-acfe5876966a")
-	th.AssertEquals(t, n.ExtraSpecs["capabilities"], "gpu")
+	th.AssertEquals(t, "test_type", n.Name)
+	th.AssertEquals(t, "test_type_desc", n.Description)
+	th.AssertEquals(t, true, n.IsPublic)
+	th.AssertEquals(t, true, n.PublicAccess)
+	th.AssertEquals(t, "6d0ff92a-0007-4780-9ece-acfe5876966a", n.ID)
+	th.AssertEquals(t, "gpu", n.ExtraSpecs["capabilities"])
 }
 
 func TestDelete(t *testing.T) {

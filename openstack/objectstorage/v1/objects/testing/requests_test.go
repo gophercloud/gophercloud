@@ -490,7 +490,7 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, ok := reader.(io.ReadSeeker)
-	th.AssertEquals(t, ok, true)
+	th.AssertEquals(t, true, ok)
 
 	c, err := io.ReadAll(reader)
 	th.AssertNoErr(t, err)

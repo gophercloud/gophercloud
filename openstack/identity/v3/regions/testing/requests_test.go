@@ -27,7 +27,7 @@ func TestListRegions(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListRegionsAllPages(t *testing.T) {
@@ -40,7 +40,7 @@ func TestListRegionsAllPages(t *testing.T) {
 	actual, err := regions.ExtractRegions(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedRegionsSlice, actual)
-	th.AssertEquals(t, ExpectedRegionsSlice[1].Extra["email"], "westsupport@example.com")
+	th.AssertEquals(t, "westsupport@example.com", ExpectedRegionsSlice[1].Extra["email"])
 }
 
 func TestGetRegion(t *testing.T) {

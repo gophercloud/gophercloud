@@ -82,7 +82,7 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 	tools.PrintResource(t, volume)
 	th.AssertEquals(t, volume.Name, volumeName)
 	th.AssertEquals(t, volume.Description, volumeDescription)
-	th.AssertEquals(t, volume.Size, 1)
+	th.AssertEquals(t, 1, volume.Size)
 
 	t.Logf("Successfully created volume: %s", volume.ID)
 
@@ -125,7 +125,7 @@ func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient) (*vo
 	}
 
 	th.AssertEquals(t, newVolume.Name, volumeName)
-	th.AssertEquals(t, newVolume.Size, 1)
+	th.AssertEquals(t, 1, newVolume.Size)
 
 	t.Logf("Successfully created volume from image: %s", newVolume.ID)
 

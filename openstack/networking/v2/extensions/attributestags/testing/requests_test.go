@@ -34,7 +34,7 @@ func TestReplaceAll(t *testing.T) {
 	res, err := attributestags.ReplaceAll(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
+	th.AssertDeepEquals(t, []string{"abc", "xyz"}, res)
 }
 
 func TestList(t *testing.T) {
@@ -54,7 +54,7 @@ func TestList(t *testing.T) {
 	res, err := attributestags.List(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
+	th.AssertDeepEquals(t, []string{"abc", "xyz"}, res)
 }
 
 func TestDeleteAll(t *testing.T) {

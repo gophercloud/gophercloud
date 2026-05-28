@@ -26,7 +26,7 @@ func TestExtractPassword_no_pwd_data(t *testing.T) {
 
 	pwd, err := resp.ExtractPassword(nil)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, pwd, "")
+	th.AssertEquals(t, "", pwd)
 }
 
 // Ok - return encrypted password when no private key is given.

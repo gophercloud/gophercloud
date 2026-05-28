@@ -36,7 +36,7 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	template, err := clustertemplates.Get(context.TODO(), client, clusterTemplate.UUID).Extract()
 	th.AssertNoErr(t, err)

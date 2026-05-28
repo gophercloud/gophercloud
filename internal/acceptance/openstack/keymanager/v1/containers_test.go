@@ -53,7 +53,7 @@ func TestGenericContainersCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestCertificateContainer(t *testing.T) {
@@ -172,7 +172,7 @@ func TestContainerConsumersCRUD(t *testing.T) {
 	container, err = containers.CreateConsumer(context.TODO(), client, containerID, consumerCreateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, container.Consumers)
-	th.AssertEquals(t, len(container.Consumers), 1)
+	th.AssertEquals(t, 1, len(container.Consumers))
 	defer func() {
 		deleteOpts := containers.DeleteConsumerOpts{
 			Name: consumerName,
@@ -181,7 +181,7 @@ func TestContainerConsumersCRUD(t *testing.T) {
 
 		container, err := containers.DeleteConsumer(context.TODO(), client, containerID, deleteOpts).Extract()
 		th.AssertNoErr(t, err)
-		th.AssertEquals(t, len(container.Consumers), 0)
+		th.AssertEquals(t, 0, len(container.Consumers))
 	}()
 
 	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages(context.TODO())
@@ -197,5 +197,5 @@ func TestContainerConsumersCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }

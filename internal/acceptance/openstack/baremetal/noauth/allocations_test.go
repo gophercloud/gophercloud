@@ -43,5 +43,5 @@ func TestAllocationsCreateDestroy(t *testing.T) {
 		return false, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }

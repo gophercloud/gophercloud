@@ -43,5 +43,5 @@ func TestGetMultipleAPIVersion(t *testing.T) {
 	MockGetMultipleResponses(t, fakeServer)
 
 	_, err := apiversions.Get(context.TODO(), client.ServiceClient(fakeServer), "v3").Extract()
-	th.AssertEquals(t, err.Error(), "Unable to find requested API version")
+	th.AssertEquals(t, "Unable to find requested API version", err.Error())
 }

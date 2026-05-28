@@ -37,8 +37,8 @@ func TestGetPort(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d").ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, p.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, p.QoSPolicyID, "591e0597-39a6-4665-8149-2111d8de9a08")
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", p.ID)
+	th.AssertEquals(t, "591e0597-39a6-4665-8149-2111d8de9a08", p.QoSPolicyID)
 }
 
 func TestCreatePort(t *testing.T) {
@@ -73,10 +73,10 @@ func TestCreatePort(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, p.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, p.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, p.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, p.QoSPolicyID, "591e0597-39a6-4665-8149-2111d8de9a08")
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", p.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", p.TenantID)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", p.ID)
+	th.AssertEquals(t, "591e0597-39a6-4665-8149-2111d8de9a08", p.QoSPolicyID)
 }
 
 func TestUpdatePortWithPolicy(t *testing.T) {
@@ -111,10 +111,10 @@ func TestUpdatePortWithPolicy(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, p.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, p.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, p.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, p.QoSPolicyID, "591e0597-39a6-4665-8149-2111d8de9a08")
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", p.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", p.TenantID)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", p.ID)
+	th.AssertEquals(t, "591e0597-39a6-4665-8149-2111d8de9a08", p.QoSPolicyID)
 }
 
 func TestUpdatePortWithoutPolicy(t *testing.T) {
@@ -149,10 +149,10 @@ func TestUpdatePortWithoutPolicy(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, p.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, p.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, p.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, p.QoSPolicyID, "")
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", p.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", p.TenantID)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", p.ID)
+	th.AssertEquals(t, "", p.QoSPolicyID)
 }
 
 func TestGetNetwork(t *testing.T) {
@@ -177,8 +177,8 @@ func TestGetNetwork(t *testing.T) {
 	err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d").ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, n.QoSPolicyID, "591e0597-39a6-4665-8149-2111d8de9a08")
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertEquals(t, "591e0597-39a6-4665-8149-2111d8de9a08", n.QoSPolicyID)
 }
 
 func TestCreateNetwork(t *testing.T) {
@@ -213,9 +213,9 @@ func TestCreateNetwork(t *testing.T) {
 	err := networks.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, n.QoSPolicyID, "591e0597-39a6-4665-8149-2111d8de9a08")
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", n.TenantID)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertEquals(t, "591e0597-39a6-4665-8149-2111d8de9a08", n.QoSPolicyID)
 }
 
 func TestUpdateNetworkWithPolicy(t *testing.T) {
@@ -253,10 +253,10 @@ func TestUpdateNetworkWithPolicy(t *testing.T) {
 	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, n.Name, "updated")
-	th.AssertEquals(t, n.QoSPolicyID, "591e0597-39a6-4665-8149-2111d8de9a08")
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", n.TenantID)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertEquals(t, "updated", n.Name)
+	th.AssertEquals(t, "591e0597-39a6-4665-8149-2111d8de9a08", n.QoSPolicyID)
 }
 
 func TestUpdateNetworkWithoutPolicy(t *testing.T) {
@@ -291,9 +291,9 @@ func TestUpdateNetworkWithoutPolicy(t *testing.T) {
 	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&n)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, n.QoSPolicyID, "")
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", n.TenantID)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", n.ID)
+	th.AssertEquals(t, "", n.QoSPolicyID)
 }
 
 func TestListPolicies(t *testing.T) {

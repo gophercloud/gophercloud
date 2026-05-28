@@ -83,7 +83,7 @@ func TestGroupCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "TEST",
@@ -105,7 +105,7 @@ func TestGroupCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "foo",
@@ -127,7 +127,7 @@ func TestGroupCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, false)
+	th.AssertEquals(t, false, found)
 
 	// Get the recently created group by ID
 	p, err := groups.Get(context.TODO(), client, group.ID).Extract()

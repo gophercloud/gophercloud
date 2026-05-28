@@ -128,7 +128,7 @@ func TestShare(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/zones/zone-id/shares", func(w http.ResponseWriter, r *http.Request) {
-		th.AssertEquals(t, r.Method, "POST")
+		th.AssertEquals(t, "POST", r.Method)
 
 		body, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -156,7 +156,7 @@ func TestUnshare(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/zones/zone-id/shares/share-id", func(w http.ResponseWriter, r *http.Request) {
-		th.AssertEquals(t, r.Method, "DELETE")
+		th.AssertEquals(t, "DELETE", r.Method)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
@@ -169,7 +169,7 @@ func TestListShares(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/zones/zone-id/shares", func(w http.ResponseWriter, r *http.Request) {
-		th.AssertEquals(t, r.Method, "GET")
+		th.AssertEquals(t, "GET", r.Method)
 		th.AssertEquals(t, "true", r.Header.Get("X-Auth-All-Projects"))
 
 		w.Header().Add("Content-Type", "application/json")

@@ -27,7 +27,7 @@ func TestListAvailableProjects(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListProjects(t *testing.T) {
@@ -51,9 +51,9 @@ func TestListProjects(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 2)
+	th.CheckEquals(t, 2, count)
 
-	th.CheckEquals(t, len(actualProjects), 2)
+	th.CheckEquals(t, 2, len(actualProjects))
 	th.CheckDeepEquals(t, ExpectedProjectSlice, actualProjects)
 }
 

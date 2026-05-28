@@ -27,7 +27,7 @@ func TestListRegisteredLimits(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListRegisteredLimitsAllPages(t *testing.T) {

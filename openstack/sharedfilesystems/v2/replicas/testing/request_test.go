@@ -218,7 +218,7 @@ func TestGetExportLocationSuccess(t *testing.T) {
 	s, err := replicas.GetExportLocation(context.TODO(), getClient(fakeServer, "2.47"), replicaID, "ae73e762-e8b9-4aad-aad3-23afb7cd6825").Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &replicas.ExportLocation{
+	th.AssertDeepEquals(t, &replicas.ExportLocation{
 		Path:             "192.168.1.124:/var/lib/manila/mnt/share-3b9c33e8-b136-45c6-84a6-019c8db1d550",
 		ID:               "ae73e762-e8b9-4aad-aad3-23afb7cd6825",
 		Preferred:        false,
@@ -226,7 +226,7 @@ func TestGetExportLocationSuccess(t *testing.T) {
 		AvailabilityZone: "zone-1",
 		CreatedAt:        time.Date(2023, time.May, 26, 12, 44, 33, 987960000, time.UTC),
 		UpdatedAt:        time.Date(2023, time.May, 26, 12, 44, 33, 958363000, time.UTC),
-	})
+	}, s)
 }
 
 func TestResetStatusSuccess(t *testing.T) {

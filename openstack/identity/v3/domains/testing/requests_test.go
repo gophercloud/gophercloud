@@ -27,7 +27,7 @@ func TestListAvailableDomains(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListDomains(t *testing.T) {
@@ -47,7 +47,7 @@ func TestListDomains(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListDomainsAllPages(t *testing.T) {

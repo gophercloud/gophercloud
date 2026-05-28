@@ -37,7 +37,7 @@ func TestZonesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	description := ""
 	updateOpts := zones.UpdateOpts{

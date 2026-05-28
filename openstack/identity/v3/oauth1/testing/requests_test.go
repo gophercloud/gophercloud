@@ -75,7 +75,7 @@ func TestListConsumers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListConsumersAllPages(t *testing.T) {
@@ -187,7 +187,7 @@ func TestListAccessTokens(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAccessTokensAllPages(t *testing.T) {
@@ -219,7 +219,7 @@ func TestListAccessTokenRoles(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAccessTokenRolesAllPages(t *testing.T) {

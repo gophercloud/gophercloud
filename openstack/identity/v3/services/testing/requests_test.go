@@ -47,7 +47,7 @@ func TestListServices(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListServicesAllPages(t *testing.T) {
@@ -60,8 +60,8 @@ func TestListServicesAllPages(t *testing.T) {
 	actual, err := services.ExtractServices(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedServicesSlice, actual)
-	th.AssertEquals(t, ExpectedServicesSlice[0].Extra["email"], "service-one@example.com")
-	th.AssertEquals(t, ExpectedServicesSlice[1].Extra["email"], "service@example.com")
+	th.AssertEquals(t, "service-one@example.com", ExpectedServicesSlice[0].Extra["email"])
+	th.AssertEquals(t, "service@example.com", ExpectedServicesSlice[1].Extra["email"])
 }
 
 func TestGetSuccessful(t *testing.T) {
@@ -73,7 +73,7 @@ func TestGetSuccessful(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondService, *actual)
-	th.AssertEquals(t, SecondService.Extra["email"], "service@example.com")
+	th.AssertEquals(t, "service@example.com", SecondService.Extra["email"])
 }
 
 func TestUpdateSuccessful(t *testing.T) {
@@ -89,7 +89,7 @@ func TestUpdateSuccessful(t *testing.T) {
 	actual, err := services.Update(context.TODO(), client.ServiceClient(fakeServer), "9876", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondServiceUpdated, *actual)
-	th.AssertEquals(t, SecondServiceUpdated.Description, "Service Two Updated")
+	th.AssertEquals(t, "Service Two Updated", SecondServiceUpdated.Description)
 }
 
 func TestDeleteSuccessful(t *testing.T) {

@@ -96,7 +96,7 @@ func TestRolesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 	description := "updated role test"
 	updateOpts := roles.UpdateOpts{
 		Description: &description,
@@ -115,7 +115,7 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, newRole.Extra)
 
 	th.AssertEquals(t, newRole.Description, description)
-	th.AssertEquals(t, newRole.Extra["email"], "updatedtestrole@example.com")
+	th.AssertEquals(t, "updatedtestrole@example.com", newRole.Extra["email"])
 
 }
 
@@ -158,7 +158,7 @@ func TestRolesFilterList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "reader",
@@ -180,7 +180,7 @@ func TestRolesFilterList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, false)
+	th.AssertEquals(t, false, found)
 }
 
 func TestRoleListAssignmentIncludeNamesAndSubtree(t *testing.T) {
@@ -248,7 +248,7 @@ func TestRoleListAssignmentIncludeNamesAndSubtree(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRoleListAssignmentForUserOnProject(t *testing.T) {
@@ -310,7 +310,7 @@ func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
@@ -375,7 +375,7 @@ func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
@@ -440,7 +440,7 @@ func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
@@ -508,7 +508,7 @@ func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRolesAssignToUserOnProject(t *testing.T) {
@@ -578,7 +578,7 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRolesAssignToUserOnDomain(t *testing.T) {
@@ -651,7 +651,7 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRolesAssignToGroupOnDomain(t *testing.T) {
@@ -727,7 +727,7 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestRolesAssignToGroupOnProject(t *testing.T) {
@@ -800,7 +800,7 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestCRUDRoleInferenceRule(t *testing.T) {

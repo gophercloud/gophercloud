@@ -55,7 +55,7 @@ func TestDomainsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestDomainsGet(t *testing.T) {
@@ -69,7 +69,7 @@ func TestDomainsGet(t *testing.T) {
 
 	tools.PrintResource(t, p)
 
-	th.AssertEquals(t, p.Name, "Default")
+	th.AssertEquals(t, "Default", p.Name)
 }
 
 func TestDomainsCRUD(t *testing.T) {

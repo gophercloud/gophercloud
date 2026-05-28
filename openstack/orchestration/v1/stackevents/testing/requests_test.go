@@ -38,7 +38,7 @@ func TestList(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListResourceEvents(t *testing.T) {
@@ -57,7 +57,7 @@ func TestListResourceEvents(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestGetEvent(t *testing.T) {

@@ -44,7 +44,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestNodesUpdate(t *testing.T) {
@@ -68,7 +68,7 @@ func TestNodesUpdate(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.Maintenance, true)
+	th.AssertEquals(t, true, updated.Maintenance)
 }
 
 func TestNodesRAIDConfig(t *testing.T) {

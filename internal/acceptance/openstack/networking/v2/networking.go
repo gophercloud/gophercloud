@@ -426,7 +426,7 @@ func CreateSubnetWithNoGateway(t *testing.T, client *gophercloud.ServiceClient, 
 	t.Logf("Successfully created subnet.")
 
 	th.AssertEquals(t, subnet.Name, subnetName)
-	th.AssertEquals(t, subnet.GatewayIP, "")
+	th.AssertEquals(t, "", subnet.GatewayIP)
 	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
 
 	return subnet, nil

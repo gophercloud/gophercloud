@@ -49,8 +49,8 @@ func TestACLCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
-	th.AssertEquals(t, len((*acl)["read"].Users), 1)
-	th.AssertEquals(t, (*acl)["read"].ProjectAccess, false)
+	th.AssertEquals(t, 1, len((*acl)["read"].Users))
+	th.AssertEquals(t, false, (*acl)["read"].ProjectAccess)
 
 	newUsers := []string{}
 	updateOpts := acls.SetOpts{
@@ -68,8 +68,8 @@ func TestACLCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
-	th.AssertEquals(t, len((*acl)["read"].Users), 0)
-	th.AssertEquals(t, (*acl)["read"].ProjectAccess, false)
+	th.AssertEquals(t, 0, len((*acl)["read"].Users))
+	th.AssertEquals(t, false, (*acl)["read"].ProjectAccess)
 
 	container, err := CreateGenericContainer(t, client, secret)
 	th.AssertNoErr(t, err)
@@ -92,8 +92,8 @@ func TestACLCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
-	th.AssertEquals(t, len((*acl)["read"].Users), 1)
-	th.AssertEquals(t, (*acl)["read"].ProjectAccess, false)
+	th.AssertEquals(t, 1, len((*acl)["read"].Users))
+	th.AssertEquals(t, false, (*acl)["read"].ProjectAccess)
 
 	aclRef, err = acls.UpdateContainerACL(context.TODO(), client, containerID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -103,6 +103,6 @@ func TestACLCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, acl)
 	tools.PrintResource(t, (*acl)["read"].Created)
-	th.AssertEquals(t, len((*acl)["read"].Users), 0)
-	th.AssertEquals(t, (*acl)["read"].ProjectAccess, false)
+	th.AssertEquals(t, 0, len((*acl)["read"].Users))
+	th.AssertEquals(t, false, (*acl)["read"].ProjectAccess)
 }
