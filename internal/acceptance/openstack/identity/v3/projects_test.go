@@ -55,7 +55,7 @@ func TestProjectsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "dmi",
@@ -76,7 +76,7 @@ func TestProjectsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	listOpts.Filters = map[string]string{
 		"name__contains": "foo",
@@ -97,7 +97,7 @@ func TestProjectsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, false)
+	th.AssertEquals(t, false, found)
 }
 
 func TestProjectsGet(t *testing.T) {
@@ -247,7 +247,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	// Search using all tags, including a not existing one
 	listOpts = projects.ListOpts{
@@ -260,7 +260,7 @@ func TestProjectsTags(t *testing.T) {
 	allProjects, err = projects.ExtractProjects(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allProjects), 0)
+	th.AssertEquals(t, 0, len(allProjects))
 
 	// Search matching at least one tag
 	listOpts = projects.ListOpts{
@@ -282,7 +282,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	// Search not matching any single tag
 	listOpts = projects.ListOpts{
@@ -304,7 +304,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, false)
+	th.AssertEquals(t, false, found)
 
 	// Search matching not all tags
 	listOpts = projects.ListOpts{
@@ -326,7 +326,7 @@ func TestProjectsTags(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	// Update the tags
 	updateOpts := projects.UpdateOpts{
@@ -337,8 +337,8 @@ func TestProjectsTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
-	th.AssertEquals(t, len(updatedProject.Tags), 1)
-	th.AssertEquals(t, updatedProject.Tags[0], "Tag1")
+	th.AssertEquals(t, 1, len(updatedProject.Tags))
+	th.AssertEquals(t, "Tag1", updatedProject.Tags[0])
 
 	// Update the project, but not its tags
 	description := "Test description"
@@ -350,8 +350,8 @@ func TestProjectsTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
-	th.AssertEquals(t, len(updatedProject.Tags), 1)
-	th.AssertEquals(t, updatedProject.Tags[0], "Tag1")
+	th.AssertEquals(t, 1, len(updatedProject.Tags))
+	th.AssertEquals(t, "Tag1", updatedProject.Tags[0])
 
 	// Remove all Tags
 	updateOpts = projects.UpdateOpts{
@@ -362,7 +362,7 @@ func TestProjectsTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
-	th.AssertEquals(t, len(updatedProject.Tags), 0)
+	th.AssertEquals(t, 0, len(updatedProject.Tags))
 }
 
 func TestProjectsTagsCRUD(t *testing.T) {

@@ -64,7 +64,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 
 	th.AssertEquals(t, policy.Name, policyName)
 	th.AssertEquals(t, policy.Description, policyDescription)
-	th.AssertEquals(t, len(policy.Rules), 1)
+	th.AssertEquals(t, 1, len(policy.Rules))
 
 	return policy, nil
 }

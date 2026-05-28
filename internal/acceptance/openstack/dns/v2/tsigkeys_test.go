@@ -39,7 +39,7 @@ func TestTSIGKeysCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	updateOpts := tsigkeys.UpdateOpts{
 		Name:   tsigkey.Name + "-updated",
@@ -52,5 +52,5 @@ func TestTSIGKeysCRUD(t *testing.T) {
 	tools.PrintResource(t, &newTSIGKey)
 
 	th.AssertEquals(t, newTSIGKey.Name, tsigkey.Name+"-updated")
-	th.AssertEquals(t, newTSIGKey.Secret, "updated-test-secret-key==")
+	th.AssertEquals(t, "updated-test-secret-key==", newTSIGKey.Secret)
 }

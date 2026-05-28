@@ -37,7 +37,7 @@ func TestServicesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestServicesCRUD(t *testing.T) {
@@ -75,5 +75,5 @@ func TestServicesCRUD(t *testing.T) {
 	tools.PrintResource(t, newService)
 	tools.PrintResource(t, newService.Extra)
 
-	th.AssertEquals(t, newService.Extra["description"], "Test Users")
+	th.AssertEquals(t, "Test Users", newService.Extra["description"])
 }

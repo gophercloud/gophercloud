@@ -84,7 +84,7 @@ func TestListOpts(t *testing.T) {
 	}
 
 	_, err := optsDetail.ToConductorListQuery()
-	th.AssertEquals(t, err.Error(), "cannot have both fields and detail options for conductors")
+	th.AssertEquals(t, "cannot have both fields and detail options for conductors", err.Error())
 
 	// Regular ListOpts can
 	query, err := opts.ToConductorListQuery()

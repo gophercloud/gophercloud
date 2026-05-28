@@ -19,12 +19,12 @@ func TestErrUnexpectedResponseCode(t *testing.T) {
 		ResponseHeader: nil,
 	}
 
-	th.AssertEquals(t, err.GetStatusCode(), 404)
-	th.AssertEquals(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound), true)
-	th.AssertEquals(t, gophercloud.ResponseCodeIs(err, http.StatusInternalServerError), false)
+	th.AssertEquals(t, 404, err.GetStatusCode())
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertEquals(t, false, gophercloud.ResponseCodeIs(err, http.StatusInternalServerError))
 
 	//even if application code wraps our error, ResponseCodeIs() should still work
 	errWrapped := fmt.Errorf("could not frobnicate the foobar: %w", err)
-	th.AssertEquals(t, gophercloud.ResponseCodeIs(errWrapped, http.StatusNotFound), true)
-	th.AssertEquals(t, gophercloud.ResponseCodeIs(errWrapped, http.StatusInternalServerError), false)
+	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(errWrapped, http.StatusNotFound))
+	th.AssertEquals(t, false, gophercloud.ResponseCodeIs(errWrapped, http.StatusInternalServerError))
 }

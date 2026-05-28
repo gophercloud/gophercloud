@@ -15,5 +15,5 @@ func TestHostnameInInventory(t *testing.T) {
 		t.Fatalf("Failed to unmarshal Inventory data: %s", err)
 	}
 
-	th.CheckDeepEquals(t, IntrospectionDataRes.Inventory.Hostname, "myawesomehost")
+	th.CheckDeepEquals(t, "myawesomehost", IntrospectionDataRes.Inventory.Hostname)
 }

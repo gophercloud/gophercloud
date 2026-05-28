@@ -54,7 +54,7 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestSubnetPoolsRevision(t *testing.T) {

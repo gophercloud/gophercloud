@@ -28,11 +28,11 @@ func TestCreate(t *testing.T) {
 	n, err := shares.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, n.Name, "my_test_share")
-	th.AssertEquals(t, n.Size, 1)
-	th.AssertEquals(t, n.ShareProto, "NFS")
-	th.AssertEquals(t, n.Metadata["__affinity_same_host"], "e268f4aa-d571-43dd-9ab3-f49ad06ffaef")
-	th.AssertEquals(t, n.Metadata["__affinity_different_host"], "e268f4aa-d571-43dd-9ab3-f49ad06ffaef")
+	th.AssertEquals(t, "my_test_share", n.Name)
+	th.AssertEquals(t, 1, n.Size)
+	th.AssertEquals(t, "NFS", n.ShareProto)
+	th.AssertEquals(t, "e268f4aa-d571-43dd-9ab3-f49ad06ffaef", n.Metadata["__affinity_same_host"])
+	th.AssertEquals(t, "e268f4aa-d571-43dd-9ab3-f49ad06ffaef", n.Metadata["__affinity_different_host"])
 }
 
 func TestUpdate(t *testing.T) {
@@ -52,9 +52,9 @@ func TestUpdate(t *testing.T) {
 	n, err := shares.Update(context.TODO(), client.ServiceClient(fakeServer), shareID, options).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, n.Name, "my_new_test_share")
-	th.AssertEquals(t, n.Description, "")
-	th.AssertEquals(t, n.IsPublic, false)
+	th.AssertEquals(t, "my_new_test_share", n.Name)
+	th.AssertEquals(t, "", n.Description)
+	th.AssertEquals(t, false, n.IsPublic)
 }
 
 func TestDelete(t *testing.T) {
@@ -75,7 +75,7 @@ func TestGet(t *testing.T) {
 
 	s, err := shares.Get(context.TODO(), client.ServiceClient(fakeServer), shareID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &shares.Share{
+	th.AssertDeepEquals(t, &shares.Share{
 		AvailabilityZone:   "nova",
 		ShareNetworkID:     "713df749-aac0-4a54-af52-10f6c991e80c",
 		ShareServerID:      "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
@@ -114,7 +114,7 @@ func TestGet(t *testing.T) {
 				"rel":  "bookmark",
 			},
 		},
-	})
+	}, s)
 }
 
 func TestListDetail(t *testing.T) {
@@ -130,7 +130,7 @@ func TestListDetail(t *testing.T) {
 	actual, err := shares.ExtractShares(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, actual, []shares.Share{
+	th.AssertDeepEquals(t, []shares.Share{
 		{
 			AvailabilityZone:   "nova",
 			ShareNetworkID:     "713df749-aac0-4a54-af52-10f6c991e80c",
@@ -171,7 +171,7 @@ func TestListDetail(t *testing.T) {
 				},
 			},
 		},
-	})
+	}, actual)
 }
 
 func TestListExportLocationsSuccess(t *testing.T) {
@@ -187,7 +187,7 @@ func TestListExportLocationsSuccess(t *testing.T) {
 	s, err := shares.ListExportLocations(context.TODO(), c, shareID).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, []shares.ExportLocation{
+	th.AssertDeepEquals(t, []shares.ExportLocation{
 		{
 			Path:            "127.0.0.1:/var/lib/manila/mnt/share-9a922036-ad26-4d27-b955-7a1e285fa74d",
 			ShareInstanceID: "011d21e2-fbc3-4e4a-9993-9ea223f73264",
@@ -195,7 +195,7 @@ func TestListExportLocationsSuccess(t *testing.T) {
 			ID:              "80ed63fc-83bc-4afc-b881-da4a345ac83d",
 			Preferred:       false,
 		},
-	})
+	}, s)
 }
 
 func TestGetExportLocationSuccess(t *testing.T) {
@@ -211,13 +211,13 @@ func TestGetExportLocationSuccess(t *testing.T) {
 	s, err := shares.GetExportLocation(context.TODO(), c, shareID, "80ed63fc-83bc-4afc-b881-da4a345ac83d").Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &shares.ExportLocation{
+	th.AssertDeepEquals(t, &shares.ExportLocation{
 		Path:            "127.0.0.1:/var/lib/manila/mnt/share-9a922036-ad26-4d27-b955-7a1e285fa74d",
 		ShareInstanceID: "011d21e2-fbc3-4e4a-9993-9ea223f73264",
 		IsAdminOnly:     false,
 		ID:              "80ed63fc-83bc-4afc-b881-da4a345ac83d",
 		Preferred:       false,
-	})
+	}, s)
 }
 
 func TestGrantAcessSuccess(t *testing.T) {
@@ -238,7 +238,7 @@ func TestGrantAcessSuccess(t *testing.T) {
 	s, err := shares.GrantAccess(context.TODO(), c, shareID, grantAccessReq).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &shares.AccessRight{
+	th.AssertDeepEquals(t, &shares.AccessRight{
 		ShareID:     "011d21e2-fbc3-4e4a-9993-9ea223f73264",
 		AccessType:  "ip",
 		AccessTo:    "0.0.0.0/0",
@@ -246,7 +246,7 @@ func TestGrantAcessSuccess(t *testing.T) {
 		AccessLevel: "rw",
 		State:       "new",
 		ID:          "a2f226a5-cee8-430b-8a03-78a59bd84ee8",
-	})
+	}, s)
 }
 
 func TestRevokeAccessSuccess(t *testing.T) {
@@ -278,7 +278,7 @@ func TestListAccessRightsSuccess(t *testing.T) {
 	s, err := shares.ListAccessRights(context.TODO(), c, shareID).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, []shares.AccessRight{
+	th.AssertDeepEquals(t, []shares.AccessRight{
 		{
 			ShareID:     "011d21e2-fbc3-4e4a-9993-9ea223f73264",
 			AccessType:  "ip",
@@ -288,7 +288,7 @@ func TestListAccessRightsSuccess(t *testing.T) {
 			State:       "new",
 			ID:          "a2f226a5-cee8-430b-8a03-78a59bd84ee8",
 		},
-	})
+	}, s)
 }
 
 func TestExtendSuccess(t *testing.T) {

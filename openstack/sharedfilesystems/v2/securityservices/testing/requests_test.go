@@ -30,12 +30,12 @@ func TestCreate(t *testing.T) {
 	s, err := securityservices.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "SecServ1")
-	th.AssertEquals(t, s.Description, "Creating my first Security Service")
-	th.AssertEquals(t, s.User, "demo")
-	th.AssertEquals(t, s.DNSIP, "10.0.0.0/24")
-	th.AssertEquals(t, s.Password, "supersecret")
-	th.AssertEquals(t, s.Type, "kerberos")
+	th.AssertEquals(t, "SecServ1", s.Name)
+	th.AssertEquals(t, "Creating my first Security Service", s.Description)
+	th.AssertEquals(t, "demo", s.User)
+	th.AssertEquals(t, "10.0.0.0/24", s.DNSIP)
+	th.AssertEquals(t, "supersecret", s.Password)
+	th.AssertEquals(t, "kerberos", s.Type)
 }
 
 // Verifies that a security service cannot be created without a type

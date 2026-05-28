@@ -38,5 +38,5 @@ func TestVLANTransparentCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }

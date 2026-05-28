@@ -30,7 +30,7 @@ func CreateSegment(t *testing.T, client *gophercloud.ServiceClient, networkID st
 
 	th.AssertEquals(t, segment.Name, name)
 	th.AssertEquals(t, segment.Description, desc)
-	th.AssertEquals(t, segment.NetworkType, "geneve")
+	th.AssertEquals(t, "geneve", segment.NetworkType)
 	th.AssertEquals(t, segment.NetworkID, networkID)
 
 	return segment, nil

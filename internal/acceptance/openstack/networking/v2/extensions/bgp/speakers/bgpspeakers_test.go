@@ -81,7 +81,7 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	speakerGot, err = speakers.Get(context.TODO(), client, bgpSpeaker.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, len(speakerGot.Networks), 0)
+	th.AssertEquals(t, 0, len(speakerGot.Networks))
 	t.Logf("Successfully removed BGP Peer %s to BGP Speaker %s", bgpPeer.Name, speakerUpdated.Name)
 
 	// GetAdvertisedRoutes

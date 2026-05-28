@@ -62,7 +62,7 @@ func TestSubnetCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestSubnetsServiceType(t *testing.T) {
@@ -275,7 +275,7 @@ func TestSubnetDNSNameservers(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnet)
-	th.AssertEquals(t, len(newSubnet.DNSNameservers), 1)
+	th.AssertEquals(t, 1, len(newSubnet.DNSNameservers))
 
 	// Update Subnet again
 	dnsNameservers = []string{}
@@ -290,7 +290,7 @@ func TestSubnetDNSNameservers(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnet)
-	th.AssertEquals(t, len(newSubnet.DNSNameservers), 0)
+	th.AssertEquals(t, 0, len(newSubnet.DNSNameservers))
 }
 
 func TestSubnetsRevision(t *testing.T) {

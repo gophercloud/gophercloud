@@ -111,8 +111,8 @@ func TestGet(t *testing.T) {
 	v, err := backups.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, v.Name, "backup-001")
-	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "backup-001", v.Name)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", v.ID)
 }
 
 func TestCreate(t *testing.T) {
@@ -125,9 +125,9 @@ func TestCreate(t *testing.T) {
 	n, err := backups.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.VolumeID, "1234")
-	th.AssertEquals(t, n.Name, "backup-001")
-	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "1234", n.VolumeID)
+	th.AssertEquals(t, "backup-001", n.Name)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", n.ID)
 }
 
 func TestRestore(t *testing.T) {
@@ -140,9 +140,9 @@ func TestRestore(t *testing.T) {
 	n, err := backups.RestoreFromBackup(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.VolumeID, "1234")
-	th.AssertEquals(t, n.VolumeName, "vol-001")
-	th.AssertEquals(t, n.BackupID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "1234", n.VolumeID)
+	th.AssertEquals(t, "vol-001", n.VolumeName)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", n.BackupID)
 }
 
 func TestDelete(t *testing.T) {
@@ -164,7 +164,7 @@ func TestExport(t *testing.T) {
 	n, err := backups.Export(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.BackupService, "cinder.backup.drivers.swift.SwiftBackupDriver")
+	th.AssertEquals(t, "cinder.backup.drivers.swift.SwiftBackupDriver", n.BackupService)
 	th.AssertDeepEquals(t, n.BackupURL, backupURL)
 
 	tmp := backups.ImportBackup{}
@@ -186,7 +186,7 @@ func TestImport(t *testing.T) {
 	n, err := backups.Import(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", n.ID)
 }
 
 func TestResetStatus(t *testing.T) {

@@ -210,10 +210,10 @@ func TestReauthEndLoop(t *testing.T) {
 	}
 
 	wg.Wait()
-	th.AssertEquals(t, info.reauthAttempts, 6)
-	th.AssertEquals(t, info.maxReauthReached, true)
-	th.AssertEquals(t, errAfter > 1, true)
-	th.AssertEquals(t, errUnable < 20, true)
+	th.AssertEquals(t, 6, info.reauthAttempts)
+	th.AssertEquals(t, true, info.maxReauthReached)
+	th.AssertEquals(t, true, errAfter > 1)
+	th.AssertEquals(t, true, errUnable < 20)
 }
 
 func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
@@ -569,7 +569,7 @@ func TestRequestRetryError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}
-	th.AssertEquals(t, retryCounter, uint(0))
+	th.AssertEquals(t, uint(0), retryCounter)
 }
 
 func TestRequestRetrySuccess(t *testing.T) {
@@ -594,7 +594,7 @@ func TestRequestRetrySuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	th.AssertEquals(t, retryCounter, uint(0))
+	th.AssertEquals(t, uint(0), retryCounter)
 }
 
 func TestRequestRetryContext(t *testing.T) {

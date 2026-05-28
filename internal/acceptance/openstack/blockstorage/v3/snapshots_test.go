@@ -69,7 +69,7 @@ func TestSnapshots(t *testing.T) {
 			}
 		}
 
-		th.AssertEquals(t, found, true)
+		th.AssertEquals(t, true, found)
 
 		return true, nil
 	})
@@ -87,7 +87,7 @@ func TestSnapshots(t *testing.T) {
 			}
 		}
 
-		th.AssertEquals(t, found, true)
+		th.AssertEquals(t, true, found)
 
 		return true, nil
 	})

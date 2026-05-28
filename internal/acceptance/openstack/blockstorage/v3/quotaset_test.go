@@ -130,7 +130,7 @@ func TestQuotasetUpdate(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, count, 3)
+	th.AssertEquals(t, 3, count)
 
 	// unpopulate resultQuotas.Extra as it is different per cloud and test
 	// rest of the quotaSet

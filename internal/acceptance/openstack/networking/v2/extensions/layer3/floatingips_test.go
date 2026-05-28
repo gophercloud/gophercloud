@@ -44,7 +44,7 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
@@ -100,7 +100,7 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 
 	tools.PrintResource(t, newFip)
 
-	th.AssertEquals(t, newFip.PortID, "")
+	th.AssertEquals(t, "", newFip.PortID)
 }
 
 func TestLayer3FloatingIPsWithFixedIPsExternalCreateDelete(t *testing.T) {

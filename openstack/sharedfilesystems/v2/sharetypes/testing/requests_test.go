@@ -32,8 +32,8 @@ func TestCreate(t *testing.T) {
 	st, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, st.Name, "my_new_share_type")
-	th.AssertEquals(t, st.IsPublic, true)
+	th.AssertEquals(t, "my_new_share_type", st.Name)
+	th.AssertEquals(t, true, st.IsPublic)
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
@@ -134,9 +134,9 @@ func TestGetExtraSpecs(t *testing.T) {
 	st, err := sharetypes.GetExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, st["snapshot_support"], "True")
-	th.AssertEquals(t, st["driver_handles_share_servers"], "True")
-	th.AssertEquals(t, st["my_custom_extra_spec"], "False")
+	th.AssertEquals(t, "True", st["snapshot_support"])
+	th.AssertEquals(t, "True", st["driver_handles_share_servers"])
+	th.AssertEquals(t, "False", st["my_custom_extra_spec"])
 }
 
 // Verifies that an extra specs can be added to a share type
@@ -153,7 +153,7 @@ func TestSetExtraSpecs(t *testing.T) {
 	es, err := sharetypes.SetExtraSpecs(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, es["my_key"], "my_value")
+	th.AssertEquals(t, "my_value", es["my_key"])
 }
 
 // Verifies that an extra specification can be unset for a share type

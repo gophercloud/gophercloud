@@ -92,7 +92,7 @@ func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 
 	t.Logf("Created Port Forwarding.")
 
-	th.AssertEquals(t, pf.Protocol, "tcp")
+	th.AssertEquals(t, "tcp", pf.Protocol)
 
 	return pf, err
 }
@@ -121,7 +121,7 @@ func CreatePortRangeForwarding(t *testing.T, client *gophercloud.ServiceClient, 
 
 	t.Logf("Created Port Range Forwarding.")
 
-	th.AssertEquals(t, pf.Protocol, "tcp")
+	th.AssertEquals(t, "tcp", pf.Protocol)
 
 	return pf, err
 }

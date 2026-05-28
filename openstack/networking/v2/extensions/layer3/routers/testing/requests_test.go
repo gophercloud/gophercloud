@@ -263,20 +263,20 @@ func TestGet(t *testing.T) {
 	n, err := routers.Get(context.TODO(), fake.ServiceClient(fakeServer), "a07eea83-7710-4860-931b-5fe220fae533").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "ACTIVE")
-	th.AssertDeepEquals(t, n.GatewayInfo, routers.GatewayInfo{
+	th.AssertEquals(t, "ACTIVE", n.Status)
+	th.AssertDeepEquals(t, routers.GatewayInfo{
 		NetworkID: "85d76829-6415-48ff-9c63-5c5ca8c61ac6",
 		ExternalFixedIPs: []routers.ExternalFixedIP{
 			{IPAddress: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
 		},
 		QoSPolicyID: "6601bae5-f15a-4687-8be9-ddec9a2f8a8b",
-	})
-	th.AssertEquals(t, n.Name, "router1")
-	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.TenantID, "d6554fe62e2f41efbb6e026fad5c1542")
-	th.AssertEquals(t, n.ID, "a07eea83-7710-4860-931b-5fe220fae533")
-	th.AssertDeepEquals(t, n.Routes, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
-	th.AssertDeepEquals(t, n.AvailabilityZoneHints, []string{"zone1", "zone2"})
+	}, n.GatewayInfo)
+	th.AssertEquals(t, "router1", n.Name)
+	th.AssertEquals(t, true, n.AdminStateUp)
+	th.AssertEquals(t, "d6554fe62e2f41efbb6e026fad5c1542", n.TenantID)
+	th.AssertEquals(t, "a07eea83-7710-4860-931b-5fe220fae533", n.ID)
+	th.AssertDeepEquals(t, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}, n.Routes)
+	th.AssertDeepEquals(t, []string{"zone1", "zone2"}, n.AvailabilityZoneHints)
 }
 
 func TestUpdate(t *testing.T) {
@@ -350,9 +350,9 @@ func TestUpdate(t *testing.T) {
 		{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
 	}
 
-	th.AssertEquals(t, n.Name, "new_name")
+	th.AssertEquals(t, "new_name", n.Name)
 	th.AssertDeepEquals(t, n.GatewayInfo, gwi)
-	th.AssertDeepEquals(t, n.Routes, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
+	th.AssertDeepEquals(t, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}, n.Routes)
 }
 
 func TestUpdateWithoutRoutes(t *testing.T) {
@@ -406,8 +406,8 @@ func TestUpdateWithoutRoutes(t *testing.T) {
 	n, err := routers.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "new_name")
-	th.AssertDeepEquals(t, n.Routes, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
+	th.AssertEquals(t, "new_name", n.Name)
+	th.AssertDeepEquals(t, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}, n.Routes)
 }
 
 func TestAllRoutesRemoved(t *testing.T) {
@@ -454,7 +454,7 @@ func TestAllRoutesRemoved(t *testing.T) {
 	n, err := routers.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, n.Routes, []routers.Route{})
+	th.AssertDeepEquals(t, []routers.Route{}, n.Routes)
 }
 
 func TestDelete(t *testing.T) {
@@ -760,9 +760,9 @@ func TestAddExternalGateways(t *testing.T) {
 	n, err := routers.AddExternalGateways(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "router1")
-	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertEquals(t, n.GatewayInfo.NetworkID, "8ca37218-28ff-41cb-9b10-039601ea7e6b")
+	th.AssertEquals(t, "router1", n.Name)
+	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", n.ID)
+	th.AssertEquals(t, "8ca37218-28ff-41cb-9b10-039601ea7e6b", n.GatewayInfo.NetworkID)
 }
 
 func TestUpdateExternalGateways(t *testing.T) {
@@ -831,9 +831,9 @@ func TestUpdateExternalGateways(t *testing.T) {
 	n, err := routers.UpdateExternalGateways(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "router1")
-	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertEquals(t, *n.GatewayInfo.EnableSNAT, true)
+	th.AssertEquals(t, "router1", n.Name)
+	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", n.ID)
+	th.AssertEquals(t, true, *n.GatewayInfo.EnableSNAT)
 }
 
 func TestRemoveExternalGateways(t *testing.T) {
@@ -893,7 +893,7 @@ func TestRemoveExternalGateways(t *testing.T) {
 	n, err := routers.RemoveExternalGateways(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "router1")
-	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertEquals(t, n.GatewayInfo.NetworkID, "")
+	th.AssertEquals(t, "router1", n.Name)
+	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", n.ID)
+	th.AssertEquals(t, "", n.GatewayInfo.NetworkID)
 }

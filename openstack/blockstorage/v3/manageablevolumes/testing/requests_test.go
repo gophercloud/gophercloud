@@ -31,14 +31,14 @@ func TestManageExisting(t *testing.T) {
 	n, err := manageablevolumes.ManageExisting(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Host, "host@lvm#LVM")
-	th.AssertEquals(t, n.Name, "New Volume")
-	th.AssertEquals(t, n.AvailabilityZone, "nova")
-	th.AssertEquals(t, n.Description, "Volume imported from existingLV")
-	th.AssertEquals(t, n.Bootable, "true")
-	th.AssertDeepEquals(t, n.Metadata, map[string]string{
+	th.AssertEquals(t, "host@lvm#LVM", n.Host)
+	th.AssertEquals(t, "New Volume", n.Name)
+	th.AssertEquals(t, "nova", n.AvailabilityZone)
+	th.AssertEquals(t, "Volume imported from existingLV", n.Description)
+	th.AssertEquals(t, "true", n.Bootable)
+	th.AssertDeepEquals(t, map[string]string{
 		"key1": "value1",
 		"key2": "value2",
-	})
-	th.AssertEquals(t, n.ID, "23cf872b-c781-4cd4-847d-5f2ec8cbd91c")
+	}, n.Metadata)
+	th.AssertEquals(t, "23cf872b-c781-4cd4-847d-5f2ec8cbd91c", n.ID)
 }

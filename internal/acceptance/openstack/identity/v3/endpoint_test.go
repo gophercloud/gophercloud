@@ -36,7 +36,7 @@ func TestEndpointsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestEndpointsGet(t *testing.T) {
@@ -79,7 +79,7 @@ func TestEndpointsNavigateCatalog(t *testing.T) {
 	allServices, err := services.ExtractServices(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allServices), 1)
+	th.AssertEquals(t, 1, len(allServices))
 
 	computeService := allServices[0]
 	tools.PrintResource(t, computeService)
@@ -96,7 +96,7 @@ func TestEndpointsNavigateCatalog(t *testing.T) {
 	allEndpoints, err := endpoints.ExtractEndpoints(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allServices), 1)
+	th.AssertEquals(t, 1, len(allServices))
 
 	tools.PrintResource(t, allEndpoints[0])
 }
@@ -138,6 +138,6 @@ func TestEndpointCRUD(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, newEndpoint.URL, "https://example-updated.com")
+	th.AssertEquals(t, "https://example-updated.com", newEndpoint.URL)
 	th.AssertEquals(t, newEndpoint.Description, description)
 }

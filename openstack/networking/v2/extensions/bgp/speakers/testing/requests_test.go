@@ -88,8 +88,8 @@ func TestCreate(t *testing.T) {
 	r, err := speakers.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, r.Name, opts.Name)
-	th.AssertEquals(t, r.LocalAS, 2000)
-	th.AssertEquals(t, len(r.Networks), 0)
+	th.AssertEquals(t, 2000, r.LocalAS)
+	th.AssertEquals(t, 0, len(r.Networks))
 	th.AssertEquals(t, r.IPVersion, opts.IPVersion)
 	th.AssertEquals(t, r.AdvertiseFloatingIPHostRoutes, *opts.AdvertiseFloatingIPHostRoutes)
 	th.AssertEquals(t, r.AdvertiseTenantNetworks, *opts.AdvertiseTenantNetworks)
@@ -230,7 +230,7 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 				{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
 				{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
 			}
-			th.CheckDeepEquals(t, count, 1)
+			th.CheckDeepEquals(t, 1, count)
 			th.CheckDeepEquals(t, expected, actual)
 			return true, nil
 		})

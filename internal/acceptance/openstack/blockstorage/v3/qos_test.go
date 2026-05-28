@@ -68,7 +68,7 @@ func TestQoS(t *testing.T) {
 			}
 		}
 
-		th.AssertEquals(t, found, true)
+		th.AssertEquals(t, true, found)
 
 		return true, nil
 	})

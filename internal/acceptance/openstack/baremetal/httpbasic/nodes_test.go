@@ -44,7 +44,7 @@ func TestNodesCreateDestroy(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 }
 
 func TestNodesUpdate(t *testing.T) {
@@ -68,7 +68,7 @@ func TestNodesUpdate(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.Maintenance, true)
+	th.AssertEquals(t, true, updated.Maintenance)
 }
 
 func TestNodesRAIDConfig(t *testing.T) {
@@ -114,9 +114,9 @@ func TestNodesFirmwareInterface(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer v1.DeleteNode(t, client, node)
 
-	th.AssertEquals(t, node.FirmwareInterface, "no-firmware")
+	th.AssertEquals(t, "no-firmware", node.FirmwareInterface)
 
 	nodeFirmwareCmps, err := nodes.ListFirmware(context.TODO(), client, node.UUID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, nodeFirmwareCmps, []nodes.FirmwareComponent{})
+	th.AssertDeepEquals(t, []nodes.FirmwareComponent{}, nodeFirmwareCmps)
 }

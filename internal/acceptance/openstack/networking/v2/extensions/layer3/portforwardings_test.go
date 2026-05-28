@@ -56,13 +56,13 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	pf, err := CreatePortForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, pf.Description, "Test description")
+	th.AssertEquals(t, "Test description", pf.Description)
 	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
 
 	pfRange, err := CreatePortRangeForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, pfRange.Description, "Test description range")
+	th.AssertEquals(t, "Test description range", pfRange.Description)
 	defer DeletePortForwarding(t, client, fip.ID, pfRange.ID)
 	tools.PrintResource(t, pfRange)
 
@@ -82,7 +82,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	newPf, err = portforwarding.Get(context.TODO(), client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, newPf.Description, "")
+	th.AssertEquals(t, "", newPf.Description)
 
 	// Test updating port range
 	newRangePf, err := portforwarding.Get(context.TODO(), client, fip.ID, pfRange.ID).Extract()
@@ -100,10 +100,10 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	newRangePf, err = portforwarding.Get(context.TODO(), client, fip.ID, pfRange.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, newRangePf.Description, "")
-	th.AssertEquals(t, newRangePf.Protocol, "tcp")
-	th.AssertEquals(t, newRangePf.InternalPortRange, "1300:1399")
-	th.AssertEquals(t, newRangePf.ExternalPortRange, "1300:1399")
+	th.AssertEquals(t, "", newRangePf.Description)
+	th.AssertEquals(t, "tcp", newRangePf.Protocol)
+	th.AssertEquals(t, "1300:1399", newRangePf.InternalPortRange)
+	th.AssertEquals(t, "1300:1399", newRangePf.ExternalPortRange)
 
 	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages(context.TODO())
 	th.AssertNoErr(t, err)

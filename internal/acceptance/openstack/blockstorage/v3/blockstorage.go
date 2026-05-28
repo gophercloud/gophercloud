@@ -98,7 +98,7 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 	tools.PrintResource(t, volume)
 	th.AssertEquals(t, volume.Name, volumeName)
 	th.AssertEquals(t, volume.Description, volumeDescription)
-	th.AssertEquals(t, volume.Size, 1)
+	th.AssertEquals(t, 1, volume.Size)
 
 	t.Logf("Successfully created volume: %s", volume.ID)
 
@@ -141,7 +141,7 @@ func CreateVolumeWithType(t *testing.T, client *gophercloud.ServiceClient, vt *v
 	tools.PrintResource(t, volume)
 	th.AssertEquals(t, volume.Name, volumeName)
 	th.AssertEquals(t, volume.Description, volumeDescription)
-	th.AssertEquals(t, volume.Size, 1)
+	th.AssertEquals(t, 1, volume.Size)
 	th.AssertEquals(t, volume.VolumeType, vt.Name)
 
 	t.Logf("Successfully created volume: %s", volume.ID)
@@ -168,7 +168,7 @@ func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumet
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, vt.IsPublic, true)
+	th.AssertEquals(t, true, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 	// TODO: For some reason returned extra_specs are empty even in API reference: https://developer.openstack.org/api-ref/block-storage/v3/?expanded=create-a-volume-type-detail#volume-types-types
@@ -201,7 +201,7 @@ func CreateVolumeTypeNoExtraSpecs(t *testing.T, client *gophercloud.ServiceClien
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, vt.IsPublic, true)
+	th.AssertEquals(t, true, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 
@@ -230,10 +230,10 @@ func CreateVolumeTypeMultiAttach(t *testing.T, client *gophercloud.ServiceClient
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, vt.IsPublic, true)
+	th.AssertEquals(t, true, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
-	th.AssertEquals(t, vt.ExtraSpecs["multiattach"], "<is> True")
+	th.AssertEquals(t, "<is> True", vt.ExtraSpecs["multiattach"])
 
 	t.Logf("Successfully created volume type: %s", vt.ID)
 
@@ -262,7 +262,7 @@ func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*
 	}
 
 	tools.PrintResource(t, vt)
-	th.AssertEquals(t, vt.IsPublic, false)
+	th.AssertEquals(t, false, vt.IsPublic)
 	th.AssertEquals(t, vt.Name, name)
 	th.AssertEquals(t, vt.Description, description)
 
@@ -365,7 +365,7 @@ func CreateQoS(t *testing.T, client *gophercloud.ServiceClient) (*qos.QoS, error
 	}
 
 	tools.PrintResource(t, qs)
-	th.AssertEquals(t, qs.Consumer, "front-end")
+	th.AssertEquals(t, "front-end", qs.Consumer)
 	th.AssertEquals(t, qs.Name, name)
 	th.AssertDeepEquals(t, qs.Specs, createOpts.Specs)
 

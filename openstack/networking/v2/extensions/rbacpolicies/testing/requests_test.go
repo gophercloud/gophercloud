@@ -123,11 +123,11 @@ func TestListWithAllPages(t *testing.T) {
 	err = rbacpolicies.ExtractRBACPolicesInto(allPages, &allRBACpolicies)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, allRBACpolicies[0].ObjectType, "network")
+	th.AssertEquals(t, "network", allRBACpolicies[0].ObjectType)
 	th.AssertEquals(t, allRBACpolicies[0].Action, rbacpolicies.ActionAccessShared)
 
-	th.AssertEquals(t, allRBACpolicies[1].ProjectID, "1ae27ce0a2a54cc6ae06dc62dd0ec832")
-	th.AssertEquals(t, allRBACpolicies[1].TargetTenant, "1a547a3bcfe44702889fdeff3c3520c3")
+	th.AssertEquals(t, "1ae27ce0a2a54cc6ae06dc62dd0ec832", allRBACpolicies[1].ProjectID)
+	th.AssertEquals(t, "1a547a3bcfe44702889fdeff3c3520c3", allRBACpolicies[1].TargetTenant)
 
 }
 
@@ -166,6 +166,6 @@ func TestUpdate(t *testing.T) {
 	rbacResult, err := rbacpolicies.Update(context.TODO(), fake.ServiceClient(fakeServer), "2cf7523a-93b5-4e69-9360-6c6bf986bb7c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, rbacResult.TargetTenant, "9d766060b6354c9e8e2da44cab0e8f38")
-	th.AssertEquals(t, rbacResult.ID, "2cf7523a-93b5-4e69-9360-6c6bf986bb7c")
+	th.AssertEquals(t, "9d766060b6354c9e8e2da44cab0e8f38", rbacResult.TargetTenant)
+	th.AssertEquals(t, "2cf7523a-93b5-4e69-9360-6c6bf986bb7c", rbacResult.ID)
 }

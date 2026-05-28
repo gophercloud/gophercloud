@@ -79,7 +79,7 @@ func CreateZone(t *testing.T, client *gophercloud.ServiceClient) (*zones.Zone, e
 	t.Logf("Created Zone: %s", zoneName)
 
 	th.AssertEquals(t, newZone.Name, zoneName)
-	th.AssertEquals(t, newZone.TTL, 7200)
+	th.AssertEquals(t, 7200, newZone.TTL)
 
 	return newZone, nil
 }
@@ -115,7 +115,7 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 	t.Logf("Created Zone: %s", zoneName)
 
 	th.AssertEquals(t, newZone.Name, zoneName)
-	th.AssertEquals(t, newZone.Masters[0], "10.0.0.1")
+	th.AssertEquals(t, "10.0.0.1", newZone.Masters[0])
 
 	return newZone, nil
 }
@@ -338,7 +338,7 @@ func CreateTSIGKey(t *testing.T, client *gophercloud.ServiceClient) (*tsigkeys.T
 	t.Logf("Created TSIG key: %s", keyName)
 
 	th.AssertEquals(t, newTSIGKey.Name, keyName)
-	th.AssertEquals(t, newTSIGKey.Algorithm, "hmac-sha256")
+	th.AssertEquals(t, "hmac-sha256", newTSIGKey.Algorithm)
 
 	return newTSIGKey, nil
 }

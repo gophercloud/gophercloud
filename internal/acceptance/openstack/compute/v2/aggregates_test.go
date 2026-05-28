@@ -57,8 +57,8 @@ func TestAggregatesCRUD(t *testing.T) {
 
 	tools.PrintResource(t, aggregate)
 
-	th.AssertEquals(t, updatedAggregate.Name, "new_aggregate_name")
-	th.AssertEquals(t, updatedAggregate.AvailabilityZone, "new_azone")
+	th.AssertEquals(t, "new_aggregate_name", updatedAggregate.Name)
+	th.AssertEquals(t, "new_azone", updatedAggregate.AvailabilityZone)
 }
 
 func TestAggregatesAddRemoveHost(t *testing.T) {
@@ -94,7 +94,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 
 	tools.PrintResource(t, aggregateWithRemovedHost)
 
-	th.AssertEquals(t, len(aggregateWithRemovedHost.Hosts), 0)
+	th.AssertEquals(t, 0, len(aggregateWithRemovedHost.Hosts))
 }
 
 func TestAggregatesSetRemoveMetadata(t *testing.T) {

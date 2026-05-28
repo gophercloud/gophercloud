@@ -26,7 +26,7 @@ func TestGetTenant(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, count, 1)
+	th.AssertEquals(t, 1, count)
 }
 
 func TestAllTenants(t *testing.T) {
@@ -49,5 +49,5 @@ func TestAllTenants(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, count, 1)
+	th.AssertEquals(t, 1, count)
 }

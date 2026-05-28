@@ -38,7 +38,7 @@ func TestVolumeTypesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertEquals(t, true, found)
 
 	name := vt.Name + "-updated"
 	description := vt.Description + "-updated"
@@ -141,9 +141,9 @@ func TestVolumeTypesExtraSpecs(t *testing.T) {
 
 	tools.PrintResource(t, createdExtraSpecs)
 
-	th.AssertEquals(t, len(createdExtraSpecs), 2)
-	th.AssertEquals(t, createdExtraSpecs["capabilities"], "gpu")
-	th.AssertEquals(t, createdExtraSpecs["volume_backend_name"], "ssd")
+	th.AssertEquals(t, 2, len(createdExtraSpecs))
+	th.AssertEquals(t, "gpu", createdExtraSpecs["capabilities"])
+	th.AssertEquals(t, "ssd", createdExtraSpecs["volume_backend_name"])
 
 	err = volumetypes.DeleteExtraSpec(context.TODO(), client, vt.ID, "volume_backend_name").ExtractErr()
 	th.AssertNoErr(t, err)
@@ -156,22 +156,22 @@ func TestVolumeTypesExtraSpecs(t *testing.T) {
 
 	tools.PrintResource(t, updatedExtraSpec)
 
-	th.AssertEquals(t, updatedExtraSpec["capabilities"], "gpu-2")
+	th.AssertEquals(t, "gpu-2", updatedExtraSpec["capabilities"])
 
 	allExtraSpecs, err := volumetypes.ListExtraSpecs(context.TODO(), client, vt.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, allExtraSpecs)
 
-	th.AssertEquals(t, len(allExtraSpecs), 1)
-	th.AssertEquals(t, allExtraSpecs["capabilities"], "gpu-2")
+	th.AssertEquals(t, 1, len(allExtraSpecs))
+	th.AssertEquals(t, "gpu-2", allExtraSpecs["capabilities"])
 
 	singleSpec, err := volumetypes.GetExtraSpec(context.TODO(), client, vt.ID, "capabilities").Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, singleSpec)
 
-	th.AssertEquals(t, singleSpec["capabilities"], "gpu-2")
+	th.AssertEquals(t, "gpu-2", singleSpec["capabilities"])
 }
 
 func TestVolumeTypesAccess(t *testing.T) {
@@ -206,7 +206,7 @@ func TestVolumeTypesAccess(t *testing.T) {
 
 	tools.PrintResource(t, accessList)
 
-	th.AssertEquals(t, len(accessList), 1)
+	th.AssertEquals(t, 1, len(accessList))
 	th.AssertEquals(t, accessList[0].ProjectID, project.ID)
 	th.AssertEquals(t, accessList[0].VolumeTypeID, vt.ID)
 
@@ -225,7 +225,7 @@ func TestVolumeTypesAccess(t *testing.T) {
 
 	tools.PrintResource(t, accessList)
 
-	th.AssertEquals(t, len(accessList), 0)
+	th.AssertEquals(t, 0, len(accessList))
 }
 
 func TestEncryptionVolumeTypes(t *testing.T) {

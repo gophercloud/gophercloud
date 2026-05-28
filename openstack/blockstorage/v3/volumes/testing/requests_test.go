@@ -197,8 +197,8 @@ func TestGet(t *testing.T) {
 	v, err := volumes.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, v.Name, "vol-001")
-	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "vol-001", v.Name)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", v.ID)
 }
 
 func TestCreate(t *testing.T) {
@@ -211,8 +211,8 @@ func TestCreate(t *testing.T) {
 	n, err := volumes.Create(context.TODO(), client.ServiceClient(fakeServer), options, nil).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Size, 75)
-	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, 75, n.Size)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", n.ID)
 }
 
 func TestCreateSchedulerHints(t *testing.T) {
@@ -303,9 +303,9 @@ func TestCreateFromBackup(t *testing.T) {
 	v, err := volumes.Create(context.TODO(), client.ServiceClient(fakeServer), options, nil).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, v.Size, 30)
-	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, *v.BackupID, "20c792f0-bb03-434f-b653-06ef238e337e")
+	th.AssertEquals(t, 30, v.Size)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", v.ID)
+	th.AssertEquals(t, "20c792f0-bb03-434f-b653-06ef238e337e", *v.BackupID)
 }
 
 func TestAttach(t *testing.T) {
