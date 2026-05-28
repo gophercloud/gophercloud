@@ -125,7 +125,7 @@ func TestDNSPortCRUDL(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
-	th.AssertEquals(t, newPort.Description, newPortName)
+	th.AssertEquals(t, newPort.Name, newPortName)
 	th.AssertEquals(t, newPort.Description, newPortDescription)
 	th.AssertEquals(t, newPort.DNSName, newDNSName)
 
@@ -242,7 +242,7 @@ func TestDNSNetwork(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newNetwork)
-	th.AssertEquals(t, newNetwork.Description, newNetworkName)
+	th.AssertEquals(t, newNetwork.Name, newNetworkName)
 	th.AssertEquals(t, newNetwork.Description, newNetworkDescription)
 	th.AssertEquals(t, newNetwork.DNSDomain, newNetworkDNSDomain)
 
