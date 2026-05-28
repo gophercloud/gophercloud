@@ -37,7 +37,8 @@ func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, networkID
 
 	t.Logf("Created floating IP.")
 
-	th.AssertEquals(t, floatingIP.Description, fipDescription)
+	th.AssertEquals(t, fipDescription, floatingIP.Description)
+	th.AssertEquals(t, networkID, floatingIP.FloatingNetworkID)
 
 	return floatingIP, err
 }
@@ -62,8 +63,9 @@ func CreateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceClient
 
 	t.Logf("Created floating IP.")
 
-	th.AssertEquals(t, floatingIP.Description, fipDescription)
-	th.AssertEquals(t, floatingIP.FixedIP, fixedIP)
+	th.AssertEquals(t, fipDescription, floatingIP.Description)
+	th.AssertEquals(t, networkID, floatingIP.FloatingNetworkID)
+	th.AssertEquals(t, fixedIP, floatingIP.FixedIP)
 
 	return floatingIP, err
 }
@@ -92,7 +94,12 @@ func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID
 
 	t.Logf("Created Port Forwarding.")
 
+	th.AssertEquals(t, pfDescription, pf.Description)
 	th.AssertEquals(t, "tcp", pf.Protocol)
+	th.AssertEquals(t, 25, pf.InternalPort)
+	th.AssertEquals(t, 2230, pf.ExternalPort)
+	th.AssertEquals(t, internalIP, pf.InternalIPAddress)
+	th.AssertEquals(t, portID, pf.InternalPortID)
 
 	return pf, err
 }
@@ -109,7 +116,7 @@ func CreatePortRangeForwarding(t *testing.T, client *gophercloud.ServiceClient, 
 		Description:       pfDescription,
 		Protocol:          "tcp",
 		InternalPortRange: "1200:1299",
-		ExternalPortRange: "1200:1299",
+		ExternalPortRange: "1300:1399",
 		InternalIPAddress: internalIP,
 		InternalPortID:    portID,
 	}
@@ -121,7 +128,12 @@ func CreatePortRangeForwarding(t *testing.T, client *gophercloud.ServiceClient, 
 
 	t.Logf("Created Port Range Forwarding.")
 
+	th.AssertEquals(t, pfDescription, pf.Description)
 	th.AssertEquals(t, "tcp", pf.Protocol)
+	th.AssertEquals(t, "1200:1299", pf.InternalPortRange)
+	th.AssertEquals(t, "1300:1399", pf.ExternalPortRange)
+	th.AssertEquals(t, internalIP, pf.InternalIPAddress)
+	th.AssertEquals(t, portID, pf.InternalPortID)
 
 	return pf, err
 }
@@ -177,8 +189,9 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 
 	t.Logf("Created router: %s", routerName)
 
-	th.AssertEquals(t, router.Name, routerName)
-	th.AssertEquals(t, router.Description, routerDescription)
+	th.AssertEquals(t, routerName, router.Name)
+	th.AssertEquals(t, routerDescription, router.Description)
+	th.AssertTrue(t, router.AdminStateUp)
 
 	return router, nil
 }
@@ -209,8 +222,9 @@ func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID str
 
 	t.Logf("Created router: %s", routerName)
 
-	th.AssertEquals(t, router.Name, routerName)
-	th.AssertEquals(t, router.Description, routerDescription)
+	th.AssertEquals(t, routerName, router.Name)
+	th.AssertEquals(t, routerDescription, router.Description)
+	th.AssertTrue(t, router.AdminStateUp)
 
 	return router, nil
 }

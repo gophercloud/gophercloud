@@ -77,6 +77,8 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
 
+	th.AssertEquals(t, "test description", role.Description)
+
 	listOpts := roles.ListOpts{
 		DomainID: "default",
 	}

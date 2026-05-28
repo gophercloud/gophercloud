@@ -89,7 +89,10 @@ func TestCredentialsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updateCredential)
 
-	th.AssertEquals(t, updateCredential.Blob, updateOpts.Blob)
+	th.AssertEquals(t, updateOpts.Blob, updateCredential.Blob)
+	th.AssertEquals(t, updateOpts.Type, updateCredential.Type)
+	th.AssertEquals(t, updateOpts.UserID, updateCredential.UserID)
+	th.AssertEquals(t, updateOpts.ProjectID, updateCredential.ProjectID)
 }
 
 func TestCredentialsValidateS3(t *testing.T) {

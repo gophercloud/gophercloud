@@ -358,8 +358,8 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newListener)
 
-	th.AssertEquals(t, newListener.Name, listenerName)
-	th.AssertEquals(t, newListener.Description, listenerDescription)
+	th.AssertEquals(t, listenerName, newListener.Name)
+	th.AssertEquals(t, listenerDescription, newListener.Description)
 
 	listenerStats, err := listeners.GetStats(context.TODO(), lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)
@@ -430,7 +430,8 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
-	th.AssertEquals(t, newMember.Name, memberName)
+	th.AssertEquals(t, memberName, newMember.Name)
+	th.AssertEquals(t, newWeight, newMember.Weight)
 
 	newWeight = tools.RandomInt(11, 100)
 	memberOpts := pools.BatchUpdateMemberOpts{
@@ -534,6 +535,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
+	th.AssertEquals(t, listenerDescription, newListener.Description)
 
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
@@ -554,6 +556,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPool)
+	th.AssertEquals(t, poolDescription, newPool.Description)
 
 	// Member
 	member, err := CreateMember(t, lbClient, lb, newPool, subnet.ID, subnet.CIDR)
@@ -574,6 +577,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
+	th.AssertEquals(t, newWeight, newMember.Weight)
 
 	// Monitor
 	monitor, err := CreateMonitor(t, lbClient, lb, newPool)

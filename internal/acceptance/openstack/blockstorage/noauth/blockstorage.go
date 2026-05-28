@@ -13,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/snapshots"
 	"github.com/gophercloud/gophercloud/v2/openstack/blockstorage/v3/volumes"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateVolume will create a volume with a random name and size of 1GB. An
@@ -42,6 +43,9 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 	if err != nil {
 		return volume, err
 	}
+
+	th.AssertEquals(t, volumeName, volume.Name)
+	th.AssertEquals(t, 1, volume.Size)
 
 	return volume, nil
 }
@@ -79,6 +83,9 @@ func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient) (*vo
 	if err != nil {
 		return volume, err
 	}
+
+	th.AssertEquals(t, volumeName, volume.Name)
+	th.AssertEquals(t, 1, volume.Size)
 
 	return volume, nil
 }
@@ -123,6 +130,10 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 	if err != nil {
 		return snapshot, err
 	}
+
+	th.AssertEquals(t, snapshotName, snapshot.Name)
+	th.AssertEquals(t, snapshotDescription, snapshot.Description)
+	th.AssertEquals(t, volume.ID, snapshot.VolumeID)
 
 	return snapshot, nil
 }

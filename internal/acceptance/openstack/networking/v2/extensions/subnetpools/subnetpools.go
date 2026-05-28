@@ -36,6 +36,8 @@ func CreateSubnetPool(t *testing.T, client *gophercloud.ServiceClient) (*subnetp
 
 	th.AssertEquals(t, subnetPool.Name, subnetPoolName)
 	th.AssertEquals(t, subnetPool.Description, subnetPoolDescription)
+	th.AssertDeepEquals(t, subnetPoolPrefixes, subnetPool.Prefixes)
+	th.AssertEquals(t, 24, subnetPool.DefaultPrefixLen)
 
 	return subnetPool, nil
 }

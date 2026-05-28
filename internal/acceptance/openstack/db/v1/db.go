@@ -13,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/databases"
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/instances"
 	"github.com/gophercloud/gophercloud/v2/openstack/db/v1/users"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateDatabase will create a database with a randomly generated name.
@@ -67,7 +68,14 @@ func CreateInstance(t *testing.T, client *gophercloud.ServiceClient) (*instances
 		return instance, err
 	}
 
-	return instances.Get(context.TODO(), client, instance.ID).Extract()
+	result, err := instances.Get(context.TODO(), client, instance.ID).Extract()
+	if err != nil {
+		return result, err
+	}
+
+	th.AssertEquals(t, name, result.Name)
+
+	return result, nil
 }
 
 // CreateUser will create a user with a randomly generated name.

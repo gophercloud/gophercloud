@@ -76,6 +76,13 @@ func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, c
 	th.AssertDeepEquals(t, labels, clusterTemplate.Labels)
 	th.AssertEquals(t, choices.ExternalNetworkID, clusterTemplate.ExternalNetworkID)
 	th.AssertEquals(t, choices.MagnumImageID, clusterTemplate.ImageID)
+	th.AssertEquals(t, coe, clusterTemplate.COE)
+	th.AssertEquals(t, "8.8.8.8", clusterTemplate.DNSNameServer)
+	th.AssertEquals(t, "overlay2", clusterTemplate.DockerStorageDriver)
+	th.AssertFalse(t, clusterTemplate.FloatingIPEnabled)
+	th.AssertFalse(t, clusterTemplate.Public)
+	th.AssertFalse(t, clusterTemplate.RegistryEnabled)
+	th.AssertEquals(t, "vm", clusterTemplate.ServerType)
 
 	return clusterTemplate, nil
 }

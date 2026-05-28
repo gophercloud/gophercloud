@@ -308,6 +308,7 @@ func TestServersActionRebuild(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, server.ID, rebuilt.ID)
+	th.AssertEquals(t, rebuildOpts.Name, rebuilt.Name)
 
 	if err = WaitForComputeStatus(client, rebuilt, "REBUILD"); err != nil {
 		t.Fatal(err)

@@ -140,4 +140,5 @@ func TestEndpointCRUD(t *testing.T) {
 
 	th.AssertEquals(t, "https://example-updated.com", newEndpoint.URL)
 	th.AssertEquals(t, newEndpoint.Description, description)
+	th.AssertEquals(t, "new-endpoint", newEndpoint.Name)
 }

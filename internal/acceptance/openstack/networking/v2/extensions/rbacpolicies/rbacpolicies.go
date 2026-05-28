@@ -29,6 +29,9 @@ func CreateRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, tenantID,
 	t.Logf("Successfully created rbac_policy")
 
 	th.AssertEquals(t, rbacPolicy.ObjectID, networkID)
+	th.AssertEquals(t, string(rbacpolicies.ActionAccessShared), string(rbacPolicy.Action))
+	th.AssertEquals(t, "network", rbacPolicy.ObjectType)
+	th.AssertEquals(t, tenantID, rbacPolicy.TargetTenant)
 
 	return rbacPolicy, nil
 }

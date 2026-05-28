@@ -50,6 +50,10 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 
 	t.Logf("Successfully created snapshot: %s", snapshot.ID)
 
+	th.AssertEquals(t, snapshotName, snapshot.Name)
+	th.AssertEquals(t, snapshotDescription, snapshot.Description)
+	th.AssertEquals(t, volume.ID, snapshot.VolumeID)
+
 	return snapshot, nil
 }
 

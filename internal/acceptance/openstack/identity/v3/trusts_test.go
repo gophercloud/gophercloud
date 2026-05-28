@@ -113,6 +113,9 @@ func TestTrustCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.ExpiresAt, expiresAt)
 	th.AssertTrue(t, p.DeletedAt.IsZero())
+	th.AssertEquals(t, trusteeUser.ID, p.TrusteeUserID)
+	th.AssertEquals(t, adminUser.ID, p.TrustorUserID)
+	th.AssertEquals(t, trusteeProject.ID, p.ProjectID)
 
 	tools.PrintResource(t, p)
 

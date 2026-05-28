@@ -51,8 +51,10 @@ func TestIPSecPolicyCRUD(t *testing.T) {
 	policy, err = ipsecpolicies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, policy)
+	th.AssertEquals(t, updatedDescription, policy.Description)
 
 	newPolicy, err := ipsecpolicies.Get(context.TODO(), client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, newPolicy)
+	th.AssertEquals(t, updatedDescription, newPolicy.Description)
 }

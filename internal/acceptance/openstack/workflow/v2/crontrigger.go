@@ -32,7 +32,9 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 		return crontrigger, err
 	}
 	t.Logf("Cron trigger created: %s", crontriggerName)
-	th.AssertEquals(t, crontrigger.Name, crontriggerName)
+	th.AssertEquals(t, crontriggerName, crontrigger.Name)
+	th.AssertEquals(t, workflow.ID, crontrigger.WorkflowID)
+	th.AssertEquals(t, "0 0 1 1 *", crontrigger.Pattern)
 	return crontrigger, nil
 }
 

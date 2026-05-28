@@ -7,6 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunks"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func CreateTrunk(t *testing.T, client *gophercloud.ServiceClient, parentPortID string, subportIDs ...string) (trunk *trunks.Trunk, err error) {
@@ -32,6 +33,11 @@ func CreateTrunk(t *testing.T, client *gophercloud.ServiceClient, parentPortID s
 	trunk, err = trunks.Create(context.TODO(), client, opts).Extract()
 	if err == nil {
 		t.Logf("Successfully created trunk")
+
+		th.AssertEquals(t, trunkName, trunk.Name)
+		th.AssertEquals(t, "Trunk created by gophercloud", trunk.Description)
+		th.AssertTrue(t, trunk.AdminStateUp)
+		th.AssertEquals(t, parentPortID, trunk.PortID)
 	}
 	return
 }

@@ -61,6 +61,8 @@ func TestServicesCRUD(t *testing.T) {
 	tools.PrintResource(t, service)
 	tools.PrintResource(t, service.Extra)
 
+	th.AssertEquals(t, "testing", service.Type)
+
 	updateOpts := services.UpdateOpts{
 		Type: "testing2",
 		Extra: map[string]any{
@@ -76,4 +78,5 @@ func TestServicesCRUD(t *testing.T) {
 	tools.PrintResource(t, newService.Extra)
 
 	th.AssertEquals(t, "Test Users", newService.Extra["description"])
+	th.AssertEquals(t, "testing2", newService.Type)
 }

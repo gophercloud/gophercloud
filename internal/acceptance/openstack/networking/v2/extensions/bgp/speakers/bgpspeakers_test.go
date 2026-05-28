@@ -58,6 +58,8 @@ func TestBGPSpeakerCRUD(t *testing.T) {
 	speakerUpdated, err := speakers.Update(context.TODO(), client, bgpSpeaker.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, speakerUpdated.Name, *opts.Name)
+	th.AssertFalse(t, speakerUpdated.AdvertiseTenantNetworks)
+	th.AssertTrue(t, speakerUpdated.AdvertiseFloatingIPHostRoutes)
 	t.Logf("Updated the BGP Speaker, name set from %s to %s", bgpSpeaker.Name, speakerUpdated.Name)
 
 	// Get a BGP Speaker

@@ -41,8 +41,9 @@ func CreateNetwork(t *testing.T, client *gophercloud.ServiceClient) (*networks.N
 
 	t.Logf("Successfully created network.")
 
-	th.AssertEquals(t, network.Name, networkName)
-	th.AssertEquals(t, network.Description, networkDescription)
+	th.AssertEquals(t, networkName, network.Name)
+	th.AssertEquals(t, networkDescription, network.Description)
+	th.AssertTrue(t, network.AdminStateUp)
 
 	return network, nil
 }
@@ -108,8 +109,10 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 
 	t.Logf("Successfully created port: %s", portName)
 
-	th.AssertEquals(t, port.Name, portName)
-	th.AssertEquals(t, port.Description, portDescription)
+	th.AssertEquals(t, portName, port.Name)
+	th.AssertEquals(t, portDescription, port.Description)
+	th.AssertTrue(t, port.AdminStateUp)
+	th.AssertEquals(t, networkID, port.NetworkID)
 
 	return newPort, nil
 }
@@ -146,7 +149,9 @@ func CreatePortWithNoSecurityGroup(t *testing.T, client *gophercloud.ServiceClie
 
 	t.Logf("Successfully created port: %s", portName)
 
-	th.AssertEquals(t, port.Name, portName)
+	th.AssertEquals(t, portName, port.Name)
+	th.AssertFalse(t, port.AdminStateUp)
+	th.AssertEquals(t, networkID, port.NetworkID)
 
 	return newPort, nil
 }
@@ -187,7 +192,9 @@ func CreatePortWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClie
 
 	t.Logf("Successfully created port: %s", portName)
 
-	th.AssertEquals(t, port.Name, portName)
+	th.AssertEquals(t, portName, port.Name)
+	th.AssertTrue(t, port.AdminStateUp)
+	th.AssertEquals(t, networkID, port.NetworkID)
 
 	return newPort, nil
 }
@@ -233,6 +240,10 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 
 	t.Logf("Successfully created port: %s", portName)
 
+	th.AssertEquals(t, portName, port.Name)
+	th.AssertTrue(t, port.AdminStateUp)
+	th.AssertEquals(t, networkID, port.NetworkID)
+
 	return port, nil
 }
 
@@ -268,8 +279,10 @@ func CreatePortWithMultipleFixedIPs(t *testing.T, client *gophercloud.ServiceCli
 
 	t.Logf("Successfully created port: %s", portName)
 
-	th.AssertEquals(t, port.Name, portName)
-	th.AssertEquals(t, port.Description, portDescription)
+	th.AssertEquals(t, portName, port.Name)
+	th.AssertEquals(t, portDescription, port.Description)
+	th.AssertTrue(t, port.AdminStateUp)
+	th.AssertEquals(t, networkID, port.NetworkID)
 
 	if len(port.FixedIPs) != 2 {
 		t.Fatalf("Failed to create a port with two fixed IPs: %s", portName)
@@ -311,10 +324,13 @@ func CreateSubnetWithCIDR(t *testing.T, client *gophercloud.ServiceClient, netwo
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
-	th.AssertEquals(t, subnet.Description, subnetDescription)
-	th.AssertEquals(t, subnet.GatewayIP, subnetGateway)
-	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
+	th.AssertEquals(t, subnetName, subnet.Name)
+	th.AssertEquals(t, subnetDescription, subnet.Description)
+	th.AssertEquals(t, subnetGateway, subnet.GatewayIP)
+	th.AssertEquals(t, subnetCIDR, subnet.CIDR)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
 
 	return subnet, nil
 }
@@ -349,11 +365,14 @@ func CreateSubnetWithServiceTypes(t *testing.T, client *gophercloud.ServiceClien
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
-	th.AssertEquals(t, subnet.Description, subnetDescription)
-	th.AssertEquals(t, subnet.GatewayIP, subnetGateway)
-	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
-	th.AssertDeepEquals(t, subnet.ServiceTypes, serviceTypes)
+	th.AssertEquals(t, subnetName, subnet.Name)
+	th.AssertEquals(t, subnetDescription, subnet.Description)
+	th.AssertEquals(t, subnetGateway, subnet.GatewayIP)
+	th.AssertEquals(t, subnetCIDR, subnet.CIDR)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
+	th.AssertDeepEquals(t, serviceTypes, subnet.ServiceTypes)
 
 	return subnet, nil
 }
@@ -384,9 +403,12 @@ func CreateSubnetWithDefaultGateway(t *testing.T, client *gophercloud.ServiceCli
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
-	th.AssertEquals(t, subnet.GatewayIP, defaultGateway)
-	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
+	th.AssertEquals(t, subnetName, subnet.Name)
+	th.AssertEquals(t, defaultGateway, subnet.GatewayIP)
+	th.AssertEquals(t, subnetCIDR, subnet.CIDR)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
 
 	return subnet, nil
 }
@@ -425,9 +447,12 @@ func CreateSubnetWithNoGateway(t *testing.T, client *gophercloud.ServiceClient, 
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
+	th.AssertEquals(t, subnetName, subnet.Name)
 	th.AssertEquals(t, "", subnet.GatewayIP)
-	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
+	th.AssertEquals(t, subnetCIDR, subnet.CIDR)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
 
 	return subnet, nil
 }
@@ -456,8 +481,12 @@ func CreateSubnetWithSubnetPool(t *testing.T, client *gophercloud.ServiceClient,
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
-	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
+	th.AssertEquals(t, subnetName, subnet.Name)
+	th.AssertEquals(t, subnetCIDR, subnet.CIDR)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
+	th.AssertEquals(t, subnetPoolID, subnet.SubnetPoolID)
 
 	return subnet, nil
 }
@@ -484,7 +513,11 @@ func CreateSubnetWithSubnetPoolNoCIDR(t *testing.T, client *gophercloud.ServiceC
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
+	th.AssertEquals(t, subnetName, subnet.Name)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
+	th.AssertEquals(t, subnetPoolID, subnet.SubnetPoolID)
 
 	return subnet, nil
 }
@@ -513,7 +546,11 @@ func CreateSubnetWithSubnetPoolPrefixlen(t *testing.T, client *gophercloud.Servi
 
 	t.Logf("Successfully created subnet.")
 
-	th.AssertEquals(t, subnet.Name, subnetName)
+	th.AssertEquals(t, subnetName, subnet.Name)
+	th.AssertEquals(t, networkID, subnet.NetworkID)
+	th.AssertEquals(t, 4, subnet.IPVersion)
+	th.AssertFalse(t, subnet.EnableDHCP)
+	th.AssertEquals(t, subnetPoolID, subnet.SubnetPoolID)
 
 	return subnet, nil
 }

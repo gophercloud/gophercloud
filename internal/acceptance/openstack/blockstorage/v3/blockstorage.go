@@ -56,8 +56,9 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 	}
 
 	tools.PrintResource(t, snapshot)
-	th.AssertEquals(t, snapshot.Name, snapshotName)
-	th.AssertEquals(t, snapshot.VolumeID, volume.ID)
+	th.AssertEquals(t, snapshotName, snapshot.Name)
+	th.AssertEquals(t, snapshotDescription, snapshot.Description)
+	th.AssertEquals(t, volume.ID, snapshot.VolumeID)
 
 	t.Logf("Successfully created snapshot: %s", snapshot.ID)
 
@@ -420,7 +421,8 @@ func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID stri
 	t.Logf("Successfully created backup %s", backup.ID)
 	tools.PrintResource(t, backup)
 
-	th.AssertEquals(t, backup.Name, backupName)
+	th.AssertEquals(t, backupName, backup.Name)
+	th.AssertEquals(t, volumeID, backup.VolumeID)
 
 	return backup, nil
 }

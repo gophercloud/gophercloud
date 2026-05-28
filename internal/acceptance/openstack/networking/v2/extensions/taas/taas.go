@@ -37,6 +37,9 @@ func CreateTapMirror(t *testing.T, client *gophercloud.ServiceClient, portID str
 
 	th.AssertEquals(t, mirrorName, mirror.Name)
 	th.AssertEquals(t, mirrorDescription, mirror.Description)
+	th.AssertEquals(t, portID, mirror.PortID)
+	th.AssertEquals(t, string(tapmirrors.MirrorTypeErspanv1), mirror.MirrorType)
+	th.AssertEquals(t, remoteIP, mirror.RemoteIP)
 
 	t.Logf("Created Tap Mirror: %s", mirror.ID)
 	return mirror, nil

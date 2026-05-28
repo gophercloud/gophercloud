@@ -23,6 +23,7 @@ func TestServergroupsCreateDelete(t *testing.T) {
 
 	serverGroup, err = servergroups.Get(context.TODO(), client, serverGroup.ID).Extract()
 	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, []string{"anti-affinity"}, serverGroup.Policies)
 
 	tools.PrintResource(t, serverGroup)
 
@@ -82,6 +83,14 @@ func TestServergroupsMicroversionCreateDelete(t *testing.T) {
 
 	serverGroup, err = servergroups.Get(context.TODO(), client, serverGroup.ID).Extract()
 	th.AssertNoErr(t, err)
+	if serverGroup.Policy == nil {
+		t.Fatal("Expected Policy to be non-nil")
+	}
+	th.AssertEquals(t, "anti-affinity", *serverGroup.Policy)
+	if serverGroup.Rules == nil {
+		t.Fatal("Expected Rules to be non-nil")
+	}
+	th.AssertEquals(t, 3, serverGroup.Rules.MaxServerPerHost)
 
 	tools.PrintResource(t, serverGroup)
 

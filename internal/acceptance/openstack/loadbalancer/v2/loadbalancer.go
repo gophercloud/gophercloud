@@ -322,7 +322,11 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalan
 		return member, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
-	th.AssertEquals(t, member.Name, memberName)
+	th.AssertEquals(t, memberName, member.Name)
+	th.AssertEquals(t, memberPort, member.ProtocolPort)
+	th.AssertEquals(t, memberWeight, member.Weight)
+	th.AssertEquals(t, memberAddress, member.Address)
+	th.AssertEquals(t, subnetID, member.SubnetID)
 
 	return member, nil
 }

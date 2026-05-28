@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -55,7 +56,15 @@ func CreateEmptyImage(t *testing.T, client *gophercloud.ServiceClient) (*images.
 
 	t.Logf("Created image %s: %#v", name, newImage)
 
-	th.CheckEquals(t, newImage.Name, name)
+	th.CheckEquals(t, name, newImage.Name)
+	th.CheckEquals(t, "bare", newImage.ContainerFormat)
+	th.CheckEquals(t, "qcow2", newImage.DiskFormat)
+	th.CheckEquals(t, images.ImageVisibilityPrivate, newImage.Visibility)
+	expectedTags := []string{"bar", "baz", "foo"}
+	actualTags := make([]string, len(newImage.Tags))
+	copy(actualTags, newImage.Tags)
+	sort.Strings(actualTags)
+	th.AssertDeepEquals(t, expectedTags, actualTags)
 	th.CheckEquals(t, "x86_64", newImage.Properties["architecture"])
 	th.CheckEquals(t, "{'hypervisor_type': 'qemu', 'architecture': 'x86_64'}", newImage.Properties["properties"])
 	return newImage, nil

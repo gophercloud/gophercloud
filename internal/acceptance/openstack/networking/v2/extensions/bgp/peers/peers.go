@@ -27,6 +27,7 @@ func CreateBGPPeer(t *testing.T, client *gophercloud.ServiceClient) (*peers.BGPP
 	th.AssertEquals(t, bgpPeer.Name, opts.Name)
 	th.AssertEquals(t, bgpPeer.RemoteAS, opts.RemoteAS)
 	th.AssertEquals(t, bgpPeer.PeerIP, opts.PeerIP)
+	th.AssertEquals(t, opts.AuthType, bgpPeer.AuthType)
 	t.Logf("Successfully created BGP Peer")
 	tools.PrintResource(t, bgpPeer)
 	return bgpPeer, err

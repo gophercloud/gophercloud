@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/nodes"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/portgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/ports"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateNode creates a basic node with a randomly generated name.
@@ -32,8 +33,16 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 			"ipmi_password":  "admin",
 		},
 	}).Extract()
+	if err != nil {
+		return node, err
+	}
 
-	return node, err
+	th.AssertEquals(t, name, node.Name)
+	th.AssertEquals(t, "ipmi", node.Driver)
+	th.AssertEquals(t, "ipxe", node.BootInterface)
+	th.AssertEquals(t, "agent", node.RAIDInterface)
+
+	return node, nil
 }
 
 // DeleteNode deletes a bare metal node via its UUID.
@@ -63,8 +72,14 @@ func CreateAllocation(t *testing.T, client *gophercloud.ServiceClient) (*allocat
 		Name:          name,
 		ResourceClass: "baremetal",
 	}).Extract()
+	if err != nil {
+		return allocation, err
+	}
 
-	return allocation, err
+	th.AssertEquals(t, name, allocation.Name)
+	th.AssertEquals(t, "baremetal", allocation.ResourceClass)
+
+	return allocation, nil
 }
 
 // DeleteAllocation deletes a bare metal allocation via its UUID.
@@ -86,8 +101,14 @@ func CreatePortGroup(t *testing.T, client *gophercloud.ServiceClient, node *node
 		Name:     name,
 		NodeUUID: node.UUID,
 	}).Extract()
+	if err != nil {
+		return allocation, err
+	}
 
-	return allocation, err
+	th.AssertEquals(t, name, allocation.Name)
+	th.AssertEquals(t, node.UUID, allocation.NodeUUID)
+
+	return allocation, nil
 }
 
 // DeletePortGroup deletes a bare metal portgroup via its UUID.
@@ -119,8 +140,15 @@ func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Nod
 			"ipmi_password":  "admin",
 		},
 	}).Extract()
+	if err != nil {
+		return node, err
+	}
 
-	return node, err
+	th.AssertEquals(t, name, node.Name)
+	th.AssertEquals(t, "fake-hardware", node.Driver)
+	th.AssertEquals(t, "fake", node.BootInterface)
+
+	return node, nil
 }
 
 func ChangeProvisionStateAndWait(ctx context.Context, client *gophercloud.ServiceClient, node *nodes.Node,
@@ -196,8 +224,14 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 		Address:    mac,
 		PXEEnabled: &iTrue,
 	}).Extract()
+	if err != nil {
+		return port, err
+	}
 
-	return port, err
+	th.AssertEquals(t, node.UUID, port.NodeUUID)
+	th.AssertEquals(t, mac, port.Address)
+
+	return port, nil
 }
 
 // DeletePort - deletes a port via its UUID

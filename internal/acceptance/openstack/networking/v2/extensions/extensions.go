@@ -46,6 +46,7 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 
 	th.AssertEquals(t, networkName, network.Name)
 	th.AssertEquals(t, networkDescription, network.Description)
+	th.AssertTrue(t, network.AdminStateUp)
 
 	return network, nil
 }
@@ -137,6 +138,11 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 
 	th.AssertEquals(t, rule.SecGroupID, secGroupID)
 	th.AssertEquals(t, rule.Description, description)
+	th.AssertEquals(t, "ingress", rule.Direction)
+	th.AssertEquals(t, "IPv4", rule.EtherType)
+	th.AssertEquals(t, fromPort, rule.PortRangeMin)
+	th.AssertEquals(t, toPort, rule.PortRangeMax)
+	th.AssertEquals(t, string(rules.ProtocolTCP), rule.Protocol)
 
 	return rule, nil
 }
