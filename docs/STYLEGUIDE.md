@@ -28,9 +28,8 @@
   [Pending #PRNUM] tag once the PR has been updated with the merged, dependent PR. That will
   let reviewers know it is ready to review.
 
-- A PR should be small. Even if you intend on implementing an entire
-  service, a PR should only be one route of that service
-  (e.g. create server or get server, but not both).
+- A PR should be focused. Group related operations together, but avoid
+  mixing unrelated changes in a single PR.
 
 - Unless explicitly asked, do not squash commits in the middle of a review; only
   append. It makes it difficult for the reviewer to see what's changed from one
