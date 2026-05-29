@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# Prep the testing environment by creating the required testing resources and
+# environment variables. This env is used for the CI jobs and you might need
+# to modify this according to your setup
+
+set -euxo pipefail
+
+DEVSTACK_PATH=${DEVSTACK_PATH:-/opt/stack/new/devstack}
+
+pushd "$DEVSTACK_PATH"
+
+set +u
+# shellcheck disable=SC1091
+source openrc admin admin
+set -u
+
+if [[ "${USE_SYSTEM_SCOPE:-}" == "true" ]]; then
+    # use system-scoped tokens
+    echo export OS_SYSTEM_SCOPE=all >> openrc
+fi
+# TODO: This should only be set when using project-scoped tokens (and we should
+# unsetting things like OS_PROJECT_NAME and OS_PROJECT_DOMAIN_ID when not using
+# these) but our tests require both which means we need to export both. This
+# causes OSC to (correctly) fail since keystoneauth (which is handling
+# authentication for OSC and most other clients) can't tell if we want project-
+# or system-scoped tokens. As such, post running this script, the 'openrc' file
+# will no longer be usable with OSC or other clients.
+#
+# The long-term fix for this likely involves a mechanism to switch between
+# different sets of auth info on a test-by-test basis. Achieving this almost
+# certainly means switching our tests to use clouds.yaml with well-known cloud
+# names rather than openrc file currently used.
+echo export OS_DOMAIN_ID=default >> openrc
+
+_FLAVOR_ID=99
+_FLAVOR_ALT_ID=98
+openstack flavor create m1.acctest --id "$_FLAVOR_ID" --ram 512 --disk 10 --vcpu 1 --ephemeral 10
+openstack flavor create m1.resize --id "$_FLAVOR_ALT_ID" --ram 512 --disk 11 --vcpu 1 --ephemeral 10
+openstack keypair create magnum
+_NETWORK_ID=$(openstack network show private -c id -f value)
+_SUBNET_ID=$(openstack subnet show private-subnet -c id -f value)
+_EXTGW_ID=$(openstack network show public -c id -f value)
+_IMAGE=$(openstack image list | grep -i cirros | head -n 1)
+_IMAGE_ID=$(echo "$_IMAGE" | awk -F\| '{print $2}' | tr -d ' ')
+_IMAGE_NAME=$(echo "$_IMAGE" | awk -F\| '{print $3}' | tr -d ' ')
+
+cat >> "openrc" <<EOL
+
+# gophercloud-specific configuration
+
+export OS_IMAGE_NAME="$_IMAGE_NAME"
+export OS_IMAGE_ID="$_IMAGE_ID"
+export OS_NETWORK_ID="$_NETWORK_ID"
+export OS_SUBNET_ID="$_SUBNET_ID"
+export OS_EXTGW_ID="$_EXTGW_ID"
+export OS_POOL_NAME="public"
+export OS_FLAVOR_ID="$_FLAVOR_ID"
+export OS_FLAVOR_ID_RESIZE="$_FLAVOR_ALT_ID"
+EOL
+
+if _=$(openstack service list | grep container-infra); then
+    _MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep coreos | cut -d ' ' -f 1)
+    if [ -z "$_MAGNUM_IMAGE_ID" ]; then
+        _MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep -i atomic | cut -d ' ' -f 1)
+    fi
+    cat >> "openrc" <<EOL
+export OS_MAGNUM_IMAGE_ID="$_MAGNUM_IMAGE_ID"
+export OS_MAGNUM_KEYPAIR=magnum
+EOL
+fi
+
+set +u
+# shellcheck disable=SC1091
+source openrc admin admin
+set -u
+
+popd

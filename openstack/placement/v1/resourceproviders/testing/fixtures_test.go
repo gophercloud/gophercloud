@@ -1,0 +1,882 @@
+package testing
+
+import (
+	"fmt"
+	"net/http"
+	"testing"
+
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
+	"github.com/gophercloud/gophercloud/v2/openstack/placement/v1/resourceproviders"
+
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
+)
+
+const ResourceProviderTestID = "99c09379-6e52-4ef8-9a95-b9ce6f68452e"
+const PresentInventoryResourceClass = "VCPU"
+const MissingInventoryResourceClass = "NO_SUCH_CLASS"
+const NonExistentRPID = "00000000-0000-0000-0000-000000000000"
+
+const ResourceProvidersBody = `
+{
+  "resource_providers": [
+    {
+      "generation": 1,
+      "uuid": "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+      "links": [
+        {
+          "href": "/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+          "rel": "self"
+        }
+      ],
+      "name": "vgr.localdomain",
+      "parent_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+      "root_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8"
+    },
+    {
+      "generation": 2,
+      "uuid": "d0b381e9-8761-42de-8e6c-bba99a96d5f5",
+      "links": [
+        {
+          "href": "/resource_providers/d0b381e9-8761-42de-8e6c-bba99a96d5f5",
+          "rel": "self"
+        }
+      ],
+      "name": "pony1",
+      "parent_provider_uuid": null,
+      "root_provider_uuid": "d0b381e9-8761-42de-8e6c-bba99a96d5f5"
+    }
+  ]
+}
+`
+
+const ResourceProviderCreateBody = `
+{
+  "generation": 1,
+  "uuid": "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+  "links": [
+	{
+	  "href": "/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+	  "rel": "self"
+	}
+  ],
+  "name": "vgr.localdomain",
+  "parent_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+  "root_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8"
+}
+`
+
+const ResourceProviderUpdateResponse = `
+{
+  "generation": 1,
+  "uuid": "4e8e5957-649f-477b-9e5b-f1f75b21c03c",
+  "links": [
+	{
+	  "href": "/resource_providers/4e8e5957-649f-477b-9e5b-f1f75b21c03c",
+	  "rel": "self"
+	}
+  ],
+  "name": "new_name",
+  "parent_provider_uuid": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+  "root_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8"
+}
+`
+
+const ResourceProviderUpdateRequest = `
+{
+  "name": "new_name",
+  "parent_provider_uuid": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+}
+`
+
+const UsagesBody = `
+{
+    "resource_provider_generation": 1,
+    "usages": {
+        "DISK_GB": 1,
+        "MEMORY_MB": 512,
+        "VCPU": 1
+    }
+}
+`
+
+const InventoriesBody = `
+{
+    "inventories": {
+        "DISK_GB": {
+            "allocation_ratio": 1.0,
+            "max_unit": 35,
+            "min_unit": 1,
+            "reserved": 0,
+            "step_size": 1,
+            "total": 35
+        },
+        "MEMORY_MB": {
+            "allocation_ratio": 1.5,
+            "max_unit": 5825,
+            "min_unit": 1,
+            "reserved": 512,
+            "step_size": 1,
+            "total": 5825
+        },
+        "VCPU": {
+            "allocation_ratio": 16.0,
+            "max_unit": 4,
+            "min_unit": 1,
+            "reserved": 0,
+            "step_size": 1,
+            "total": 4
+        }
+    },
+    "resource_provider_generation": 7
+}
+`
+
+const UpdateInventoriesRequest = `
+{
+	"resource_provider_generation": 7,
+	"inventories": {
+		"DISK_GB": {
+			"allocation_ratio": 1.0,
+			"max_unit": 35,
+			"min_unit": 1,
+			"reserved": 0,
+			"step_size": 1,
+			"total": 35
+		},
+		"MEMORY_MB": {
+			"allocation_ratio": 1.5,
+			"max_unit": 5825,
+			"min_unit": 1,
+			"reserved": 512,
+			"step_size": 1,
+			"total": 5825
+		},
+		"VCPU": {
+			"allocation_ratio": 16.0,
+			"max_unit": 4,
+			"min_unit": 1,
+			"reserved": 0,
+			"step_size": 1,
+			"total": 4
+		}
+	}
+}
+`
+
+const InventoryBody = `
+{
+	"resource_provider_generation": 7,
+	"allocation_ratio": 16.0,
+	"max_unit": 4,
+	"min_unit": 1,
+	"reserved": 0,
+	"step_size": 1,
+	"total": 4
+}
+`
+
+const UpdateInventoryRequest = `
+{
+	"resource_provider_generation": 7,
+	"allocation_ratio": 16.0,
+	"max_unit": 4,
+	"min_unit": 1,
+	"reserved": 0,
+	"step_size": 1,
+	"total": 4
+}
+`
+
+const AllocationsBody = `
+{
+    "allocations": {
+        "56785a3f-6f1c-4fec-af0b-0faf075b1fcb": {
+            "resources": {
+                "MEMORY_MB": 256,
+                "VCPU": 1
+            }
+        },
+        "9afd5aeb-d6b9-4dea-a588-1e6327a91834": {
+            "resources": {
+                "MEMORY_MB": 512,
+                "VCPU": 2
+            }
+        },
+        "9d16a611-e7f9-4ef3-be26-c61ed01ecefb": {
+            "resources": {
+                "MEMORY_MB": 1024,
+                "VCPU": 1
+            }
+        }
+    },
+    "resource_provider_generation": 12
+}
+`
+
+const TraitsBody = `
+{
+    "resource_provider_generation": 1,
+    "traits": [
+        "CUSTOM_HW_FPGA_CLASS1",
+        "CUSTOM_HW_FPGA_CLASS3"
+    ]
+}
+`
+
+const AggregatesBody = `
+{
+	"resource_provider_generation": 1,
+	"aggregates": [
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4"
+	]
+}
+`
+
+const AggregatesBodyPreGeneration = `
+{
+	"aggregates": [
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4"
+	]
+}
+`
+
+const AggregatesUpdateBody = `
+{
+	"resource_provider_generation": 1,
+	"aggregates": [
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd"
+	]
+}
+`
+
+// AggregatesUpdateRequestPreGeneration is the raw JSON array sent as the PUT request body
+// for microversions < 1.19, where the payload is just a list of aggregate UUIDs.
+const AggregatesUpdateRequestPreGeneration = `["89f68995-4fd8-4f8b-a03e-7d5980762ff2","16d0e5f2-7f66-4f32-9040-b09de2f40afd"]`
+
+// AggregatesUpdateBodyWithoutGeneration is the pre-1.19 server response body for an aggregates update.
+// Unlike the request, the response is not flat.
+const AggregatesUpdateBodyWithoutGeneration = `
+{
+	"aggregates": [
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd"
+	]
+}
+`
+
+const AbsentResourceProviderID = "00000000-0000-0000-0000-000000000000"
+
+var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
+	Generation: 1,
+	UUID:       "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+	Links: []resourceproviders.ResourceProviderLinks{
+		{
+			Href: "/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+			Rel:  "self",
+		},
+	},
+	Name:               "vgr.localdomain",
+	ParentProviderUUID: "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+	RootProviderUUID:   "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+}
+
+var ExpectedResourceProvider2 = resourceproviders.ResourceProvider{
+	Generation: 2,
+	UUID:       "d0b381e9-8761-42de-8e6c-bba99a96d5f5",
+	Links: []resourceproviders.ResourceProviderLinks{
+		{
+			Href: "/resource_providers/d0b381e9-8761-42de-8e6c-bba99a96d5f5",
+			Rel:  "self",
+		},
+	},
+	Name:               "pony1",
+	ParentProviderUUID: "",
+	RootProviderUUID:   "d0b381e9-8761-42de-8e6c-bba99a96d5f5",
+}
+
+var ExpectedResourceProviders = []resourceproviders.ResourceProvider{
+	ExpectedResourceProvider1,
+	ExpectedResourceProvider2,
+}
+
+var ExpectedUsages = resourceproviders.ResourceProviderUsage{
+	ResourceProviderGeneration: 1,
+	Usages: map[string]int{
+		"DISK_GB":   1,
+		"MEMORY_MB": 512,
+		"VCPU":      1,
+	},
+}
+
+var ExpectedInventories = resourceproviders.ResourceProviderInventories{
+	ResourceProviderGeneration: 7,
+	Inventories: map[string]resourceproviders.Inventory{
+		"DISK_GB": {
+			AllocationRatio: 1.0,
+			MaxUnit:         35,
+			MinUnit:         1,
+			Reserved:        0,
+			StepSize:        1,
+			Total:           35,
+		},
+		"MEMORY_MB": {
+			AllocationRatio: 1.5,
+			MaxUnit:         5825,
+			MinUnit:         1,
+			Reserved:        512,
+			StepSize:        1,
+			Total:           5825,
+		},
+		"VCPU": {
+			AllocationRatio: 16.0,
+			MaxUnit:         4,
+			MinUnit:         1,
+			Reserved:        0,
+			StepSize:        1,
+			Total:           4,
+		},
+	},
+}
+
+var ExpectedInventory = resourceproviders.ResourceProviderInventory{
+	ResourceProviderGeneration: 7,
+	Inventory: resourceproviders.Inventory{
+		AllocationRatio: 16.0,
+		MaxUnit:         4,
+		MinUnit:         1,
+		Reserved:        0,
+		StepSize:        1,
+		Total:           4,
+	},
+}
+
+var ExpectedAllocations = resourceproviders.ResourceProviderAllocations{
+	ResourceProviderGeneration: 12,
+	Allocations: map[string]resourceproviders.Allocation{
+		"56785a3f-6f1c-4fec-af0b-0faf075b1fcb": {
+			Resources: map[string]int{
+				"MEMORY_MB": 256,
+				"VCPU":      1,
+			},
+		},
+		"9afd5aeb-d6b9-4dea-a588-1e6327a91834": {
+			Resources: map[string]int{
+				"MEMORY_MB": 512,
+				"VCPU":      2,
+			},
+		},
+		"9d16a611-e7f9-4ef3-be26-c61ed01ecefb": {
+			Resources: map[string]int{
+				"MEMORY_MB": 1024,
+				"VCPU":      1,
+			},
+		},
+	},
+}
+
+var ExpectedTraits = resourceproviders.ResourceProviderTraits{
+	ResourceProviderGeneration: 1,
+	Traits: []string{
+		"CUSTOM_HW_FPGA_CLASS1",
+		"CUSTOM_HW_FPGA_CLASS3",
+	},
+}
+
+var expectedAggregatesGeneration = 1
+
+var ExpectedAggregates = resourceproviders.ResourceProviderAggregates{
+	ResourceProviderGeneration: &expectedAggregatesGeneration,
+	Aggregates: []string{
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+	},
+}
+
+var ExpectedAggregatesPreGeneration = resourceproviders.ResourceProviderAggregates{
+	ResourceProviderGeneration: nil,
+	Aggregates: []string{
+		"6d84f6f6-7736-40ff-84d2-7db47f18ea25",
+		"f11f14bc-6f17-4f0a-b7c2-44b3e685ccf4",
+	},
+}
+
+var expectedUpdatedAggregatesGeneration = 1
+
+var ExpectedUpdatedAggregates = resourceproviders.ResourceProviderAggregates{
+	ResourceProviderGeneration: &expectedUpdatedAggregatesGeneration,
+	Aggregates: []string{
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd",
+	},
+}
+
+var ExpectedUpdatedAggregatesPreGeneration = resourceproviders.ResourceProviderAggregates{
+	Aggregates: []string{
+		"89f68995-4fd8-4f8b-a03e-7d5980762ff2",
+		"16d0e5f2-7f66-4f32-9040-b09de2f40afd",
+	},
+}
+
+func HandleResourceProviderList(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, ResourceProvidersBody)
+		})
+}
+
+func HandleResourceProviderList139(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			q := r.URL.Query()
+			th.AssertDeepEquals(t,
+				[]string{"a09ba171-9405-40ca-bfe1-a8d1208af2ed", "47abce38-8a58-47b3-81e0-c647e37e03ae"},
+				q["member_of"])
+			th.AssertDeepEquals(t, []string{"HW:A_TRAIT", "CUSTOM_TRAIT"}, q["required"])
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, ResourceProvidersBody)
+		})
+}
+
+func HandleResourceProviderCreate(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ResourceProviderCreateBody)
+	})
+}
+
+func HandleResourceProviderGet(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ResourceProviderCreateBody)
+	})
+}
+
+func HandleResourceProviderDelete(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers/b99b3ab4-3aa6-4fba-b827-69b88b9c544a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleResourceProviderUpdate(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/resource_providers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, ResourceProviderUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ResourceProviderUpdateResponse)
+	})
+}
+
+func HandleResourceProviderGetUsages(t *testing.T, fakeServer th.FakeServer) {
+	usageTestUrl := fmt.Sprintf("/resource_providers/%s/usages", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(usageTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, UsagesBody)
+		})
+}
+
+func HandleResourceProviderGetInventories(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesTestUrl := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(inventoriesTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, InventoriesBody)
+		})
+}
+
+func HandleResourceProviderGetInventory(t *testing.T, fakeServer th.FakeServer) {
+	inventoryTestURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, InventoryBody)
+		})
+}
+
+func HandleResourceProviderGetInventoryNotFound(t *testing.T, fakeServer th.FakeServer) {
+	inventoryNotFoundURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, MissingInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryNotFoundURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleResourceProviderPutInventories(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesTestURL := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(inventoriesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, UpdateInventoriesRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, InventoriesBody)
+		})
+}
+
+func HandleResourceProviderPutInventoriesNotFound(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesNotFoundURL := fmt.Sprintf("/resource_providers/%s/inventories", NonExistentRPID)
+
+	fakeServer.Mux.HandleFunc(inventoriesNotFoundURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, `{"errors":[{"status":404,"title":"Not Found"}]}`)
+		})
+}
+
+func HandleResourceProviderPutInventory(t *testing.T, fakeServer th.FakeServer) {
+	inventoryTestURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, UpdateInventoryRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, InventoryBody)
+		})
+}
+
+func HandleResourceProviderPutInventoryNotFound(t *testing.T, fakeServer th.FakeServer) {
+	inventoryNotFoundURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", NonExistentRPID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryNotFoundURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, `{"errors":[{"status":404,"title":"Not Found"}]}`)
+		})
+}
+
+func HandleResourceProviderDeleteInventorySuccess(t *testing.T, fakeServer th.FakeServer) {
+	inventoryDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleResourceProviderDeleteInventoryInUse(t *testing.T, fakeServer th.FakeServer) {
+	inventoryDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories/%s", ResourceProviderTestID, PresentInventoryResourceClass)
+
+	fakeServer.Mux.HandleFunc(inventoryDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprint(w, `{"errors":[{"status":409,"title":"Conflict","detail":"Inventory is in use.","code":"placement.inventory.inuse"}]}`)
+		})
+}
+
+func HandleResourceProviderDeleteInventoriesSuccess(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(inventoriesDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleResourceProviderDeleteInventoriesConflict(t *testing.T, fakeServer th.FakeServer) {
+	inventoriesDeleteURL := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(inventoriesDeleteURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.AssertEquals(t, "", r.URL.RawQuery)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprint(w, `{"errors":[{"status":409,"title":"Conflict","detail":"Inventory is in use.","code":"placement.inventory.inuse"}]}`)
+		})
+}
+
+func HandleResourceProviderGetAllocations(t *testing.T, fakeServer th.FakeServer) {
+	allocationsTestUrl := fmt.Sprintf("/resource_providers/%s/allocations", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(allocationsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AllocationsBody)
+		})
+}
+
+func HandleResourceProviderGetTraits(t *testing.T, fakeServer th.FakeServer) {
+	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(traitsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, TraitsBody)
+		})
+}
+
+func HandleResourceProviderPutTraits(t *testing.T, fakeServer th.FakeServer) {
+	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(traitsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, TraitsBody)
+		})
+}
+
+func HandleResourceProviderDeleteTraits(t *testing.T, fakeServer th.FakeServer) {
+	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(traitsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+func HandleResourceProviderGetAggregatesSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AggregatesBody)
+		})
+}
+
+func HandleResourceProviderGetAggregatesPreGenerationSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AggregatesBodyPreGeneration)
+		})
+}
+
+func HandleResourceProviderGetAggregatesNotFound(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", AbsentResourceProviderID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNotFound)
+		})
+}
+
+func HandleResourceProviderUpdateAndGetAggregatesSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	// This handler must cover PUT and GET because the test updates and then fetches on the same path.
+	body := AggregatesBody
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case http.MethodGet:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			case http.MethodPut:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+				th.TestHeader(t, r, "Content-Type", "application/json")
+				th.TestHeader(t, r, "Accept", "application/json")
+				th.TestJSONRequest(t, r, AggregatesUpdateBody)
+
+				body = AggregatesUpdateBody
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		})
+}
+
+func HandleResourceProviderUpdateAndGetAggregatesPreGenerationSuccess(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	// Pre-generation variant of the same update-then-fetch flow on a shared endpoint.
+	body := AggregatesBodyPreGeneration
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case http.MethodGet:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			case http.MethodPut:
+				th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+				th.TestHeader(t, r, "Content-Type", "application/json")
+				th.TestHeader(t, r, "Accept", "application/json")
+				th.TestJSONRequest(t, r, AggregatesUpdateRequestPreGeneration)
+
+				body = AggregatesUpdateBodyWithoutGeneration
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprint(w, body)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		})
+}
+
+func HandleResourceProviderUpdateAggregatesConflict(t *testing.T, fakeServer th.FakeServer) {
+	aggregatesTestURL := fmt.Sprintf("/resource_providers/%s/aggregates", ResourceProviderTestID)
+
+	fakeServer.Mux.HandleFunc(aggregatesTestURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusConflict)
+		})
+}
+
+// ToInventoryUpdateBase converts a ResourceProvider Inventory result into its
+// corresponding Update (pointer) version. This is used in tests to facilitate
+// the mapping between API results (which contain values) and Update operations
+// (which use pointers for optionality).
+func ToInventoryUpdateBase(inv resourceproviders.Inventory) resourceproviders.InventoryUpdateBase {
+	return resourceproviders.InventoryUpdateBase{
+		AllocationRatio: ptr.To(inv.AllocationRatio),
+		MaxUnit:         ptr.To(inv.MaxUnit),
+		MinUnit:         ptr.To(inv.MinUnit),
+		Reserved:        ptr.To(inv.Reserved),
+		StepSize:        ptr.To(inv.StepSize),
+		Total:           inv.Total,
+	}
+}
+
+// ToUpdateInventoriesOpts converts a ResourceProviderInventories result into UpdateInventoriesOpts.
+func ToUpdateInventoriesOpts(inventories resourceproviders.ResourceProviderInventories) resourceproviders.UpdateInventoriesOpts {
+	opts := resourceproviders.UpdateInventoriesOpts{
+		ResourceProviderGeneration: inventories.ResourceProviderGeneration,
+		Inventories:                make(map[string]resourceproviders.InventoryUpdateBase, len(inventories.Inventories)),
+	}
+
+	for resourceClass, inv := range inventories.Inventories {
+		opts.Inventories[resourceClass] = ToInventoryUpdateBase(inv)
+	}
+
+	return opts
+}
+
+// ToUpdateInventoryOpts converts a ResourceProviderInventory result into UpdateInventoryOpts.
+func ToUpdateInventoryOpts(inventory resourceproviders.ResourceProviderInventory) resourceproviders.UpdateInventoryOpts {
+	return resourceproviders.UpdateInventoryOpts{
+		ResourceProviderGeneration: inventory.ResourceProviderGeneration,
+		InventoryUpdateBase:        ToInventoryUpdateBase(inventory.Inventory),
+	}
+}

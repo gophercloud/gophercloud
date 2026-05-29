@@ -1,0 +1,24 @@
+name: 'File Filter'
+description: 'Filter PR files by glob patterns and return true/false if any files match'
+inputs:
+  patterns:
+    description: 'String containing one or more glob patterns separated by spaces'
+    required: true
+  exclude:
+    description: 'Whether patterns is a list of glob patterns to *exclude* rather than *include*'
+    required: false
+    default: false
+  token:
+    description: 'GitHub token for API access'
+    required: false
+    default: ${{ github.token }}
+outputs:
+  matches:
+    description: 'True if any files match the patterns or if event_type is schedule, false otherwise (boolean)'
+  count:
+    description: 'Number of files that matched the patterns; will be unset if event_type is schedule (integer)'
+  files:
+    description: 'Files that matched the patterns; will unset if event_type is schedule (JSON array of strings)'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

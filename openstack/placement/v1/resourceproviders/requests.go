@@ -1,0 +1,365 @@
+package resourceproviders
+
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
+	"github.com/gophercloud/gophercloud/v2/pagination"
+)
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToResourceProviderListQuery() (string, error)
+}
+
+// ListOpts allows the filtering resource providers. Filtering is achieved by
+// passing in struct field values that map to the resource provider attributes
+// you want to see returned.
+type ListOpts struct {
+	// Name is the name of the resource provider to filter the list
+	Name string `q:"name"`
+
+	// UUID is the uuid of the resource provider to filter the list
+	UUID string `q:"uuid"`
+
+	// MemberOf is a string representing aggregate uuids to filter or exclude from the list
+	MemberOf string `q:"member_of"`
+
+	// Resources is a comma-separated list of string indicating an amount of resource
+	// of a specified class that a provider must have the capacity and availability to serve
+	Resources string `q:"resources"`
+
+	// InTree is a string that represents a resource provider UUID.  The returned resource
+	// providers will be in the same provider tree as the specified provider.
+	InTree string `q:"in_tree"`
+
+	// Required is comma-delimited list of string trait names.
+	Required string `q:"required"`
+}
+
+// ToResourceProviderListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToResourceProviderListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List makes a request against the API to list resource providers.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := resourceProvidersListURL(client)
+
+	if opts != nil {
+		query, err := opts.ToResourceProviderListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ResourceProvidersPage{pagination.SinglePageBase(r)}
+	})
+}
+
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToResourceProviderCreateMap() (map[string]any, error)
+}
+
+// CreateOpts represents options used to create a resource provider.
+type CreateOpts struct {
+	Name string `json:"name"`
+	UUID string `json:"uuid,omitempty"`
+	// The UUID of the immediate parent of the resource provider.
+	// Available in version >= 1.14
+	ParentProviderUUID string `json:"parent_provider_uuid,omitempty"`
+}
+
+// ToResourceProviderCreateMap constructs a request body from CreateOpts.
+func (opts CreateOpts) ToResourceProviderCreateMap() (map[string]any, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// Create makes a request against the API to create a resource provider
+func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToResourceProviderCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Post(ctx, resourceProvidersListURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Delete accepts a unique ID and deletes the resource provider associated with it.
+func Delete(ctx context.Context, c *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+	resp, err := c.Delete(ctx, deleteURL(c, resourceProviderID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Get retrieves a specific resource provider based on its unique ID.
+func Get(ctx context.Context, c *gophercloud.ServiceClient, resourceProviderID string) (r GetResult) {
+	resp, err := c.Get(ctx, getURL(c, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToResourceProviderUpdateMap() (map[string]any, error)
+}
+
+// UpdateOpts represents options used to update a resource provider.
+type UpdateOpts struct {
+	Name *string `json:"name,omitempty"`
+	// Available in version >= 1.37. It can be set to any existing provider UUID
+	// except to providers that would cause a loop. Using an empty string
+	// transforms the provider to a new root provider.
+	ParentProviderUUID *string `json:"parent_provider_uuid,omitempty"`
+}
+
+// ToResourceProviderUpdateMap constructs a request body from UpdateOpts.
+func (opts UpdateOpts) ToResourceProviderUpdateMap() (map[string]any, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	// In order to set this to null, use an empty string as a value.
+	if opts.ParentProviderUUID != nil && *opts.ParentProviderUUID == "" {
+		b["parent_provider_uuid"] = nil
+	}
+
+	return b, nil
+}
+
+// Update makes a request against the API to create a resource provider
+func Update(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToResourceProviderUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, updateURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetUsages(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetUsagesResult) {
+	resp, err := client.Get(ctx, getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetInventories(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetInventoriesResult) {
+	resp, err := client.Get(ctx, getResourceProviderInventoriesURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetInventory(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID, resourceClass string) (r GetInventoryResult) {
+	resp, err := client.Get(ctx, getResourceProviderInventoryURL(client, resourceProviderID, resourceClass), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateInventoriesOptsBuilder allows extensions to add additional parameters to the
+// UpdateInventories request.
+type UpdateInventoriesOptsBuilder interface {
+	ToResourceProviderUpdateInventoriesMap() (map[string]any, error)
+}
+
+// InventoryUpdateBase contains inventory fields shared by update operations.
+type InventoryUpdateBase struct {
+	AllocationRatio *float32 `json:"allocation_ratio,omitempty"`
+	MaxUnit         *int     `json:"max_unit,omitempty"`
+	MinUnit         *int     `json:"min_unit,omitempty"`
+	Reserved        *int     `json:"reserved,omitempty"`
+	StepSize        *int     `json:"step_size,omitempty"`
+	Total           int      `json:"total"`
+}
+
+// UpdateInventoriesOpts represents options used to update all inventories of a resource provider.
+type UpdateInventoriesOpts struct {
+	ResourceProviderGeneration int                            `json:"resource_provider_generation"`
+	Inventories                map[string]InventoryUpdateBase `json:"inventories"`
+}
+
+// ToResourceProviderUpdateInventoriesMap constructs a request body from UpdateInventoriesOpts.
+func (opts UpdateInventoriesOpts) ToResourceProviderUpdateInventoriesMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// UpdateInventories updates all inventories of a resource provider.
+func UpdateInventories(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateInventoriesOptsBuilder) (r GetInventoriesResult) {
+	b, err := opts.ToResourceProviderUpdateInventoriesMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, getResourceProviderInventoriesURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteInventories deletes all inventories from a resource provider.
+func DeleteInventories(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteResourceProviderInventoriesURL(client, resourceProviderID), &gophercloud.RequestOpts{OkCodes: []int{204}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateInventoryOptsBuilder allows extensions to add additional parameters to the
+// UpdateInventory request.
+type UpdateInventoryOptsBuilder interface {
+	ToResourceProviderUpdateInventoryMap() (map[string]any, error)
+}
+
+// UpdateInventoryOpts represents options used to update one inventory of a resource provider.
+type UpdateInventoryOpts struct {
+	ResourceProviderGeneration int `json:"resource_provider_generation"`
+	InventoryUpdateBase
+}
+
+// ToResourceProviderUpdateInventoryMap constructs a request body from UpdateInventoryOpts.
+func (opts UpdateInventoryOpts) ToResourceProviderUpdateInventoryMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// UpdateInventory updates one inventory of a resource provider.
+func UpdateInventory(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID, resourceClass string, opts UpdateInventoryOptsBuilder) (r UpdateInventoryResult) {
+	b, err := opts.ToResourceProviderUpdateInventoryMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, updateResourceProviderInventoryURL(client, resourceProviderID, resourceClass), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteInventory deletes one inventory from a resource provider.
+func DeleteInventory(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID, resourceClass string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, deleteResourceProviderInventoryURL(client, resourceProviderID, resourceClass), &gophercloud.RequestOpts{OkCodes: []int{204}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetAllocations(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetAllocationsResult) {
+	resp, err := client.Get(ctx, getResourceProviderAllocationsURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetTraitsResult) {
+	resp, err := client.Get(ctx, getResourceProviderTraitsURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func GetAggregates(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r GetAggregatesResult) {
+	resp, err := client.Get(ctx, getResourceProviderAggregatesURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateAggregatesOptsBuilder allows extensions to add additional parameters to the
+// UpdateAggregates request.
+type UpdateAggregatesOptsBuilder interface {
+	ToResourceProviderUpdateAggregatesMap() (map[string]any, error)
+}
+
+// UpdateAggregatesOpts represents options used to update aggregates of a resource provider.
+type UpdateAggregatesOpts struct {
+	// ResourceProviderGeneration is required from microversion 1.19 and later.
+	ResourceProviderGeneration *int     `json:"resource_provider_generation,omitempty"`
+	Aggregates                 []string `json:"aggregates"`
+}
+
+// ToResourceProviderUpdateAggregatesMap constructs a request body from UpdateAggregatesOpts.
+func (opts UpdateAggregatesOpts) ToResourceProviderUpdateAggregatesMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func UpdateAggregates(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateAggregatesOptsBuilder) (r GetAggregatesResult) {
+	b, err := opts.ToResourceProviderUpdateAggregatesMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var body any = b
+	if client.Microversion != "" {
+		_, minor, err := utils.ParseMicroversion(client.Microversion)
+		if err != nil {
+			r.Err = err
+			return
+		}
+		// In microversions prior to 1.19, the body was not enveloped.
+		if minor < 19 {
+			body = b["aggregates"]
+		}
+	}
+	resp, err := client.Put(ctx, updateResourceProviderAggregatesURL(client, resourceProviderID), body, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateTraitsOptsBuilder allows extensions to add additional parameters to the
+// UpdateTraits request.
+type UpdateTraitsOptsBuilder interface {
+	ToResourceProviderUpdateTraitsMap() (map[string]any, error)
+}
+
+// UpdateTraitsOpts represents options used to update traits of a resource provider.
+type UpdateTraitsOpts = ResourceProviderTraits
+
+// ToResourceProviderUpdateTraitsMap constructs a request body from UpdateTraitsOpts.
+func (opts UpdateTraitsOpts) ToResourceProviderUpdateTraitsMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func UpdateTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string, opts UpdateTraitsOptsBuilder) (r GetTraitsResult) {
+	b, err := opts.ToResourceProviderUpdateTraitsMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, getResourceProviderTraitsURL(client, resourceProviderID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+func DeleteTraits(ctx context.Context, client *gophercloud.ServiceClient, resourceProviderID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, getResourceProviderTraitsURL(client, resourceProviderID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

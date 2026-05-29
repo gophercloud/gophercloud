@@ -1,0 +1,20 @@
+name: Label issue
+on:
+  issue_comment:
+    types:
+    - created
+
+jobs:
+  clear_needinfo:
+    name: Clear needinfo
+    if: ${{ github.event.issue.user.login == github.event.comment.user.login }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - run: gh issue edit "$NUMBER" --remove-label "needinfo"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.issue.number }}

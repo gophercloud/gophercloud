@@ -1,0 +1,185 @@
+package networkipavailabilities
+
+import (
+	"encoding/json"
+	"fmt"
+	"math/big"
+
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/pagination"
+)
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// GetResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a NetworkIPAvailability.
+type GetResult struct {
+	commonResult
+}
+
+// Extract is a function that accepts a result and extracts a NetworkIPAvailability.
+func (r commonResult) Extract() (*NetworkIPAvailability, error) {
+	var s struct {
+		NetworkIPAvailability *NetworkIPAvailability `json:"network_ip_availability"`
+	}
+	err := r.ExtractInto(&s)
+	return s.NetworkIPAvailability, err
+}
+
+// NetworkIPAvailability represents availability details for a single network.
+type NetworkIPAvailability struct {
+	// NetworkID contains an unique identifier of the network.
+	NetworkID string `json:"network_id"`
+
+	// NetworkName represents human-readable name of the network.
+	NetworkName string `json:"network_name"`
+
+	// ProjectID is the ID of the Identity project.
+	ProjectID string `json:"project_id"`
+
+	// TenantID is the ID of the Identity project.
+	TenantID string `json:"tenant_id"`
+
+	// SubnetIPAvailabilities contains availability details for every subnet
+	// that is associated to the network.
+	SubnetIPAvailabilities []SubnetIPAvailability `json:"subnet_ip_availability"`
+
+	// TotalIPs represents a number of IP addresses in the network.
+	TotalIPs string `json:"-"`
+
+	// UsedIPs represents a number of used IP addresses in the network.
+	UsedIPs string `json:"-"`
+}
+
+// Go's encoding/json decodes all JSON numbers into float64 when the target is
+// interface{}. For large integers (abs >= 1e21), re-encoding that float64
+// produces scientific notation (e.g. "1.1805916207174113e+21"), which
+// big.Int.UnmarshalJSON cannot parse. This function handles both plain integer
+// and scientific notation forms.
+func parseBigIntFromNumber(n json.Number) (*big.Int, error) {
+	s := string(n)
+
+	// Fast path: plain integer notation
+	bi := new(big.Int)
+	if _, ok := bi.SetString(s, 10); ok {
+		return bi, nil
+	}
+
+	// Slow path: scientific notation from float64 round-trip
+	bf := new(big.Float).SetPrec(256)
+	if _, _, err := bf.Parse(s, 10); err != nil {
+		return nil, fmt.Errorf("networkipavailabilities: cannot parse %q as an integer: %w", s, err)
+	}
+	result, _ := bf.Int(nil)
+	return result, nil
+}
+
+func (r *NetworkIPAvailability) UnmarshalJSON(b []byte) error {
+	type tmp NetworkIPAvailability
+	var s struct {
+		tmp
+		TotalIPs json.Number `json:"total_ips"`
+		UsedIPs  json.Number `json:"used_ips"`
+	}
+
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = NetworkIPAvailability(s.tmp)
+
+	totalIPs, err := parseBigIntFromNumber(s.TotalIPs)
+	if err != nil {
+		return err
+	}
+	r.TotalIPs = totalIPs.String()
+
+	usedIPs, err := parseBigIntFromNumber(s.UsedIPs)
+	if err != nil {
+		return err
+	}
+	r.UsedIPs = usedIPs.String()
+
+	return nil
+}
+
+// SubnetIPAvailability represents availability details for a single subnet.
+type SubnetIPAvailability struct {
+	// SubnetID contains an unique identifier of the subnet.
+	SubnetID string `json:"subnet_id"`
+
+	// SubnetName represents human-readable name of the subnet.
+	SubnetName string `json:"subnet_name"`
+
+	// CIDR represents prefix in the CIDR format.
+	CIDR string `json:"cidr"`
+
+	// IPVersion is the IP protocol version.
+	IPVersion int `json:"ip_version"`
+
+	// TotalIPs represents a number of IP addresses in the subnet.
+	TotalIPs string `json:"-"`
+
+	// UsedIPs represents a number of used IP addresses in the subnet.
+	UsedIPs string `json:"-"`
+}
+
+func (r *SubnetIPAvailability) UnmarshalJSON(b []byte) error {
+	type tmp SubnetIPAvailability
+	var s struct {
+		tmp
+		TotalIPs json.Number `json:"total_ips"`
+		UsedIPs  json.Number `json:"used_ips"`
+	}
+
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = SubnetIPAvailability(s.tmp)
+
+	totalIPs, err := parseBigIntFromNumber(s.TotalIPs)
+	if err != nil {
+		return err
+	}
+	r.TotalIPs = totalIPs.String()
+
+	usedIPs, err := parseBigIntFromNumber(s.UsedIPs)
+	if err != nil {
+		return err
+	}
+	r.UsedIPs = usedIPs.String()
+
+	return nil
+}
+
+// NetworkIPAvailabilityPage stores a single page of NetworkIPAvailabilities
+// from the List call.
+type NetworkIPAvailabilityPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty determines whether or not a NetworkIPAvailability is empty.
+func (r NetworkIPAvailabilityPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
+	networkipavailabilities, err := ExtractNetworkIPAvailabilities(r)
+	return len(networkipavailabilities) == 0, err
+}
+
+// ExtractNetworkIPAvailabilities interprets the results of a single page from
+// a List() API call, producing a slice of NetworkIPAvailabilities structures.
+func ExtractNetworkIPAvailabilities(r pagination.Page) ([]NetworkIPAvailability, error) {
+	var s struct {
+		NetworkIPAvailabilities []NetworkIPAvailability `json:"network_ip_availabilities"`
+	}
+	err := (r.(NetworkIPAvailabilityPage)).ExtractInto(&s)
+	if err != nil {
+		return nil, err
+	}
+	return s.NetworkIPAvailabilities, nil
+}
