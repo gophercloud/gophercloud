@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -75,6 +76,24 @@ func DeleteAllocation(t *testing.T, client *gophercloud.ServiceClient, allocatio
 	}
 
 	t.Logf("Deleted allocation: %s", allocation.UUID)
+}
+
+// WaitForAllocationState waits until an allocation reaches the requested state.
+func WaitForAllocationState(ctx context.Context, client *gophercloud.ServiceClient, id string, state string) error {
+	return gophercloud.WaitFor(ctx, func(ctx context.Context) (bool, error) {
+		current, err := allocations.Get(ctx, client, id).Extract()
+		if err != nil {
+			return false, err
+		}
+		if current.State == state {
+			return true, nil
+		}
+		if current.State == string(allocations.Error) {
+			return false, fmt.Errorf("allocation %s entered error state: %s", id, current.LastError)
+		}
+
+		return false, nil
+	})
 }
 
 // CreatePortGroup creates an allocation
