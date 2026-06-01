@@ -4,6 +4,7 @@ package v1
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -67,7 +68,12 @@ func TestAllocationsGetDeleteByNode(t *testing.T) {
 	defer cancel()
 
 	err = WaitForAllocationState(ctx, client, allocation.UUID, allocations.Active)
-	th.AssertNoErr(t, err)
+	if err != nil {
+		if strings.Contains(err.Error(), "no available nodes match the resource class") {
+			t.Skipf("skipping node allocation test because no matching nodes are available: %s", err)
+		}
+		th.AssertNoErr(t, err)
+	}
 
 	allocation, err = allocations.Get(context.TODO(), client, allocation.UUID).Extract()
 	th.AssertNoErr(t, err)
