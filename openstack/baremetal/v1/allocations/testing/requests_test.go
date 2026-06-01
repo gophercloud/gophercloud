@@ -78,3 +78,42 @@ func TestGetAllocation(t *testing.T) {
 
 	th.CheckDeepEquals(t, Allocation1, *actual)
 }
+
+func TestGetAllocationByNode(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationGetByNodeSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := allocations.GetByNode(context.TODO(), c, "1234asdf", nil).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected GetByNode error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, Allocation1, *actual)
+}
+
+func TestGetAllocationByNodeWithFields(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationGetByNodeWithFieldsSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := allocations.GetByNode(context.TODO(), c, "1234asdf", allocations.GetByNodeOpts{
+		Fields: []string{"uuid", "name"},
+	}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected GetByNode error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, Allocation1, *actual)
+}
+
+func TestDeleteAllocationByNode(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAllocationDeleteByNodeSuccessfully(t, fakeServer)
+
+	res := allocations.DeleteByNode(context.TODO(), client.ServiceClient(fakeServer), "1234asdf")
+	th.AssertNoErr(t, res.Err)
+}

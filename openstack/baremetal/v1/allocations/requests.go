@@ -128,9 +128,53 @@ func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r G
 	return
 }
 
+// GetByNodeOptsBuilder allows extensions to add additional parameters to the
+// GetByNode request.
+type GetByNodeOptsBuilder interface {
+	ToAllocationGetByNodeQuery() (string, error)
+}
+
+// GetByNodeOpts specifies allocation lookup parameters for a node.
+type GetByNodeOpts struct {
+	// One or more fields to be returned in the response.
+	Fields []string `q:"fields" format:"comma-separated"`
+}
+
+// ToAllocationGetByNodeQuery formats a GetByNodeOpts into a query string.
+func (opts GetByNodeOpts) ToAllocationGetByNodeQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// GetByNode requests the details of an allocation by node UUID or name.
+func GetByNode(ctx context.Context, client *gophercloud.ServiceClient, nodeID string, opts GetByNodeOptsBuilder) (r GetResult) {
+	url := nodeAllocationURL(client, nodeID)
+	if opts != nil {
+		query, err := opts.ToAllocationGetByNodeQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
+	resp, err := client.Get(ctx, url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // Delete requests the deletion of an allocation
 func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	resp, err := client.Delete(ctx, deleteURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteByNode requests the deletion of an allocation by node UUID or name.
+func DeleteByNode(ctx context.Context, client *gophercloud.ServiceClient, nodeID string) (r DeleteResult) {
+	resp, err := client.Delete(ctx, nodeAllocationURL(client, nodeID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
