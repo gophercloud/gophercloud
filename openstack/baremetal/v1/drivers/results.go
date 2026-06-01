@@ -207,3 +207,34 @@ func (r GetDiskPropertiesResult) Extract() (*DiskProperties, error) {
 type GetDiskPropertiesResult struct {
 	gophercloud.Result
 }
+
+type VendorPassthruMethod struct {
+	HTTPMethods []string `json:"http_methods"`
+	Async       bool     `json:"async"`
+	Description string   `json:"description"`
+	Attach      bool     `json:"attach"`
+}
+
+// Extract interprets a ListVendorPassthruMethodsResult as generic vendor passthru method metadata.
+func (r ListVendorPassthruMethodsResult) Extract() (map[string]VendorPassthruMethod, error) {
+	var s map[string]VendorPassthruMethod
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// Extract interprets a CallVendorPassthruResult as an arbitrary JSON object.
+func (r CallVendorPassthruResult) Extract() (map[string]any, error) {
+	var s map[string]any
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// ListVendorPassthruMethodsResult is the response from a ListVendorPassthruMethods operation.
+type ListVendorPassthruMethodsResult struct {
+	gophercloud.Result
+}
+
+// CallVendorPassthruResult is the response from a CallVendorPassthru operation.
+type CallVendorPassthruResult struct {
+	gophercloud.Result
+}

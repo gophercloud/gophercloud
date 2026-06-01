@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/drivers"
@@ -82,4 +83,31 @@ func TestGetDriverDiskProperties(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, DriverIpmiToolDisk, *actual)
+}
+
+func TestListVendorPassthruMethods(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListVendorPassthruMethodsSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := drivers.ListVendorPassthruMethods(context.TODO(), c, "ipmi").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "Reset all nodes managed by the driver.", actual["driver_reset"].Description)
+}
+
+func TestCallVendorPassthru(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCallVendorPassthruSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := drivers.CallVendorPassthru(context.TODO(), c, "ipmi", http.MethodPost, drivers.VendorPassthruCallOpts{
+		Method: "driver_reset",
+		Body: map[string]any{
+			"force": true,
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "ok", actual["result"])
 }
