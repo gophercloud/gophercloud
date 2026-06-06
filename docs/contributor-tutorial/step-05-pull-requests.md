@@ -37,9 +37,6 @@ If you're adding a single field, then a single Pull Request is also fine. See
 [#662](https://github.com/gophercloud/gophercloud/pull/662) as an example of
 this.
 
-If you plan to add more than one missing field, you will need to open a Pull
-Request for _each_ field.
-
 ### Adding a Single API Call
 
 Single API calls can also be submitted as a single Pull Request. See
@@ -49,14 +46,13 @@ this.
 ### Adding a Suite of API Calls
 
 If you're adding support for a "suite" of API calls (meaning: Create, Update,
-Delete, Get), then you will need to create one Pull Request for _each_ call.
+Delete, Get), you can group related operations into a single Pull Request.
+Different API suites (e.g. servers and flavors) should be submitted as separate
+PRs.
 
-The following Pull Requests are good examples of how to do this:
+The following Pull Request is a good example of adding an entire API suite:
 
-* https://github.com/gophercloud/gophercloud/pull/584
-* https://github.com/gophercloud/gophercloud/pull/586
-* https://github.com/gophercloud/gophercloud/pull/587
-* https://github.com/gophercloud/gophercloud/pull/594
+* https://github.com/gophercloud/gophercloud/pull/3701
 
 You can also use the provided [template](/docs/contributor-tutorial/.template)
 as it contains a lot of the repeated boiler plate code seen in each resource.
@@ -66,9 +62,9 @@ the work and will require further rounds of review to fix.
 
 ### Adding an Entire OpenStack Project
 
-To add an entire OpenStack project, you must break each set of API calls into
-individual Pull Requests. Implementing an entire project can be thought of as
-implementing multiple API suites.
+To add an entire OpenStack project, break it into Pull Requests by API suite.
+Implementing an entire project can be thought of as implementing multiple API
+suites.
 
 An example of this can be seen from the Pull Requests referenced in
 [#723](https://github.com/gophercloud/gophercloud/issues/723).

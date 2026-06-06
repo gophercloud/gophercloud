@@ -87,8 +87,9 @@ supports the OpenStack projects proper.
 
 ### Adding a Missing API Suite
 
-Adding support to a missing suite of API calls will require more than one Pull
-Request. However, you can use a single issue for all PRs.
+Adding support to a missing suite of API calls can be done in a single Pull
+Request or broken into multiple PRs. Either way, you can use a single issue
+to track the work.
 
 Examples of issues which track the addition of a missing API suite are:
 
