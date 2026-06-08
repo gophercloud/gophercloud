@@ -27,7 +27,7 @@ func TestListGroups(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListGroupsAllPages(t *testing.T) {
@@ -40,8 +40,8 @@ func TestListGroupsAllPages(t *testing.T) {
 	actual, err := groups.ExtractGroups(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedGroupsSlice, actual)
-	th.AssertEquals(t, ExpectedGroupsSlice[0].Extra["email"], "support@localhost")
-	th.AssertEquals(t, ExpectedGroupsSlice[1].Extra["email"], "support@example.com")
+	th.AssertEquals(t, "support@localhost", ExpectedGroupsSlice[0].Extra["email"])
+	th.AssertEquals(t, "support@example.com", ExpectedGroupsSlice[1].Extra["email"])
 }
 
 func TestListGroupsFiltersCheck(t *testing.T) {
@@ -85,7 +85,7 @@ func TestGetGroup(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroup, *actual)
-	th.AssertEquals(t, SecondGroup.Extra["email"], "support@example.com")
+	th.AssertEquals(t, "support@example.com", SecondGroup.Extra["email"])
 }
 
 func TestCreateGroup(t *testing.T) {

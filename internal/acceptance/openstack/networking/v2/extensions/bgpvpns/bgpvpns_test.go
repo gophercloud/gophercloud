@@ -168,7 +168,7 @@ func TestBGPVPNRouterAssociationCRUD(t *testing.T) {
 	assocUpdate, err := bgpvpns.UpdateRouterAssociation(context.TODO(), client, bgpVpnCreated.ID, assoc.ID, assocUpdOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, routerCreated.ID, assocUpdate.RouterID)
-	th.AssertEquals(t, false, assocUpdate.AdvertiseExtraRoutes)
+	th.AssertFalse(t, assocUpdate.AdvertiseExtraRoutes)
 
 	// List all Router Associations
 	allPages, err := bgpvpns.ListRouterAssociations(client, bgpVpnCreated.ID, bgpvpns.ListRouterAssociationsOpts{}).AllPages(context.TODO())
@@ -241,7 +241,7 @@ func TestBGPVPNPortAssociationCRUD(t *testing.T) {
 	assocUpdate, err := bgpvpns.UpdatePortAssociation(context.TODO(), client, bgpVpnCreated.ID, assoc.ID, assocUpdOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, port.ID, assocUpdate.PortID)
-	th.AssertEquals(t, false, assocUpdate.AdvertiseFixedIPs)
+	th.AssertFalse(t, assocUpdate.AdvertiseFixedIPs)
 
 	// List all Port Associations
 	allPages, err := bgpvpns.ListPortAssociations(client, bgpVpnCreated.ID, bgpvpns.ListPortAssociationsOpts{}).AllPages(context.TODO())

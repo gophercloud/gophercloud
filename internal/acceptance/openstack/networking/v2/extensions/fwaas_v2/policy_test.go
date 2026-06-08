@@ -68,7 +68,7 @@ func TestPolicyCRUD(t *testing.T) {
 	tools.PrintResource(t, newPolicy)
 	th.AssertEquals(t, newPolicy.Name, name)
 	th.AssertEquals(t, newPolicy.Description, description)
-	th.AssertEquals(t, len(newPolicy.Rules), 0)
+	th.AssertEquals(t, 0, len(newPolicy.Rules))
 
 	allPages, err := policies.List(client, nil).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -83,5 +83,5 @@ func TestPolicyCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }

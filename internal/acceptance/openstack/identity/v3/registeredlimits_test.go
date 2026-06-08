@@ -90,9 +90,10 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updated_registered_limit)
-	th.AssertEquals(t, updated_registered_limit.Description, updatedDescription)
-	th.AssertEquals(t, updated_registered_limit.DefaultLimit, updatedDefaultLimit)
-	th.AssertEquals(t, updated_registered_limit.ResourceName, updatedResourceName)
+	th.AssertEquals(t, updatedDescription, updated_registered_limit.Description)
+	th.AssertEquals(t, updatedDefaultLimit, updated_registered_limit.DefaultLimit)
+	th.AssertEquals(t, updatedResourceName, updated_registered_limit.ResourceName)
+	th.AssertEquals(t, serviceID, updated_registered_limit.ServiceID)
 
 	// Delete the registered limit
 	del_err := registeredlimits.Delete(context.TODO(), client, createdRegisteredLimits[0].ID).ExtractErr()

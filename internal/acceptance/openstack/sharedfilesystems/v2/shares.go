@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/messages"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/shares"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateShare will create a share with a name, and a size of 1Gb. An
@@ -47,6 +48,11 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient, optShareType .
 		DeleteShare(t, client, share)
 		return share, err
 	}
+
+	th.AssertEquals(t, "My Test Share", share.Name)
+	th.AssertEquals(t, "My Test Description", share.Description)
+	th.AssertEquals(t, "NFS", share.ShareProto)
+	th.AssertEquals(t, 1, share.Size)
 
 	return share, nil
 }

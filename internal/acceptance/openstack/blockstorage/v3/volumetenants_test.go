@@ -36,5 +36,5 @@ func TestVolumeTenants(t *testing.T) {
 
 	err = volumes.ExtractVolumesInto(allPages, &allVolumes)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, len(allVolumes) > 0)
+	th.AssertTrue(t, len(allVolumes) > 0)
 }

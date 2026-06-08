@@ -66,7 +66,7 @@ func TestImagesListAllPages(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestImagesListByDate(t *testing.T) {
@@ -175,7 +175,7 @@ func TestImagesUpdate(t *testing.T) {
 	tools.PrintResource(t, newImage.Properties)
 
 	th.AssertEquals(t, newImage.Name, image.Name+"foo")
-	th.AssertEquals(t, newImage.Protected, true)
+	th.AssertTrue(t, newImage.Protected)
 
 	sort.Strings(newTags)
 	sort.Strings(newImage.Tags)
@@ -183,7 +183,7 @@ func TestImagesUpdate(t *testing.T) {
 
 	// Because OpenStack is now adding additional properties automatically,
 	// it's not possible to do an easy AssertDeepEquals.
-	th.AssertEquals(t, newImage.Properties["hw_disk_bus"], "scsi")
+	th.AssertEquals(t, "scsi", newImage.Properties["hw_disk_bus"])
 
 	if _, ok := newImage.Properties["architecture"]; ok {
 		t.Fatal("architecture property still exists")

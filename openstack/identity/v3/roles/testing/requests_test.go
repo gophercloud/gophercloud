@@ -27,7 +27,7 @@ func TestListRoles(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListRolesAllPages(t *testing.T) {
@@ -40,7 +40,7 @@ func TestListRolesAllPages(t *testing.T) {
 	actual, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedRolesSlice, actual)
-	th.AssertEquals(t, ExpectedRolesSlice[1].Extra["test"], "this is for the test")
+	th.AssertEquals(t, "this is for the test", ExpectedRolesSlice[1].Extra["test"])
 }
 
 func TestListUsersFiltersCheck(t *testing.T) {
@@ -171,7 +171,7 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
@@ -195,7 +195,7 @@ func TestListAssignmentsWithNamesSinglePage(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
@@ -219,7 +219,7 @@ func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
@@ -241,7 +241,7 @@ func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAssignmentsOnResource_DomainsUsers(t *testing.T) {
@@ -263,7 +263,7 @@ func TestListAssignmentsOnResource_DomainsUsers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAssignmentsOnResource_ProjectsGroups(t *testing.T) {
@@ -285,7 +285,7 @@ func TestListAssignmentsOnResource_ProjectsGroups(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
@@ -307,7 +307,7 @@ func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestAssign(t *testing.T) {

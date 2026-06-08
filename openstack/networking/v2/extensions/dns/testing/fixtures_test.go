@@ -73,7 +73,7 @@ func PortHandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		th.AssertEquals(t, r.RequestURI, "/v2.0/ports?dns_name=test-port")
+		th.AssertEquals(t, "/v2.0/ports?dns_name=test-port", r.RequestURI)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -224,7 +224,7 @@ func FloatingIPHandleList(t *testing.T, fakeServer th.FakeServer) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		th.AssertEquals(t, r.RequestURI, "/v2.0/floatingips?dns_domain=local.&dns_name=test-fip")
+		th.AssertEquals(t, "/v2.0/floatingips?dns_domain=local.&dns_name=test-fip", r.RequestURI)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -273,7 +273,7 @@ func NetworkHandleList(t *testing.T, fakeServer th.FakeServer) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		th.AssertEquals(t, r.RequestURI, "/v2.0/networks?dns_domain=local.")
+		th.AssertEquals(t, "/v2.0/networks?dns_domain=local.", r.RequestURI)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

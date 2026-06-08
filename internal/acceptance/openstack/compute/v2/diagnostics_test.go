@@ -28,5 +28,5 @@ func TestDiagnostics(t *testing.T) {
 	tools.PrintResource(t, diag)
 
 	_, ok := diag["memory"]
-	th.AssertEquals(t, true, ok)
+	th.AssertTrue(t, ok)
 }

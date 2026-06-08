@@ -34,7 +34,7 @@ func TestReplaceAll(t *testing.T) {
 	res, err := attributestags.ReplaceAll(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
+	th.AssertDeepEquals(t, []string{"abc", "xyz"}, res)
 }
 
 func TestList(t *testing.T) {
@@ -54,7 +54,7 @@ func TestList(t *testing.T) {
 	res, err := attributestags.List(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
+	th.AssertDeepEquals(t, []string{"abc", "xyz"}, res)
 }
 
 func TestDeleteAll(t *testing.T) {
@@ -119,7 +119,7 @@ func TestConfirmTrue(t *testing.T) {
 
 	exists, err := attributestags.Confirm(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid", "atag").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, exists)
+	th.AssertTrue(t, exists)
 }
 
 func TestConfirmFalse(t *testing.T) {
@@ -135,5 +135,5 @@ func TestConfirmFalse(t *testing.T) {
 	})
 
 	exists, _ := attributestags.Confirm(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid", "atag").Extract()
-	th.AssertEquals(t, false, exists)
+	th.AssertFalse(t, exists)
 }

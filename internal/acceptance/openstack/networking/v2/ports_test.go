@@ -74,7 +74,7 @@ func TestPortsCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 
 	ipAddress := port.FixedIPs[0].IPAddress
 	t.Logf("Port has IP address: %s", ipAddress)
@@ -415,6 +415,7 @@ func TestPortsPortSecurityCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, portWithExt)
+	th.AssertTrue(t, portWithExt.PortSecurityEnabled)
 }
 
 func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
@@ -466,6 +467,7 @@ func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
+	th.AssertEquals(t, newPortName, newPort.Name)
 }
 
 func TestPortsTrustedVIFCRUD(t *testing.T) {
@@ -519,6 +521,10 @@ func TestPortsTrustedVIFCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to update port: %v", err)
 	}
+	if portWithExt.PortTrustedVIF == nil {
+		t.Fatal("Expected PortTrustedVIF to be non-nil after update")
+	}
+	th.AssertTrue(t, *portWithExt.PortTrustedVIF)
 }
 
 func TestPortsRevision(t *testing.T) {

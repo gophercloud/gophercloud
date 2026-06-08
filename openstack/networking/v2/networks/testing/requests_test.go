@@ -80,14 +80,14 @@ func TestListWithExtensions(t *testing.T) {
 	err = networks.ExtractNetworksInto(allPages, &allNetworks)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, allNetworks[0].Status, "ACTIVE")
-	th.AssertEquals(t, allNetworks[0].PortSecurityEnabled, true)
-	th.AssertEquals(t, allNetworks[0].Subnets[0], "54d6f61d-db07-451c-9ab3-b9609b6b6f0b")
-	th.AssertEquals(t, allNetworks[1].Subnets[0], "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertEquals(t, allNetworks[0].CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
-	th.AssertEquals(t, allNetworks[0].UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
-	th.AssertEquals(t, allNetworks[1].CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
-	th.AssertEquals(t, allNetworks[1].UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
+	th.AssertEquals(t, "ACTIVE", allNetworks[0].Status)
+	th.AssertTrue(t, allNetworks[0].PortSecurityEnabled)
+	th.AssertEquals(t, "54d6f61d-db07-451c-9ab3-b9609b6b6f0b", allNetworks[0].Subnets[0])
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", allNetworks[1].Subnets[0])
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", allNetworks[0].CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", allNetworks[0].UpdatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", allNetworks[1].CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", allNetworks[1].UpdatedAt.Format(time.RFC3339))
 }
 
 func TestGet(t *testing.T) {
@@ -107,8 +107,8 @@ func TestGet(t *testing.T) {
 	n, err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &Network1, n)
-	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
-	th.AssertEquals(t, n.UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", n.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", n.UpdatedAt.Format(time.RFC3339))
 }
 
 func TestGetWithExtensions(t *testing.T) {
@@ -133,8 +133,8 @@ func TestGetWithExtensions(t *testing.T) {
 	err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, networkWithExtensions.Status, "ACTIVE")
-	th.AssertEquals(t, networkWithExtensions.PortSecurityEnabled, true)
+	th.AssertEquals(t, "ACTIVE", networkWithExtensions.Status)
+	th.AssertTrue(t, networkWithExtensions.PortSecurityEnabled)
 }
 
 func TestCreate(t *testing.T) {
@@ -158,10 +158,10 @@ func TestCreate(t *testing.T) {
 	n, err := networks.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, "ACTIVE", n.Status)
 	th.AssertDeepEquals(t, &Network2, n)
-	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
-	th.AssertEquals(t, n.UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", n.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", n.UpdatedAt.Format(time.RFC3339))
 }
 
 func TestCreateWithOptionalFields(t *testing.T) {
@@ -214,12 +214,12 @@ func TestUpdate(t *testing.T) {
 	n, err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "new_network_name")
-	th.AssertEquals(t, n.AdminStateUp, false)
-	th.AssertEquals(t, n.Shared, true)
-	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
-	th.AssertEquals(t, n.UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
+	th.AssertEquals(t, "new_network_name", n.Name)
+	th.AssertFalse(t, n.AdminStateUp)
+	th.AssertTrue(t, n.Shared)
+	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", n.ID)
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", n.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", n.UpdatedAt.Format(time.RFC3339))
 }
 
 func TestUpdateRevision(t *testing.T) {
@@ -312,8 +312,8 @@ func TestCreatePortSecurity(t *testing.T) {
 	err := networks.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, networkWithExtensions.Status, "ACTIVE")
-	th.AssertEquals(t, networkWithExtensions.PortSecurityEnabled, false)
+	th.AssertEquals(t, "ACTIVE", networkWithExtensions.Status)
+	th.AssertFalse(t, networkWithExtensions.PortSecurityEnabled)
 }
 
 func TestUpdatePortSecurity(t *testing.T) {
@@ -348,9 +348,9 @@ func TestUpdatePortSecurity(t *testing.T) {
 	err := networks.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", updateOpts).ExtractInto(&networkWithExtensions)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, networkWithExtensions.Name, "private")
-	th.AssertEquals(t, networkWithExtensions.AdminStateUp, true)
-	th.AssertEquals(t, networkWithExtensions.Shared, false)
-	th.AssertEquals(t, networkWithExtensions.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertEquals(t, networkWithExtensions.PortSecurityEnabled, false)
+	th.AssertEquals(t, "private", networkWithExtensions.Name)
+	th.AssertTrue(t, networkWithExtensions.AdminStateUp)
+	th.AssertFalse(t, networkWithExtensions.Shared)
+	th.AssertEquals(t, "4e8e5957-649f-477b-9e5b-f1f75b21c03c", networkWithExtensions.ID)
+	th.AssertFalse(t, networkWithExtensions.PortSecurityEnabled)
 }

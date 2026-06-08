@@ -52,7 +52,7 @@ func TestCapsuleBase(t *testing.T) {
 			capsule, err := capsules.Get(context.TODO(), client, capsuleUUID).ExtractBase()
 
 			th.AssertNoErr(t, err)
-			th.AssertEquals(t, capsule.MetaName, "template")
+			th.AssertEquals(t, "template", capsule.MetaName)
 
 			err = capsules.Delete(context.TODO(), client, capsuleUUID).ExtractErr()
 			th.AssertNoErr(t, err)
@@ -105,7 +105,7 @@ func TestCapsuleV132(t *testing.T) {
 			capsule, err := capsules.Get(context.TODO(), client, capsuleUUID).ExtractV132()
 
 			th.AssertNoErr(t, err)
-			th.AssertEquals(t, capsule.MetaName, "template")
+			th.AssertEquals(t, "template", capsule.MetaName)
 
 			err = capsules.Delete(context.TODO(), client, capsuleUUID).ExtractErr()
 			th.AssertNoErr(t, err)

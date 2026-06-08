@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/snapshots"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateSnapshot will create a snapshot from the share ID with a name. An error will
@@ -36,6 +37,10 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, shareID str
 		t.Logf("Failed to get %s snapshot status", snapshot.ID)
 		return snapshot, err
 	}
+
+	th.AssertEquals(t, "My Test Snapshot", snapshot.Name)
+	th.AssertEquals(t, "My Test Description", snapshot.Description)
+	th.AssertEquals(t, shareID, snapshot.ShareID)
 
 	return snapshot, nil
 }

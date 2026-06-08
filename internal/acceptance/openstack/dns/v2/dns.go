@@ -43,7 +43,10 @@ func CreateRecordSet(t *testing.T, client *gophercloud.ServiceClient, zone *zone
 
 	t.Logf("Created record set: %s", newRS.Name)
 
-	th.AssertEquals(t, newRS.Name, zone.Name)
+	th.AssertEquals(t, zone.Name, newRS.Name)
+	th.AssertEquals(t, "A", newRS.Type)
+	th.AssertEquals(t, 3600, newRS.TTL)
+	th.AssertEquals(t, "Test recordset", newRS.Description)
 
 	return rs, nil
 }
@@ -78,8 +81,11 @@ func CreateZone(t *testing.T, client *gophercloud.ServiceClient) (*zones.Zone, e
 
 	t.Logf("Created Zone: %s", zoneName)
 
-	th.AssertEquals(t, newZone.Name, zoneName)
-	th.AssertEquals(t, newZone.TTL, 7200)
+	th.AssertEquals(t, zoneName, newZone.Name)
+	th.AssertEquals(t, "root@example.com", newZone.Email)
+	th.AssertEquals(t, "PRIMARY", newZone.Type)
+	th.AssertEquals(t, "Test zone", newZone.Description)
+	th.AssertEquals(t, 7200, newZone.TTL)
 
 	return newZone, nil
 }
@@ -114,8 +120,9 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 
 	t.Logf("Created Zone: %s", zoneName)
 
-	th.AssertEquals(t, newZone.Name, zoneName)
-	th.AssertEquals(t, newZone.Masters[0], "10.0.0.1")
+	th.AssertEquals(t, zoneName, newZone.Name)
+	th.AssertEquals(t, "SECONDARY", newZone.Type)
+	th.AssertEquals(t, "10.0.0.1", newZone.Masters[0])
 
 	return newZone, nil
 }
@@ -148,6 +155,8 @@ func CreateTransferRequest(t *testing.T, client *gophercloud.ServiceClient, zone
 
 	th.AssertEquals(t, newTransferRequest.ZoneID, zone.ID)
 	th.AssertEquals(t, newTransferRequest.ZoneName, zone.Name)
+	th.AssertEquals(t, targetProjectID, newTransferRequest.TargetProjectID)
+	th.AssertEquals(t, "Test transfer request", newTransferRequest.Description)
 
 	return newTransferRequest, nil
 }
@@ -338,7 +347,7 @@ func CreateTSIGKey(t *testing.T, client *gophercloud.ServiceClient) (*tsigkeys.T
 	t.Logf("Created TSIG key: %s", keyName)
 
 	th.AssertEquals(t, newTSIGKey.Name, keyName)
-	th.AssertEquals(t, newTSIGKey.Algorithm, "hmac-sha256")
+	th.AssertEquals(t, "hmac-sha256", newTSIGKey.Algorithm)
 
 	return newTSIGKey, nil
 }

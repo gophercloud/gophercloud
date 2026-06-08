@@ -71,23 +71,23 @@ func TestGet(t *testing.T) {
 	s, err := subnets.Get(context.TODO(), fake.ServiceClient(fakeServer), "54d6f61d-db07-451c-9ab3-b9609b6b6f0b").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_subnet")
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{})
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "my_subnet", s.Name)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertDeepEquals(t, []string{}, s.DNSNameservers)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "192.0.0.2",
 			End:   "192.255.255.254",
 		},
-	})
-	th.AssertDeepEquals(t, s.HostRoutes, []subnets.HostRoute{})
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.GatewayIP, "192.0.0.1")
-	th.AssertEquals(t, s.CIDR, "192.0.0.0/8")
-	th.AssertEquals(t, s.ID, "54d6f61d-db07-451c-9ab3-b9609b6b6f0b")
-	th.AssertEquals(t, s.SubnetPoolID, "b80340c7-9960-4f67-a99c-02501656284b")
+	}, s.AllocationPools)
+	th.AssertDeepEquals(t, []subnets.HostRoute{}, s.HostRoutes)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "192.0.0.1", s.GatewayIP)
+	th.AssertEquals(t, "192.0.0.0/8", s.CIDR)
+	th.AssertEquals(t, "54d6f61d-db07-451c-9ab3-b9609b6b6f0b", s.ID)
+	th.AssertEquals(t, "b80340c7-9960-4f67-a99c-02501656284b", s.SubnetPoolID)
 }
 
 func TestCreate(t *testing.T) {
@@ -131,25 +131,25 @@ func TestCreate(t *testing.T) {
 	s, err := subnets.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.DNSPublishFixedIP, true)
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{"foo"})
-	th.AssertDeepEquals(t, s.ServiceTypes, []string{"network:routed"})
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.DNSPublishFixedIP)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertDeepEquals(t, []string{"foo"}, s.DNSNameservers)
+	th.AssertDeepEquals(t, []string{"network:routed"}, s.ServiceTypes)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "192.168.199.2",
 			End:   "192.168.199.254",
 		},
-	})
-	th.AssertDeepEquals(t, s.HostRoutes, []subnets.HostRoute{})
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.GatewayIP, "192.168.199.1")
-	th.AssertEquals(t, s.CIDR, "192.168.199.0/24")
-	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
-	th.AssertEquals(t, s.SubnetPoolID, "b80340c7-9960-4f67-a99c-02501656284b")
+	}, s.AllocationPools)
+	th.AssertDeepEquals(t, []subnets.HostRoute{}, s.HostRoutes)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "192.168.199.1", s.GatewayIP)
+	th.AssertEquals(t, "192.168.199.0/24", s.CIDR)
+	th.AssertEquals(t, "3b80198d-4f7b-4f77-9ef5-774d54e17126", s.ID)
+	th.AssertEquals(t, "b80340c7-9960-4f67-a99c-02501656284b", s.SubnetPoolID)
 }
 
 func TestCreateNoGateway(t *testing.T) {
@@ -186,21 +186,21 @@ func TestCreateNoGateway(t *testing.T) {
 	s, err := subnets.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a23")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a23", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "192.168.1.2",
 			End:   "192.168.1.254",
 		},
-	})
-	th.AssertDeepEquals(t, s.HostRoutes, []subnets.HostRoute{})
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.GatewayIP, "")
-	th.AssertEquals(t, s.CIDR, "192.168.1.0/24")
-	th.AssertEquals(t, s.ID, "54d6f61d-db07-451c-9ab3-b9609b6b6f0c")
+	}, s.AllocationPools)
+	th.AssertDeepEquals(t, []subnets.HostRoute{}, s.HostRoutes)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "", s.GatewayIP)
+	th.AssertEquals(t, "192.168.1.0/24", s.CIDR)
+	th.AssertEquals(t, "54d6f61d-db07-451c-9ab3-b9609b6b6f0c", s.ID)
 }
 
 func TestCreateDefaultGateway(t *testing.T) {
@@ -235,21 +235,21 @@ func TestCreateDefaultGateway(t *testing.T) {
 	s, err := subnets.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a23")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a23", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "192.168.1.2",
 			End:   "192.168.1.254",
 		},
-	})
-	th.AssertDeepEquals(t, s.HostRoutes, []subnets.HostRoute{})
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.GatewayIP, "192.168.1.1")
-	th.AssertEquals(t, s.CIDR, "192.168.1.0/24")
-	th.AssertEquals(t, s.ID, "54d6f61d-db07-451c-9ab3-b9609b6b6f0c")
+	}, s.AllocationPools)
+	th.AssertDeepEquals(t, []subnets.HostRoute{}, s.HostRoutes)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "192.168.1.1", s.GatewayIP)
+	th.AssertEquals(t, "192.168.1.0/24", s.CIDR)
+	th.AssertEquals(t, "54d6f61d-db07-451c-9ab3-b9609b6b6f0c", s.ID)
 }
 
 func TestCreateIPv6RaAddressMode(t *testing.T) {
@@ -281,16 +281,16 @@ func TestCreateIPv6RaAddressMode(t *testing.T) {
 	s, err := subnets.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertEquals(t, s.IPVersion, 6)
-	th.AssertEquals(t, s.GatewayIP, "2001:db8:0:a::1")
-	th.AssertEquals(t, s.CIDR, "2001:db8:0:a:0:0:0:0/64")
-	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
-	th.AssertEquals(t, s.IPv6AddressMode, "slaac")
-	th.AssertEquals(t, s.IPv6RAMode, "slaac")
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertEquals(t, 6, s.IPVersion)
+	th.AssertEquals(t, "2001:db8:0:a::1", s.GatewayIP)
+	th.AssertEquals(t, "2001:db8:0:a:0:0:0:0/64", s.CIDR)
+	th.AssertEquals(t, "3b80198d-4f7b-4f77-9ef5-774d54e17126", s.ID)
+	th.AssertEquals(t, "slaac", s.IPv6AddressMode)
+	th.AssertEquals(t, "slaac", s.IPv6RAMode)
 }
 
 func TestCreateWithNoCIDR(t *testing.T) {
@@ -322,24 +322,24 @@ func TestCreateWithNoCIDR(t *testing.T) {
 	s, err := subnets.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.DNSPublishFixedIP, true)
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{"foo"})
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.DNSPublishFixedIP)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertDeepEquals(t, []string{"foo"}, s.DNSNameservers)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "192.168.199.2",
 			End:   "192.168.199.254",
 		},
-	})
-	th.AssertDeepEquals(t, s.HostRoutes, []subnets.HostRoute{})
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.GatewayIP, "192.168.199.1")
-	th.AssertEquals(t, s.CIDR, "192.168.199.0/24")
-	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
-	th.AssertEquals(t, s.SubnetPoolID, "b80340c7-9960-4f67-a99c-02501656284b")
+	}, s.AllocationPools)
+	th.AssertDeepEquals(t, []subnets.HostRoute{}, s.HostRoutes)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "192.168.199.1", s.GatewayIP)
+	th.AssertEquals(t, "192.168.199.0/24", s.CIDR)
+	th.AssertEquals(t, "3b80198d-4f7b-4f77-9ef5-774d54e17126", s.ID)
+	th.AssertEquals(t, "b80340c7-9960-4f67-a99c-02501656284b", s.SubnetPoolID)
 }
 
 func TestCreateWithPrefixlen(t *testing.T) {
@@ -372,24 +372,24 @@ func TestCreateWithPrefixlen(t *testing.T) {
 	s, err := subnets.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.DNSPublishFixedIP, true)
-	th.AssertEquals(t, s.EnableDHCP, true)
-	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []string{"foo"})
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.DNSPublishFixedIP)
+	th.AssertTrue(t, s.EnableDHCP)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.NetworkID)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s.TenantID)
+	th.AssertDeepEquals(t, []string{"foo"}, s.DNSNameservers)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "192.168.199.2",
 			End:   "192.168.199.254",
 		},
-	})
-	th.AssertDeepEquals(t, s.HostRoutes, []subnets.HostRoute{})
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.GatewayIP, "192.168.199.1")
-	th.AssertEquals(t, s.CIDR, "192.168.199.0/24")
-	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
-	th.AssertEquals(t, s.SubnetPoolID, "b80340c7-9960-4f67-a99c-02501656284b")
+	}, s.AllocationPools)
+	th.AssertDeepEquals(t, []subnets.HostRoute{}, s.HostRoutes)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "192.168.199.1", s.GatewayIP)
+	th.AssertEquals(t, "192.168.199.0/24", s.CIDR)
+	th.AssertEquals(t, "3b80198d-4f7b-4f77-9ef5-774d54e17126", s.ID)
+	th.AssertEquals(t, "b80340c7-9960-4f67-a99c-02501656284b", s.SubnetPoolID)
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
@@ -441,8 +441,8 @@ func TestUpdate(t *testing.T) {
 	s, err := subnets.Update(context.TODO(), fake.ServiceClient(fakeServer), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_new_subnet")
-	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertEquals(t, "my_new_subnet", s.Name)
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", s.ID)
 }
 
 func TestUpdateGateway(t *testing.T) {
@@ -471,9 +471,9 @@ func TestUpdateGateway(t *testing.T) {
 	s, err := subnets.Update(context.TODO(), fake.ServiceClient(fakeServer), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_new_subnet")
-	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertEquals(t, s.GatewayIP, "10.0.0.1")
+	th.AssertEquals(t, "my_new_subnet", s.Name)
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", s.ID)
+	th.AssertEquals(t, "10.0.0.1", s.GatewayIP)
 }
 
 func TestUpdateRemoveGateway(t *testing.T) {
@@ -502,9 +502,9 @@ func TestUpdateRemoveGateway(t *testing.T) {
 	s, err := subnets.Update(context.TODO(), fake.ServiceClient(fakeServer), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_new_subnet")
-	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertEquals(t, s.GatewayIP, "")
+	th.AssertEquals(t, "my_new_subnet", s.Name)
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", s.ID)
+	th.AssertEquals(t, "", s.GatewayIP)
 }
 
 func TestUpdateHostRoutes(t *testing.T) {
@@ -539,8 +539,8 @@ func TestUpdateHostRoutes(t *testing.T) {
 	s, err := subnets.Update(context.TODO(), fake.ServiceClient(fakeServer), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_new_subnet")
-	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertEquals(t, "my_new_subnet", s.Name)
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", s.ID)
 	th.AssertDeepEquals(t, s.HostRoutes, HostRoutes)
 }
 
@@ -568,8 +568,8 @@ func TestUpdateRemoveHostRoutes(t *testing.T) {
 	s, err := subnets.Update(context.TODO(), fake.ServiceClient(fakeServer), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_new_subnet")
-	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertEquals(t, "my_new_subnet", s.Name)
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", s.ID)
 	th.AssertDeepEquals(t, s.HostRoutes, noHostRoutes)
 }
 
@@ -603,14 +603,14 @@ func TestUpdateAllocationPool(t *testing.T) {
 	s, err := subnets.Update(context.TODO(), fake.ServiceClient(fakeServer), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_new_subnet")
-	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertDeepEquals(t, s.AllocationPools, []subnets.AllocationPool{
+	th.AssertEquals(t, "my_new_subnet", s.Name)
+	th.AssertEquals(t, "08eae331-0402-425a-923c-34f7cfe39c1b", s.ID)
+	th.AssertDeepEquals(t, []subnets.AllocationPool{
 		{
 			Start: "10.1.0.2",
 			End:   "10.1.0.254",
 		},
-	})
+	}, s.AllocationPools)
 }
 
 func TestUpdateRevision(t *testing.T) {

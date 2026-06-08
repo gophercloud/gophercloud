@@ -166,11 +166,11 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "some information", group.Description)
 	th.AssertEquals(t, "e3f11142-3792-454b-8d3e-91ac1bf127b4", group.IngressFirewallPolicyID)
 	th.AssertEquals(t, "", group.EgressFirewallPolicyID)
-	th.AssertEquals(t, true, group.AdminStateUp)
+	th.AssertTrue(t, group.AdminStateUp)
 	th.AssertEquals(t, 1, len(group.Ports))
 	th.AssertEquals(t, "a6af1e56-b12b-4733-8f77-49166afd5719", group.Ports[0])
 	th.AssertEquals(t, "ACTIVE", group.Status)
-	th.AssertEquals(t, false, group.Shared)
+	th.AssertFalse(t, group.Shared)
 	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", group.TenantID)
 }
 
@@ -343,8 +343,8 @@ func TestRemoveIngressPolicy(t *testing.T) {
 
 	removeIngressPolicy, err := groups.RemoveIngressPolicy(context.TODO(), fake.ServiceClient(fakeServer), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, removeIngressPolicy.IngressFirewallPolicyID, "")
-	th.AssertEquals(t, removeIngressPolicy.EgressFirewallPolicyID, "43a11f3a-ddac-4129-9469-02b9df26548e")
+	th.AssertEquals(t, "", removeIngressPolicy.IngressFirewallPolicyID)
+	th.AssertEquals(t, "43a11f3a-ddac-4129-9469-02b9df26548e", removeIngressPolicy.EgressFirewallPolicyID)
 }
 
 func TestRemoveEgressPolicy(t *testing.T) {
@@ -391,8 +391,8 @@ func TestRemoveEgressPolicy(t *testing.T) {
 
 	removeEgressPolicy, err := groups.RemoveEgressPolicy(context.TODO(), fake.ServiceClient(fakeServer), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, removeEgressPolicy.IngressFirewallPolicyID, "e3f11142-3792-454b-8d3e-91ac1bf127b4")
-	th.AssertEquals(t, removeEgressPolicy.EgressFirewallPolicyID, "")
+	th.AssertEquals(t, "e3f11142-3792-454b-8d3e-91ac1bf127b4", removeEgressPolicy.IngressFirewallPolicyID)
+	th.AssertEquals(t, "", removeEgressPolicy.EgressFirewallPolicyID)
 }
 
 func TestDelete(t *testing.T) {

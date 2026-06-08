@@ -100,9 +100,9 @@ func TestGet(t *testing.T) {
 	ext, err := extensions.Get(context.TODO(), fake.ServiceClient(fakeServer), "agent").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
-	th.AssertEquals(t, ext.Name, "agent")
-	th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
-	th.AssertEquals(t, ext.Alias, "agent")
-	th.AssertEquals(t, ext.Description, "The agent management extension.")
+	th.AssertEquals(t, "2013-02-03T10:00:00-00:00", ext.Updated)
+	th.AssertEquals(t, "agent", ext.Name)
+	th.AssertEquals(t, "http://docs.openstack.org/ext/agent/api/v2.0", ext.Namespace)
+	th.AssertEquals(t, "agent", ext.Alias)
+	th.AssertEquals(t, "The agent management extension.", ext.Description)
 }

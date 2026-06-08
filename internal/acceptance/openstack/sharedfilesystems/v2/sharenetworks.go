@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/sharenetworks"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 // CreateShareNetwork will create a share network with a random name. An
@@ -36,6 +37,11 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 	if err != nil {
 		return shareNetwork, err
 	}
+
+	th.AssertEquals(t, shareNetworkName, shareNetwork.Name)
+	th.AssertEquals(t, "This is a shared network", shareNetwork.Description)
+	th.AssertEquals(t, choices.NetworkID, shareNetwork.NeutronNetID)
+	th.AssertEquals(t, choices.SubnetID, shareNetwork.NeutronSubnetID)
 
 	return shareNetwork, nil
 }

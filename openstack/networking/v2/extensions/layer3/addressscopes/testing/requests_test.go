@@ -69,12 +69,12 @@ func TestGet(t *testing.T) {
 	s, err := addressscopes.Get(context.TODO(), fake.ServiceClient(fakeServer), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.ID, "9cc35860-522a-4d35-974d-51d4b011801e")
-	th.AssertEquals(t, s.Name, "scopev4")
-	th.AssertEquals(t, s.TenantID, "4a9807b773404e979b19633f38370643")
-	th.AssertEquals(t, s.ProjectID, "4a9807b773404e979b19633f38370643")
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.Shared, false)
+	th.AssertEquals(t, "9cc35860-522a-4d35-974d-51d4b011801e", s.ID)
+	th.AssertEquals(t, "scopev4", s.Name)
+	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.TenantID)
+	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.ProjectID)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertFalse(t, s.Shared)
 }
 
 func TestCreate(t *testing.T) {
@@ -102,12 +102,12 @@ func TestCreate(t *testing.T) {
 	s, err := addressscopes.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "test0")
-	th.AssertEquals(t, s.Shared, true)
-	th.AssertEquals(t, s.IPVersion, 4)
-	th.AssertEquals(t, s.TenantID, "4a9807b773404e979b19633f38370643")
-	th.AssertEquals(t, s.ProjectID, "4a9807b773404e979b19633f38370643")
-	th.AssertEquals(t, s.ID, "9cc35860-522a-4d35-974d-51d4b011801e")
+	th.AssertEquals(t, "test0", s.Name)
+	th.AssertTrue(t, s.Shared)
+	th.AssertEquals(t, 4, s.IPVersion)
+	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.TenantID)
+	th.AssertEquals(t, "4a9807b773404e979b19633f38370643", s.ProjectID)
+	th.AssertEquals(t, "9cc35860-522a-4d35-974d-51d4b011801e", s.ID)
 }
 
 func TestUpdate(t *testing.T) {
@@ -136,8 +136,8 @@ func TestUpdate(t *testing.T) {
 	s, err := addressscopes.Update(context.TODO(), fake.ServiceClient(fakeServer), "9cc35860-522a-4d35-974d-51d4b011801e", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "test1")
-	th.AssertEquals(t, s.Shared, true)
+	th.AssertEquals(t, "test1", s.Name)
+	th.AssertTrue(t, s.Shared)
 }
 
 func TestDelete(t *testing.T) {

@@ -49,7 +49,7 @@ func TestOrdersCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestOrdersAsymmetric(t *testing.T) {

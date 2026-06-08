@@ -36,7 +36,7 @@ func TestRecordSetsListByZone(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 
 	listOpts := recordsets.ListOpts{
 		Limit: 1,
@@ -46,7 +46,7 @@ func TestRecordSetsListByZone(t *testing.T) {
 	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		rr, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
-		th.AssertEquals(t, len(rr), 1)
+		th.AssertEquals(t, 1, len(rr))
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
@@ -79,7 +79,7 @@ func TestRecordSetsListAll(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 
 	listOpts := recordsets.ListOpts{
 		Limit: 1,
@@ -89,7 +89,7 @@ func TestRecordSetsListAll(t *testing.T) {
 	err = pager.EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		rr, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
-		th.AssertEquals(t, len(rr), 1)
+		th.AssertEquals(t, 1, len(rr))
 		return false, nil
 	})
 	th.AssertNoErr(t, err)
@@ -134,7 +134,7 @@ func TestRecordSetsCRUD(t *testing.T) {
 	tools.PrintResource(t, &newRS)
 
 	th.AssertDeepEquals(t, newRS.Records, records)
-	th.AssertEquals(t, newRS.TTL, 3600)
+	th.AssertEquals(t, 3600, newRS.TTL)
 
 	ttl := 0
 	updateOpts = recordsets.UpdateOpts{

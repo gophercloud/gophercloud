@@ -20,11 +20,11 @@ func TestCreate(t *testing.T) {
 	n, err := snapshots.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, n.Name, "test snapshot")
-	th.AssertEquals(t, n.Description, "test description")
-	th.AssertEquals(t, n.ShareProto, "NFS")
-	th.AssertEquals(t, n.ShareSize, 1)
-	th.AssertEquals(t, n.Size, 1)
+	th.AssertEquals(t, "test snapshot", n.Name)
+	th.AssertEquals(t, "test description", n.Description)
+	th.AssertEquals(t, "NFS", n.ShareProto)
+	th.AssertEquals(t, 1, n.ShareSize)
+	th.AssertEquals(t, 1, n.Size)
 }
 
 func TestUpdate(t *testing.T) {
@@ -42,8 +42,8 @@ func TestUpdate(t *testing.T) {
 	n, err := snapshots.Update(context.TODO(), client.ServiceClient(fakeServer), snapshotID, options).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, n.Name, "my_new_test_snapshot")
-	th.AssertEquals(t, n.Description, "")
+	th.AssertEquals(t, "my_new_test_snapshot", n.Name)
+	th.AssertEquals(t, "", n.Description)
 }
 
 func TestDelete(t *testing.T) {
@@ -64,7 +64,7 @@ func TestGet(t *testing.T) {
 
 	s, err := snapshots.Get(context.TODO(), client.ServiceClient(fakeServer), snapshotID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &snapshots.Snapshot{
+	th.AssertDeepEquals(t, &snapshots.Snapshot{
 		ID:          snapshotID,
 		Name:        "new_app_snapshot",
 		Description: "",
@@ -85,7 +85,7 @@ func TestGet(t *testing.T) {
 				"rel":  "bookmark",
 			},
 		},
-	})
+	}, s)
 }
 
 func TestListDetail(t *testing.T) {
@@ -101,7 +101,7 @@ func TestListDetail(t *testing.T) {
 	actual, err := snapshots.ExtractSnapshots(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, actual, []snapshots.Snapshot{
+	th.AssertDeepEquals(t, []snapshots.Snapshot{
 		{
 			ID:          snapshotID,
 			Name:        "new_app_snapshot",
@@ -124,7 +124,7 @@ func TestListDetail(t *testing.T) {
 				},
 			},
 		},
-	})
+	}, actual)
 }
 
 func TestResetStatusSuccess(t *testing.T) {

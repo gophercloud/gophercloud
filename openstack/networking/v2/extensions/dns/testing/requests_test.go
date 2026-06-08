@@ -99,28 +99,28 @@ func TestPortGet(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "ACTIVE")
-	th.AssertEquals(t, s.Name, "")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "7e02058126cc4950b75f9970368ba177")
-	th.AssertEquals(t, s.DeviceOwner, "network:router_interface")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:23:fd:d7")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "ACTIVE", s.Status)
+	th.AssertEquals(t, "", s.Name)
+	th.AssertTrue(t, s.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "7e02058126cc4950b75f9970368ba177", s.TenantID)
+	th.AssertEquals(t, "network:router_interface", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:23:fd:d7", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.1"},
-	})
-	th.AssertEquals(t, s.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{})
-	th.AssertEquals(t, s.DeviceID, "5e3898d7-11be-483e-9732-b2f5eccd2b2e")
+	}, s.FixedIPs)
+	th.AssertEquals(t, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", s.ID)
+	th.AssertDeepEquals(t, []string{}, s.SecurityGroups)
+	th.AssertEquals(t, "5e3898d7-11be-483e-9732-b2f5eccd2b2e", s.DeviceID)
 
-	th.AssertEquals(t, s.DNSName, "test-port")
-	th.AssertDeepEquals(t, s.DNSAssignment, []map[string]string{
+	th.AssertEquals(t, "test-port", s.DNSName)
+	th.AssertDeepEquals(t, []map[string]string{
 		{
 			"hostname":   "test-port",
 			"ip_address": "172.24.4.2",
 			"fqdn":       "test-port.openstack.local.",
 		},
-	})
+	}, s.DNSAssignment)
 }
 
 func TestPortCreate(t *testing.T) {
@@ -150,27 +150,27 @@ func TestPortCreate(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
-	th.AssertEquals(t, s.Name, "private-port")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, s.DeviceOwner, "")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", s.Status)
+	th.AssertEquals(t, "private-port", s.Name)
+	th.AssertTrue(t, s.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
+	th.AssertEquals(t, "", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+	}, s.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", s.ID)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, s.SecurityGroups)
 
-	th.AssertEquals(t, s.DNSName, "test-port")
-	th.AssertDeepEquals(t, s.DNSAssignment, []map[string]string{
+	th.AssertEquals(t, "test-port", s.DNSName)
+	th.AssertDeepEquals(t, []map[string]string{
 		{
 			"hostname":   "test-port",
 			"ip_address": "172.24.4.2",
 			"fqdn":       "test-port.openstack.local.",
 		},
-	})
+	}, s.DNSAssignment)
 }
 
 func TestPortRequiredCreateOpts(t *testing.T) {
@@ -209,19 +209,19 @@ func TestPortUpdate(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "new_port_name")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "new_port_name", s.Name)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
-	})
-	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
-	th.AssertEquals(t, s.DNSName, "test-port1")
-	th.AssertDeepEquals(t, s.DNSAssignment, []map[string]string{
+	}, s.FixedIPs)
+	th.AssertDeepEquals(t, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"}, s.SecurityGroups)
+	th.AssertEquals(t, "test-port1", s.DNSName)
+	th.AssertDeepEquals(t, []map[string]string{
 		{
 			"hostname":   "test-port1",
 			"ip_address": "172.24.4.2",
 			"fqdn":       "test-port1.openstack.local.",
 		},
-	})
+	}, s.DNSAssignment)
 }
 
 func TestFloatingIPGet(t *testing.T) {

@@ -54,6 +54,6 @@ func TestHostRoute(t *testing.T) {
 		t.Fatalf("%s", err)
 	}
 	route := subnetWrapper.Subnet.HostRoutes[0]
-	th.AssertEquals(t, route.NextHop, "172.16.0.2")
-	th.AssertEquals(t, route.DestinationCIDR, "172.20.1.0/24")
+	th.AssertEquals(t, "172.16.0.2", route.NextHop)
+	th.AssertEquals(t, "172.20.1.0/24", route.DestinationCIDR)
 }

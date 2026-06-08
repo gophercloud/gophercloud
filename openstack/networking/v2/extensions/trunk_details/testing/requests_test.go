@@ -35,11 +35,11 @@ func TestServerWithUsageExt(t *testing.T) {
 	err := ports.Get(context.TODO(), client.ServiceClient(fakeServer), portIDFixture).ExtractInto(&portExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portExt.TrunkID, "f170c831-8c55-4ceb-ad13-75eab4a121e5")
-	th.AssertEquals(t, len(portExt.SubPorts), 1)
+	th.AssertEquals(t, "f170c831-8c55-4ceb-ad13-75eab4a121e5", portExt.TrunkID)
+	th.AssertEquals(t, 1, len(portExt.SubPorts))
 	subPort := portExt.SubPorts[0]
-	th.AssertEquals(t, subPort.SegmentationID, 100)
-	th.AssertEquals(t, subPort.SegmentationType, "vlan")
-	th.AssertEquals(t, subPort.PortID, "20c673d8-7f9d-4570-b662-148d9ddcc5bd")
-	th.AssertEquals(t, subPort.MACAddress, "fa:16:3e:88:29:a0")
+	th.AssertEquals(t, 100, subPort.SegmentationID)
+	th.AssertEquals(t, "vlan", subPort.SegmentationType)
+	th.AssertEquals(t, "20c673d8-7f9d-4570-b662-148d9ddcc5bd", subPort.PortID)
+	th.AssertEquals(t, "fa:16:3e:88:29:a0", subPort.MACAddress)
 }

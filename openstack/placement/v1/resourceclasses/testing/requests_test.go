@@ -43,7 +43,7 @@ func TestGetResourceClassNotFound(t *testing.T) {
 	HandleGetResourceClassNotFound(t, fakeServer)
 
 	_, err := resourceclasses.Get(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceClass).Extract()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestCreateResourceClassSuccess(t *testing.T) {
@@ -71,7 +71,7 @@ func TestCreateResourceClassConflict(t *testing.T) {
 	}
 
 	err := resourceclasses.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestUpdateResourceClassCreateSuccess(t *testing.T) {
@@ -101,7 +101,7 @@ func TestUpdateResourceClassNonCustom(t *testing.T) {
 	HandleUpdateResourceClassNonCustom(t, fakeServer)
 
 	err := resourceclasses.Update(context.TODO(), client.ServiceClient(fakeServer), "VCPU").ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 func TestDeleteResourceClassSuccess(t *testing.T) {
@@ -121,7 +121,7 @@ func TestDeleteResourceClassNotFound(t *testing.T) {
 	HandleDeleteResourceClassNotFound(t, fakeServer)
 
 	err := resourceclasses.Delete(context.TODO(), client.ServiceClient(fakeServer), AbsentResourceClass).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestDeleteResourceClassStandardClass(t *testing.T) {
@@ -132,5 +132,5 @@ func TestDeleteResourceClassStandardClass(t *testing.T) {
 	HandleDeleteResourceClassStandardClass(t, fakeServer)
 
 	err := resourceclasses.Delete(context.TODO(), client.ServiceClient(fakeServer), "VCPU").ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }

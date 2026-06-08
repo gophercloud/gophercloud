@@ -55,7 +55,7 @@ func TestDomainsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestDomainsGet(t *testing.T) {
@@ -69,7 +69,7 @@ func TestDomainsGet(t *testing.T) {
 
 	tools.PrintResource(t, p)
 
-	th.AssertEquals(t, p.Name, "Default")
+	th.AssertEquals(t, "Default", p.Name)
 }
 
 func TestDomainsCRUD(t *testing.T) {
@@ -92,6 +92,7 @@ func TestDomainsCRUD(t *testing.T) {
 	tools.PrintResource(t, domain)
 
 	th.AssertEquals(t, domain.Description, description)
+	th.AssertTrue(t, domain.Enabled)
 
 	var iFalse = false
 	description = ""
@@ -106,4 +107,5 @@ func TestDomainsCRUD(t *testing.T) {
 	tools.PrintResource(t, newDomain)
 
 	th.AssertEquals(t, newDomain.Description, description)
+	th.AssertFalse(t, newDomain.Enabled)
 }

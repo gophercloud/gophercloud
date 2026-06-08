@@ -56,4 +56,7 @@ func TestGroupCRUD(t *testing.T) {
 	updatedGroup, err := endpointgroups.Update(context.TODO(), client, group.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updatedGroup)
+
+	th.AssertEquals(t, updatedName, updatedGroup.Name)
+	th.AssertEquals(t, updatedDescription, updatedGroup.Description)
 }

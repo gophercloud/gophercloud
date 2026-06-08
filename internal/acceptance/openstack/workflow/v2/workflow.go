@@ -57,6 +57,8 @@ func CreateWorkflow(t *testing.T, client *gophercloud.ServiceClient) (*workflows
 	t.Logf("Workflow created: %s", workflowName)
 
 	th.AssertEquals(t, workflowName, workflow.Name)
+	th.AssertEquals(t, "some-namespace", workflow.Namespace)
+	th.AssertEquals(t, "private", workflow.Scope)
 
 	return &workflow, nil
 }

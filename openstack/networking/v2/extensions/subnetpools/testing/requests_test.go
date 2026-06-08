@@ -72,25 +72,25 @@ func TestGet(t *testing.T) {
 	s, err := subnetpools.Get(context.TODO(), fake.ServiceClient(fakeServer), "0a738452-8057-4ad3-89c2-92f6a74afa76").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.ID, "0a738452-8057-4ad3-89c2-92f6a74afa76")
-	th.AssertEquals(t, s.Name, "my-ipv6-pool")
-	th.AssertEquals(t, s.DefaultQuota, 2)
-	th.AssertEquals(t, s.TenantID, "1e2b9857295a4a3e841809ef492812c5")
-	th.AssertEquals(t, s.ProjectID, "1e2b9857295a4a3e841809ef492812c5")
+	th.AssertEquals(t, "0a738452-8057-4ad3-89c2-92f6a74afa76", s.ID)
+	th.AssertEquals(t, "my-ipv6-pool", s.Name)
+	th.AssertEquals(t, 2, s.DefaultQuota)
+	th.AssertEquals(t, "1e2b9857295a4a3e841809ef492812c5", s.TenantID)
+	th.AssertEquals(t, "1e2b9857295a4a3e841809ef492812c5", s.ProjectID)
 	th.AssertEquals(t, s.CreatedAt, time.Date(2018, 1, 1, 0, 0, 1, 0, time.UTC))
 	th.AssertEquals(t, s.UpdatedAt, time.Date(2018, 1, 1, 0, 10, 10, 0, time.UTC))
-	th.AssertDeepEquals(t, s.Prefixes, []string{
+	th.AssertDeepEquals(t, []string{
 		"2001:db8::a3/64",
-	})
-	th.AssertEquals(t, s.DefaultPrefixLen, 64)
-	th.AssertEquals(t, s.MinPrefixLen, 64)
-	th.AssertEquals(t, s.MaxPrefixLen, 128)
-	th.AssertEquals(t, s.AddressScopeID, "")
-	th.AssertEquals(t, s.IPversion, 6)
-	th.AssertEquals(t, s.Shared, false)
-	th.AssertEquals(t, s.Description, "ipv6 prefixes")
-	th.AssertEquals(t, s.IsDefault, true)
-	th.AssertEquals(t, s.RevisionNumber, 2)
+	}, s.Prefixes)
+	th.AssertEquals(t, 64, s.DefaultPrefixLen)
+	th.AssertEquals(t, 64, s.MinPrefixLen)
+	th.AssertEquals(t, 128, s.MaxPrefixLen)
+	th.AssertEquals(t, "", s.AddressScopeID)
+	th.AssertEquals(t, 6, s.IPversion)
+	th.AssertFalse(t, s.Shared)
+	th.AssertEquals(t, "ipv6 prefixes", s.Description)
+	th.AssertTrue(t, s.IsDefault)
+	th.AssertEquals(t, 2, s.RevisionNumber)
 }
 func TestCreate(t *testing.T) {
 	fakeServer := th.SetupHTTP()
@@ -123,15 +123,15 @@ func TestCreate(t *testing.T) {
 	s, err := subnetpools.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Name, "my_ipv4_pool")
-	th.AssertDeepEquals(t, s.Prefixes, []string{
+	th.AssertEquals(t, "my_ipv4_pool", s.Name)
+	th.AssertDeepEquals(t, []string{
 		"10.10.0.0/16",
 		"10.11.11.0/24",
-	})
-	th.AssertEquals(t, s.MinPrefixLen, 25)
-	th.AssertEquals(t, s.MaxPrefixLen, 30)
-	th.AssertEquals(t, s.AddressScopeID, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3")
-	th.AssertEquals(t, s.Description, "ipv4 prefixes")
+	}, s.Prefixes)
+	th.AssertEquals(t, 25, s.MinPrefixLen)
+	th.AssertEquals(t, 30, s.MaxPrefixLen)
+	th.AssertEquals(t, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3", s.AddressScopeID)
+	th.AssertEquals(t, "ipv4 prefixes", s.Description)
 }
 
 func TestUpdate(t *testing.T) {
@@ -167,17 +167,17 @@ func TestUpdate(t *testing.T) {
 	n, err := subnetpools.Update(context.TODO(), fake.ServiceClient(fakeServer), "099546ca-788d-41e5-a76d-17d8cd282d3e", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "new_subnetpool_name")
-	th.AssertDeepEquals(t, n.Prefixes, []string{
+	th.AssertEquals(t, "new_subnetpool_name", n.Name)
+	th.AssertDeepEquals(t, []string{
 		"10.8.0.0/16",
 		"10.11.12.0/24",
 		"10.24.0.0/16",
-	})
-	th.AssertEquals(t, n.MaxPrefixLen, 16)
-	th.AssertEquals(t, n.ID, "099546ca-788d-41e5-a76d-17d8cd282d3e")
-	th.AssertEquals(t, n.AddressScopeID, "")
-	th.AssertEquals(t, n.DefaultQuota, 0)
-	th.AssertEquals(t, n.Description, "")
+	}, n.Prefixes)
+	th.AssertEquals(t, 16, n.MaxPrefixLen)
+	th.AssertEquals(t, "099546ca-788d-41e5-a76d-17d8cd282d3e", n.ID)
+	th.AssertEquals(t, "", n.AddressScopeID)
+	th.AssertEquals(t, 0, n.DefaultQuota)
+	th.AssertEquals(t, "", n.Description)
 }
 
 func TestDelete(t *testing.T) {

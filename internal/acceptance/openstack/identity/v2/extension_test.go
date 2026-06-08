@@ -33,7 +33,7 @@ func TestExtensionsList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestExtensionsGet(t *testing.T) {

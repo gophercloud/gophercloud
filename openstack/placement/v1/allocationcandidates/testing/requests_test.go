@@ -103,7 +103,7 @@ func TestListAllocationCandidatesEmptySuccess(t *testing.T) {
 
 	isEmpty, err := page.IsEmpty()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, isEmpty)
+	th.AssertTrue(t, isEmpty)
 }
 
 func TestIsEmpty110Success(t *testing.T) {
@@ -119,7 +119,7 @@ func TestIsEmpty110Success(t *testing.T) {
 
 	isEmpty, err := page.IsEmpty()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, isEmpty)
+	th.AssertFalse(t, isEmpty)
 }
 
 func TestListAllocationCandidatesBadRequest(t *testing.T) {
@@ -132,7 +132,7 @@ func TestListAllocationCandidatesBadRequest(t *testing.T) {
 		Resources: "INVALID",
 	}).AllPages(context.TODO())
 	th.AssertErr(t, err)
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusBadRequest))
 }
 
 func TestListAllocationCandidatesWithFullQuerySuccess(t *testing.T) {

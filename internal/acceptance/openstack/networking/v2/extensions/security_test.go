@@ -22,7 +22,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	group, err := CreateSecurityGroup(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroup(t, client, group.ID)
-	th.AssertEquals(t, group.Stateful, true)
+	th.AssertTrue(t, group.Stateful)
 
 	rule, err := CreateSecurityGroupRule(t, client, group.ID)
 	th.AssertNoErr(t, err)
@@ -50,7 +50,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	tools.PrintResource(t, newGroup)
 	th.AssertEquals(t, newGroup.Name, name)
 	th.AssertEquals(t, newGroup.Description, description)
-	th.AssertEquals(t, newGroup.Stateful, false)
+	th.AssertFalse(t, newGroup.Stateful)
 
 	listOpts := groups.ListOpts{}
 	allPages, err := groups.List(client, listOpts).AllPages(context.TODO())
@@ -66,7 +66,7 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestSecurityGroupsPort(t *testing.T) {
@@ -153,7 +153,7 @@ func TestSecurityGroupsRevision(t *testing.T) {
 
 	tools.PrintResource(t, group)
 
-	th.AssertEquals(t, group.Name, "")
+	th.AssertEquals(t, "", group.Name)
 	th.AssertEquals(t, group.Description, newDescription)
 }
 

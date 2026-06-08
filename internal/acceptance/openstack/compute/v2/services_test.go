@@ -33,7 +33,7 @@ func TestServicesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestServicesListWithOpts(t *testing.T) {
@@ -62,5 +62,5 @@ func TestServicesListWithOpts(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }

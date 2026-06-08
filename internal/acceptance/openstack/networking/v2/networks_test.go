@@ -51,7 +51,7 @@ func TestNetworksExternalList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 
 	iFalse := false
 	networkListOpts = networks.ListOpts{
@@ -67,7 +67,7 @@ func TestNetworksExternalList(t *testing.T) {
 
 	v, err := networks.ExtractNetworks(allPages)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, len(v), 0)
+	th.AssertEquals(t, 0, len(v))
 }
 
 func TestNetworksCRUD(t *testing.T) {
@@ -118,7 +118,7 @@ func TestNetworksCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestNetworksPortSecurityCRUD(t *testing.T) {
@@ -153,6 +153,7 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, networkWithExtensions)
+	th.AssertTrue(t, networkWithExtensions.PortSecurityEnabled)
 }
 
 func TestNetworksRevision(t *testing.T) {

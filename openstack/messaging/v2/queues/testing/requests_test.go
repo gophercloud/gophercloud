@@ -27,7 +27,7 @@ func TestList(t *testing.T) {
 		countField, err := page.(queues.QueuePage).GetCount()
 
 		th.AssertNoErr(t, err)
-		th.AssertEquals(t, countField, 2)
+		th.AssertEquals(t, 2, countField)
 
 		th.CheckDeepEquals(t, ExpectedQueueSlice[count], actual)
 		count++

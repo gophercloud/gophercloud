@@ -58,7 +58,7 @@ func TestListTransfers(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListTransfersDetail(t *testing.T) {
@@ -81,7 +81,7 @@ func TestListTransfersDetail(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListTransfersAllPages(t *testing.T) {

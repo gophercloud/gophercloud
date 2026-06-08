@@ -54,7 +54,7 @@ func TestCreate(t *testing.T) {
 	n, err := trunks.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, "ACTIVE", n.Status)
 	expectedTrunks, err := ExpectedTrunkSlice()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, &expectedTrunks[1], n)
@@ -86,7 +86,7 @@ func TestCreateNoSubports(t *testing.T) {
 	n, err := trunks.Create(context.TODO(), fake.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, "ACTIVE", n.Status)
 	th.AssertEquals(t, 0, len(n.Subports))
 }
 

@@ -63,7 +63,7 @@ func CreateAsymmetricOrder(t *testing.T, client *gophercloud.ServiceClient) (*or
 	tools.PrintResource(t, order.Meta.Expiration)
 
 	th.AssertEquals(t, order.Meta.Name, name)
-	th.AssertEquals(t, order.Type, "asymmetric")
+	th.AssertEquals(t, "asymmetric", order.Type)
 
 	return order, nil
 }
@@ -114,7 +114,7 @@ func CreateCertificateContainer(t *testing.T, client *gophercloud.ServiceClient,
 	tools.PrintResource(t, container)
 
 	th.AssertEquals(t, container.Name, containerName)
-	th.AssertEquals(t, container.Type, "certificate")
+	th.AssertEquals(t, "certificate", container.Type)
 
 	return container, nil
 }
@@ -156,7 +156,7 @@ func CreateKeyOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Or
 	tools.PrintResource(t, order.Meta.Expiration)
 
 	th.AssertEquals(t, order.Meta.Name, name)
-	th.AssertEquals(t, order.Type, "key")
+	th.AssertEquals(t, "key", order.Type)
 
 	return order, nil
 }
@@ -207,7 +207,7 @@ func CreateRSAContainer(t *testing.T, client *gophercloud.ServiceClient, passphr
 	tools.PrintResource(t, container)
 
 	th.AssertEquals(t, container.Name, containerName)
-	th.AssertEquals(t, container.Type, "rsa")
+	th.AssertEquals(t, "rsa", container.Type)
 
 	return container, nil
 }
@@ -249,7 +249,8 @@ func CreateCertificateSecret(t *testing.T, client *gophercloud.ServiceClient, ce
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, name)
-	th.AssertEquals(t, secret.Algorithm, "rsa")
+	th.AssertEquals(t, "rsa", secret.Algorithm)
+	th.AssertEquals(t, "certificate", secret.SecretType)
 
 	return secret, nil
 }
@@ -289,7 +290,10 @@ func CreateEmptySecret(t *testing.T, client *gophercloud.ServiceClient) (*secret
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, secretName)
-	th.AssertEquals(t, secret.Algorithm, "aes")
+	th.AssertEquals(t, "aes", secret.Algorithm)
+	th.AssertEquals(t, 256, secret.BitLength)
+	th.AssertEquals(t, "cbc", secret.Mode)
+	th.AssertEquals(t, "opaque", secret.SecretType)
 
 	return secret, nil
 }
@@ -333,7 +337,7 @@ func CreateGenericContainer(t *testing.T, client *gophercloud.ServiceClient, sec
 	tools.PrintResource(t, container)
 
 	th.AssertEquals(t, container.Name, containerName)
-	th.AssertEquals(t, container.Type, "generic")
+	th.AssertEquals(t, "generic", container.Type)
 
 	return container, nil
 }
@@ -423,7 +427,10 @@ func CreatePassphraseSecret(t *testing.T, client *gophercloud.ServiceClient, pas
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, secretName)
-	th.AssertEquals(t, secret.Algorithm, "aes")
+	th.AssertEquals(t, "aes", secret.Algorithm)
+	th.AssertEquals(t, 256, secret.BitLength)
+	th.AssertEquals(t, "cbc", secret.Mode)
+	th.AssertEquals(t, "passphrase", secret.SecretType)
 
 	return secret, nil
 }
@@ -465,7 +472,8 @@ func CreatePublicSecret(t *testing.T, client *gophercloud.ServiceClient, pub []b
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, name)
-	th.AssertEquals(t, secret.Algorithm, "rsa")
+	th.AssertEquals(t, "rsa", secret.Algorithm)
+	th.AssertEquals(t, "public", secret.SecretType)
 
 	return secret, nil
 }
@@ -507,7 +515,8 @@ func CreatePrivateSecret(t *testing.T, client *gophercloud.ServiceClient, priv [
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, name)
-	th.AssertEquals(t, secret.Algorithm, "rsa")
+	th.AssertEquals(t, "rsa", secret.Algorithm)
+	th.AssertEquals(t, "private", secret.SecretType)
 
 	return secret, nil
 }
@@ -551,7 +560,10 @@ func CreateSecretWithPayload(t *testing.T, client *gophercloud.ServiceClient, pa
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, secretName)
-	th.AssertEquals(t, secret.Algorithm, "aes")
+	th.AssertEquals(t, "aes", secret.Algorithm)
+	th.AssertEquals(t, 256, secret.BitLength)
+	th.AssertEquals(t, "cbc", secret.Mode)
+	th.AssertEquals(t, "opaque", secret.SecretType)
 	th.AssertEquals(t, secret.Expiration, expiration)
 
 	return secret, nil
@@ -597,7 +609,10 @@ func CreateSymmetricSecret(t *testing.T, client *gophercloud.ServiceClient) (*se
 	tools.PrintResource(t, secret)
 
 	th.AssertEquals(t, secret.Name, name)
-	th.AssertEquals(t, secret.Algorithm, "aes")
+	th.AssertEquals(t, "aes", secret.Algorithm)
+	th.AssertEquals(t, 256, secret.BitLength)
+	th.AssertEquals(t, "cbc", secret.Mode)
+	th.AssertEquals(t, "symmetric", secret.SecretType)
 
 	return secret, nil
 }

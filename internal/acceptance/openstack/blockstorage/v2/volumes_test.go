@@ -57,7 +57,7 @@ func TestVolumesCreateDestroy(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestVolumesCreateForceDestroy(t *testing.T) {

@@ -138,7 +138,7 @@ func TestListInstances(t *testing.T) {
 			return false, err
 		}
 
-		th.AssertDeepEquals(t, actual, []instances.Instance{expectedInstance})
+		th.AssertDeepEquals(t, []instances.Instance{expectedInstance}, actual)
 
 		return true, nil
 	})

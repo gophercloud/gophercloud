@@ -57,6 +57,8 @@ func AttachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID s
 
 	t.Logf("Successfully created interface %s on server %s", iface.PortID, serverID)
 
+	th.AssertEquals(t, networkID, iface.NetID)
+
 	return iface, nil
 }
 
@@ -155,9 +157,9 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 	isPublic := true
 	createOpts := flavors.CreateOpts{
 		Name:        flavorName,
-		RAM:         1,
+		RAM:         64,
 		VCPUs:       1,
-		Disk:        gophercloud.IntToPointer(1),
+		Disk:        gophercloud.IntToPointer(2),
 		IsPublic:    &isPublic,
 		Description: flavorDescription,
 	}
@@ -170,10 +172,10 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Fla
 	t.Logf("Successfully created flavor %s", flavor.ID)
 
 	th.AssertEquals(t, flavorName, flavor.Name)
-	th.AssertEquals(t, 1, flavor.RAM)
-	th.AssertEquals(t, 1, flavor.Disk)
+	th.AssertEquals(t, 64, flavor.RAM)
+	th.AssertEquals(t, 2, flavor.Disk)
 	th.AssertEquals(t, 1, flavor.VCPUs)
-	th.AssertEquals(t, true, flavor.IsPublic)
+	th.AssertTrue(t, flavor.IsPublic)
 	th.AssertEquals(t, flavorDescription, flavor.Description)
 
 	return flavor, nil
@@ -279,9 +281,9 @@ func CreatePrivateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flav
 	isPublic := false
 	createOpts := flavors.CreateOpts{
 		Name:     flavorName,
-		RAM:      1,
+		RAM:      64,
 		VCPUs:    1,
-		Disk:     gophercloud.IntToPointer(1),
+		Disk:     gophercloud.IntToPointer(2),
 		IsPublic: &isPublic,
 	}
 
@@ -293,10 +295,10 @@ func CreatePrivateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flav
 	t.Logf("Successfully created flavor %s", flavor.ID)
 
 	th.AssertEquals(t, flavorName, flavor.Name)
-	th.AssertEquals(t, 1, flavor.RAM)
-	th.AssertEquals(t, 1, flavor.Disk)
+	th.AssertEquals(t, 64, flavor.RAM)
+	th.AssertEquals(t, 2, flavor.Disk)
 	th.AssertEquals(t, 1, flavor.VCPUs)
-	th.AssertEquals(t, false, flavor.IsPublic)
+	th.AssertFalse(t, flavor.IsPublic)
 
 	return flavor, nil
 }
@@ -319,6 +321,7 @@ func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*secg
 	t.Logf("Created security group: %s", securityGroup.ID)
 
 	th.AssertEquals(t, name, securityGroup.Name)
+	th.AssertEquals(t, "something", securityGroup.Description)
 
 	return securityGroup, nil
 }
@@ -347,6 +350,8 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 	th.AssertEquals(t, fromPort, rule.FromPort)
 	th.AssertEquals(t, toPort, rule.ToPort)
 	th.AssertEquals(t, securityGroupID, rule.ParentGroupID)
+	th.AssertEqualsIgnoreCase(t, "TCP", rule.IPProtocol)
+	th.AssertEquals(t, "0.0.0.0/0", rule.IPRange.CIDR)
 
 	return rule, nil
 }
@@ -406,6 +411,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 	th.AssertEquals(t, name, newServer.Name)
 	th.AssertEquals(t, choices.FlavorID, newServer.Flavor["id"])
 	th.AssertEquals(t, choices.ImageID, newServer.Image["id"])
+	th.AssertDeepEquals(t, map[string]string{"abc": "def"}, newServer.Metadata)
 
 	return newServer, nil
 }
@@ -459,6 +465,7 @@ func CreateMicroversionServer(t *testing.T, client *gophercloud.ServiceClient) (
 
 	th.AssertEquals(t, name, newServer.Name)
 	th.AssertEquals(t, choices.ImageID, newServer.Image["id"])
+	th.AssertDeepEquals(t, map[string]string{"abc": "def"}, newServer.Metadata)
 
 	return newServer, nil
 }
@@ -585,6 +592,7 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 	t.Logf("Successfully created server group %s", name)
 
 	th.AssertEquals(t, name, sg.Name)
+	th.AssertDeepEquals(t, []string{policy}, sg.Policies)
 
 	return sg, nil
 }
@@ -613,6 +621,14 @@ func CreateServerGroupMicroversion(t *testing.T, client *gophercloud.ServiceClie
 	t.Logf("Successfully created server group %s", name)
 
 	th.AssertEquals(t, name, sg.Name)
+	if sg.Policy == nil {
+		t.Fatal("Expected Policy to be non-nil")
+	}
+	th.AssertEquals(t, policy, *sg.Policy)
+	if sg.Rules == nil {
+		t.Fatal("Expected Rules to be non-nil")
+	}
+	th.AssertEquals(t, maxServerPerHost, sg.Rules.MaxServerPerHost)
 
 	return sg, nil
 }
@@ -712,6 +728,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 	th.AssertEquals(t, name, newServer.Name)
 	th.AssertEquals(t, choices.FlavorID, newServer.Flavor["id"])
 	th.AssertEquals(t, choices.ImageID, newServer.Image["id"])
+	th.AssertEquals(t, keyPairName, newServer.KeyName)
 
 	return newServer, nil
 }
@@ -739,6 +756,15 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 
 	if err := volumes.WaitForStatus(ctx, blockClient, volume.ID, "in-use"); err != nil {
 		return volumeAttachment, err
+	}
+
+	th.AssertEquals(t, volume.ID, volumeAttachment.VolumeID)
+	th.AssertEquals(t, server.ID, volumeAttachment.ServerID)
+	if volumeAttachment.Tag != nil {
+		th.AssertEquals(t, tag, *volumeAttachment.Tag)
+	}
+	if volumeAttachment.DeleteOnTermination != nil {
+		th.AssertEquals(t, dot, *volumeAttachment.DeleteOnTermination)
 	}
 
 	return volumeAttachment, nil
@@ -1020,6 +1046,10 @@ func CreateRemoteConsole(t *testing.T, client *gophercloud.ServiceClient, server
 	}
 
 	t.Logf("Successfully created console: %s", remoteConsole.URL)
+
+	th.AssertEquals(t, string(remoteconsoles.ConsoleProtocolVNC), remoteConsole.Protocol)
+	th.AssertEquals(t, string(remoteconsoles.ConsoleTypeNoVNC), remoteConsole.Type)
+
 	return remoteConsole, nil
 }
 
@@ -1071,6 +1101,7 @@ func CreateServerNoNetwork(t *testing.T, client *gophercloud.ServiceClient) (*se
 	th.AssertEquals(t, name, newServer.Name)
 	th.AssertEquals(t, choices.FlavorID, newServer.Flavor["id"])
 	th.AssertEquals(t, choices.ImageID, newServer.Image["id"])
+	th.AssertDeepEquals(t, map[string]string{"abc": "def"}, newServer.Metadata)
 
 	return newServer, nil
 }

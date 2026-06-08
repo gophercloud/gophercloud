@@ -33,8 +33,8 @@ func TestGet(t *testing.T) {
 	s, err := imageimport.Get(context.TODO(), client.ServiceClient(fakeServer)).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.ImportMethods.Description, "Import methods available.")
-	th.AssertEquals(t, s.ImportMethods.Type, "array")
+	th.AssertEquals(t, "Import methods available.", s.ImportMethods.Description)
+	th.AssertEquals(t, "array", s.ImportMethods.Type)
 	th.AssertDeepEquals(t, s.ImportMethods.Value, validImportMethods)
 }
 

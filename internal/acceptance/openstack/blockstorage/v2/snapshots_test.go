@@ -44,5 +44,5 @@ func TestSnapshots(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }

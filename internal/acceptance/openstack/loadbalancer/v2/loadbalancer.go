@@ -154,7 +154,7 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	th.AssertEquals(t, lb.Name, lbName)
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
-	th.AssertEquals(t, lb.AdminStateUp, true)
+	th.AssertTrue(t, lb.AdminStateUp)
 
 	if len(tags) > 0 {
 		th.AssertDeepEquals(t, lb.Tags, tags)
@@ -252,34 +252,34 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 	th.AssertEquals(t, lb.Name, lbName)
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
-	th.AssertEquals(t, lb.AdminStateUp, true)
+	th.AssertTrue(t, lb.AdminStateUp)
 
-	th.AssertEquals(t, len(lb.Listeners), 1)
+	th.AssertEquals(t, 1, len(lb.Listeners))
 	th.AssertEquals(t, lb.Listeners[0].Name, listenerName)
 	th.AssertEquals(t, lb.Listeners[0].Description, listenerDescription)
 	th.AssertEquals(t, lb.Listeners[0].ProtocolPort, listenerPort)
 
-	th.AssertEquals(t, len(lb.Listeners[0].L7Policies), 1)
+	th.AssertEquals(t, 1, len(lb.Listeners[0].L7Policies))
 	th.AssertEquals(t, lb.Listeners[0].L7Policies[0].Name, policyName)
 	th.AssertEquals(t, lb.Listeners[0].L7Policies[0].Description, policyDescription)
 	th.AssertEquals(t, lb.Listeners[0].L7Policies[0].Description, policyDescription)
-	th.AssertEquals(t, len(lb.Listeners[0].L7Policies[0].Rules), 1)
+	th.AssertEquals(t, 1, len(lb.Listeners[0].L7Policies[0].Rules))
 
-	th.AssertEquals(t, len(lb.Pools), 1)
+	th.AssertEquals(t, 1, len(lb.Pools))
 	th.AssertEquals(t, lb.Pools[0].Name, poolName)
 	th.AssertEquals(t, lb.Pools[0].Description, poolDescription)
 
-	th.AssertEquals(t, len(lb.Pools[0].Members), 1)
+	th.AssertEquals(t, 1, len(lb.Pools[0].Members))
 	th.AssertEquals(t, lb.Pools[0].Members[0].Name, memberName)
 	th.AssertEquals(t, lb.Pools[0].Members[0].ProtocolPort, memberPort)
 	th.AssertEquals(t, lb.Pools[0].Members[0].Weight, memberWeight)
 
-	th.AssertEquals(t, lb.Pools[0].Monitor.Delay, 10)
-	th.AssertEquals(t, lb.Pools[0].Monitor.Timeout, 5)
-	th.AssertEquals(t, lb.Pools[0].Monitor.MaxRetries, 5)
-	th.AssertEquals(t, lb.Pools[0].Monitor.MaxRetriesDown, 4)
+	th.AssertEquals(t, 10, lb.Pools[0].Monitor.Delay)
+	th.AssertEquals(t, 5, lb.Pools[0].Monitor.Timeout)
+	th.AssertEquals(t, 5, lb.Pools[0].Monitor.MaxRetries)
+	th.AssertEquals(t, 4, lb.Pools[0].Monitor.MaxRetriesDown)
 	th.AssertEquals(t, lb.Pools[0].Monitor.Type, string(monitors.TypeHTTP))
-	th.AssertEquals(t, lb.Pools[0].Monitor.HTTPVersion, "1.0")
+	th.AssertEquals(t, "1.0", lb.Pools[0].Monitor.HTTPVersion)
 
 	if len(tags) > 0 {
 		th.AssertDeepEquals(t, lb.Tags, tags)
@@ -322,7 +322,11 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalan
 		return member, fmt.Errorf("timed out waiting for loadbalancer to become active: %s", err)
 	}
 
-	th.AssertEquals(t, member.Name, memberName)
+	th.AssertEquals(t, memberName, member.Name)
+	th.AssertEquals(t, memberPort, member.ProtocolPort)
+	th.AssertEquals(t, memberWeight, member.Weight)
+	th.AssertEquals(t, memberAddress, member.Address)
+	th.AssertEquals(t, subnetID, member.SubnetID)
 
 	return member, nil
 }
@@ -358,11 +362,11 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 
 	th.AssertEquals(t, monitor.Name, monitorName)
 	th.AssertEquals(t, monitor.Type, monitors.TypePING)
-	th.AssertEquals(t, monitor.Delay, 10)
-	th.AssertEquals(t, monitor.Timeout, 5)
-	th.AssertEquals(t, monitor.MaxRetries, 5)
-	th.AssertEquals(t, monitor.MaxRetriesDown, 4)
-	th.AssertEquals(t, monitor.HTTPVersion, "1.1")
+	th.AssertEquals(t, 10, monitor.Delay)
+	th.AssertEquals(t, 5, monitor.Timeout)
+	th.AssertEquals(t, 5, monitor.MaxRetries)
+	th.AssertEquals(t, 4, monitor.MaxRetriesDown)
+	th.AssertEquals(t, "1.1", monitor.HTTPVersion)
 
 	return monitor, nil
 }
@@ -474,7 +478,7 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 	th.AssertEquals(t, policy.Description, policyDescription)
 	th.AssertEquals(t, policy.ListenerID, listener.ID)
 	th.AssertEquals(t, policy.Action, string(l7policies.ActionRedirectToURL))
-	th.AssertEquals(t, policy.RedirectURL, "http://www.example.com")
+	th.AssertEquals(t, "http://www.example.com", policy.RedirectURL)
 	th.AssertDeepEquals(t, policy.Tags, tags)
 
 	return policy, nil
@@ -504,7 +508,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 
 	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
 	th.AssertEquals(t, rule.CompareType, string(l7policies.CompareTypeStartWith))
-	th.AssertEquals(t, rule.Value, "/api")
+	th.AssertEquals(t, "/api", rule.Value)
 	th.AssertDeepEquals(t, rule.Tags, tags)
 
 	return rule, nil
@@ -749,7 +753,7 @@ func CreateFlavor(t *testing.T, client *gophercloud.ServiceClient, flavorProfile
 	th.AssertEquals(t, flavorName, flavor.Name)
 	th.AssertEquals(t, description, flavor.Description)
 	th.AssertEquals(t, flavorProfile.ID, flavor.FlavorProfileID)
-	th.AssertEquals(t, false, flavor.Enabled)
+	th.AssertFalse(t, flavor.Enabled)
 
 	return flavor, nil
 }

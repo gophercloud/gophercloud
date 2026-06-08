@@ -64,7 +64,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 
 	th.AssertEquals(t, policy.Name, policyName)
 	th.AssertEquals(t, policy.Description, policyDescription)
-	th.AssertEquals(t, len(policy.Rules), 1)
+	th.AssertEquals(t, 1, len(policy.Rules))
 
 	return policy, nil
 }
@@ -167,6 +167,8 @@ func CreateGroup(t *testing.T, client *gophercloud.ServiceClient) (*groups.Group
 	t.Logf("firewall group %s successfully created", groupName)
 
 	th.AssertEquals(t, group.Name, groupName)
+	th.AssertEquals(t, description, group.Description)
+	th.AssertTrue(t, group.AdminStateUp)
 	return group, nil
 }
 

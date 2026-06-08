@@ -231,7 +231,7 @@ func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/os-keypairs/deletedkey", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.AssertEquals(t, r.Form.Get("user_id"), "")
+		th.AssertEquals(t, "", r.Form.Get("user_id"))
 
 		w.WriteHeader(http.StatusAccepted)
 	})

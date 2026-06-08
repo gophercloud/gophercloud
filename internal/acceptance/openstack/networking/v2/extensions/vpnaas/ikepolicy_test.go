@@ -60,4 +60,8 @@ func TestIKEPolicyCRUD(t *testing.T) {
 	updatedPolicy, err := ikepolicies.Update(context.TODO(), client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, updatedPolicy)
+
+	th.AssertEquals(t, updatedName, updatedPolicy.Name)
+	th.AssertEquals(t, updatedDescription, updatedPolicy.Description)
+	th.AssertEquals(t, 7000, updatedPolicy.Lifetime.Value)
 }

@@ -23,7 +23,7 @@ func TestGetHTTPClient(t *testing.T) {
 	th.AssertNoErr(t, err)
 	resp, err := client.Get(baseurl)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, resp.StatusCode, 200)
+	th.AssertEquals(t, 200, resp.StatusCode)
 }
 
 // Implement a fakeclient that can be used to mock out HTTP requests

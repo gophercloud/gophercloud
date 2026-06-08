@@ -58,7 +58,7 @@ func TestPoliciesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestPoliciesRevision(t *testing.T) {

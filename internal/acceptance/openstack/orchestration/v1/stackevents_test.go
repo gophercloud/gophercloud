@@ -24,7 +24,7 @@ func TestStackEvents(t *testing.T) {
 	allEvents, err := stackevents.ExtractEvents(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allEvents), 4)
+	th.AssertEquals(t, 4, len(allEvents))
 
 	/*
 			allPages is currently broke

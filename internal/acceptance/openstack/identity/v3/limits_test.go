@@ -111,6 +111,7 @@ func TestLimitsCRUD(t *testing.T) {
 	th.AssertEquals(t, globalResourceName, createdLimits[0].ResourceName)
 	th.AssertEquals(t, serviceID, createdLimits[0].ServiceID)
 	th.AssertEquals(t, project.ID, createdLimits[0].ProjectID)
+	th.AssertEquals(t, "RegionOne", createdLimits[0].RegionID)
 
 	limitID := createdLimits[0].ID
 

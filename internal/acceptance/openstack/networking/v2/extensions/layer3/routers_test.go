@@ -59,7 +59,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
@@ -124,7 +124,7 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 
 	newRouter, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, newRouter.GatewayInfo, routers.GatewayInfo{})
+	th.AssertDeepEquals(t, routers.GatewayInfo{}, newRouter.GatewayInfo)
 
 }
 
@@ -212,7 +212,7 @@ func TestLayer3RouterAgents(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestLayer3RouterRevision(t *testing.T) {

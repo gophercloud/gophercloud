@@ -97,7 +97,7 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, applicationCredential.ExpiresAt, expiresAt)
 	th.AssertEquals(t, applicationCredential.Name, createOpts.Name)
 	th.AssertEquals(t, applicationCredential.Description, createOpts.Description)
-	th.AssertEquals(t, applicationCredential.Unrestricted, false)
+	th.AssertFalse(t, applicationCredential.Unrestricted)
 	th.AssertEquals(t, applicationCredential.ProjectID, project.ID)
 
 	checkACroles := rolesToMap(applicationCredential.Roles)
@@ -124,7 +124,7 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, getApplicationCredential.ExpiresAt, expiresAt)
 	th.AssertEquals(t, getApplicationCredential.Name, createOpts.Name)
 	th.AssertEquals(t, getApplicationCredential.Description, createOpts.Description)
-	th.AssertEquals(t, getApplicationCredential.Unrestricted, false)
+	th.AssertFalse(t, getApplicationCredential.Unrestricted)
 	th.AssertEquals(t, getApplicationCredential.ProjectID, project.ID)
 
 	checkACroles = rolesToMap(getApplicationCredential.Roles)
@@ -152,12 +152,12 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	defer applicationcredentials.Delete(context.TODO(), client, user.ID, newApplicationCredential.ID)
 	tools.PrintResource(t, newApplicationCredential)
 
-	th.AssertEquals(t, newApplicationCredential.ExpiresAt, time.Time{})
+	th.AssertEquals(t, time.Time{}, newApplicationCredential.ExpiresAt)
 	th.AssertEquals(t, newApplicationCredential.Name, createOpts.Name)
 	th.AssertEquals(t, newApplicationCredential.Description, createOpts.Description)
 	th.AssertEquals(t, newApplicationCredential.Secret, createOpts.Secret)
-	th.AssertEquals(t, newApplicationCredential.Unrestricted, true)
-	th.AssertEquals(t, newApplicationCredential.ExpiresAt, time.Time{})
+	th.AssertTrue(t, newApplicationCredential.Unrestricted)
+	th.AssertEquals(t, time.Time{}, newApplicationCredential.ExpiresAt)
 	th.AssertEquals(t, newApplicationCredential.ProjectID, project.ID)
 
 	checkACroles = rolesToMap(newApplicationCredential.Roles)
@@ -235,7 +235,7 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 	th.AssertEquals(t, applicationCredential.ExpiresAt, expiresAt)
 	th.AssertEquals(t, applicationCredential.Name, createOpts.Name)
 	th.AssertEquals(t, applicationCredential.Description, createOpts.Description)
-	th.AssertEquals(t, applicationCredential.Unrestricted, false)
+	th.AssertFalse(t, applicationCredential.Unrestricted)
 
 	for i, rule := range applicationCredential.AccessRules {
 		th.AssertEquals(t, rule.Path, apAccessRules[i].Path)
@@ -255,7 +255,7 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 	th.AssertEquals(t, getApplicationCredential.ExpiresAt, expiresAt)
 	th.AssertEquals(t, getApplicationCredential.Name, createOpts.Name)
 	th.AssertEquals(t, getApplicationCredential.Description, createOpts.Description)
-	th.AssertEquals(t, getApplicationCredential.Unrestricted, false)
+	th.AssertFalse(t, getApplicationCredential.Unrestricted)
 
 	for i, rule := range applicationCredential.AccessRules {
 		th.AssertEquals(t, rule.Path, apAccessRules[i].Path)
@@ -290,5 +290,5 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err = applicationcredentials.ExtractAccessRules(allPages)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, len(actual), 0)
+	th.AssertEquals(t, 0, len(actual))
 }

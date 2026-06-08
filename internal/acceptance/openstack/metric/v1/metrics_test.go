@@ -22,7 +22,7 @@ func TestMetricQuery(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, result)
-	th.AssertEquals(t, result.ResultType, "vector")
+	th.AssertEquals(t, "vector", result.ResultType)
 }
 
 func TestMetricLabels(t *testing.T) {

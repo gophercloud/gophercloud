@@ -97,7 +97,7 @@ func TestUpdateConflict(t *testing.T) {
 		UserID:             UserID,
 		ConsumerGeneration: &staleGeneration,
 	}).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
 
 func TestDeleteSuccess(t *testing.T) {
@@ -122,7 +122,7 @@ func TestDeleteNotFound(t *testing.T) {
 	HandleDeleteAllocationsNotFound(t, fakeServer)
 
 	err := allocations.Delete(context.TODO(), client.ServiceClient(fakeServer), NotFoundConsumerUUID).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
 }
 
 func TestManageSuccess(t *testing.T) {
@@ -181,5 +181,5 @@ func TestManageConflict(t *testing.T) {
 			ConsumerGeneration: &staleGeneration,
 		},
 	}).ExtractErr()
-	th.AssertEquals(t, true, gophercloud.ResponseCodeIs(err, http.StatusConflict))
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusConflict))
 }
