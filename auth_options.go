@@ -434,15 +434,6 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 	}
 
 	if opts.Scope.ProjectName != "" {
-		// ProjectName provided: either DomainID or DomainName must also be supplied.
-		// ProjectID may not be supplied.
-		if opts.Scope.DomainID == "" && opts.Scope.DomainName == "" {
-			return nil, ErrScopeDomainIDOrDomainName{}
-		}
-		if opts.Scope.ProjectID != "" {
-			return nil, ErrScopeProjectIDOrProjectName{}
-		}
-
 		if opts.Scope.DomainID != "" {
 			// ProjectName + DomainID
 			return map[string]any{
@@ -463,14 +454,6 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 			}, nil
 		}
 	} else if opts.Scope.ProjectID != "" {
-		// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
-		if opts.Scope.DomainID != "" {
-			return nil, ErrScopeProjectIDAlone{}
-		}
-		if opts.Scope.DomainName != "" {
-			return nil, ErrScopeProjectIDAlone{}
-		}
-
 		// ProjectID
 		return map[string]any{
 			"project": map[string]any{
@@ -478,11 +461,6 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 			},
 		}, nil
 	} else if opts.Scope.DomainID != "" {
-		// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
-		if opts.Scope.DomainName != "" {
-			return nil, ErrScopeDomainIDOrDomainName{}
-		}
-
 		// DomainID
 		return map[string]any{
 			"domain": map[string]any{

@@ -315,27 +315,6 @@ func (e ErrMissingPassword) Error() string {
 	return "You must provide a password to authenticate"
 }
 
-// ErrScopeDomainIDOrDomainName indicates that a domain ID or Name was required in a Scope, but not present.
-type ErrScopeDomainIDOrDomainName struct{ BaseError }
-
-func (e ErrScopeDomainIDOrDomainName) Error() string {
-	return "You must provide exactly one of DomainID or DomainName in a Scope with ProjectName"
-}
-
-// ErrScopeProjectIDOrProjectName indicates that both a ProjectID and a ProjectName were provided in a Scope.
-type ErrScopeProjectIDOrProjectName struct{ BaseError }
-
-func (e ErrScopeProjectIDOrProjectName) Error() string {
-	return "You must provide at most one of ProjectID or ProjectName in a Scope"
-}
-
-// ErrScopeProjectIDAlone indicates that a ProjectID was provided with other constraints in a Scope.
-type ErrScopeProjectIDAlone struct{ BaseError }
-
-func (e ErrScopeProjectIDAlone) Error() string {
-	return "ProjectID must be supplied alone in a Scope"
-}
-
 // ErrScopeEmpty indicates that no credentials were provided in a Scope.
 type ErrScopeEmpty struct{ BaseError }
 
