@@ -52,3 +52,30 @@ func TestZonesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, newZone.Description, description)
 }
+
+func TestZonesListWithAllProjects(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewDNSV2Client()
+	th.AssertNoErr(t, err)
+
+	zone, err := CreateZone(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteZone(t, client, zone)
+
+	listOpts := zones.ListOpts{AllProjects: true}
+	allPages, err := zones.List(client, listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allZones, err := zones.ExtractZones(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, z := range allZones {
+		if zone.Name == z.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+}

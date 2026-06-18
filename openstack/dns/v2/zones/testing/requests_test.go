@@ -44,6 +44,19 @@ func TestListAllPages(t *testing.T) {
 	th.CheckEquals(t, 2, len(allZones))
 }
 
+func TestListWithAllProjects(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAllProjectsSuccessfully(t, fakeServer)
+
+	opts := zones.ListOpts{AllProjects: true}
+	allPages, err := zones.List(client.ServiceClient(fakeServer), opts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	allZones, err := zones.ExtractZones(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 2, len(allZones))
+}
+
 func TestGet(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
