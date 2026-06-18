@@ -153,6 +153,19 @@ func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	})
 }
 
+// HandleListAllProjectsSuccessfully configures the test server to respond to a List request
+// with the X-Auth-All-Projects header set.
+func HandleListAllProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "X-Auth-All-Projects", "true")
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, ListOutput)
+	})
+}
+
 // HandleGetSuccessfully configures the test server to respond to a List request.
 func HandleGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3", func(w http.ResponseWriter, r *http.Request) {
