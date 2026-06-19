@@ -41,8 +41,8 @@ type ListOpts struct {
 	// All projects header
 	AllProjects bool `h:"X-Auth-All-Projects"`
 
-	// Sudo tenant ID
-	SudoTenantID bool `h:"X-Auth-Sudo-Tenant-ID"`
+	// SudoTenantID impersonates the given project.
+	SudoTenantID string `h:"X-Auth-Sudo-Tenant-ID"`
 }
 
 // ToZoneListQuery formats a ListOpts into a query string.
