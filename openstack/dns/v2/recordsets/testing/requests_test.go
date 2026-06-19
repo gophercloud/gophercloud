@@ -63,6 +63,19 @@ func TestListByZoneAllPages(t *testing.T) {
 	th.CheckEquals(t, 2, len(allRecordSets))
 }
 
+func TestListByZoneWithAllProjects(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListByZoneAllProjectsSuccessfully(t, fakeServer)
+
+	opts := recordsets.ListOpts{AllProjects: true}
+	allPages, err := recordsets.ListByZone(client.ServiceClient(fakeServer), "2150b1bf-dee2-4221-9d85-11f7886fb15f", opts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 2, len(allRecordSets))
+}
+
 func TestListAll(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -197,4 +210,71 @@ func TestDelete(t *testing.T) {
 	err := recordsets.Delete(context.TODO(), client.ServiceClient(fakeServer), DeletedRecordSet.ZoneID, DeletedRecordSet.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	//th.CheckDeepEquals(t, &DeletedZone, actual)
+}
+
+func TestListAllWithAllProjects(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAllAllProjectsSuccessfully(t, fakeServer)
+
+	opts := recordsets.ListOpts{AllProjects: true}
+	allPages, err := recordsets.ListAll(client.ServiceClient(fakeServer), opts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 2, len(allRecordSets))
+}
+
+func TestCreateWithAllProjects(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateAllProjectsSuccessfully(t, fakeServer)
+
+	createOpts := recordsets.CreateOpts{
+		Name:        "example.org.",
+		Type:        "A",
+		TTL:         3600,
+		Description: "This is an example record set.",
+		Records:     []string{"10.1.0.2"},
+		AllProjects: true,
+	}
+
+	actual, err := recordsets.Create(context.TODO(), client.ServiceClient(fakeServer), "2150b1bf-dee2-4221-9d85-11f7886fb15f", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedRecordSet, actual)
+}
+
+func TestUpdateWithAllProjects(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleUpdateAllProjectsSuccessfully(t, fakeServer)
+
+	var description = "Updated description"
+	ttl := 0
+	updateOpts := recordsets.UpdateOpts{
+		TTL:         &ttl,
+		Description: &description,
+		Records:     []string{"10.1.0.2", "10.1.0.3"},
+		AllProjects: true,
+	}
+
+	UpdatedRecordSet := CreatedRecordSet
+	UpdatedRecordSet.Status = "PENDING"
+	UpdatedRecordSet.Action = "UPDATE"
+	UpdatedRecordSet.Description = "Updated description"
+	UpdatedRecordSet.Records = []string{"10.1.0.2", "10.1.0.3"}
+	UpdatedRecordSet.Version = 2
+
+	actual, err := recordsets.Update(context.TODO(), client.ServiceClient(fakeServer), UpdatedRecordSet.ZoneID, UpdatedRecordSet.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &UpdatedRecordSet, actual)
+}
+
+func TestDeleteWithAllProjects(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleDeleteAllProjectsSuccessfully(t, fakeServer)
+
+	err := recordsets.Delete(context.TODO(), client.ServiceClient(fakeServer), "2150b1bf-dee2-4221-9d85-11f7886fb15f", "f7b10e9b-0cae-4a91-b162-562bc6096648", recordsets.DeleteOpts{AllProjects: true}).ExtractErr()
+	th.AssertNoErr(t, err)
 }
