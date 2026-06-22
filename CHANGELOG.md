@@ -1,3 +1,89 @@
+## v2.13.0 (2026-06-22)
+
+New features and improvements:
+
+* [GH-3680](https://github.com/gophercloud/gophercloud/pull/3680) placement: Implement GET/UPDATE/DELETE operations on resource providers inventories
+* [GH-3675](https://github.com/gophercloud/gophercloud/pull/3675) placement: Implement resource_classes GET operations
+* [GH-3676](https://github.com/gophercloud/gophercloud/pull/3676) placement: Implement resource_classes CREATE operations
+* [GH-3677](https://github.com/gophercloud/gophercloud/pull/3677) placement: Implement resource_classes DELETE operation
+* [GH-3685](https://github.com/gophercloud/gophercloud/pull/3685) placement: Implement resource provider aggregates
+* [GH-3701](https://github.com/gophercloud/gophercloud/pull/3701) placement: Implement allocationcandidates list
+* [GH-3713](https://github.com/gophercloud/gophercloud/pull/3713) placement: Implement resource provider allocations
+* [GH-3715](https://github.com/gophercloud/gophercloud/pull/3715) placement: Implement usages
+* [GH-3757](https://github.com/gophercloud/gophercloud/pull/3757) placement: Add resourceprovider list post 1.39
+* [GH-3743](https://github.com/gophercloud/gophercloud/pull/3743) placement: Add optionality to inventory update
+* [GH-3749](https://github.com/gophercloud/gophercloud/pull/3749) placement: Allow clearing parent_provider_uuid
+* [GH-3638](https://github.com/gophercloud/gophercloud/pull/3638) baremetal: Add metric-storage (Aetos) v1 service support
+* [GH-3658](https://github.com/gophercloud/gophercloud/pull/3658) placement: Implement READ operations on traits
+* [GH-3668](https://github.com/gophercloud/gophercloud/pull/3668) placement: Implement CREATE/UPDATE operations on traits
+* [GH-3669](https://github.com/gophercloud/gophercloud/pull/3669) placement: Implement DELETE operations on traits
+* [GH-3546](https://github.com/gophercloud/gophercloud/pull/3546) compute: Add cpu info topology cells entry
+* [GH-3536](https://github.com/gophercloud/gophercloud/pull/3536) compute: Add config_drive to server struct
+* [GH-3801](https://github.com/gophercloud/gophercloud/pull/3801) dns: Add AllProjects support to zones.List via X-Auth-All-Projects header
+* [GH-3623](https://github.com/gophercloud/gophercloud/pull/3623) dns: Add TSIG key support for OpenStack DNS v2 API
+* [GH-3535](https://github.com/gophercloud/gophercloud/pull/3535) networking: Add Epoxy support
+* [GH-3603](https://github.com/gophercloud/gophercloud/pull/3603) networking: Add external gateways management on routers
+* [GH-3474](https://github.com/gophercloud/gophercloud/pull/3474) networking: Implement hypervisors.GetExt
+* [GH-3480](https://github.com/gophercloud/gophercloud/pull/3480) networking: Implement hypervisors.GetExt with Query parameter
+* [GH-3456](https://github.com/gophercloud/gophercloud/pull/3456) messaging: Fix pagination for messaging client
+* [GH-3459](https://github.com/gophercloud/gophercloud/pull/3459) messaging: Fix pagination endpoint
+* [GH-3488](https://github.com/gophercloud/gophercloud/pull/3488) key-manager: Resolve ContainerConsumerListOpts receiver error
+* [GH-3462](https://github.com/gophercloud/gophercloud/pull/3462) core: Clone service type aliases instead of referencing global slice
+* [GH-3593](https://github.com/gophercloud/gophercloud/pull/3593) loadbalancer: Add availability zone profiles
+* [GH-3688](https://github.com/gophercloud/gophercloud/pull/3688) dns: Add support for listing recordsets across all zones
+* [GH-3756](https://github.com/gophercloud/gophercloud/pull/3756) networking: Add portforwarding ranges support
+* [GH-3768](https://github.com/gophercloud/gophercloud/pull/3768) networking: Enable port-forwarding extension in devstack
+* [GH-3581](https://github.com/gophercloud/gophercloud/pull/3581) identity: Make name optional on Endpoint creation
+* [GH-3572](https://github.com/gophercloud/gophercloud/pull/3572) identity: Add description field to Endpoint
+* [GH-3584](https://github.com/gophercloud/gophercloud/pull/3584) identity: Add enabled field on Endpoint creation/update
+* [GH-3576](https://github.com/gophercloud/gophercloud/pull/3576) identity: Add access rules support for application credentials
+* [GH-3539](https://github.com/gophercloud/gophercloud/pull/3539) identity: Add description field to roles
+* [GH-3575](https://github.com/gophercloud/gophercloud/pull/3575) keystone: Add support for per page limit
+* [GH-3578](https://github.com/gophercloud/gophercloud/pull/3578) networking: Add support for update mac_address on port
+* [GH-3599](https://github.com/gophercloud/gophercloud/pull/3599) identity: Add missing pointer to description on update
+* [GH-3448](https://github.com/gophercloud/gophercloud/pull/3448) networking: Allow omission of subnet_id for IP address
+* [GH-3523](https://github.com/gophercloud/gophercloud/pull/3523) image: Add 'uploading' status
+* [GH-3587](https://github.com/gophercloud/gophercloud/pull/3587) blockstorage: Add name and description filters to volume types
+* [GH-3509](https://github.com/gophercloud/gophercloud/pull/3509) identity: Remove role from domain
+* [GH-3518](https://github.com/gophercloud/gophercloud/pull/3518) networking/blockstorage: Enable deletion for quotas
+* [GH-3521](https://github.com/gophercloud/gophercloud/pull/3521) compute: Add host aggregate uuid field
+* [GH-3493](https://github.com/gophercloud/gophercloud/pull/3493) networking: Add networking taas tapmirror suite
+* [GH-3734](https://github.com/gophercloud/gophercloud/pull/3734) db: Remove hardcoded 300GB size cap for instances
+
+Bug fixes:
+
+* [GH-3806](https://github.com/gophercloud/gophercloud/pull/3806) dns: Fix SudoTenantID type in zones ListOpts
+* [GH-3726](https://github.com/gophercloud/gophercloud/pull/3726) core: Skip unmarshal for non-struct types to prevent panic
+* [GH-3639](https://github.com/gophercloud/gophercloud/pull/3639) networking: Handle scientific notation in IP counts
+* [GH-3749](https://github.com/gophercloud/gophercloud/pull/3749) placement: Fix parent_provider_uuid update
+* [GH-3729](https://github.com/gophercloud/gophercloud/pull/3729) placement: Use RandomUUID() in tests
+* [GH-3711](https://github.com/gophercloud/gophercloud/pull/3711) placement: Fix aggregates review comments
+* [GH-3649](https://github.com/gophercloud/gophercloud/pull/3649) clouds: Fix XDG path search on all platforms
+* [GH-3635](https://github.com/gophercloud/gophercloud/pull/3635) networking: Remove description from address scope ListOpts
+* [GH-3478](https://github.com/gophercloud/gophercloud/pull/3478) networking: Fix ICMP field description in PortRangeMax
+* [GH-3443](https://github.com/gophercloud/gophercloud/pull/3443) loadbalancer: Fix FlavorProfileId struct member name
+* [GH-3492](https://github.com/gophercloud/gophercloud/pull/3492) [tracked via GH-3493](https://github.com/gophercloud/gophercloud/pull/3493) networking: Various fixes
+* [GH-3543](https://github.com/gophercloud/gophercloud/pull/3543) compute: Fix Nova create image response for microversion 2.45+
+* [GH-3556](https://github.com/gophercloud/gophercloud/pull/3556) keystone: Fix EC2 authentication with new Keystone auth requirement
+* [GH-3662](https://github.com/gophercloud/gophercloud/pull/3662) tests: Fix flaky TestCreateTempURL
+
+CI improvements:
+
+* [GH-3705](https://github.com/gophercloud/gophercloud/pull/3705) CI: Add scripted required jobs
+* [GH-3702](https://github.com/gophercloud/gophercloud/pull/3702) CI: Add scripted required jobs (automation)
+* [GH-3697](https://github.com/gophercloud/gophercloud/pull/3697) CI: Prefer github mirrors
+* [GH-3696](https://github.com/gophercloud/gophercloud/pull/3696) CI: Add Gazpacho, drop Dalmatian
+* [GH-3694](https://github.com/gophercloud/gophercloud/pull/3694) CI: Dependabot tweaks
+* [GH-3773](https://github.com/gophercloud/gophercloud/pull/3773) CI: Fix octavia job with pre-built amphora images
+* [GH-3779](https://github.com/gophercloud/gophercloud/pull/3779) docs: Add AGENTS.md
+* [GH-3789](https://github.com/gophercloud/gophercloud/pull/3789) CI: Skip failing Magnum and Zaqar master jobs
+* [GH-3778](https://github.com/gophercloud/gophercloud/pull/3778) docs: Relax one-operation-per-PR rule
+* [GH-3777](https://github.com/gophercloud/gophercloud/pull/3777) CI: Improve test assertions
+* [GH-3500](https://github.com/gophercloud/gophercloud/pull/3500) CI: Fix baremetal CI
+* [GH-3735](https://github.com/gophercloud/gophercloud/pull/3735) CI: Bump golangci-lint
+* [GH-3773](https://github.com/gophercloud/gophercloud/pull/3773) tests: Use jimmy amphora in octavia job
+* [GH-3755](https://github.com/gophercloud/gophercloud/pull/3755) tests: Fix vpnaas CI
+
 ## v2.1.0 (2024-07-24)
 
 * [GH-3078](https://github.com/gophercloud/gophercloud/pull/3078) [networking]: add BGP VPNs support
