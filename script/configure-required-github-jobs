@@ -55,8 +55,8 @@ declare -A EXPECTED_SETTINGS=(
 # their workflow has an `on: merge_group` trigger. Add entries using the exact
 # name format: "<Job name>" (with resolved matrix values).
 SKIP_CHECKS=(
-    "Magnum on OpenStack master"
-    "Zaqar on OpenStack master"
+    "Magnum on OpenStack master"   # https://github.com/gophercloud/gophercloud/issues/3818
+    "Neutron on OpenStack master"  # https://github.com/gophercloud/gophercloud/issues/3817
     "finish"   # coveralls parallel-finish job, not a test gate
 )
 
