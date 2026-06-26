@@ -65,6 +65,9 @@ jobs:
             ZUN_CAPSULE_DRIVER=docker
             ZUN_DB_TYPE=sql
             ENABLE_CONTAINERD_CRI=true
+            [[post-config|\$ZUN_CONF]]
+            [DEFAULT]
+            sandbox_image = registry.k8s.io/pause:3.9
           enabled_services: "zun-api,zun-compute,zun-wsproxy,openstack-cli-server"
 
       - name: Checkout go
