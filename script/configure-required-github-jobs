@@ -57,6 +57,7 @@ declare -A EXPECTED_SETTINGS=(
 SKIP_CHECKS=(
     "Magnum on OpenStack master"   # https://github.com/gophercloud/gophercloud/issues/3818
     "Neutron on OpenStack master"  # https://github.com/gophercloud/gophercloud/issues/3817
+    "Zun on OpenStack master"       # https://bugs.launchpad.net/zun/+bug/2158372
     "finish"   # coveralls parallel-finish job, not a test gate
 )
 
