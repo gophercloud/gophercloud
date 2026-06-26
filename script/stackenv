@@ -59,6 +59,17 @@ export OS_FLAVOR_ID="$_FLAVOR_ID"
 export OS_FLAVOR_ID_RESIZE="$_FLAVOR_ALT_ID"
 EOL
 
+if _=$(openstack service list | grep database); then
+    _DB_DATASTORE_TYPE=$(openstack datastore list -f value -c Name | head -1)
+    if [[ -n "$_DB_DATASTORE_TYPE" ]]; then
+        _DB_DATASTORE_VERSION=$(openstack datastore version list "$_DB_DATASTORE_TYPE" -f value -c Name | head -1)
+        cat >> "openrc" <<EOL
+export OS_DB_DATASTORE_TYPE="$_DB_DATASTORE_TYPE"
+export OS_DB_DATASTORE_VERSION="$_DB_DATASTORE_VERSION"
+EOL
+    fi
+fi
+
 if _=$(openstack service list | grep container-infra); then
     _MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep coreos | cut -d ' ' -f 1)
     if [ -z "$_MAGNUM_IMAGE_ID" ]; then
