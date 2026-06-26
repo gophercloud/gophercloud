@@ -3,6 +3,7 @@ undefine GOFLAGS
 GOLANGCI_LINT_VERSION?=v2.12.1
 GOTESTSUM_VERSION?=v1.13.0
 GO_TEST?=go run gotest.tools/gotestsum@$(GOTESTSUM_VERSION) --format testname --
+GOTESTFLAGS?=
 TIMEOUT := "60m"
 
 ifeq ($(shell command -v podman 2> /dev/null),)
@@ -71,7 +72,7 @@ acceptance-containerinfra:
 .PHONY: acceptance-containerinfra
 
 acceptance-db:
-	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance" ./internal/acceptance/openstack/db/...
+	$(GO_TEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) -tags "fixtures acceptance" ./internal/acceptance/openstack/db/...
 .PHONY: acceptance-db
 
 acceptance-dns:
