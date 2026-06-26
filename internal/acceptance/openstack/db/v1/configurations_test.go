@@ -49,19 +49,19 @@ func TestConfigurationsCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, readCgroup)
-	th.AssertEquals(t, readCgroup.Name, createOpts.Name)
-	th.AssertEquals(t, readCgroup.Description, createOpts.Description)
+	th.AssertEquals(t, createOpts.Name, readCgroup.Name)
+	th.AssertEquals(t, createOpts.Description, readCgroup.Description)
 	// TODO: verify datastore
 	//th.AssertDeepEquals(t, readCgroup.Datastore, datastore)
 
 	// Update cgroup
 	newCgroupName := "New configuration name"
-	newCgroupDescription := ""
+	newCgroupDescription := "Updated description"
 	updateOpts := configurations.UpdateOpts{
 		Name:        newCgroupName,
 		Description: &newCgroupDescription,
 	}
-	err = configurations.Update(context.TODO(), client, cgroup.ID, updateOpts).ExtractErr()
+	err = configurations.Replace(context.TODO(), client, cgroup.ID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	newCgroup, err := configurations.Get(context.TODO(), client, cgroup.ID).Extract()
@@ -70,8 +70,8 @@ func TestConfigurationsCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, newCgroup)
-	th.AssertEquals(t, newCgroup.Name, newCgroupName)
-	th.AssertEquals(t, newCgroup.Description, newCgroupDescription)
+	th.AssertEquals(t, newCgroupName, newCgroup.Name)
+	th.AssertEquals(t, newCgroupDescription, newCgroup.Description)
 
 	err = configurations.Delete(context.TODO(), client, cgroup.ID).ExtractErr()
 	if err != nil {
