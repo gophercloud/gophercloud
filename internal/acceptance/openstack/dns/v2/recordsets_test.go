@@ -149,3 +149,65 @@ func TestRecordSetsCRUD(t *testing.T) {
 	th.AssertDeepEquals(t, newRS.Records, records)
 	th.AssertEquals(t, newRS.TTL, ttl)
 }
+
+func TestRecordSetsListByZoneWithAllProjects(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewDNSV2Client()
+	th.AssertNoErr(t, err)
+
+	zone, err := CreateZone(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteZone(t, client, zone)
+
+	rs, err := CreateRecordSet(t, client, zone)
+	th.AssertNoErr(t, err)
+	defer DeleteRecordSet(t, client, rs)
+
+	listOpts := recordsets.ListOpts{AllProjects: true}
+	allPages, err := recordsets.ListByZone(client, zone.ID, listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, recordset := range allRecordSets {
+		if recordset.ID == rs.ID {
+			found = true
+		}
+	}
+
+	th.AssertTrue(t, found)
+}
+
+func TestRecordSetsListAllWithAllProjects(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewDNSV2Client()
+	th.AssertNoErr(t, err)
+
+	zone, err := CreateZone(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteZone(t, client, zone)
+
+	rs, err := CreateRecordSet(t, client, zone)
+	th.AssertNoErr(t, err)
+	defer DeleteRecordSet(t, client, rs)
+
+	listOpts := recordsets.ListOpts{AllProjects: true}
+	allPages, err := recordsets.ListAll(client, listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, recordset := range allRecordSets {
+		if recordset.ID == rs.ID {
+			found = true
+		}
+	}
+
+	th.AssertTrue(t, found)
+}

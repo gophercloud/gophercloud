@@ -223,10 +223,36 @@ func HandleListByZoneSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	})
 }
 
+// HandleListByZoneAllProjectsSuccessfully configures the test server to respond to a ListByZone
+// request with the X-Auth-All-Projects header set.
+func HandleListByZoneAllProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "X-Auth-All-Projects", "true")
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, ListByZoneOutput)
+	})
+}
+
 // HandleListAllSuccessfully configures the test server to respond to a ListAll request.
 func HandleListAllSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/recordsets", func(w http.ResponseWriter, r *http.Request) {
 		handleListSuccessfully(t, w, r)
+	})
+}
+
+// HandleListAllAllProjectsSuccessfully configures the test server to respond to a ListAll
+// request with the X-Auth-All-Projects header set.
+func HandleListAllAllProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/recordsets", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "X-Auth-All-Projects", "true")
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, ListByZoneOutput)
 	})
 }
 
@@ -297,6 +323,22 @@ func HandleCreateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		})
 }
 
+// HandleCreateAllProjectsSuccessfully configures the test server to respond to a Create request
+// with the X-Auth-All-Projects header set.
+func HandleCreateAllProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "X-Auth-All-Projects", "true")
+			th.TestJSONRequest(t, r, CreateRecordSetRequest)
+
+			w.WriteHeader(http.StatusCreated)
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprint(w, CreateRecordSetResponse)
+		})
+}
+
 // UpdateRecordSetRequest is a sample request to update a record set.
 const UpdateRecordSetRequest = `
 {
@@ -349,6 +391,22 @@ func HandleUpdateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		})
 }
 
+// HandleUpdateAllProjectsSuccessfully configures the test server to respond to an Update request
+// with the X-Auth-All-Projects header set.
+func HandleUpdateAllProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "X-Auth-All-Projects", "true")
+			th.TestJSONRequest(t, r, UpdateRecordSetRequest)
+
+			w.WriteHeader(http.StatusOK)
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprint(w, UpdateRecordSetResponse)
+		})
+}
+
 // DeleteRecordSetResponse is a sample response to a delete request.
 const DeleteRecordSetResponse = `
 {
@@ -385,5 +443,18 @@ func HandleDeleteSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 			w.WriteHeader(http.StatusAccepted)
 			//w.Header().Add("Content-Type", "application/json")
 			//fmt.Fprint(w, DeleteZoneResponse)
+		})
+}
+
+// HandleDeleteAllProjectsSuccessfully configures the test server to respond to a Delete request
+// with the X-Auth-All-Projects header set.
+func HandleDeleteAllProjectsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestHeader(t, r, "X-Auth-All-Projects", "true")
+
+			w.WriteHeader(http.StatusAccepted)
 		})
 }
