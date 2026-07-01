@@ -18,6 +18,10 @@ type ShareType struct {
 	RequiredExtraSpecs map[string]any `json:"required_extra_specs"`
 	// The extra specifications for the share type
 	ExtraSpecs map[string]any `json:"extra_specs"`
+	// The human-readable description for the share type
+	Description *string `json:"description"`
+	// Indicates whether the share type is the default one
+	IsDefault bool `json:"is_default"`
 }
 
 type commonResult struct {
@@ -41,6 +45,16 @@ type CreateResult struct {
 // DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// GetResult contains the response body and error from a Get request.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult contains the response body and error from an Update request.
+type UpdateResult struct {
+	commonResult
 }
 
 // ShareTypePage is a pagination.pager that is returned from a call to the List function.
