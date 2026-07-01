@@ -224,6 +224,19 @@ const SingleDriverDiskProperties = `
 }
 `
 
+const DriverVendorPassthruMethodsBody = `
+{
+  "driver_reset": {
+    "http_methods": [
+      "POST"
+    ],
+    "async": false,
+    "description": "Reset all nodes managed by the driver.",
+    "attach": false
+  }
+}
+`
+
 var (
 	DriverAgentIpmitool = drivers.Driver{
 		Name:  "agent_ipmitool",
@@ -411,5 +424,28 @@ func HandleGetDriverDiskPropertiesSuccessfully(t *testing.T, fakeServer th.FakeS
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		fmt.Fprint(w, SingleDriverDiskProperties)
+	})
+}
+
+func HandleListVendorPassthruMethodsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/drivers/ipmi/vendor_passthru/methods", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprint(w, DriverVendorPassthruMethodsBody)
+	})
+}
+
+func HandleCallVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/drivers/ipmi/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "driver_reset"})
+		th.TestJSONRequest(t, r, `{"force": true}`)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{"result":"ok"}`)
 	})
 }

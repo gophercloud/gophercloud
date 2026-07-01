@@ -1731,6 +1731,31 @@ func HandleGetVendorPassthruMethodsSuccessfully(t *testing.T, fakeServer th.Fake
 	})
 }
 
+func HandleCallNodeVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "reset_bmc"})
+		th.TestJSONRequest(t, r, `{"force": true}`)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{"result":"ok"}`)
+	})
+}
+
+func HandleCallAsyncNodeVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "async_reset"})
+		th.TestJSONRequest(t, r, `{"force": true}`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
 func HandleGetAllSubscriptionsVendorPassthruSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
