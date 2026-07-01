@@ -168,3 +168,33 @@ func HandleAllocationGetSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		fmt.Fprint(w, SingleAllocationBody)
 	})
 }
+
+func HandleAllocationGetByNodeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/allocation", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprint(w, SingleAllocationBody)
+	})
+}
+
+func HandleAllocationGetByNodeWithFieldsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/allocation", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"fields": "uuid,name"})
+
+		fmt.Fprint(w, SingleAllocationBody)
+	})
+}
+
+func HandleAllocationDeleteByNodeSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/allocation", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
