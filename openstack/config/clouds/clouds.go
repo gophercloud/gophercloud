@@ -159,6 +159,17 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		scope = &gophercloud.AuthScope{
 			TrustID: trustID,
 		}
+	} else if projectName := coalesce(options.projectName, cloud.AuthInfo.ProjectName); projectName != "" && (cloud.AuthInfo.ProjectDomainID != "" || cloud.AuthInfo.ProjectDomainName != "") {
+		// project_domain_id/name is set explicitly alongside a project name.
+		// Build the scope directly so the project domain is not inherited from
+		// the user-auth DomainID/DomainName fields. This matters when the user
+		// and project live in different domains (e.g. user_domain_name=corp.example.com
+		// with project_domain_name=Default).
+		scope = &gophercloud.AuthScope{
+			ProjectName: projectName,
+			DomainID:    cloud.AuthInfo.ProjectDomainID,
+			DomainName:  cloud.AuthInfo.ProjectDomainName,
+		}
 	}
 
 	return gophercloud.AuthOptions{
@@ -166,8 +177,8 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			Username:                    coalesce(options.username, cloud.AuthInfo.Username),
 			UserID:                      coalesce(options.userID, cloud.AuthInfo.UserID),
 			Password:                    coalesce(options.password, cloud.AuthInfo.Password),
-			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.UserDomainID, cloud.AuthInfo.ProjectDomainID, cloud.AuthInfo.DomainID),
-			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.UserDomainName, cloud.AuthInfo.ProjectDomainName, cloud.AuthInfo.DomainName),
+			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.UserDomainID, cloud.AuthInfo.DomainID),
+			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.UserDomainName, cloud.AuthInfo.DomainName),
 			TenantID:                    coalesce(options.projectID, cloud.AuthInfo.ProjectID),
 			TenantName:                  coalesce(options.projectName, cloud.AuthInfo.ProjectName),
 			TokenID:                     coalesce(options.token, cloud.AuthInfo.Token),
