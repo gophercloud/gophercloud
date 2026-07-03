@@ -42,6 +42,39 @@ func CreateSubnetPool(t *testing.T, client *gophercloud.ServiceClient) (*subnetp
 	return subnetPool, nil
 }
 
+func CreateSubnetPoolDefaultQuotaZero(t *testing.T, client *gophercloud.ServiceClient) (*subnetpools.SubnetPool, error) {
+	subnetPoolName := tools.RandomString("TESTACC-", 8)
+	subnetPoolDescription := tools.RandomString("TESTACC-DESC-", 8)
+	subnetPoolPrefixes := []string{
+		"192.168.10.0/24",
+	}
+	defaultQuota := 0
+	createOpts := subnetpools.CreateOpts{
+		Name:             subnetPoolName,
+		Description:      subnetPoolDescription,
+		Prefixes:         subnetPoolPrefixes,
+		DefaultPrefixLen: 24,
+		DefaultQuota:     &defaultQuota,
+	}
+
+	t.Logf("Attempting to create a subnetpool: %s", subnetPoolName)
+
+	subnetPool, err := subnetpools.Create(context.TODO(), client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created the subnetpool.")
+
+	th.AssertEquals(t, subnetPool.Name, subnetPoolName)
+	th.AssertEquals(t, subnetPool.Description, subnetPoolDescription)
+	th.AssertDeepEquals(t, subnetPoolPrefixes, subnetPool.Prefixes)
+	th.AssertEquals(t, 24, subnetPool.DefaultPrefixLen)
+	th.AssertEquals(t, 0, *subnetPool.DefaultQuota)
+
+	return subnetPool, nil
+}
+
 // DeleteSubnetPool will delete a subnetpool with a specified ID.
 // A fatal error will occur if the delete was not successful.
 func DeleteSubnetPool(t *testing.T, client *gophercloud.ServiceClient, subnetPoolID string) {

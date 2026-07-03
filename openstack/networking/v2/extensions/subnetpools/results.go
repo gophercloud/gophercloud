@@ -58,7 +58,7 @@ type SubnetPool struct {
 
 	// DefaultQuota is the per-project quota on the prefix space
 	// that can be allocated from the subnetpool for project subnets.
-	DefaultQuota int `json:"default_quota"`
+	DefaultQuota *int `json:"default_quota"`
 
 	// TenantID is the id of the Identity project.
 	TenantID string `json:"tenant_id"`
@@ -265,6 +265,6 @@ func ExtractSubnetPools(r pagination.Page) ([]SubnetPool, error) {
 	var s struct {
 		SubnetPools []SubnetPool `json:"subnetpools"`
 	}
-	err := (r.(SubnetPoolPage)).ExtractInto(&s)
+	err := r.(SubnetPoolPage).ExtractInto(&s)
 	return s.SubnetPools, err
 }

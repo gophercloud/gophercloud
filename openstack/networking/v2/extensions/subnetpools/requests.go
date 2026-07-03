@@ -92,7 +92,7 @@ type CreateOpts struct {
 
 	// DefaultQuota is the per-project quota on the prefix space
 	// that can be allocated from the subnetpool for project subnets.
-	DefaultQuota int `json:"default_quota,omitempty"`
+	DefaultQuota *int `json:"default_quota,omitempty"`
 
 	// TenantID is the id of the Identity project.
 	TenantID string `json:"tenant_id,omitempty"`

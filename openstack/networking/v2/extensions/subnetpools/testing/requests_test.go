@@ -74,7 +74,7 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, "0a738452-8057-4ad3-89c2-92f6a74afa76", s.ID)
 	th.AssertEquals(t, "my-ipv6-pool", s.Name)
-	th.AssertEquals(t, 2, s.DefaultQuota)
+	th.AssertEquals(t, 2, *s.DefaultQuota)
 	th.AssertEquals(t, "1e2b9857295a4a3e841809ef492812c5", s.TenantID)
 	th.AssertEquals(t, "1e2b9857295a4a3e841809ef492812c5", s.ProjectID)
 	th.AssertEquals(t, s.CreatedAt, time.Date(2018, 1, 1, 0, 0, 1, 0, time.UTC))
@@ -92,6 +92,7 @@ func TestGet(t *testing.T) {
 	th.AssertTrue(t, s.IsDefault)
 	th.AssertEquals(t, 2, s.RevisionNumber)
 }
+
 func TestCreate(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -176,7 +177,7 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, 16, n.MaxPrefixLen)
 	th.AssertEquals(t, "099546ca-788d-41e5-a76d-17d8cd282d3e", n.ID)
 	th.AssertEquals(t, "", n.AddressScopeID)
-	th.AssertEquals(t, 0, n.DefaultQuota)
+	th.AssertEquals(t, 0, *n.DefaultQuota)
 	th.AssertEquals(t, "", n.Description)
 }
 
