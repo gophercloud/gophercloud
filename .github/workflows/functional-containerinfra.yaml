@@ -53,28 +53,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Check changed files
-        uses: ./.github/actions/file-filter
-        id: changed-files
-        with:
-          patterns: |
-            openstack/auth_env.go
-            openstack/client.go
-            openstack/endpoint.go
-            openstack/endpoint_location.go
-            openstack/config/provider_client.go
-            openstack/utils/choose_version.go
-            openstack/utils/discovery.go
-            **containerinfra**
-            .github/workflows/functional-containerinfra.yaml
-            script/stackenv
-
-      - name: Skip tests for unrelated changed-files
-        if: ${{ ! fromJSON(steps.changed-files.outputs.matches) }}
-        run: |
-          echo "No relevant files changed - skipping tests for ${{ matrix.name }}"
-          echo "TESTS_SKIPPED=true" >> $GITHUB_ENV
-
       - name: Deploy devstack
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1 # v0.19
         with:
