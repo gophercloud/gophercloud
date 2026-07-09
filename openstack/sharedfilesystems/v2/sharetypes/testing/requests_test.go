@@ -17,9 +17,10 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t, fakeServer)
 
+	dhss := true
 	snapshotSupport := true
 	extraSpecs := sharetypes.ExtraSpecsOpts{
-		DriverHandlesShareServers: true,
+		DriverHandlesShareServers: &dhss,
 		SnapshotSupport:           &snapshotSupport,
 	}
 
@@ -50,8 +51,9 @@ func TestRequiredCreateOpts(t *testing.T) {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
 
+	dhss := true
 	extraSpecs := sharetypes.ExtraSpecsOpts{
-		DriverHandlesShareServers: true,
+		DriverHandlesShareServers: &dhss,
 	}
 
 	options = &sharetypes.CreateOpts{

@@ -28,7 +28,7 @@ type CreateOpts struct {
 // ExtraSpecsOpts represent the extra specifications that can be selected for a share type
 type ExtraSpecsOpts struct {
 	// An extra specification that defines the driver mode for share server, or storage, life cycle management
-	DriverHandlesShareServers bool `json:"driver_handles_share_servers" required:"true"`
+	DriverHandlesShareServers *bool `json:"driver_handles_share_servers" required:"true"`
 	// An extra specification that filters back ends by whether they do or do not support share snapshots
 	SnapshotSupport *bool `json:"snapshot_support,omitempty"`
 }

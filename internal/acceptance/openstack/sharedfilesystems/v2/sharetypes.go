@@ -19,8 +19,9 @@ func CreateShareType(t *testing.T, client *gophercloud.ServiceClient) (*sharetyp
 	shareTypeName := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create share type: %s", shareTypeName)
 
+	dhss := true
 	extraSpecsOps := sharetypes.ExtraSpecsOpts{
-		DriverHandlesShareServers: true,
+		DriverHandlesShareServers: &dhss,
 	}
 
 	createOpts := sharetypes.CreateOpts{
