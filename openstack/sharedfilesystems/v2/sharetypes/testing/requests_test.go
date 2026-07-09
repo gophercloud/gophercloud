@@ -11,11 +11,11 @@ import (
 )
 
 // Verifies that a share type can be created correctly
-func TestCreate(t *testing.T) {
+func TestCreateTrue(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
-	MockCreateResponse(t, fakeServer)
+	MockCreateResponseTrue(t, fakeServer)
 
 	dhss := true
 	snapshotSupport := true
@@ -35,6 +35,33 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, st.Name, "my_new_share_type")
 	th.AssertEquals(t, st.IsPublic, true)
+}
+
+// Verifies that a share type can be created correctly
+func TestCreateFalse(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockCreateResponseFalse(t, fakeServer)
+
+	dhss := false
+	snapshotSupport := false
+	extraSpecs := sharetypes.ExtraSpecsOpts{
+		DriverHandlesShareServers: &dhss,
+		SnapshotSupport:           &snapshotSupport,
+	}
+
+	options := &sharetypes.CreateOpts{
+		Name:       "my_new_share_type",
+		IsPublic:   false,
+		ExtraSpecs: extraSpecs,
+	}
+
+	st, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, st.Name, "my_new_share_type")
+	th.AssertEquals(t, st.IsPublic, false)
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
