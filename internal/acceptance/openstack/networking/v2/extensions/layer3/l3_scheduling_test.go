@@ -29,7 +29,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer v2.DeleteSubnet(t, client, subnet.ID)
 
-	router, err := CreateRouter(t, client, network.ID)
+	router, err := CreateExternalRouter(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteRouter(t, client, router.ID)
 	tools.PrintResource(t, router)
