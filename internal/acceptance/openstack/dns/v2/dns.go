@@ -235,7 +235,16 @@ func UnshareZone(t *testing.T, client *gophercloud.ServiceClient, share *zones.Z
 // the record set failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteRecordSet(t *testing.T, client *gophercloud.ServiceClient, rs *recordsets.RecordSet) {
-	err := recordsets.Delete(context.TODO(), client, rs.ZoneID, rs.ID).ExtractErr()
+	err := recordsets.Delete(context.TODO(), client, rs.ZoneID, rs.ID, nil).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete record set %s: %v", rs.ID, err)
+	}
+
+	t.Logf("Deleted record set: %s", rs.ID)
+}
+
+func DeleteRecordSetAllProjects(t *testing.T, client *gophercloud.ServiceClient, rs *recordsets.RecordSet) {
+	err := recordsets.Delete(context.TODO(), client, rs.ZoneID, rs.ID, recordsets.DeleteOpts{AllProjects: true}).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete record set %s: %v", rs.ID, err)
 	}
