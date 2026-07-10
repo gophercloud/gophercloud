@@ -234,6 +234,15 @@ func DeleteRecordSet(t *testing.T, client *gophercloud.ServiceClient, rs *record
 	t.Logf("Deleted record set: %s", rs.ID)
 }
 
+func DeleteRecordSetAllProjects(t *testing.T, client *gophercloud.ServiceClient, rs *recordsets.RecordSet) {
+	err := recordsets.DeleteWithOpts(context.TODO(), client, rs.ZoneID, rs.ID, recordsets.DeleteOpts{AllProjects: true}).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete record set %s: %v", rs.ID, err)
+	}
+
+	t.Logf("Deleted record set: %s", rs.ID)
+}
+
 // DeleteZone will delete a specified zone. A fatal error will occur if
 // the zone failed to be deleted. This works best when used as a deferred
 // function.
