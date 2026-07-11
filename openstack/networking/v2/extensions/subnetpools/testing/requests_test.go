@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/subnetpools"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -133,6 +134,50 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, 30, s.MaxPrefixLen)
 	th.AssertEquals(t, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3", s.AddressScopeID)
 	th.AssertEquals(t, "ipv4 prefixes", s.Description)
+}
+
+func TestCreateDefaultQuotaZero(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, SubnetPoolCreateDefaultQuotaZeroRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprint(w, SubnetPoolCreateDefaultQuotaZeroResult)
+	})
+
+	opts := subnetpools.CreateOpts{
+		Name: "my_ipv4_pool",
+		Prefixes: []string{
+			"10.10.0.0/16",
+			"10.11.11.0/24",
+		},
+		MinPrefixLen:   25,
+		MaxPrefixLen:   30,
+		AddressScopeID: "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
+		Description:    "ipv4 prefixes",
+		DefaultQuota:   ptr.To(0),
+	}
+	s, err := subnetpools.Create(context.TODO(), fake.ServiceClient(fakeServer), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "my_ipv4_pool", s.Name)
+	th.AssertDeepEquals(t, []string{
+		"10.10.0.0/16",
+		"10.11.11.0/24",
+	}, s.Prefixes)
+	th.AssertEquals(t, 25, s.MinPrefixLen)
+	th.AssertEquals(t, 30, s.MaxPrefixLen)
+	th.AssertEquals(t, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3", s.AddressScopeID)
+	th.AssertEquals(t, "ipv4 prefixes", s.Description)
+	th.AssertEquals(t, 0, *s.DefaultQuota)
 }
 
 func TestUpdate(t *testing.T) {
