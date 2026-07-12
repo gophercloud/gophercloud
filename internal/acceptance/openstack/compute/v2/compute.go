@@ -24,8 +24,10 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/secgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servergroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/shareattach"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/volumeattach"
 	neutron "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
+	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/shares"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 
 	"golang.org/x/crypto/ssh"
@@ -881,6 +883,68 @@ func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)
 }
 
+// CreateShareAttachment will attach a share to a server. The server must be in
+// SHUTOFF status. An error will be returned if the share failed to attach.
+func CreateShareAttachment(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server, share *shares.Share) (*shareattach.ShareAttachment, error) {
+	tag := tools.RandomString("ACPTTEST", 16)
+
+	t.Logf("Attempting to attach share %s to server %s", share.ID, server.ID)
+
+	shareAttachment, err := shareattach.Create(context.TODO(), client, server.ID, shareattach.CreateOpts{
+		ShareID: share.ID,
+		Tag:     tag,
+	}).Extract()
+	if err != nil {
+		return shareAttachment, err
+	}
+
+	if err := WaitForShareAttachmentStatus(client, server.ID, share.ID, "inactive"); err != nil {
+		return shareAttachment, err
+	}
+
+	th.AssertEquals(t, share.ID, shareAttachment.ShareID)
+	th.AssertEquals(t, tag, shareAttachment.Tag)
+
+	got, err := shareattach.Get(context.TODO(), client, server.ID, share.ID).Extract()
+	if err != nil {
+		return shareAttachment, err
+	}
+
+	th.AssertEquals(t, share.ID, got.ShareID)
+	th.AssertEquals(t, tag, got.Tag)
+	th.AssertEquals(t, "inactive", got.Status)
+
+	return got, nil
+}
+
+// DeleteShareAttachment will detach a share from a server. A fatal error will
+// occur if the share failed to detach. The server must be in SHUTOFF status.
+// This works best when used as a deferred function.
+func DeleteShareAttachment(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server, shareAttachment *shareattach.ShareAttachment) {
+	t.Logf("Attempting to detach share %s from server %s", shareAttachment.ShareID, server.ID)
+
+	err := shareattach.Delete(context.TODO(), client, server.ID, shareAttachment.ShareID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to detach share: %v", err)
+	}
+
+	err = tools.WaitFor(func(ctx context.Context) (bool, error) {
+		_, err := shareattach.Get(ctx, client, server.ID, shareAttachment.ShareID).Extract()
+		if err != nil {
+			if gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
+				return true, nil
+			}
+			return false, err
+		}
+		return false, nil
+	})
+	if err != nil {
+		t.Fatalf("Unable to wait for share detachment: %v", err)
+	}
+
+	t.Logf("Deleted share attachment: %s", shareAttachment.ShareID)
+}
+
 // DetachInterface will detach an interface from a server. A fatal
 // error will occur if the interface could not be detached. This works best
 // when used as a deferred function.
@@ -961,6 +1025,27 @@ func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 	}
 
 	return nil
+}
+
+// WaitForShareAttachmentStatus will poll a share attachment's status until it
+// either matches the specified status or the status becomes error.
+func WaitForShareAttachmentStatus(client *gophercloud.ServiceClient, serverID, shareID, status string) error {
+	return tools.WaitFor(func(ctx context.Context) (bool, error) {
+		sa, err := shareattach.Get(ctx, client, serverID, shareID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if sa.Status == status {
+			return true, nil
+		}
+
+		if sa.Status == "error" {
+			return false, fmt.Errorf("share attachment in error state")
+		}
+
+		return false, nil
+	})
 }
 
 // WaitForComputeStatus will poll an instance's status until it either matches
