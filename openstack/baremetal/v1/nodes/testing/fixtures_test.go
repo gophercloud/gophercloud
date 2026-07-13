@@ -873,7 +873,10 @@ const NodeFirmwareListBody = `
       "component": "bios",
       "initial_version": "U30 v2.36 (07/16/2020)",
       "current_version": "U30 v2.36 (07/16/2020)",
-      "last_version_flashed": null
+      "last_version_flashed": null,
+      "vendor": "HPE",
+      "model": "ProLiant DL380 Gen10",
+      "serial_number": "CZ12345678"
    },
    {
       "created_at": "2023-10-03T18:30:00+00:00",
@@ -1401,6 +1404,9 @@ var (
 	createdAtFirmware, _ = time.Parse(time.RFC3339, "2023-10-03T18:30:00+00:00")
 	updatedAtFirmware, _ = time.Parse(time.RFC3339, "2023-10-03T18:45:54+00:00")
 	lastVersion          = "iLO 5 v2.81"
+	firmwareVendor       = "HPE"
+	firmwareModel        = "ProLiant DL380 Gen10"
+	firmwareSerial       = "CZ12345678"
 	NodeFirmwareList     = []nodes.FirmwareComponent{
 		{
 			CreatedAt:          createdAtFirmware,
@@ -1409,6 +1415,9 @@ var (
 			InitialVersion:     "U30 v2.36 (07/16/2020)",
 			CurrentVersion:     "U30 v2.36 (07/16/2020)",
 			LastVersionFlashed: "",
+			Vendor:             &firmwareVendor,
+			Model:              &firmwareModel,
+			SerialNumber:       &firmwareSerial,
 		},
 		{
 			CreatedAt:          createdAtFirmware,
