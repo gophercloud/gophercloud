@@ -125,6 +125,7 @@ acceptance-placement:
 
 acceptance-sharedfilesystems:
 	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance" ./internal/acceptance/openstack/sharedfilesystems/...
+	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance shareattach" -run TestShareAttach ./internal/acceptance/openstack/compute/v2/
 .PHONY: acceptance-sharefilesystems
 
 acceptance-workflow:

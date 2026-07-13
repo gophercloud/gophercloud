@@ -42,6 +42,8 @@ jobs:
             openstack/utils/choose_version.go
             openstack/utils/discovery.go
             **sharedfilesystems**
+            openstack/compute/v2/shareattach/**
+            internal/acceptance/openstack/compute/v2/compute.go
             .github/workflows/functional-sharedfilesystems.yaml
 
       - name: Skip tests for unrelated changed-files
@@ -49,6 +51,10 @@ jobs:
         run: |
           echo "No relevant files changed - skipping tests for ${{ matrix.name }}"
           echo "TESTS_SKIPPED=true" >> $GITHUB_ENV
+
+      - name: Install virtiofsd
+        if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
+        run: sudo apt-get update && sudo apt-get install -y virtiofsd
 
       - name: Deploy devstack
         if: ${{ fromJSON(steps.changed-files.outputs.matches) }}
@@ -71,6 +77,15 @@ jobs:
             MANILA_DEFAULT_SHARE_TYPE_EXTRA_SPECS='snapshot_support=True create_share_from_snapshot_support=True revert_to_snapshot_support=True mount_snapshot_support=True'
             MANILA_CONFIGURE_DEFAULT_TYPES=True
             MANILA_INSTALL_TEMPEST_PLUGIN_SYSTEMWIDE=false
+
+            [[post-config|\$NOVA_CONF]]
+            [DEFAULT]
+            reserved_host_memory_mb = 0
+            ram_allocation_ratio = 1.0
+
+            [libvirt]
+            file_backed_memory = 4096
+            mem_stats_period_s = 0
 
             ${{ matrix.devstack_conf_overrides }}
           enabled_services: "openstack-cli-server"

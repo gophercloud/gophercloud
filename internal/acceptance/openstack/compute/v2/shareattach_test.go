@@ -1,4 +1,4 @@
-//go:build acceptance || compute || shareattach
+//go:build sharedfilesystems || shareattach
 
 package v2
 
