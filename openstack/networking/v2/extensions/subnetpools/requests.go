@@ -210,9 +210,21 @@ type UpdateOpts struct {
 	RevisionNumber *int `json:"-" h:"If-Match"`
 }
 
+// PrefixesOpsOpts represents the prefixes passed to the operation.
+type PrefixesOpsOpts struct {
+	// Prefixes is a list of subnet prefixes to add or remove from the
+	// subnet pool.
+	Prefixes []string `json:"prefixes,omitempty"`
+}
+
 // ToSubnetPoolUpdateMap builds a request body from UpdateOpts.
 func (opts UpdateOpts) ToSubnetPoolUpdateMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "subnetpool")
+}
+
+// ToSubnetPoolUpdateMap builds a request body from UpdateOpts.
+func (opts PrefixesOpsOpts) ToSubnetPoolUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // Update accepts a UpdateOpts struct and updates an existing subnetpool using the
@@ -236,6 +248,36 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID stri
 	resp, err := c.Put(ctx, updateURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// AddPrefixes accepts and PrefixesOpsOpts and add new prefixes for an
+// existing subnet.
+func AddPrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBuilder) (r PrefixesOpsResult) {
+	b, err := opts.ToSubnetPoolUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(ctx, addPrefixesURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RemovePrefixes accepts and PrefixesOpsOpts and remove prefixes for an
+// existing subnet.
+func RemovePrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBuilder) (r PrefixesOpsResult) {
+	b, err := opts.ToSubnetPoolUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(ctx, removePrefixesURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
