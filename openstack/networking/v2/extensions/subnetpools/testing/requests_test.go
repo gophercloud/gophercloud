@@ -193,3 +193,53 @@ func TestDelete(t *testing.T) {
 	res := subnetpools.Delete(context.TODO(), fake.ServiceClient(fakeServer), "099546ca-788d-41e5-a76d-17d8cd282d3e")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestAddPrefixes(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e/add_prefixes", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, PrefixesAddRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, PrefixesAddResponse)
+	})
+
+	n, err := subnetpools.AddPrefixes(context.TODO(), fake.ServiceClient(fakeServer), "099546ca-788d-41e5-a76d-17d8cd282d3e", subnetpools.PrefixesOpsOpts{
+		Prefixes: []string{"192.168.0.0/24", "192.168.1.0/24", "172.16.0.0/21"},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, []string{"192.168.0.0/23", "172.16.0.0/21"}, n)
+}
+
+func TestRemovePrefixes(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e/remove_prefixes", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, PrefixesRemoveRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, PrefixesRemoveResponse)
+	})
+
+	n, err := subnetpools.RemovePrefixes(context.TODO(), fake.ServiceClient(fakeServer), "099546ca-788d-41e5-a76d-17d8cd282d3e", subnetpools.PrefixesOpsOpts{
+		Prefixes: []string{"192.168.0.0/24"},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, []string{"192.168.1.0/24", "172.16.0.0/21"}, n)
+}

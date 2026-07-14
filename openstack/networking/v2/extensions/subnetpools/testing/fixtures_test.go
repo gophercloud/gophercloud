@@ -146,6 +146,8 @@ var SubnetPool3 = subnetpools.SubnetPool{
 	UpdatedAt:      time.Date(2017, 12, 28, 7, 21, 27, 0, time.UTC),
 }
 
+var Prefixes1 = []string{"192.168.0.0/23", "172.16.0.0/21"}
+
 const SubnetPoolGetResult = `
 {
     "subnetpool": {
@@ -255,5 +257,29 @@ const SubnetPoolUpdateResponse = `
         "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
         "updated_at": "2018-01-05T09:56:56Z"
     }
+}
+`
+
+const PrefixesAddRequest = `
+{
+  "prefixes": ["192.168.0.0/24", "192.168.1.0/24", "172.16.0.0/21"]
+}
+`
+
+const PrefixesRemoveRequest = `
+{
+  "prefixes": ["192.168.0.0/24"]
+}
+`
+
+const PrefixesAddResponse = `
+{
+  "prefixes": ["192.168.0.0/23", "172.16.0.0/21"]
+}
+`
+
+const PrefixesRemoveResponse = `
+{
+ "prefixes": ["192.168.1.0/24", "172.16.0.0/21"]
 }
 `
