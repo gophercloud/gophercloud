@@ -21,7 +21,7 @@ type ShareType struct {
 	// The human-readable description for the share type
 	Description *string `json:"description"`
 	// Indicates whether the share type is the default one
-	IsDefault bool `json:"is_default"`
+	IsDefault *bool `json:"is_default"`
 }
 
 type commonResult struct {

@@ -138,6 +138,7 @@ func TestGet(t *testing.T) {
 	MockGetResponse(t, fakeServer)
 
 	description := "my share type description"
+	isDefault := false
 	expected := sharetypes.ShareType{
 		ID:                 "1d600d02-26a7-4b23-af3d-7d51860fe858",
 		Name:               "my_share_type",
@@ -145,7 +146,7 @@ func TestGet(t *testing.T) {
 		ExtraSpecs:         map[string]any{"snapshot_support": "True", "driver_handles_share_servers": "True"},
 		RequiredExtraSpecs: map[string]any{"driver_handles_share_servers": "True"},
 		Description:        &description,
-		IsDefault:          false,
+		IsDefault:          &isDefault,
 	}
 
 	actual, err := sharetypes.Get(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID").Extract()
