@@ -4,6 +4,7 @@ package v2
 
 import (
 	"context"
+	"slices"
 	"strings"
 	"testing"
 
@@ -72,6 +73,66 @@ func TestSubnetPoolsDefaultQuotaZeroCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, 0, *sb.DefaultQuota)
+}
+
+func TestSubnetPoolsAddRemovePrefixes(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create a subnetpool with an initial prefix.
+	subnetPool, err := CreateSubnetPool(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteSubnetPool(t, client, subnetPool.ID)
+
+	tools.PrintResource(t, subnetPool)
+
+	// Add new prefixes to the pool.
+	addOpts := subnetpools.PrefixesOpsOpts{
+		Prefixes: []string{
+			"172.16.0.0/16",
+			"192.168.0.0/16",
+		},
+	}
+
+	t.Logf("Attempting to add prefixes to subnetpool %s", subnetPool.ID)
+
+	addedPrefixes, err := subnetpools.AddPrefixes(context.TODO(), client, subnetPool.ID, addOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully added prefixes to subnetpool %s: %v", subnetPool.ID, addedPrefixes)
+
+	updatedPool, err := subnetpools.Get(context.TODO(), client, subnetPool.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedPool)
+
+	th.AssertEquals(t, true, slices.Contains(updatedPool.Prefixes, "172.16.0.0/16"))
+	th.AssertEquals(t, true, slices.Contains(updatedPool.Prefixes, "192.168.0.0/16"))
+	th.AssertEquals(t, true, slices.Contains(updatedPool.Prefixes, "10.0.0.0/8"))
+
+	// Remove one of the prefixes.
+	removeOpts := subnetpools.PrefixesOpsOpts{
+		Prefixes: []string{
+			"192.168.0.0/16",
+		},
+	}
+
+	t.Logf("Attempting to remove prefixes from subnetpool %s", subnetPool.ID)
+
+	remainingPrefixes, err := subnetpools.RemovePrefixes(context.TODO(), client, subnetPool.ID, removeOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Successfully removed prefixes from subnetpool %s: %v", subnetPool.ID, remainingPrefixes)
+
+	// Verify via Get that the subnetpool reflects the removal.
+	finalPool, err := subnetpools.Get(context.TODO(), client, subnetPool.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, finalPool)
+
+	th.AssertEquals(t, false, slices.Contains(finalPool.Prefixes, "192.168.0.0/16"))
+	th.AssertEquals(t, true, slices.Contains(finalPool.Prefixes, "172.16.0.0/16"))
+	th.AssertEquals(t, true, slices.Contains(finalPool.Prefixes, "10.0.0.0/8"))
 }
 
 func TestSubnetPoolsRevision(t *testing.T) {
