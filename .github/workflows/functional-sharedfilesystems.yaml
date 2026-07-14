@@ -80,7 +80,6 @@ jobs:
 
             [[post-config|\$NOVA_CONF]]
             [DEFAULT]
-            reserved_host_memory_mb = 0
             ram_allocation_ratio = 1.0
 
             [libvirt]
