@@ -61,7 +61,7 @@ func TestCreateFalse(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, st.Name, "my_new_share_type")
-	th.AssertEquals(t, st.IsPublic, false)
+	th.AssertFalse(t, st.IsPublic)
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
