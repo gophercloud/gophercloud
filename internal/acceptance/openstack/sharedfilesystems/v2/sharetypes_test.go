@@ -27,6 +27,56 @@ func TestShareTypeCreateDestroy(t *testing.T) {
 	defer DeleteShareType(t, client, shareType)
 }
 
+func TestShareTypeUpdateGet(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create shared file system client: %v", err)
+	}
+	client.Microversion = "2.50"
+
+	shareType, err := CreateShareType(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share type: %v", err)
+	}
+	defer DeleteShareType(t, client, shareType)
+
+	name := "ACPTTEST_new_share_type_name"
+	description := "my new share type description"
+	isPublic := true
+
+	options := sharetypes.UpdateOpts{
+		Name:        &name,
+		Description: &description,
+		IsPublic:    &isPublic,
+	}
+
+	t.Logf("Share type ID: %s", shareType.ID)
+	_, err = sharetypes.Update(context.TODO(), client, shareType.ID, options).Extract()
+	t.Logf("Update error: %s", err)
+	if err != nil {
+		t.Fatalf("Unable to update share type: %s", shareType.Name)
+	}
+
+	st, err := sharetypes.Get(context.TODO(), client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
+	}
+
+	if st.Name != "ACPTTEST_new_share_type_name" {
+		t.Fatal("Share type name was expected to be ACPTTEST_new_share_type_name")
+	}
+
+	if *st.Description != "my new share type description" {
+		t.Fatal("Share type description was expected to be 'my new share type description'")
+	}
+
+	if st.IsPublic != true {
+		t.Fatal("Share type was expected to be public")
+	}
+
+	tools.PrintResource(t, shareType)
+}
+
 func TestShareTypeList(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
