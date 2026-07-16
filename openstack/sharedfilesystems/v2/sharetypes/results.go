@@ -24,6 +24,13 @@ type ShareType struct {
 	IsDefault *bool `json:"is_default"`
 }
 
+// shareTypeV6Compat provides compatibility for os-share-type-access:is_public
+// being renamed to share_type_access:is_public at microversion v6 or greater.
+type shareTypeV6Compat struct {
+	// Indicates whether a share type is publicly accessible
+	IsPublic *bool `json:"share_type_access:is_public"`
+}
+
 type commonResult struct {
 	gophercloud.Result
 }
@@ -34,6 +41,24 @@ func (r commonResult) Extract() (*ShareType, error) {
 		ShareType *ShareType `json:"share_type"`
 	}
 	err := r.ExtractInto(&s)
+	if err != nil {
+		return s.ShareType, err
+	}
+
+	var sV6 struct {
+		ShareTypeCompat *shareTypeV6Compat `json:"share_type"`
+	}
+	err = r.ExtractInto(&sV6)
+	if err != nil {
+		return s.ShareType, err
+	}
+
+	// Overwrite IsPublic if a value for share_type_access:is_public is found.
+	// Otherwise IsPublic is always false at microversion v6 or greater.
+	if sV6.ShareTypeCompat.IsPublic != nil {
+		s.ShareType.IsPublic = *sV6.ShareTypeCompat.IsPublic
+	}
+
 	return s.ShareType, err
 }
 
