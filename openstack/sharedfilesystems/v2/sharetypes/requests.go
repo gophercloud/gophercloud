@@ -85,7 +85,7 @@ type UpdateOpts struct {
 	// The share type description.
 	Description *string `json:"description,omitempty"`
 	// Indicates whether a share type is publicly accessible.
-	IsPublic *bool `json:"os-share-type-access:is_public,omitempty"`
+	IsPublic *bool `json:"share_type_access:is_public,omitempty"`
 }
 
 // ToShareTypeUpdateMap assembles a request body based on the contents of an
