@@ -221,7 +221,7 @@ func MockUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
             "share_type": {
                 "name": "my_new_share_type_name",
                 "description": "my new share type description",
-                "os-share-type-access:is_public": false
+                "share_type_access:is_public": false
             }
         }`)
 
