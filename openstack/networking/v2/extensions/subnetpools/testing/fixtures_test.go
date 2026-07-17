@@ -145,8 +145,6 @@ var SubnetPool3 = subnetpools.SubnetPool{
 	UpdatedAt:      time.Date(2017, 12, 28, 7, 21, 27, 0, time.UTC),
 }
 
-var Prefixes1 = []string{"192.168.0.0/23", "172.16.0.0/21"}
-
 const SubnetPoolGetResult = `
 {
     "subnetpool": {
