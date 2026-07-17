@@ -258,7 +258,7 @@ func MockUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
 		fmt.Fprint(w, `
         {
             "share_type": {
-                "os-share-type-access:is_public": false,
+                "share_type_access:is_public": false,
                 "required_extra_specs": {
                     "driver_handles_share_servers": "True"
                 },
