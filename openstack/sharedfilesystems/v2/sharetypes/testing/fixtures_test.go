@@ -161,6 +161,33 @@ func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
 	})
 }
 
+func MockGetResponseV6(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/shareTypeID", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `
+        {
+            "share_type": {
+                "share_type_access:is_public": true,
+                "required_extra_specs": {
+                    "driver_handles_share_servers": "True"
+                },
+                "extra_specs": {
+                    "snapshot_support": "True",
+                    "driver_handles_share_servers": "True"
+                },
+                "name": "my_share_type",
+                "id": "1d600d02-26a7-4b23-af3d-7d51860fe858",
+                "description": "my share type description",
+                "is_default": false
+            }
+        }`)
+	})
+}
+
 func MockGetDefaultResponse(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/types/default", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
