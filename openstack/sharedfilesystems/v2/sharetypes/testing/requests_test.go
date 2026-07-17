@@ -35,6 +35,9 @@ func TestCreateTrue(t *testing.T) {
 
 	th.AssertEquals(t, "my_new_share_type", st.Name)
 	th.AssertTrue(t, st.IsPublic)
+
+	expected := map[string]any{"driver_handles_share_servers": true}
+	th.CheckDeepEquals(t, expected, st.RequiredExtraSpecs)
 }
 
 // Verifies that a share type can be created correctly
@@ -62,6 +65,9 @@ func TestCreateFalse(t *testing.T) {
 
 	th.AssertEquals(t, "my_new_share_type", st.Name)
 	th.AssertFalse(t, st.IsPublic)
+
+	expected := map[string]any{"driver_handles_share_servers": false}
+	th.CheckDeepEquals(t, expected, st.RequiredExtraSpecs)
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
