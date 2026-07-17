@@ -50,9 +50,7 @@ func TestShareTypeUpdateGet(t *testing.T) {
 		IsPublic:    &isPublic,
 	}
 
-	t.Logf("Share type ID: %s", shareType.ID)
 	_, err = sharetypes.Update(context.TODO(), client, shareType.ID, options).Extract()
-	t.Logf("Update error: %s", err)
 	if err != nil {
 		t.Fatalf("Unable to update share type: %s", shareType.Name)
 	}
