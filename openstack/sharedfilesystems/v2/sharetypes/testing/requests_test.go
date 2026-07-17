@@ -60,7 +60,7 @@ func TestCreateFalse(t *testing.T) {
 	st, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, st.Name, "my_new_share_type")
+	th.AssertEquals(t, "my_new_share_type", st.Name)
 	th.AssertFalse(t, st.IsPublic)
 }
 
