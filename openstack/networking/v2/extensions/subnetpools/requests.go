@@ -252,11 +252,12 @@ type PrefixesOpsOpts struct {
 	Prefixes []string `json:"prefixes,omitempty"`
 }
 
+// ToSubnetPoolPrefixesOpsMap builds a request body from PrefixesOpsOpts.
 func (opts PrefixesOpsOpts) ToSubnetPoolPrefixesOpsMap() (map[string]any, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-// AddPrefixes accepts and PrefixesOpsOpts and add new prefixes for an
+// AddPrefixes accepts a PrefixesOpsOpts and adds new prefixes to an
 // existing subnet.
 func AddPrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts PrefixesOpsOptsBuilder) (r PrefixesOpsResult) {
 	b, err := opts.ToSubnetPoolPrefixesOpsMap()
@@ -271,8 +272,8 @@ func AddPrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID
 	return
 }
 
-// RemovePrefixes accepts and PrefixesOpsOpts and remove prefixes for an
-// existing subnet.
+// RemovePrefixes accepts a PrefixesOpsOpts and removes prefixes for
+// an existing subnet.
 func RemovePrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts PrefixesOpsOptsBuilder) (r PrefixesOpsResult) {
 	b, err := opts.ToSubnetPoolPrefixesOpsMap()
 	if err != nil {
