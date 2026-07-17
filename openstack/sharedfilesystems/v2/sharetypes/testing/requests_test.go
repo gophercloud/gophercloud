@@ -11,15 +11,16 @@ import (
 )
 
 // Verifies that a share type can be created correctly
-func TestCreate(t *testing.T) {
+func TestCreateTrue(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
-	MockCreateResponse(t, fakeServer)
+	MockCreateResponseTrue(t, fakeServer)
 
+	dhss := true
 	snapshotSupport := true
 	extraSpecs := sharetypes.ExtraSpecsOpts{
-		DriverHandlesShareServers: true,
+		DriverHandlesShareServers: &dhss,
 		SnapshotSupport:           &snapshotSupport,
 	}
 
@@ -34,6 +35,39 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, "my_new_share_type", st.Name)
 	th.AssertTrue(t, st.IsPublic)
+
+	expected := map[string]any{"driver_handles_share_servers": true}
+	th.CheckDeepEquals(t, expected, st.RequiredExtraSpecs)
+}
+
+// Verifies that a share type can be created correctly
+func TestCreateFalse(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockCreateResponseFalse(t, fakeServer)
+
+	dhss := false
+	snapshotSupport := false
+	extraSpecs := sharetypes.ExtraSpecsOpts{
+		DriverHandlesShareServers: &dhss,
+		SnapshotSupport:           &snapshotSupport,
+	}
+
+	options := &sharetypes.CreateOpts{
+		Name:       "my_new_share_type",
+		IsPublic:   false,
+		ExtraSpecs: extraSpecs,
+	}
+
+	st, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "my_new_share_type", st.Name)
+	th.AssertFalse(t, st.IsPublic)
+
+	expected := map[string]any{"driver_handles_share_servers": false}
+	th.CheckDeepEquals(t, expected, st.RequiredExtraSpecs)
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
@@ -50,8 +84,9 @@ func TestRequiredCreateOpts(t *testing.T) {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
 
+	dhss := true
 	extraSpecs := sharetypes.ExtraSpecsOpts{
-		DriverHandlesShareServers: true,
+		DriverHandlesShareServers: &dhss,
 	}
 
 	options = &sharetypes.CreateOpts{

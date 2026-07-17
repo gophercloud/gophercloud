@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
+func MockCreateResponseTrue(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -52,6 +52,57 @@ func MockCreateResponse(t *testing.T, fakeServer th.FakeServer) {
                 "extra_specs": {
                     "snapshot_support": "True",
                     "driver_handles_share_servers": "True"
+                },
+                "name": "my_new_share_type",
+                "id": "1d600d02-26a7-4b23-af3d-7d51860fe858"
+            }
+        }`)
+	})
+}
+
+func MockCreateResponseFalse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+        {
+            "share_type": {
+                "os-share-type-access:is_public": false,
+                "extra_specs": {
+                    "driver_handles_share_servers": false,
+                    "snapshot_support": false
+                },
+                "name": "my_new_share_type"
+            }
+        }`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprint(w, `
+        {
+            "volume_type": {
+                "os-share-type-access:is_public": false,
+                "required_extra_specs": {
+                    "driver_handles_share_servers": false
+                },
+                "extra_specs": {
+                    "snapshot_support": "False",
+                    "driver_handles_share_servers": "False"
+                },
+                "name": "my_new_share_type",
+                "id": "1d600d02-26a7-4b23-af3d-7d51860fe858"
+            },
+            "share_type": {
+                "os-share-type-access:is_public": false,
+                "required_extra_specs": {
+                    "driver_handles_share_servers": false
+                },
+                "extra_specs": {
+                    "snapshot_support": "False",
+                    "driver_handles_share_servers": "False"
                 },
                 "name": "my_new_share_type",
                 "id": "1d600d02-26a7-4b23-af3d-7d51860fe858"
