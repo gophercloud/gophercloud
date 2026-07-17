@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/sharetypes"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestShareTypeCreateDestroy(t *testing.T) {
@@ -29,15 +30,11 @@ func TestShareTypeCreateDestroy(t *testing.T) {
 
 func TestShareTypeUpdateGet(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create shared file system client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	client.Microversion = "2.50"
 
 	shareType, err := CreateShareType(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create share type: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteShareType(t, client, shareType)
 
 	name := "ACPTTEST_new_share_type_name"
@@ -51,26 +48,14 @@ func TestShareTypeUpdateGet(t *testing.T) {
 	}
 
 	_, err = sharetypes.Update(context.TODO(), client, shareType.ID, options).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update share type: %s", shareType.Name)
-	}
+	th.AssertNoErr(t, err)
 
 	st, err := sharetypes.Get(context.TODO(), client, shareType.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
-	}
+	th.AssertNoErr(t, err)
 
-	if st.Name != "ACPTTEST_new_share_type_name" {
-		t.Fatal("Share type name was expected to be ACPTTEST_new_share_type_name")
-	}
-
-	if *st.Description != "my new share type description" {
-		t.Fatal("Share type description was expected to be 'my new share type description'")
-	}
-
-	if st.IsPublic != true {
-		t.Fatal("Share type was expected to be public")
-	}
+	th.AssertEquals(t, "ACPTTEST_new_share_type_name", st.Name)
+	th.AssertEquals(t, "my new share type description", *st.Description)
+	th.AssertTrue(t, st.IsPublic)
 
 	tools.PrintResource(t, shareType)
 }
