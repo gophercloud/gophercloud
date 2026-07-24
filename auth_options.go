@@ -405,7 +405,7 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 	// Sending an explicit scope alongside them results in a 401 error:
 	// "Application credentials cannot request a scope."
 	if opts.ApplicationCredentialID != "" || opts.ApplicationCredentialName != "" {
-		return map[string]any{}, nil
+		return nil, nil
 	}
 
 	// For backwards compatibility.
