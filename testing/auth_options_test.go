@@ -145,7 +145,7 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					DomainName:  "Default",
 				},
 			},
-			map[string]any{},
+			nil,
 		},
 		{
 			"Application credential by name: no scope sent",
@@ -159,7 +159,7 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 					DomainName:  "Default",
 				},
 			},
-			map[string]any{},
+			nil,
 		},
 	}
 	for _, successCase := range successCases {
