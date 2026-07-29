@@ -78,7 +78,15 @@ func (r Result) extractIntoPtr(to any, label string) error {
 		return err
 	}
 
-	b, err := json.Marshal(m[label])
+	// Check if the expected label exists in the response
+	value, exists := m[label]
+	if !exists && len(m) > 0 {
+		// Key doesn't exist but response has other data - this is an error
+		// If len(m) == 0, we allow empty responses (e.g., tokens API where data is in headers)
+		return fmt.Errorf("expected response key %q not found in response", label)
+	}
+
+	b, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}

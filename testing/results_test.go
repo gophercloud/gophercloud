@@ -2,6 +2,7 @@ package testing
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -239,4 +240,66 @@ func TestUnmarshalSliceOfNamedStructs(t *testing.T) {
 	th.AssertEquals(t, "", actual[0].TestPersonExt.Location)
 	th.AssertEquals(t, "", actual[1].TestPerson.Name)
 	th.AssertEquals(t, "", actual[1].TestPersonExt.Location)
+}
+
+// TestExtractMissingKeyWithPlural tests that when a singular key is missing
+// but other data exists in the response, it returns a helpful error message.
+// This catches cases where Get("") hits a List endpoint or any wrong endpoint.
+func TestExtractMissingKeyWithPlural(t *testing.T) {
+	// Simulate what happens when we call Get with empty ID
+	// and get a List response (or any other mismatched response)
+	body := map[string]interface{}{
+		"networks": []interface{}{
+			map[string]interface{}{"id": "123", "name": "test"},
+		},
+	}
+
+	r := gophercloud.Result{Body: body}
+
+	var network struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	// This is what commonResult.Extract() does
+	err := r.ExtractIntoStructPtr(&network, "network") // looking for "network" key
+	th.AssertErr(t, err)
+	th.CheckEquals(t, true, strings.Contains(err.Error(), `expected response key "network" not found`))
+}
+
+// TestExtractValidKey tests that valid extractions still work correctly.
+func TestExtractValidKey(t *testing.T) {
+	body := map[string]interface{}{
+		"network": map[string]interface{}{"id": "123", "name": "test"},
+	}
+
+	r := gophercloud.Result{Body: body}
+
+	var network struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	err := r.ExtractIntoStructPtr(&network, "network")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "123", network.ID)
+	th.AssertEquals(t, "test", network.Name)
+}
+
+// TestExtractEmptyResponse tests that empty responses are allowed (e.g., for tokens API).
+func TestExtractEmptyResponse(t *testing.T) {
+	body := map[string]interface{}{}
+
+	r := gophercloud.Result{Body: body}
+
+	var network struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	err := r.ExtractIntoStructPtr(&network, "network")
+	th.AssertNoErr(t, err)
+	// Should have zero values
+	th.AssertEquals(t, "", network.ID)
+	th.AssertEquals(t, "", network.Name)
 }
