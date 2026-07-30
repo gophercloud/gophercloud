@@ -117,6 +117,20 @@ Example to Assign a Role to a User in a Project
 		panic(err)
 	}
 
+Example to Assign a Role to a User on the System
+
+	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
+	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
+
+	err := roles.Assign(context.TODO(), identityClient, roleID, roles.AssignOpts{
+		UserID: userID,
+		System: true,
+	}).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
+
 Example to Unassign a Role From a User in a Project
 
 	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
