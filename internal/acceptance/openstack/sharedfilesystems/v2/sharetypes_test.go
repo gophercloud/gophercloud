@@ -55,7 +55,7 @@ func TestShareTypeUpdateGet(t *testing.T) {
 
 	th.AssertEquals(t, "ACPTTEST_new_share_type_name", st.Name)
 	th.AssertEquals(t, "my new share type description", *st.Description)
-	th.AssertTrue(t, st.IsPublic)
+	th.AssertEquals(t, true, st.IsPublic)
 
 	tools.PrintResource(t, shareType)
 }
