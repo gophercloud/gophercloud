@@ -76,6 +76,20 @@ func TestListL7Policies(t *testing.T) {
 	}
 }
 
+func TestListL7PolicyOpts(t *testing.T) {
+	listOpts := l7policies.ListOpts{
+		Tags:       []string{"tag1", "tag2"},
+		TagsAny:    []string{"tag3", "tag4"},
+		TagsNot:    []string{"tag5", "tag6"},
+		TagsNotAny: []string{"tag7", "tag8"},
+	}
+
+	expected := "?not-tags=tag5&not-tags=tag6&not-tags-any=tag7&not-tags-any=tag8&tags=tag1&tags=tag2&tags-any=tag3&tags-any=tag4"
+	actual, err := listOpts.ToL7PolicyListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
+}
+
 func TestListAllL7Policies(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -240,6 +254,20 @@ func TestListRules(t *testing.T) {
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
 	}
+}
+
+func TestListRulesOpts(t *testing.T) {
+	listOpts := l7policies.ListRulesOpts{
+		Tags:       []string{"tag1", "tag2"},
+		TagsAny:    []string{"tag3", "tag4"},
+		TagsNot:    []string{"tag5", "tag6"},
+		TagsNotAny: []string{"tag7", "tag8"},
+	}
+
+	expected := "?not-tags=tag5&not-tags=tag6&not-tags-any=tag7&not-tags-any=tag8&tags=tag1&tags=tag2&tags-any=tag3&tags-any=tag4"
+	actual, err := listOpts.ToRulesListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
 }
 
 func TestListAllRules(t *testing.T) {
