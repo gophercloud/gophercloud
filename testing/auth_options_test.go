@@ -135,6 +135,32 @@ func TestToTokenV3ScopeMap(t *testing.T) {
 			},
 			nil,
 		},
+		{
+			"Application credential by ID: no scope sent",
+			gophercloud.AuthOptions{
+				ApplicationCredentialID:     "26bb287fd56a41f8a577c47f79221187",
+				ApplicationCredentialSecret: "secret",
+				Scope: &gophercloud.AuthScope{
+					ProjectName: "admin",
+					DomainName:  "Default",
+				},
+			},
+			nil,
+		},
+		{
+			"Application credential by name: no scope sent",
+			gophercloud.AuthOptions{
+				ApplicationCredentialName:   "myappcred",
+				ApplicationCredentialSecret: "secret",
+				Username:                    "someuser",
+				DomainName:                  "Default",
+				Scope: &gophercloud.AuthScope{
+					ProjectName: "admin",
+					DomainName:  "Default",
+				},
+			},
+			nil,
+		},
 	}
 	for _, successCase := range successCases {
 		t.Run(successCase.name, func(t *testing.T) {
