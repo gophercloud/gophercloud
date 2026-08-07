@@ -696,6 +696,12 @@ type FirmwareComponent struct {
 	CurrentVersion string `json:"current_version"`
 	// The last firmware version updated for the component.
 	LastVersionFlashed string `json:"last_version_flashed,omitempty"`
+	// The vendor of the firmware component.
+	Vendor *string `json:"vendor,omitempty"`
+	// The model of the firmware component.
+	Model *string `json:"model,omitempty"`
+	// The serial number of the firmware component.
+	SerialNumber *string `json:"serial_number,omitempty"`
 }
 
 // Extract interprets a ListFirmwareResult as an array of FirmwareComponent structs, if possible.
