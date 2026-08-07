@@ -479,7 +479,7 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 	th.AssertEquals(t, policy.ListenerID, listener.ID)
 	th.AssertEquals(t, policy.Action, string(l7policies.ActionRedirectToURL))
 	th.AssertEquals(t, "http://www.example.com", policy.RedirectURL)
-	th.AssertDeepEquals(t, policy.Tags, tags)
+	th.AssertTagsEqual(t, tags, policy.Tags)
 
 	return policy, nil
 }
@@ -509,7 +509,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
 	th.AssertEquals(t, rule.CompareType, string(l7policies.CompareTypeStartWith))
 	th.AssertEquals(t, "/api", rule.Value)
-	th.AssertDeepEquals(t, rule.Tags, tags)
+	th.AssertTagsEqual(t, tags, rule.Tags)
 
 	return rule, nil
 }
