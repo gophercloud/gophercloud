@@ -3,6 +3,7 @@ package testing
 import (
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/internal/ptr"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/subnetpools"
 )
 
@@ -82,7 +83,6 @@ var SubnetPool1 = subnetpools.SubnetPool{
 	AddressScopeID:   "",
 	CreatedAt:        time.Date(2017, 12, 28, 7, 21, 41, 0, time.UTC),
 	DefaultPrefixLen: 8,
-	DefaultQuota:     0,
 	Description:      "IPv4",
 	ID:               "d43a57fe-3390-4608-b437-b1307b0adb40",
 	IPversion:        4,
@@ -105,7 +105,6 @@ var SubnetPool2 = subnetpools.SubnetPool{
 	AddressScopeID:   "0bc38e22-be49-4e67-969e-fec3f36508bd",
 	CreatedAt:        time.Date(2017, 12, 28, 7, 21, 34, 0, time.UTC),
 	DefaultPrefixLen: 64,
-	DefaultQuota:     0,
 	Description:      "IPv6",
 	ID:               "832cb7f3-59fe-40cf-8f64-8350ffc03272",
 	IPversion:        6,
@@ -128,7 +127,7 @@ var SubnetPool3 = subnetpools.SubnetPool{
 	AddressScopeID:   "",
 	CreatedAt:        time.Date(2017, 12, 28, 7, 21, 27, 0, time.UTC),
 	DefaultPrefixLen: 64,
-	DefaultQuota:     4,
+	DefaultQuota:     ptr.To(4),
 	Description:      "PublicPool",
 	ID:               "2fe18ae6-58c2-4a85-8bfb-566d6426749b",
 	IPversion:        6,
@@ -188,6 +187,50 @@ const SubnetPoolCreateRequest = `
 }
 `
 
+const SubnetPoolCreateDefaultQuotaZeroRequest = `
+{
+    "subnetpool": {
+        "name": "my_ipv4_pool",
+        "prefixes": [
+            "10.10.0.0/16",
+            "10.11.11.0/24"
+        ],
+        "address_scope_id": "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
+        "min_prefixlen": 25,
+        "max_prefixlen": 30,
+        "description": "ipv4 prefixes",
+		"default_quota": 0
+    }
+}
+`
+
+const SubnetPoolCreateDefaultQuotaZeroResult = `
+{
+    "subnetpool": {
+        "address_scope_id": "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
+        "created_at": "2018-01-01T00:00:15Z",
+        "default_prefixlen": "25",
+        "default_quota": 0,
+        "description": "ipv4 prefixes",
+        "id": "55b5999c-c2fe-42cd-bce0-961a551b80f5",
+        "ip_version": 4,
+        "is_default": false,
+        "max_prefixlen": "30",
+        "min_prefixlen": "25",
+        "name": "my_ipv4_pool",
+        "prefixes": [
+            "10.10.0.0/16",
+            "10.11.11.0/24"
+        ],
+        "project_id": "1e2b9857295a4a3e841809ef492812c5",
+        "revision_number": 1,
+        "shared": false,
+        "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+        "updated_at": "2018-01-01T00:00:15Z"
+    }
+}
+`
+
 const SubnetPoolCreateResult = `
 {
     "subnetpool": {
@@ -237,7 +280,7 @@ const SubnetPoolUpdateResponse = `
         "address_scope_id": null,
         "created_at": "2018-01-03T07:21:34Z",
         "default_prefixlen": 8,
-        "default_quota": null,
+        "default_quota": 0,
         "description": null,
         "id": "099546ca-788d-41e5-a76d-17d8cd282d3e",
         "ip_version": 4,
