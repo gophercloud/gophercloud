@@ -18,6 +18,17 @@ type ShareType struct {
 	RequiredExtraSpecs map[string]any `json:"required_extra_specs"`
 	// The extra specifications for the share type
 	ExtraSpecs map[string]any `json:"extra_specs"`
+	// The human-readable description for the share type
+	Description *string `json:"description"`
+	// Indicates whether the share type is the default one
+	IsDefault *bool `json:"is_default"`
+}
+
+// shareTypeV6Compat provides compatibility for os-share-type-access:is_public
+// being renamed to share_type_access:is_public at microversion v6 or greater.
+type shareTypeV6Compat struct {
+	// Indicates whether a share type is publicly accessible
+	IsPublic *bool `json:"share_type_access:is_public"`
 }
 
 type commonResult struct {
@@ -30,6 +41,24 @@ func (r commonResult) Extract() (*ShareType, error) {
 		ShareType *ShareType `json:"share_type"`
 	}
 	err := r.ExtractInto(&s)
+	if err != nil {
+		return s.ShareType, err
+	}
+
+	var sV6 struct {
+		ShareTypeCompat *shareTypeV6Compat `json:"share_type"`
+	}
+	err = r.ExtractInto(&sV6)
+	if err != nil {
+		return s.ShareType, err
+	}
+
+	// Overwrite IsPublic if a value for share_type_access:is_public is found.
+	// Otherwise IsPublic is always false at microversion v6 or greater.
+	if sV6.ShareTypeCompat.IsPublic != nil {
+		s.ShareType.IsPublic = *sV6.ShareTypeCompat.IsPublic
+	}
+
 	return s.ShareType, err
 }
 
@@ -41,6 +70,16 @@ type CreateResult struct {
 // DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// GetResult contains the response body and error from a Get request.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult contains the response body and error from an Update request.
+type UpdateResult struct {
+	commonResult
 }
 
 // ShareTypePage is a pagination.pager that is returned from a call to the List function.

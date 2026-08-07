@@ -62,6 +62,54 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 	return
 }
 
+// Get will retrieve the existing ShareType with the provided ID.
+func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(ctx, getURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToShareTypeUpdateMap() (map[string]any, error)
+}
+
+// UpdateOpts contains options for updating a ShareType. This object is
+// passed to the sharetypes.Update function. Only the fields which are
+// specified are updated; all fields are optional so that a partial update
+// can be performed.
+type UpdateOpts struct {
+	// The share type name.
+	Name *string `json:"name,omitempty"`
+	// The share type description.
+	Description *string `json:"description,omitempty"`
+	// Indicates whether a share type is publicly accessible.
+	IsPublic *bool `json:"share_type_access:is_public,omitempty"`
+}
+
+// ToShareTypeUpdateMap assembles a request body based on the contents of an
+// UpdateOpts.
+func (opts UpdateOpts) ToShareTypeUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "share_type")
+}
+
+// Update will update an existing ShareType based on the values in
+// UpdateOpts. To extract the ShareType object from the response, call the
+// Extract method on the UpdateResult.
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToShareTypeUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {

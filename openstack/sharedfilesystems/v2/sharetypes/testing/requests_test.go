@@ -64,6 +64,31 @@ func TestRequiredCreateOpts(t *testing.T) {
 	}
 }
 
+// Verifies that a share type can be updated
+func TestUpdate(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockUpdateResponse(t, fakeServer)
+
+	name := "my_new_share_type_name"
+	description := "my new share type description"
+	isPublic := false
+
+	options := &sharetypes.UpdateOpts{
+		Name:        &name,
+		Description: &description,
+		IsPublic:    &isPublic,
+	}
+
+	st, err := sharetypes.Update(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "my_new_share_type_name", st.Name)
+	th.AssertEquals(t, "my new share type description", *st.Description)
+	th.AssertEquals(t, false, st.IsPublic)
+}
+
 // Verifies that share type deletion works
 func TestDelete(t *testing.T) {
 	fakeServer := th.SetupHTTP()
@@ -103,6 +128,55 @@ func TestList(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, expected, actual)
+}
+
+// Verifies that a share type can be retrieved by ID
+func TestGet(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockGetResponse(t, fakeServer)
+
+	description := "my share type description"
+	isDefault := false
+	expected := sharetypes.ShareType{
+		ID:                 "1d600d02-26a7-4b23-af3d-7d51860fe858",
+		Name:               "my_share_type",
+		IsPublic:           true,
+		ExtraSpecs:         map[string]any{"snapshot_support": "True", "driver_handles_share_servers": "True"},
+		RequiredExtraSpecs: map[string]any{"driver_handles_share_servers": "True"},
+		Description:        &description,
+		IsDefault:          &isDefault,
+	}
+
+	actual, err := sharetypes.Get(context.TODO(), client.ServiceClient(fakeServer), "shareTypeID").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expected, actual)
+}
+
+// Verifies that a share type can be retrieved by ID at microversion v6 or greater.
+func TestGetV6(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockGetResponseV6(t, fakeServer)
+
+	description := "my share type description"
+	isDefault := false
+	expected := sharetypes.ShareType{
+		ID:                 "1d600d02-26a7-4b23-af3d-7d51860fe858",
+		Name:               "my_share_type",
+		IsPublic:           true,
+		ExtraSpecs:         map[string]any{"snapshot_support": "True", "driver_handles_share_servers": "True"},
+		RequiredExtraSpecs: map[string]any{"driver_handles_share_servers": "True"},
+		Description:        &description,
+		IsDefault:          &isDefault,
+	}
+
+	testClient := client.ServiceClient(fakeServer)
+	actual, err := sharetypes.Get(context.TODO(), testClient, "shareTypeID").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expected, actual)
 }
 
 // Verifies that it is possible to get the default share type

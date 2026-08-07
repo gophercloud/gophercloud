@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/sharetypes"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestShareTypeCreateDestroy(t *testing.T) {
@@ -25,6 +26,38 @@ func TestShareTypeCreateDestroy(t *testing.T) {
 	tools.PrintResource(t, shareType)
 
 	defer DeleteShareType(t, client, shareType)
+}
+
+func TestShareTypeUpdateGet(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "2.50"
+
+	shareType, err := CreateShareType(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteShareType(t, client, shareType)
+
+	name := "ACPTTEST_new_share_type_name"
+	description := "my new share type description"
+	isPublic := true
+
+	options := sharetypes.UpdateOpts{
+		Name:        &name,
+		Description: &description,
+		IsPublic:    &isPublic,
+	}
+
+	_, err = sharetypes.Update(context.TODO(), client, shareType.ID, options).Extract()
+	th.AssertNoErr(t, err)
+
+	st, err := sharetypes.Get(context.TODO(), client, shareType.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "ACPTTEST_new_share_type_name", st.Name)
+	th.AssertEquals(t, "my new share type description", *st.Description)
+	th.AssertEquals(t, true, st.IsPublic)
+
+	tools.PrintResource(t, shareType)
 }
 
 func TestShareTypeList(t *testing.T) {

@@ -134,6 +134,60 @@ func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
 	})
 }
 
+func MockGetResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/shareTypeID", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `
+        {
+            "share_type": {
+                "os-share-type-access:is_public": true,
+                "required_extra_specs": {
+                    "driver_handles_share_servers": "True"
+                },
+                "extra_specs": {
+                    "snapshot_support": "True",
+                    "driver_handles_share_servers": "True"
+                },
+                "name": "my_share_type",
+                "id": "1d600d02-26a7-4b23-af3d-7d51860fe858",
+                "description": "my share type description",
+                "is_default": false
+            }
+        }`)
+	})
+}
+
+func MockGetResponseV6(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/shareTypeID", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `
+        {
+            "share_type": {
+                "share_type_access:is_public": true,
+                "required_extra_specs": {
+                    "driver_handles_share_servers": "True"
+                },
+                "extra_specs": {
+                    "snapshot_support": "True",
+                    "driver_handles_share_servers": "True"
+                },
+                "name": "my_share_type",
+                "id": "1d600d02-26a7-4b23-af3d-7d51860fe858",
+                "description": "my share type description",
+                "is_default": false
+            }
+        }`)
+	})
+}
+
 func MockGetDefaultResponse(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/types/default", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -178,6 +232,44 @@ func MockGetExtraSpecsResponse(t *testing.T, fakeServer th.FakeServer) {
                 "snapshot_support": "True",
                 "driver_handles_share_servers": "True",
                 "my_custom_extra_spec": "False"
+            }
+        }`)
+	})
+}
+
+func MockUpdateResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/types/shareTypeID", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+        {
+            "share_type": {
+                "name": "my_new_share_type_name",
+                "description": "my new share type description",
+                "share_type_access:is_public": false
+            }
+        }`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, `
+        {
+            "share_type": {
+                "share_type_access:is_public": false,
+                "required_extra_specs": {
+                    "driver_handles_share_servers": "True"
+                },
+                "extra_specs": {
+                    "snapshot_support": "True",
+                    "driver_handles_share_servers": "True"
+                },
+                "name": "my_new_share_type_name",
+                "id": "1d600d02-26a7-4b23-af3d-7d51860fe858",
+                "description": "my new share type description",
+                "is_default": false
             }
         }`)
 	})
