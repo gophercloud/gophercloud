@@ -20,30 +20,30 @@ type ListOptsBuilder interface {
 // by a particular subnet attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Name              string `q:"name"`
-	Description       string `q:"description"`
-	DNSPublishFixedIP *bool  `q:"dns_publish_fixed_ip"`
-	EnableDHCP        *bool  `q:"enable_dhcp"`
-	NetworkID         string `q:"network_id"`
-	TenantID          string `q:"tenant_id"`
-	ProjectID         string `q:"project_id"`
-	IPVersion         int    `q:"ip_version"`
-	GatewayIP         string `q:"gateway_ip"`
-	CIDR              string `q:"cidr"`
-	IPv6AddressMode   string `q:"ipv6_address_mode"`
-	IPv6RAMode        string `q:"ipv6_ra_mode"`
-	ID                string `q:"id"`
-	SubnetPoolID      string `q:"subnetpool_id"`
-	Limit             int    `q:"limit"`
-	Marker            string `q:"marker"`
-	SortKey           string `q:"sort_key"`
-	SortDir           string `q:"sort_dir"`
-	Tags              string `q:"tags"`
-	TagsAny           string `q:"tags-any"`
-	NotTags           string `q:"not-tags"`
-	NotTagsAny        string `q:"not-tags-any"`
-	RevisionNumber    *int   `q:"revision_number"`
-	SegmentID         string `q:"segment_id"`
+	Name              string   `q:"name"`
+	Description       string   `q:"description"`
+	DNSPublishFixedIP *bool    `q:"dns_publish_fixed_ip"`
+	EnableDHCP        *bool    `q:"enable_dhcp"`
+	NetworkID         string   `q:"network_id"`
+	TenantID          string   `q:"tenant_id"`
+	ProjectID         string   `q:"project_id"`
+	IPVersion         int      `q:"ip_version"`
+	GatewayIP         string   `q:"gateway_ip"`
+	CIDR              string   `q:"cidr"`
+	IPv6AddressMode   string   `q:"ipv6_address_mode"`
+	IPv6RAMode        string   `q:"ipv6_ra_mode"`
+	ID                string   `q:"id"`
+	SubnetPoolID      string   `q:"subnetpool_id"`
+	Limit             int      `q:"limit"`
+	Marker            string   `q:"marker"`
+	SortKey           string   `q:"sort_key"`
+	SortDir           string   `q:"sort_dir"`
+	Tags              []string `q:"tags" format:"comma-separated"`
+	TagsAny           []string `q:"tags-any" format:"comma-separated"`
+	NotTags           []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny        []string `q:"not-tags-any" format:"comma-separated"`
+	RevisionNumber    *int     `q:"revision_number"`
+	SegmentID         string   `q:"segment_id"`
 }
 
 // ToSubnetListQuery formats a ListOpts into a query string.
