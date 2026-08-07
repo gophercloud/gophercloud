@@ -64,22 +64,21 @@ type ListOptsBuilder interface {
 // by a particular trunk attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	AdminStateUp *bool    `q:"admin_state_up"`
-	Description  string   `q:"description"`
-	ID           string   `q:"id"`
-	Name         string   `q:"name"`
-	PortID       string   `q:"port_id"`
-	Status       string   `q:"status"`
-	TenantID     string   `q:"tenant_id"`
-	ProjectID    string   `q:"project_id"`
-	SortDir      string   `q:"sort_dir"`
-	SortKey      string   `q:"sort_key"`
-	Tags         []string `q:"tags" format:"comma-separated"`
-	TagsAny      []string `q:"tags-any" format:"comma-separated"`
-	NotTags      []string `q:"not-tags" format:"comma-separated"`
-	NotTagsAny   []string `q:"not-tags-any" format:"comma-separated"`
-	// TODO change type to *int for consistency
-	RevisionNumber string `q:"revision_number"`
+	AdminStateUp   *bool    `q:"admin_state_up"`
+	Description    string   `q:"description"`
+	ID             string   `q:"id"`
+	Name           string   `q:"name"`
+	PortID         string   `q:"port_id"`
+	Status         string   `q:"status"`
+	TenantID       string   `q:"tenant_id"`
+	ProjectID      string   `q:"project_id"`
+	SortDir        string   `q:"sort_dir"`
+	SortKey        string   `q:"sort_key"`
+	Tags           []string `q:"tags" format:"comma-separated"`
+	TagsAny        []string `q:"tags-any" format:"comma-separated"`
+	NotTags        []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny     []string `q:"not-tags-any" format:"comma-separated"`
+	RevisionNumber *int     `q:"revision_number"`
 }
 
 // ToTrunkListQuery formats a ListOpts into a query string.
