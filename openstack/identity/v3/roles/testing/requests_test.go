@@ -222,6 +222,29 @@ func TestListAssignmentsWithSubtreeSinglePage(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestListAssignmentsWithSystemScopeSinglePage(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListRoleAssignmentsWithSystemSuccessfully(t, fakeServer)
+
+	listOpts := roles.ListAssignmentsOpts{
+		ScopeSystem: "all",
+	}
+
+	count := 0
+	err := roles.ListAssignments(client.ServiceClient(fakeServer), listOpts).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+		actual, err := roles.ExtractRoleAssignments(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedSystemRoleAssignmentsSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
+}
+
 func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -310,6 +333,50 @@ func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestListAssignmentsOnResource_SystemUsers(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAssignmentsOnResourceSuccessfully_SystemUsers(t, fakeServer)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(fakeServer), roles.ListAssignmentsOnResourceOpts{
+		UserID: "{user_id}",
+		System: true,
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
+}
+
+func TestListAssignmentsOnResource_SystemGroups(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListAssignmentsOnResourceSuccessfully_SystemGroups(t, fakeServer)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(fakeServer), roles.ListAssignmentsOnResourceOpts{
+		GroupID: "{group_id}",
+		System:  true,
+	}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
+}
+
 func TestAssign(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -338,6 +405,38 @@ func TestAssign(t *testing.T) {
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
+		UserID: "{user_id}",
+		System: true,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
+		GroupID: "{group_id}",
+		System:  true,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestValidate(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleValidateSuccessfully(t, fakeServer)
+
+	tests := []roles.ValidateOpts{
+		{UserID: "{user_id}", ProjectID: "{project_id}"},
+		{UserID: "{user_id}", DomainID: "{domain_id}"},
+		{GroupID: "{group_id}", ProjectID: "{project_id}"},
+		{GroupID: "{group_id}", DomainID: "{domain_id}"},
+		{UserID: "{user_id}", System: true},
+		{GroupID: "{group_id}", System: true},
+	}
+
+	for _, opts := range tests {
+		err := roles.Validate(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", opts).ExtractErr()
+		th.AssertNoErr(t, err)
+	}
 }
 
 func TestUnassign(t *testing.T) {
@@ -368,6 +467,42 @@ func TestUnassign(t *testing.T) {
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.UnassignOpts{
+		UserID: "{user_id}",
+		System: true,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.UnassignOpts{
+		GroupID: "{group_id}",
+		System:  true,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestAssignmentOptsValidation(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	err := roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
+		UserID: "{user_id}",
+	}).ExtractErr()
+	th.AssertErr(t, err)
+
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+		System:    true,
+	}).ExtractErr()
+	th.AssertErr(t, err)
+
+	err = roles.Assign(context.TODO(), client.ServiceClient(fakeServer), "{role_id}", roles.AssignOpts{
+		UserID:    "{user_id}",
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertErr(t, err)
 }
 
 func TestCreateRoleInferenceRule(t *testing.T) {

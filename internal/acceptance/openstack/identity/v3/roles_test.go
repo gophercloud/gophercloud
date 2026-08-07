@@ -313,6 +313,152 @@ func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 	th.AssertEquals(t, found, true)
 }
 
+func TestRolesAssignToUserOnSystem(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	role, err := CreateRole(t, client, &roles.CreateOpts{})
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	user, err := CreateUser(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteUser(t, client, user.ID)
+
+	assignOpts := roles.AssignOpts{
+		UserID: user.ID,
+		System: true,
+	}
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
+		UserID: user.ID,
+		System: true,
+	})
+
+	err = roles.Validate(context.TODO(), client, role.ID, roles.ValidateOpts{
+		UserID: user.ID,
+		System: true,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allPages, err := roles.ListAssignmentsOnResource(client, roles.ListAssignmentsOnResourceOpts{
+		UserID: user.ID,
+		System: true,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		if r.ID == role.ID {
+			found = true
+		}
+	}
+	th.AssertTrue(t, found)
+
+	allPages, err = roles.ListAssignments(client, roles.ListAssignmentsOpts{
+		RoleID:      role.ID,
+		ScopeSystem: "all",
+		UserID:      user.ID,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRoleAssignments, err := roles.ExtractRoleAssignments(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, roleAssignment := range allRoleAssignments {
+		tools.PrintResource(t, roleAssignment)
+		if roleAssignment.Role.ID == role.ID &&
+			roleAssignment.User.ID == user.ID &&
+			roleAssignment.Scope.System != nil &&
+			roleAssignment.Scope.System.All {
+			found = true
+		}
+	}
+	th.AssertTrue(t, found)
+}
+
+func TestRolesAssignToGroupOnSystem(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	role, err := CreateRole(t, client, &roles.CreateOpts{})
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	group, err := CreateGroup(t, client, &groups.CreateOpts{
+		DomainID: "default",
+	})
+	th.AssertNoErr(t, err)
+	defer DeleteGroup(t, client, group.ID)
+
+	assignOpts := roles.AssignOpts{
+		GroupID: group.ID,
+		System:  true,
+	}
+	err = roles.Assign(context.TODO(), client, role.ID, assignOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
+		GroupID: group.ID,
+		System:  true,
+	})
+
+	err = roles.Validate(context.TODO(), client, role.ID, roles.ValidateOpts{
+		GroupID: group.ID,
+		System:  true,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allPages, err := roles.ListAssignmentsOnResource(client, roles.ListAssignmentsOnResourceOpts{
+		GroupID: group.ID,
+		System:  true,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		if r.ID == role.ID {
+			found = true
+		}
+	}
+	th.AssertTrue(t, found)
+
+	allPages, err = roles.ListAssignments(client, roles.ListAssignmentsOpts{
+		GroupID:     group.ID,
+		RoleID:      role.ID,
+		ScopeSystem: "all",
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRoleAssignments, err := roles.ExtractRoleAssignments(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, roleAssignment := range allRoleAssignments {
+		tools.PrintResource(t, roleAssignment)
+		if roleAssignment.Group.ID == group.ID &&
+			roleAssignment.Role.ID == role.ID &&
+			roleAssignment.Scope.System != nil &&
+			roleAssignment.Scope.System.All {
+			found = true
+		}
+	}
+	th.AssertTrue(t, found)
+}
+
 func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
 	clients.RequireAdmin(t)
 
