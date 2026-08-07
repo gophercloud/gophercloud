@@ -641,6 +641,50 @@ func TestGetVendorPassthruMethods(t *testing.T) {
 	th.CheckDeepEquals(t, NodeVendorPassthruMethods, *actual)
 }
 
+func TestListVendorPassthruMethods(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleGetVendorPassthruMethodsSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := nodes.ListVendorPassthruMethods(context.TODO(), c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, []string{"POST"}, actual["create_subscription"].HTTPMethods)
+	th.AssertEquals(t, true, actual["create_subscription"].RequireExclusiveLock)
+}
+
+func TestCallVendorPassthru(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCallNodeVendorPassthruSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := nodes.CallVendorPassthru(context.TODO(), c, "1234asdf", http.MethodPost, nodes.VendorPassthruCallOpts{
+		Method: "reset_bmc",
+		Body: map[string]any{
+			"force": true,
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "ok", actual["result"])
+}
+
+func TestCallAsyncVendorPassthru(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCallAsyncNodeVendorPassthruSuccessfully(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	result := nodes.CallVendorPassthru(context.TODO(), c, "1234asdf", http.MethodPost, nodes.VendorPassthruCallOpts{
+		Method: "async_reset",
+		Body: map[string]any{
+			"force": true,
+		},
+	})
+	th.AssertNoErr(t, result.Err)
+	th.AssertEquals(t, http.StatusAccepted, result.StatusCode)
+}
+
 func TestGetAllSubscriptions(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

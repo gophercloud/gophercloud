@@ -78,6 +78,20 @@ func (r VendorPassthruMethodsResult) Extract() (*VendorPassthruMethods, error) {
 	return &s, err
 }
 
+// Extract interprets a ListVendorPassthruMethodsResult as generic vendor passthru method metadata.
+func (r ListVendorPassthruMethodsResult) Extract() (map[string]VendorPassthruMethod, error) {
+	var s map[string]VendorPassthruMethod
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// Extract interprets a CallVendorPassthruResult as an arbitrary JSON object.
+func (r CallVendorPassthruResult) Extract() (map[string]any, error) {
+	var s map[string]any
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
 func (r GetAllSubscriptionsVendorPassthruResult) Extract() (*GetAllSubscriptionsVendorPassthru, error) {
 	var s GetAllSubscriptionsVendorPassthru
 	err := r.ExtractInto(&s)
@@ -541,6 +555,14 @@ type VendorPassthruMethods struct {
 	GetAllSubscriptions GetAllSubscriptionsMethod `json:"get_all_subscriptions,omitempty"`
 }
 
+type VendorPassthruMethod struct {
+	HTTPMethods          []string `json:"http_methods"`
+	Async                bool     `json:"async"`
+	Description          string   `json:"description"`
+	Attach               bool     `json:"attach"`
+	RequireExclusiveLock bool     `json:"require_exclusive_lock"`
+}
+
 // Below you can find all vendor passthru methods structs
 
 type CreateSubscriptionMethod struct {
@@ -594,6 +616,16 @@ type SubscriptionVendorPassthru struct {
 	Destination string   `json:"Destination"`
 	EventTypes  []string `json:"EventTypes"`
 	Protocol    string   `json:"Protocol"`
+}
+
+// ListVendorPassthruMethodsResult is the response from a ListVendorPassthruMethods operation.
+type ListVendorPassthruMethodsResult struct {
+	gophercloud.Result
+}
+
+// CallVendorPassthruResult is the response from a CallVendorPassthru operation.
+type CallVendorPassthruResult struct {
+	gophercloud.Result
 }
 
 // SetMaintenanceResult is the response from a SetMaintenance operation. Call its ExtractErr
