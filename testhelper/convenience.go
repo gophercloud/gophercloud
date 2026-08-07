@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -318,6 +319,20 @@ func AssertDeepEquals(t *testing.T, expected, actual any) {
 	if differed {
 		logFatal(t, "The structures were different.")
 	}
+}
+
+// AssertTagsEqual compares two slices of tags without regard to order.
+// If they are not equal, a fatal error is raised.
+func AssertTagsEqual(t *testing.T, expected, actual []string) {
+	t.Helper()
+
+	expected = append([]string(nil), expected...)
+	actual = append([]string(nil), actual...)
+
+	sort.Strings(expected)
+	sort.Strings(actual)
+
+	AssertDeepEquals(t, expected, actual)
 }
 
 // CheckDeepEquals is similar to AssertDeepEquals, except with a non-fatal error
