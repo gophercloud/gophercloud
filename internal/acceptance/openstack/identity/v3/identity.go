@@ -367,7 +367,7 @@ func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID st
 	t.Logf("Deleted service: %s", serviceID)
 }
 
-// UnassignRole will delete a role assigned to a user/group on a project/domain
+// UnassignRole will delete a role assigned to a user/group on a project/domain/system.
 // A fatal error will occur if it fails to delete the assignment.
 // This works best when using it as a deferred function.
 func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.UnassignOpts) {

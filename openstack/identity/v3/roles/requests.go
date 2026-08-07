@@ -203,9 +203,9 @@ type ListAssignmentsOptsBuilder interface {
 }
 
 // ListAssignmentsOpts allows you to query the ListAssignments method.
-// Specify one of or a combination of GroupId, RoleId, ScopeDomainId,
-// ScopeProjectId, and/or UserId to search for roles assigned to corresponding
-// entities.
+// Specify one of or a combination of GroupID, RoleID, ScopeDomainID,
+// ScopeProjectID, ScopeSystem, and/or UserID to search for roles assigned to
+// corresponding entities.
 type ListAssignmentsOpts struct {
 	// GroupID is the group ID to query.
 	GroupID string `q:"group.id"`
@@ -219,7 +219,12 @@ type ListAssignmentsOpts struct {
 	// ScopeProjectID filters the results by the given Project ID.
 	ScopeProjectID string `q:"scope.project.id"`
 
-	// UserID filterst he results by the given User ID.
+	// ScopeSystem filters the results by system scope.
+	// The only supported value is "all".
+	// Available since Identity API v3.10.
+	ScopeSystem string `q:"scope.system"`
+
+	// UserID filters the results by the given User ID.
 	UserID string `q:"user.id"`
 
 	// Effective lists effective assignments at the user, project, and domain
@@ -258,7 +263,7 @@ func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOpts
 }
 
 // ListAssignmentsOnResourceOpts provides options to list role assignments
-// for a user/group on a project/domain
+// for a user/group on a project/domain/system.
 type ListAssignmentsOnResourceOpts struct {
 	// UserID is the ID of a user to assign a role
 	// Note: exactly one of UserID or GroupID must be provided
@@ -269,12 +274,17 @@ type ListAssignmentsOnResourceOpts struct {
 	GroupID string `xor:"UserID"`
 
 	// ProjectID is the ID of a project to assign a role on
-	// Note: exactly one of ProjectID or DomainID must be provided
-	ProjectID string `xor:"DomainID"`
+	// Note: exactly one of ProjectID, DomainID, or System must be provided
+	ProjectID string
 
 	// DomainID is the ID of a domain to assign a role on
-	// Note: exactly one of ProjectID or DomainID must be provided
-	DomainID string `xor:"ProjectID"`
+	// Note: exactly one of ProjectID, DomainID, or System must be provided
+	DomainID string
+
+	// System specifies whether to list role assignments on the system.
+	// Note: exactly one of ProjectID, DomainID, or System must be provided.
+	// Available since Identity API v3.10.
+	System bool
 }
 
 // AssignOpts provides options to assign a role
@@ -288,12 +298,41 @@ type AssignOpts struct {
 	GroupID string `xor:"UserID"`
 
 	// ProjectID is the ID of a project to assign a role on
-	// Note: exactly one of ProjectID or DomainID must be provided
-	ProjectID string `xor:"DomainID"`
+	// Note: exactly one of ProjectID, DomainID, or System must be provided
+	ProjectID string
 
 	// DomainID is the ID of a domain to assign a role on
-	// Note: exactly one of ProjectID or DomainID must be provided
-	DomainID string `xor:"ProjectID"`
+	// Note: exactly one of ProjectID, DomainID, or System must be provided
+	DomainID string
+
+	// System specifies whether to assign a role on the system.
+	// Note: exactly one of ProjectID, DomainID, or System must be provided.
+	// Available since Identity API v3.10.
+	System bool
+}
+
+// ValidateOpts provides options to validate a role assignment.
+type ValidateOpts struct {
+	// UserID is the ID of a user to validate a role assignment for.
+	// Note: exactly one of UserID or GroupID must be provided.
+	UserID string `xor:"GroupID"`
+
+	// GroupID is the ID of a group to validate a role assignment for.
+	// Note: exactly one of UserID or GroupID must be provided.
+	GroupID string `xor:"UserID"`
+
+	// ProjectID is the ID of a project to validate a role assignment on.
+	// Note: exactly one of ProjectID, DomainID, or System must be provided.
+	ProjectID string
+
+	// DomainID is the ID of a domain to validate a role assignment on.
+	// Note: exactly one of ProjectID, DomainID, or System must be provided.
+	DomainID string
+
+	// System specifies whether to validate a role assignment on the system.
+	// Note: exactly one of ProjectID, DomainID, or System must be provided.
+	// Available since Identity API v3.10.
+	System bool
 }
 
 // UnassignOpts provides options to unassign a role
@@ -307,42 +346,27 @@ type UnassignOpts struct {
 	GroupID string `xor:"UserID"`
 
 	// ProjectID is the ID of a project to unassign a role on
-	// Note: exactly one of ProjectID or DomainID must be provided
-	ProjectID string `xor:"DomainID"`
+	// Note: exactly one of ProjectID, DomainID, or System must be provided
+	ProjectID string
 
 	// DomainID is the ID of a domain to unassign a role on
-	// Note: exactly one of ProjectID or DomainID must be provided
-	DomainID string `xor:"ProjectID"`
+	// Note: exactly one of ProjectID, DomainID, or System must be provided
+	DomainID string
+
+	// System specifies whether to unassign a role on the system.
+	// Note: exactly one of ProjectID, DomainID, or System must be provided.
+	// Available since Identity API v3.10.
+	System bool
 }
 
 // ListAssignmentsOnResource is the operation responsible for listing role
-// assignments for a user/group on a project/domain.
+// assignments for a user/group on a project/domain/system.
 func ListAssignmentsOnResource(client *gophercloud.ServiceClient, opts ListAssignmentsOnResourceOpts) pagination.Pager {
-	// Check xor conditions
-	_, err := gophercloud.BuildRequestBody(opts, "")
+	targetType, targetID, actorType, actorID, err := assignmentURLParts(
+		opts.UserID, opts.GroupID, opts.ProjectID, opts.DomainID, opts.System,
+	)
 	if err != nil {
 		return pagination.Pager{Err: err}
-	}
-
-	// Get corresponding URL
-	var targetID string
-	var targetType string
-	if opts.ProjectID != "" {
-		targetID = opts.ProjectID
-		targetType = "projects"
-	} else {
-		targetID = opts.DomainID
-		targetType = "domains"
-	}
-
-	var actorID string
-	var actorType string
-	if opts.UserID != "" {
-		actorID = opts.UserID
-		actorType = "users"
-	} else {
-		actorID = opts.GroupID
-		actorType = "groups"
 	}
 
 	url := listAssignmentsOnResourceURL(client, targetType, targetID, actorType, actorID)
@@ -352,34 +376,14 @@ func ListAssignmentsOnResource(client *gophercloud.ServiceClient, opts ListAssig
 }
 
 // Assign is the operation responsible for assigning a role
-// to a user/group on a project/domain.
+// to a user/group on a project/domain/system.
 func Assign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
-	// Check xor conditions
-	_, err := gophercloud.BuildRequestBody(opts, "")
+	targetType, targetID, actorType, actorID, err := assignmentURLParts(
+		opts.UserID, opts.GroupID, opts.ProjectID, opts.DomainID, opts.System,
+	)
 	if err != nil {
 		r.Err = err
 		return
-	}
-
-	// Get corresponding URL
-	var targetID string
-	var targetType string
-	if opts.ProjectID != "" {
-		targetID = opts.ProjectID
-		targetType = "projects"
-	} else {
-		targetID = opts.DomainID
-		targetType = "domains"
-	}
-
-	var actorID string
-	var actorType string
-	if opts.UserID != "" {
-		actorID = opts.UserID
-		actorType = "users"
-	} else {
-		actorID = opts.GroupID
-		actorType = "groups"
 	}
 
 	resp, err := client.Put(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), nil, nil, &gophercloud.RequestOpts{
@@ -389,35 +393,33 @@ func Assign(ctx context.Context, client *gophercloud.ServiceClient, roleID strin
 	return
 }
 
-// Unassign is the operation responsible for unassigning a role
-// from a user/group on a project/domain.
-func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
-	// Check xor conditions
-	_, err := gophercloud.BuildRequestBody(opts, "")
+// Validate checks whether a user/group has a role assignment on a
+// project/domain/system.
+func Validate(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts ValidateOpts) (r ValidateResult) {
+	targetType, targetID, actorType, actorID, err := assignmentURLParts(
+		opts.UserID, opts.GroupID, opts.ProjectID, opts.DomainID, opts.System,
+	)
 	if err != nil {
 		r.Err = err
 		return
 	}
 
-	// Get corresponding URL
-	var targetID string
-	var targetType string
-	if opts.ProjectID != "" {
-		targetID = opts.ProjectID
-		targetType = "projects"
-	} else {
-		targetID = opts.DomainID
-		targetType = "domains"
-	}
+	resp, err := client.Head(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
 
-	var actorID string
-	var actorType string
-	if opts.UserID != "" {
-		actorID = opts.UserID
-		actorType = "users"
-	} else {
-		actorID = opts.GroupID
-		actorType = "groups"
+// Unassign is the operation responsible for unassigning a role
+// from a user/group on a project/domain/system.
+func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID string, opts UnassignOpts) (r UnassignmentResult) {
+	targetType, targetID, actorType, actorID, err := assignmentURLParts(
+		opts.UserID, opts.GroupID, opts.ProjectID, opts.DomainID, opts.System,
+	)
+	if err != nil {
+		r.Err = err
+		return
 	}
 
 	resp, err := client.Delete(ctx, assignURL(client, targetType, targetID, actorType, actorID, roleID), &gophercloud.RequestOpts{
@@ -425,6 +427,54 @@ func Unassign(ctx context.Context, client *gophercloud.ServiceClient, roleID str
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
+}
+
+func assignmentURLParts(userID, groupID, projectID, domainID string, system bool) (string, string, string, string, error) {
+	type actorOpts struct {
+		UserID  string `xor:"GroupID"`
+		GroupID string `xor:"UserID"`
+	}
+
+	_, err := gophercloud.BuildRequestBody(actorOpts{UserID: userID, GroupID: groupID}, "")
+	if err != nil {
+		return "", "", "", "", err
+	}
+
+	scopeCount := 0
+	if projectID != "" {
+		scopeCount++
+	}
+	if domainID != "" {
+		scopeCount++
+	}
+	if system {
+		scopeCount++
+	}
+	if scopeCount != 1 {
+		return "", "", "", "", gophercloud.ErrMissingInput{
+			BaseError: gophercloud.BaseError{
+				Info: "Exactly one of ProjectID, DomainID, and System must be provided",
+			},
+			Argument: "ProjectID/DomainID/System",
+		}
+	}
+
+	var targetType, targetID string
+	switch {
+	case projectID != "":
+		targetType = "projects"
+		targetID = projectID
+	case domainID != "":
+		targetType = "domains"
+		targetID = domainID
+	default:
+		targetType = "system"
+	}
+
+	if userID != "" {
+		return targetType, targetID, "users", userID, nil
+	}
+	return targetType, targetID, "groups", groupID, nil
 }
 
 func CreateRoleInferenceRule(ctx context.Context, client *gophercloud.ServiceClient, priorRoleID, impliedRoleID string) (r CreateImpliedRoleResult) {
