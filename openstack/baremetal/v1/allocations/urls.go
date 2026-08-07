@@ -21,3 +21,7 @@ func deleteURL(client *gophercloud.ServiceClient, id string) string {
 func getURL(client *gophercloud.ServiceClient, id string) string {
 	return resourceURL(client, id)
 }
+
+func nodeAllocationURL(client *gophercloud.ServiceClient, nodeID string) string {
+	return client.ServiceURL("nodes", nodeID, "allocation")
+}
