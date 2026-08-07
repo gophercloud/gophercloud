@@ -76,3 +76,22 @@ func (r ListResult) Extract() ([]ShareAccess, error) {
 	err := r.ExtractInto(&s)
 	return s.AccessList, err
 }
+
+// MetadataResult contains the response body and error from an UpdateMetadata request.
+type MetadataResult struct {
+	gophercloud.Result
+}
+
+// Extract will get the string-string map from MetadataResult.
+func (r MetadataResult) Extract() (map[string]string, error) {
+	var s struct {
+		Metadata map[string]string `json:"metadata"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Metadata, err
+}
+
+// DeleteMetadatumResult contains the response body and error from a DeleteMetadatum request.
+type DeleteMetadatumResult struct {
+	gophercloud.ErrResult
+}
