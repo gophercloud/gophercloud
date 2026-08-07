@@ -23,6 +23,15 @@ func (r commonResult) Extract() (*SubnetPool, error) {
 	return s.SubnetPool, err
 }
 
+// Extract interprets a PrefixesOpsResult as a slice of prefix strings.
+func (r PrefixesOpsResult) Extract() ([]string, error) {
+	var s struct {
+		Prefixes []string `json:"prefixes"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Prefixes, err
+}
+
 // GetResult represents the result of a get operation. Call its Extract
 // method to interpret it as a SubnetPool.
 type GetResult struct {
@@ -38,6 +47,12 @@ type CreateResult struct {
 // UpdateResult represents the result of an update operation. Call its Extract
 // method to interpret it as a SubnetPool.
 type UpdateResult struct {
+	commonResult
+}
+
+// PrefixesOpsResult represents the result of an add/remove prefixes
+// operation. Call its Extract method to interpret it as a []string.
+type PrefixesOpsResult struct {
 	commonResult
 }
 
