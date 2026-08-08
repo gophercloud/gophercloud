@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/migrations"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -26,6 +27,16 @@ func TestMigrate(t *testing.T) {
 
 	err = servers.Migrate(context.TODO(), client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	allPages, err := migrations.List(client, migrations.ListOpts{
+		InstanceID: &server.ID,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allMigrations, err := migrations.ExtractMigrations(allPages)
+	th.AssertNoErr(t, err)
+
+	th.AssertIntGreaterOrEqual(t, len(allMigrations), 1)
 }
 
 func TestLiveMigrate(t *testing.T) {
@@ -52,4 +63,14 @@ func TestLiveMigrate(t *testing.T) {
 
 	err = servers.LiveMigrate(context.TODO(), client, server.ID, liveMigrateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
+
+	allPages, err := migrations.List(client, migrations.ListOpts{
+		InstanceID: &server.ID,
+	}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allMigrations, err := migrations.ExtractMigrations(allPages)
+	th.AssertNoErr(t, err)
+
+	th.AssertIntGreaterOrEqual(t, len(allMigrations), 1)
 }
