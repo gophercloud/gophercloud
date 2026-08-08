@@ -133,6 +133,85 @@ var GetParamJSON = `
 }
 `
 
+var CreateParamReq = `
+{
+  "configuration-parameter": {
+    "data_type": "integer",
+    "max_size": 65535,
+    "min_size": 64,
+    "name": "connect_timeout",
+    "restart_required": 0
+  }
+}
+`
+
+var CreateParamZeroReq = `
+{
+  "configuration-parameter": {
+    "data_type": "integer",
+    "max_size": 0,
+    "min_size": 0,
+    "name": "connect_timeout",
+    "restart_required": 0
+  }
+}
+`
+
+var CreateParamJSON = `
+{
+  "configuration-parameters": [
+    {
+      "datastore_version_id": "b00000b0-00b0-0b00-00b0-000b000000bb",
+      "max": 65535,
+      "min": 64,
+      "name": "connect_timeout",
+      "restart_required": false,
+      "type": "integer"
+    }
+  ]
+}
+`
+
+var CreateParamZeroJSON = `
+{
+  "configuration-parameters": [
+    {
+      "datastore_version_id": "b00000b0-00b0-0b00-00b0-000b000000bb",
+      "max": 0,
+      "min": 0,
+      "name": "connect_timeout",
+      "restart_required": false,
+      "type": "integer"
+    }
+  ]
+}
+`
+
+var UpdateParamReq = `
+{
+  "configuration-parameter": {
+    "data_type": "integer",
+    "max_size": 65535,
+    "min_size": 64,
+    "name": "connect_timeout",
+    "restart_required": 0
+  }
+}
+`
+
+var UpdateParamJSON = `
+{
+  "datastore_version_id": "b00000b0-00b0-0b00-00b0-000b000000bb",
+  "deleted": 0,
+  "deleted_at": null,
+  "max_size": 65535,
+  "min_size": 64,
+  "name": "connect_timeout",
+  "restart_required": false,
+  "type": "integer"
+}
+`
+
 var ExampleConfig = configurations.Config{
 	Created:              timeVal,
 	DatastoreName:        "mysql",
