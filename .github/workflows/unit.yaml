@@ -21,7 +21,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version-file: 'go.mod'
+          go-version: 1.26.4
           cache: true
       - name: Setup environment
         run: |
@@ -29,6 +29,10 @@ jobs:
           cd "$(mktemp -d)"
           go mod init unit_tests
           go install github.com/alexfalkowski/gocovmerge@v1.4.0
+      - name: Run containerinfra unit tests
+        run: |
+          go test -v -run TestCreateCertificates -count 10 ./openstack/containerinfra/v1/certificates/testing
+          go run gotest.tools/gotestsum@v1.13.0 --format testname -- -v -shuffle on -run TestCreateCertificates -count 10 ./openstack/containerinfra/v1/certificates/testing
       - name: Run unit tests
         run: |
           make unit
