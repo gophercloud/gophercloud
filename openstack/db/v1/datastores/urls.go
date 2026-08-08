@@ -6,6 +6,14 @@ func baseURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("datastores")
 }
 
+func createVersionURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL("mgmt", "datastore-versions")
+}
+
+func mgmtVersionURL(c *gophercloud.ServiceClient, versionID string) string {
+	return c.ServiceURL("mgmt", "datastore-versions", versionID)
+}
+
 func resourceURL(c *gophercloud.ServiceClient, dsID string) string {
 	return c.ServiceURL("datastores", dsID)
 }
