@@ -84,6 +84,10 @@ type ProviderClient struct {
 	// authentication functions for different Identity service versions.
 	ReauthFunc func(context.Context) error
 
+	// AuthenticatedHeadersFunc returns the headers used to authenticate service
+	// requests. When unset, X-Auth-Token is used.
+	AuthenticatedHeadersFunc func(token string) map[string]string
+
 	// Throwaway determines whether if this client is a throw-away client. It's a copy of user's provider client
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
 	Throwaway bool
@@ -144,16 +148,11 @@ func (f *reauthFuture) Get(ctx context.Context) error {
 	}
 }
 
-// AuthenticatedHeaders returns a map of HTTP headers that are common for all
-// authenticated service requests. Blocks if Reauthenticate is in progress.
-func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
-	headers, _ := client.authenticatedHeaders(context.Background())
-	return headers
-}
-
-func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[string]string, error) {
+// authenticatedHeaders returns the authentication headers and the token used
+// to build them.
+func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[string]string, string, error) {
 	if client.IsThrowaway() {
-		return nil, nil
+		return nil, "", nil
 	}
 	if client.reauthmut != nil {
 		// If a Reauthenticate is in progress, wait for it to complete.
@@ -162,15 +161,25 @@ func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[str
 		client.reauthmut.Unlock()
 		if ongoing != nil {
 			if err := ongoing.Get(ctx); err != nil && ctx.Err() != nil {
-				return nil, ctx.Err()
+				return nil, "", ctx.Err()
 			}
 		}
 	}
 	t := client.Token()
 	if t == "" {
-		return nil, nil
+		return nil, "", nil
 	}
-	return map[string]string{"X-Auth-Token": t}, nil
+	if client.AuthenticatedHeadersFunc != nil {
+		return client.AuthenticatedHeadersFunc(t), t, nil
+	}
+	return map[string]string{"X-Auth-Token": t}, t, nil
+}
+
+// AuthenticatedHeaders returns a map of HTTP headers that are common for all
+// authenticated service requests. Blocks if Reauthenticate is in progress.
+func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
+	headers, _, _ := client.authenticatedHeaders(context.Background())
+	return headers
 }
 
 // UseTokenLock creates a mutex that is used to allow safe concurrent access to the auth token.
@@ -421,15 +430,13 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	}
 
 	// get latest token from client
-	authenticatedHeaders, err := client.authenticatedHeaders(ctx)
+	authenticatedHeaders, prereqtok, err := client.authenticatedHeaders(ctx)
 	if err != nil {
 		return nil, err
 	}
 	for k, v := range authenticatedHeaders {
 		req.Header.Set(k, v)
 	}
-
-	prereqtok := req.Header.Get("X-Auth-Token")
 
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
