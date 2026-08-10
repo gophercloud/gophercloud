@@ -133,6 +133,22 @@ type ListOpts struct {
 	Marker         string `q:"marker"`
 	SortKey        string `q:"sort_key"`
 	SortDir        string `q:"sort_dir"`
+
+	// Tags filters L7 policies that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	Tags []string `q:"tags"`
+
+	// TagsAny filters L7 policies that contain at least one of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsAny []string `q:"tags-any"`
+
+	// TagsNot excludes L7 policies that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNot []string `q:"not-tags"`
+
+	// TagsNotAny excludes L7 policies that contain any of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNotAny []string `q:"not-tags-any"`
 }
 
 // ToL7PolicyListQuery formats a ListOpts into a query string.
@@ -338,6 +354,22 @@ type ListRulesOpts struct {
 	Marker       string      `q:"marker"`
 	SortKey      string      `q:"sort_key"`
 	SortDir      string      `q:"sort_dir"`
+
+	// Tags filters L7 rules that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	Tags []string `q:"tags"`
+
+	// TagsAny filters L7 rules that contain at least one of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsAny []string `q:"tags-any"`
+
+	// TagsNot excludes L7 rules that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNot []string `q:"not-tags"`
+
+	// TagsNotAny excludes L7 rules that contain any of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNotAny []string `q:"not-tags-any"`
 }
 
 // ToRulesListQuery formats a ListOpts into a query string.
