@@ -51,7 +51,7 @@ type AuthOptions struct {
 	// TokenCache enables unscoped token reuse and requires CacheNamespace.
 	TokenCache tokencache.Cache
 
-	// CacheNamespace identifies the local WebSSO profile.
+	// CacheNamespace identifies the expected browser login profile.
 	CacheNamespace string
 }
 

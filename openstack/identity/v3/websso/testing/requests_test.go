@@ -58,6 +58,39 @@ func TestBrowserOpenerFailureIsReturned(t *testing.T) {
 	}
 }
 
+func TestWebSSOListenerStartsBeforeBrowser(t *testing.T) {
+	fakeKeystone := th.SetupHTTP()
+	defer fakeKeystone.Teardown()
+	HandleWebSSOTokenValidation(t, fakeKeystone, testToken)
+
+	result := websso.Authenticate(context.Background(), serviceClient(fakeKeystone.Endpoint()), &websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		RedirectHost:         "127.0.0.1",
+		RedirectPort:         findAvailablePort(t),
+		BrowserOpener: func(target string) error {
+			parsed, err := url.Parse(target)
+			if err != nil {
+				return err
+			}
+			response, err := http.PostForm(parsed.Query().Get("origin"), url.Values{"token": {testToken}})
+			if err != nil {
+				return err
+			}
+			defer response.Body.Close()
+			if response.StatusCode != http.StatusOK {
+				return fmt.Errorf("unexpected callback status: %s", response.Status)
+			}
+			return nil
+		},
+	})
+
+	th.AssertNoErr(t, result.Err)
+	token, err := result.ExtractTokenID()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, testToken, token)
+}
+
 func TestCacheRequiresExplicitNamespace(t *testing.T) {
 	client := serviceClient("http://identity.example/v3/")
 	result := websso.Authenticate(context.Background(), client, &websso.AuthOptions{
