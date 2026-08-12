@@ -51,6 +51,21 @@ func TestCacheKeyIsNonEmptyAndFlowIsolated(t *testing.T) {
 	}
 }
 
+func TestWebSSOCacheKeySeparatesNamespaces(t *testing.T) {
+	endpoint := "https://keystone.example.com/v3"
+	base := websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		CacheNamespace:       "account-a",
+	}
+	other := base
+	other.CacheNamespace = "account-b"
+
+	if first, second := websso.CacheKey(endpoint, &base), websso.CacheKey(endpoint, &other); first == second {
+		t.Fatalf("different cache namespaces share key %q", first)
+	}
+}
+
 func TestWebSSOCacheKeyIgnoresScope(t *testing.T) {
 	endpoint := "https://keystone.example.com/v3"
 	base := websso.AuthOptions{
