@@ -82,6 +82,30 @@ func TestRedirectHostMustBeLoopback(t *testing.T) {
 	}
 }
 
+func TestInvalidScopeDoesNotOpenBrowser(t *testing.T) {
+	client := serviceClient("http://identity.example/v3/")
+	opened := false
+	result := websso.Authenticate(context.Background(), client, &websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		Scope: tokens.Scope{
+			ProjectName: "project",
+		},
+		RedirectPort: findAvailablePort(t),
+		BrowserOpener: func(string) error {
+			opened = true
+			return errors.New("browser should not open")
+		},
+	})
+
+	if result.Err == nil || !strings.Contains(result.Err.Error(), "DomainID or DomainName") {
+		t.Fatalf("expected invalid scope error, got %v", result.Err)
+	}
+	if opened {
+		t.Fatal("browser opened before scope validation")
+	}
+}
+
 func TestMalformedContentTypeDoesNotConsumeCallback(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

@@ -2,14 +2,17 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokencache"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/websso"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -38,14 +41,150 @@ func TestCacheKeyIsNonEmptyAndFlowIsolated(t *testing.T) {
 	if webSSOKey == "" {
 		t.Fatal("expected non-empty WebSSO cache key")
 	}
-	oidcKey := tokencache.Key(tokencache.KeyOptions{
-		Flow:             "oidc-client-credentials",
+	otherKey := tokencache.Key(tokencache.KeyOptions{
+		Flow:             "other-flow",
 		IdentityEndpoint: endpoint,
 		Principal:        "profile",
 	})
-	if webSSOKey == oidcKey {
-		t.Fatalf("OIDC and WebSSO must not share cache key %q", webSSOKey)
+	if webSSOKey == otherKey {
+		t.Fatalf("authentication flows must not share cache key %q", webSSOKey)
 	}
+}
+
+func TestWebSSOCacheKeyIgnoresScope(t *testing.T) {
+	endpoint := "https://keystone.example.com/v3"
+	base := websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		CacheNamespace:       "profile",
+	}
+	projectA := base
+	projectA.Scope = tokens.Scope{ProjectID: "project-a"}
+	projectB := base
+	projectB.Scope = tokens.Scope{ProjectID: "project-b"}
+
+	if first, second := websso.CacheKey(endpoint, &projectA), websso.CacheKey(endpoint, &projectB); first != second {
+		t.Fatalf("scope changed unscoped token cache key: %q != %q", first, second)
+	}
+}
+
+func TestWebSSOCacheReusesUnscopedTokenAcrossProjects(t *testing.T) {
+	fakeKeystone := th.SetupHTTP()
+	defer fakeKeystone.Teardown()
+
+	const (
+		unscopedToken = "unscoped-token"
+		projectAToken = "project-a-token"
+		projectBToken = "project-b-token"
+	)
+	var scopeRequests atomic.Int32
+	fakeKeystone.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case http.MethodGet:
+			th.TestHeader(t, r, "X-Subject-Token", unscopedToken)
+			w.Header().Set("X-Subject-Token", unscopedToken)
+			fmt.Fprint(w, tokenResponse(""))
+		case http.MethodPost:
+			var project, token string
+			switch scopeRequests.Add(1) {
+			case 1:
+				project, token = "project-a", projectAToken
+			case 2:
+				project, token = "project-b", projectBToken
+			default:
+				t.Fatal("unexpected extra scope request")
+			}
+			th.TestJSONRequest(t, r, fmt.Sprintf(`{"auth":{"identity":{"methods":["token"],"token":{"id":%q}},"scope":{"project":{"id":%q}}}}`, unscopedToken, project))
+			w.Header().Set("X-Subject-Token", token)
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprint(w, tokenResponse(project))
+		default:
+			t.Fatalf("unexpected method %s", r.Method)
+		}
+	})
+
+	cache := newMemoryCache()
+	client := gophercloud.ServiceClient{
+		ProviderClient: newTestProviderClient(),
+		Endpoint:       fakeKeystone.Endpoint() + "v3/",
+	}
+	base := websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		Timeout:              10 * time.Second,
+		TokenCache:           cache,
+		CacheNamespace:       "profile",
+	}
+
+	projectA := base
+	projectA.Scope = tokens.Scope{ProjectID: "project-a"}
+	projectA.RedirectPort = findAvailablePort(t)
+	results := startWebSSO(context.Background(), &client, &projectA)
+	response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", projectA.RedirectPort), url.Values{"token": {unscopedToken}})
+	th.AssertNoErr(t, err)
+	response.Body.Close()
+	result := <-results
+	th.AssertNoErr(t, result.Err)
+	token, err := result.ExtractTokenID()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, projectAToken, token)
+
+	projectB := base
+	projectB.Scope = tokens.Scope{ProjectID: "project-b"}
+	projectB.RedirectPort = findAvailablePort(t)
+	projectB.BrowserOpener = func(string) error { return errors.New("browser opened on cache hit") }
+	result = websso.Authenticate(context.Background(), &client, &projectB)
+	th.AssertNoErr(t, result.Err)
+	token, err = result.ExtractTokenID()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, projectBToken, token)
+	th.CheckEquals(t, int32(2), scopeRequests.Load())
+}
+
+func TestWebSSOCacheValidationCancellationDoesNotOpenBrowser(t *testing.T) {
+	cache := newMemoryCache()
+	endpoint := "http://127.0.0.1:1/v3/"
+	opts := &websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		TokenCache:           cache,
+		CacheNamespace:       "profile",
+		RedirectPort:         findAvailablePort(t),
+	}
+	cacheKey := websso.CacheKey(endpoint, opts)
+	cached := fmt.Sprintf(`{"token_id":"cached-token","expires_at":%q,"endpoint":%q}`, time.Now().Add(time.Hour).UTC().Format(time.RFC3339Nano), endpoint)
+	th.AssertNoErr(t, cache.Set(cacheKey, cached))
+
+	opened := false
+	opts.BrowserOpener = func(string) error {
+		opened = true
+		return nil
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	result := websso.Authenticate(ctx, &gophercloud.ServiceClient{
+		ProviderClient: newTestProviderClient(),
+		Endpoint:       endpoint,
+	}, opts)
+
+	if !errors.Is(result.Err, context.Canceled) {
+		t.Fatalf("expected context cancellation, got %v", result.Err)
+	}
+	if opened {
+		t.Fatal("browser opened after cached token validation was canceled")
+	}
+	if value, err := cache.Get(cacheKey); err != nil || value == "" {
+		t.Fatalf("cached token removed after cancellation: value %q, error %v", value, err)
+	}
+}
+
+func tokenResponse(projectID string) string {
+	project := ""
+	if projectID != "" {
+		project = fmt.Sprintf(`,"project":{"id":%q,"name":%q,"domain":{"id":"default","name":"Default"}}`, projectID, projectID)
+	}
+	return fmt.Sprintf(`{"token":{"methods":["mapped"],"expires_at":"2035-06-03T02:19:49Z","user":{"id":"user-id","name":"user","domain":{"id":"default","name":"Default"}}%s}}`, project)
 }
 
 func newTestProviderClient() *gophercloud.ProviderClient {

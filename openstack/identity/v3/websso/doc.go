@@ -7,9 +7,9 @@ token result. The callback origin must be registered in Keystone's
 trusted_dashboard configuration. RedirectHost is restricted to loopback
 addresses so the token listener cannot be exposed on an external interface.
 
-Token caching is disabled by default. When TokenCache is set, CacheNamespace
-must identify the local login profile so unrelated browser identities cannot
-share a cached token.
+Token caching is disabled by default. When TokenCache is set, the validated
+unscoped token is reused across scopes. CacheNamespace must identify the local
+login profile so unrelated browser identities cannot share a token.
 
 Example:
 

@@ -6,6 +6,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -64,26 +66,27 @@ func (ct *cachedToken) valid(endpoint string) bool {
 	return time.Now().Add(tokenExpiryMargin).Before(ct.ExpiresAt)
 }
 
-// Load retrieves and validates a cached token against Keystone.
-func Load(ctx context.Context, client *gophercloud.ProviderClient, cache Cache, key, identityEndpoint string) (tokens.CreateResult, bool) {
+// Load retrieves and validates a cached token against Keystone. Invalid tokens
+// are cache misses; other validation errors are returned.
+func Load(ctx context.Context, client *gophercloud.ProviderClient, cache Cache, key, identityEndpoint string) (tokens.CreateResult, bool, error) {
 	var zero tokens.CreateResult
 	if client == nil || cache == nil {
-		return zero, false
+		return zero, false, nil
 	}
 
 	data, err := cache.Get(key)
 	if err != nil || data == "" {
-		return zero, false
+		return zero, false, nil
 	}
 
 	var cached cachedToken
 	if err := json.Unmarshal([]byte(data), &cached); err != nil {
 		_ = cache.Delete(key)
-		return zero, false
+		return zero, false, nil
 	}
 	if !cached.valid(identityEndpoint) {
 		_ = cache.Delete(key)
-		return zero, false
+		return zero, false, nil
 	}
 
 	endpoint := gophercloud.NormalizeURL(identityEndpoint)
@@ -91,29 +94,44 @@ func Load(ctx context.Context, client *gophercloud.ProviderClient, cache Cache, 
 		endpoint = strings.TrimRight(endpoint, "/") + "/v3/"
 	}
 	identityClient := &gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{
-			HTTPClient:        client.HTTPClient,
-			UserAgent:         client.UserAgent,
-			RetryBackoffFunc:  client.RetryBackoffFunc,
-			MaxBackoffRetries: client.MaxBackoffRetries,
-			RetryFunc:         client.RetryFunc,
-		},
-		Endpoint: endpoint,
-		Type:     "identity",
+		ProviderClient: client,
+		Endpoint:       endpoint,
+		Type:           "identity",
 	}
-
-	identityClient.SetToken(cached.TokenID)
-	result := tokens.Get(ctx, identityClient, cached.TokenID, nil)
+	result := Validate(ctx, identityClient, cached.TokenID)
 	if result.Err != nil {
-		_ = cache.Delete(key)
-		return zero, false
+		invalid := gophercloud.ResponseCodeIs(result.Err, http.StatusUnauthorized) ||
+			gophercloud.ResponseCodeIs(result.Err, http.StatusNotFound)
+		if invalid {
+			_ = cache.Delete(key)
+			return zero, false, nil
+		}
+		return zero, false, result.Err
+	}
+	return result, true, nil
+}
+
+// Validate retrieves token details from Keystone without changing client.
+func Validate(ctx context.Context, client *gophercloud.ServiceClient, tokenID string) (r tokens.CreateResult) {
+	if client == nil || client.ProviderClient == nil {
+		r.Err = fmt.Errorf("service client or provider client is nil")
+		return
 	}
 
-	var created tokens.CreateResult
-	created.Body = result.Body
-	created.Header = result.Header
-	created.Err = result.Err
-	return created, true
+	validationClient := *client
+	validationClient.ProviderClient = &gophercloud.ProviderClient{
+		TokenID:           tokenID,
+		HTTPClient:        client.HTTPClient,
+		UserAgent:         client.UserAgent,
+		RetryBackoffFunc:  client.RetryBackoffFunc,
+		MaxBackoffRetries: client.MaxBackoffRetries,
+		RetryFunc:         client.RetryFunc,
+	}
+	result := tokens.Get(ctx, &validationClient, tokenID, nil)
+	r.Body = result.Body
+	r.Header = result.Header
+	r.Err = result.Err
+	return
 }
 
 // Persist stores a successful token result. Cache errors are ignored.

@@ -177,6 +177,74 @@ func TestWebSSOCallbackHandlerAcceptsValidPost(t *testing.T) {
 	th.CheckEquals(t, UnscopedTokenID, token)
 }
 
+func TestWebSSOTokenValidationAccepts203(t *testing.T) {
+	fakeKeystone := th.SetupHTTP()
+	defer fakeKeystone.Teardown()
+
+	fakeKeystone.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodGet)
+		th.TestHeader(t, r, "X-Subject-Token", UnscopedTokenID)
+		w.Header().Set("X-Subject-Token", UnscopedTokenID)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNonAuthoritativeInfo)
+		fmt.Fprint(w, FederationAuthResponse)
+	})
+
+	client := gophercloud.ServiceClient{
+		ProviderClient: &gophercloud.ProviderClient{},
+		Endpoint:       fakeKeystone.Endpoint(),
+	}
+	port := findAvailablePort(t)
+	results := startWebSSO(context.Background(), &client, &websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		RedirectPort:         port,
+		Timeout:              10 * time.Second,
+	})
+
+	response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}})
+	th.AssertNoErr(t, err)
+	response.Body.Close()
+
+	result := <-results
+	th.AssertNoErr(t, result.Err)
+}
+
+func TestWebSSOTokenValidationFailurePreservesProviderToken(t *testing.T) {
+	fakeKeystone := th.SetupHTTP()
+	defer fakeKeystone.Teardown()
+
+	fakeKeystone.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "validation failed", http.StatusInternalServerError)
+	})
+
+	provider := newTestProviderClient()
+	provider.SetToken("existing-token")
+	client := gophercloud.ServiceClient{
+		ProviderClient: provider,
+		Endpoint:       fakeKeystone.Endpoint(),
+	}
+	port := findAvailablePort(t)
+	results := startWebSSO(context.Background(), &client, &websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		RedirectPort:         port,
+		Timeout:              10 * time.Second,
+	})
+
+	response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}})
+	th.AssertNoErr(t, err)
+	response.Body.Close()
+
+	result := <-results
+	if result.Err == nil {
+		t.Fatal("expected token validation error")
+	}
+	if provider.TokenID != "existing-token" {
+		t.Fatalf("provider token changed after validation failure: got %q", provider.TokenID)
+	}
+}
+
 func TestWebSSOCallbackRejectsWrongMethod(t *testing.T) {
 	port := findAvailablePort(t)
 
@@ -253,7 +321,12 @@ func TestWebSSOCallbackIgnoresMissingTokenThenAcceptsValidToken(t *testing.T) {
 
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
 
-	resp, err := http.PostForm(callbackURL, url.Values{"nottoken": {"abc"}})
+	resp, err := http.PostForm(callbackURL+"?token="+UnscopedTokenID, nil)
+	th.AssertNoErr(t, err)
+	resp.Body.Close()
+	th.CheckEquals(t, http.StatusBadRequest, resp.StatusCode)
+
+	resp, err = http.PostForm(callbackURL, url.Values{"nottoken": {"abc"}})
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusBadRequest, resp.StatusCode)
