@@ -48,7 +48,7 @@ type AuthOptions struct {
 	// BrowserOpener opens the WebSSO URL. It defaults to the OS browser.
 	BrowserOpener func(string) error
 
-	// TokenCache enables token reuse and requires CacheNamespace.
+	// TokenCache enables unscoped token reuse and requires CacheNamespace.
 	TokenCache tokencache.Cache
 
 	// CacheNamespace identifies the local WebSSO profile.
@@ -79,7 +79,6 @@ func CacheKey(identityEndpoint string, opts *AuthOptions) string {
 		IdentityEndpoint: identityEndpoint,
 		IdentityProvider: opts.IdentityProviderName,
 		Protocol:         opts.Protocol,
-		Scope:            opts.Scope,
 	})
 }
 
@@ -98,50 +97,60 @@ func Authenticate(ctx context.Context, client *gophercloud.ServiceClient, builde
 		r.Err = fmt.Errorf("websso: ServiceClient or ProviderClient is nil")
 		return
 	}
-
-	cacheKey := ""
-	if opts.TokenCache != nil {
-		cacheKey = CacheKey(client.Endpoint, opts)
-		if cached, ok := tokencache.Load(ctx, client.ProviderClient, opts.TokenCache, cacheKey, client.Endpoint); ok {
-			return cached
-		}
-	}
-
-	port := opts.RedirectPort
-	if port == 0 {
-		port = defaultRedirectPort
-	}
-	timeout := opts.Timeout
-	if timeout == 0 {
-		timeout = defaultTimeout
-	}
-
-	unscopedToken, err := captureToken(ctx, client, opts, port, timeout)
-	if err != nil {
-		r.Err = err
-		return
-	}
-
 	scope, err := opts.ToTokenV3ScopeMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	if scope != nil {
-		tokenOpts := &tokens.AuthOptions{TokenID: unscopedToken, Scope: opts.Scope}
-		r = tokens.Create(ctx, client, tokenOpts)
-	} else {
-		client.SetToken(unscopedToken)
-		response, err := client.Get(ctx, client.ServiceURL("auth", "tokens"), &r.Body, &gophercloud.RequestOpts{
-			MoreHeaders: map[string]string{"X-Subject-Token": unscopedToken},
-		})
-		_, r.Header, r.Err = gophercloud.ParseResponse(response, err)
+
+	var unscoped tokens.CreateResult
+	haveUnscoped := false
+	cacheKey := ""
+	if opts.TokenCache != nil {
+		cacheKey = CacheKey(client.Endpoint, opts)
+		cached, ok, err := tokencache.Load(ctx, client.ProviderClient, opts.TokenCache, cacheKey, client.Endpoint)
+		if err != nil {
+			r.Err = err
+			return
+		}
+		if ok {
+			unscoped = cached
+			haveUnscoped = true
+		}
+	}
+	if !haveUnscoped {
+		port := opts.RedirectPort
+		if port == 0 {
+			port = defaultRedirectPort
+		}
+		timeout := opts.Timeout
+		if timeout == 0 {
+			timeout = defaultTimeout
+		}
+
+		unscopedToken, err := captureToken(ctx, client, opts, port, timeout)
+		if err != nil {
+			r.Err = err
+			return
+		}
+		unscoped = tokencache.Validate(ctx, client, unscopedToken)
+		if unscoped.Err != nil {
+			return unscoped
+		}
+		if opts.TokenCache != nil {
+			tokencache.Persist(opts.TokenCache, cacheKey, client.Endpoint, unscoped)
+		}
 	}
 
-	if r.Err == nil && opts.TokenCache != nil {
-		tokencache.Persist(opts.TokenCache, cacheKey, client.Endpoint, r)
+	if scope == nil {
+		return unscoped
 	}
-	return
+	unscopedToken, err := unscoped.ExtractTokenID()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	return tokens.Create(ctx, client, &tokens.AuthOptions{TokenID: unscopedToken, Scope: opts.Scope})
 }
 
 func (opts *AuthOptions) validate() error {
@@ -197,7 +206,7 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			return
 		}
-		token := request.FormValue("token")
+		token := request.PostFormValue("token")
 		if token == "" {
 			http.Error(w, "Missing token", http.StatusBadRequest)
 			return
