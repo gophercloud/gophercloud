@@ -100,6 +100,31 @@ func TestEnumerateLinked(t *testing.T) {
 	}
 }
 
+func TestAllPagesLinkedEmpty(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{ "ints": [], "links": { "next": null } }`)
+	})
+
+	client := client.ServiceClient(fakeServer)
+
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return LinkedPageResult{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	pager := pagination.NewPager(client, fakeServer.Server.URL+"/page1", createPage)
+
+	page, err := pager.AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	actual, err := ExtractLinkedInts(page)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(actual))
+}
+
 func TestAllPagesLinked(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
