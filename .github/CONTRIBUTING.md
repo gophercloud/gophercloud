@@ -1,7 +1,7 @@
 # Contributing to Gophercloud
 
 - [New Contributor Tutorial](#new-contributor-tutorial)
-- [3 ways to get involved](#3-ways-to-get-involved)
+- [Ways to get involved](#ways-to-get-involved)
 - [Getting started](#getting-started)
 - [Tests](#tests)
 - [Style guide](#style-guide)
@@ -11,10 +11,10 @@
 For new contributors, we've put together a detailed tutorial
 [here](https://github.com/gophercloud/gophercloud/tree/main/docs/contributor-tutorial)!
 
-## 3 ways to get involved
+## Ways to get involved
 
-There are three main ways you can get involved in our open-source project, and
-each is described briefly below.
+There are several ways you can get involved in our open-source project, each
+described briefly below.
 
 ### 1. Fixing bugs
 
@@ -24,6 +24,9 @@ is central to any project. The best way to get started is by heading to our
 bugs that you think nobody is working on. It might be useful to comment on the
 thread to see the current state of the issue and if anybody has made any
 breakthroughs on it so far.
+
+New to the project? Look for issues labelled [`good first issue`](https://github.com/gophercloud/gophercloud/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+to find a good starting point.
 
 ### 2. Improving documentation
 
@@ -53,6 +56,14 @@ the contribution, submitting code which you are unfamiliar with is a risk to the
 users who will ultimately use it. See our [acceptance tests readme](/internal/acceptance/README.md)
 for information about how you can create a local development environment to
 better understand the feature you're working on.
+
+### 4. Reviewing pull requests
+
+Reviewing [open pull requests](https://github.com/gophercloud/gophercloud/pulls)
+is a valuable contribution in its own right. Fresh eyes catch bugs, improve
+code quality, and help contributors learn from each other. Feel free to leave
+comments, ask clarifying questions, or approve changes once you're satisfied
+with them.
 
 Please do not hesitate to ask questions or request clarification. Your
 contribution is very much appreciated and we are happy to work with you to get
