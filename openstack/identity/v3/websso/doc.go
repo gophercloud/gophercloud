@@ -34,5 +34,8 @@ Example:
 	if result.Err != nil {
 		panic(result.Err)
 	}
+
+See the Horizon WebSSO implementation:
+https://opendev.org/openstack/horizon/src/commit/3c5006efb4533e1cf0815fb80ede86b7a38a40bf/openstack_auth/views.py
 */
 package websso

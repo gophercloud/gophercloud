@@ -1,4 +1,4 @@
-package tokencache_test
+package testing
 
 import (
 	"testing"
