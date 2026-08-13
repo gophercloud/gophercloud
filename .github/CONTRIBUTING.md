@@ -157,7 +157,7 @@ process of testing expectations with assertions:
 import (
   "testing"
 
-  "github.com/gophercloud/gophercloud/testhelper"
+  "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestSomething(t *testing.T) {
@@ -181,19 +181,20 @@ Here is a truncated example of mocked HTTP responses:
 
 ```go
 import (
+	"context"
 	"testing"
 
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 )
 
 func TestGet(t *testing.T) {
 	// Setup the HTTP request multiplexer and server
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		// Test we're using the correct HTTP method
 		th.TestMethod(t, r, "GET")
 
@@ -220,11 +221,11 @@ func TestGet(t *testing.T) {
 	})
 
 	// Call our API operation
-	network, err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	network, err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 
 	// Assert no errors and equality
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, "ACTIVE", network.Status)
 }
 ```
 
@@ -248,28 +249,35 @@ environments in our [acceptance tests readme](/internal/acceptance/README.md).
 
 ### Running tests
 
-To run all tests:
+To run all unit tests:
 
   ```bash
-  go test -tags fixtures ./...
+  make unit
   ```
 
 To run all tests with verbose output:
 
   ```bash
-  go test -v -tags fixtures ./...
+  go test -v ./...
   ```
 
-To run tests that match certain [build tags]():
+To run a single test by name:
 
   ```bash
-  go test -tags "fixtures foo bar" ./...
+  go test -run TestCreateServer ./...
   ```
 
 To run tests for a particular sub-package:
 
   ```bash
-  cd ./path/to/package && go test -tags fixtures ./...
+  cd ./path/to/package && go test ./...
+  ```
+
+To run acceptance tests for a given service (requires a live OpenStack cloud
+and may incur charges; see the [acceptance tests readme](/internal/acceptance/README.md)):
+
+  ```bash
+  make acceptance-compute
   ```
 
 ## Style guide
