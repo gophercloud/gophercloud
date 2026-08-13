@@ -243,7 +243,7 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "<html><body><h2>Authentication successful</h2><p>You may close this window.</p></body></html>")
+		fmt.Fprint(w, "<html><body><script>window.close()</script><h2>Authentication successful</h2><p>You may close this window.</p></body></html>")
 		tokenCh <- token
 	})
 

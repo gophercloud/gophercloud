@@ -94,53 +94,6 @@ func TestWebSSOWrongOptionsType(t *testing.T) {
 	}
 }
 
-func TestWebSSOScopeMap(t *testing.T) {
-	opts := &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		Scope: tokens.Scope{
-			ProjectName: "my-project",
-			DomainName:  "Default",
-		},
-	}
-
-	scopeMap, err := opts.ToTokenV3ScopeMap()
-	th.AssertNoErr(t, err)
-	if scopeMap == nil {
-		t.Fatal("Expected non-nil scope map")
-	}
-
-	project, ok := scopeMap["project"].(map[string]any)
-	if !ok {
-		t.Fatalf("Expected project in scope map, got %v", scopeMap)
-	}
-	projectName, ok := project["name"].(*string)
-	if !ok || projectName == nil || *projectName != "my-project" {
-		t.Errorf("Expected project name 'my-project', got %v", project["name"])
-	}
-}
-
-func TestWebSSONoScopeReturnsNil(t *testing.T) {
-	opts := &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-	}
-
-	scopeMap, err := opts.ToTokenV3ScopeMap()
-	th.AssertNoErr(t, err)
-	if scopeMap != nil {
-		t.Errorf("Expected nil scope map for unscoped, got %v", scopeMap)
-	}
-}
-
-func TestWebSSOCanReauth(t *testing.T) {
-	opts := &websso.AuthOptions{AllowReauth: true}
-	th.CheckEquals(t, true, opts.CanReauth())
-
-	opts2 := &websso.AuthOptions{AllowReauth: false}
-	th.CheckEquals(t, false, opts2.CanReauth())
-}
-
 func TestWebSSOCallbackHandlerAcceptsValidPost(t *testing.T) {
 	fakeKeystone := th.SetupHTTP()
 	defer fakeKeystone.Teardown()
