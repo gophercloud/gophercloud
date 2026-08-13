@@ -30,7 +30,9 @@ type AuthOptions struct {
 	// Protocol is the Keystone federation protocol.
 	Protocol string
 
-	// AllowReauth enables automatic reauthentication.
+	// AllowReauth enables automatic reauthentication. If no cached token is
+	// available, reauthentication opens a new browser flow and concurrent
+	// requests wait for it to finish.
 	AllowReauth bool
 
 	// Scope controls the resulting Keystone token scope.
@@ -104,18 +106,24 @@ func Authenticate(ctx context.Context, client *gophercloud.ServiceClient, builde
 	}
 
 	var unscoped tokens.CreateResult
+	var unscopedToken string
 	haveUnscoped := false
 	cacheKey := ""
 	if opts.TokenCache != nil {
 		cacheKey = CacheKey(client.Endpoint, opts)
-		cached, ok, err := tokencache.Load(ctx, client.ProviderClient, opts.TokenCache, cacheKey, client.Endpoint)
-		if err != nil {
-			r.Err = err
-			return
-		}
+		cachedToken, ok := tokencache.Load(opts.TokenCache, cacheKey, client.Endpoint)
 		if ok {
-			unscoped = cached
-			haveUnscoped = true
+			cached := validateToken(ctx, client, cachedToken)
+			if cached.Err == nil {
+				unscoped = cached
+				unscopedToken = cachedToken
+				haveUnscoped = true
+			} else if gophercloud.ResponseCodeIs(cached.Err, http.StatusUnauthorized) ||
+				gophercloud.ResponseCodeIs(cached.Err, http.StatusNotFound) {
+				_ = opts.TokenCache.Delete(cacheKey)
+			} else {
+				return cached
+			}
 		}
 	}
 	if !haveUnscoped {
@@ -128,29 +136,47 @@ func Authenticate(ctx context.Context, client *gophercloud.ServiceClient, builde
 			timeout = defaultTimeout
 		}
 
-		unscopedToken, err := captureToken(ctx, client, opts, port, timeout)
+		unscopedToken, err = captureToken(ctx, client, opts, port, timeout)
 		if err != nil {
 			r.Err = err
 			return
 		}
-		unscoped = tokencache.Validate(ctx, client, unscopedToken)
+		unscoped = validateToken(ctx, client, unscopedToken)
 		if unscoped.Err != nil {
 			return unscoped
 		}
 		if opts.TokenCache != nil {
-			tokencache.Persist(opts.TokenCache, cacheKey, client.Endpoint, unscoped)
+			token, err := unscoped.ExtractToken()
+			if err == nil && token != nil {
+				tokencache.Persist(opts.TokenCache, cacheKey, client.Endpoint, unscopedToken, token.ExpiresAt)
+			}
 		}
 	}
 
 	if scope == nil {
 		return unscoped
 	}
-	unscopedToken, err := unscoped.ExtractTokenID()
-	if err != nil {
-		r.Err = err
-		return
-	}
 	return tokens.Create(ctx, client, &tokens.AuthOptions{TokenID: unscopedToken, Scope: opts.Scope})
+}
+
+func validateToken(ctx context.Context, client *gophercloud.ServiceClient, tokenID string) (r tokens.CreateResult) {
+	validationClient := *client
+	validationClient.ProviderClient = &gophercloud.ProviderClient{
+		TokenID:           tokenID,
+		HTTPClient:        client.HTTPClient,
+		UserAgent:         client.UserAgent,
+		RetryBackoffFunc:  client.RetryBackoffFunc,
+		MaxBackoffRetries: client.MaxBackoffRetries,
+		RetryFunc:         client.RetryFunc,
+	}
+	result := tokens.Get(ctx, &validationClient, tokenID, nil)
+	r.Body = result.Body
+	r.Header = result.Header
+	r.Err = result.Err
+	if r.Err == nil {
+		r.Header.Set("X-Subject-Token", tokenID)
+	}
+	return
 }
 
 func (opts *AuthOptions) validate() error {

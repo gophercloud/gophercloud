@@ -2,17 +2,11 @@
 package tokencache
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"net/http"
 	"strings"
 	"time"
-
-	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 )
 
 const tokenExpiryMargin = 5 * time.Minute
@@ -39,10 +33,6 @@ type KeyOptions struct {
 	IdentityProvider string
 	// Protocol is the Keystone federation protocol.
 	Protocol string
-	// AuthenticationEndpoint is the external identity endpoint.
-	AuthenticationEndpoint string
-	// Scope is the requested Keystone scope.
-	Scope tokens.Scope
 }
 
 // Key returns a deterministic cache identifier.
@@ -66,91 +56,39 @@ func (ct *cachedToken) valid(endpoint string) bool {
 	return time.Now().Add(tokenExpiryMargin).Before(ct.ExpiresAt)
 }
 
-// Load retrieves and validates a cached token against Keystone. Invalid tokens
-// are cache misses; other validation errors are returned.
-func Load(ctx context.Context, client *gophercloud.ProviderClient, cache Cache, key, identityEndpoint string) (tokens.CreateResult, bool, error) {
-	var zero tokens.CreateResult
-	if client == nil || cache == nil {
-		return zero, false, nil
+// Load retrieves a cached token ID. Missing, malformed, and expired entries are
+// cache misses.
+func Load(cache Cache, key, identityEndpoint string) (string, bool) {
+	if cache == nil {
+		return "", false
 	}
 
 	data, err := cache.Get(key)
 	if err != nil || data == "" {
-		return zero, false, nil
+		return "", false
 	}
 
 	var cached cachedToken
 	if err := json.Unmarshal([]byte(data), &cached); err != nil {
 		_ = cache.Delete(key)
-		return zero, false, nil
+		return "", false
 	}
-	if !cached.valid(identityEndpoint) {
+	if cached.TokenID == "" || !cached.valid(identityEndpoint) {
 		_ = cache.Delete(key)
-		return zero, false, nil
+		return "", false
 	}
-
-	endpoint := gophercloud.NormalizeURL(identityEndpoint)
-	if !strings.HasSuffix(strings.TrimRight(endpoint, "/"), "/v3") {
-		endpoint = strings.TrimRight(endpoint, "/") + "/v3/"
-	}
-	identityClient := &gophercloud.ServiceClient{
-		ProviderClient: client,
-		Endpoint:       endpoint,
-		Type:           "identity",
-	}
-	result := Validate(ctx, identityClient, cached.TokenID)
-	if result.Err != nil {
-		invalid := gophercloud.ResponseCodeIs(result.Err, http.StatusUnauthorized) ||
-			gophercloud.ResponseCodeIs(result.Err, http.StatusNotFound)
-		if invalid {
-			_ = cache.Delete(key)
-			return zero, false, nil
-		}
-		return zero, false, result.Err
-	}
-	return result, true, nil
+	return cached.TokenID, true
 }
 
-// Validate retrieves token details from Keystone without changing client.
-func Validate(ctx context.Context, client *gophercloud.ServiceClient, tokenID string) (r tokens.CreateResult) {
-	if client == nil || client.ProviderClient == nil {
-		r.Err = fmt.Errorf("service client or provider client is nil")
-		return
-	}
-
-	validationClient := *client
-	validationClient.ProviderClient = &gophercloud.ProviderClient{
-		TokenID:           tokenID,
-		HTTPClient:        client.HTTPClient,
-		UserAgent:         client.UserAgent,
-		RetryBackoffFunc:  client.RetryBackoffFunc,
-		MaxBackoffRetries: client.MaxBackoffRetries,
-		RetryFunc:         client.RetryFunc,
-	}
-	result := tokens.Get(ctx, &validationClient, tokenID, nil)
-	r.Body = result.Body
-	r.Header = result.Header
-	r.Err = result.Err
-	return
-}
-
-// Persist stores a successful token result. Cache errors are ignored.
-func Persist(cache Cache, key, identityEndpoint string, result tokens.CreateResult) {
-	if cache == nil {
-		return
-	}
-	tokenID, err := result.ExtractTokenID()
-	if err != nil || tokenID == "" {
-		return
-	}
-	token, err := result.ExtractToken()
-	if err != nil || token == nil {
+// Persist stores a token ID and expiration. Cache errors are ignored.
+func Persist(cache Cache, key, identityEndpoint, tokenID string, expiresAt time.Time) {
+	if cache == nil || tokenID == "" {
 		return
 	}
 
 	data, err := json.Marshal(cachedToken{
 		TokenID:   tokenID,
-		ExpiresAt: token.ExpiresAt,
+		ExpiresAt: expiresAt,
 		Endpoint:  identityEndpoint,
 	})
 	if err != nil {

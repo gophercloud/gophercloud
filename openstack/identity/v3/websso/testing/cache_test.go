@@ -157,6 +157,92 @@ func TestWebSSOCacheReusesUnscopedTokenAcrossProjects(t *testing.T) {
 	th.CheckEquals(t, int32(2), scopeRequests.Load())
 }
 
+func TestWebSSOKeepsKnownTokenIDAfterValidation(t *testing.T) {
+	const (
+		unscopedToken = "unscoped-token"
+		scopedToken   = "scoped-token"
+	)
+
+	tests := []struct {
+		name   string
+		cached bool
+		scoped bool
+	}{
+		{name: "browser unscoped"},
+		{name: "browser scoped", scoped: true},
+		{name: "cache scoped", cached: true, scoped: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fakeKeystone := th.SetupHTTP()
+			defer fakeKeystone.Teardown()
+
+			fakeKeystone.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				switch r.Method {
+				case http.MethodGet:
+					th.TestHeader(t, r, "X-Subject-Token", unscopedToken)
+					fmt.Fprint(w, tokenResponse(""))
+				case http.MethodPost:
+					if !tt.scoped {
+						t.Fatal("unexpected scope request")
+					}
+					th.TestJSONRequest(t, r, fmt.Sprintf(`{"auth":{"identity":{"methods":["token"],"token":{"id":%q}},"scope":{"project":{"id":"project-id"}}}}`, unscopedToken))
+					w.Header().Set("X-Subject-Token", scopedToken)
+					w.WriteHeader(http.StatusCreated)
+					fmt.Fprint(w, tokenResponse("project-id"))
+				default:
+					t.Fatalf("unexpected method %s", r.Method)
+				}
+			})
+
+			cache := newMemoryCache()
+			client := gophercloud.ServiceClient{
+				ProviderClient: newTestProviderClient(),
+				Endpoint:       fakeKeystone.Endpoint() + "v3/",
+			}
+			opts := &websso.AuthOptions{
+				IdentityProviderName: "my-idp",
+				Protocol:             "openid",
+				RedirectPort:         findAvailablePort(t),
+				Timeout:              10 * time.Second,
+			}
+			if tt.scoped {
+				opts.Scope = tokens.Scope{ProjectID: "project-id"}
+			}
+			if tt.cached {
+				opts.TokenCache = cache
+				opts.CacheNamespace = "profile"
+				key := websso.CacheKey(client.Endpoint, opts)
+				cached := fmt.Sprintf(`{"token_id":%q,"expires_at":%q,"endpoint":%q}`, unscopedToken, time.Now().Add(time.Hour).UTC().Format(time.RFC3339Nano), client.Endpoint)
+				th.AssertNoErr(t, cache.Set(key, cached))
+				opts.BrowserOpener = func(string) error { return errors.New("browser opened on cache hit") }
+			}
+
+			var result tokens.CreateResult
+			if tt.cached {
+				result = websso.Authenticate(context.Background(), &client, opts)
+			} else {
+				results := startWebSSO(context.Background(), &client, opts)
+				response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", opts.RedirectPort), url.Values{"token": {unscopedToken}})
+				th.AssertNoErr(t, err)
+				response.Body.Close()
+				result = <-results
+			}
+
+			th.AssertNoErr(t, result.Err)
+			tokenID, err := result.ExtractTokenID()
+			th.AssertNoErr(t, err)
+			wantToken := unscopedToken
+			if tt.scoped {
+				wantToken = scopedToken
+			}
+			th.CheckEquals(t, wantToken, tokenID)
+		})
+	}
+}
+
 func TestWebSSOCacheValidationCancellationDoesNotOpenBrowser(t *testing.T) {
 	cache := newMemoryCache()
 	endpoint := "http://127.0.0.1:1/v3/"
