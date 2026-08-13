@@ -71,46 +71,39 @@ it merged.
 
 ## Getting Started
 
-As a contributor you will need to setup your workspace in a slightly different
-way than just downloading it. Here are the basic instructions:
+As a contributor you will need to setup your workspace. Here are the basic
+instructions:
 
-1. Configure your `$GOPATH` and run `go get` as described in the main
-[README](/README.md#how-to-install) but add `-tags "fixtures acceptance"` to
-get dependencies for unit and acceptance tests.
-
-   ```bash
-   go get -tags "fixtures acceptance" github.com/gophercloud/gophercloud
-   ```
-
-2. Move into the directory that houses your local repository:
+1. Fork the `gophercloud/gophercloud` repository on GitHub, then clone your
+fork:
 
    ```bash
-   cd ${GOPATH}/src/github.com/gophercloud/gophercloud
+   git clone git@github.com:<my_username>/gophercloud.git
+   cd gophercloud
    ```
 
-3. Fork the `gophercloud/gophercloud` repository and update your remote refs. You
-will need to rename the `origin` remote branch to `upstream`, and add your
-fork as `origin` instead:
+2. Add the upstream repository as a remote so you can keep your fork up to
+date:
 
    ```bash
-   git remote rename origin upstream
-   git remote add origin git@github.com:<my_username>/gophercloud.git
+   git remote add upstream https://github.com/gophercloud/gophercloud.git
    ```
 
-4. Checkout the latest development branch:
+3. Checkout the latest development branch:
 
    ```bash
    git checkout main
+   git pull upstream main
    ```
 
-5. If you're working on something (discussed more in detail below), you will
+4. If you're working on something (discussed more in detail above), you will
 need to checkout a new feature branch:
 
    ```bash
    git checkout -b my-new-feature
    ```
 
-6. Use a standard text editor or IDE of your choice to make your changes to the code or documentation. Once finished, commit them.
+5. Use a standard text editor or IDE of your choice to make your changes to the code or documentation. Once finished, commit them.
 
    ```bash
    git status
@@ -118,7 +111,24 @@ need to checkout a new feature branch:
    git commit
    ```
 
-7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/main/docs/STYLEGUIDE.md).
+6. Run checks locally before opening or updating your Pull Request:
+
+   ```bash
+   make unit     # run unit tests
+   make lint     # run golangci-lint (requires docker or podman)
+   make format   # run gofmt -s
+   ```
+
+   If your change should also be validated against a real OpenStack cloud,
+   see our [acceptance tests readme](/internal/acceptance/README.md).
+
+7. Before opening the PR, make sure a [GitHub issue](https://github.com/gophercloud/gophercloud/issues)
+exists for non-trivial changes and has been acknowledged by a core
+contributor. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/),
+following our [Style Guide](/docs/STYLEGUIDE.md). Your PR must also carry one
+of the `semver:patch`, `semver:minor`, or `semver:major` labels described in
+the [release documentation](/RELEASE.md#the-semver-label). CI will block the
+merge until that label is set.
 
 > Further information about using Git can be found [here](https://git-scm.com/book/en/v2).
 
