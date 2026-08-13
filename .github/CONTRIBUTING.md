@@ -1,20 +1,35 @@
 # Contributing to Gophercloud
 
 - [New Contributor Tutorial](#new-contributor-tutorial)
-- [3 ways to get involved](#3-ways-to-get-involved)
+- [Communication](#communication)
+- [Ways to get involved](#ways-to-get-involved)
 - [Getting started](#getting-started)
 - [Tests](#tests)
-- [Style guide](#basic-style-guide)
+- [Style guide](#style-guide)
+- [Becoming a maintainer](#becoming-a-maintainer)
+- [License](#license)
 
 ## New Contributor Tutorial
 
 For new contributors, we've put together a detailed tutorial
 [here](https://github.com/gophercloud/gophercloud/tree/main/docs/contributor-tutorial)!
 
-## 3 ways to get involved
+## Communication
 
-There are three main ways you can get involved in our open-source project, and
-each is described briefly below.
+- **Slack**: Join us on Kubernetes Slack in
+  [#gophercloud](https://kubernetes.slack.com/archives/C05G4NJ6P6X). Visit
+  [slack.k8s.io](https://slack.k8s.io) for an invitation.
+- **GitHub Issues**: For bug reports, feature requests, and design
+  discussions, use our [bug tracker](https://github.com/gophercloud/gophercloud/issues).
+
+Please do not hesitate to ask questions or request clarification. Your
+contribution is very much appreciated and we are happy to work with you to get
+it merged.
+
+## Ways to get involved
+
+There are several ways you can get involved in our open-source project, each
+described briefly below.
 
 ### 1. Fixing bugs
 
@@ -24,6 +39,9 @@ is central to any project. The best way to get started is by heading to our
 bugs that you think nobody is working on. It might be useful to comment on the
 thread to see the current state of the issue and if anybody has made any
 breakthroughs on it so far.
+
+New to the project? Look for issues labelled [`good first issue`](https://github.com/gophercloud/gophercloud/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+to find a good starting point.
 
 ### 2. Improving documentation
 
@@ -50,56 +68,53 @@ ready for review, you can remove the `[wip]` tag and request a review.
 We ask that you do not submit a feature that you have not spent time researching
 and testing first-hand in an actual OpenStack environment. While we appreciate
 the contribution, submitting code which you are unfamiliar with is a risk to the
-users who will ultimately use it. See our [acceptance tests readme](/acceptance)
+users who will ultimately use it. See our [acceptance tests readme](/internal/acceptance/README.md)
 for information about how you can create a local development environment to
 better understand the feature you're working on.
 
-Please do not hesitate to ask questions or request clarification. Your
-contribution is very much appreciated and we are happy to work with you to get
-it merged.
+### 4. Reviewing pull requests
+
+Reviewing [open pull requests](https://github.com/gophercloud/gophercloud/pulls)
+is a valuable contribution in its own right. Fresh eyes catch bugs, improve
+code quality, and help contributors learn from each other. Feel free to leave
+comments, ask clarifying questions, or approve changes once you're satisfied
+with them.
 
 ## Getting Started
 
-As a contributor you will need to setup your workspace in a slightly different
-way than just downloading it. Here are the basic instructions:
+As a contributor you will need to setup your workspace. Here are the basic
+instructions:
 
-1. Configure your `$GOPATH` and run `go get` as described in the main
-[README](/README.md#how-to-install) but add `-tags "fixtures acceptance"` to
-get dependencies for unit and acceptance tests.
-
-   ```bash
-   go get -tags "fixtures acceptance" github.com/gophercloud/gophercloud
-   ```
-
-2. Move into the directory that houses your local repository:
+1. Fork the `gophercloud/gophercloud` repository on GitHub, then clone your
+fork:
 
    ```bash
-   cd ${GOPATH}/src/github.com/gophercloud/gophercloud
+   git clone git@github.com:<my_username>/gophercloud.git
+   cd gophercloud
    ```
 
-3. Fork the `gophercloud/gophercloud` repository and update your remote refs. You
-will need to rename the `origin` remote branch to `upstream`, and add your
-fork as `origin` instead:
+2. Add the upstream repository as a remote so you can keep your fork up to
+date:
 
    ```bash
-   git remote rename origin upstream
-   git remote add origin git@github.com:<my_username>/gophercloud.git
+   git remote add upstream https://github.com/gophercloud/gophercloud.git
    ```
 
-4. Checkout the latest development branch:
+3. Checkout the latest development branch:
 
    ```bash
    git checkout main
+   git pull upstream main
    ```
 
-5. If you're working on something (discussed more in detail below), you will
+4. If you're working on something (discussed more in detail above), you will
 need to checkout a new feature branch:
 
    ```bash
    git checkout -b my-new-feature
    ```
 
-6. Use a standard text editor or IDE of your choice to make your changes to the code or documentation. Once finished, commit them.
+5. Use a standard text editor or IDE of your choice to make your changes to the code or documentation. Once finished, commit them.
 
    ```bash
    git status
@@ -107,7 +122,24 @@ need to checkout a new feature branch:
    git commit
    ```
 
-7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/main/docs/STYLEGUIDE.md).
+6. Run checks locally before opening or updating your Pull Request:
+
+   ```bash
+   make unit     # run unit tests
+   make lint     # run golangci-lint (requires docker or podman)
+   make format   # run gofmt -s
+   ```
+
+   If your change should also be validated against a real OpenStack cloud,
+   see our [acceptance tests readme](/internal/acceptance/README.md).
+
+7. Before opening the PR, make sure a [GitHub issue](https://github.com/gophercloud/gophercloud/issues)
+exists for non-trivial changes and has been acknowledged by a core
+contributor. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/),
+following our [Style Guide](/docs/STYLEGUIDE.md). Your PR must also carry one
+of the `semver:patch`, `semver:minor`, or `semver:major` labels described in
+the [release documentation](/RELEASE.md#the-semver-label). CI will block the
+merge until that label is set.
 
 > Further information about using Git can be found [here](https://git-scm.com/book/en/v2).
 
@@ -136,7 +168,7 @@ process of testing expectations with assertions:
 import (
   "testing"
 
-  "github.com/gophercloud/gophercloud/testhelper"
+  "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
 func TestSomething(t *testing.T) {
@@ -160,19 +192,20 @@ Here is a truncated example of mocked HTTP responses:
 
 ```go
 import (
+	"context"
 	"testing"
 
-	th "github.com/gophercloud/gophercloud/testhelper"
-	fake "github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	fake "github.com/gophercloud/gophercloud/v2/testhelper/client"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 )
 
 func TestGet(t *testing.T) {
 	// Setup the HTTP request multiplexer and server
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
 
-	th.Mux.HandleFunc("/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		// Test we're using the correct HTTP method
 		th.TestMethod(t, r, "GET")
 
@@ -199,11 +232,11 @@ func TestGet(t *testing.T) {
 	})
 
 	// Call our API operation
-	network, err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	network, err := networks.Get(context.TODO(), fake.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 
 	// Assert no errors and equality
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, "ACTIVE", network.Status)
 }
 ```
 
@@ -223,34 +256,60 @@ teardown procedures, it is always worth manually checking that resources are
 deleted after the test suite finishes.
 
 We provide detailed information about how to set up local acceptance test
-environments in our [acceptance tests readme](/acceptance).
+environments in our [acceptance tests readme](/internal/acceptance/README.md).
 
 ### Running tests
 
-To run all tests:
+To run all unit tests:
 
   ```bash
-  go test -tags fixtures ./...
+  make unit
   ```
 
 To run all tests with verbose output:
 
   ```bash
-  go test -v -tags fixtures ./...
+  go test -v ./...
   ```
 
-To run tests that match certain [build tags]():
+To run a single test by name:
 
   ```bash
-  go test -tags "fixtures foo bar" ./...
+  go test -run TestCreateServer ./...
   ```
 
 To run tests for a particular sub-package:
 
   ```bash
-  cd ./path/to/package && go test -tags fixtures ./...
+  cd ./path/to/package && go test ./...
+  ```
+
+To run acceptance tests for a given service (requires a live OpenStack cloud
+and may incur charges; see the [acceptance tests readme](/internal/acceptance/README.md)):
+
+  ```bash
+  make acceptance-compute
   ```
 
 ## Style guide
 
 See [here](/docs/STYLEGUIDE.md)
+
+## Becoming a maintainer
+
+Gophercloud does not have a formal, documented process for becoming a
+maintainer (referred to in this guide and elsewhere as a "core contributor"
+or "core reviewer"). In practice, maintainer status is granted informally,
+based on sustained, high-quality contributions over time: code, code
+reviews, and helping other contributors in issues, pull requests, and on
+Slack.
+
+If you've been contributing consistently and are interested in taking on a
+maintainer role, feel free to raise it in [#gophercloud on Slack](https://kubernetes.slack.com/archives/C05G4NJ6P6X)
+or with an existing maintainer.
+
+## License
+
+Gophercloud is licensed under the [Apache License 2.0](/LICENSE). By
+contributing, you agree that your contributions will be licensed under the
+same terms.
