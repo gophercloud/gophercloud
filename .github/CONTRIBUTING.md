@@ -4,7 +4,7 @@
 - [3 ways to get involved](#3-ways-to-get-involved)
 - [Getting started](#getting-started)
 - [Tests](#tests)
-- [Style guide](#basic-style-guide)
+- [Style guide](#style-guide)
 
 ## New Contributor Tutorial
 
@@ -50,7 +50,7 @@ ready for review, you can remove the `[wip]` tag and request a review.
 We ask that you do not submit a feature that you have not spent time researching
 and testing first-hand in an actual OpenStack environment. While we appreciate
 the contribution, submitting code which you are unfamiliar with is a risk to the
-users who will ultimately use it. See our [acceptance tests readme](/acceptance)
+users who will ultimately use it. See our [acceptance tests readme](/internal/acceptance/README.md)
 for information about how you can create a local development environment to
 better understand the feature you're working on.
 
@@ -223,7 +223,7 @@ teardown procedures, it is always worth manually checking that resources are
 deleted after the test suite finishes.
 
 We provide detailed information about how to set up local acceptance test
-environments in our [acceptance tests readme](/acceptance).
+environments in our [acceptance tests readme](/internal/acceptance/README.md).
 
 ### Running tests
 
