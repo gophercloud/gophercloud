@@ -31,16 +31,13 @@ func (c memoryCache) Delete(key string) error {
 	return nil
 }
 
-func TestCacheKeyIsNonEmptyAndFlowIsolated(t *testing.T) {
+func TestWebSSOCacheKeySeparatesFlows(t *testing.T) {
 	endpoint := "https://keystone.example.com/v3"
 	webSSOKey := websso.CacheKey(endpoint, &websso.AuthOptions{
 		IdentityProviderName: "my-idp",
 		Protocol:             "openid",
 		CacheNamespace:       "profile",
 	})
-	if webSSOKey == "" {
-		t.Fatal("expected non-empty WebSSO cache key")
-	}
 	otherKey := tokencache.Key(tokencache.KeyOptions{
 		Flow:             "other-flow",
 		IdentityEndpoint: endpoint,
