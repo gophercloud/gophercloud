@@ -84,8 +84,8 @@ func HandleGetCertificateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 }
 
 func HandleCreateCertificateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
-	fakeServer.Mux.HandleFunc("/v1/certificates/", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
+	fakeServer.Mux.HandleFunc("/v1/certificates", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
