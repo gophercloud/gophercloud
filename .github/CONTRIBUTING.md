@@ -1,15 +1,30 @@
 # Contributing to Gophercloud
 
 - [New Contributor Tutorial](#new-contributor-tutorial)
+- [Communication](#communication)
 - [Ways to get involved](#ways-to-get-involved)
 - [Getting started](#getting-started)
 - [Tests](#tests)
 - [Style guide](#style-guide)
+- [Becoming a maintainer](#becoming-a-maintainer)
+- [License](#license)
 
 ## New Contributor Tutorial
 
 For new contributors, we've put together a detailed tutorial
 [here](https://github.com/gophercloud/gophercloud/tree/main/docs/contributor-tutorial)!
+
+## Communication
+
+- **Slack**: Join us on Kubernetes Slack in
+  [#gophercloud](https://kubernetes.slack.com/archives/C05G4NJ6P6X). Visit
+  [slack.k8s.io](https://slack.k8s.io) for an invitation.
+- **GitHub Issues**: For bug reports, feature requests, and design
+  discussions, use our [bug tracker](https://github.com/gophercloud/gophercloud/issues).
+
+Please do not hesitate to ask questions or request clarification. Your
+contribution is very much appreciated and we are happy to work with you to get
+it merged.
 
 ## Ways to get involved
 
@@ -64,10 +79,6 @@ is a valuable contribution in its own right. Fresh eyes catch bugs, improve
 code quality, and help contributors learn from each other. Feel free to leave
 comments, ask clarifying questions, or approve changes once you're satisfied
 with them.
-
-Please do not hesitate to ask questions or request clarification. Your
-contribution is very much appreciated and we are happy to work with you to get
-it merged.
 
 ## Getting Started
 
@@ -283,3 +294,22 @@ and may incur charges; see the [acceptance tests readme](/internal/acceptance/RE
 ## Style guide
 
 See [here](/docs/STYLEGUIDE.md)
+
+## Becoming a maintainer
+
+Gophercloud does not have a formal, documented process for becoming a
+maintainer (referred to in this guide and elsewhere as a "core contributor"
+or "core reviewer"). In practice, maintainer status is granted informally,
+based on sustained, high-quality contributions over time: code, code
+reviews, and helping other contributors in issues, pull requests, and on
+Slack.
+
+If you've been contributing consistently and are interested in taking on a
+maintainer role, feel free to raise it in [#gophercloud on Slack](https://kubernetes.slack.com/archives/C05G4NJ6P6X)
+or with an existing maintainer.
+
+## License
+
+Gophercloud is licensed under the [Apache License 2.0](/LICENSE). By
+contributing, you agree that your contributions will be licensed under the
+same terms.
