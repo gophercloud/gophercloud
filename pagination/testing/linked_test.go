@@ -31,6 +31,30 @@ func ExtractLinkedInts(r pagination.Page) ([]int, error) {
 	return s.Ints, err
 }
 
+type KeyedLinkedPageResult struct {
+	pagination.LinkedPageBase
+}
+
+func (r KeyedLinkedPageResult) ResourceKey() string {
+	return "ints"
+}
+
+func (r KeyedLinkedPageResult) IsEmpty() (bool, error) {
+	var s struct {
+		Ints []int `json:"ints"`
+	}
+	err := r.ExtractInto(&s)
+	return len(s.Ints) == 0, err
+}
+
+func ExtractKeyedLinkedInts(r pagination.Page) ([]int, error) {
+	var s struct {
+		Ints []int `json:"ints"`
+	}
+	err := (r.(KeyedLinkedPageResult)).ExtractInto(&s)
+	return s.Ints, err
+}
+
 func createLinked(fakeServer th.FakeServer) pagination.Pager {
 	fakeServer.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
@@ -136,6 +160,62 @@ func TestAllPagesLinked(t *testing.T) {
 
 	expected := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	actual, err := ExtractLinkedInts(page)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestAllPagesLinkedEmptyKeyed(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{ "ints": [], "links": { "next": null } }`)
+	})
+
+	client := client.ServiceClient(fakeServer)
+
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return KeyedLinkedPageResult{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	pager := pagination.NewPager(client, fakeServer.Server.URL+"/page1", createPage)
+
+	page, err := pager.AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	actual, err := ExtractKeyedLinkedInts(page)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(actual))
+}
+
+func TestAllPagesLinkedKeyed(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `{ "ints": [1, 2, 3], "links": { "next": "%s/page2" } }`, fakeServer.Server.URL)
+	})
+
+	fakeServer.Mux.HandleFunc("/page2", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{ "ints": [4, 5, 6], "links": { "next": null } }`)
+	})
+
+	client := client.ServiceClient(fakeServer)
+
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return KeyedLinkedPageResult{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	pager := pagination.NewPager(client, fakeServer.Server.URL+"/page1", createPage)
+
+	page, err := pager.AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	expected := []int{1, 2, 3, 4, 5, 6}
+	actual, err := ExtractKeyedLinkedInts(page)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
