@@ -34,6 +34,16 @@ type Page interface {
 	GetBody() any
 }
 
+// KeyedPage may optionally be implemented by a Page whose body is a JSON
+// object keyed by a resource name (e.g. {"servers": [...]}). AllPages uses
+// this to determine the correct key when constructing the combined page,
+// avoiding a heuristic scan of the response body.
+type KeyedPage interface {
+	// ResourceKey returns the JSON object key that contains the resource
+	// list, e.g. "servers" or "networks".
+	ResourceKey() string
+}
+
 // Pager knows how to advance through a specific resource collection, one page at a time.
 type Pager struct {
 	client *gophercloud.ServiceClient
@@ -165,16 +175,20 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 	// `[]byte`, and `[]any`.
 	switch pb := firstPage.GetBody().(type) {
 	case map[string]any:
-		// key is the map key for the page body if the body type is
-		// `map[string]any`. Discover it from the first page body
-		// before iterating: EachPage skips empty pages, so the
-		// callback may never run.
+		// key is the map key for the page body if the body type is `map[string]any`.
+		// Prefer the static key from KeyedPage when available, falling back to
+		// scanning the first page body if not. We do discovery here before iterating:
+		// EachPage skips empty pages, so the callback may never run.
 		var key string
-		for k, v := range pb {
-			if !strings.HasSuffix(k, "links") {
-				if _, ok := v.([]any); ok {
-					key = k
-					break
+		if kp, ok := firstPage.(KeyedPage); ok {
+			key = kp.ResourceKey()
+		} else {
+			for k, v := range pb {
+				if !strings.HasSuffix(k, "links") {
+					if _, ok := v.([]any); ok {
+						key = k
+						break
+					}
 				}
 			}
 		}
