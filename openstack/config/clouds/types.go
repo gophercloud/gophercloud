@@ -9,6 +9,10 @@ type Clouds struct {
 	Clouds map[string]Cloud `yaml:"clouds" json:"clouds"`
 }
 
+type PublicClouds struct {
+	Clouds map[string]Cloud `yaml:"public-clouds" json:"public-clouds"`
+}
+
 // Cloud represents an entry in a clouds.yaml/public-clouds.yaml/secure.yaml file.
 type Cloud struct {
 	Cloud      string    `yaml:"cloud,omitempty" json:"cloud,omitempty"`
