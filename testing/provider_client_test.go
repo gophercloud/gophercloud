@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -27,6 +28,105 @@ func TestAuthenticatedHeaders(t *testing.T) {
 	expected := map[string]string{"X-Auth-Token": "1234"}
 	actual := p.AuthenticatedHeaders()
 	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestConcurrentReauthenticateHonorsContext(t *testing.T) {
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+
+	started := make(chan struct{})
+	release := make(chan struct{})
+	var releaseOnce sync.Once
+	defer releaseOnce.Do(func() { close(release) })
+	p.ReauthFunc = func(context.Context) error {
+		close(started)
+		<-release
+		return nil
+	}
+
+	first := make(chan error, 1)
+	go func() {
+		first <- p.Reauthenticate(context.Background(), "")
+	}()
+	<-started
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
+	defer cancel()
+	second := make(chan error, 1)
+	go func() {
+		second <- p.Reauthenticate(ctx, "")
+	}()
+
+	select {
+	case err := <-second:
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatalf("expected context deadline exceeded, got %v", err)
+		}
+	case <-time.After(250 * time.Millisecond):
+		releaseOnce.Do(func() { close(release) })
+		<-first
+		<-second
+		t.Fatal("concurrent reauthentication ignored context cancellation")
+	}
+
+	select {
+	case err := <-first:
+		t.Fatalf("canceled waiter disrupted active reauthentication: %v", err)
+	default:
+	}
+
+	releaseOnce.Do(func() { close(release) })
+	if err := <-first; err != nil {
+		t.Fatalf("active reauthentication failed: %v", err)
+	}
+}
+
+func TestRequestWaitingForReauthenticationHonorsContext(t *testing.T) {
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.SetToken("old-token")
+
+	started := make(chan struct{})
+	release := make(chan struct{})
+	var releaseOnce sync.Once
+	defer releaseOnce.Do(func() { close(release) })
+	p.ReauthFunc = func(context.Context) error {
+		close(started)
+		<-release
+		p.SetToken("new-token")
+		return nil
+	}
+
+	first := make(chan error, 1)
+	go func() {
+		first <- p.Reauthenticate(context.Background(), "")
+	}()
+	<-started
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
+	defer cancel()
+	request := make(chan error, 1)
+	go func() {
+		_, err := p.Request(ctx, http.MethodGet, "http://127.0.0.1:1", new(gophercloud.RequestOpts))
+		request <- err
+	}()
+
+	select {
+	case err := <-request:
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatalf("expected context deadline exceeded, got %v", err)
+		}
+	case <-time.After(250 * time.Millisecond):
+		releaseOnce.Do(func() { close(release) })
+		<-first
+		<-request
+		t.Fatal("request ignored context while waiting for reauthentication")
+	}
+
+	releaseOnce.Do(func() { close(release) })
+	if err := <-first; err != nil {
+		t.Fatalf("active reauthentication failed: %v", err)
+	}
 }
 
 func TestUserAgent(t *testing.T) {

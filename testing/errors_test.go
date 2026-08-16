@@ -28,3 +28,12 @@ func TestErrUnexpectedResponseCode(t *testing.T) {
 	th.AssertTrue(t, gophercloud.ResponseCodeIs(errWrapped, http.StatusNotFound))
 	th.AssertFalse(t, gophercloud.ResponseCodeIs(errWrapped, http.StatusInternalServerError))
 }
+
+func TestResponseCodeIsAfterReauthentication(t *testing.T) {
+	err := &gophercloud.ErrErrorAfterReauthentication{
+		ErrOriginal: gophercloud.ErrUnexpectedResponseCode{Actual: http.StatusNotFound},
+	}
+
+	th.AssertTrue(t, gophercloud.ResponseCodeIs(err, http.StatusNotFound))
+	th.AssertFalse(t, gophercloud.ResponseCodeIs(err, http.StatusInternalServerError))
+}
