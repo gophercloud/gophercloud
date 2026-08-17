@@ -165,8 +165,19 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 	// `[]byte`, and `[]any`.
 	switch pb := firstPage.GetBody().(type) {
 	case map[string]any:
-		// key is the map key for the page body if the body type is `map[string]any`.
+		// key is the map key for the page body if the body type is
+		// `map[string]any`. Discover it from the first page body
+		// before iterating: EachPage skips empty pages, so the
+		// callback may never run.
 		var key string
+		for k, v := range pb {
+			if !strings.HasSuffix(k, "links") {
+				if _, ok := v.([]any); ok {
+					key = k
+					break
+				}
+			}
+		}
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(ctx, func(_ context.Context, page Page) (bool, error) {
 			b := page.GetBody().(map[string]any)
@@ -176,7 +187,6 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 					// check the field's type. we only want []any (which is really []map[string]any)
 					switch vt := v.(type) {
 					case []any:
-						key = k
 						pagesSlice = append(pagesSlice, vt...)
 					}
 				}
