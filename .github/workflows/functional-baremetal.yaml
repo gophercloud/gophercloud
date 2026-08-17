@@ -83,7 +83,7 @@ jobs:
             IRONIC_CALLBACK_TIMEOUT=600
             IRONIC_DEPLOY_DRIVER=ipmi
             IRONIC_INSPECTOR_BUILD_RAMDISK=False
-            IRONIC_RAMDISK_TYPE=tinyipa
+            IRONIC_RAMDISK_TYPE=dib
             IRONIC_TEMPEST_BUILD_TIMEOUT=720
             IRONIC_TEMPEST_WHOLE_DISK_IMAGE=False
             IRONIC_VM_COUNT=1
