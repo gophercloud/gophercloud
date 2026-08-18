@@ -7,9 +7,39 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
+// ListIdentityProvidersOptsBuilder allows extensions to add additional
+// parameters to the ListIdentityProviders request.
+type ListIdentityProvidersOptsBuilder interface {
+	ToIdentityProviderListQuery() (string, error)
+}
+
+// ListIdentityProvidersOpts provides options for filtering identity providers.
+type ListIdentityProvidersOpts struct {
+	// ID filters the response by identity provider ID.
+	ID string `q:"id"`
+
+	// Enabled filters the response by whether identity providers are enabled.
+	Enabled *bool `q:"enabled"`
+}
+
+// ToIdentityProviderListQuery formats ListIdentityProvidersOpts into a query
+// string.
+func (opts ListIdentityProvidersOpts) ToIdentityProviderListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
 // ListIdentityProviders enumerates the identity providers.
-func ListIdentityProviders(client *gophercloud.ServiceClient) pagination.Pager {
-	return pagination.NewPager(client, identityProvidersRootURL(client), func(r pagination.PageResult) pagination.Page {
+func ListIdentityProviders(client *gophercloud.ServiceClient, opts ListIdentityProvidersOptsBuilder) pagination.Pager {
+	url := identityProvidersRootURL(client)
+	if opts != nil {
+		query, err := opts.ToIdentityProviderListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return IdentityProvidersPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
@@ -323,9 +353,39 @@ func DeleteProtocol(ctx context.Context, client *gophercloud.ServiceClient, iden
 	return
 }
 
+// ListServiceProvidersOptsBuilder allows extensions to add additional
+// parameters to the ListServiceProviders request.
+type ListServiceProvidersOptsBuilder interface {
+	ToServiceProviderListQuery() (string, error)
+}
+
+// ListServiceProvidersOpts provides options for filtering service providers.
+type ListServiceProvidersOpts struct {
+	// ID filters the response by service provider ID.
+	ID string `q:"id"`
+
+	// Enabled filters the response by whether service providers are enabled.
+	Enabled *bool `q:"enabled"`
+}
+
+// ToServiceProviderListQuery formats ListServiceProvidersOpts into a query
+// string.
+func (opts ListServiceProvidersOpts) ToServiceProviderListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
 // ListServiceProviders enumerates the service providers.
-func ListServiceProviders(client *gophercloud.ServiceClient) pagination.Pager {
-	return pagination.NewPager(client, serviceProvidersRootURL(client), func(r pagination.PageResult) pagination.Page {
+func ListServiceProviders(client *gophercloud.ServiceClient, opts ListServiceProvidersOptsBuilder) pagination.Pager {
+	url := serviceProvidersRootURL(client)
+	if opts != nil {
+		query, err := opts.ToServiceProviderListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return ServiceProvidersPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
