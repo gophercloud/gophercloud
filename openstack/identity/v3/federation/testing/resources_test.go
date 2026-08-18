@@ -51,6 +51,10 @@ func TestIdentityProviders(t *testing.T) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, map[string]string{
+			"enabled": "false",
+			"id":      "ACME",
+		})
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"identity_providers":[%s],"links":{"next":null,"previous":null}}`,
 			`{"authorization_ttl":null,"domain_id":"1789d1","description":null,"enabled":true,"id":"ACME","links":{"self":"http://example.com/OS-FEDERATION/identity_providers/ACME"},"remote_ids":["acme_id_1","acme_id_2"]}`)
@@ -91,7 +95,11 @@ func TestIdentityProviders(t *testing.T) {
 		}
 	})
 
-	allPages, err := federation.ListIdentityProviders(client.ServiceClient(fakeServer)).AllPages(context.TODO())
+	listOpts := federation.ListIdentityProvidersOpts{
+		ID:      "ACME",
+		Enabled: gophercloud.Disabled,
+	}
+	allPages, err := federation.ListIdentityProviders(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	identityProviders, err := federation.ExtractIdentityProviders(allPages)
 	th.AssertNoErr(t, err)
@@ -353,6 +361,10 @@ func TestServiceProviders(t *testing.T) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestFormValues(t, r, map[string]string{
+			"enabled": "true",
+			"id":      "ACME",
+		})
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, `{
 			"service_providers": [{
@@ -406,7 +418,11 @@ func TestServiceProviders(t *testing.T) {
 		}
 	})
 
-	allPages, err := federation.ListServiceProviders(client.ServiceClient(fakeServer)).AllPages(context.TODO())
+	listOpts := federation.ListServiceProvidersOpts{
+		ID:      "ACME",
+		Enabled: gophercloud.Enabled,
+	}
+	allPages, err := federation.ListServiceProviders(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	serviceProviders, err := federation.ExtractServiceProviders(allPages)
 	th.AssertNoErr(t, err)

@@ -148,10 +148,16 @@ func TestIdentityProvidersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, identityProviderID, actual.ID)
 
-	allPages, err := federation.ListIdentityProviders(client).AllPages(context.TODO())
+	listOpts := federation.ListIdentityProvidersOpts{
+		ID:      identityProviderID,
+		Enabled: gophercloud.Enabled,
+	}
+	allPages, err := federation.ListIdentityProviders(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	identityProviders, err := federation.ExtractIdentityProviders(allPages)
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(identityProviders))
+	th.CheckEquals(t, identityProviderID, identityProviders[0].ID)
 	tools.PrintResource(t, identityProviders)
 
 	description := "Updated Gophercloud acceptance test identity provider"
@@ -281,10 +287,16 @@ func TestServiceProvidersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, serviceProviderID, actual.ID)
 
-	allPages, err := federation.ListServiceProviders(client).AllPages(context.TODO())
+	listOpts := federation.ListServiceProvidersOpts{
+		ID:      serviceProviderID,
+		Enabled: gophercloud.Enabled,
+	}
+	allPages, err := federation.ListServiceProviders(client, listOpts).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 	serviceProviders, err := federation.ExtractServiceProviders(allPages)
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(serviceProviders))
+	th.CheckEquals(t, serviceProviderID, serviceProviders[0].ID)
 	tools.PrintResource(t, serviceProviders)
 
 	authURL := "https://new.example.com/v3/OS-FEDERATION/identity_providers/acme/protocols/saml2/auth"
