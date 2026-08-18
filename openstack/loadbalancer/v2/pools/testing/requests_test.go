@@ -53,6 +53,20 @@ func TestListAllPools(t *testing.T) {
 	th.CheckDeepEquals(t, PoolDb, actual[1])
 }
 
+func TestListPoolOpts(t *testing.T) {
+	listOpts := pools.ListOpts{
+		Tags:       []string{"tag1", "tag2"},
+		TagsAny:    []string{"tag3", "tag4"},
+		TagsNot:    []string{"tag5", "tag6"},
+		TagsNotAny: []string{"tag7", "tag8"},
+	}
+
+	expected := "?not-tags=tag5&not-tags=tag6&not-tags-any=tag7&not-tags-any=tag8&tags=tag1&tags=tag2&tags-any=tag3&tags-any=tag4"
+	actual, err := listOpts.ToPoolListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
+}
+
 func TestCreatePool(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -187,6 +201,20 @@ func TestListAllMembers(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, MemberWeb, actual[0])
 	th.CheckDeepEquals(t, MemberDb, actual[1])
+}
+
+func TestListMembersOpts(t *testing.T) {
+	listOpts := pools.ListMembersOpts{
+		Tags:       []string{"tag1", "tag2"},
+		TagsAny:    []string{"tag3", "tag4"},
+		TagsNot:    []string{"tag5", "tag6"},
+		TagsNotAny: []string{"tag7", "tag8"},
+	}
+
+	expected := "?not-tags=tag5&not-tags=tag6&not-tags-any=tag7&not-tags-any=tag8&tags=tag1&tags=tag2&tags-any=tag3&tags-any=tag4"
+	actual, err := listOpts.ToMembersListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
 }
 
 func TestCreateMember(t *testing.T) {

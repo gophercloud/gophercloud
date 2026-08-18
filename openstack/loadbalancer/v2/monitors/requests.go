@@ -20,26 +20,41 @@ type ListOptsBuilder interface {
 // sort by a particular Monitor attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID             string   `q:"id"`
-	Name           string   `q:"name"`
-	TenantID       string   `q:"tenant_id"`
-	ProjectID      string   `q:"project_id"`
-	PoolID         string   `q:"pool_id"`
-	Type           string   `q:"type"`
-	Delay          int      `q:"delay"`
-	Timeout        int      `q:"timeout"`
-	MaxRetries     int      `q:"max_retries"`
-	MaxRetriesDown int      `q:"max_retries_down"`
-	HTTPMethod     string   `q:"http_method"`
-	URLPath        string   `q:"url_path"`
-	ExpectedCodes  string   `q:"expected_codes"`
-	AdminStateUp   *bool    `q:"admin_state_up"`
-	Status         string   `q:"status"`
-	Limit          int      `q:"limit"`
-	Marker         string   `q:"marker"`
-	SortKey        string   `q:"sort_key"`
-	SortDir        string   `q:"sort_dir"`
-	Tags           []string `q:"tags"`
+	ID             string `q:"id"`
+	Name           string `q:"name"`
+	TenantID       string `q:"tenant_id"`
+	ProjectID      string `q:"project_id"`
+	PoolID         string `q:"pool_id"`
+	Type           string `q:"type"`
+	Delay          int    `q:"delay"`
+	Timeout        int    `q:"timeout"`
+	MaxRetries     int    `q:"max_retries"`
+	MaxRetriesDown int    `q:"max_retries_down"`
+	HTTPMethod     string `q:"http_method"`
+	URLPath        string `q:"url_path"`
+	ExpectedCodes  string `q:"expected_codes"`
+	AdminStateUp   *bool  `q:"admin_state_up"`
+	Status         string `q:"status"`
+	Limit          int    `q:"limit"`
+	Marker         string `q:"marker"`
+	SortKey        string `q:"sort_key"`
+	SortDir        string `q:"sort_dir"`
+
+	// Tags filters health monitors that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	Tags []string `q:"tags"`
+
+	// TagsAny filters health monitors that contain at least one of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsAny []string `q:"tags-any"`
+
+	// TagsNot excludes health monitors that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNot []string `q:"not-tags"`
+
+	// TagsNotAny excludes health monitors that contain any of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNotAny []string `q:"not-tags-any"`
 }
 
 // ToMonitorListQuery formats a ListOpts into a query string.
