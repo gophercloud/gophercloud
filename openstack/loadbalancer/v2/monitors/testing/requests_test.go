@@ -53,6 +53,20 @@ func TestListAllHealthmonitors(t *testing.T) {
 	th.CheckDeepEquals(t, HealthmonitorDb, actual[1])
 }
 
+func TestListHealthmonitorOpts(t *testing.T) {
+	listOpts := monitors.ListOpts{
+		Tags:       []string{"tag1", "tag2"},
+		TagsAny:    []string{"tag3", "tag4"},
+		TagsNot:    []string{"tag5", "tag6"},
+		TagsNotAny: []string{"tag7", "tag8"},
+	}
+
+	expected := "?not-tags=tag5&not-tags=tag6&not-tags-any=tag7&not-tags-any=tag8&tags=tag1&tags=tag2&tags-any=tag3&tags-any=tag4"
+	actual, err := listOpts.ToMonitorListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
+}
+
 func TestCreateHealthmonitor(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

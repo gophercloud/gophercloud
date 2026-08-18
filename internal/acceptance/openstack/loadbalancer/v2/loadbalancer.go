@@ -195,17 +195,20 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 			Description:  listenerDescription,
 			Protocol:     listeners.ProtocolHTTP,
 			ProtocolPort: listenerPort,
+			Tags:         tags,
 			DefaultPool: &pools.CreateOpts{
 				Name:        poolName,
 				Description: poolDescription,
 				Protocol:    pools.ProtocolHTTP,
 				LBMethod:    pools.LBMethodLeastConnections,
+				Tags:        tags,
 				Members: []pools.CreateMemberOpts{{
 					Name:         memberName,
 					ProtocolPort: memberPort,
 					Weight:       &memberWeight,
 					Address:      "1.2.3.4",
 					SubnetID:     subnetID,
+					Tags:         tags,
 				}},
 				Monitor: &monitors.CreateOpts{
 					Delay:          10,
@@ -214,6 +217,7 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 					MaxRetriesDown: 4,
 					Type:           monitors.TypeHTTP,
 					HTTPVersion:    "1.0",
+					Tags:           tags,
 				},
 			},
 			L7Policies: []l7policies.CreateOpts{{
@@ -280,7 +284,11 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 	th.AssertEquals(t, "1.0", lb.Pools[0].Monitor.HTTPVersion)
 
 	if len(tags) > 0 {
-		th.AssertDeepEquals(t, lb.Tags, tags)
+		th.AssertTagsEqual(t, tags, lb.Tags)
+		th.AssertTagsEqual(t, tags, lb.Listeners[0].Tags)
+		th.AssertTagsEqual(t, tags, lb.Pools[0].Tags)
+		th.AssertTagsEqual(t, tags, lb.Pools[0].Members[0].Tags)
+		th.AssertTagsEqual(t, tags, lb.Pools[0].Monitor.Tags)
 	}
 
 	return lb, nil

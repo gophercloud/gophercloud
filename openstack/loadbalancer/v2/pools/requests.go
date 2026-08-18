@@ -31,18 +31,33 @@ type ListOptsBuilder interface {
 // sort by a particular Pool attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	LBMethod       string   `q:"lb_algorithm"`
-	Protocol       string   `q:"protocol"`
-	ProjectID      string   `q:"project_id"`
-	AdminStateUp   *bool    `q:"admin_state_up"`
-	Name           string   `q:"name"`
-	ID             string   `q:"id"`
-	LoadbalancerID string   `q:"loadbalancer_id"`
-	Limit          int      `q:"limit"`
-	Marker         string   `q:"marker"`
-	SortKey        string   `q:"sort_key"`
-	SortDir        string   `q:"sort_dir"`
-	Tags           []string `q:"tags"`
+	LBMethod       string `q:"lb_algorithm"`
+	Protocol       string `q:"protocol"`
+	ProjectID      string `q:"project_id"`
+	AdminStateUp   *bool  `q:"admin_state_up"`
+	Name           string `q:"name"`
+	ID             string `q:"id"`
+	LoadbalancerID string `q:"loadbalancer_id"`
+	Limit          int    `q:"limit"`
+	Marker         string `q:"marker"`
+	SortKey        string `q:"sort_key"`
+	SortDir        string `q:"sort_dir"`
+
+	// Tags filters pools that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	Tags []string `q:"tags"`
+
+	// TagsAny filters pools that contain at least one of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsAny []string `q:"tags-any"`
+
+	// TagsNot excludes pools that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNot []string `q:"not-tags"`
+
+	// TagsNotAny excludes pools that contain any of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNotAny []string `q:"not-tags-any"`
 }
 
 // ToPoolListQuery formats a ListOpts into a query string.
@@ -344,6 +359,22 @@ type ListMembersOpts struct {
 	Marker       string `q:"marker"`
 	SortKey      string `q:"sort_key"`
 	SortDir      string `q:"sort_dir"`
+
+	// Tags filters members that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	Tags []string `q:"tags"`
+
+	// TagsAny filters members that contain at least one of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsAny []string `q:"tags-any"`
+
+	// TagsNot excludes members that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNot []string `q:"not-tags"`
+
+	// TagsNotAny excludes members that contain any of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNotAny []string `q:"not-tags-any"`
 }
 
 // ToMemberListQuery formats a ListOpts into a query string.
