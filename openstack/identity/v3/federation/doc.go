@@ -18,7 +18,10 @@ Example to Create an Identity Provider
 
 Example to List Identity Providers
 
-	allPages, err := federation.ListIdentityProviders(identityClient).AllPages(context.TODO())
+	listOpts := federation.ListIdentityProvidersOpts{
+		Enabled: gophercloud.Enabled,
+	}
+	allPages, err := federation.ListIdentityProviders(identityClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
