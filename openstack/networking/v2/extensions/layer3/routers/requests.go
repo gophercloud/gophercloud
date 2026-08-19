@@ -77,14 +77,20 @@ type CreateOptsBuilder interface {
 // CreateOpts contains all the values needed to create a new router. There are
 // no required values.
 type CreateOpts struct {
-	Name                  string       `json:"name,omitempty"`
-	Description           string       `json:"description,omitempty"`
-	AdminStateUp          *bool        `json:"admin_state_up,omitempty"`
-	Distributed           *bool        `json:"distributed,omitempty"`
-	TenantID              string       `json:"tenant_id,omitempty"`
-	ProjectID             string       `json:"project_id,omitempty"`
-	GatewayInfo           *GatewayInfo `json:"external_gateway_info,omitempty"`
-	AvailabilityZoneHints []string     `json:"availability_zone_hints,omitempty"`
+	Name                   string       `json:"name,omitempty"`
+	Description            string       `json:"description,omitempty"`
+	AdminStateUp           *bool        `json:"admin_state_up,omitempty"`
+	Distributed            *bool        `json:"distributed,omitempty"`
+	TenantID               string       `json:"tenant_id,omitempty"`
+	ProjectID              string       `json:"project_id,omitempty"`
+	HA                     *bool        `json:"ha,omitempty"`
+	ServiceTypeID          string       `json:"service_type_id,omitempty"`
+	FlavorID               string       `json:"flavor_id,omitempty"`
+	EnableNDPProxy         *bool        `json:"enable_ndp_proxy,omitempty"`
+	EnableDefaultRouteBFD  *bool        `json:"enable_default_route_bfd,omitempty"`
+	EnableDefaultRouteECMP *bool        `json:"enable_default_route_ecmp,omitempty"`
+	GatewayInfo            *GatewayInfo `json:"external_gateway_info,omitempty"`
+	AvailabilityZoneHints  []string     `json:"availability_zone_hints,omitempty"`
 }
 
 // ToRouterCreateMap builds a create request body from CreateOpts.
@@ -126,12 +132,16 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a router.
 type UpdateOpts struct {
-	Name         string       `json:"name,omitempty"`
-	Description  *string      `json:"description,omitempty"`
-	AdminStateUp *bool        `json:"admin_state_up,omitempty"`
-	Distributed  *bool        `json:"distributed,omitempty"`
-	GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
-	Routes       *[]Route     `json:"routes,omitempty"`
+	Name                   string       `json:"name,omitempty"`
+	Description            *string      `json:"description,omitempty"`
+	AdminStateUp           *bool        `json:"admin_state_up,omitempty"`
+	Distributed            *bool        `json:"distributed,omitempty"`
+	HA                     *bool        `json:"ha,omitempty"`
+	EnableNDPProxy         *bool        `json:"enable_ndp_proxy,omitempty"`
+	EnableDefaultRouteBFD  *bool        `json:"enable_default_route_bfd,omitempty"`
+	EnableDefaultRouteECMP *bool        `json:"enable_default_route_ecmp,omitempty"`
+	GatewayInfo            *GatewayInfo `json:"external_gateway_info,omitempty"`
+	Routes                 *[]Route     `json:"routes,omitempty"`
 
 	// RevisionNumber implements extension:standard-attr-revisions. If != "" it
 	// will set revision_number=%s. If the revision number does not match, the
