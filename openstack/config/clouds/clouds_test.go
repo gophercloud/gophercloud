@@ -340,7 +340,7 @@ func TestParse(t *testing.T) {
 	t.Run("parses clouds-public.yaml if present", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test-0:
-    cloud: gophercloud-test-1
+    profile: gophercloud-test-1
     auth:
       user_domain_name: CustomDomain`
 		const cloudsPublicYAML = `public-clouds:
