@@ -241,6 +241,52 @@ func Update(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID stri
 	return
 }
 
+type PrefixesOpsOptsBuilder interface {
+	ToSubnetPoolPrefixesOpsMap() (map[string]any, error)
+}
+
+// PrefixesOpsOpts represents the prefixes passed to the operation.
+type PrefixesOpsOpts struct {
+	// Prefixes is a list of subnet prefixes to add or remove from the
+	// subnet pool.
+	Prefixes []string `json:"prefixes,omitempty"`
+}
+
+// ToSubnetPoolPrefixesOpsMap builds a request body from PrefixesOpsOpts.
+func (opts PrefixesOpsOpts) ToSubnetPoolPrefixesOpsMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// AddPrefixes accepts a PrefixesOpsOpts and adds new prefixes to an
+// existing subnet.
+func AddPrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts PrefixesOpsOptsBuilder) (r PrefixesOpsResult) {
+	b, err := opts.ToSubnetPoolPrefixesOpsMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(ctx, addPrefixesURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RemovePrefixes accepts a PrefixesOpsOpts and removes prefixes for
+// an existing subnet.
+func RemovePrefixes(ctx context.Context, c *gophercloud.ServiceClient, subnetPoolID string, opts PrefixesOpsOptsBuilder) (r PrefixesOpsResult) {
+	b, err := opts.ToSubnetPoolPrefixesOpsMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(ctx, removePrefixesURL(c, subnetPoolID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // Delete accepts a unique ID and deletes the subnetpool associated with it.
 func Delete(ctx context.Context, c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	resp, err := c.Delete(ctx, deleteURL(c, id), nil)
