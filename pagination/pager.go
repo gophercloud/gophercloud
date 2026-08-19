@@ -181,15 +181,8 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(ctx, func(_ context.Context, page Page) (bool, error) {
 			b := page.GetBody().(map[string]any)
-			for k, v := range b {
-				// If it's a linked page, we don't want the `links`, we want the other one.
-				if !strings.HasSuffix(k, "links") {
-					// check the field's type. we only want []any (which is really []map[string]any)
-					switch vt := v.(type) {
-					case []any:
-						pagesSlice = append(pagesSlice, vt...)
-					}
-				}
+			if v, ok := b[key].([]any); ok {
+				pagesSlice = append(pagesSlice, v...)
 			}
 			return true, nil
 		})
