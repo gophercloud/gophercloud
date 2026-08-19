@@ -211,7 +211,7 @@ func TestCascadingDeleteLoadbalancer(t *testing.T) {
 
 	query, err := deleteOpts.ToLoadBalancerDeleteQuery()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, query, "?cascade=true")
+	th.AssertEquals(t, "?cascade=true", query)
 
 	err = loadbalancers.Delete(context.TODO(), sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)

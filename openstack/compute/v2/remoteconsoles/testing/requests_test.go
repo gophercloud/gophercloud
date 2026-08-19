@@ -37,5 +37,5 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, s.Protocol, string(remoteconsoles.ConsoleProtocolVNC))
 	th.AssertEquals(t, s.Type, string(remoteconsoles.ConsoleTypeNoVNC))
-	th.AssertEquals(t, s.URL, "http://192.168.0.4:6080/vnc_auto.html?token=9a2372b9-6a0e-4f71-aca1-56020e6bb677")
+	th.AssertEquals(t, "http://192.168.0.4:6080/vnc_auto.html?token=9a2372b9-6a0e-4f71-aca1-56020e6bb677", s.URL)
 }

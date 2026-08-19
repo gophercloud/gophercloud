@@ -72,24 +72,24 @@ func TestGet(t *testing.T) {
 	s, err := agents.Get(context.TODO(), fake.ServiceClient(fakeServer), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.ID, "43583cf5-472e-4dc8-af5b-6aed4c94ee3a")
-	th.AssertEquals(t, s.Binary, "neutron-openvswitch-agent")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.Alive, true)
-	th.AssertEquals(t, s.Topic, "N/A")
-	th.AssertEquals(t, s.Host, "compute3")
-	th.AssertEquals(t, s.AgentType, "Open vSwitch agent")
+	th.AssertEquals(t, "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", s.ID)
+	th.AssertEquals(t, "neutron-openvswitch-agent", s.Binary)
+	th.AssertTrue(t, s.AdminStateUp)
+	th.AssertTrue(t, s.Alive)
+	th.AssertEquals(t, "N/A", s.Topic)
+	th.AssertEquals(t, "compute3", s.Host)
+	th.AssertEquals(t, "Open vSwitch agent", s.AgentType)
 	th.AssertEquals(t, s.HeartbeatTimestamp, time.Date(2019, 1, 9, 11, 43, 01, 0, time.UTC))
 	th.AssertEquals(t, s.StartedAt, time.Date(2018, 6, 26, 21, 46, 20, 0, time.UTC))
 	th.AssertEquals(t, s.CreatedAt, time.Date(2017, 7, 26, 23, 2, 5, 0, time.UTC))
-	th.AssertDeepEquals(t, s.Configurations, map[string]any{
+	th.AssertDeepEquals(t, map[string]any{
 		"ovs_hybrid_plug":            false,
 		"datapath_type":              "system",
 		"vhostuser_socket_dir":       "/var/run/openvswitch",
 		"log_agent_heartbeats":       false,
 		"l2_population":              true,
 		"enable_distributed_routing": false,
-	})
+	}, s.Configurations)
 }
 
 func TestUpdate(t *testing.T) {
@@ -156,17 +156,17 @@ func TestListDHCPNetworks(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	var nilSlice []string
-	th.AssertEquals(t, len(s), 1)
-	th.AssertEquals(t, s[0].ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, s[0].AdminStateUp, true)
-	th.AssertEquals(t, s[0].ProjectID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertEquals(t, s[0].Shared, false)
-	th.AssertEquals(t, s[0].Name, "net1")
-	th.AssertEquals(t, s[0].Status, "ACTIVE")
+	th.AssertEquals(t, 1, len(s))
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s[0].ID)
+	th.AssertTrue(t, s[0].AdminStateUp)
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s[0].ProjectID)
+	th.AssertFalse(t, s[0].Shared)
+	th.AssertEquals(t, "net1", s[0].Name)
+	th.AssertEquals(t, "ACTIVE", s[0].Status)
 	th.AssertDeepEquals(t, s[0].Tags, nilSlice)
-	th.AssertEquals(t, s[0].TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s[0].AvailabilityZoneHints, []string{})
-	th.AssertDeepEquals(t, s[0].Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
+	th.AssertEquals(t, "4fd44f30292945e481c7b8a0c8908869", s[0].TenantID)
+	th.AssertDeepEquals(t, []string{}, s[0].AvailabilityZoneHints)
+	th.AssertDeepEquals(t, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"}, s[0].Subnets)
 
 }
 
@@ -234,11 +234,11 @@ func TestListBGPSpeakers(t *testing.T) {
 			actual, err := agents.ExtractBGPSpeakers(page)
 
 			th.AssertNoErr(t, err)
-			th.AssertEquals(t, len(actual), 1)
-			th.AssertEquals(t, actual[0].ID, "cab00464-284d-4251-9798-2b27db7b1668")
-			th.AssertEquals(t, actual[0].Name, "gophercloud-testing-speaker")
-			th.AssertEquals(t, actual[0].LocalAS, 12345)
-			th.AssertEquals(t, actual[0].IPVersion, 4)
+			th.AssertEquals(t, 1, len(actual))
+			th.AssertEquals(t, "cab00464-284d-4251-9798-2b27db7b1668", actual[0].ID)
+			th.AssertEquals(t, "gophercloud-testing-speaker", actual[0].Name)
+			th.AssertEquals(t, 12345, actual[0].LocalAS)
+			th.AssertEquals(t, 4, actual[0].IPVersion)
 			return true, nil
 		})
 	th.AssertNoErr(t, err)
@@ -373,19 +373,19 @@ func TestListL3Routers(t *testing.T) {
 	}
 
 	var nilSlice []string
-	th.AssertEquals(t, len(s), 2)
-	th.AssertEquals(t, s[0].ID, "915a14a6-867b-4af7-83d1-70efceb146f9")
-	th.AssertEquals(t, s[0].AdminStateUp, true)
-	th.AssertEquals(t, s[0].ProjectID, "0bd18306d801447bb457a46252d82d13")
-	th.AssertEquals(t, s[0].Name, "router2")
-	th.AssertEquals(t, s[0].Status, "ACTIVE")
-	th.AssertEquals(t, s[0].TenantID, "0bd18306d801447bb457a46252d82d13")
-	th.AssertDeepEquals(t, s[0].AvailabilityZoneHints, []string{})
+	th.AssertEquals(t, 2, len(s))
+	th.AssertEquals(t, "915a14a6-867b-4af7-83d1-70efceb146f9", s[0].ID)
+	th.AssertTrue(t, s[0].AdminStateUp)
+	th.AssertEquals(t, "0bd18306d801447bb457a46252d82d13", s[0].ProjectID)
+	th.AssertEquals(t, "router2", s[0].Name)
+	th.AssertEquals(t, "ACTIVE", s[0].Status)
+	th.AssertEquals(t, "0bd18306d801447bb457a46252d82d13", s[0].TenantID)
+	th.AssertDeepEquals(t, []string{}, s[0].AvailabilityZoneHints)
 	th.AssertDeepEquals(t, s[0].Routes, routes)
 	th.AssertDeepEquals(t, s[0].GatewayInfo, gw)
 	th.AssertDeepEquals(t, s[0].Tags, nilSlice)
-	th.AssertEquals(t, s[1].ID, "f8a44de0-fc8e-45df-93c7-f79bf3b01c95")
-	th.AssertEquals(t, s[1].Name, "router1")
+	th.AssertEquals(t, "f8a44de0-fc8e-45df-93c7-f79bf3b01c95", s[1].ID)
+	th.AssertEquals(t, "router1", s[1].Name)
 
 }
 

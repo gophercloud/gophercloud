@@ -179,7 +179,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 				found = true
 			}
 		}
-		th.AssertEquals(t, found, true)
+		th.AssertTrue(t, found)
 	}
 
 	// Get access token role
@@ -193,7 +193,7 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 			found = true
 		}
 	}
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 
 	// Test auth using OAuth1
 	newClient, err := clients.NewIdentityV3UnauthenticatedClient()

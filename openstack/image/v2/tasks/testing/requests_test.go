@@ -73,21 +73,21 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))
 	th.AssertEquals(t, s.CreatedAt, time.Date(2018, 7, 25, 8, 59, 13, 0, time.UTC))
 	th.AssertEquals(t, s.UpdatedAt, time.Date(2018, 7, 25, 8, 59, 14, 0, time.UTC))
-	th.AssertEquals(t, s.Self, "/v2/tasks/1252f636-1246-4319-bfba-c47cde0efbe0")
-	th.AssertEquals(t, s.Owner, "424e7cf0243c468ca61732ba45973b3e")
-	th.AssertEquals(t, s.Message, "")
-	th.AssertEquals(t, s.Type, "import")
-	th.AssertEquals(t, s.ID, "1252f636-1246-4319-bfba-c47cde0efbe0")
-	th.AssertEquals(t, s.Schema, "/v2/schemas/task")
+	th.AssertEquals(t, "/v2/tasks/1252f636-1246-4319-bfba-c47cde0efbe0", s.Self)
+	th.AssertEquals(t, "424e7cf0243c468ca61732ba45973b3e", s.Owner)
+	th.AssertEquals(t, "", s.Message)
+	th.AssertEquals(t, "import", s.Type)
+	th.AssertEquals(t, "1252f636-1246-4319-bfba-c47cde0efbe0", s.ID)
+	th.AssertEquals(t, "/v2/schemas/task", s.Schema)
 	th.AssertDeepEquals(t, s.Result, map[string]any(nil))
-	th.AssertDeepEquals(t, s.Input, map[string]any{
+	th.AssertDeepEquals(t, map[string]any{
 		"import_from":        "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img",
 		"import_from_format": "raw",
 		"image_properties": map[string]any{
 			"container_format": "bare",
 			"disk_format":      "raw",
 		},
-	})
+	}, s.Input)
 }
 
 func TestCreate(t *testing.T) {
@@ -122,19 +122,19 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))
 	th.AssertEquals(t, s.CreatedAt, time.Date(2018, 7, 25, 11, 7, 54, 0, time.UTC))
 	th.AssertEquals(t, s.UpdatedAt, time.Date(2018, 7, 25, 11, 7, 54, 0, time.UTC))
-	th.AssertEquals(t, s.Self, "/v2/tasks/d550c87d-86ed-430a-9895-c7a1f5ce87e9")
-	th.AssertEquals(t, s.Owner, "fb57277ef2f84a0e85b9018ec2dedbf7")
-	th.AssertEquals(t, s.Message, "")
-	th.AssertEquals(t, s.Type, "import")
-	th.AssertEquals(t, s.ID, "d550c87d-86ed-430a-9895-c7a1f5ce87e9")
-	th.AssertEquals(t, s.Schema, "/v2/schemas/task")
+	th.AssertEquals(t, "/v2/tasks/d550c87d-86ed-430a-9895-c7a1f5ce87e9", s.Self)
+	th.AssertEquals(t, "fb57277ef2f84a0e85b9018ec2dedbf7", s.Owner)
+	th.AssertEquals(t, "", s.Message)
+	th.AssertEquals(t, "import", s.Type)
+	th.AssertEquals(t, "d550c87d-86ed-430a-9895-c7a1f5ce87e9", s.ID)
+	th.AssertEquals(t, "/v2/schemas/task", s.Schema)
 	th.AssertDeepEquals(t, s.Result, map[string]any(nil))
-	th.AssertDeepEquals(t, s.Input, map[string]any{
+	th.AssertDeepEquals(t, map[string]any{
 		"import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
 		"import_from_format": "raw",
 		"image_properties": map[string]any{
 			"container_format": "bare",
 			"disk_format":      "raw",
 		},
-	})
+	}, s.Input)
 }

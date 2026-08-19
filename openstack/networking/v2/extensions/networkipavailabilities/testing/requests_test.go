@@ -71,13 +71,13 @@ func TestGet(t *testing.T) {
 	s, err := networkipavailabilities.Get(context.TODO(), fake.ServiceClient(fakeServer), "cf11ab78-2302-49fa-870f-851a08c7afb8").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.NetworkID, "cf11ab78-2302-49fa-870f-851a08c7afb8")
-	th.AssertEquals(t, s.NetworkName, "public")
-	th.AssertEquals(t, s.ProjectID, "424e7cf0243c468ca61732ba45973b3e")
-	th.AssertEquals(t, s.TenantID, "424e7cf0243c468ca61732ba45973b3e")
-	th.AssertEquals(t, s.TotalIPs, "253")
-	th.AssertEquals(t, s.UsedIPs, "3")
-	th.AssertDeepEquals(t, s.SubnetIPAvailabilities, []networkipavailabilities.SubnetIPAvailability{
+	th.AssertEquals(t, "cf11ab78-2302-49fa-870f-851a08c7afb8", s.NetworkID)
+	th.AssertEquals(t, "public", s.NetworkName)
+	th.AssertEquals(t, "424e7cf0243c468ca61732ba45973b3e", s.ProjectID)
+	th.AssertEquals(t, "424e7cf0243c468ca61732ba45973b3e", s.TenantID)
+	th.AssertEquals(t, "253", s.TotalIPs)
+	th.AssertEquals(t, "3", s.UsedIPs)
+	th.AssertDeepEquals(t, []networkipavailabilities.SubnetIPAvailability{
 		{
 			SubnetID:   "4afe6e5f-9649-40db-b18f-64c7ead942bd",
 			SubnetName: "public-subnet",
@@ -86,5 +86,5 @@ func TestGet(t *testing.T) {
 			TotalIPs:   "253",
 			UsedIPs:    "3",
 		},
-	})
+	}, s.SubnetIPAvailabilities)
 }

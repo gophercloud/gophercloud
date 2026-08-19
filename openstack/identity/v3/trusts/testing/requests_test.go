@@ -90,7 +90,7 @@ func TestListTrusts(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListTrustsAllPages(t *testing.T) {
@@ -136,7 +136,7 @@ func TestListTrustRoles(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListTrustRolesAllPages(t *testing.T) {

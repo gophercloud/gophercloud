@@ -137,7 +137,7 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 	}
 	ng, err = nodegroups.Update(context.TODO(), client, clusterID, nodeGroupID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
+	th.AssertFalse(t, ng.MaxNodeCount == nil)
 	th.AssertEquals(t, 5, *ng.MaxNodeCount)
 
 	updateOpts = []nodegroups.UpdateOptsBuilder{
@@ -154,7 +154,7 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 	}
 	ng, err = nodegroups.Update(context.TODO(), client, clusterID, nodeGroupID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
+	th.AssertFalse(t, ng.MaxNodeCount == nil)
 	th.AssertEquals(t, 1, ng.MinNodeCount)
 	th.AssertEquals(t, 3, *ng.MaxNodeCount)
 }

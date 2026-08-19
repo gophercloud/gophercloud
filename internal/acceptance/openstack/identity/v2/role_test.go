@@ -49,7 +49,7 @@ func TestRolesAddToUser(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestRolesList(t *testing.T) {
@@ -73,5 +73,5 @@ func TestRolesList(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }

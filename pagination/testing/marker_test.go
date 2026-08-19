@@ -114,7 +114,7 @@ func TestEnumerateMarker(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, callCount, 3)
+	th.AssertEquals(t, 3, callCount)
 }
 
 func TestAllPagesMarker(t *testing.T) {

@@ -428,5 +428,5 @@ func TestObjectsBulkDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	th.AssertEquals(t, len(allObjects), 0)
+	th.AssertEquals(t, 0, len(allObjects))
 }

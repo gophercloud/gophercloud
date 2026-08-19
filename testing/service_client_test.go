@@ -31,5 +31,5 @@ func TestMoreHeaders(t *testing.T) {
 	c.ProviderClient = new(gophercloud.ProviderClient)
 	resp, err := c.Get(context.TODO(), fmt.Sprintf("%s/route", fakeServer.Endpoint()), nil, nil)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, resp.Request.Header.Get("custom"), "header")
+	th.AssertEquals(t, "header", resp.Request.Header.Get("custom"))
 }

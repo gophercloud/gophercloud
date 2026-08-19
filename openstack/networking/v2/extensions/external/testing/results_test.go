@@ -40,7 +40,7 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", actual[0].ID)
-	th.AssertEquals(t, true, actual[0].External)
+	th.AssertTrue(t, actual[0].External)
 }
 
 func TestGet(t *testing.T) {
@@ -66,7 +66,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", s.ID)
-	th.AssertEquals(t, true, s.External)
+	th.AssertTrue(t, s.External)
 }
 
 func TestCreate(t *testing.T) {

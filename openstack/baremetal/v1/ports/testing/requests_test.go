@@ -77,7 +77,7 @@ func TestListOpts(t *testing.T) {
 	}
 
 	_, err := opts.ToPortListDetailQuery()
-	th.AssertEquals(t, err.Error(), "fields is not a valid option when getting a detailed listing of ports")
+	th.AssertEquals(t, "fields is not a valid option when getting a detailed listing of ports", err.Error())
 
 	// Regular ListOpts can
 	query, err := opts.ToPortListQuery()

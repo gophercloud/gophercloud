@@ -27,6 +27,6 @@ func TestServicesList(t *testing.T) {
 
 	for _, s := range allServices {
 		tools.PrintResource(t, &s)
-		th.AssertEquals(t, s.Status, "enabled")
+		th.AssertEquals(t, "enabled", s.Status)
 	}
 }

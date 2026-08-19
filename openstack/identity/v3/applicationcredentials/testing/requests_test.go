@@ -27,7 +27,7 @@ func TestListApplicationCredentials(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestListApplicationCredentialsAllPages(t *testing.T) {
@@ -40,8 +40,8 @@ func TestListApplicationCredentialsAllPages(t *testing.T) {
 	actual, err := applicationcredentials.ExtractApplicationCredentials(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedApplicationCredentialsSlice, actual)
-	th.AssertDeepEquals(t, ExpectedApplicationCredentialsSlice[0].Roles, []applicationcredentials.Role{{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}})
-	th.AssertDeepEquals(t, ExpectedApplicationCredentialsSlice[1].Roles, []applicationcredentials.Role{{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}, {ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4", Name: "network_viewer"}})
+	th.AssertDeepEquals(t, []applicationcredentials.Role{{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}}, ExpectedApplicationCredentialsSlice[0].Roles)
+	th.AssertDeepEquals(t, []applicationcredentials.Role{{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}, {ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4", Name: "network_viewer"}}, ExpectedApplicationCredentialsSlice[1].Roles)
 }
 
 func TestGetApplicationCredential(t *testing.T) {
@@ -148,7 +148,7 @@ func TestListAccessRules(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestGetAccessRule(t *testing.T) {

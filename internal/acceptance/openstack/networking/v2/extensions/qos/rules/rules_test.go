@@ -43,7 +43,7 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
-	th.AssertEquals(t, newRule.MaxBurstKBps, 0)
+	th.AssertEquals(t, 0, newRule.MaxBurstKBps)
 
 	allPages, err := rules.ListBandwidthLimitRules(client, policy.ID, rules.BandwidthLimitRulesListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -58,7 +58,7 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestDSCPMarkingRulesCRUD(t *testing.T) {
@@ -89,7 +89,7 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
-	th.AssertEquals(t, newRule.DSCPMark, 20)
+	th.AssertEquals(t, 20, newRule.DSCPMark)
 
 	allPages, err := rules.ListDSCPMarkingRules(client, policy.ID, rules.DSCPMarkingRulesListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -104,7 +104,7 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestMinimumBandwidthRulesCRUD(t *testing.T) {
@@ -135,7 +135,7 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
-	th.AssertEquals(t, newRule.MinKBps, 500)
+	th.AssertEquals(t, 500, newRule.MinKBps)
 
 	allPages, err := rules.ListMinimumBandwidthRules(client, policy.ID, rules.MinimumBandwidthRulesListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
@@ -150,5 +150,5 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }

@@ -28,8 +28,8 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, e)
 
 	for k, msg := range detailedErr {
-		th.AssertEquals(t, k, "itemNotFound")
-		th.AssertEquals(t, msg.Code, 404)
-		th.AssertEquals(t, msg.Message, "ShareSnapshotNotFound: Snapshot 70bfbebc-d3ff-4528-8bbb-58422daa280b could not be found.")
+		th.AssertEquals(t, "itemNotFound", k)
+		th.AssertEquals(t, 404, msg.Code)
+		th.AssertEquals(t, "ShareSnapshotNotFound: Snapshot 70bfbebc-d3ff-4528-8bbb-58422daa280b could not be found.", msg.Message)
 	}
 }

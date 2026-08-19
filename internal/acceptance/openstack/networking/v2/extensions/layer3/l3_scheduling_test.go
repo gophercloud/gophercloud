@@ -64,7 +64,7 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	// List routers on hosting agent
 	routersOnHostingAgent, err := agents.ListL3Routers(context.TODO(), client, hostingAgent.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, containsRouterFunc(routersOnHostingAgent, router.ID), false)
+	th.AssertFalse(t, containsRouterFunc(routersOnHostingAgent, router.ID))
 	t.Logf("Router %s is not scheduled on %s", router.ID, hostingAgent.ID)
 
 	// schedule back
@@ -74,6 +74,6 @@ func TestLayer3RouterScheduling(t *testing.T) {
 	// List hosting agent after readding
 	routersOnHostingAgent, err = agents.ListL3Routers(context.TODO(), client, hostingAgent.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, containsRouterFunc(routersOnHostingAgent, router.ID), true)
+	th.AssertTrue(t, containsRouterFunc(routersOnHostingAgent, router.ID))
 	t.Logf("Router %s is scheduled on %s", router.ID, hostingAgent.ID)
 }

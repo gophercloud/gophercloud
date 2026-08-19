@@ -36,7 +36,7 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 
 	template, err := clustertemplates.Get(context.TODO(), client, clusterTemplate.UUID).Extract()
 	th.AssertNoErr(t, err)
@@ -63,8 +63,8 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 
 	updateClusterTemplate, err := clustertemplates.Update(context.TODO(), client, clusterTemplate.UUID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, updateClusterTemplate.MasterLBEnabled)
-	th.AssertEquals(t, false, updateClusterTemplate.RegistryEnabled)
+	th.AssertFalse(t, updateClusterTemplate.MasterLBEnabled)
+	th.AssertFalse(t, updateClusterTemplate.RegistryEnabled)
 	th.AssertEquals(t, "test", updateClusterTemplate.Labels["test"])
 	tools.PrintResource(t, updateClusterTemplate)
 

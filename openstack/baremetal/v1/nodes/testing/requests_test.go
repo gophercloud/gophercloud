@@ -81,7 +81,7 @@ func TestListOpts(t *testing.T) {
 	}
 
 	_, err := opts.ToNodeListDetailQuery()
-	th.AssertEquals(t, err.Error(), "fields is not a valid option when getting a detailed listing of nodes")
+	th.AssertEquals(t, "fields is not a valid option when getting a detailed listing of nodes", err.Error())
 
 	// Regular ListOpts can
 	query, err := opts.ToNodeListQuery()
@@ -627,7 +627,7 @@ func TestListBIOSSettingsOpts(t *testing.T) {
 	}
 
 	_, err := opts.ToListBIOSSettingsOptsQuery()
-	th.AssertEquals(t, err.Error(), "cannot have both fields and detail options for BIOS settings")
+	th.AssertEquals(t, "cannot have both fields and detail options for BIOS settings", err.Error())
 }
 
 func TestGetVendorPassthruMethods(t *testing.T) {
@@ -938,5 +938,5 @@ func TestVirtualInterfaceOptsValidation(t *testing.T) {
 	}
 
 	_, err := opts.ToVirtualInterfaceMap()
-	th.AssertEquals(t, err.Error(), "cannot specify both port_uuid and portgroup_uuid")
+	th.AssertEquals(t, "cannot specify both port_uuid and portgroup_uuid", err.Error())
 }

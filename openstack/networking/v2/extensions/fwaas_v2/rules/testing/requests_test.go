@@ -301,10 +301,10 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "ssh_form_any", rule.Name)
 	th.AssertEquals(t, "80cf934d6ffb4ef5b244f1c512ad1e61", rule.TenantID)
 	th.AssertEquals(t, "80cf934d6ffb4ef5b244f1c512ad1e61", rule.ProjectID)
-	th.AssertEquals(t, true, rule.Enabled)
+	th.AssertTrue(t, rule.Enabled)
 	th.AssertEquals(t, "allow", rule.Action)
 	th.AssertEquals(t, 4, rule.IPVersion)
-	th.AssertEquals(t, false, rule.Shared)
+	th.AssertFalse(t, rule.Shared)
 }
 
 func TestUpdate(t *testing.T) {

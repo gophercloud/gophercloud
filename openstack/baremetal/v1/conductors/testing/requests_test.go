@@ -58,9 +58,9 @@ func TestListDetailConductors(t *testing.T) {
 			t.Fatalf("Expected 2 conductors, got %d", len(actual))
 		}
 		th.AssertEquals(t, "compute1.localdomain", actual[0].Hostname)
-		th.AssertEquals(t, false, actual[0].Alive)
+		th.AssertFalse(t, actual[0].Alive)
 		th.AssertEquals(t, "compute2.localdomain", actual[1].Hostname)
-		th.AssertEquals(t, true, actual[1].Alive)
+		th.AssertTrue(t, actual[1].Alive)
 
 		return true, nil
 	})
@@ -84,7 +84,7 @@ func TestListOpts(t *testing.T) {
 	}
 
 	_, err := optsDetail.ToConductorListQuery()
-	th.AssertEquals(t, err.Error(), "cannot have both fields and detail options for conductors")
+	th.AssertEquals(t, "cannot have both fields and detail options for conductors", err.Error())
 
 	// Regular ListOpts can
 	query, err := opts.ToConductorListQuery()

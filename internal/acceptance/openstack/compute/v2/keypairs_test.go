@@ -57,7 +57,7 @@ func TestKeyPairsCreateDelete(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 }
 
 func TestKeyPairsImportPublicKey(t *testing.T) {
@@ -146,7 +146,7 @@ func TestKeyPairsCreateDeleteByID(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, true, found)
+	th.AssertTrue(t, found)
 
 	deleteOpts := keypairs.DeleteOpts{
 		UserID: user.ID,

@@ -77,10 +77,10 @@ func TestGetBandwidthLimitRule(t *testing.T) {
 	r, err := rules.GetBandwidthLimitRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractBandwidthLimitRule()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, r.ID, "30a57f4a-336b-4382-8275-d708babd2241")
-	th.AssertEquals(t, r.Direction, "egress")
-	th.AssertEquals(t, r.MaxBurstKBps, 300)
-	th.AssertEquals(t, r.MaxKBps, 3000)
+	th.AssertEquals(t, "30a57f4a-336b-4382-8275-d708babd2241", r.ID)
+	th.AssertEquals(t, "egress", r.Direction)
+	th.AssertEquals(t, 300, r.MaxBurstKBps)
+	th.AssertEquals(t, 3000, r.MaxKBps)
 }
 
 func TestCreateBandwidthLimitRule(t *testing.T) {
@@ -218,7 +218,7 @@ func TestGetDSCPMarkingRule(t *testing.T) {
 	r, err := rules.GetDSCPMarkingRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractDSCPMarkingRule()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, r.ID, "30a57f4a-336b-4382-8275-d708babd2241")
+	th.AssertEquals(t, "30a57f4a-336b-4382-8275-d708babd2241", r.ID)
 	th.AssertEquals(t, 26, r.DSCPMark)
 }
 
@@ -355,9 +355,9 @@ func TestGetMinimumBandwidthRule(t *testing.T) {
 	r, err := rules.GetMinimumBandwidthRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractMinimumBandwidthRule()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, r.ID, "30a57f4a-336b-4382-8275-d708babd2241")
-	th.AssertEquals(t, r.Direction, "egress")
-	th.AssertEquals(t, r.MinKBps, 3000)
+	th.AssertEquals(t, "30a57f4a-336b-4382-8275-d708babd2241", r.ID)
+	th.AssertEquals(t, "egress", r.Direction)
+	th.AssertEquals(t, 3000, r.MinKBps)
 }
 
 func TestCreateMinimumBandwidthRule(t *testing.T) {

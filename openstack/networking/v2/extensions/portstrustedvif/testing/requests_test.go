@@ -93,23 +93,23 @@ func TestGet(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
-	th.AssertEquals(t, s.Name, "private-port")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, s.DeviceOwner, "")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", s.Status)
+	th.AssertEquals(t, "private-port", s.Name)
+	th.AssertTrue(t, s.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
+	th.AssertEquals(t, "", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.1"},
-	})
-	th.AssertEquals(t, s.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
-	th.AssertEquals(t, s.DeviceID, "")
+	}, s.FixedIPs)
+	th.AssertEquals(t, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", s.ID)
+	th.AssertEquals(t, "", s.DeviceID)
 
 	if s.PortTrustedVIF == nil {
 		t.Fatalf("Expected s.PortTrustedVIF to be not nil")
 	}
-	th.AssertEquals(t, *s.PortTrustedVIF, false)
+	th.AssertFalse(t, *s.PortTrustedVIF)
 }
 
 func TestGetUnset(t *testing.T) {
@@ -134,18 +134,18 @@ func TestGetUnset(t *testing.T) {
 	err := ports.Get(context.TODO(), fake.ServiceClient(fakeServer), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Status, "DOWN")
-	th.AssertEquals(t, s.Name, "private-port")
-	th.AssertEquals(t, s.AdminStateUp, true)
-	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, s.DeviceOwner, "")
-	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", s.Status)
+	th.AssertEquals(t, "private-port", s.Name)
+	th.AssertTrue(t, s.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", s.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", s.TenantID)
+	th.AssertEquals(t, "", s.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", s.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.1"},
-	})
-	th.AssertEquals(t, s.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
-	th.AssertEquals(t, s.DeviceID, "")
+	}, s.FixedIPs)
+	th.AssertEquals(t, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", s.ID)
+	th.AssertEquals(t, "", s.DeviceID)
 
 	if s.PortTrustedVIF != nil {
 		t.Fatalf("Expected s.PortTrustedVIF to be nil")
@@ -191,18 +191,18 @@ func TestCreateWithPortTrustedVIF(t *testing.T) {
 	err := ports.Create(context.TODO(), fake.ServiceClient(fakeServer), createOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExt.Status, "DOWN")
-	th.AssertEquals(t, portWithExt.Name, "private-port")
-	th.AssertEquals(t, portWithExt.AdminStateUp, true)
-	th.AssertEquals(t, portWithExt.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
-	th.AssertEquals(t, portWithExt.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertEquals(t, portWithExt.DeviceOwner, "")
-	th.AssertEquals(t, portWithExt.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, portWithExt.FixedIPs, []ports.IP{
+	th.AssertEquals(t, "DOWN", portWithExt.Status)
+	th.AssertEquals(t, "private-port", portWithExt.Name)
+	th.AssertTrue(t, portWithExt.AdminStateUp)
+	th.AssertEquals(t, "a87cc70a-3e15-4acf-8205-9b711a3531b7", portWithExt.NetworkID)
+	th.AssertEquals(t, "d6700c0c9ffa4f1cb322cd4a1f3906fa", portWithExt.TenantID)
+	th.AssertEquals(t, "", portWithExt.DeviceOwner)
+	th.AssertEquals(t, "fa:16:3e:c9:cb:f0", portWithExt.MACAddress)
+	th.AssertDeepEquals(t, []ports.IP{
 		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
-	})
-	th.AssertEquals(t, portWithExt.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertEquals(t, *portWithExt.PortTrustedVIF, true)
+	}, portWithExt.FixedIPs)
+	th.AssertEquals(t, "65c0ee9f-d634-4522-8954-51021b570b0d", portWithExt.ID)
+	th.AssertTrue(t, *portWithExt.PortTrustedVIF)
 }
 
 func TestUpdatePortTrustedVIF(t *testing.T) {
@@ -237,6 +237,6 @@ func TestUpdatePortTrustedVIF(t *testing.T) {
 	err := ports.Update(context.TODO(), fake.ServiceClient(fakeServer), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithExt)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, portWithExt.Name, "private-port")
-	th.AssertDeepEquals(t, *portWithExt.PortTrustedVIF, false)
+	th.AssertEquals(t, "private-port", portWithExt.Name)
+	th.AssertDeepEquals(t, false, *portWithExt.PortTrustedVIF)
 }

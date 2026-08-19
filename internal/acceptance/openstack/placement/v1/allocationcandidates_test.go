@@ -75,17 +75,17 @@ func TestAllocationCandidatesList(t *testing.T) {
 	result, err := allocationcandidates.ExtractAllocationCandidates(page)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, len(result.AllocationRequests) > 0)
+	th.AssertTrue(t, len(result.AllocationRequests) > 0)
 
 	// Assert: The provider's summary contains the exact inventory we seeded:
 	// VCPU total=8, reserved=0 → capacity=8, used=0.
 	summary, present := result.ProviderSummaries[rpUUID]
-	th.AssertEquals(t, true, present)
+	th.AssertTrue(t, present)
 	vcpuSummary, present := summary.Resources["VCPU"]
-	th.AssertEquals(t, true, present)
+	th.AssertTrue(t, present)
 	th.AssertEquals(t, 8, vcpuSummary.Capacity)
 	th.AssertEquals(t, 0, vcpuSummary.Used)
-	th.AssertEquals(t, true, slices.Contains(*summary.Traits, "COMPUTE_NODE"))
+	th.AssertTrue(t, slices.Contains(*summary.Traits, "COMPUTE_NODE"))
 	// It is a root provider: root UUID equals its own UUID, parent is absent.
 	th.AssertEquals(t, rpUUID, *summary.RootProviderUUID)
 	th.AssertEquals(t, (*string)(nil), summary.ParentProviderUUID)
@@ -125,15 +125,15 @@ func TestAllocationCandidatesListPre129(t *testing.T) {
 	result, err := allocationcandidates.ExtractAllocationCandidates(page)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, len(result.AllocationRequests) > 0)
+	th.AssertTrue(t, len(result.AllocationRequests) > 0)
 
 	summary, present := result.ProviderSummaries[rpUUID]
-	th.AssertEquals(t, true, present)
+	th.AssertTrue(t, present)
 	vcpuSummary, present := summary.Resources["VCPU"]
-	th.AssertEquals(t, true, present)
+	th.AssertTrue(t, present)
 	th.AssertEquals(t, 8, vcpuSummary.Capacity)
 	th.AssertEquals(t, 0, vcpuSummary.Used)
-	th.AssertEquals(t, true, slices.Contains(*summary.Traits, "COMPUTE_NODE"))
+	th.AssertTrue(t, slices.Contains(*summary.Traits, "COMPUTE_NODE"))
 	// Root/parent UUIDs are absent below 1.29.
 	th.AssertEquals(t, (*string)(nil), summary.RootProviderUUID)
 	th.AssertEquals(t, (*string)(nil), summary.ParentProviderUUID)
@@ -163,8 +163,8 @@ func TestAllocationCandidatesList110(t *testing.T) {
 	result, err := allocationcandidates.ExtractAllocationCandidates110(page)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, true, len(result.AllocationRequests) > 0)
-	th.AssertEquals(t, true, len(result.ProviderSummaries) > 0)
+	th.AssertTrue(t, len(result.AllocationRequests) > 0)
+	th.AssertTrue(t, len(result.ProviderSummaries) > 0)
 
 	// Assert: UUID of the created RP present and resource amount correct.
 	var foundAlloc allocationcandidates.AllocationRequest110Resource
@@ -180,9 +180,9 @@ func TestAllocationCandidatesList110(t *testing.T) {
 
 	// Assert: The provider summary contains the expected inventory.
 	rpSummary, present := result.ProviderSummaries[rpUUID]
-	th.AssertEquals(t, true, present)
+	th.AssertTrue(t, present)
 	vcpuSummary, present := rpSummary.Resources["VCPU"]
-	th.AssertEquals(t, true, present)
+	th.AssertTrue(t, present)
 	th.AssertEquals(t, 8, vcpuSummary.Capacity)
 	th.AssertEquals(t, 0, vcpuSummary.Used)
 }
@@ -206,7 +206,7 @@ func TestAllocationCandidatesIsEmpty110(t *testing.T) {
 
 	isEmpty, err := page.IsEmpty()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, false, isEmpty)
+	th.AssertFalse(t, isEmpty)
 }
 
 func TestAllocationCandidatesListEmpty(t *testing.T) {
@@ -230,5 +230,5 @@ func TestAllocationCandidatesListEmpty(t *testing.T) {
 
 	isEmpty, err := page.IsEmpty()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, isEmpty)
+	th.AssertTrue(t, isEmpty)
 }

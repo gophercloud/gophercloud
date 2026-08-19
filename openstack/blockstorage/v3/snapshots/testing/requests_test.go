@@ -124,8 +124,8 @@ func TestGet(t *testing.T) {
 	v, err := snapshots.Get(context.TODO(), client.ServiceClient(fakeServer), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, v.Name, "snapshot-001")
-	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "snapshot-001", v.Name)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", v.ID)
 }
 
 func TestCreate(t *testing.T) {
@@ -138,9 +138,9 @@ func TestCreate(t *testing.T) {
 	n, err := snapshots.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.VolumeID, "1234")
-	th.AssertEquals(t, n.Name, "snapshot-001")
-	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, "1234", n.VolumeID)
+	th.AssertEquals(t, "snapshot-001", n.Name)
+	th.AssertEquals(t, "d32019d3-bc6e-4319-9c1d-6722fc136a22", n.ID)
 }
 
 func TestUpdateMetadata(t *testing.T) {

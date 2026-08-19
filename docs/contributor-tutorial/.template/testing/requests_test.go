@@ -27,7 +27,7 @@ func TestListResources(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, count, 1)
+	th.AssertEquals(t, 1, count)
 }
 
 func TestListResourcesAllPages(t *testing.T) {

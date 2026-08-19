@@ -41,7 +41,7 @@ func TestTransferRequestCRUD(t *testing.T) {
 			foundRequest = true
 		}
 	}
-	th.AssertEquals(t, foundRequest, true)
+	th.AssertTrue(t, foundRequest)
 
 	description := "new description"
 	updateOpts := transferRequests.UpdateOpts{
@@ -93,5 +93,5 @@ func TestTransferRequestAccept(t *testing.T) {
 			foundAccept = true
 		}
 	}
-	th.AssertEquals(t, foundAccept, true)
+	th.AssertTrue(t, foundAccept)
 }

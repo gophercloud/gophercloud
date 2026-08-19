@@ -66,7 +66,7 @@ func TestAddExtraRoutes(t *testing.T) {
 	n, err := extraroutes.Add(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, n.Routes, []routers.Route{
+	th.AssertDeepEquals(t, []routers.Route{
 		{
 			DestinationCIDR: "10.0.1.0/24",
 			NextHop:         "10.0.0.11",
@@ -83,7 +83,7 @@ func TestAddExtraRoutes(t *testing.T) {
 			DestinationCIDR: "10.0.4.0/24",
 			NextHop:         "10.0.0.14",
 		},
-	})
+	}, n.Routes)
 }
 
 func TestRemoveExtraRoutes(t *testing.T) {
@@ -138,7 +138,7 @@ func TestRemoveExtraRoutes(t *testing.T) {
 	n, err := extraroutes.Remove(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, n.Routes, []routers.Route{
+	th.AssertDeepEquals(t, []routers.Route{
 		{
 			DestinationCIDR: "10.0.1.0/24",
 			NextHop:         "10.0.0.11",
@@ -147,5 +147,5 @@ func TestRemoveExtraRoutes(t *testing.T) {
 			DestinationCIDR: "10.0.2.0/24",
 			NextHop:         "10.0.0.12",
 		},
-	})
+	}, n.Routes)
 }

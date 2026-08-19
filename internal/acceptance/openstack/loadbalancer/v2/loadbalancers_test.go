@@ -406,7 +406,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newListener)
 
-	th.AssertEquals(t, newListener.DefaultPoolID, "")
+	th.AssertEquals(t, "", newListener.DefaultPoolID)
 
 	// Member
 	member, err := CreateMember(t, lbClient, lb, pool, subnet.ID, subnet.CIDR)

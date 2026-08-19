@@ -52,7 +52,7 @@ func TestSecretsCRUD(t *testing.T) {
 		}
 	}
 
-	th.AssertEquals(t, found, true)
+	th.AssertTrue(t, found)
 }
 
 func TestSecretsDelayedPayload(t *testing.T) {
@@ -105,8 +105,8 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	metadata, err := secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
-	th.AssertEquals(t, metadata["foo"], "bar")
-	th.AssertEquals(t, metadata["something"], "something else")
+	th.AssertEquals(t, "bar", metadata["foo"])
+	th.AssertEquals(t, "something else", metadata["something"])
 
 	// Add a single metadatum
 	metadatumOpts := secrets.MetadatumOpts{
@@ -120,10 +120,10 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	metadata, err = secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
-	th.AssertEquals(t, len(metadata), 3)
-	th.AssertEquals(t, metadata["foo"], "bar")
-	th.AssertEquals(t, metadata["something"], "something else")
-	th.AssertEquals(t, metadata["bar"], "baz")
+	th.AssertEquals(t, 3, len(metadata))
+	th.AssertEquals(t, "bar", metadata["foo"])
+	th.AssertEquals(t, "something else", metadata["something"])
+	th.AssertEquals(t, "baz", metadata["bar"])
 
 	// Update a metadatum
 	metadatumOpts.Key = "foo"
@@ -132,16 +132,16 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	metadatum, err := secrets.UpdateMetadatum(context.TODO(), client, secretID, metadatumOpts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadatum)
-	th.AssertDeepEquals(t, metadatum.Key, "foo")
-	th.AssertDeepEquals(t, metadatum.Value, "foo")
+	th.AssertDeepEquals(t, "foo", metadatum.Key)
+	th.AssertDeepEquals(t, "foo", metadatum.Value)
 
 	metadata, err = secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
-	th.AssertEquals(t, len(metadata), 3)
-	th.AssertEquals(t, metadata["foo"], "foo")
-	th.AssertEquals(t, metadata["something"], "something else")
-	th.AssertEquals(t, metadata["bar"], "baz")
+	th.AssertEquals(t, 3, len(metadata))
+	th.AssertEquals(t, "foo", metadata["foo"])
+	th.AssertEquals(t, "something else", metadata["something"])
+	th.AssertEquals(t, "baz", metadata["bar"])
 
 	// Delete a metadatum
 	err = secrets.DeleteMetadatum(context.TODO(), client, secretID, "foo").ExtractErr()
@@ -150,9 +150,9 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	metadata, err = secrets.GetMetadata(context.TODO(), client, secretID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, metadata)
-	th.AssertEquals(t, len(metadata), 2)
-	th.AssertEquals(t, metadata["something"], "something else")
-	th.AssertEquals(t, metadata["bar"], "baz")
+	th.AssertEquals(t, 2, len(metadata))
+	th.AssertEquals(t, "something else", metadata["something"])
+	th.AssertEquals(t, "baz", metadata["bar"])
 }
 
 func TestSymmetricSecret(t *testing.T) {
