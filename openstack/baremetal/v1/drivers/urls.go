@@ -17,3 +17,11 @@ func driverPropertiesURL(client *gophercloud.ServiceClient, driverName string) s
 func driverDiskPropertiesURL(client *gophercloud.ServiceClient, driverName string) string {
 	return client.ServiceURL("drivers", driverName, "raid", "logical_disk_properties")
 }
+
+func vendorPassthruMethodsURL(client *gophercloud.ServiceClient, driverName string) string {
+	return client.ServiceURL("drivers", driverName, "vendor_passthru", "methods")
+}
+
+func vendorPassthruCallURL(client *gophercloud.ServiceClient, driverName string) string {
+	return client.ServiceURL("drivers", driverName, "vendor_passthru")
+}

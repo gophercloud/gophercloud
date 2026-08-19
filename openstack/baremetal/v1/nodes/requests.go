@@ -2,7 +2,9 @@ package nodes
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -747,6 +749,74 @@ func GetVendorPassthruMethods(ctx context.Context, client *gophercloud.ServiceCl
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
+}
+
+// ListVendorPassthruMethods retrieves all generic vendor passthru methods available for the given Node.
+func ListVendorPassthruMethods(ctx context.Context, client *gophercloud.ServiceClient, id string) (r ListVendorPassthruMethodsResult) {
+	resp, err := client.Get(ctx, vendorPassthruMethodsURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// VendorPassthruCallOpts defines options for invoking a vendor passthru method.
+type VendorPassthruCallOpts struct {
+	// Method is the driver-specific passthru method name.
+	Method string
+
+	// Body is the JSON body forwarded to the driver.
+	Body any
+}
+
+// CallVendorPassthru invokes a vendor passthru method for the given Node.
+func CallVendorPassthru(ctx context.Context, client *gophercloud.ServiceClient, id string, httpMethod string, opts VendorPassthruCallOpts) (r CallVendorPassthruResult) {
+	query, err := vendorPassthruCallQuery(opts.Method)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	url := vendorPassthruCallURL(client, id) + query
+	callVendorPassthru(ctx, client, httpMethod, url, opts.Body, &r)
+	return
+}
+
+func vendorPassthruCallQuery(method string) (string, error) {
+	q, err := gophercloud.BuildQueryString(struct {
+		Method string `q:"method" required:"true"`
+	}{Method: method})
+	return q.String(), err
+}
+
+func callVendorPassthru(ctx context.Context, client *gophercloud.ServiceClient, httpMethod string, url string, body any, r *CallVendorPassthruResult) {
+	resp, err := client.Request(ctx, httpMethod, url, &gophercloud.RequestOpts{
+		JSONBody:         body,
+		OkCodes:          []int{200, 202, 204},
+		KeepResponseBody: true,
+	})
+	if resp != nil {
+		r.Header = resp.Header
+		r.StatusCode = resp.StatusCode
+	}
+	if err != nil {
+		r.Err = err
+		return
+	}
+	if resp == nil || resp.Body == nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	if len(responseBody) == 0 {
+		return
+	}
+	r.Err = json.Unmarshal(responseBody, &r.Body)
 }
 
 // Get all subscriptions available for the given Node.
