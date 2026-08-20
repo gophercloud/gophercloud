@@ -58,24 +58,39 @@ type ListOptsBuilder interface {
 // sort by a particular listener attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID                   string   `q:"id"`
-	Name                 string   `q:"name"`
-	AdminStateUp         *bool    `q:"admin_state_up"`
-	ProjectID            string   `q:"project_id"`
-	LoadbalancerID       string   `q:"loadbalancer_id"`
-	DefaultPoolID        string   `q:"default_pool_id"`
-	Protocol             string   `q:"protocol"`
-	ProtocolPort         int      `q:"protocol_port"`
-	ConnectionLimit      int      `q:"connection_limit"`
-	Limit                int      `q:"limit"`
-	Marker               string   `q:"marker"`
-	SortKey              string   `q:"sort_key"`
-	SortDir              string   `q:"sort_dir"`
-	TimeoutClientData    *int     `q:"timeout_client_data"`
-	TimeoutMemberData    *int     `q:"timeout_member_data"`
-	TimeoutMemberConnect *int     `q:"timeout_member_connect"`
-	TimeoutTCPInspect    *int     `q:"timeout_tcp_inspect"`
-	Tags                 []string `q:"tags"`
+	ID                   string `q:"id"`
+	Name                 string `q:"name"`
+	AdminStateUp         *bool  `q:"admin_state_up"`
+	ProjectID            string `q:"project_id"`
+	LoadbalancerID       string `q:"loadbalancer_id"`
+	DefaultPoolID        string `q:"default_pool_id"`
+	Protocol             string `q:"protocol"`
+	ProtocolPort         int    `q:"protocol_port"`
+	ConnectionLimit      int    `q:"connection_limit"`
+	Limit                int    `q:"limit"`
+	Marker               string `q:"marker"`
+	SortKey              string `q:"sort_key"`
+	SortDir              string `q:"sort_dir"`
+	TimeoutClientData    *int   `q:"timeout_client_data"`
+	TimeoutMemberData    *int   `q:"timeout_member_data"`
+	TimeoutMemberConnect *int   `q:"timeout_member_connect"`
+	TimeoutTCPInspect    *int   `q:"timeout_tcp_inspect"`
+
+	// Tags filters listeners that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	Tags []string `q:"tags"`
+
+	// TagsAny filters listeners that contain at least one of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsAny []string `q:"tags-any"`
+
+	// TagsNot excludes listeners that contain all of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNot []string `q:"not-tags"`
+
+	// TagsNotAny excludes listeners that contain any of the given tags.
+	// Requires Octavia API version 2.5 or later.
+	TagsNotAny []string `q:"not-tags-any"`
 }
 
 // ToListenerListQuery formats a ListOpts into a query string.

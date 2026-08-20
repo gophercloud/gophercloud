@@ -54,6 +54,20 @@ func TestListAllListeners(t *testing.T) {
 	th.CheckDeepEquals(t, ListenerDb, actual[1])
 }
 
+func TestListListenerOpts(t *testing.T) {
+	listOpts := listeners.ListOpts{
+		Tags:       []string{"tag1", "tag2"},
+		TagsAny:    []string{"tag3", "tag4"},
+		TagsNot:    []string{"tag5", "tag6"},
+		TagsNotAny: []string{"tag7", "tag8"},
+	}
+
+	expected := "?not-tags=tag5&not-tags=tag6&not-tags-any=tag7&not-tags-any=tag8&tags=tag1&tags=tag2&tags-any=tag3&tags-any=tag4"
+	actual, err := listOpts.ToListenerListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
+}
+
 func TestCreateListener(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
