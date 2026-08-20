@@ -31,3 +31,11 @@ func updateURL(c *gophercloud.ServiceClient, id string) string {
 func deleteURL(c *gophercloud.ServiceClient, id string) string {
 	return resourceURL(c, id)
 }
+
+func addPrefixesURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id) + "/add_prefixes"
+}
+
+func removePrefixesURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id) + "/remove_prefixes"
+}

@@ -257,3 +257,27 @@ const SubnetPoolUpdateResponse = `
     }
 }
 `
+
+const PrefixesAddRequest = `
+{
+  "prefixes": ["192.168.0.0/24", "192.168.1.0/24", "172.16.0.0/21"]
+}
+`
+
+const PrefixesRemoveRequest = `
+{
+  "prefixes": ["192.168.0.0/24"]
+}
+`
+
+const PrefixesAddResponse = `
+{
+  "prefixes": ["192.168.0.0/23", "172.16.0.0/21"]
+}
+`
+
+const PrefixesRemoveResponse = `
+{
+ "prefixes": ["192.168.1.0/24", "172.16.0.0/21"]
+}
+`
