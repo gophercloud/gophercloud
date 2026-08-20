@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -13,6 +15,7 @@ import (
 
 var (
 	// ErrPageNotAvailable is returned from a Pager when a next or previous page is requested, but does not exist.
+	// Deprecated: This error is no longer used by Gophercloud.
 	ErrPageNotAvailable = errors.New("the requested page does not exist")
 )
 
@@ -197,6 +200,12 @@ func (p Pager) AllPages(ctx context.Context) (Page, error) {
 			b := page.GetBody().(map[string]any)
 			if v, ok := b[key].([]any); ok {
 				pagesSlice = append(pagesSlice, v...)
+			} else {
+				err = gophercloud.ErrMissingResourceKey{
+					Expected: key,
+					Actual:   slices.Collect(maps.Keys(b)),
+				}
+				return false, err
 			}
 			return true, nil
 		})

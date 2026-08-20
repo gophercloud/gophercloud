@@ -76,6 +76,22 @@ func (e ErrMissingAnyoneOfEnvironmentVariables) Error() string {
 	return e.choseErrString()
 }
 
+// ErrMissingResourceKey is returned by the Pager when a response does not contain the
+// expected envelope key.
+type ErrMissingResourceKey struct {
+	BaseError
+	Expected string
+	Actual   []string
+}
+
+func (e ErrMissingResourceKey) Error() string {
+	e.DefaultErrString = fmt.Sprintf(
+		"Expected key %v in body but got %v instead",
+		e.Expected, e.Actual,
+	)
+	return e.choseErrString()
+}
+
 // ErrUnexpectedResponseCode is returned by the Request method when a response code other than
 // those listed in OkCodes is encountered.
 type ErrUnexpectedResponseCode struct {
