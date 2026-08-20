@@ -130,6 +130,7 @@ func (e ErrTimeOut) Error() string {
 }
 
 // ErrUnableToReauthenticate is the error type returned when reauthentication fails.
+// It does not unwrap because ErrOriginal and ErrReauth are independent failures.
 type ErrUnableToReauthenticate struct {
 	BaseError
 	ErrOriginal error
@@ -142,7 +143,7 @@ func (e ErrUnableToReauthenticate) Error() string {
 }
 
 // ErrErrorAfterReauthentication is the error type returned when reauthentication
-// succeeds, but an error occurs afterword (usually an HTTP error).
+// succeeds, but an error occurs afterward (usually an HTTP error).
 type ErrErrorAfterReauthentication struct {
 	BaseError
 	ErrOriginal error
@@ -151,6 +152,11 @@ type ErrErrorAfterReauthentication struct {
 func (e ErrErrorAfterReauthentication) Error() string {
 	e.DefaultErrString = fmt.Sprintf("Successfully re-authenticated, but got error executing request: %s", e.ErrOriginal)
 	return e.choseErrString()
+}
+
+// Unwrap returns the error from the retried request.
+func (e ErrErrorAfterReauthentication) Unwrap() error {
+	return e.ErrOriginal
 }
 
 // ErrServiceNotFound is returned when no service in a service catalog matches
