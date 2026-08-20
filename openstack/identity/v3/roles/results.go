@@ -162,6 +162,16 @@ type AssignedRole struct {
 type Scope struct {
 	Domain  Domain  `json:"domain,omitempty"`
 	Project Project `json:"project,omitempty"`
+
+	// System contains system scope details.
+	// Available since Identity API v3.10.
+	System *System `json:"system,omitempty"`
+}
+
+// System represents the system in a role assignment scope.
+type System struct {
+	// All is true when the role assignment applies to the entire system.
+	All bool `json:"all"`
 }
 
 // Domain represents a domain in a role assignment scope.
@@ -231,6 +241,12 @@ func ExtractRoleAssignments(r pagination.Page) ([]RoleAssignment, error) {
 // AssignmentResult represents the result of an assign operation.
 // Call ExtractErr method to determine if the request succeeded or failed.
 type AssignmentResult struct {
+	gophercloud.ErrResult
+}
+
+// ValidateResult represents the result of a validate operation.
+// Call ExtractErr method to determine if the request succeeded or failed.
+type ValidateResult struct {
 	gophercloud.ErrResult
 }
 

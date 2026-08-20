@@ -232,6 +232,39 @@ const ListAssignmentWithNamesOutput = `
 }
 `
 
+// ListAssignmentSystemOutput provides a result of a ListAssignment request
+// filtered by system scope.
+const ListAssignmentSystemOutput = `
+{
+    "role_assignments": [
+        {
+            "links": {
+                "assignment": "http://identity:35357/v3/system/groups/101112/roles/123456"
+            },
+            "role": {
+                "id": "123456"
+            },
+            "scope": {
+                "system": {
+                    "all": true
+                }
+            },
+            "group": {
+                "domain": {
+                    "id": "161718"
+                },
+                "id": "101112"
+            }
+        }
+    ],
+    "links": {
+        "self": "http://identity:35357/v3/role_assignments?scope.system=all",
+        "previous": null,
+        "next": null
+    }
+}
+`
+
 // ListAssignmentsOnResourceOutput provides a result of ListAssignmentsOnResource request.
 const ListAssignmentsOnResourceOutput = `
 {
@@ -508,6 +541,37 @@ func HandleAssignSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
+
+	fakeServer.Mux.HandleFunc("/system/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	fakeServer.Mux.HandleFunc("/system/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleValidateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	paths := []string{
+		"/projects/{project_id}/users/{user_id}/roles/{role_id}",
+		"/projects/{project_id}/groups/{group_id}/roles/{role_id}",
+		"/domains/{domain_id}/users/{user_id}/roles/{role_id}",
+		"/domains/{domain_id}/groups/{group_id}/roles/{role_id}",
+		"/system/users/{user_id}/roles/{role_id}",
+		"/system/groups/{group_id}/roles/{role_id}",
+	}
+
+	for _, path := range paths {
+		fakeServer.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "HEAD")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.WriteHeader(http.StatusNoContent)
+		})
+	}
 }
 
 func HandleUnassignSuccessfully(t *testing.T, fakeServer th.FakeServer) {
@@ -530,6 +594,18 @@ func HandleUnassignSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	})
 
 	fakeServer.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	fakeServer.Mux.HandleFunc("/system/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	fakeServer.Mux.HandleFunc("/system/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
@@ -560,6 +636,14 @@ var ThirdRoleAssignment = roles.RoleAssignment{
 	Group: roles.Group{},
 }
 
+// SystemRoleAssignment is a role assignment with system scope.
+var SystemRoleAssignment = roles.RoleAssignment{
+	Role:  roles.AssignedRole{ID: "123456"},
+	Scope: roles.Scope{System: &roles.System{All: true}},
+	User:  roles.User{},
+	Group: roles.Group{Domain: roles.Domain{ID: "161718"}, ID: "101112"},
+}
+
 // ExpectedRoleAssignmentsSlice is the slice of role assignments expected to be
 // returned from ListAssignmentOutput.
 var ExpectedRoleAssignmentsSlice = []roles.RoleAssignment{FirstRoleAssignment, SecondRoleAssignment}
@@ -567,6 +651,10 @@ var ExpectedRoleAssignmentsSlice = []roles.RoleAssignment{FirstRoleAssignment, S
 // ExpectedRoleAssignmentsWithNamesSlice is the slice of role assignments expected to be
 // returned from ListAssignmentWithNamesOutput.
 var ExpectedRoleAssignmentsWithNamesSlice = []roles.RoleAssignment{ThirdRoleAssignment}
+
+// ExpectedSystemRoleAssignmentsSlice is the slice of system role assignments
+// expected to be returned from ListAssignmentSystemOutput.
+var ExpectedSystemRoleAssignmentsSlice = []roles.RoleAssignment{SystemRoleAssignment}
 
 // HandleListRoleAssignmentsSuccessfully creates an HTTP handler at `/role_assignments` on the
 // test handler mux that responds with a list of two role assignments.
@@ -609,6 +697,21 @@ func HandleListRoleAssignmentsWithSubtreeSuccessfully(t *testing.T, fakeServer t
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ListAssignmentOutput)
+	})
+}
+
+// HandleListRoleAssignmentsWithSystemSuccessfully creates an HTTP handler at
+// `/role_assignments` that responds with a system-scoped role assignment.
+func HandleListRoleAssignmentsWithSystemSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.AssertEquals(t, "scope.system=all", r.URL.RawQuery)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, ListAssignmentSystemOutput)
 	})
 }
 
@@ -682,6 +785,34 @@ func HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t *testing.T, fak
 	}
 
 	fakeServer.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles", fn)
+}
+
+func HandleListAssignmentsOnResourceSuccessfully_SystemUsers(t *testing.T, fakeServer th.FakeServer) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
+	}
+
+	fakeServer.Mux.HandleFunc("/system/users/{user_id}/roles", fn)
+}
+
+func HandleListAssignmentsOnResourceSuccessfully_SystemGroups(t *testing.T, fakeServer th.FakeServer) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, ListAssignmentsOnResourceOutput)
+	}
+
+	fakeServer.Mux.HandleFunc("/system/groups/{group_id}/roles", fn)
 }
 
 var expectedRoleInferenceRule = roles.RoleInferenceRule{

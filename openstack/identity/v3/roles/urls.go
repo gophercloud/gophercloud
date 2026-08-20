@@ -31,10 +31,16 @@ func listAssignmentsURL(client *gophercloud.ServiceClient) string {
 }
 
 func listAssignmentsOnResourceURL(client *gophercloud.ServiceClient, targetType, targetID, actorType, actorID string) string {
+	if targetType == "system" {
+		return client.ServiceURL(targetType, actorType, actorID, rolePath)
+	}
 	return client.ServiceURL(targetType, targetID, actorType, actorID, rolePath)
 }
 
 func assignURL(client *gophercloud.ServiceClient, targetType, targetID, actorType, actorID, roleID string) string {
+	if targetType == "system" {
+		return client.ServiceURL(targetType, actorType, actorID, rolePath, roleID)
+	}
 	return client.ServiceURL(targetType, targetID, actorType, actorID, rolePath, roleID)
 }
 
