@@ -2,11 +2,14 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
+	"slices"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
@@ -53,6 +56,25 @@ func ExtractKeyedLinkedInts(r pagination.Page) ([]int, error) {
 	}
 	err := (r.(KeyedLinkedPageResult)).ExtractInto(&s)
 	return s.Ints, err
+}
+
+// MismatchedKeyedLinkedPageResult declares an envelope key ("ints") that is
+// decoupled from its emptiness check ("items"). This lets us exercise the case
+// where a non-empty page does not contain the expected envelope key.
+type MismatchedKeyedLinkedPageResult struct {
+	pagination.LinkedPageBase
+}
+
+func (r MismatchedKeyedLinkedPageResult) ResourceKey() string {
+	return "ints"
+}
+
+func (r MismatchedKeyedLinkedPageResult) IsEmpty() (bool, error) {
+	var s struct {
+		Items []int `json:"items"`
+	}
+	err := r.ExtractInto(&s)
+	return len(s.Items) == 0, err
 }
 
 func createLinked(fakeServer th.FakeServer) pagination.Pager {
@@ -218,4 +240,38 @@ func TestAllPagesLinkedKeyed(t *testing.T) {
 	actual, err := ExtractKeyedLinkedInts(page)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestAllPagesLinkedKeyedMissingKey(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	// The page is non-empty (it has "items") but does not contain the
+	// expected "ints" envelope key.
+	fakeServer.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{ "items": [1, 2, 3], "links": { "next": null } }`)
+	})
+
+	client := client.ServiceClient(fakeServer)
+
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return MismatchedKeyedLinkedPageResult{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	pager := pagination.NewPager(client, fakeServer.Server.URL+"/page1", createPage)
+
+	_, err := pager.AllPages(context.TODO())
+	th.AssertErr(t, err)
+
+	var missingKeyErr gophercloud.ErrMissingResourceKey
+	if !errors.As(err, &missingKeyErr) {
+		t.Fatalf("Expected ErrMissingResourceKey, but got %T: %v", err, err)
+	}
+	th.AssertEquals(t, "ints", missingKeyErr.Expected)
+
+	// maps.Keys does not guarantee ordering, so sort before comparing.
+	actualKeys := slices.Clone(missingKeyErr.Actual)
+	slices.Sort(actualKeys)
+	th.AssertDeepEquals(t, []string{"items", "links"}, actualKeys)
 }
