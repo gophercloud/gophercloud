@@ -4,7 +4,8 @@ updates:
   directory: "/"
   target-branch: "main"
   schedule:
-    interval: daily
+    interval: "weekly"
+    day: "monday"
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
@@ -15,7 +16,8 @@ updates:
   directory: "/"
   target-branch: "main"
   schedule:
-    interval: daily
+    interval: "weekly"
+    day: "monday"
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
@@ -26,7 +28,8 @@ updates:
   directory: "/"
   target-branch: "v2"
   schedule:
-    interval: daily
+    interval: "weekly"
+    day: "monday"
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
@@ -37,7 +40,8 @@ updates:
   directory: "/"
   target-branch: "v2"
   schedule:
-    interval: daily
+    interval: "weekly"
+    day: "monday"
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
