@@ -26,19 +26,25 @@ jobs:
             ubuntu_version: "24.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum master
-              MAGNUMCLIENT_BRANCH=master
+              enable_plugin magnum-cluster-api https://github.com/vexxhost/magnum-cluster-api main
+
+              MAGNUM_GUEST_IMAGE_URL=https://github.com/vexxhost/capo-image-elements/releases/download/2026.05-1/ubuntu-24.04-v1.35.4.qcow2
           - name: "gazpacho"
             openstack_version: "stable/2026.1"
             ubuntu_version: "24.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/2026.1
-              MAGNUMCLIENT_BRANCH=stable/2026.1
+              enable_plugin magnum-cluster-api https://github.com/vexxhost/magnum-cluster-api main
+
+              MAGNUM_GUEST_IMAGE_URL=https://github.com/vexxhost/capo-image-elements/releases/download/2026.05-1/ubuntu-24.04-v1.35.4.qcow2
           - name: "epoxy"
             openstack_version: "stable/2025.1"
             ubuntu_version: "24.04"
             devstack_conf_overrides: |
               enable_plugin magnum https://github.com/openstack/magnum stable/2025.1
-              MAGNUMCLIENT_BRANCH=stable/2025.1
+
+              enable_plugin heat https://github.com/openstack/heat stable/2025.1
+              ENABLED_SERVICES+=h-eng,h-api,h-api-cfn,h-api,cw
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
     name: Magnum on OpenStack ${{ matrix.name }}
     steps:
@@ -46,19 +52,23 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
+
       - name: Deploy devstack
         uses: gophercloud/devstack-action@60ca1042045c0c9e3e001c64575d381654ffcba1 # v0.19
         with:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin barbican https://github.com/openstack/barbican ${{ matrix.openstack_version }}
-            enable_plugin heat https://github.com/openstack/heat ${{ matrix.openstack_version }}
+
+            MAGNUMCLIENT_BRANCH=${{ matrix.openstack_version }}
+
             GLANCE_LIMIT_IMAGE_SIZE_TOTAL=5000
             SWIFT_MAX_FILE_SIZE=5368709122
             KEYSTONE_ADMIN_ENDPOINT=true
 
             ${{ matrix.devstack_conf_overrides }}
-          enabled_services: "h-eng,h-api,h-api-cfn,h-api-cw,openstack-cli-server"
+          enabled_services: "openstack-cli-server"
+
       - name: Checkout go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
