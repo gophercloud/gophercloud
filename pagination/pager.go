@@ -13,6 +13,7 @@ import (
 
 var (
 	// ErrPageNotAvailable is returned from a Pager when a next or previous page is requested, but does not exist.
+	// Deprecated: This error is no longer used by Gophercloud.
 	ErrPageNotAvailable = errors.New("the requested page does not exist")
 )
 
