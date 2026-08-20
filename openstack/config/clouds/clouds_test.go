@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/config/clouds"
+	"go.yaml.in/yaml/v3"
 )
 
 func ExampleWithCloudName() {
@@ -64,6 +65,32 @@ func ExampleWithRegion() {
 
 	fmt.Println(eo.Region)
 	// Output: mars
+}
+
+func TestCloudDefaultMicroversion(t *testing.T) {
+	const exampleClouds = `clouds:
+  openstack:
+    auth:
+      auth_url: https://example.com:13000
+    compute_default_microversion: "2.87"
+    regions:
+      - name: mars
+        values:
+          compute_default_microversion: "2.79"`
+
+	var parsed clouds.Clouds
+	if err := yaml.Unmarshal([]byte(exampleClouds), &parsed); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	cloud := parsed.Clouds["openstack"]
+	if got := cloud.ComputeDefaultMicroversion; got != "2.87" {
+		t.Errorf("unexpected compute default microversion: %q", got)
+	}
+
+	if got := cloud.Regions[0].Values.ComputeDefaultMicroversion; got != "2.79" {
+		t.Errorf("unexpected regional compute default microversion: %q", got)
+	}
 }
 
 func TestParse(t *testing.T) {
