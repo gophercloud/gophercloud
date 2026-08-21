@@ -20,23 +20,23 @@ type ListOptsBuilder interface {
 // sort by a particular network attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID             string `q:"id"`
-	Name           string `q:"name"`
-	Description    string `q:"description"`
-	AdminStateUp   *bool  `q:"admin_state_up"`
-	Distributed    *bool  `q:"distributed"`
-	Status         string `q:"status"`
-	TenantID       string `q:"tenant_id"`
-	ProjectID      string `q:"project_id"`
-	Limit          int    `q:"limit"`
-	Marker         string `q:"marker"`
-	SortKey        string `q:"sort_key"`
-	SortDir        string `q:"sort_dir"`
-	Tags           string `q:"tags"`
-	TagsAny        string `q:"tags-any"`
-	NotTags        string `q:"not-tags"`
-	NotTagsAny     string `q:"not-tags-any"`
-	RevisionNumber *int   `q:"revision_number"`
+	ID             string   `q:"id"`
+	Name           string   `q:"name"`
+	Description    string   `q:"description"`
+	AdminStateUp   *bool    `q:"admin_state_up"`
+	Distributed    *bool    `q:"distributed"`
+	Status         string   `q:"status"`
+	TenantID       string   `q:"tenant_id"`
+	ProjectID      string   `q:"project_id"`
+	Limit          int      `q:"limit"`
+	Marker         string   `q:"marker"`
+	SortKey        string   `q:"sort_key"`
+	SortDir        string   `q:"sort_dir"`
+	Tags           []string `q:"tags" format:"comma-separated"`
+	TagsAny        []string `q:"tags-any" format:"comma-separated"`
+	NotTags        []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny     []string `q:"not-tags-any" format:"comma-separated"`
+	RevisionNumber *int     `q:"revision_number"`
 }
 
 // ToRouterListQuery formats a ListOpts into a query string.
