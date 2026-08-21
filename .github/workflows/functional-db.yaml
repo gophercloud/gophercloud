@@ -41,7 +41,7 @@ jobs:
             openstack/config/provider_client.go
             openstack/utils/choose_version.go
             openstack/utils/discovery.go
-            **db**
+            **/db/**
             .github/workflows/functional-db.yaml
 
       - name: Skip tests for unrelated changed-files
