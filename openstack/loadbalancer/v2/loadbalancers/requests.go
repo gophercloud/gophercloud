@@ -112,6 +112,10 @@ type CreateOpts struct {
 	// The ID of the QoS Policy which will apply to the Virtual IP
 	VipQosPolicyID string `json:"vip_qos_policy_id,omitempty"`
 
+	// The IDs of the Security Groups which will apply to the Virtual IP.
+	// Requires Octavia API version 2.29 or later (OpenStack 2025.1).
+	VipSecGroupIDs []string `json:"vip_sg_ids,omitempty"`
+
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
@@ -196,6 +200,10 @@ type UpdateOpts struct {
 
 	// The ID of the QoS Policy which will apply to the Virtual IP
 	VipQosPolicyID *string `json:"vip_qos_policy_id,omitempty"`
+
+	// The IDs of the Security Groups which will apply to the Virtual IP.
+	// Requires Octavia API version 2.29 or later (OpenStack 2025.1).
+	VipSecGroupIDs *[]string `json:"vip_sg_ids,omitempty"`
 
 	// Tags is a set of resource tags.
 	Tags *[]string `json:"tags,omitempty"`
