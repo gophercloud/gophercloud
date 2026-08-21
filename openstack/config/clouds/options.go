@@ -7,10 +7,12 @@ import (
 )
 
 type cloudOpts struct {
-	cloudName        string
-	locations        []string
-	cloudsyamlReader io.Reader
-	secureyamlReader io.Reader
+	cloudName              string
+	locations              []string
+	publicLocations        []string
+	cloudsyamlReader       io.Reader
+	secureyamlReader       io.Reader
+	cloudsPublicyamlReader io.Reader
 
 	applicationCredentialID     string
 	applicationCredentialName   string
@@ -53,6 +55,15 @@ func WithLocations(locations ...string) ParseOption {
 	}
 }
 
+// WithPublicLocations is a functional option that sets the search location for
+// the clouds-public.yaml. Each location is a file path pointing to a possible
+// `clouds-public.yaml`
+func WithPublicLocations(locations ...string) ParseOption {
+	return func(co *cloudOpts) {
+		co.publicLocations = locations
+	}
+}
+
 // WithCloudsYAML is a functional option that lets you pass a clouds.yaml file
 // as an io.Reader interface. When this option is passed, FromCloudsYaml will
 // not attempt to fetch any file from the file system. To add a secure.yaml,
@@ -69,6 +80,14 @@ func WithCloudsYAML(clouds io.Reader) ParseOption {
 func WithSecureYAML(secure io.Reader) ParseOption {
 	return func(co *cloudOpts) {
 		co.secureyamlReader = secure
+	}
+}
+
+// WithCloudsPublicYAML is a functional option that lets you pass
+// clouds-public.yaml file as an io.Reader interface
+func WithCloudsPublicYAML(public io.Reader) ParseOption {
+	return func(co *cloudOpts) {
+		co.cloudsPublicyamlReader = public
 	}
 }
 
