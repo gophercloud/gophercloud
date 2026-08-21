@@ -130,3 +130,25 @@ acceptance-sharedfilesystems:
 acceptance-workflow:
 	$(GO_TEST) -timeout $(TIMEOUT) -tags "fixtures acceptance" ./internal/acceptance/openstack/workflow/...
 .PHONY: acceptance-workflow
+
+# apicheck compares the OpenStack OpenAPI schemas against Gophercloud's
+# implementation and prints a coverage-gap report. It requires a local checkout
+# of the gtema/openstack schemas (https://github.com/gtema/openstack); clone them
+# and point APICHECK_SPEC_ROOT at the data directory, e.g.
+#
+#   git clone https://github.com/gtema/openstack
+#   make apicheck APICHECK_SPEC_ROOT=openstack/openstack_types/data
+#
+# APICHECK_ARGS forwards extra flags, e.g. APICHECK_ARGS="-service compute -format json".
+APICHECK_SPEC_ROOT ?=
+apicheck:
+ifeq ($(strip $(APICHECK_SPEC_ROOT)),)
+	$(error set APICHECK_SPEC_ROOT to the openstack-openapi openstack_types/data directory)
+endif
+	cd tools/apicheck && go run . -spec-root "$(abspath $(APICHECK_SPEC_ROOT))" $(APICHECK_ARGS)
+.PHONY: apicheck
+
+# apicheck-test runs the apicheck tool's own unit tests.
+apicheck-test:
+	cd tools/apicheck && go test ./...
+.PHONY: apicheck-test
