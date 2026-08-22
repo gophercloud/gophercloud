@@ -51,3 +51,44 @@ func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
 		fmt.Fprint(w, listResponse)
 	})
 }
+
+func TestUpdateMetadataSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockUpdateMetadataResponse(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	// Client c must have Microversion set; minimum supported microversion for
+	// access rule metadata is 2.45
+	c.Microversion = "2.45"
+
+	opts := shareaccessrules.UpdateMetadataOpts{
+		Metadata: map[string]string{
+			"key1": "value1",
+			"key2": "value2",
+		},
+	}
+
+	actual, err := shareaccessrules.UpdateMetadata(context.TODO(), c, shareAccessRuleID, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{
+		"key1": "value1",
+		"key2": "value2",
+	}, actual)
+}
+
+func TestDeleteMetadatumSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockDeleteMetadatumResponse(t, fakeServer, "key1")
+
+	c := client.ServiceClient(fakeServer)
+	// Client c must have Microversion set; minimum supported microversion for
+	// access rule metadata is 2.45
+	c.Microversion = "2.45"
+
+	err := shareaccessrules.DeleteMetadatum(context.TODO(), c, shareAccessRuleID, "key1").ExtractErr()
+	th.AssertNoErr(t, err)
+}

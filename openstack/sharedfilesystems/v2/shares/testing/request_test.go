@@ -249,6 +249,45 @@ func TestGrantAcessSuccess(t *testing.T) {
 	}, s)
 }
 
+func TestGrantAccessWithMetadataSuccess(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	MockGrantAccessWithMetadataResponse(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	// Client c must have Microversion set; minimum supported microversion for
+	// access rule metadata is 2.45
+	c.Microversion = "2.45"
+
+	grantAccessReq := shares.GrantAccessOpts{
+		AccessType:  "ip",
+		AccessTo:    "0.0.0.0/0",
+		AccessLevel: "rw",
+		Metadata: map[string]string{
+			"key1": "value1",
+			"key2": "value2",
+		},
+	}
+
+	s, err := shares.GrantAccess(context.TODO(), c, shareID, grantAccessReq).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, &shares.AccessRight{
+		ShareID:     "011d21e2-fbc3-4e4a-9993-9ea223f73264",
+		AccessType:  "ip",
+		AccessTo:    "0.0.0.0/0",
+		AccessKey:   "",
+		AccessLevel: "rw",
+		State:       "new",
+		ID:          "a2f226a5-cee8-430b-8a03-78a59bd84ee8",
+		Metadata: map[string]any{
+			"key1": "value1",
+			"key2": "value2",
+		},
+	}, s)
+}
+
 func TestRevokeAccessSuccess(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
