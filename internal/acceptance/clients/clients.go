@@ -745,3 +745,24 @@ func NewPlacementV1Client() (*gophercloud.ServiceClient, error) {
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
+
+// NewReservationV1Client returns a *ServiceClient for making calls
+// to the OpenStack Blazar API. An error will be returned
+// if authentication or client creation was not possible.
+func NewReservationV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewReservationV1(context.TODO(), client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
