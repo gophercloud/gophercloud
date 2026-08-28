@@ -512,8 +512,11 @@ func NewPlacementV1(ctx context.Context, client *gophercloud.ProviderClient, eo 
 // NewReservationV1 creates a ServiceClient that may be used with the reservation package.
 func NewReservationV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "reservation", 1)
+	if err != nil {
+		return sc, err
+	}
 	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v1") {
 		sc.ResourceBase = sc.Endpoint + "v1/"
 	}
-	return sc, err
+	return sc, nil
 }
