@@ -58,8 +58,6 @@ jobs:
           branch: ${{ matrix.openstack_version }}
           conf_overrides: |
             enable_plugin blazar https://github.com/openstack/blazar ${{ matrix.openstack_version }}
-
-            KEYSTONE_ADMIN_ENDPOINT=true
           enabled_services: "openstack-cli-server"
 
       - name: Checkout go
