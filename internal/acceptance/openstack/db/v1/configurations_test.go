@@ -35,7 +35,11 @@ func TestConfigurationsCRUD(t *testing.T) {
 	createOpts.Datastore = &datastore
 
 	values := make(map[string]any)
-	values["collation_server"] = "latin1_swedish_ci"
+	if choices.DBDatastoreType == "postgresql" {
+		values["max_connections"] = 200
+	} else {
+		values["collation_server"] = "latin1_swedish_ci"
+	}
 	createOpts.Values = values
 
 	cgroup, err := configurations.Create(context.TODO(), client, createOpts).Extract()
