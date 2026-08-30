@@ -370,10 +370,13 @@ func initClientOpts(ctx context.Context, client *gophercloud.ProviderClient, eo 
 // bare metal package.
 func NewBareMetalV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "baremetal", 1)
+	if err != nil {
+		return sc, err
+	}
 	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v1") {
 		sc.ResourceBase = sc.Endpoint + "v1/"
 	}
-	return sc, err
+	return sc, nil
 }
 
 // NewBareMetalIntrospectionV1 creates a ServiceClient that may be used with the v1
@@ -398,8 +401,11 @@ func NewComputeV2(ctx context.Context, client *gophercloud.ProviderClient, eo go
 // package.
 func NewNetworkV2(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "network", 2)
+	if err != nil {
+		return sc, err
+	}
 	sc.ResourceBase = sc.Endpoint + "v2.0/"
-	return sc, err
+	return sc, nil
 }
 
 // TODO(stephenfin): Remove this in v3. We no longer support the V1 Block Storage service.
@@ -440,44 +446,59 @@ func NewDBV1(ctx context.Context, client *gophercloud.ProviderClient, eo gopherc
 // service.
 func NewDNSV2(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "dns", 2)
+	if err != nil {
+		return sc, err
+	}
 	sc.ResourceBase = sc.Endpoint + "v2/"
-	return sc, err
+	return sc, nil
 }
 
 // NewImageV2 creates a ServiceClient that may be used to access the v2 image
 // service.
 func NewImageV2(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "image", 2)
+	if err != nil {
+		return sc, err
+	}
 	sc.ResourceBase = sc.Endpoint + "v2/"
-	return sc, err
+	return sc, nil
 }
 
 // NewLoadBalancerV2 creates a ServiceClient that may be used to access the v2
 // load balancer service.
 func NewLoadBalancerV2(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "load-balancer", 2)
+	if err != nil {
+		return sc, err
+	}
 
 	// Fixes edge case having an OpenStack lb endpoint with trailing version number.
 	endpoint := strings.ReplaceAll(sc.Endpoint, "v2.0/", "")
 
 	sc.ResourceBase = endpoint + "v2.0/"
-	return sc, err
+	return sc, nil
 }
 
 // NewMetricV1 creates a ServiceClient that may be used with the v1 metric-storage
 // service (Aetos).
 func NewMetricV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "metric-storage", 1)
+	if err != nil {
+		return sc, err
+	}
 	sc.ResourceBase = sc.Endpoint + "api/v1/"
-	return sc, err
+	return sc, nil
 }
 
 // NewMessagingV2 creates a ServiceClient that may be used with the v2 messaging
 // service.
 func NewMessagingV2(ctx context.Context, client *gophercloud.ProviderClient, clientID string, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "message", 2)
+	if err != nil {
+		return sc, err
+	}
 	sc.MoreHeaders = map[string]string{"Client-ID": clientID}
-	return sc, err
+	return sc, nil
 }
 
 // NewContainerV1 creates a ServiceClient that may be used with v1 container package
@@ -489,8 +510,11 @@ func NewContainerV1(ctx context.Context, client *gophercloud.ProviderClient, eo 
 // manager service.
 func NewKeyManagerV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(ctx, client, eo, "key-manager", 1)
+	if err != nil {
+		return sc, err
+	}
 	sc.ResourceBase = sc.Endpoint + "v1/"
-	return sc, err
+	return sc, nil
 }
 
 // NewContainerInfraV1 creates a ServiceClient that may be used with the v1 container infra management
