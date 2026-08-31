@@ -111,6 +111,11 @@ edit:placement:
   - any-glob-to-any-file:
     - 'openstack/placement/**'
     - 'internal/acceptance/openstack/placement/**'
+edit:reservation:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'openstack/reservation/**'
+    - 'internal/acceptance/openstack/reservation/**'
 edit:sharedfilesystems:
 - changed-files:
   - any-glob-to-any-file:

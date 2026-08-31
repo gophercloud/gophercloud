@@ -103,6 +103,9 @@
   description: This PR updates placement code
   name: edit:placement
 - color: '000000'
+  description: This PR updates reservation code
+  name: edit:reservation
+- color: '000000'
   description: This PR updates sharedfilesystems code
   name: edit:sharedfilesystems
 - color: '000000'
