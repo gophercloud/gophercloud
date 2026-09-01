@@ -133,7 +133,7 @@ func TestWebSSOCacheReusesUnscopedTokenAcrossProjects(t *testing.T) {
 	projectA.Scope = tokens.Scope{ProjectID: "project-a"}
 	projectA.RedirectPort = findAvailablePort(t)
 	results := startWebSSO(context.Background(), &client, &projectA)
-	response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", projectA.RedirectPort), url.Values{"token": {unscopedToken}})
+	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", projectA.RedirectPort), url.Values{"token": {unscopedToken}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
 	result := <-results
@@ -222,7 +222,7 @@ func TestWebSSOKeepsKnownTokenIDAfterValidation(t *testing.T) {
 				result = websso.Authenticate(context.Background(), &client, opts)
 			} else {
 				results := startWebSSO(context.Background(), &client, opts)
-				response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", opts.RedirectPort), url.Values{"token": {unscopedToken}})
+				response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", opts.RedirectPort), url.Values{"token": {unscopedToken}}))
 				th.AssertNoErr(t, err)
 				response.Body.Close()
 				result = <-results
@@ -354,7 +354,7 @@ func TestWebSSOCacheHitSkipsBrowser(t *testing.T) {
 
 	results := startWebSSO(context.Background(), &client, opts)
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
-	resp, err := http.PostForm(callbackURL, url.Values{"token": {tokenID}})
+	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {tokenID}}))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusOK, resp.StatusCode)

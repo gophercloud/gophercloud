@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os/exec"
 	"runtime"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -206,6 +207,10 @@ func (opts *AuthOptions) validate() error {
 
 func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *AuthOptions, port int, timeout time.Duration) (string, error) {
 	const callbackPath = "/auth/websso/"
+	keystoneOrigin, err := endpointOrigin(client.Endpoint)
+	if err != nil {
+		return "", fmt.Errorf("invalid identity endpoint: %w", err)
+	}
 	host := opts.RedirectHost
 	if host == "" {
 		host = "localhost"
@@ -225,6 +230,10 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 		mediaType, _, err := mime.ParseMediaType(request.Header.Get("Content-Type"))
 		if err != nil || mediaType != "application/x-www-form-urlencoded" {
 			http.Error(w, "Unsupported Content-Type", http.StatusUnsupportedMediaType)
+			return
+		}
+		if !validCallbackRequest(request, keystoneOrigin) {
+			http.Error(w, "Bad request", http.StatusBadRequest)
 			return
 		}
 		request.Body = http.MaxBytesReader(w, request.Body, 64<<10)
@@ -291,6 +300,37 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 	case <-ctx.Done():
 		return "", fmt.Errorf("WebSSO authentication cancelled: %w", ctx.Err())
 	}
+}
+
+func endpointOrigin(rawURL string) (string, error) {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+	if parsed.Scheme == "" || parsed.Host == "" {
+		return "", fmt.Errorf("URL must include a scheme and host")
+	}
+	return strings.ToLower(parsed.Scheme + "://" + parsed.Host), nil
+}
+
+func validCallbackRequest(request *http.Request, keystoneOrigin string) bool {
+	if request.Header.Get("Sec-Fetch-Mode") != "navigate" ||
+		request.Header.Get("Sec-Fetch-Dest") != "document" ||
+		request.Header.Get("Sec-Fetch-Site") == "none" {
+		return false
+	}
+
+	origin := request.Header.Get("Origin")
+	if origin != "" && origin != "null" && !sameOrigin(origin, keystoneOrigin) {
+		return false
+	}
+	referer := request.Header.Get("Referer")
+	return referer == "" || sameOrigin(referer, keystoneOrigin)
+}
+
+func sameOrigin(rawURL, expected string) bool {
+	origin, err := endpointOrigin(rawURL)
+	return err == nil && origin == expected
 }
 
 func openBrowser(target string) error {

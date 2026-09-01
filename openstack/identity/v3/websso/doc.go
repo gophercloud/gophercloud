@@ -7,10 +7,12 @@ token result. The callback origin must be registered in Keystone's
 trusted_dashboard configuration. RedirectHost is restricted to loopback
 addresses so the token listener cannot be exposed on an external interface.
 
-Keystone's WebSSO callback has no request correlation value. Authenticate
-validates the received token with Keystone, but cannot prove that the POST
-came from the browser flow it opened. Another valid token submitted during the
-callback window can therefore cause login CSRF.
+Keystone's WebSSO callback has no request correlation value. The origin must
+match a trusted_dashboard entry verbatim, so it cannot carry a per-flow nonce.
+Authenticate rejects requests that do not resemble Keystone's browser form
+POST and validates the received token with Keystone, but cannot prove that the
+POST came from the browser flow it opened. Another valid token submitted during
+the callback window can therefore cause login CSRF.
 
 Token caching is disabled by default. When TokenCache is set, the validated
 unscoped token is reused across scopes. CacheNamespace must identify the local

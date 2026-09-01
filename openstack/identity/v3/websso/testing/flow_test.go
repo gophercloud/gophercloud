@@ -117,7 +117,7 @@ func TestWebSSOCallbackHandlerAcceptsValidPost(t *testing.T) {
 	results := startWebSSO(context.Background(), &client, opts)
 
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
-	resp, err := http.PostForm(callbackURL, url.Values{"token": {UnscopedTokenID}})
+	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {UnscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusOK, resp.StatusCode)
@@ -155,7 +155,7 @@ func TestWebSSOTokenValidationAccepts203(t *testing.T) {
 		Timeout:              10 * time.Second,
 	})
 
-	response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}})
+	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
 
@@ -185,7 +185,7 @@ func TestWebSSOTokenValidationFailurePreservesProviderToken(t *testing.T) {
 		Timeout:              10 * time.Second,
 	})
 
-	response, err := http.PostForm(fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}})
+	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
 
@@ -274,17 +274,17 @@ func TestWebSSOCallbackIgnoresMissingTokenThenAcceptsValidToken(t *testing.T) {
 
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
 
-	resp, err := http.PostForm(callbackURL+"?token="+UnscopedTokenID, nil)
+	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL+"?token="+UnscopedTokenID, nil))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusBadRequest, resp.StatusCode)
 
-	resp, err = http.PostForm(callbackURL, url.Values{"nottoken": {"abc"}})
+	resp, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"nottoken": {"abc"}}))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusBadRequest, resp.StatusCode)
 
-	resp, err = http.PostForm(callbackURL, url.Values{"token": {UnscopedTokenID}})
+	resp, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {UnscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusOK, resp.StatusCode)

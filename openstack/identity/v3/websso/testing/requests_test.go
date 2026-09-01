@@ -73,7 +73,8 @@ func TestWebSSOListenerStartsBeforeBrowser(t *testing.T) {
 			if err != nil {
 				return err
 			}
-			response, err := http.PostForm(parsed.Query().Get("origin"), url.Values{"token": {testToken}})
+			request := newWebSSOCallbackRequest(t, parsed.Query().Get("origin"), url.Values{"token": {testToken}})
+			response, err := http.DefaultClient.Do(request)
 			if err != nil {
 				return err
 			}
@@ -170,7 +171,7 @@ func TestMalformedContentTypeDoesNotConsumeCallback(t *testing.T) {
 		t.Fatalf("unexpected malformed callback status: %d", response.StatusCode)
 	}
 
-	response, err = http.PostForm(callbackURL, url.Values{"token": {testToken}})
+	response, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
 	if response.StatusCode != http.StatusOK {
@@ -184,6 +185,96 @@ func TestMalformedContentTypeDoesNotConsumeCallback(t *testing.T) {
 	if actualToken != testToken {
 		t.Fatalf("unexpected token: got %q, want %q", actualToken, testToken)
 	}
+}
+
+func TestWebSSOCallbackRejectsUnexpectedBrowserContext(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleWebSSOTokenValidation(t, fakeServer, testToken)
+
+	port := findAvailablePort(t)
+	client := serviceClient(fakeServer.Endpoint())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	results := startWebSSO(ctx, client, &websso.AuthOptions{
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		RedirectHost:         "127.0.0.1",
+		RedirectPort:         port,
+		Timeout:              5 * time.Second,
+	})
+
+	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
+	tests := []struct {
+		name   string
+		modify func(*http.Request)
+	}{
+		{
+			name: "missing fetch mode",
+			modify: func(request *http.Request) {
+				request.Header.Del("Sec-Fetch-Mode")
+			},
+		},
+		{
+			name: "unexpected fetch destination",
+			modify: func(request *http.Request) {
+				request.Header.Set("Sec-Fetch-Dest", "empty")
+			},
+		},
+		{
+			name: "direct navigation",
+			modify: func(request *http.Request) {
+				request.Header.Set("Sec-Fetch-Site", "none")
+			},
+		},
+		{
+			name: "unexpected origin",
+			modify: func(request *http.Request) {
+				request.Header.Set("Origin", "https://attacker.example")
+			},
+		},
+		{
+			name: "unexpected referer",
+			modify: func(request *http.Request) {
+				request.Header.Set("Referer", "https://attacker.example/")
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			request := newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}})
+			test.modify(request)
+			response, err := http.DefaultClient.Do(request)
+			th.AssertNoErr(t, err)
+			defer response.Body.Close()
+			if response.StatusCode != http.StatusBadRequest {
+				t.Fatalf("unexpected callback status: got %d, want %d", response.StatusCode, http.StatusBadRequest)
+			}
+		})
+	}
+
+	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}}))
+	th.AssertNoErr(t, err)
+	response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected valid callback status: %d", response.StatusCode)
+	}
+
+	result := <-results
+	th.AssertNoErr(t, result.Err)
+}
+
+func newWebSSOCallbackRequest(t *testing.T, target string, values url.Values) *http.Request {
+	t.Helper()
+	request, err := http.NewRequest(http.MethodPost, target, strings.NewReader(values.Encode()))
+	th.AssertNoErr(t, err)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Sec-Fetch-Mode", "navigate")
+	request.Header.Set("Sec-Fetch-Dest", "document")
+	request.Header.Set("Sec-Fetch-Site", "cross-site")
+	request.Header.Set("Origin", "null")
+	return request
 }
 
 func serviceClient(endpoint string) *gophercloud.ServiceClient {
