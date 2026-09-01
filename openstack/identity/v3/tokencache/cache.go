@@ -11,7 +11,8 @@ import (
 
 const tokenExpiryMargin = 5 * time.Minute
 
-// Cache stores authentication results. Implementations must be safe for concurrent use.
+// Cache stores authentication results. Values contain bearer tokens and must be
+// protected accordingly. Implementations must be safe for concurrent use.
 type Cache interface {
 	// Get returns ("", nil) for a cache miss.
 	Get(key string) (string, error)

@@ -61,7 +61,7 @@ func TestBrowserOpenerFailureIsReturned(t *testing.T) {
 func TestWebSSOListenerStartsBeforeBrowser(t *testing.T) {
 	fakeKeystone := th.SetupHTTP()
 	defer fakeKeystone.Teardown()
-	HandleWebSSOTokenValidation(t, fakeKeystone, testToken)
+	handleWebSSOTokenValidation(t, fakeKeystone, testToken)
 
 	result := websso.Authenticate(context.Background(), serviceClient(fakeKeystone.Endpoint()), &websso.AuthOptions{
 		IdentityProviderName: "my-idp",
@@ -140,75 +140,28 @@ func TestInvalidScopeDoesNotOpenBrowser(t *testing.T) {
 	}
 }
 
-func TestMalformedContentTypeDoesNotConsumeCallback(t *testing.T) {
+func TestWebSSOCallbackRejectsInvalidRequest(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
-	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
-		th.TestHeader(t, r, "X-Subject-Token", testToken)
-		w.Header().Set("X-Subject-Token", testToken)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"token":{"expires_at":"2035-01-01T00:00:00Z","methods":["mapped"],"user":{"id":"user-id","name":"user","domain":{"id":"default","name":"Default"}}}}`)
-	})
-
-	port := findAvailablePort(t)
-	client := serviceClient(fakeServer.Endpoint())
-	results := startWebSSO(context.Background(), client, &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		RedirectHost:         "127.0.0.1",
-		RedirectPort:         port,
-		Timeout:              5 * time.Second,
-	})
-
-	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
-	request, err := http.NewRequest(http.MethodPost, callbackURL, strings.NewReader("token="+testToken))
-	th.AssertNoErr(t, err)
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded-malformed")
-	response, err := http.DefaultClient.Do(request)
-	th.AssertNoErr(t, err)
-	response.Body.Close()
-	if response.StatusCode != http.StatusUnsupportedMediaType {
-		t.Fatalf("unexpected malformed callback status: %d", response.StatusCode)
-	}
-
-	response, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}}))
-	th.AssertNoErr(t, err)
-	response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected valid callback status: %d", response.StatusCode)
-	}
-
-	result := <-results
-	th.AssertNoErr(t, result.Err)
-	actualToken, err := result.ExtractTokenID()
-	th.AssertNoErr(t, err)
-	if actualToken != testToken {
-		t.Fatalf("unexpected token: got %q, want %q", actualToken, testToken)
-	}
-}
-
-func TestWebSSOCallbackRejectsUnexpectedBrowserContext(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-	HandleWebSSOTokenValidation(t, fakeServer, testToken)
-
-	port := findAvailablePort(t)
-	client := serviceClient(fakeServer.Endpoint())
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	results := startWebSSO(ctx, client, &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		RedirectHost:         "127.0.0.1",
-		RedirectPort:         port,
-		Timeout:              5 * time.Second,
-	})
-
-	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
+	handleWebSSOTokenValidation(t, fakeServer, testToken)
 	tests := []struct {
-		name   string
-		modify func(*http.Request)
+		name       string
+		path       string
+		statusCode int
+		modify     func(*http.Request)
 	}{
+		{
+			name:       "malformed content type",
+			statusCode: http.StatusUnsupportedMediaType,
+			modify: func(request *http.Request) {
+				request.Header.Set("Content-Type", "application/x-www-form-urlencoded-malformed")
+			},
+		},
+		{
+			name:       "unexpected path",
+			path:       "unexpected",
+			statusCode: http.StatusNotFound,
+		},
 		{
 			name: "missing fetch mode",
 			modify: func(request *http.Request) {
@@ -243,26 +196,42 @@ func TestWebSSOCallbackRejectsUnexpectedBrowserContext(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			request := newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}})
-			test.modify(request)
+			port := findAvailablePort(t)
+			results := startWebSSO(t, context.Background(), serviceClient(fakeServer.Endpoint()), &websso.AuthOptions{
+				IdentityProviderName: "my-idp",
+				Protocol:             "openid",
+				RedirectHost:         "127.0.0.1",
+				RedirectPort:         port,
+				Timeout:              5 * time.Second,
+			})
+
+			callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
+			request := newWebSSOCallbackRequest(t, callbackURL+test.path, url.Values{"token": {testToken}})
+			if test.modify != nil {
+				test.modify(request)
+			}
 			response, err := http.DefaultClient.Do(request)
 			th.AssertNoErr(t, err)
-			defer response.Body.Close()
-			if response.StatusCode != http.StatusBadRequest {
-				t.Fatalf("unexpected callback status: got %d, want %d", response.StatusCode, http.StatusBadRequest)
+			response.Body.Close()
+			wantStatus := test.statusCode
+			if wantStatus == 0 {
+				wantStatus = http.StatusBadRequest
 			}
+			if response.StatusCode != wantStatus {
+				t.Fatalf("unexpected callback status: got %d, want %d", response.StatusCode, wantStatus)
+			}
+
+			response, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}}))
+			th.AssertNoErr(t, err)
+			response.Body.Close()
+			if response.StatusCode != http.StatusOK {
+				t.Fatalf("unexpected valid callback status: %d", response.StatusCode)
+			}
+
+			result := <-results
+			th.AssertNoErr(t, result.Err)
 		})
 	}
-
-	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {testToken}}))
-	th.AssertNoErr(t, err)
-	response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected valid callback status: %d", response.StatusCode)
-	}
-
-	result := <-results
-	th.AssertNoErr(t, result.Err)
 }
 
 func newWebSSOCallbackRequest(t *testing.T, target string, values url.Values) *http.Request {

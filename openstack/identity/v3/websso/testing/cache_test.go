@@ -132,7 +132,7 @@ func TestWebSSOCacheReusesUnscopedTokenAcrossProjects(t *testing.T) {
 	projectA := base
 	projectA.Scope = tokens.Scope{ProjectID: "project-a"}
 	projectA.RedirectPort = findAvailablePort(t)
-	results := startWebSSO(context.Background(), &client, &projectA)
+	results := startWebSSO(t, context.Background(), &client, &projectA)
 	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", projectA.RedirectPort), url.Values{"token": {unscopedToken}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
@@ -221,7 +221,7 @@ func TestWebSSOKeepsKnownTokenIDAfterValidation(t *testing.T) {
 			if tt.cached {
 				result = websso.Authenticate(context.Background(), &client, opts)
 			} else {
-				results := startWebSSO(context.Background(), &client, opts)
+				results := startWebSSO(t, context.Background(), &client, opts)
 				response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", opts.RedirectPort), url.Values{"token": {unscopedToken}}))
 				th.AssertNoErr(t, err)
 				response.Body.Close()
@@ -282,7 +282,7 @@ func tokenResponse(projectID string) string {
 	if projectID != "" {
 		project = fmt.Sprintf(`,"project":{"id":%q,"name":%q,"domain":{"id":"default","name":"Default"}}`, projectID, projectID)
 	}
-	return fmt.Sprintf(`{"token":{"methods":["mapped"],"expires_at":"2035-06-03T02:19:49Z","user":{"id":"user-id","name":"user","domain":{"id":"default","name":"Default"}}%s}}`, project)
+	return fmt.Sprintf(`{"token":{"methods":["mapped"],"expires_at":%q,"user":{"id":"user-id","name":"user","domain":{"id":"default","name":"Default"}}%s}}`, time.Now().Add(time.Hour).UTC().Format(time.RFC3339Nano), project)
 }
 
 func newTestProviderClient() *gophercloud.ProviderClient {
@@ -352,7 +352,7 @@ func TestWebSSOCacheHitSkipsBrowser(t *testing.T) {
 		CacheNamespace:       "test-profile",
 	}
 
-	results := startWebSSO(context.Background(), &client, opts)
+	results := startWebSSO(t, context.Background(), &client, opts)
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
 	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {tokenID}}))
 	th.AssertNoErr(t, err)

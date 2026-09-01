@@ -31,9 +31,8 @@ type AuthOptions struct {
 	// Protocol is the Keystone federation protocol.
 	Protocol string
 
-	// AllowReauth enables automatic reauthentication. If no cached token is
-	// available, reauthentication opens a new browser flow and concurrent
-	// requests wait for it to finish.
+	// AllowReauth allows Gophercloud to reauthenticate automatically when the
+	// token expires.
 	AllowReauth bool
 
 	// Scope controls the resulting Keystone token scope.
@@ -58,18 +57,22 @@ type AuthOptions struct {
 	CacheNamespace string
 }
 
+// ToTokenV3ScopeMap returns the requested token scope.
 func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
 	return (&tokens.AuthOptions{Scope: opts.Scope}).ToTokenV3ScopeMap()
 }
 
+// ToTokenV3HeadersMap implements tokens.AuthOptionsBuilder.
 func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]any) (map[string]string, error) {
 	return nil, nil
 }
 
+// ToTokenV3CreateMap implements tokens.AuthOptionsBuilder.
 func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
 	return nil, nil
 }
 
+// CanReauth reports whether automatic reauthentication is enabled.
 func (opts *AuthOptions) CanReauth() bool {
 	return opts.AllowReauth
 }
@@ -209,7 +212,7 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 	const callbackPath = "/auth/websso/"
 	keystoneOrigin, err := endpointOrigin(client.Endpoint)
 	if err != nil {
-		return "", fmt.Errorf("invalid identity endpoint: %w", err)
+		return "", fmt.Errorf("websso: invalid identity endpoint: %w", err)
 	}
 	host := opts.RedirectHost
 	if host == "" {
@@ -223,6 +226,10 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 	var accepted atomic.Bool
 	mux := http.NewServeMux()
 	mux.HandleFunc(callbackPath, func(w http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != callbackPath {
+			http.NotFound(w, request)
+			return
+		}
 		if request.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -232,7 +239,7 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 			http.Error(w, "Unsupported Content-Type", http.StatusUnsupportedMediaType)
 			return
 		}
-		if !validCallbackRequest(request, keystoneOrigin) {
+		if !validCallbackContext(request, keystoneOrigin) {
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			return
 		}
@@ -258,7 +265,11 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 
 	listener, err := net.Listen("tcp", net.JoinHostPort(host, fmt.Sprintf("%d", port)))
 	if err != nil {
-		return "", fmt.Errorf("failed to start callback server on %s: %w", net.JoinHostPort(host, fmt.Sprintf("%d", port)), err)
+		return "", fmt.Errorf("websso: failed to start callback server on %s: %w", net.JoinHostPort(host, fmt.Sprintf("%d", port)), err)
+	}
+	if !isLoopbackAddr(listener.Addr()) {
+		_ = listener.Close()
+		return "", fmt.Errorf("websso: callback listener is not bound to a loopback address")
 	}
 	server := &http.Server{
 		Handler:           mux,
@@ -269,7 +280,7 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 	}
 	go func() {
 		if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-			errCh <- fmt.Errorf("callback server error: %w", err)
+			errCh <- fmt.Errorf("websso: callback server error: %w", err)
 		}
 	}()
 	defer func() {
@@ -285,7 +296,7 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 		opener = openBrowser
 	}
 	if err := opener(webSSOURL); err != nil {
-		return "", fmt.Errorf("failed to open browser: %w", err)
+		return "", fmt.Errorf("websso: failed to open browser: %w", err)
 	}
 
 	timer := time.NewTimer(timeout)
@@ -296,9 +307,9 @@ func captureToken(ctx context.Context, client *gophercloud.ServiceClient, opts *
 	case err := <-errCh:
 		return "", err
 	case <-timer.C:
-		return "", fmt.Errorf("WebSSO authentication timed out after %s", timeout)
+		return "", fmt.Errorf("websso: authentication timed out after %s", timeout)
 	case <-ctx.Done():
-		return "", fmt.Errorf("WebSSO authentication cancelled: %w", ctx.Err())
+		return "", fmt.Errorf("websso: authentication cancelled: %w", ctx.Err())
 	}
 }
 
@@ -308,12 +319,12 @@ func endpointOrigin(rawURL string) (string, error) {
 		return "", err
 	}
 	if parsed.Scheme == "" || parsed.Host == "" {
-		return "", fmt.Errorf("URL must include a scheme and host")
+		return "", fmt.Errorf("url must include a scheme and host")
 	}
 	return strings.ToLower(parsed.Scheme + "://" + parsed.Host), nil
 }
 
-func validCallbackRequest(request *http.Request, keystoneOrigin string) bool {
+func validCallbackContext(request *http.Request, keystoneOrigin string) bool {
 	if request.Header.Get("Sec-Fetch-Mode") != "navigate" ||
 		request.Header.Get("Sec-Fetch-Dest") != "document" ||
 		request.Header.Get("Sec-Fetch-Site") == "none" {
@@ -326,6 +337,11 @@ func validCallbackRequest(request *http.Request, keystoneOrigin string) bool {
 	}
 	referer := request.Header.Get("Referer")
 	return referer == "" || sameOrigin(referer, keystoneOrigin)
+}
+
+func isLoopbackAddr(addr net.Addr) bool {
+	tcpAddr, ok := addr.(*net.TCPAddr)
+	return ok && tcpAddr.IP.IsLoopback()
 }
 
 func sameOrigin(rawURL, expected string) bool {

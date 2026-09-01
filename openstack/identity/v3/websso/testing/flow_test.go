@@ -16,7 +16,8 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func startWebSSO(ctx context.Context, client *gophercloud.ServiceClient, opts *websso.AuthOptions) <-chan tokens.CreateResult {
+func startWebSSO(t *testing.T, ctx context.Context, client *gophercloud.ServiceClient, opts *websso.AuthOptions) <-chan tokens.CreateResult {
+	t.Helper()
 	ready := make(chan struct{})
 	opts.BrowserOpener = func(string) error {
 		close(ready)
@@ -24,7 +25,11 @@ func startWebSSO(ctx context.Context, client *gophercloud.ServiceClient, opts *w
 	}
 	results := make(chan tokens.CreateResult, 1)
 	go func() { results <- websso.Authenticate(ctx, client, opts) }()
-	<-ready
+	select {
+	case <-ready:
+	case result := <-results:
+		t.Fatalf("authentication returned before opening the browser: %v", result.Err)
+	}
 	return results
 }
 
@@ -94,53 +99,17 @@ func TestWebSSOWrongOptionsType(t *testing.T) {
 	}
 }
 
-func TestWebSSOCallbackHandlerAcceptsValidPost(t *testing.T) {
-	fakeKeystone := th.SetupHTTP()
-	defer fakeKeystone.Teardown()
-
-	HandleWebSSOTokenValidation(t, fakeKeystone, UnscopedTokenID)
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeKeystone.Endpoint(),
-	}
-
-	opts := &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		RedirectPort:         0,
-		Timeout:              10 * time.Second,
-	}
-
-	port := findAvailablePort(t)
-	opts.RedirectPort = port
-	results := startWebSSO(context.Background(), &client, opts)
-
-	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
-	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {UnscopedTokenID}}))
-	th.AssertNoErr(t, err)
-	resp.Body.Close()
-	th.CheckEquals(t, http.StatusOK, resp.StatusCode)
-
-	result := <-results
-	th.AssertNoErr(t, result.Err)
-
-	token, err := result.ExtractTokenID()
-	th.AssertNoErr(t, err)
-	th.CheckEquals(t, UnscopedTokenID, token)
-}
-
 func TestWebSSOTokenValidationAccepts203(t *testing.T) {
 	fakeKeystone := th.SetupHTTP()
 	defer fakeKeystone.Teardown()
 
 	fakeKeystone.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
-		th.TestHeader(t, r, "X-Subject-Token", UnscopedTokenID)
-		w.Header().Set("X-Subject-Token", UnscopedTokenID)
+		th.TestHeader(t, r, "X-Subject-Token", unscopedTokenID)
+		w.Header().Set("X-Subject-Token", unscopedTokenID)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNonAuthoritativeInfo)
-		fmt.Fprint(w, FederationAuthResponse)
+		fmt.Fprint(w, federationAuthResponse())
 	})
 
 	client := gophercloud.ServiceClient{
@@ -148,14 +117,14 @@ func TestWebSSOTokenValidationAccepts203(t *testing.T) {
 		Endpoint:       fakeKeystone.Endpoint(),
 	}
 	port := findAvailablePort(t)
-	results := startWebSSO(context.Background(), &client, &websso.AuthOptions{
+	results := startWebSSO(t, context.Background(), &client, &websso.AuthOptions{
 		IdentityProviderName: "my-idp",
 		Protocol:             "openid",
 		RedirectPort:         port,
 		Timeout:              10 * time.Second,
 	})
 
-	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}}))
+	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {unscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
 
@@ -178,14 +147,14 @@ func TestWebSSOTokenValidationFailurePreservesProviderToken(t *testing.T) {
 		Endpoint:       fakeKeystone.Endpoint(),
 	}
 	port := findAvailablePort(t)
-	results := startWebSSO(context.Background(), &client, &websso.AuthOptions{
+	results := startWebSSO(t, context.Background(), &client, &websso.AuthOptions{
 		IdentityProviderName: "my-idp",
 		Protocol:             "openid",
 		RedirectPort:         port,
 		Timeout:              10 * time.Second,
 	})
 
-	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {UnscopedTokenID}}))
+	response, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port), url.Values{"token": {unscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	response.Body.Close()
 
@@ -214,7 +183,7 @@ func TestWebSSOCallbackRejectsWrongMethod(t *testing.T) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	startWebSSO(ctx, &client, opts)
+	startWebSSO(t, ctx, &client, opts)
 	defer cancel()
 
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
@@ -224,37 +193,11 @@ func TestWebSSOCallbackRejectsWrongMethod(t *testing.T) {
 	th.CheckEquals(t, http.StatusMethodNotAllowed, resp.StatusCode)
 }
 
-func TestWebSSOCallbackRejectsWrongContentType(t *testing.T) {
-	port := findAvailablePort(t)
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       "http://localhost/v3/",
-	}
-
-	opts := &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		RedirectPort:         port,
-		Timeout:              3 * time.Second,
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	startWebSSO(ctx, &client, opts)
-	defer cancel()
-
-	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
-	resp, err := http.Post(callbackURL, "application/json", strings.NewReader(`{"token":"abc"}`)) //nolint:gosec
-	th.AssertNoErr(t, err)
-	resp.Body.Close()
-	th.CheckEquals(t, http.StatusUnsupportedMediaType, resp.StatusCode)
-}
-
 func TestWebSSOCallbackIgnoresMissingTokenThenAcceptsValidToken(t *testing.T) {
 	fakeKeystone := th.SetupHTTP()
 	defer fakeKeystone.Teardown()
 
-	HandleWebSSOTokenValidation(t, fakeKeystone, UnscopedTokenID)
+	handleWebSSOTokenValidation(t, fakeKeystone, unscopedTokenID)
 
 	port := findAvailablePort(t)
 
@@ -270,11 +213,11 @@ func TestWebSSOCallbackIgnoresMissingTokenThenAcceptsValidToken(t *testing.T) {
 		Timeout:              10 * time.Second,
 	}
 
-	results := startWebSSO(context.Background(), &client, opts)
+	results := startWebSSO(t, context.Background(), &client, opts)
 
 	callbackURL := fmt.Sprintf("http://127.0.0.1:%d/auth/websso/", port)
 
-	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL+"?token="+UnscopedTokenID, nil))
+	resp, err := http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL+"?token="+unscopedTokenID, nil))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusBadRequest, resp.StatusCode)
@@ -284,7 +227,7 @@ func TestWebSSOCallbackIgnoresMissingTokenThenAcceptsValidToken(t *testing.T) {
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusBadRequest, resp.StatusCode)
 
-	resp, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {UnscopedTokenID}}))
+	resp, err = http.DefaultClient.Do(newWebSSOCallbackRequest(t, callbackURL, url.Values{"token": {unscopedTokenID}}))
 	th.AssertNoErr(t, err)
 	resp.Body.Close()
 	th.CheckEquals(t, http.StatusOK, resp.StatusCode)
@@ -307,12 +250,26 @@ func TestWebSSOCancellationDoesNotWaitForSlowCallback(t *testing.T) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	results := startWebSSO(ctx, &client, opts)
+	results := startWebSSO(t, ctx, &client, opts)
 	conn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	th.AssertNoErr(t, err)
 
-	_, err = fmt.Fprintf(conn, "POST /auth/websso/ HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 1000\r\n\r\ntoken=")
+	const slowRequest = "POST /auth/websso/ HTTP/1.1\r\n" +
+		"Host: localhost\r\n" +
+		"Content-Type: application/x-www-form-urlencoded\r\n" +
+		"Content-Length: 1000\r\n" +
+		"Sec-Fetch-Mode: navigate\r\n" +
+		"Sec-Fetch-Dest: document\r\n" +
+		"Sec-Fetch-Site: cross-site\r\n" +
+		"Origin: null\r\n\r\n" +
+		"token="
+	_, err = fmt.Fprint(conn, slowRequest)
 	th.AssertNoErr(t, err)
+	select {
+	case result := <-results:
+		t.Fatalf("authentication returned before cancellation: %v", result.Err)
+	case <-time.After(50 * time.Millisecond):
+	}
 	cancel()
 
 	select {
@@ -368,7 +325,7 @@ func TestWebSSOContextCancellation(t *testing.T) {
 		Timeout:              30 * time.Second,
 	}
 
-	results := startWebSSO(ctx, &client, opts)
+	results := startWebSSO(t, ctx, &client, opts)
 	cancel()
 
 	res := <-results

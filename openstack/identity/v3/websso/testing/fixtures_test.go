@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-const (
-	UnscopedTokenID        = "unscoped-federation-token-aaa111"
-	FederationAuthResponse = `{
+const unscopedTokenID = "unscoped-federation-token-aaa111"
+
+func federationAuthResponse() string {
+	return fmt.Sprintf(`{
 		"token": {
 			"methods": ["mapped"],
 			"user": {
@@ -18,19 +20,19 @@ const (
 				"name": "federation-user",
 				"domain": {"id": "Federated", "name": "Federated"}
 			},
-			"expires_at": "2035-06-03T02:19:49Z",
+			"expires_at": %q,
 			"is_domain": false
 		}
-	}`
-)
+	}`, time.Now().Add(time.Hour).UTC().Format(time.RFC3339Nano))
+}
 
-func HandleWebSSOTokenValidation(t *testing.T, fakeServer th.FakeServer, expectedToken string) {
+func handleWebSSOTokenValidation(t *testing.T, fakeServer th.FakeServer, expectedToken string) {
 	t.Helper()
 	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
 		th.TestHeader(t, r, "X-Subject-Token", expectedToken)
 		w.Header().Set("X-Subject-Token", expectedToken)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, FederationAuthResponse)
+		fmt.Fprint(w, federationAuthResponse())
 	})
 }
