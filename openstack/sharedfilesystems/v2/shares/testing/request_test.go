@@ -281,7 +281,7 @@ func TestGrantAccessWithMetadataSuccess(t *testing.T) {
 		AccessLevel: "rw",
 		State:       "new",
 		ID:          "a2f226a5-cee8-430b-8a03-78a59bd84ee8",
-		Metadata: map[string]any{
+		Metadata: map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 		},

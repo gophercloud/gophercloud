@@ -284,7 +284,7 @@ type AccessRight struct {
 	// Access rule metadata.
 	//
 	// Requires microversion 2.45 or later.
-	Metadata map[string]any `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 // Extract will get the GrantAccess object from the commonResult
