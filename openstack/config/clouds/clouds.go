@@ -81,15 +81,9 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			if err != nil {
 				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the current working directory: %w", err)
 			}
-			// Use XDG_CONFIG_HOME or fall back to ~/.config, matching the
-			// OpenStack convention for clouds.yaml location on all platforms.
-			userConfig := os.Getenv("XDG_CONFIG_HOME")
-			if userConfig == "" {
-				homeDir, err := os.UserHomeDir()
-				if err != nil {
-					return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the user home directory: %w", err)
-				}
-				userConfig = path.Join(homeDir, ".config")
+			userConfig, err := getUserConfig()
+			if err != nil {
+				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
 			}
 			options.locations = []string{path.Join(cwd, "clouds.yaml"), path.Join(userConfig, "openstack", "clouds.yaml"), path.Join("/etc", "openstack", "clouds.yaml")}
 		}
@@ -141,10 +135,15 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 				var err error
 				cloud, err = mergeClouds(secureCloud, cloud)
 				if err != nil {
-					return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to merge information from clouds.yaml and secure.yaml")
+					return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to merge information from clouds.yaml and secure.yaml: %w", err)
 				}
 			}
 		}
+	}
+
+	cloud, err := mergeWithPublicClouds(cloud, &options)
+	if err != nil {
+		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
 	}
 
 	tlsConfig, err := computeTLSConfig(cloud, options)
@@ -181,6 +180,81 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		},
 		tlsConfig,
 		nil
+}
+
+func getUserConfig() (string, error) {
+	// Use XDG_CONFIG_HOME or fall back to ~/.config, matching the
+	// OpenStack convention for clouds.yaml location on all platforms.
+	userConfig := os.Getenv("XDG_CONFIG_HOME")
+	if userConfig != "" {
+		return userConfig, nil
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("failed to get the user home directory: %w", err)
+	}
+	userConfig = path.Join(homeDir, ".config")
+	return userConfig, nil
+}
+
+func mergeWithPublicClouds(cloud Cloud, options *cloudOpts) (Cloud, error) {
+	var mergeWith string
+	if cloud.Profile != "" {
+		mergeWith = cloud.Profile
+	} else if cloud.Cloud != "" {
+		mergeWith = cloud.Cloud
+	} else {
+		return cloud, nil
+	}
+
+	// Code is executed only if cloud needs to be merged with a public
+	// profile, error are returned only loading clouds-public.yaml was
+	// needed
+	if options.cloudsPublicyamlReader == nil {
+		if len(options.publicLocations) < 1 {
+			cwd, err := os.Getwd()
+			if err != nil {
+				return cloud, fmt.Errorf("failed to get the current directory: %w", err)
+			}
+			userConfig, err := getUserConfig()
+			if err != nil {
+				return cloud, err
+			}
+			options.publicLocations = []string{path.Join(cwd, "clouds-public.yaml"), path.Join(userConfig, "openstack", "clouds-public.yaml"), path.Join("/etc", "openstack", "clouds-public.yaml")}
+		}
+		for _, publicPath := range options.publicLocations {
+			f, err := os.Open(publicPath)
+			if err != nil {
+				continue
+			}
+			defer f.Close()
+			options.cloudsPublicyamlReader = f
+			break
+		}
+		if options.cloudsPublicyamlReader == nil {
+			return cloud, fmt.Errorf("clouds file not found. Search locations were: %v", options.publicLocations)
+		}
+	}
+
+	var publicClouds PublicClouds
+	if err := yaml.NewDecoder(options.cloudsPublicyamlReader).Decode(&publicClouds); err != nil {
+		return cloud, err
+	}
+
+	pCloud, ok := publicClouds.Clouds[mergeWith]
+	if !ok {
+		return cloud, nil
+	}
+
+	var err error
+	cloud, err = mergeClouds(cloud, pCloud)
+	if err != nil {
+		return cloud, fmt.Errorf("unable to merge information from clouds-public.yaml: %w", err)
+	}
+
+	return cloud, nil
+
 }
 
 // computeAvailability is a helper method to determine the endpoint type
