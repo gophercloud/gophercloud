@@ -52,3 +52,27 @@ func TestListAllProviders(t *testing.T) {
 	th.CheckDeepEquals(t, ProviderAmphora, actual[0])
 	th.CheckDeepEquals(t, ProviderOVN, actual[1])
 }
+
+func TestListFlavorCapabilities(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleFlavorCapabilitiesListSuccessfully(t, fakeServer)
+
+	actual, err := providers.ListFlavorCapabilities(context.TODO(), fake.ServiceClient(fakeServer), "amphora", providers.ListFlavorCapabilitiesOpts{
+		Fields: []string{"name", "description"},
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FlavorCapabilities, actual)
+}
+
+func TestListAvailabilityZoneCapabilities(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleAvailabilityZoneCapabilitiesListSuccessfully(t, fakeServer)
+
+	actual, err := providers.ListAvailabilityZoneCapabilities(context.TODO(), fake.ServiceClient(fakeServer), "amphora", providers.ListAvailabilityZoneCapabilitiesOpts{
+		Fields: []string{"name", "description"},
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, AvailabilityZoneCapabilities, actual)
+}
