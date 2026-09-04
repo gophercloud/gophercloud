@@ -68,11 +68,8 @@ type AuthOptionsV2 struct {
 }
 
 func (ao AuthOptionsV2) GetAuthURL() string {
-	if strings.HasSuffix(ao.AuthURL, "/") {
-		return ao.AuthURL + "v2.0/"
-	}
-
-	return ao.AuthURL + "/v2.0/"
+	base := strings.TrimSuffix(ao.AuthURL, "/")
+	return base + "/v2.0/"
 }
 
 func (ao AuthOptionsV2) Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error) {
@@ -99,7 +96,7 @@ func (ao AuthOptionsV2) Authenticate(ctx context.Context, httpClient *http.Clien
 
 	client := &gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{HTTPClient: *httpClient},
-		Endpoint:       gophercloud.NormalizeURL(ao.AuthURL),
+		Endpoint:       ao.GetAuthURL(),
 	}
 
 	var result gophercloud.Result
@@ -126,11 +123,8 @@ type AuthOptionsV3 struct {
 }
 
 func (ao AuthOptionsV3) GetAuthURL() string {
-	if strings.HasSuffix(ao.AuthURL, "/") {
-		return ao.AuthURL + "v3/"
-	}
-
-	return ao.AuthURL + "/v3/"
+	base := strings.TrimSuffix(ao.AuthURL, "/")
+	return base + "/v3/"
 }
 
 func (ao AuthOptionsV3) Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error) {
@@ -174,7 +168,7 @@ func (ao AuthOptionsV3) Authenticate(ctx context.Context, httpClient *http.Clien
 
 	client := &gophercloud.ServiceClient{
 		ProviderClient: &gophercloud.ProviderClient{HTTPClient: *httpClient},
-		Endpoint:       gophercloud.NormalizeURL(ao.AuthURL),
+		Endpoint:       ao.GetAuthURL(),
 	}
 
 	var result gophercloud.Result

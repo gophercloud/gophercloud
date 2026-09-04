@@ -638,7 +638,7 @@ func TestAuthOptionsV3AuthenticateUsesProvidedHTTPClient(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
-	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", ID)
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, `{ "token": { "expires_at": "2013-02-02T18:30:59.000000Z" } }`)
@@ -666,7 +666,7 @@ func TestAuthOptionsV3AuthenticateNilHTTPClientDefaults(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
-	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", ID)
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, `{ "token": { "expires_at": "2013-02-02T18:30:59.000000Z" } }`)

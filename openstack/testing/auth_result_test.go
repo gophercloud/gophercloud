@@ -54,6 +54,10 @@ func (f *fakeAuthOptionsBuilder) Authenticate(ctx context.Context, httpClient *h
 	return &f.authResult, f.authErr
 }
 
+func (f *fakeAuthOptionsBuilder) GetAuthURL() string {
+	return "http://example.com/identity"
+}
+
 func TestWithReauthWiresReauthFuncWhenCanReauthTrue(t *testing.T) {
 	fake := &fakeAuthOptionsBuilder{authResult: auth.AuthResult{TokenID: "fresh-token"}}
 	client, err := openstack.NewClientFromAuthResult(sampleAuthResult(), openstack.WithReauth(fake, auth.AuthResult{CanReauth: true}))
