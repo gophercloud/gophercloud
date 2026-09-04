@@ -140,7 +140,7 @@ func NewBlockStorageV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func NewBlockStorageV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func NewBlockStorageV3Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +241,7 @@ func NewComputeV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func NewBareMetalV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +303,7 @@ func NewBareMetalIntrospectionV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +324,7 @@ func NewDBV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func NewDNSV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +366,7 @@ func NewIdentityV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -387,7 +387,7 @@ func NewIdentityV2AdminClient() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -428,7 +428,7 @@ func NewIdentityV3Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -468,7 +468,7 @@ func NewImageV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -489,7 +489,7 @@ func NewNetworkV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -510,7 +510,7 @@ func NewObjectStorageV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -531,7 +531,7 @@ func NewSharedFileSystemV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -552,7 +552,7 @@ func NewLoadBalancerV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -573,7 +573,7 @@ func NewMessagingV2Client(clientID string) (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -594,7 +594,7 @@ func NewMetricV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -615,7 +615,7 @@ func NewContainerV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -636,7 +636,7 @@ func NewKeyManagerV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -671,7 +671,7 @@ func NewContainerInfraV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -692,7 +692,7 @@ func NewWorkflowV2Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -713,7 +713,7 @@ func NewOrchestrationV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -734,7 +734,7 @@ func NewPlacementV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}
@@ -755,7 +755,7 @@ func NewReservationV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		return nil, err
 	}

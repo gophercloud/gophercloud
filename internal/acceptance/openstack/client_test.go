@@ -25,7 +25,7 @@ func TestAuthenticatedClient(t *testing.T) {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
 
-	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	client, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	if err != nil {
 		t.Fatalf("Unable to authenticate: %v", err)
 	}
@@ -123,7 +123,7 @@ func TestReauth(t *testing.T) {
 		t.Fatalf("Unable to create provider: %v", err)
 	}
 
-	err = openstack.Authenticate(context.TODO(), provider, ao)
+	err = openstack.AuthenticateWithAuthOptions(context.TODO(), provider, ao)
 	if err != nil {
 		t.Fatalf("Unable to authenticate: %v", err)
 	}

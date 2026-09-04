@@ -21,7 +21,7 @@ Service Client.
 Example of Retrieving Compute Extensions
 
 	ao, err := openstack.AuthOptionsFromEnv()
-	provider, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	provider, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	computeClient, err := openstack.NewComputeV2(context.TODO(), provider, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
@@ -36,7 +36,7 @@ Example of Retrieving Compute Extensions
 Example of Retrieving Network Extensions
 
 	ao, err := openstack.AuthOptionsFromEnv()
-	provider, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	provider, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	networkClient, err := openstack.NewNetworkV2(context.TODO(), provider, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})

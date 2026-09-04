@@ -22,7 +22,7 @@ func TestReauthAuthResultDeadlock(t *testing.T) {
 
 	ao.AllowReauth = true
 
-	provider, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	provider, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), ao)
 	th.AssertNoErr(t, err)
 
 	provider.SetToken("this is not a valid token")
