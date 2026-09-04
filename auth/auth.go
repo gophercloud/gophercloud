@@ -6,6 +6,7 @@ import (
 	"maps"
 	"net/http"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -58,11 +59,20 @@ type AuthOptionsBuilderV3 interface {
 
 type Authenticator interface {
 	Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error)
+	GetAuthURL() string
 }
 
 type AuthOptionsV2 struct {
 	AuthURL string
 	Auth    AuthOptionsBuilderV2
+}
+
+func (ao AuthOptionsV2) GetAuthURL() string {
+	if strings.HasSuffix(ao.AuthURL, "/") {
+		return ao.AuthURL + "v2.0/"
+	}
+
+	return ao.AuthURL + "/v2.0/"
 }
 
 func (ao AuthOptionsV2) Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error) {
@@ -113,6 +123,14 @@ func (ao AuthOptionsV2) Authenticate(ctx context.Context, httpClient *http.Clien
 type AuthOptionsV3 struct {
 	AuthURL string
 	Auth    AuthOptionsBuilderV3
+}
+
+func (ao AuthOptionsV3) GetAuthURL() string {
+	if strings.HasSuffix(ao.AuthURL, "/") {
+		return ao.AuthURL + "v3/"
+	}
+
+	return ao.AuthURL + "/v3/"
 }
 
 func (ao AuthOptionsV3) Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error) {
