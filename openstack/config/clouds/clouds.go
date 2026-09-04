@@ -3,12 +3,17 @@
 // Example use:
 //
 //	ctx := context.Background()
-//	ao, eo, tlsConfig, err := clouds.Parse()
+//	cloud, eo, tlsConfig, err := clouds.Parse()
 //	if err != nil {
 //		panic(err)
 //	}
 //
-//	providerClient, err := config.NewProviderClient(ctx, ao, config.WithTLSConfig(tlsConfig))
+//	authOpts, err := cloud.AuthOptions()
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	providerClient, err := config.NewProviderClient(ctx, authOpts, config.WithTLSConfig(tlsConfig))
 //	if err != nil {
 //		panic(err)
 //	}
@@ -52,7 +57,7 @@ import (
 //
 // Search locations, as well as individual `clouds.yaml` properties, can be
 // overwritten with functional options.
-func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOpts, *tls.Config, error) {
+func Parse(opts ...ParseOption) (Cloud, gophercloud.EndpointOpts, *tls.Config, error) {
 	options := cloudOpts{
 		cloudName:    os.Getenv("OS_CLOUD"),
 		region:       os.Getenv("OS_REGION_NAME"),
@@ -70,7 +75,7 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 	}
 
 	if options.cloudName == "" {
-		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("the empty string \"\" is not a valid cloud name")
+		return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("the empty string \"\" is not a valid cloud name")
 	}
 
 	// Set the defaults and open the files for reading. This code only runs
@@ -79,11 +84,11 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		if len(options.locations) < 1 {
 			cwd, err := os.Getwd()
 			if err != nil {
-				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the current working directory: %w", err)
+				return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the current working directory: %w", err)
 			}
 			userConfig, err := getUserConfig()
 			if err != nil {
-				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
+				return Cloud{}, gophercloud.EndpointOpts{}, nil, err
 			}
 			options.locations = []string{path.Join(cwd, "clouds.yaml"), path.Join(userConfig, "openstack", "clouds.yaml"), path.Join("/etc", "openstack", "clouds.yaml")}
 		}
@@ -107,25 +112,25 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			break
 		}
 		if options.cloudsyamlReader == nil {
-			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("clouds file not found. Search locations were: %v", options.locations)
+			return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("clouds file not found. Search locations were: %v", options.locations)
 		}
 	}
 
 	// Parse the YAML payloads.
 	var clouds Clouds
 	if err := yaml.NewDecoder(options.cloudsyamlReader).Decode(&clouds); err != nil {
-		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
+		return Cloud{}, gophercloud.EndpointOpts{}, nil, err
 	}
 
 	cloud, ok := clouds.Clouds[options.cloudName]
 	if !ok {
-		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("cloud %q not found in clouds.yaml", options.cloudName)
+		return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("cloud %q not found in clouds.yaml", options.cloudName)
 	}
 
 	if options.secureyamlReader != nil {
 		var secureClouds Clouds
 		if err := yaml.NewDecoder(options.secureyamlReader).Decode(&secureClouds); err != nil {
-			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to parse secure.yaml: %w", err)
+			return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to parse secure.yaml: %w", err)
 		}
 
 		if secureCloud, ok := secureClouds.Clouds[options.cloudName]; ok {
@@ -135,7 +140,7 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 				var err error
 				cloud, err = mergeClouds(secureCloud, cloud)
 				if err != nil {
-					return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to merge information from clouds.yaml and secure.yaml: %w", err)
+					return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to merge information from clouds.yaml and secure.yaml: %w", err)
 				}
 			}
 		}
@@ -143,38 +148,27 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 
 	cloud, err := mergeWithPublicClouds(cloud, &options)
 	if err != nil {
-		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
+		return Cloud{}, gophercloud.EndpointOpts{}, nil, err
 	}
 
 	tlsConfig, err := computeTLSConfig(cloud, options)
 	if err != nil {
-		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to compute TLS configuration: %w", err)
+		return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to compute TLS configuration: %w", err)
 	}
 
 	endpointType := coalesce(options.endpointType, cloud.EndpointType, cloud.Interface)
 
-	var scope *gophercloud.AuthScope
-	if trustID := cloud.AuthInfo.TrustID; trustID != "" {
-		scope = &gophercloud.AuthScope{
-			TrustID: trustID,
+	// WithIdentityEndpoint is an endpoint locator (like region), not
+	// credential material, so it stays in this package and is applied
+	// directly onto the returned Cloud.
+	if options.authURL != "" {
+		if cloud.Auth == nil {
+			cloud.Auth = map[string]any{}
 		}
+		cloud.Auth["auth_url"] = options.authURL
 	}
 
-	return gophercloud.AuthOptions{
-			IdentityEndpoint:            coalesce(options.authURL, cloud.AuthInfo.AuthURL),
-			Username:                    coalesce(options.username, cloud.AuthInfo.Username),
-			UserID:                      coalesce(options.userID, cloud.AuthInfo.UserID),
-			Password:                    coalesce(options.password, cloud.AuthInfo.Password),
-			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.UserDomainID, cloud.AuthInfo.ProjectDomainID, cloud.AuthInfo.DomainID),
-			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.UserDomainName, cloud.AuthInfo.ProjectDomainName, cloud.AuthInfo.DomainName),
-			TenantID:                    coalesce(options.projectID, cloud.AuthInfo.ProjectID),
-			TenantName:                  coalesce(options.projectName, cloud.AuthInfo.ProjectName),
-			TokenID:                     coalesce(options.token, cloud.AuthInfo.Token),
-			Scope:                       coalesce(options.scope, scope),
-			ApplicationCredentialID:     coalesce(options.applicationCredentialID, cloud.AuthInfo.ApplicationCredentialID),
-			ApplicationCredentialName:   coalesce(options.applicationCredentialName, cloud.AuthInfo.ApplicationCredentialName),
-			ApplicationCredentialSecret: coalesce(options.applicationCredentialSecret, cloud.AuthInfo.ApplicationCredentialSecret),
-		}, gophercloud.EndpointOpts{
+	return cloud, gophercloud.EndpointOpts{
 			Region:       coalesce(options.region, cloud.RegionName),
 			Availability: computeAvailability(endpointType),
 		},
@@ -281,7 +275,7 @@ func coalesce[T comparable](items ...T) T {
 	return t
 }
 
-// mergeClouds merges two Clouds recursively (the AuthInfo also gets merged).
+// mergeClouds merges two Clouds recursively (the Auth map also gets merged).
 // In case both Clouds define a value, the value in the 'override' cloud takes precedence
 func mergeClouds(override, cloud Cloud) (Cloud, error) {
 	overrideJson, err := json.Marshal(override)
