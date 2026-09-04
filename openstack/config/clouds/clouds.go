@@ -23,6 +23,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"reflect"
@@ -57,12 +58,14 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		cloudName:    os.Getenv("OS_CLOUD"),
 		region:       os.Getenv("OS_REGION_NAME"),
 		endpointType: os.Getenv("OS_INTERFACE"),
-		locations: func() []string {
+		locations: func() map[CloudsType][]string {
+			out := make(map[CloudsType][]string)
 			if path := os.Getenv("OS_CLIENT_CONFIG_FILE"); path != "" {
-				return []string{path}
+				out[Default] = []string{path}
 			}
-			return nil
+			return out
 		}(),
+		readers: make(map[CloudsType]io.Reader),
 	}
 
 	for _, apply := range opts {
@@ -73,77 +76,54 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("the empty string \"\" is not a valid cloud name")
 	}
 
-	// Set the defaults and open the files for reading. This code only runs
-	// if no override has been set, because it is fallible.
-	if options.cloudsyamlReader == nil {
-		if len(options.locations) < 1 {
-			cwd, err := os.Getwd()
-			if err != nil {
-				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to get the current working directory: %w", err)
-			}
-			userConfig, err := getUserConfig()
-			if err != nil {
-				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
-			}
-			options.locations = []string{path.Join(cwd, "clouds.yaml"), path.Join(userConfig, "openstack", "clouds.yaml"), path.Join("/etc", "openstack", "clouds.yaml")}
-		}
-
-		for _, cloudsPath := range options.locations {
-			f, err := os.Open(cloudsPath)
-			if err != nil {
-				continue
-			}
-			defer f.Close()
-			options.cloudsyamlReader = f
-
-			if options.secureyamlReader == nil {
-				securePath := path.Join(path.Dir(cloudsPath), "secure.yaml")
-				secureF, err := os.Open(securePath)
-				if err == nil {
-					defer secureF.Close()
-					options.secureyamlReader = secureF
-				}
-			}
-			break
-		}
-		if options.cloudsyamlReader == nil {
-			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("clouds file not found. Search locations were: %v", options.locations)
-		}
-	}
-
-	// Parse the YAML payloads.
-	var clouds Clouds
-	if err := yaml.NewDecoder(options.cloudsyamlReader).Decode(&clouds); err != nil {
+	clouds, err := readClouds(&options, Default)
+	if err != nil {
 		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
 	}
 
-	cloud, ok := clouds.Clouds[options.cloudName]
+	cloud, ok := clouds[options.cloudName]
 	if !ok {
 		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("cloud %q not found in clouds.yaml", options.cloudName)
 	}
 
-	if options.secureyamlReader != nil {
-		var secureClouds Clouds
-		if err := yaml.NewDecoder(options.secureyamlReader).Decode(&secureClouds); err != nil {
-			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("failed to parse secure.yaml: %w", err)
+	secureClouds, err := readClouds(&options, Secure)
+	if err != nil {
+		// For secure.yaml we ignore if there is not secure.yaml file found
+		if _, ok := err.(ErrFileNotFound); !ok {
+			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
 		}
 
-		if secureCloud, ok := secureClouds.Clouds[options.cloudName]; ok {
-			// If secureCloud has content and it differs from the cloud entry,
-			// merge the two together.
-			if !reflect.DeepEqual((gophercloud.AuthOptions{}), secureClouds) && !reflect.DeepEqual(clouds, secureClouds) {
-				var err error
-				cloud, err = mergeClouds(secureCloud, cloud)
-				if err != nil {
-					return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to merge information from clouds.yaml and secure.yaml: %w", err)
-				}
+	}
+	secure, ok := secureClouds[options.cloudName]
+	if ok {
+		if !reflect.DeepEqual(cloud, secure) {
+			cloud, err = mergeClouds(secure, cloud)
+			if err != nil {
+				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to merge information from clouds.yaml and secure.yaml: %w", err)
 			}
 		}
 	}
 
-	cloud, err := mergeWithPublicClouds(cloud, &options)
-	if err != nil {
-		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
+	var profile string
+	if cloud.Profile != "" {
+		profile = cloud.Profile
+	} else if cloud.Cloud != "" {
+		profile = cloud.Cloud
+	}
+
+	if profile != "" {
+		publicsCloud, err := readClouds(&options, Public)
+		if err != nil {
+			return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
+		}
+
+		public, ok := publicsCloud[profile]
+		if ok {
+			cloud, err = mergeClouds(cloud, public)
+			if err != nil {
+				return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
+			}
+		}
 	}
 
 	tlsConfig, err := computeTLSConfig(cloud, options)
@@ -182,6 +162,57 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		nil
 }
 
+func readClouds(options *cloudOpts, ctype CloudsType) (map[string]Cloud, error) {
+	// Set the defaults and open the files for reading. This code only runs
+	// if no override has been set, because it is fallible.
+	if options.readers[ctype] == nil {
+		if len(options.locations[ctype]) < 1 {
+			cwd, err := os.Getwd()
+			if err != nil {
+				return map[string]Cloud{}, fmt.Errorf("failed to get the current working directory: %w", err)
+			}
+			userConfig, err := getUserConfig()
+			if err != nil {
+				return map[string]Cloud{}, err
+			}
+			options.locations[ctype] = []string{path.Join(cwd, string(ctype)), path.Join(userConfig, "openstack", string(ctype)), path.Join("/etc", "openstack", string(ctype))}
+		}
+
+		for _, cloudsPath := range options.locations[ctype] {
+			f, err := os.Open(cloudsPath)
+			if err != nil {
+				continue
+			}
+			defer f.Close()
+			options.readers[ctype] = f
+			break
+		}
+		if options.readers[ctype] == nil {
+			return map[string]Cloud{}, ErrFileNotFound{
+				file:            string(ctype),
+				searchLocations: options.locations[ctype]}
+		}
+	}
+
+	// Parse the YAML payloads.
+	var cloudsMap map[string]Cloud
+	if ctype == Public {
+		var clouds PublicClouds
+		if err := yaml.NewDecoder(options.readers[ctype]).Decode(&clouds); err != nil {
+			return map[string]Cloud{}, err
+		}
+		cloudsMap = clouds.Clouds
+	} else {
+		var clouds Clouds
+		if err := yaml.NewDecoder(options.readers[ctype]).Decode(&clouds); err != nil {
+			return map[string]Cloud{}, err
+		}
+		cloudsMap = clouds.Clouds
+	}
+
+	return cloudsMap, nil
+}
+
 func getUserConfig() (string, error) {
 	// Use XDG_CONFIG_HOME or fall back to ~/.config, matching the
 	// OpenStack convention for clouds.yaml location on all platforms.
@@ -196,65 +227,6 @@ func getUserConfig() (string, error) {
 	}
 	userConfig = path.Join(homeDir, ".config")
 	return userConfig, nil
-}
-
-func mergeWithPublicClouds(cloud Cloud, options *cloudOpts) (Cloud, error) {
-	var mergeWith string
-	if cloud.Profile != "" {
-		mergeWith = cloud.Profile
-	} else if cloud.Cloud != "" {
-		mergeWith = cloud.Cloud
-	} else {
-		return cloud, nil
-	}
-
-	// Code is executed only if cloud needs to be merged with a public
-	// profile, error are returned only loading clouds-public.yaml was
-	// needed
-	if options.cloudsPublicyamlReader == nil {
-		if len(options.publicLocations) < 1 {
-			cwd, err := os.Getwd()
-			if err != nil {
-				return cloud, fmt.Errorf("failed to get the current directory: %w", err)
-			}
-			userConfig, err := getUserConfig()
-			if err != nil {
-				return cloud, err
-			}
-			options.publicLocations = []string{path.Join(cwd, "clouds-public.yaml"), path.Join(userConfig, "openstack", "clouds-public.yaml"), path.Join("/etc", "openstack", "clouds-public.yaml")}
-		}
-		for _, publicPath := range options.publicLocations {
-			f, err := os.Open(publicPath)
-			if err != nil {
-				continue
-			}
-			defer f.Close()
-			options.cloudsPublicyamlReader = f
-			break
-		}
-		if options.cloudsPublicyamlReader == nil {
-			return cloud, fmt.Errorf("clouds file not found. Search locations were: %v", options.publicLocations)
-		}
-	}
-
-	var publicClouds PublicClouds
-	if err := yaml.NewDecoder(options.cloudsPublicyamlReader).Decode(&publicClouds); err != nil {
-		return cloud, err
-	}
-
-	pCloud, ok := publicClouds.Clouds[mergeWith]
-	if !ok {
-		return cloud, nil
-	}
-
-	var err error
-	cloud, err = mergeClouds(cloud, pCloud)
-	if err != nil {
-		return cloud, fmt.Errorf("unable to merge information from clouds-public.yaml: %w", err)
-	}
-
-	return cloud, nil
-
 }
 
 // computeAvailability is a helper method to determine the endpoint type

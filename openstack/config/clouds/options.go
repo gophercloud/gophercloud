@@ -7,12 +7,9 @@ import (
 )
 
 type cloudOpts struct {
-	cloudName              string
-	locations              []string
-	publicLocations        []string
-	cloudsyamlReader       io.Reader
-	secureyamlReader       io.Reader
-	cloudsPublicyamlReader io.Reader
+	cloudName string
+	locations map[CloudsType][]string
+	readers   map[CloudsType]io.Reader
 
 	applicationCredentialID     string
 	applicationCredentialName   string
@@ -51,7 +48,7 @@ func WithCloudName(osCloud string) ParseOption {
 // a file path pointing to a possible `clouds.yaml`.
 func WithLocations(locations ...string) ParseOption {
 	return func(co *cloudOpts) {
-		co.locations = locations
+		co.locations[Default] = locations
 	}
 }
 
@@ -60,7 +57,7 @@ func WithLocations(locations ...string) ParseOption {
 // `clouds-public.yaml`
 func WithPublicLocations(locations ...string) ParseOption {
 	return func(co *cloudOpts) {
-		co.publicLocations = locations
+		co.locations[Public] = locations
 	}
 }
 
@@ -70,7 +67,7 @@ func WithPublicLocations(locations ...string) ParseOption {
 // use in conjunction with WithSecureYAML.
 func WithCloudsYAML(clouds io.Reader) ParseOption {
 	return func(co *cloudOpts) {
-		co.cloudsyamlReader = clouds
+		co.readers[Default] = clouds
 	}
 }
 
@@ -79,7 +76,7 @@ func WithCloudsYAML(clouds io.Reader) ParseOption {
 // fetched from the filesystem, or passed with WithCloudsYAML.
 func WithSecureYAML(secure io.Reader) ParseOption {
 	return func(co *cloudOpts) {
-		co.secureyamlReader = secure
+		co.readers[Secure] = secure
 	}
 }
 
@@ -87,7 +84,7 @@ func WithSecureYAML(secure io.Reader) ParseOption {
 // clouds-public.yaml file as an io.Reader interface
 func WithCloudsPublicYAML(public io.Reader) ParseOption {
 	return func(co *cloudOpts) {
-		co.cloudsPublicyamlReader = public
+		co.readers[Public] = public
 	}
 }
 
