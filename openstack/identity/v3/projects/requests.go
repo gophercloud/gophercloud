@@ -34,16 +34,16 @@ type ListOpts struct {
 	ParentID string `q:"parent_id"`
 
 	// Tags filters on specific project tags. All tags must be present for the project.
-	Tags string `q:"tags"`
+	Tags []string `q:"tags" format:"comma-separated"`
 
 	// TagsAny filters on specific project tags. At least one of the tags must be present for the project.
-	TagsAny string `q:"tags-any"`
+	TagsAny []string `q:"tags-any" format:"comma-separated"`
 
 	// NotTags filters on specific project tags. All tags must be absent for the project.
-	NotTags string `q:"not-tags"`
+	NotTags []string `q:"not-tags" format:"comma-separated"`
 
 	// NotTagsAny filters on specific project tags. At least one of the tags must be absent for the project.
-	NotTagsAny string `q:"not-tags-any"`
+	NotTagsAny []string `q:"not-tags-any" format:"comma-separated"`
 
 	// Limit limits the number of projects returned per page.
 	Limit int `q:"limit"`
