@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	tokens2 "github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/oauth1"
@@ -67,13 +68,13 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 //
 // Example:
 //
-//	ao, err := openstack.AuthOptionsFromEnv()
+//	ao, err := auth.AuthOptionsFromEnv()
 //	provider, err := openstack.AuthenticatedClient(ctx, ao)
 //	client, err := openstack.NewNetworkV2(ctx, provider, gophercloud.EndpointOpts{
 //		Region: os.Getenv("OS_REGION_NAME"),
 //	})
-func AuthenticatedClient(ctx context.Context, options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	client, err := NewClient(options.IdentityEndpoint)
+func AuthenticatedClient(ctx context.Context, options auth.Authenticator) (*gophercloud.ProviderClient, error) {
+	client, err := NewClient(options.GetAuthURL())
 	if err != nil {
 		return nil, err
 	}
@@ -87,26 +88,30 @@ func AuthenticatedClient(ctx context.Context, options gophercloud.AuthOptions) (
 
 // Authenticate authenticates or re-authenticates against the most
 // recent identity service supported at the provided endpoint.
-func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
-	versions := []*utils.Version{
-		{ID: v2, Priority: 20, Suffix: "/v2.0/"},
-		{ID: v3, Priority: 30, Suffix: "/v3/"},
-	}
-
-	chosen, endpoint, err := utils.ChooseVersion(ctx, client, versions)
+func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, options auth.Authenticator) error {
+	result, err := options.Authenticate(ctx, &client.HTTPClient)
 	if err != nil {
 		return err
 	}
-
-	switch chosen.ID {
-	case v2:
-		return v2auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
-	case v3:
-		return v3auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
-	default:
-		// The switch statement must be out of date from the versions list.
-		return fmt.Errorf("unrecognized identity version: %s", chosen.ID)
+	if err := client.SetTokenAndAuthResult(result); err != nil {
+		return err
 	}
+	client.EndpointLocator = result.EndpointLocator()
+
+	if result.CanReauth {
+		client.ReauthFunc = func(ctx context.Context) error {
+			result, err := options.Authenticate(ctx, &client.HTTPClient)
+			if err != nil {
+				return err
+			}
+			if err := client.SetTokenAndAuthResult(result); err != nil {
+				return err
+			}
+			client.EndpointLocator = result.EndpointLocator()
+			return nil
+		}
+	}
+	return nil
 }
 
 // AuthenticateV2 explicitly authenticates against the identity v2 endpoint.

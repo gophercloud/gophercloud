@@ -2,8 +2,6 @@ package clouds
 
 import (
 	"io"
-
-	"github.com/gophercloud/gophercloud/v2"
 )
 
 type cloudOpts struct {
@@ -14,21 +12,8 @@ type cloudOpts struct {
 	secureyamlReader       io.Reader
 	cloudsPublicyamlReader io.Reader
 
-	applicationCredentialID     string
-	applicationCredentialName   string
-	applicationCredentialSecret string
-	authURL                     string
-	domainID                    string
-	domainName                  string
-	endpointType                string
-	password                    string
-	projectID                   string
-	projectName                 string
-	region                      string
-	scope                       *gophercloud.AuthScope
-	token                       string
-	userID                      string
-	username                    string
+	endpointType string
+	region       string
 
 	caCertPath     string
 	clientCertPath string
@@ -91,42 +76,6 @@ func WithCloudsPublicYAML(public io.Reader) ParseOption {
 	}
 }
 
-func WithApplicationCredentialID(applicationCredentialID string) ParseOption {
-	return func(co *cloudOpts) {
-		co.applicationCredentialID = applicationCredentialID
-	}
-}
-
-func WithApplicationCredentialName(applicationCredentialName string) ParseOption {
-	return func(co *cloudOpts) {
-		co.applicationCredentialName = applicationCredentialName
-	}
-}
-
-func WithApplicationCredentialSecret(applicationCredentialSecret string) ParseOption {
-	return func(co *cloudOpts) {
-		co.applicationCredentialSecret = applicationCredentialSecret
-	}
-}
-
-func WithIdentityEndpoint(authURL string) ParseOption {
-	return func(co *cloudOpts) {
-		co.authURL = authURL
-	}
-}
-
-func WithDomainID(domainID string) ParseOption {
-	return func(co *cloudOpts) {
-		co.domainID = domainID
-	}
-}
-
-func WithDomainName(domainName string) ParseOption {
-	return func(co *cloudOpts) {
-		co.domainName = domainName
-	}
-}
-
 // WithRegion allows to override the endpoint type set in clouds.yaml or in the
 // environment variable `OS_INTERFACE`.
 func WithEndpointType(endpointType string) ParseOption {
@@ -135,53 +84,11 @@ func WithEndpointType(endpointType string) ParseOption {
 	}
 }
 
-func WithPassword(password string) ParseOption {
-	return func(co *cloudOpts) {
-		co.password = password
-	}
-}
-
-func WithProjectID(projectID string) ParseOption {
-	return func(co *cloudOpts) {
-		co.projectID = projectID
-	}
-}
-
-func WithProjectName(projectName string) ParseOption {
-	return func(co *cloudOpts) {
-		co.projectName = projectName
-	}
-}
-
 // WithRegion allows to override the region set in clouds.yaml or in the
 // environment variable `OS_REGION_NAME`
 func WithRegion(region string) ParseOption {
 	return func(co *cloudOpts) {
 		co.region = region
-	}
-}
-
-func WithScope(scope *gophercloud.AuthScope) ParseOption {
-	return func(co *cloudOpts) {
-		co.scope = scope
-	}
-}
-
-func WithToken(token string) ParseOption {
-	return func(co *cloudOpts) {
-		co.token = token
-	}
-}
-
-func WithUserID(userID string) ParseOption {
-	return func(co *cloudOpts) {
-		co.userID = userID
-	}
-}
-
-func WithUsername(username string) ParseOption {
-	return func(co *cloudOpts) {
-		co.username = username
 	}
 }
 

@@ -61,6 +61,17 @@ func (e ErrMissingEnvironmentVariable) Error() string {
 	return e.choseErrString()
 }
 
+// ErrUnsupportedAuthType indicates that the auth type provided is not supported.
+type ErrUnsupportedAuthType struct {
+	BaseError
+	AuthType string
+}
+
+func (e ErrUnsupportedAuthType) Error() string {
+	e.DefaultErrString = fmt.Sprintf("The %s auth type is not supported", e.AuthType)
+	return e.choseErrString()
+}
+
 // ErrMissingAnyoneOfEnvironmentVariables is the error when anyone of the environment variables
 // is required in a particular situation but not provided by the user
 type ErrMissingAnyoneOfEnvironmentVariables struct {
@@ -308,6 +319,26 @@ func (e ErrUsernameOrUserID) Error() string {
 	return "Exactly one of Username and UserID must be provided for password authentication"
 }
 
+// ErrAppCredNameOrAppCredID indicates that neither ApplicationCredentialName nor ApplicationCredentialID
+// are specified, or both are at once.
+type ErrAppCredNameOrAppCredID struct{ BaseError }
+
+func (e ErrAppCredNameOrAppCredID) Error() string {
+	return "Exactly one of ApplicationCredentialName and ApplicationCredentialID must be provided for authentication"
+}
+
+// ErrProjectScopeAndDomainScope indicates that both project and domain scoped information was provided
+type ErrProjectScopeAndDomainScope struct {
+	BaseError
+	DomainOption  string
+	ProjectOption string
+}
+
+func (e ErrProjectScopeAndDomainScope) Error() string {
+	e.DefaultErrString = fmt.Sprintf("%s and %s cannot be used to scope at the same time", e.ProjectOption, e.DomainOption)
+	return e.choseErrString()
+}
+
 // ErrDomainIDWithUserID indicates that a DomainID was provided, but unnecessary because a UserID is being used.
 type ErrDomainIDWithUserID struct{ BaseError }
 
@@ -337,11 +368,24 @@ func (e ErrMissingPassword) Error() string {
 	return "You must provide a password to authenticate"
 }
 
+// ErrMissingPasscode indicates that no password was provided and no token is available.
+type ErrMissingPasscode struct{ BaseError }
+
+func (e ErrMissingPasscode) Error() string {
+	return "You must provide a passcode to authenticate"
+}
+
 // ErrScopeDomainIDOrDomainName indicates that a domain ID or Name was required in a Scope, but not present.
 type ErrScopeDomainIDOrDomainName struct{ BaseError }
 
 func (e ErrScopeDomainIDOrDomainName) Error() string {
 	return "You must provide exactly one of DomainID or DomainName in a Scope with ProjectName"
+}
+
+type ErrScopeProjectDomainIDOrProjectDomainName struct{ BaseError }
+
+func (e ErrScopeProjectDomainIDOrProjectDomainName) Error() string {
+	return "You must provide exactly one of ProjectDomainID or ProjectDomainName in a Scope with ProjectName"
 }
 
 // ErrScopeProjectIDOrProjectName indicates that both a ProjectID and a ProjectName were provided in a Scope.
