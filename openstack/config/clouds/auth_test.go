@@ -1,7 +1,8 @@
-package testing
+package clouds_test
 
 import (
 	"fmt"
+	"maps"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -12,14 +13,14 @@ import (
 
 func TestAuthOptionsFromCloudV3PasswordInferred(t *testing.T) {
 	cloud := clouds.Cloud{
-		AuthInfo: &clouds.AuthInfo{
-			AuthURL:  "http://example.com:5000",
-			Username: "testuser",
-			Password: "testpass",
+		Auth: map[string]any{
+			"auth_url": "http://example.com:5000",
+			"username": "testuser",
+			"password": "testpass",
 		},
 	}
 
-	opts, err := auth.AuthOptionsFromCloud(cloud)
+	opts, err := cloud.AuthOptions()
 	th.AssertNoErr(t, err)
 
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
@@ -31,14 +32,14 @@ func TestAuthOptionsFromCloudV3PasswordInferred(t *testing.T) {
 func TestAuthOptionsFromCloudV2ViaIdentityAPIVersion(t *testing.T) {
 	cloud := clouds.Cloud{
 		IdentityAPIVersion: "2.0",
-		AuthInfo: &clouds.AuthInfo{
-			AuthURL:  "http://example.com:5000",
-			Username: "testuser",
-			Password: "testpass",
+		Auth: map[string]any{
+			"auth_url": "http://example.com:5000",
+			"username": "testuser",
+			"password": "testpass",
 		},
 	}
 
-	opts, err := auth.AuthOptionsFromCloud(cloud)
+	opts, err := cloud.AuthOptions()
 	th.AssertNoErr(t, err)
 
 	v2Opts, ok := opts.(*auth.AuthOptionsV2)
@@ -49,23 +50,23 @@ func TestAuthOptionsFromCloudV2ViaIdentityAPIVersion(t *testing.T) {
 
 func TestAuthOptionsFromCloudMissingAuthURL(t *testing.T) {
 	cloud := clouds.Cloud{
-		AuthInfo: &clouds.AuthInfo{
-			Username: "testuser",
-			Password: "testpass",
+		Auth: map[string]any{
+			"username": "testuser",
+			"password": "testpass",
 		},
 	}
 
-	_, err := auth.AuthOptionsFromCloud(cloud)
+	_, err := cloud.AuthOptions()
 	th.AssertErr(t, err)
 
 	_, ok := err.(gophercloud.ErrMissingInput)
 	th.AssertEquals(t, true, ok)
 }
 
-func TestAuthOptionsFromCloudNilAuthInfo(t *testing.T) {
+func TestAuthOptionsFromCloudNilAuth(t *testing.T) {
 	cloud := clouds.Cloud{}
 
-	_, err := auth.AuthOptionsFromCloud(cloud)
+	_, err := cloud.AuthOptions()
 	th.AssertErr(t, err)
 
 	_, ok := err.(gophercloud.ErrMissingInput)
@@ -74,12 +75,12 @@ func TestAuthOptionsFromCloudNilAuthInfo(t *testing.T) {
 
 func TestAuthOptionsFromCloudNoUsableCredentials(t *testing.T) {
 	cloud := clouds.Cloud{
-		AuthInfo: &clouds.AuthInfo{
-			AuthURL: "http://example.com:5000",
+		Auth: map[string]any{
+			"auth_url": "http://example.com:5000",
 		},
 	}
 
-	_, err := auth.AuthOptionsFromCloud(cloud)
+	_, err := cloud.AuthOptions()
 	th.AssertErr(t, err)
 
 	missingInput, ok := err.(gophercloud.ErrMissingInput)
@@ -97,11 +98,11 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 		{
 			name: "v2password",
 			cloud: clouds.Cloud{
-				AuthType: clouds.AuthV2Password,
-				AuthInfo: &clouds.AuthInfo{
-					AuthURL:  "http://example.com:5000",
-					Username: "testuser",
-					Password: "testpass",
+				AuthType: auth.AuthV2Password,
+				Auth: map[string]any{
+					"auth_url": "http://example.com:5000",
+					"username": "testuser",
+					"password": "testpass",
 				},
 			},
 			wantV2:   true,
@@ -110,10 +111,10 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 		{
 			name: "v2token",
 			cloud: clouds.Cloud{
-				AuthType: clouds.AuthV2Token,
-				AuthInfo: &clouds.AuthInfo{
-					AuthURL: "http://example.com:5000",
-					Token:   "testtoken",
+				AuthType: auth.AuthV2Token,
+				Auth: map[string]any{
+					"auth_url": "http://example.com:5000",
+					"token":    "testtoken",
 				},
 			},
 			wantV2:   true,
@@ -122,11 +123,11 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 		{
 			name: "v3password",
 			cloud: clouds.Cloud{
-				AuthType: clouds.AuthV3Password,
-				AuthInfo: &clouds.AuthInfo{
-					AuthURL:  "http://example.com:5000",
-					Username: "testuser",
-					Password: "testpass",
+				AuthType: auth.AuthV3Password,
+				Auth: map[string]any{
+					"auth_url": "http://example.com:5000",
+					"username": "testuser",
+					"password": "testpass",
 				},
 			},
 			wantAuth: auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}},
@@ -134,10 +135,10 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 		{
 			name: "v3token",
 			cloud: clouds.Cloud{
-				AuthType: clouds.AuthV3Token,
-				AuthInfo: &clouds.AuthInfo{
-					AuthURL: "http://example.com:5000",
-					Token:   "testtoken",
+				AuthType: auth.AuthV3Token,
+				Auth: map[string]any{
+					"auth_url": "http://example.com:5000",
+					"token":    "testtoken",
 				},
 			},
 			wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}},
@@ -145,11 +146,11 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 		{
 			name: "v3applicationcredential",
 			cloud: clouds.Cloud{
-				AuthType: clouds.AuthV3ApplicationCredential,
-				AuthInfo: &clouds.AuthInfo{
-					AuthURL:                     "http://example.com:5000",
-					ApplicationCredentialID:     "app-cred-id",
-					ApplicationCredentialSecret: "app-cred-secret",
+				AuthType: auth.AuthV3ApplicationCredential,
+				Auth: map[string]any{
+					"auth_url":                      "http://example.com:5000",
+					"application_credential_id":     "app-cred-id",
+					"application_credential_secret": "app-cred-secret",
 				},
 			},
 			wantAuth: auth.V3ApplicationCredentialOpts{ApplicationCredentialID: "app-cred-id", ApplicationCredentialSecret: "app-cred-secret"},
@@ -158,7 +159,7 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			opts, err := auth.AuthOptionsFromCloud(tt.cloud)
+			opts, err := tt.cloud.AuthOptions()
 			th.AssertNoErr(t, err)
 
 			if tt.wantV2 {
@@ -177,13 +178,13 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 func TestAuthOptionsFromCloudV3TOTPExplicit(t *testing.T) {
 	cloud := clouds.Cloud{
 		AuthType: "v3totp",
-		AuthInfo: &clouds.AuthInfo{
-			AuthURL:  "http://example.com:5000",
-			Username: "testuser",
+		Auth: map[string]any{
+			"auth_url": "http://example.com:5000",
+			"username": "testuser",
 		},
 	}
 
-	opts, err := auth.AuthOptionsFromCloud(cloud, auth.WithPasscode("123456"))
+	opts, err := cloud.AuthOptions(auth.WithPasscode("123456"))
 	th.AssertNoErr(t, err)
 
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
@@ -192,17 +193,17 @@ func TestAuthOptionsFromCloudV3TOTPExplicit(t *testing.T) {
 }
 
 func TestAuthOptionsFromCloudMechanismInferencePrecedence(t *testing.T) {
-	base := clouds.AuthInfo{
-		AuthURL:                 "http://example.com:5000",
-		Username:                "testuser",
-		Password:                "testpass",
-		Token:                   "testtoken",
-		ApplicationCredentialID: "app-cred-id",
+	base := map[string]any{
+		"auth_url":                  "http://example.com:5000",
+		"username":                  "testuser",
+		"password":                  "testpass",
+		"token":                     "testtoken",
+		"application_credential_id": "app-cred-id",
 	}
 
 	t.Run("password beats passcode, token, and appcred", func(t *testing.T) {
-		cloud := clouds.Cloud{AuthInfo: &base}
-		opts, err := auth.AuthOptionsFromCloud(cloud, auth.WithPasscode("123456"))
+		cloud := clouds.Cloud{Auth: maps.Clone(base)}
+		opts, err := cloud.AuthOptions(auth.WithPasscode("123456"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		_, ok := v3Opts.Auth.(auth.V3PasswordOpts)
@@ -210,10 +211,10 @@ func TestAuthOptionsFromCloudMechanismInferencePrecedence(t *testing.T) {
 	})
 
 	t.Run("passcode beats token and appcred", func(t *testing.T) {
-		ai := base
-		ai.Password = ""
-		cloud := clouds.Cloud{AuthInfo: &ai}
-		opts, err := auth.AuthOptionsFromCloud(cloud, auth.WithPasscode("123456"))
+		m := maps.Clone(base)
+		delete(m, "password")
+		cloud := clouds.Cloud{Auth: m}
+		opts, err := cloud.AuthOptions(auth.WithPasscode("123456"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		_, ok := v3Opts.Auth.(auth.V3TOTPOpts)
@@ -221,10 +222,10 @@ func TestAuthOptionsFromCloudMechanismInferencePrecedence(t *testing.T) {
 	})
 
 	t.Run("token beats appcred", func(t *testing.T) {
-		ai := base
-		ai.Password = ""
-		cloud := clouds.Cloud{AuthInfo: &ai}
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		m := maps.Clone(base)
+		delete(m, "password")
+		cloud := clouds.Cloud{Auth: m}
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		_, ok := v3Opts.Auth.(auth.V3TokenOpts)
@@ -232,12 +233,11 @@ func TestAuthOptionsFromCloudMechanismInferencePrecedence(t *testing.T) {
 	})
 
 	t.Run("appcred alone resolves", func(t *testing.T) {
-		ai := clouds.AuthInfo{
-			AuthURL:                 "http://example.com:5000",
-			ApplicationCredentialID: "app-cred-id",
-		}
-		cloud := clouds.Cloud{AuthInfo: &ai}
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		cloud := clouds.Cloud{Auth: map[string]any{
+			"auth_url":                  "http://example.com:5000",
+			"application_credential_id": "app-cred-id",
+		}}
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		_, ok := v3Opts.Auth.(auth.V3ApplicationCredentialOpts)
@@ -248,12 +248,12 @@ func TestAuthOptionsFromCloudMechanismInferencePrecedence(t *testing.T) {
 func TestAuthOptionsFromCloudUnsupportedAuthType(t *testing.T) {
 	cloud := clouds.Cloud{
 		AuthType: "v3federated",
-		AuthInfo: &clouds.AuthInfo{
-			AuthURL: "http://example.com:5000",
+		Auth: map[string]any{
+			"auth_url": "http://example.com:5000",
 		},
 	}
 
-	_, err := auth.AuthOptionsFromCloud(cloud)
+	_, err := cloud.AuthOptions()
 	th.AssertErr(t, err)
 
 	_, ok := err.(gophercloud.ErrUnsupportedAuthType)
@@ -263,17 +263,17 @@ func TestAuthOptionsFromCloudUnsupportedAuthType(t *testing.T) {
 func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 	t.Run("keeps user and project domain distinct", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:           "http://example.com:5000",
-				Username:          "testuser",
-				Password:          "testpass",
-				UserDomainName:    "userdomain",
-				ProjectDomainName: "projectdomain",
-				ProjectName:       "testproject",
+			Auth: map[string]any{
+				"auth_url":            "http://example.com:5000",
+				"username":            "testuser",
+				"password":            "testpass",
+				"user_domain_name":    "userdomain",
+				"project_domain_name": "projectdomain",
+				"project_name":        "testproject",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -290,16 +290,16 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 
 	t.Run("falls back to DefaultDomain when no domain is set", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:       "http://example.com:5000",
-				Username:      "testuser",
-				Password:      "testpass",
-				DefaultDomain: "default",
-				ProjectName:   "testproject",
+			Auth: map[string]any{
+				"auth_url":       "http://example.com:5000",
+				"username":       "testuser",
+				"password":       "testpass",
+				"default_domain": "default",
+				"project_name":   "testproject",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -316,16 +316,16 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 
 	t.Run("generic DomainName seeds both user and project domain", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:     "http://example.com:5000",
-				Username:    "testuser",
-				Password:    "testpass",
-				DomainName:  "shared",
-				ProjectName: "testproject",
+			Auth: map[string]any{
+				"auth_url":     "http://example.com:5000",
+				"username":     "testuser",
+				"password":     "testpass",
+				"domain_name":  "shared",
+				"project_name": "testproject",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -342,15 +342,15 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 
 	t.Run("system scope", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:     "http://example.com:5000",
-				Username:    "testuser",
-				Password:    "testpass",
-				SystemScope: "all",
+			Auth: map[string]any{
+				"auth_url":     "http://example.com:5000",
+				"username":     "testuser",
+				"password":     "testpass",
+				"system_scope": "all",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -360,15 +360,15 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 
 	t.Run("trust ID", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:  "http://example.com:5000",
-				Username: "testuser",
-				Password: "testpass",
-				TrustID:  "trust-id",
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"username": "testuser",
+				"password": "testpass",
+				"trust_id": "trust-id",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -378,15 +378,15 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 
 	t.Run("application credential auth builds no scope", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:                     "http://example.com:5000",
-				ApplicationCredentialID:     "app-cred-id",
-				ApplicationCredentialSecret: "app-cred-secret",
-				ProjectName:                 "testproject",
+			Auth: map[string]any{
+				"auth_url":                      "http://example.com:5000",
+				"application_credential_id":     "app-cred-id",
+				"application_credential_secret": "app-cred-secret",
+				"project_name":                  "testproject",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -398,16 +398,16 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 
 	t.Run("WithScope bypasses computed scope", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:     "http://example.com:5000",
-				Username:    "testuser",
-				Password:    "testpass",
-				ProjectName: "testproject",
+			Auth: map[string]any{
+				"auth_url":     "http://example.com:5000",
+				"username":     "testuser",
+				"password":     "testpass",
+				"project_name": "testproject",
 			},
 		}
 
 		explicitScope := &auth.Scope{DomainID: "explicit-domain"}
-		opts, err := auth.AuthOptionsFromCloud(cloud, auth.WithScope(explicitScope))
+		opts, err := cloud.AuthOptions(auth.WithScope(explicitScope))
 		th.AssertNoErr(t, err)
 
 		v3Opts := opts.(*auth.AuthOptionsV3)
@@ -419,35 +419,35 @@ func TestAuthOptionsFromCloudScopeResolution(t *testing.T) {
 func TestCloudOptionOverrides(t *testing.T) {
 	baseCloud := func() clouds.Cloud {
 		return clouds.Cloud{
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL: "http://example.com:5000",
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
 			},
 		}
 	}
 
 	t.Run("WithUsername and WithPassword", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithUsername("override-user"), auth.WithPassword("override-pass"))
+		opts, err := baseCloud().AuthOptions(auth.WithUsername("override-user"), auth.WithPassword("override-pass"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "override-user", Password: "override-pass", Scope: &auth.Scope{}}, v3Opts.Auth)
 	})
 
 	t.Run("WithUserID", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithUserID("override-user-id"), auth.WithPassword("override-pass"))
+		opts, err := baseCloud().AuthOptions(auth.WithUserID("override-user-id"), auth.WithPassword("override-pass"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3PasswordOpts{UserID: "override-user-id", Password: "override-pass", Scope: &auth.Scope{}}, v3Opts.Auth)
 	})
 
 	t.Run("WithToken", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithToken("override-token"))
+		opts, err := baseCloud().AuthOptions(auth.WithToken("override-token"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3TokenOpts{Token: "override-token", Scope: &auth.Scope{}}, v3Opts.Auth)
 	})
 
 	t.Run("WithDomainID", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithUsername("u"), auth.WithPassword("p"), auth.WithDomainID("override-domain-id"))
+		opts, err := baseCloud().AuthOptions(auth.WithUsername("u"), auth.WithPassword("p"), auth.WithDomainID("override-domain-id"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3PasswordOpts{
@@ -459,7 +459,7 @@ func TestCloudOptionOverrides(t *testing.T) {
 	})
 
 	t.Run("WithDomainName", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithUsername("u"), auth.WithPassword("p"), auth.WithDomainName("override-domain"))
+		opts, err := baseCloud().AuthOptions(auth.WithUsername("u"), auth.WithPassword("p"), auth.WithDomainName("override-domain"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3PasswordOpts{
@@ -471,7 +471,7 @@ func TestCloudOptionOverrides(t *testing.T) {
 	})
 
 	t.Run("WithProjectID", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithUsername("u"), auth.WithPassword("p"), auth.WithProjectID("override-project-id"))
+		opts, err := baseCloud().AuthOptions(auth.WithUsername("u"), auth.WithPassword("p"), auth.WithProjectID("override-project-id"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3PasswordOpts{
@@ -482,7 +482,7 @@ func TestCloudOptionOverrides(t *testing.T) {
 	})
 
 	t.Run("WithProjectName", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(), auth.WithUsername("u"), auth.WithPassword("p"), auth.WithProjectName("override-project-name"))
+		opts, err := baseCloud().AuthOptions(auth.WithUsername("u"), auth.WithPassword("p"), auth.WithProjectName("override-project-name"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(*auth.AuthOptionsV3)
 		th.AssertDeepEquals(t, auth.V3PasswordOpts{
@@ -493,7 +493,7 @@ func TestCloudOptionOverrides(t *testing.T) {
 	})
 
 	t.Run("WithApplicationCredentialID and Secret", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(),
+		opts, err := baseCloud().AuthOptions(
 			auth.WithApplicationCredentialID("override-appcred-id"),
 			auth.WithApplicationCredentialSecret("override-appcred-secret"),
 		)
@@ -506,7 +506,7 @@ func TestCloudOptionOverrides(t *testing.T) {
 	})
 
 	t.Run("WithApplicationCredentialName and Secret", func(t *testing.T) {
-		opts, err := auth.AuthOptionsFromCloud(baseCloud(),
+		opts, err := baseCloud().AuthOptions(
 			auth.WithUsername("u"),
 			auth.WithApplicationCredentialName("override-appcred-name"),
 			auth.WithApplicationCredentialSecret("override-appcred-secret"),
@@ -524,16 +524,16 @@ func TestCloudOptionOverrides(t *testing.T) {
 func TestAuthOptionsFromCloudVersionAgnosticAuthType(t *testing.T) {
 	t.Run("AuthPassword with IdentityAPIVersion 2.0 resolves to V2", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthType:           clouds.AuthPassword,
+			AuthType:           auth.AuthPassword,
 			IdentityAPIVersion: "2.0",
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:  "http://example.com:5000",
-				Username: "testuser",
-				Password: "testpass",
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"username": "testuser",
+				"password": "testpass",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v2Opts, ok := opts.(*auth.AuthOptionsV2)
@@ -543,15 +543,15 @@ func TestAuthOptionsFromCloudVersionAgnosticAuthType(t *testing.T) {
 
 	t.Run("AuthPassword without IdentityAPIVersion resolves to V3", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthType: clouds.AuthPassword,
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:  "http://example.com:5000",
-				Username: "testuser",
-				Password: "testpass",
+			AuthType: auth.AuthPassword,
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"username": "testuser",
+				"password": "testpass",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts, ok := opts.(*auth.AuthOptionsV3)
@@ -561,15 +561,15 @@ func TestAuthOptionsFromCloudVersionAgnosticAuthType(t *testing.T) {
 
 	t.Run("AuthToken with IdentityAPIVersion 2.0 resolves to V2", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthType:           clouds.AuthToken,
+			AuthType:           auth.AuthToken,
 			IdentityAPIVersion: "2.0",
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL: "http://example.com:5000",
-				Token:   "testtoken",
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"token":    "testtoken",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v2Opts, ok := opts.(*auth.AuthOptionsV2)
@@ -579,14 +579,14 @@ func TestAuthOptionsFromCloudVersionAgnosticAuthType(t *testing.T) {
 
 	t.Run("AuthToken without IdentityAPIVersion resolves to V3", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthType: clouds.AuthToken,
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL: "http://example.com:5000",
-				Token:   "testtoken",
+			AuthType: auth.AuthToken,
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"token":    "testtoken",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts, ok := opts.(*auth.AuthOptionsV3)
@@ -598,16 +598,16 @@ func TestAuthOptionsFromCloudVersionAgnosticAuthType(t *testing.T) {
 func TestAuthOptionsFromCloudAuthTypeOverridesIdentityAPIVersion(t *testing.T) {
 	t.Run("explicit AuthV3Password overrides IdentityAPIVersion 2.0", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthType:           clouds.AuthV3Password,
+			AuthType:           auth.AuthV3Password,
 			IdentityAPIVersion: "2.0",
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:  "http://example.com:5000",
-				Username: "testuser",
-				Password: "testpass",
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"username": "testuser",
+				"password": "testpass",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v3Opts, ok := opts.(*auth.AuthOptionsV3)
@@ -617,15 +617,15 @@ func TestAuthOptionsFromCloudAuthTypeOverridesIdentityAPIVersion(t *testing.T) {
 
 	t.Run("explicit AuthV2Password takes precedence when IdentityAPIVersion is unset", func(t *testing.T) {
 		cloud := clouds.Cloud{
-			AuthType: clouds.AuthV2Password,
-			AuthInfo: &clouds.AuthInfo{
-				AuthURL:  "http://example.com:5000",
-				Username: "testuser",
-				Password: "testpass",
+			AuthType: auth.AuthV2Password,
+			Auth: map[string]any{
+				"auth_url": "http://example.com:5000",
+				"username": "testuser",
+				"password": "testpass",
 			},
 		}
 
-		opts, err := auth.AuthOptionsFromCloud(cloud)
+		opts, err := cloud.AuthOptions()
 		th.AssertNoErr(t, err)
 
 		v2Opts, ok := opts.(*auth.AuthOptionsV2)
@@ -634,19 +634,15 @@ func TestAuthOptionsFromCloudAuthTypeOverridesIdentityAPIVersion(t *testing.T) {
 	})
 }
 
-// ExampleWithUsername demonstrates overriding the username read from a
-// clouds.Cloud at authenticate time. Moved here from
-// openstack/config/clouds/clouds_test.go's ExampleUserID, since
-// username overriding now lives in the auth package.
 func ExampleWithUsername() {
 	cloud := clouds.Cloud{
-		AuthInfo: &clouds.AuthInfo{
-			AuthURL:  "https://example.com:13000",
-			Password: "secret",
+		Auth: map[string]any{
+			"auth_url": "https://example.com:13000",
+			"password": "secret",
 		},
 	}
 
-	authOpts, err := auth.AuthOptionsFromCloudV3(cloud, auth.WithUsername("Kris"))
+	authOpts, err := cloud.AuthOptionsV3(auth.WithUsername("Kris"))
 	if err != nil {
 		panic(err)
 	}

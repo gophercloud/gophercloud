@@ -11,6 +11,11 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
+func authField(cloud clouds.Cloud, key string) string {
+	v, _ := cloud.Auth[key].(string)
+	return v
+}
+
 func ExampleWithCloudName() {
 	const exampleClouds = `clouds:
   openstack:
@@ -25,7 +30,7 @@ func ExampleWithCloudName() {
 		panic(err)
 	}
 
-	fmt.Println(cloud.AuthInfo.AuthURL)
+	fmt.Println(authField(cloud, "auth_url"))
 	// Output: https://example.com:13000
 }
 
@@ -102,11 +107,11 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-12345:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/gophercloud-test-12345:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := cloud.AuthInfo.Username; got != "gophercloud-test-username" {
+		if got := authField(cloud, "username"); got != "gophercloud-test-username" {
 			t.Errorf("unexpected username: %q", got)
 		}
 	})
@@ -150,7 +155,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -206,7 +211,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/xdg-config:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/xdg-config:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -263,7 +268,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/home-config:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/home-config:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -313,7 +318,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -352,11 +357,11 @@ func TestParse(t *testing.T) {
 		)
 		th.AssertNoErr(t, err)
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := cloud.AuthInfo.UserDomainName; got != "CustomDomain" {
+		if got := authField(cloud, "user_domain_name"); got != "CustomDomain" {
 			t.Errorf("unexpected UserDomainName: %q", got)
 		}
 	})
@@ -400,11 +405,11 @@ func TestParse(t *testing.T) {
 		)
 		th.AssertNoErr(t, err)
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := cloud.AuthInfo.UserDomainName; got != "CustomDomain" {
+		if got := authField(cloud, "user_domain_name"); got != "CustomDomain" {
 			t.Errorf("unexpected UserDomainName: %q", got)
 		}
 	})
@@ -453,11 +458,11 @@ func TestParse(t *testing.T) {
 		)
 		th.AssertNoErr(t, err)
 
-		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := authField(cloud, "auth_url"); got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := cloud.AuthInfo.UserDomainName; got != "CustomDomain" {
+		if got := authField(cloud, "user_domain_name"); got != "CustomDomain" {
 			t.Errorf("unexpected UserDomainName: %q", got)
 		}
 	})

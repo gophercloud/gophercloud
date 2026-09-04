@@ -3,12 +3,18 @@ package auth
 import "github.com/gophercloud/gophercloud/v2"
 
 type V3PasswordOpts struct {
-	Username       string
-	UserID         string
-	Password       string
-	UserDomainID   string
-	UserDomainName string
-	Scope          *Scope
+	Username       string `json:"username,omitempty"`
+	UserID         string `json:"user_id,omitempty"`
+	Password       string `json:"password,omitempty"`
+	UserDomainID   string `json:"user_domain_id,omitempty"`
+	UserDomainName string `json:"user_domain_name,omitempty"`
+	Scope          *Scope `json:"-"`
+
+	// AllowReauth grants permission for Gophercloud to cache these
+	// credentials in memory and automatically re-authenticate when the
+	// token expires. If false, credentials are not cached and
+	// re-authentication is not possible. Defaults to false.
+	AllowReauth bool `json:"allow_reauth,omitempty"`
 }
 
 func (opts V3PasswordOpts) ToAuthBody() (map[string]map[string]any, error) {
@@ -80,7 +86,7 @@ func (opts V3PasswordOpts) ToAuthBody() (map[string]map[string]any, error) {
 	}
 
 	result := map[string]map[string]any{
-		V3Password.toAuthMethod(): b,
+		AuthV3Password.toAuthMethod(): b,
 	}
 
 	return result, nil
@@ -91,7 +97,7 @@ func (opts V3PasswordOpts) ToAuthHeaders() (map[string]any, error) {
 }
 
 func (opts V3PasswordOpts) CanReauth() bool {
-	return true
+	return opts.AllowReauth
 }
 
 func (opts V3PasswordOpts) ToAuthScope() (map[string]any, error) {

@@ -21,13 +21,13 @@ func (opts V3MultifactorOpts) ToAuthBody() (map[string]map[string]any, error) {
 
 		switch authMethod.(type) {
 		case V3PasswordOpts:
-			authTypes = append(authTypes, V3Password)
+			authTypes = append(authTypes, AuthV3Password)
 		case V3TOTPOpts:
-			authTypes = append(authTypes, V3TOTP)
+			authTypes = append(authTypes, AuthV3Totp)
 		case V3ApplicationCredentialOpts:
-			authTypes = append(authTypes, V3ApplicationCredential)
+			authTypes = append(authTypes, AuthV3ApplicationCredential)
 		case V3TokenOpts:
-			authTypes = append(authTypes, V3Token)
+			authTypes = append(authTypes, AuthV3Token)
 		default:
 			return nil, gophercloud.ErrUnsupportedAuthType{AuthType: fmt.Sprintf("%T", authMethod)}
 		}

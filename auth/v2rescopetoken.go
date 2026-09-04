@@ -51,7 +51,7 @@ func (opts V2RescopeTokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	}
 
 	result := map[string]map[string]any{
-		V2Token.toAuthMethod(): b,
+		AuthV2Token.toAuthMethod(): b,
 	}
 
 	return result, nil

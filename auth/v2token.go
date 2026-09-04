@@ -3,10 +3,16 @@ package auth
 import "github.com/gophercloud/gophercloud/v2"
 
 type V2TokenOpts struct {
-	Username   string
-	Token      string
-	TenantID   string
-	TenantName string
+	Username   string `json:"username,omitempty"`
+	Token      string `json:"token,omitempty"`
+	TenantID   string `json:"project_id,omitempty"`
+	TenantName string `json:"project_name,omitempty"`
+
+	// AllowReauth grants permission for Gophercloud to cache these
+	// credentials in memory and automatically re-authenticate when the
+	// token expires. If false, credentials are not cached and
+	// re-authentication is not possible. Defaults to false.
+	AllowReauth bool `json:"allow_reauth,omitempty"`
 }
 
 func (opts V2TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
@@ -39,12 +45,12 @@ func (opts V2TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	}
 
 	result := map[string]map[string]any{
-		V2Token.toAuthMethod(): b,
+		AuthV2Token.toAuthMethod(): b,
 	}
 
 	return result, nil
 }
 
 func (opts V2TokenOpts) CanReauth() bool {
-	return true
+	return opts.AllowReauth
 }

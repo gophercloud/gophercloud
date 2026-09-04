@@ -30,7 +30,7 @@ func (opts V3RescopeTokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	}
 
 	result := map[string]map[string]any{
-		V3Token.toAuthMethod(): b,
+		AuthV3Token.toAuthMethod(): b,
 	}
 
 	return result, nil

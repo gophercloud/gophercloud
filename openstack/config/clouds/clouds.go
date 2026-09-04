@@ -8,7 +8,7 @@
 //		panic(err)
 //	}
 //
-//	authOpts, err := auth.AuthOptionsFromCloud(cloud)
+//	authOpts, err := cloud.AuthOptions()
 //	if err != nil {
 //		panic(err)
 //	}
@@ -162,10 +162,10 @@ func Parse(opts ...ParseOption) (Cloud, gophercloud.EndpointOpts, *tls.Config, e
 	// credential material, so it stays in this package and is applied
 	// directly onto the returned Cloud.
 	if options.authURL != "" {
-		if cloud.AuthInfo == nil {
-			cloud.AuthInfo = &AuthInfo{}
+		if cloud.Auth == nil {
+			cloud.Auth = map[string]any{}
 		}
-		cloud.AuthInfo.AuthURL = options.authURL
+		cloud.Auth["auth_url"] = options.authURL
 	}
 
 	return cloud, gophercloud.EndpointOpts{

@@ -3,12 +3,12 @@ package auth
 import "github.com/gophercloud/gophercloud/v2"
 
 type V3TOTPOpts struct {
-	Username       string
-	UserID         string
-	Passcode       string
-	UserDomainID   string
-	UserDomainName string
-	Scope          *Scope
+	Username       string `json:"username,omitempty"`
+	UserID         string `json:"user_id,omitempty"`
+	Passcode       string `json:"passcode,omitempty"`
+	UserDomainID   string `json:"user_domain_id,omitempty"`
+	UserDomainName string `json:"user_domain_name,omitempty"`
+	Scope          *Scope `json:"-"`
 }
 
 func (opts V3TOTPOpts) ToAuthBody() (map[string]map[string]any, error) {
@@ -80,7 +80,7 @@ func (opts V3TOTPOpts) ToAuthBody() (map[string]map[string]any, error) {
 	}
 
 	result := map[string]map[string]any{
-		V3TOTP.toAuthMethod(): b,
+		AuthV3Totp.toAuthMethod(): b,
 	}
 
 	return result, nil

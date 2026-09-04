@@ -123,7 +123,7 @@ func TestAuthOptionsV2AuthenticateToken(t *testing.T) {
 
 	opts := auth.AuthOptionsV2{
 		AuthURL: fakeServer.Endpoint(),
-		Auth:    auth.V2TokenOpts{Token: "existing-token", TenantID: "tenant-id"},
+		Auth:    auth.V2TokenOpts{Token: "existing-token", TenantID: "tenant-id", AllowReauth: true},
 	}
 
 	result, err := opts.Authenticate(context.TODO(), nil)
@@ -265,6 +265,7 @@ func TestAuthOptionsV3AuthenticatePassword(t *testing.T) {
 			Password:     "testpass",
 			UserDomainID: "default",
 			Scope:        &auth.Scope{ProjectID: "project-id"},
+			AllowReauth:  true,
 		},
 	}
 

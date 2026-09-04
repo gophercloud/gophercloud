@@ -32,22 +32,22 @@ func AuthOptionsFromEnvV2() (*AuthOptionsV2, error) {
 
 	var authType AuthType // v2 doesn't have auth type; purely for consistency
 	if password != "" {
-		authType = V2Password
+		authType = AuthV2Password
 	} else {
-		authType = V2Token
+		authType = AuthV2Token
 	}
 
 	var opts AuthOptionsBuilderV2
 
 	switch authType {
-	case V2Password:
+	case AuthV2Password:
 		opts = V2PasswordOpts{
 			Username:   username,
 			Password:   password,
 			TenantID:   tenantID,
 			TenantName: tenantName,
 		}
-	case V2Token:
+	case AuthV2Token:
 		opts = V2TokenOpts{
 			Token:      token,
 			TenantID:   tenantID,
@@ -89,13 +89,13 @@ func AuthOptionsFromEnvV3() (*AuthOptionsV3, error) {
 		token := os.Getenv("OS_TOKEN")
 
 		if password != "" {
-			authType = V3Password
+			authType = AuthV3Password
 		} else if passcode != "" {
-			authType = V3TOTP
+			authType = AuthV3Totp
 		} else if token != "" {
-			authType = V3Token
+			authType = AuthV3Token
 		} else if applicationCredentialID != "" || applicationCredentialName != "" {
-			authType = V3ApplicationCredential
+			authType = AuthV3ApplicationCredential
 		}
 	}
 
@@ -110,7 +110,7 @@ func AuthOptionsFromEnvV3() (*AuthOptionsV3, error) {
 
 	var opts AuthOptionsBuilderV3
 
-	if authType == V3MultiFactor {
+	if authType == AuthV3MultiFactor {
 		opts = V3MultifactorOpts{
 			Scope: scope,
 		}
@@ -139,7 +139,7 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 	var opts AuthOptionsBuilderV3
 
 	switch authType {
-	case V3Password:
+	case AuthV3Password:
 		opts = V3PasswordOpts{
 			Username:       os.Getenv("OS_USERNAME"),
 			UserID:         os.Getenv("OS_USERID"),
@@ -148,7 +148,7 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			UserDomainName: os.Getenv("OS_USER_DOMAIN_NAME"),
 			Scope:          scope,
 		}
-	case V3TOTP:
+	case AuthV3Totp:
 		opts = V3TOTPOpts{
 			Username:       os.Getenv("OS_USERNAME"),
 			UserID:         os.Getenv("OS_USERID"),
@@ -157,7 +157,7 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			UserDomainName: os.Getenv("OS_USER_DOMAIN_NAME"),
 			Scope:          scope,
 		}
-	case V3ApplicationCredential:
+	case AuthV3ApplicationCredential:
 		opts = V3ApplicationCredentialOpts{
 			Username:                    os.Getenv("OS_USERNAME"),
 			UserID:                      os.Getenv("OS_USERID"),
@@ -167,12 +167,12 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			UserDomainID:                os.Getenv("OS_USER_DOMAIN_ID"),
 			UserDomainName:              os.Getenv("OS_USER_DOMAIN_NAME"),
 		}
-	case V3Token:
+	case AuthV3Token:
 		opts = V3TokenOpts{
 			Token: os.Getenv("OS_TOKEN"),
 			Scope: scope,
 		}
-	case V3MultiFactor: // this should never get here
+	case AuthV3MultiFactor: // this should never get here
 	default:
 		return nil
 	}

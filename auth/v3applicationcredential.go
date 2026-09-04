@@ -3,13 +3,19 @@ package auth
 import "github.com/gophercloud/gophercloud/v2"
 
 type V3ApplicationCredentialOpts struct {
-	Username                    string
-	UserID                      string
-	ApplicationCredentialID     string
-	ApplicationCredentialName   string
-	ApplicationCredentialSecret string
-	UserDomainID                string
-	UserDomainName              string
+	Username                    string `json:"username,omitempty"`
+	UserID                      string `json:"user_id,omitempty"`
+	ApplicationCredentialID     string `json:"application_credential_id,omitempty"`
+	ApplicationCredentialName   string `json:"application_credential_name,omitempty"`
+	ApplicationCredentialSecret string `json:"application_credential_secret,omitempty"`
+	UserDomainID                string `json:"user_domain_id,omitempty"`
+	UserDomainName              string `json:"user_domain_name,omitempty"`
+
+	// AllowReauth grants permission for Gophercloud to cache these
+	// credentials in memory and automatically re-authenticate when the
+	// token expires. If false, credentials are not cached and
+	// re-authentication is not possible. Defaults to false.
+	AllowReauth bool `json:"allow_reauth,omitempty"`
 }
 
 func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any, error) {
@@ -104,7 +110,7 @@ func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any,
 	}
 
 	result := map[string]map[string]any{
-		V3ApplicationCredential.toAuthMethod(): b,
+		AuthV3ApplicationCredential.toAuthMethod(): b,
 	}
 
 	return result, nil
@@ -115,7 +121,7 @@ func (opts V3ApplicationCredentialOpts) ToAuthHeaders() (map[string]any, error) 
 }
 
 func (opts V3ApplicationCredentialOpts) CanReauth() bool {
-	return true
+	return opts.AllowReauth
 }
 
 func (opts V3ApplicationCredentialOpts) ToAuthScope() (map[string]any, error) {

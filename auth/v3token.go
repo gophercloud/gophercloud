@@ -3,8 +3,8 @@ package auth
 import "github.com/gophercloud/gophercloud/v2"
 
 type V3TokenOpts struct {
-	Token string
-	Scope *Scope
+	Token string `json:"token,omitempty"`
+	Scope *Scope `json:"-"`
 }
 
 func (opts V3TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
@@ -22,7 +22,7 @@ func (opts V3TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	}
 
 	result := map[string]map[string]any{
-		V3Token.toAuthMethod(): b,
+		AuthV3Token.toAuthMethod(): b,
 	}
 
 	return result, nil

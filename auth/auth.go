@@ -12,33 +12,49 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 )
 
+// AuthType respresents a valid method of authentication.
 type AuthType string
 
 const (
-	V2Password              AuthType = "v2password"
-	V2Token                 AuthType = "v2token"
-	V3Password              AuthType = "v3password"
-	V3TOTP                  AuthType = "v3totp"
-	V3ApplicationCredential AuthType = "v3applicationcredential"
-	V3Token                 AuthType = "v3token"
-	V3MultiFactor           AuthType = "v3multifactor"
+	// AuthPassword defines an unknown version of the password
+	AuthPassword AuthType = "password"
+
+	// AuthToken defined an unknown version of the token
+	AuthToken AuthType = "token"
+
+	// AuthV2Password defines version 2 of the password
+	AuthV2Password AuthType = "v2password"
+
+	// AuthV2Token defines version 2 of the token
+	AuthV2Token AuthType = "v2token"
+
+	// AuthV3Password defines version 3 of the password
+	AuthV3Password AuthType = "v3password"
+
+	// AuthV3Totp defines version 3 of the totp
+	AuthV3Totp AuthType = "v3totp"
+
+	// AuthV3ApplicationCredential defines version 3 of the application credential
+	AuthV3ApplicationCredential AuthType = "v3applicationcredential"
+
+	// AuthV3Token defines version 3 of the token
+	AuthV3Token AuthType = "v3token"
+
+	// AuthV3MultiFactor defines version 3 of the multifactor
+	AuthV3MultiFactor AuthType = "v3multifactor"
 )
 
 func (at AuthType) toAuthMethod() string {
 	switch at {
-	case V2Password:
-		return ""
-	case V2Token:
-		return ""
-	case V3Password:
+	case AuthV3Password:
 		return "password"
-	case V3TOTP:
+	case AuthV3Totp:
 		return "totp"
-	case V3ApplicationCredential:
+	case AuthV3ApplicationCredential:
 		return "application_credential"
-	case V3Token:
+	case AuthV3Token:
 		return "token"
-	case V3MultiFactor:
+	case AuthV3MultiFactor:
 		return ""
 	default:
 		return ""
