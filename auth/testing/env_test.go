@@ -18,7 +18,7 @@ func TestAuthOptionsFromEnvV2Password(t *testing.T) {
 	v2Opts, ok := opts.(*auth.AuthOptionsV2)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v2.0", v2Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V2PasswordOpts{Username: "testuser", Password: "testpass"}, v2Opts.Auth)
+	th.AssertDeepEquals(t, auth.V2PasswordOpts{Username: "testuser", Password: "testpass", AllowReauth: true}, v2Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV2Token(t *testing.T) {
@@ -31,7 +31,7 @@ func TestAuthOptionsFromEnvV2Token(t *testing.T) {
 	v2Opts, ok := opts.(*auth.AuthOptionsV2)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v2.0", v2Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V2TokenOpts{Token: "testtoken"}, v2Opts.Auth)
+	th.AssertDeepEquals(t, auth.V2TokenOpts{Token: "testtoken", AllowReauth: true}, v2Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV3Password(t *testing.T) {
@@ -44,7 +44,7 @@ func TestAuthOptionsFromEnvV3Password(t *testing.T) {
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v3", v3Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, v3Opts.Auth)
+	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}, v3Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV3Token(t *testing.T) {
@@ -83,7 +83,7 @@ func TestAuthOptionsFromEnvV3AppCred(t *testing.T) {
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v3", v3Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V3ApplicationCredentialOpts{ApplicationCredentialID: "app-cred-id"}, v3Opts.Auth)
+	th.AssertDeepEquals(t, auth.V3ApplicationCredentialOpts{ApplicationCredentialID: "app-cred-id", AllowReauth: true}, v3Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV3AppCredName(t *testing.T) {
@@ -96,7 +96,7 @@ func TestAuthOptionsFromEnvV3AppCredName(t *testing.T) {
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v3", v3Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "app-cred-name"}, v3Opts.Auth)
+	th.AssertDeepEquals(t, auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "app-cred-name", AllowReauth: true}, v3Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV3ExplicitAuthType(t *testing.T) {
@@ -109,7 +109,7 @@ func TestAuthOptionsFromEnvV3ExplicitAuthType(t *testing.T) {
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v3", v3Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, v3Opts.Auth)
+	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}, v3Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV3WithAuthMethods(t *testing.T) {
@@ -122,7 +122,7 @@ func TestAuthOptionsFromEnvV3WithAuthMethods(t *testing.T) {
 	v3Opts, ok := opts.(*auth.AuthOptionsV3)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "http://example.com:5000/v3", v3Opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, v3Opts.Auth)
+	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}, v3Opts.Auth)
 }
 
 func TestAuthOptionsFromEnvMissingAuthURL(t *testing.T) {
@@ -165,7 +165,7 @@ func TestAuthOptionsFromEnvV2Direct(t *testing.T) {
 	opts, err := auth.AuthOptionsFromEnvV2()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "http://example.com:5000/v2.0", opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V2PasswordOpts{Username: "testuser", Password: "testpass"}, opts.Auth)
+	th.AssertDeepEquals(t, auth.V2PasswordOpts{Username: "testuser", Password: "testpass", AllowReauth: true}, opts.Auth)
 }
 
 func TestAuthOptionsFromEnvV3Direct(t *testing.T) {
@@ -176,5 +176,41 @@ func TestAuthOptionsFromEnvV3Direct(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "http://example.com:5000/v3", opts.AuthURL)
-	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, opts.Auth)
+	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}, opts.Auth)
+}
+
+func TestAuthOptionsFromEnvV2PasswordCanReauth(t *testing.T) {
+	defer CleanupEnv(t)
+	SetupEnvV2Password(t)
+
+	opts, err := auth.AuthOptionsFromEnvV2()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, opts.Auth.CanReauth())
+}
+
+func TestAuthOptionsFromEnvV2TokenCanReauth(t *testing.T) {
+	defer CleanupEnv(t)
+	SetupEnvV2Token(t)
+
+	opts, err := auth.AuthOptionsFromEnvV2()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, opts.Auth.CanReauth())
+}
+
+func TestAuthOptionsFromEnvV3PasswordCanReauth(t *testing.T) {
+	defer CleanupEnv(t)
+	SetupEnvV3Password(t)
+
+	opts, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, opts.Auth.CanReauth())
+}
+
+func TestAuthOptionsFromEnvV3AppCredCanReauth(t *testing.T) {
+	defer CleanupEnv(t)
+	SetupEnvV3AppCred(t)
+
+	opts, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, opts.Auth.CanReauth())
 }

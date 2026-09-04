@@ -42,16 +42,18 @@ func AuthOptionsFromEnvV2() (*AuthOptionsV2, error) {
 	switch authType {
 	case AuthV2Password:
 		opts = V2PasswordOpts{
-			Username:   username,
-			Password:   password,
-			TenantID:   tenantID,
-			TenantName: tenantName,
+			Username:    username,
+			Password:    password,
+			TenantID:    tenantID,
+			TenantName:  tenantName,
+			AllowReauth: true,
 		}
 	case AuthV2Token:
 		opts = V2TokenOpts{
-			Token:      token,
-			TenantID:   tenantID,
-			TenantName: tenantName,
+			Token:       token,
+			TenantID:    tenantID,
+			TenantName:  tenantName,
+			AllowReauth: true,
 		}
 	default:
 		return nil, gophercloud.ErrUnsupportedAuthType{AuthType: string(authType)}
@@ -147,6 +149,7 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			UserDomainID:   os.Getenv("OS_USER_DOMAIN_ID"),
 			UserDomainName: os.Getenv("OS_USER_DOMAIN_NAME"),
 			Scope:          scope,
+			AllowReauth:    true,
 		}
 	case AuthV3Totp:
 		opts = V3TOTPOpts{
@@ -166,6 +169,7 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			ApplicationCredentialSecret: os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET"),
 			UserDomainID:                os.Getenv("OS_USER_DOMAIN_ID"),
 			UserDomainName:              os.Getenv("OS_USER_DOMAIN_NAME"),
+			AllowReauth:                 true,
 		}
 	case AuthV3Token:
 		opts = V3TokenOpts{

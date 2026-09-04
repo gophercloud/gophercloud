@@ -29,6 +29,26 @@ func TestAuthOptionsFromCloudV3PasswordInferred(t *testing.T) {
 	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, v3Opts.Auth)
 }
 
+func TestAuthOptionsFromCloudAllowReauth(t *testing.T) {
+	cloud := clouds.Cloud{
+		Auth: map[string]any{
+			"auth_url":     "http://example.com:5000",
+			"username":     "testuser",
+			"password":     "testpass",
+			"allow_reauth": true,
+		},
+	}
+
+	opts, err := cloud.AuthOptions()
+	th.AssertNoErr(t, err)
+
+	v3Opts, ok := opts.(*auth.AuthOptionsV3)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, "http://example.com:5000", v3Opts.AuthURL)
+	th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}, v3Opts.Auth)
+	th.AssertEquals(t, true, v3Opts.Auth.CanReauth())
+}
+
 func TestAuthOptionsFromCloudV2ViaIdentityAPIVersion(t *testing.T) {
 	cloud := clouds.Cloud{
 		IdentityAPIVersion: "2.0",

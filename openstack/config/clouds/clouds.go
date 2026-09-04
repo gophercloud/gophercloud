@@ -275,7 +275,7 @@ func coalesce[T comparable](items ...T) T {
 	return t
 }
 
-// mergeClouds merges two Clouds recursively (the AuthInfo also gets merged).
+// mergeClouds merges two Clouds recursively (the Auth map also gets merged).
 // In case both Clouds define a value, the value in the 'override' cloud takes precedence
 func mergeClouds(override, cloud Cloud) (Cloud, error) {
 	overrideJson, err := json.Marshal(override)
