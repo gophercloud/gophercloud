@@ -66,7 +66,7 @@ func TestAuthOptionsV2AuthenticatePassword(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV2{
-		AuthURL: fakeServer.Endpoint() + "v2.0",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V2PasswordOpts{
 			Username: "testuser",
 			Password: "testpass",
@@ -122,7 +122,7 @@ func TestAuthOptionsV2AuthenticateToken(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV2{
-		AuthURL: fakeServer.Endpoint() + "v2.0",
+		AuthURL: fakeServer.Endpoint(),
 		Auth:    auth.V2TokenOpts{Token: "existing-token", TenantID: "tenant-id"},
 	}
 
@@ -158,7 +158,7 @@ func TestAuthOptionsV2AuthenticateRescope(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV2{
-		AuthURL: fakeServer.Endpoint() + "v2.0",
+		AuthURL: fakeServer.Endpoint(),
 		Auth:    auth.V2RescopeTokenOpts{Token: "existing-token", TenantID: "new-tenant-id"},
 	}
 
@@ -188,7 +188,7 @@ func TestAuthOptionsV2AuthenticateHTTPFailure(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV2{
-		AuthURL: fakeServer.Endpoint() + "v2.0",
+		AuthURL: fakeServer.Endpoint(),
 		Auth:    auth.V2PasswordOpts{Username: "testuser", Password: "wrongpass"},
 	}
 
@@ -215,6 +215,9 @@ func TestAuthOptionsV3AuthenticatePassword(t *testing.T) {
 								"password": "testpass"
 							}
 						}
+					},
+					"scope": {
+						"project": {"id": "project-id"}
 					}
 				}
 			}
@@ -256,7 +259,7 @@ func TestAuthOptionsV3AuthenticatePassword(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username:     "testuser",
 			Password:     "testpass",
@@ -317,7 +320,7 @@ func TestAuthOptionsV3AuthenticateHTTPFailure(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username: "testuser",
 			Password: "wrongpass",
@@ -355,7 +358,7 @@ func TestAuthOptionsV3AuthenticateTOTP(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3TOTPOpts{
 			Username:     "testuser",
 			Passcode:     "123456",
@@ -407,7 +410,7 @@ func TestAuthOptionsV3AuthenticateApplicationCredential(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3ApplicationCredentialOpts{
 			ApplicationCredentialID:     "appcred-id",
 			ApplicationCredentialSecret: "appcred-secret",
@@ -433,7 +436,7 @@ func TestAuthOptionsV3AuthenticateToken(t *testing.T) {
 				"auth": {
 					"identity": {
 						"methods": ["token"],
-						"token": {"token": "existing-token"}
+						"token": {"id": "existing-token"}
 					}
 				}
 			}
@@ -444,7 +447,7 @@ func TestAuthOptionsV3AuthenticateToken(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth:    auth.V3TokenOpts{Token: "existing-token"},
 	}
 
@@ -488,7 +491,7 @@ func TestAuthOptionsV3AuthenticateMultifactor(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3MultifactorOpts{
 			AuthMethods: []auth.AuthOptionsBuilderV3{
 				auth.V3PasswordOpts{Username: "testuser", Password: "testpass", UserDomainID: "default"},
@@ -513,7 +516,10 @@ func TestAuthOptionsV3AuthenticateRescope(t *testing.T) {
 				"auth": {
 					"identity": {
 						"methods": ["token"],
-						"token": {"token": "existing-token"}
+						"token": {"id": "existing-token"}
+					},
+					"scope": {
+						"project": {"id": "new-project-id"}
 					}
 				}
 			}
@@ -532,7 +538,7 @@ func TestAuthOptionsV3AuthenticateRescope(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3RescopeTokenOpts{
 			Token: "existing-token",
 			Scope: &auth.Scope{ProjectID: "new-project-id"},
@@ -563,6 +569,25 @@ func TestAuthOptionsV3AuthenticateSystemScoped(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestJSONRequest(t, r, `
+			{
+				"auth": {
+					"identity": {
+						"methods": ["password"],
+						"password": {
+							"user": {
+								"name": "testuser",
+								"domain": {"id": "default"},
+								"password": "testpass"
+							}
+						}
+					},
+					"scope": {
+						"system": {"all": true}
+					}
+				}
+			}
+		`)
 		w.Header().Set("X-Subject-Token", "system-token")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, `
@@ -577,7 +602,7 @@ func TestAuthOptionsV3AuthenticateSystemScoped(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username:     "testuser",
 			Password:     "testpass",
@@ -597,6 +622,25 @@ func TestAuthOptionsV3AuthenticateDomainScoped(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		th.TestJSONRequest(t, r, `
+			{
+				"auth": {
+					"identity": {
+						"methods": ["password"],
+						"password": {
+							"user": {
+								"name": "testuser",
+								"domain": {"id": "default"},
+								"password": "testpass"
+							}
+						}
+					},
+					"scope": {
+						"domain": {"id": "domain-id"}
+					}
+				}
+			}
+		`)
 		w.Header().Set("X-Subject-Token", "domain-token")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, `
@@ -611,7 +655,7 @@ func TestAuthOptionsV3AuthenticateDomainScoped(t *testing.T) {
 	})
 
 	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username:     "testuser",
 			Password:     "testpass",

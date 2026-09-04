@@ -25,7 +25,7 @@ func TestAuthenticatedClientV3(t *testing.T) {
 	})
 
 	options := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username:       "me",
 			Password:       "secret",
@@ -57,7 +57,7 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	})
 
 	options := auth.AuthOptionsV2{
-		AuthURL: fakeServer.Endpoint() + "v2.0",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V2PasswordOpts{
 			Username: "me",
 			Password: "secret",
@@ -79,7 +79,7 @@ func TestAuthenticatedClientCanReauthWiresReauthFunc(t *testing.T) {
 	})
 
 	options := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username:       "me",
 			Password:       "secret",
@@ -104,7 +104,7 @@ func TestAuthenticatedClientCanReauthFalseLeavesReauthFuncNil(t *testing.T) {
 	})
 
 	options := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth:    auth.V3TokenOpts{Token: "sometoken"},
 	}
 	client, err := openstack.AuthenticatedClient(context.TODO(), options)
@@ -145,7 +145,7 @@ func TestAuthenticatedClientReauthenticatesOn401AndRefreshesEndpointLocator(t *t
 	})
 
 	options := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint() + "v3",
+		AuthURL: fakeServer.Endpoint(),
 		Auth: auth.V3PasswordOpts{
 			Username:       "me",
 			Password:       "secret",

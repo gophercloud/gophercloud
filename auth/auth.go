@@ -147,10 +147,12 @@ func (ao AuthOptionsV3) Authenticate(ctx context.Context, httpClient *http.Clien
 	}
 
 	body := map[string]any{"identity": identity}
-	if scopeMap, err := ao.Auth.ToAuthScope(); err != nil {
-		if scopeMap != nil {
-			body["scope"] = scopeMap
-		}
+	scopeMap, err := ao.Auth.ToAuthScope()
+	if err != nil {
+		return nil, err
+	}
+	if scopeMap != nil {
+		body["scope"] = scopeMap
 	}
 
 	headers, err := ao.Auth.ToAuthHeaders()

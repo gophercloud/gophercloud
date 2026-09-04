@@ -18,7 +18,7 @@ func TestV3RescopeTokenOptsToAuthBody(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := map[string]map[string]any{
-		"token": {"token": "the-token"},
+		"token": {"id": "the-token"},
 	}
 	th.AssertDeepEquals(t, expected, authData)
 }

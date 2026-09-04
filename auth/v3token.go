@@ -9,7 +9,7 @@ type V3TokenOpts struct {
 
 func (opts V3TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	type tokenReq struct {
-		Token string `json:"token"`
+		Token string `json:"id"`
 	}
 
 	req := tokenReq{

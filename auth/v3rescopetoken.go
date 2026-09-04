@@ -13,7 +13,7 @@ type V3RescopeTokenOpts struct {
 
 func (opts V3RescopeTokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	type tokenReq struct {
-		Token string `json:"token"`
+		Token string `json:"id"`
 	}
 
 	if opts.Scope == nil {
