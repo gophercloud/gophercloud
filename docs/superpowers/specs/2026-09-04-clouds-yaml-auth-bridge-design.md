@@ -109,20 +109,30 @@ from `cloud.AuthInfo` before mechanism/scope selection runs:
 ## Mechanism and version selection
 
 1. If `cloud.AuthType` is one of the version-specific values
-   (`v2password`, `v2token`, `v3password`, `v3token`,
+   (`v2password`, `v2token`, `v3password`, `v3token`, `v3totp`,
    `v3applicationcredential`), use it directly — it overrides
-   `IdentityAPIVersion`.
+   `IdentityAPIVersion`. `clouds.AuthType` is an unconstrained string type,
+   so a `clouds.yaml` entry can legally set `auth_type: v3totp` even
+   though `openstack/config/clouds` doesn't export a constant for it; the
+   dispatch must still recognize the string.
 2. If `cloud.AuthType` is a version-agnostic value (`password`, `token`),
    resolve V2 vs V3 via `IdentityAPIVersion`, then pick the mechanism.
 3. If `cloud.AuthType` is empty, resolve V2 vs V3 via `IdentityAPIVersion`
    (default V3), then infer the mechanism from populated fields using the
    same relative precedence as `auth/env.go`'s `AuthOptionsFromEnvV3`:
-   password > token > application credential > passcode (passcode can
-   only be populated via `WithPasscode`, so it is checked last and only
-   matters when explicitly supplied).
+   password > passcode > token > application credential. Passcode can
+   only be populated via `WithPasscode`, so in practice it only matters
+   when explicitly supplied — but it must still be checked ahead of
+   token, matching `env.go`, so that supplying `WithPasscode` alongside a
+   leftover `Token` field doesn't silently discard the TOTP code.
 4. If nothing resolves, return an error (`gophercloud.ErrMissingInput{Argument: "Auth"}`).
 
 ## Scope resolution
+
+`Cloud.AuthInfo` is `*AuthInfo` (a pointer, since `auth:` is optional in a
+`clouds.yaml` entry). The mapping function must nil-check it before any
+field access and treat a nil `AuthInfo` as all-zero-value fields, rather
+than panicking.
 
 `clouds.AuthInfo` already keeps `UserDomainID`/`UserDomainName`,
 `ProjectDomainID`/`ProjectDomainName`, generic `DomainID`/`DomainName`, and
@@ -195,3 +205,8 @@ providerClient, err := config.NewProviderClient(ctx, authOpts, config.WithTLSCon
 - No V2 `clouds.yaml` acceptance/integration test beyond unit coverage —
   v2 Keystone is effectively dead in practice; V2 support here exists for
   API symmetry with `auth.AuthOptionsFromEnv`.
+- No `v3multifactor` support. `auth.AuthOptionsFromEnvV3` handles it via
+  `OS_AUTH_METHODS`, but `clouds.yaml` has no equivalent multi-mechanism
+  list convention, and adding a `CloudOption` like
+  `WithAuthMethods([]AuthOptionsBuilderV3)` to fill that gap is left for a
+  future change if it's ever needed.
