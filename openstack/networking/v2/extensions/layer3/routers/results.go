@@ -68,12 +68,43 @@ type Router struct {
 	// ProjectID is the project owner of the router.
 	ProjectID string `json:"project_id"`
 
+	// HA indicates a highly-available router. It is available when l3-ha
+	// extension is enabled.
+	HA bool `json:"ha"`
+
+	// ServiceTypeID of the service type associated with the router.
+	ServiceTypeID string `json:"service_type_id"`
+
+	// FlavorID of the flavor associated with the router.
+	FlavorID string `json:"flavor_id"`
+
+	// EnableNDPProxy indicates the NDP proxy attribute. Available when
+	// router-extend-ndp-proxy extension is enabled.
+	EnableNDPProxy bool `json:"enable_ndp_proxy"`
+
+	// EnableDefaultRouteBFD indicates that Neutron will enable BFD
+	// sessions for default routes inferred from the external gateway port
+	// subnets. Available when external-gateway-multihoming extension is
+	// enabled.
+	EnableDefaultRouteBFD bool `json:"enable_default_route_bfd"`
+
+	// EnableDefaultRouteECMP indicates that Neutron will add ECMP default
+	// routes if multiple are available via different gateway ports.
+	// Available when external-gateway-multihoming extension is enabled.
+	EnableDefaultRouteECMP bool `json:"enable_default_route_ecmp"`
+
 	// Routes are a collection of static routes that the router will host.
 	Routes []Route `json:"routes"`
 
-	// Availability zone hints groups network nodes that run services like DHCP, L3, FW, and others.
-	// Used to make network resources highly available.
+	// Availability zone candidates hints groups network nodes that run
+	// services like DHCP, L3, FW, and others. Used to make network
+	// resources highly available. It is available when
+	// router_availability_zone extension is enabled.
 	AvailabilityZoneHints []string `json:"availability_zone_hints"`
+
+	// AvailabilityZones for the router. It is available when
+	// router_availability_zone extension is enabled.
+	AvailabilityZones []string `json:"availability_zones"`
 
 	// Tags optionally set via extensions/attributestags
 	Tags []string `json:"tags"`
