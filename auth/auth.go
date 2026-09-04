@@ -44,6 +44,7 @@ const (
 	AuthV3MultiFactor AuthType = "v3multifactor"
 )
 
+// Helper that returns auth method used in request bodies
 func (at AuthType) toAuthMethod() string {
 	switch at {
 	case AuthV3Password:
@@ -61,14 +62,17 @@ func (at AuthType) toAuthMethod() string {
 	}
 }
 
-type AuthOptionsBuilderV2 interface {
+type AuthOptionsBuilder interface {
 	ToAuthBody() (map[string]map[string]any, error)
 	CanReauth() bool
 }
 
+type AuthOptionsBuilderV2 interface {
+	AuthOptionsBuilder
+}
+
 type AuthOptionsBuilderV3 interface {
-	ToAuthBody() (map[string]map[string]any, error)
-	CanReauth() bool
+	AuthOptionsBuilder
 	ToAuthHeaders() (map[string]any, error)
 	ToAuthScope() (map[string]any, error)
 }

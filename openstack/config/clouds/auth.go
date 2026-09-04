@@ -12,8 +12,8 @@ func (c Cloud) GetAuthType() auth.AuthType { return c.AuthType }
 // GetIdentityAPIVersion returns c.IdentityAPIVersion.
 func (c Cloud) GetIdentityAPIVersion() string { return c.IdentityAPIVersion }
 
-// GetAuth returns c.Auth.
-func (c Cloud) GetAuth() map[string]any { return c.Auth }
+// GetAuthData returns c.Auth.
+func (c Cloud) GetAuthData() map[string]any { return c.Auth }
 
 // AuthOptions builds an auth.Authenticator from a Cloud (as returned by
 // Parse). See auth.AuthOptionsFromCloud for the mechanism-selection rules.

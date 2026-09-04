@@ -8,6 +8,7 @@ import (
 )
 
 func AuthOptionsFromEnv() (Authenticator, error) {
+	// TODO(danchild): accept auth_type environment variable ???
 	// default to Keystone Identity v3
 	if os.Getenv("OS_IDENTITY_API_VERSION") == "2.0" {
 		return AuthOptionsFromEnvV2()
@@ -42,17 +43,19 @@ func AuthOptionsFromEnvV2() (*AuthOptionsV2, error) {
 	switch authType {
 	case AuthV2Password:
 		opts = V2PasswordOpts{
-			Username:    username,
-			Password:    password,
-			TenantID:    tenantID,
-			TenantName:  tenantName,
+			Username:   username,
+			Password:   password,
+			TenantID:   tenantID,
+			TenantName: tenantName,
+			// TODO (danchild): consider how ENV and Clouds approaches are using CanReauth and converge on one approach
 			AllowReauth: true,
 		}
 	case AuthV2Token:
 		opts = V2TokenOpts{
-			Token:       token,
-			TenantID:    tenantID,
-			TenantName:  tenantName,
+			Token:      token,
+			TenantID:   tenantID,
+			TenantName: tenantName,
+			// TODO (danchild): consider how ENV and Clouds approaches are using CanReauth and converge on one approach
 			AllowReauth: true,
 		}
 	default:

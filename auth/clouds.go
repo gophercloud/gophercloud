@@ -7,16 +7,11 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 )
 
-// CloudOption overrides a single credential field before mechanism
-// selection and scope resolution run. Use it to supply values that
-// don't belong in a static clouds.yaml file (a TOTP passcode, via
-// WithPasscode) or to override a value at runtime.
+// CloudOption overrides a single credential in clouds.yaml.
+// Use it to supply values dynamically, for example a TOTP passcode
 type CloudOption func(*CloudOptions)
 
-// CloudOptions is the resolved set of CloudOption overrides. It's
-// exported so packages that bridge an external config format (like
-// openstack/config/clouds) into auth can read the overridden values
-// without depending on auth's unexported internals.
+// CloudOptions is the resolved set of CloudOption overrides
 type CloudOptions struct {
 	Username                    string
 	UserID                      string
@@ -110,52 +105,33 @@ func WithScope(scope *Scope) CloudOption {
 	return func(co *CloudOptions) { co.Scope = scope }
 }
 
-// CloudSource is the auth-relevant subset of a parsed clouds.yaml cloud
-// entry. It exists so this package can build an Authenticator from
-// clouds.yaml-sourced data the same way AuthOptionsFromEnv builds one from
-// the process environment, without importing the package that defines the
-// full cloud entry (openstack/config/clouds) — avoiding an import cycle,
-// since that package already imports auth for AuthType. Any type exposing
-// these three accessors satisfies this interface; openstack/config/clouds.Cloud
-// does so via GetAuthType/GetIdentityAPIVersion/GetAuth.
+// Interface used to get data defined in the clouds package
 type CloudSource interface {
-	// GetAuthType is the explicit auth_type of the cloud entry, or "" if
-	// unset (mechanism is then inferred from GetAuth's populated fields).
 	GetAuthType() AuthType
-
-	// GetIdentityAPIVersion is the identity_api_version of the cloud
-	// entry (e.g. "2.0"), or "" if unset.
 	GetIdentityAPIVersion() string
-
-	// GetAuth is the auth: section of the cloud entry verbatim, keyed the
-	// same way clouds.yaml is (e.g. "username", "user_domain_id").
-	GetAuth() map[string]any
+	GetAuthData() map[string]any
 }
 
-// AuthOptionsFromCloud builds an Authenticator from a CloudSource (such as
-// a parsed openstack/config/clouds.Cloud), the same way AuthOptionsFromEnv
-// builds one from the process environment. Identity v2 is used when
-// c.GetAuthType() is an explicit v2 auth type, or when it's
-// empty/version-agnostic and c.GetIdentityAPIVersion() == "2.0"; v3 is
-// used otherwise.
 func AuthOptionsFromCloud(c CloudSource, opts ...CloudOption) (Authenticator, error) {
 	switch c.GetAuthType() {
+	// TODO(danchild): what do we do with AuthToken and AuthPassword (not v2 or v3) previously defined in clouds package ??
 	case AuthV2Password, AuthV2Token:
 		return AuthOptionsFromCloudV2(c, opts...)
 	case AuthV3Password, AuthV3Totp, AuthV3Token, AuthV3ApplicationCredential:
 		return AuthOptionsFromCloudV3(c, opts...)
 	}
 
+	// If auth type isn't provided, default to identity v3
 	if c.GetIdentityAPIVersion() == "2.0" {
 		return AuthOptionsFromCloudV2(c, opts...)
 	}
+
 	return AuthOptionsFromCloudV3(c, opts...)
 }
 
-// AuthOptionsFromCloudV2 builds an *AuthOptionsV2 from a CloudSource,
-// ignoring c.GetIdentityAPIVersion().
-func AuthOptionsFromCloudV2(c CloudSource, opts ...CloudOption) (*AuthOptionsV2, error) {
-	m, authURL := mergedAuth(c, opts)
+func AuthOptionsFromCloudV2(c CloudSource, cloudOpts ...CloudOption) (*AuthOptionsV2, error) {
+	// TODO(danchild): check implementation of AuthOptionsFromCloudV2 for parity
+	m, authURL := mergedAuth(c, cloudOpts)
 	if authURL == "" {
 		return nil, gophercloud.ErrMissingInput{Argument: "AuthURL"}
 	}
@@ -169,33 +145,36 @@ func AuthOptionsFromCloudV2(c CloudSource, opts ...CloudOption) (*AuthOptionsV2,
 		}
 	}
 
-	var authOpts AuthOptionsBuilderV2
+	var opts AuthOptionsBuilderV2
+
 	switch authType {
 	case AuthV2Password, AuthPassword:
 		var o V2PasswordOpts
 		if err := decode(m, &o); err != nil {
 			return nil, err
 		}
-		authOpts = o
+		opts = o
 	case AuthV2Token, AuthToken:
 		var o V2TokenOpts
 		if err := decode(m, &o); err != nil {
 			return nil, err
 		}
-		authOpts = o
-	case "":
-		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
+		opts = o
 	default:
 		return nil, gophercloud.ErrUnsupportedAuthType{AuthType: string(authType)}
 	}
 
-	return &AuthOptionsV2{AuthURL: authURL, Auth: authOpts}, nil
+	ao := &AuthOptionsV2{
+		AuthURL: authURL,
+		Auth:    opts,
+	}
+
+	return ao, nil
 }
 
-// AuthOptionsFromCloudV3 builds an *AuthOptionsV3 from a CloudSource,
-// ignoring c.GetIdentityAPIVersion().
-func AuthOptionsFromCloudV3(c CloudSource, opts ...CloudOption) (*AuthOptionsV3, error) {
-	m, authURL := mergedAuth(c, opts)
+func AuthOptionsFromCloudV3(c CloudSource, cloudOpts ...CloudOption) (*AuthOptionsV3, error) {
+	// TODO(danchild): check implementation of AuthOptionsFromCloudV2 for parity
+	m, authURL := mergedAuth(c, cloudOpts)
 	if authURL == "" {
 		return nil, gophercloud.ErrMissingInput{Argument: "AuthURL"}
 	}
@@ -216,17 +195,11 @@ func AuthOptionsFromCloudV3(c CloudSource, opts ...CloudOption) (*AuthOptionsV3,
 		}
 	}
 
-	// user_domain_id/name and project_domain_id/name each fall back to
-	// the generic domain_id/name, then to default_domain. Write the
-	// resolved user-domain values back into m so the json.Unmarshal below
-	// picks them up on whichever mechanism has UserDomainID/UserDomainName
-	// fields; the project-domain values feed Scope below instead, since
-	// Scope (not the mechanism struct) is where project domain lives.
 	userDomainID, userDomainName, projectDomainID, projectDomainName := resolveDomains(m)
 	m["user_domain_id"] = userDomainID
 	m["user_domain_name"] = userDomainName
 
-	co := ResolveCloudOptions(opts...)
+	co := ResolveCloudOptions(cloudOpts...)
 	scope := co.Scope
 	if scope == nil {
 		scope = &Scope{
@@ -239,7 +212,8 @@ func AuthOptionsFromCloudV3(c CloudSource, opts ...CloudOption) (*AuthOptionsV3,
 		}
 	}
 
-	var authOpts AuthOptionsBuilderV3
+	var opts AuthOptionsBuilderV3
+
 	switch authType {
 	case AuthV3Password, AuthPassword:
 		var o V3PasswordOpts
@@ -247,39 +221,44 @@ func AuthOptionsFromCloudV3(c CloudSource, opts ...CloudOption) (*AuthOptionsV3,
 			return nil, err
 		}
 		o.Scope = scope
-		authOpts = o
+		opts = o
 	case AuthV3Totp:
 		var o V3TOTPOpts
 		if err := decode(m, &o); err != nil {
 			return nil, err
 		}
 		o.Scope = scope
-		authOpts = o
+		opts = o
 	case AuthV3Token, AuthToken:
 		var o V3TokenOpts
 		if err := decode(m, &o); err != nil {
 			return nil, err
 		}
 		o.Scope = scope
-		authOpts = o
+		opts = o
 	case AuthV3ApplicationCredential:
 		var o V3ApplicationCredentialOpts
 		if err := decode(m, &o); err != nil {
 			return nil, err
 		}
-		authOpts = o
+		opts = o
 	default:
 		return nil, gophercloud.ErrUnsupportedAuthType{AuthType: string(authType)}
 	}
 
-	return &AuthOptionsV3{AuthURL: authURL, Auth: authOpts}, nil
+	ao := &AuthOptionsV3{
+		AuthURL: authURL,
+		Auth:    opts,
+	}
+
+	return ao, nil
 }
 
 // mergedAuth clones c.GetAuth() and overlays opts onto it, keyed the same
 // way clouds.yaml's auth: section is, and returns the merged map plus the
 // resolved auth_url.
 func mergedAuth(c CloudSource, opts []CloudOption) (map[string]any, string) {
-	src := c.GetAuth()
+	src := c.GetAuthData()
 	m := make(map[string]any, len(src)+1)
 	maps.Copy(m, src)
 
@@ -345,7 +324,7 @@ func coalesce(items ...string) string {
 // decode marshals m to JSON and unmarshals it into target, relying on
 // target's json tags to pick out the fields it cares about (extra keys
 // in m that target has no matching field for are ignored).
-func decode(m map[string]any, target any) error {
+func decode(m map[string]any, target AuthOptionsBuilder) error {
 	b, err := json.Marshal(m)
 	if err != nil {
 		return err
