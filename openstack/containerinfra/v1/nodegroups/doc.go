@@ -6,12 +6,12 @@ so the cluster UUID/name is required as a parameter in each method.
 
 Create a client to use:
 
-	opts, err := openstack.AuthOptionsFromEnv()
+	opts, err := auth.AuthOptionsFromEnv()
 	if err != nil {
 	    panic(err)
 	}
 
-	provider, err := openstack.AuthenticatedClientWithAuthOptions(context.TODO(), opts)
+	provider, err := openstack.AuthenticatedClient(context.TODO(), opts)
 	if err != nil {
 	    panic(err)
 	}

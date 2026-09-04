@@ -11,16 +11,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
-const (
-	// v2 represents Keystone v2.
-	// It should never increase beyond 2.0.
-	v2 = "v2.0"
-
-	// v3 represents Keystone v3.
-	// The version can be anything from v3 to v3.x.
-	v3 = "v3"
-)
-
 // NewClient prepares an unauthenticated ProviderClient instance.
 // Most users will probably prefer using the AuthenticatedClient function
 // instead.
