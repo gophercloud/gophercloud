@@ -84,6 +84,7 @@ func TestAuthenticatedClientCanReauthWiresReauthFunc(t *testing.T) {
 			Username:       "me",
 			Password:       "secret",
 			UserDomainName: "default",
+			AllowReauth:    true,
 		},
 	}
 	client, err := openstack.AuthenticatedClient(context.TODO(), options)
@@ -150,6 +151,7 @@ func TestAuthenticatedClientReauthenticatesOn401AndRefreshesEndpointLocator(t *t
 			Username:       "me",
 			Password:       "secret",
 			UserDomainName: "default",
+			AllowReauth:    true,
 		},
 	}
 	client, err := openstack.AuthenticatedClient(context.TODO(), options)
