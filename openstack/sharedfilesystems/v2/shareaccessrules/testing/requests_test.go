@@ -34,7 +34,7 @@ func TestGet(t *testing.T) {
 		State:       "error",
 		AccessLevel: "rw",
 		ID:          "507bf114-36f2-4f56-8cf4-857985ca87c1",
-		Metadata: map[string]any{
+		Metadata: map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 		},

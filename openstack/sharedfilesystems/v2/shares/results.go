@@ -282,7 +282,6 @@ type AccessRight struct {
 	// The access rule ID.
 	ID string `json:"id"`
 	// Access rule metadata.
-	//
 	// Requires microversion 2.45 or later.
 	Metadata map[string]string `json:"metadata,omitempty"`
 }

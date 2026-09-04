@@ -132,7 +132,7 @@ func TestShareAccessRulesMetadata(t *testing.T) {
 		t.Fatalf("Unable to grant access to share %s: %v", share.ID, err)
 	}
 
-	th.AssertDeepEquals(t, map[string]any{"key1": "value1"}, addedAccessRight.Metadata)
+	th.AssertDeepEquals(t, map[string]string{"key1": "value1"}, addedAccessRight.Metadata)
 
 	addedShareAccess := AccessRightToShareAccess(addedAccessRight)
 
@@ -162,7 +162,7 @@ func TestShareAccessRulesMetadata(t *testing.T) {
 
 	// key1 was set at creation time and must still be present; key2 was
 	// added via UpdateMetadata, which only touches the keys it is given.
-	th.AssertDeepEquals(t, map[string]any{"key1": "value1", "key2": "value2"}, accessRule.Metadata)
+	th.AssertDeepEquals(t, map[string]string{"key1": "value1", "key2": "value2"}, accessRule.Metadata)
 
 	err = shareaccessrules.DeleteMetadatum(context.TODO(), client, addedAccessRight.ID, "key1").ExtractErr()
 	if err != nil {
@@ -174,5 +174,5 @@ func TestShareAccessRulesMetadata(t *testing.T) {
 		t.Fatalf("Unable to get share access rule for share %s: %v", share.ID, err)
 	}
 
-	th.AssertDeepEquals(t, map[string]any{"key2": "value2"}, accessRule.Metadata)
+	th.AssertDeepEquals(t, map[string]string{"key2": "value2"}, accessRule.Metadata)
 }

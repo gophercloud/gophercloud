@@ -233,7 +233,6 @@ type GrantAccessOpts struct {
 	// The access level to the share is either "rw" or "ro".
 	AccessLevel string `json:"access_level"`
 	// One or more access rule metadata key and value pairs as a dictionary of strings.
-	//
 	// Requires microversion 2.45 or later.
 	Metadata map[string]string `json:"metadata,omitempty"`
 }
