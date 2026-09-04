@@ -521,6 +521,119 @@ func TestCloudOptionOverrides(t *testing.T) {
 	})
 }
 
+func TestAuthOptionsFromCloudVersionAgnosticAuthType(t *testing.T) {
+	t.Run("AuthPassword with IdentityAPIVersion 2.0 resolves to V2", func(t *testing.T) {
+		cloud := clouds.Cloud{
+			AuthType:           clouds.AuthPassword,
+			IdentityAPIVersion: "2.0",
+			AuthInfo: &clouds.AuthInfo{
+				AuthURL:  "http://example.com:5000",
+				Username: "testuser",
+				Password: "testpass",
+			},
+		}
+
+		opts, err := auth.AuthOptionsFromCloud(cloud)
+		th.AssertNoErr(t, err)
+
+		v2Opts, ok := opts.(*auth.AuthOptionsV2)
+		th.AssertEquals(t, true, ok)
+		th.AssertDeepEquals(t, auth.V2PasswordOpts{Username: "testuser", Password: "testpass"}, v2Opts.Auth)
+	})
+
+	t.Run("AuthPassword without IdentityAPIVersion resolves to V3", func(t *testing.T) {
+		cloud := clouds.Cloud{
+			AuthType: clouds.AuthPassword,
+			AuthInfo: &clouds.AuthInfo{
+				AuthURL:  "http://example.com:5000",
+				Username: "testuser",
+				Password: "testpass",
+			},
+		}
+
+		opts, err := auth.AuthOptionsFromCloud(cloud)
+		th.AssertNoErr(t, err)
+
+		v3Opts, ok := opts.(*auth.AuthOptionsV3)
+		th.AssertEquals(t, true, ok)
+		th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, v3Opts.Auth)
+	})
+
+	t.Run("AuthToken with IdentityAPIVersion 2.0 resolves to V2", func(t *testing.T) {
+		cloud := clouds.Cloud{
+			AuthType:           clouds.AuthToken,
+			IdentityAPIVersion: "2.0",
+			AuthInfo: &clouds.AuthInfo{
+				AuthURL: "http://example.com:5000",
+				Token:   "testtoken",
+			},
+		}
+
+		opts, err := auth.AuthOptionsFromCloud(cloud)
+		th.AssertNoErr(t, err)
+
+		v2Opts, ok := opts.(*auth.AuthOptionsV2)
+		th.AssertEquals(t, true, ok)
+		th.AssertDeepEquals(t, auth.V2TokenOpts{Token: "testtoken"}, v2Opts.Auth)
+	})
+
+	t.Run("AuthToken without IdentityAPIVersion resolves to V3", func(t *testing.T) {
+		cloud := clouds.Cloud{
+			AuthType: clouds.AuthToken,
+			AuthInfo: &clouds.AuthInfo{
+				AuthURL: "http://example.com:5000",
+				Token:   "testtoken",
+			},
+		}
+
+		opts, err := auth.AuthOptionsFromCloud(cloud)
+		th.AssertNoErr(t, err)
+
+		v3Opts, ok := opts.(*auth.AuthOptionsV3)
+		th.AssertEquals(t, true, ok)
+		th.AssertDeepEquals(t, auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}}, v3Opts.Auth)
+	})
+}
+
+func TestAuthOptionsFromCloudAuthTypeOverridesIdentityAPIVersion(t *testing.T) {
+	t.Run("explicit AuthV3Password overrides IdentityAPIVersion 2.0", func(t *testing.T) {
+		cloud := clouds.Cloud{
+			AuthType:           clouds.AuthV3Password,
+			IdentityAPIVersion: "2.0",
+			AuthInfo: &clouds.AuthInfo{
+				AuthURL:  "http://example.com:5000",
+				Username: "testuser",
+				Password: "testpass",
+			},
+		}
+
+		opts, err := auth.AuthOptionsFromCloud(cloud)
+		th.AssertNoErr(t, err)
+
+		v3Opts, ok := opts.(*auth.AuthOptionsV3)
+		th.AssertEquals(t, true, ok)
+		th.AssertDeepEquals(t, auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}}, v3Opts.Auth)
+	})
+
+	t.Run("explicit AuthV2Password takes precedence when IdentityAPIVersion is unset", func(t *testing.T) {
+		cloud := clouds.Cloud{
+			AuthType: clouds.AuthV2Password,
+			AuthInfo: &clouds.AuthInfo{
+				AuthURL:  "http://example.com:5000",
+				Username: "testuser",
+				Password: "testpass",
+			},
+		}
+
+		opts, err := auth.AuthOptionsFromCloud(cloud)
+		th.AssertNoErr(t, err)
+
+		v2Opts, ok := opts.(*auth.AuthOptionsV2)
+		th.AssertEquals(t, true, ok)
+		th.AssertDeepEquals(t, auth.V2PasswordOpts{Username: "testuser", Password: "testpass"}, v2Opts.Auth)
+	})
+}
+
 // ExampleWithUsername demonstrates overriding the username read from a
 // clouds.Cloud at authenticate time. Moved here from
 // openstack/config/clouds/clouds_test.go's ExampleUserID, since
