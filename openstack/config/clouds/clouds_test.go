@@ -17,7 +17,7 @@ func ExampleWithCloudName() {
     auth:
       auth_url: https://example.com:13000`
 
-	ao, _, _, err := clouds.Parse(
+	cloud, _, _, err := clouds.Parse(
 		clouds.WithCloudsYAML(strings.NewReader(exampleClouds)),
 		clouds.WithCloudName("openstack"),
 	)
@@ -25,27 +25,8 @@ func ExampleWithCloudName() {
 		panic(err)
 	}
 
-	fmt.Println(ao.IdentityEndpoint)
+	fmt.Println(cloud.AuthInfo.AuthURL)
 	// Output: https://example.com:13000
-}
-
-func ExampleWithUserID() {
-	const exampleClouds = `clouds:
-  openstack:
-    auth:
-      auth_url: https://example.com:13000`
-
-	ao, _, _, err := clouds.Parse(
-		clouds.WithCloudsYAML(strings.NewReader(exampleClouds)),
-		clouds.WithCloudName("openstack"),
-		clouds.WithUsername("Kris"),
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(ao.Username)
-	// Output: Kris
 }
 
 func ExampleWithRegion() {
@@ -114,18 +95,18 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unable to create a mock secure.yaml file: %v", err)
 		}
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-12345:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-12345:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := ao.Username; got != "gophercloud-test-username" {
+		if got := cloud.AuthInfo.Username; got != "gophercloud-test-username" {
 			t.Errorf("unexpected username: %q", got)
 		}
 	})
@@ -161,7 +142,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unable to create a mock clouds.yaml file in path %q: %v", cloudsPath2, err)
 		}
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 			clouds.WithLocations(cloudsPath1, cloudsPath2),
 		)
@@ -169,7 +150,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -218,14 +199,14 @@ func TestParse(t *testing.T) {
 		t.Setenv("XDG_CONFIG_HOME", xdgDir)
 		t.Setenv("OS_CLIENT_CONFIG_FILE", "")
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/xdg-config:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/xdg-config:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -275,14 +256,14 @@ func TestParse(t *testing.T) {
 		t.Setenv("HOME", homeDir)
 		t.Setenv("OS_CLIENT_CONFIG_FILE", "")
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/home-config:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/home-config:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -324,7 +305,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unable to create a mock clouds.yaml file in path %q: %v", cloudsPath2, err)
 		}
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 			clouds.WithLocations(cloudsPath0, cloudsPath1, cloudsPath2),
 		)
@@ -332,7 +313,7 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
@@ -365,18 +346,18 @@ func TestParse(t *testing.T) {
 		err = os.WriteFile("clouds-public.yaml", []byte(cloudsPublicYAML), 0644)
 		th.AssertNoErr(t, err)
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test-0"),
 		)
 		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := ao.DomainName; got != "CustomDomain" {
-			t.Errorf("unexpected DomainName: %q", got)
+		if got := cloud.AuthInfo.UserDomainName; got != "CustomDomain" {
+			t.Errorf("unexpected UserDomainName: %q", got)
 		}
 	})
 	t.Run("parses clouds-public.yaml locations in order", func(t *testing.T) {
@@ -412,19 +393,19 @@ func TestParse(t *testing.T) {
 		err = os.WriteFile(publicPath2, []byte(cloudsPublicYAML2), 0644)
 		th.AssertNoErr(t, err)
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test-0"),
 			clouds.WithPublicLocations(publicPath1, publicPath2),
 		)
 		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := ao.DomainName; got != "CustomDomain" {
-			t.Errorf("unexpected DomainName: %q", got)
+		if got := cloud.AuthInfo.UserDomainName; got != "CustomDomain" {
+			t.Errorf("unexpected UserDomainName: %q", got)
 		}
 	})
 	t.Run("fall back to next location if clouds-public.yaml is not found", func(t *testing.T) {
@@ -465,19 +446,19 @@ func TestParse(t *testing.T) {
 		err = os.WriteFile(publicPath2, []byte(cloudsPublicYAML2), 0644)
 		th.AssertNoErr(t, err)
 
-		ao, _, _, err := clouds.Parse(
+		cloud, _, _, err := clouds.Parse(
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test-0"),
 			clouds.WithPublicLocations(publicPath0, publicPath1, publicPath2),
 		)
 		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
+		if got := cloud.AuthInfo.AuthURL; got != "https://example.com/gophercloud-test-1:13000" {
 			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 
-		if got := ao.DomainName; got != "CustomDomain" {
-			t.Errorf("unexpected DomainName: %q", got)
+		if got := cloud.AuthInfo.UserDomainName; got != "CustomDomain" {
+			t.Errorf("unexpected UserDomainName: %q", got)
 		}
 	})
 }
