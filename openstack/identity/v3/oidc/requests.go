@@ -224,7 +224,7 @@ func fetchAccessToken(ctx context.Context, c *gophercloud.ServiceClient, opts *A
 	req.Header.Set("Accept", "application/json")
 
 	if opts.ClientSecret != "" {
-		req.SetBasicAuth(opts.ClientID, opts.ClientSecret)
+		req.SetBasicAuth(url.QueryEscape(opts.ClientID), url.QueryEscape(opts.ClientSecret))
 	}
 
 	httpClient := c.HTTPClient
