@@ -45,6 +45,20 @@ Example to get a host
 
 	fmt.Printf("%+v\n", host)
 
+Example to update the extra capabilities of a host
+
+	updateOpts := hosts.UpdateOpts{
+		ExtraCapabilities: map[string]any{
+			"gpu":  "h100",
+			"rack": nil,
+		},
+	}
+
+	host, err := hosts.Update(context.TODO(), reservationClient, "18", updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to delete a host
 
 	err := hosts.Delete(context.TODO(), reservationClient, "18").ExtractErr()

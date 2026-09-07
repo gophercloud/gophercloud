@@ -3,6 +3,7 @@ package hosts
 import (
 	"context"
 	"fmt"
+	"maps"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -89,6 +90,45 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, opts CreateO
 // Get retrieves a specific compute host based on its unique ID.
 func Get(ctx context.Context, client *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := client.Get(ctx, getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateOptsBuilder allows extensions to add parameters to the Update request.
+type UpdateOptsBuilder interface {
+	ToHostUpdateMap() (map[string]any, error)
+}
+
+// UpdateOpts specifies the parameters for updating a host. Only the extra
+// capabilities of a host can be changed.
+type UpdateOpts struct {
+	// ExtraCapabilities holds the operator-defined capabilities to set on the host.
+	ExtraCapabilities map[string]any
+}
+
+// ToHostUpdateMap formats an UpdateOpts into a request body.
+func (opts UpdateOpts) ToHostUpdateMap() (map[string]any, error) {
+	if len(opts.ExtraCapabilities) == 0 {
+		return nil, gophercloud.ErrMissingInput{Argument: "ExtraCapabilities"}
+	}
+
+	b := make(map[string]any, len(opts.ExtraCapabilities))
+	maps.Copy(b, opts.ExtraCapabilities)
+
+	return b, nil
+}
+
+// Update changes the extra capabilities of a compute host.
+func Update(ctx context.Context, client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToHostUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Put(ctx, updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

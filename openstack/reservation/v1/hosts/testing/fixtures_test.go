@@ -117,6 +117,66 @@ const HostCreateResult = `
 }
 `
 
+const HostUpdateRequest = `
+{
+  "gpu": "h100"
+}
+`
+
+const HostUpdateResult = `
+{
+  "host": {
+    "id": "18",
+    "vcpus": 20,
+    "cpu_info": "{\"arch\": \"x86_64\", \"model\": \"Broadwell-IBRS\", \"vendor\": \"Intel\", \"topology\": {\"cells\": 2, \"sockets\": 1, \"cores\": 10, \"threads\": 1}, \"maxphysaddr\": {\"mode\": \"emulate\", \"bits\": 46}, \"features\": [\"lm\", \"pcid\", \"sse4.2\", \"arat\", \"fpu\", \"ssbd\", \"md-clear\", \"acpi\", \"sse2\", \"fsgsbase\", \"sse4.1\", \"pae\", \"smap\", \"invpcid\", \"pge\", \"movbe\", \"tsc\", \"mtrr\", \"f16c\", \"vme\", \"tsc_adjust\", \"msr\", \"monitor\", \"ds_cpl\", \"est\", \"syscall\", \"avx\", \"nx\", \"adx\", \"clflush\", \"pni\", \"lahf_lm\", \"hle\", \"pdcm\", \"pat\", \"fxsr\", \"bmi1\", \"de\", \"bmi2\", \"popcnt\", \"mmx\", \"tm\", \"smep\", \"pse\", \"pbe\", \"apic\", \"fma\", \"rdseed\", \"smx\", \"sep\", \"xsave\", \"ssse3\", \"cmov\", \"mce\", \"ds\", \"abm\", \"stibp\", \"sse\", \"invtsc\", \"spec-ctrl\", \"xtpr\", \"ss\", \"pclmuldq\", \"avx2\", \"xsaveopt\", \"erms\", \"3dnowprefetch\", \"intel-pt\", \"aes\", \"rdtscp\", \"cx8\", \"tsc-deadline\", \"rtm\", \"mca\", \"pse36\", \"ht\", \"rdrand\", \"vmx\", \"flush-l1d\", \"dtes64\", \"dca\", \"cx16\", \"tm2\", \"x2apic\", \"pdpe1gb\"]}",
+    "hypervisor_type": "QEMU",
+    "hypervisor_version": 9000000,
+    "hypervisor_hostname": "compute-1.example.com",
+    "service_name": "compute-1.example.com",
+    "memory_mb": 128297,
+    "local_gb": 793,
+    "status": null,
+    "availability_zone": "nova",
+    "trust_id": "e07b8b0f5c1e4b4a9d3e2c1f0a9b8c7d",
+    "reservable": true,
+    "created_at": "2026-05-27 13:01:19",
+    "updated_at": "2026-05-28 09:12:44",
+    "gpu": "h100",
+    "rack": "b12"
+  }
+}
+`
+
+// Blazar removes an extra capability when its value is explicitly null.
+const HostRemoveCapabilityRequest = `
+{
+  "gpu": null
+}
+`
+
+const HostRemoveCapabilityResult = `
+{
+  "host": {
+    "id": "18",
+    "vcpus": 20,
+    "cpu_info": "{\"arch\": \"x86_64\", \"model\": \"Broadwell-IBRS\", \"vendor\": \"Intel\", \"topology\": {\"cells\": 2, \"sockets\": 1, \"cores\": 10, \"threads\": 1}, \"maxphysaddr\": {\"mode\": \"emulate\", \"bits\": 46}, \"features\": [\"lm\", \"pcid\", \"sse4.2\", \"arat\", \"fpu\", \"ssbd\", \"md-clear\", \"acpi\", \"sse2\", \"fsgsbase\", \"sse4.1\", \"pae\", \"smap\", \"invpcid\", \"pge\", \"movbe\", \"tsc\", \"mtrr\", \"f16c\", \"vme\", \"tsc_adjust\", \"msr\", \"monitor\", \"ds_cpl\", \"est\", \"syscall\", \"avx\", \"nx\", \"adx\", \"clflush\", \"pni\", \"lahf_lm\", \"hle\", \"pdcm\", \"pat\", \"fxsr\", \"bmi1\", \"de\", \"bmi2\", \"popcnt\", \"mmx\", \"tm\", \"smep\", \"pse\", \"pbe\", \"apic\", \"fma\", \"rdseed\", \"smx\", \"sep\", \"xsave\", \"ssse3\", \"cmov\", \"mce\", \"ds\", \"abm\", \"stibp\", \"sse\", \"invtsc\", \"spec-ctrl\", \"xtpr\", \"ss\", \"pclmuldq\", \"avx2\", \"xsaveopt\", \"erms\", \"3dnowprefetch\", \"intel-pt\", \"aes\", \"rdtscp\", \"cx8\", \"tsc-deadline\", \"rtm\", \"mca\", \"pse36\", \"ht\", \"rdrand\", \"vmx\", \"flush-l1d\", \"dtes64\", \"dca\", \"cx16\", \"tm2\", \"x2apic\", \"pdpe1gb\"]}",
+    "hypervisor_type": "QEMU",
+    "hypervisor_version": 9000000,
+    "hypervisor_hostname": "compute-1.example.com",
+    "service_name": "compute-1.example.com",
+    "memory_mb": 128297,
+    "local_gb": 793,
+    "status": null,
+    "availability_zone": "nova",
+    "trust_id": "e07b8b0f5c1e4b4a9d3e2c1f0a9b8c7d",
+    "reservable": true,
+    "created_at": "2026-05-27 13:01:19",
+    "updated_at": "2026-05-28 09:12:44",
+    "rack": "b12"
+  }
+}
+`
+
 // CPUInfo is a sample cpu_info string.
 const CPUInfo = `{"arch": "x86_64", "model": "Broadwell-IBRS", "vendor": "Intel", "topology": {"cells": 2, "sockets": 1, "cores": 10, "threads": 1}, "maxphysaddr": {"mode": "emulate", "bits": 46}, "features": ["lm", "pcid", "sse4.2", "arat", "fpu", "ssbd", "md-clear", "acpi", "sse2", "fsgsbase", "sse4.1", "pae", "smap", "invpcid", "pge", "movbe", "tsc", "mtrr", "f16c", "vme", "tsc_adjust", "msr", "monitor", "ds_cpl", "est", "syscall", "avx", "nx", "adx", "clflush", "pni", "lahf_lm", "hle", "pdcm", "pat", "fxsr", "bmi1", "de", "bmi2", "popcnt", "mmx", "tm", "smep", "pse", "pbe", "apic", "fma", "rdseed", "smx", "sep", "xsave", "ssse3", "cmov", "mce", "ds", "abm", "stibp", "sse", "invtsc", "spec-ctrl", "xtpr", "ss", "pclmuldq", "avx2", "xsaveopt", "erms", "3dnowprefetch", "intel-pt", "aes", "rdtscp", "cx8", "tsc-deadline", "rtm", "mca", "pse36", "ht", "rdrand", "vmx", "flush-l1d", "dtes64", "dca", "cx16", "tm2", "x2apic", "pdpe1gb"]}`
 
@@ -189,6 +249,34 @@ func HandleCreateHost(t *testing.T, fakeServer th.FakeServer) {
 			w.WriteHeader(http.StatusCreated)
 
 			fmt.Fprint(w, HostCreateResult)
+		})
+}
+
+func HandleUpdateHost(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/18",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestJSONRequest(t, r, HostUpdateRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, HostUpdateResult)
+		})
+}
+
+func HandleRemoveHostCapability(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/18",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestJSONRequest(t, r, HostRemoveCapabilityRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, HostRemoveCapabilityResult)
 		})
 }
 
