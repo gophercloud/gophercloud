@@ -21,7 +21,7 @@ func TestChooseVersion(t *testing.T) {
 		IdentityBase:     fakeServer.Endpoint(),
 		IdentityEndpoint: "",
 	}
-	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
+	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3}) //nolint
 
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
@@ -49,7 +49,7 @@ func TestChooseVersionOpinionatedLink(t *testing.T) {
 		IdentityBase:     fakeServer.Endpoint(),
 		IdentityEndpoint: fakeServer.Endpoint() + "v2.0/",
 	}
-	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
+	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3}) //nolint
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
 	}
@@ -75,7 +75,7 @@ func TestChooseVersionFromSuffix(t *testing.T) {
 		IdentityBase:     fakeServer.Endpoint(),
 		IdentityEndpoint: fakeServer.Endpoint() + "v2.0/",
 	}
-	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3})
+	v, endpoint, err := utils.ChooseVersion(context.TODO(), c, []*utils.Version{v2, v3}) //nolint
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
 	}
