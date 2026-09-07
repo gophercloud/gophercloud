@@ -88,46 +88,32 @@ func TestParse(t *testing.T) {
       username: gophercloud-test-username`
 
 		tmpDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(tmpDir)
 
 		cwd, err := os.Getwd()
-		if err != nil {
-			t.Fatalf("unable to determine the current working directory: %v", err)
-		}
-		if err := os.Chdir(tmpDir); err != nil {
-			t.Fatalf("unable to move to a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
+		err = os.Chdir(tmpDir)
+		th.AssertNoErr(t, err)
 		defer func() {
 			if err := os.Chdir(cwd); err != nil {
 				panic("unable to reset the current working directory: " + err.Error())
 			}
 		}()
 
-		if err := os.WriteFile("clouds.yaml", []byte(cloudsYAML), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file: %v", err)
-		}
+		err = os.WriteFile("clouds.yaml", []byte(cloudsYAML), 0644)
+		th.AssertNoErr(t, err)
 
-		if err := os.WriteFile("secure.yaml", []byte(secureYAML), 0644); err != nil {
-			t.Fatalf("unable to create a mock secure.yaml file: %v", err)
-		}
+		err = os.WriteFile("secure.yaml", []byte(secureYAML), 0644)
+		th.AssertNoErr(t, err)
 
 		ao, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-12345:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
-
-		if got := ao.Username; got != "gophercloud-test-username" {
-			t.Errorf("unexpected username: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/gophercloud-test-12345:13000", ao.IdentityEndpoint)
+		th.AssertEquals(t, "gophercloud-test-username", ao.Username)
 	})
 
 	t.Run("parses the locations in order", func(t *testing.T) {
@@ -141,37 +127,27 @@ func TestParse(t *testing.T) {
       auth_url: https://example.com/gophercloud-test-2:13000`
 
 		tmpDir1, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(tmpDir1)
 
 		tmpDir2, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(tmpDir2)
 
 		cloudsPath1, cloudsPath2 := path.Join(tmpDir1, "clouds.yaml"), path.Join(tmpDir2, "clouds.yaml")
 
-		if err := os.WriteFile(cloudsPath1, []byte(cloudsYAML1), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file in path %q: %v", cloudsPath1, err)
-		}
-		if err := os.WriteFile(cloudsPath2, []byte(cloudsYAML2), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file in path %q: %v", cloudsPath2, err)
-		}
+		err = os.WriteFile(cloudsPath1, []byte(cloudsYAML1), 0644)
+		th.AssertNoErr(t, err)
+		err = os.WriteFile(cloudsPath2, []byte(cloudsYAML2), 0644)
+		th.AssertNoErr(t, err)
 
 		ao, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 			clouds.WithLocations(cloudsPath1, cloudsPath2),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/gophercloud-test-1:13000", ao.IdentityEndpoint)
 	})
 
 	t.Run("uses XDG_CONFIG_HOME for clouds.yaml location", func(t *testing.T) {
@@ -182,33 +158,24 @@ func TestParse(t *testing.T) {
 
 		// Create a temp dir to use as XDG_CONFIG_HOME with clouds.yaml inside.
 		xdgDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(xdgDir)
 
 		openstackDir := path.Join(xdgDir, "openstack")
-		if err := os.MkdirAll(openstackDir, 0755); err != nil {
-			t.Fatalf("unable to create openstack config directory: %v", err)
-		}
-		if err := os.WriteFile(path.Join(openstackDir, "clouds.yaml"), []byte(cloudsYAML), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file: %v", err)
-		}
+		err = os.MkdirAll(openstackDir, 0755)
+		th.AssertNoErr(t, err)
+		err = os.WriteFile(path.Join(openstackDir, "clouds.yaml"), []byte(cloudsYAML), 0644)
+		th.AssertNoErr(t, err)
 
 		// Change to an empty temp dir so cwd has no clouds.yaml.
 		emptyDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(emptyDir)
 
 		cwd, err := os.Getwd()
-		if err != nil {
-			t.Fatalf("unable to determine the current working directory: %v", err)
-		}
-		if err := os.Chdir(emptyDir); err != nil {
-			t.Fatalf("unable to move to a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
+		err = os.Chdir(emptyDir)
+		th.AssertNoErr(t, err)
 		defer func() {
 			if err := os.Chdir(cwd); err != nil {
 				panic("unable to reset the current working directory: " + err.Error())
@@ -221,13 +188,9 @@ func TestParse(t *testing.T) {
 		ao, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/xdg-config:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/xdg-config:13000", ao.IdentityEndpoint)
 	})
 
 	t.Run("falls back to ~/.config when XDG_CONFIG_HOME is not set", func(t *testing.T) {
@@ -238,33 +201,24 @@ func TestParse(t *testing.T) {
 
 		// Create a temp dir to use as HOME with clouds.yaml in .config/openstack/.
 		homeDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(homeDir)
 
 		openstackDir := path.Join(homeDir, ".config", "openstack")
-		if err := os.MkdirAll(openstackDir, 0755); err != nil {
-			t.Fatalf("unable to create openstack config directory: %v", err)
-		}
-		if err := os.WriteFile(path.Join(openstackDir, "clouds.yaml"), []byte(cloudsYAML), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file: %v", err)
-		}
+		err = os.MkdirAll(openstackDir, 0755)
+		th.AssertNoErr(t, err)
+		err = os.WriteFile(path.Join(openstackDir, "clouds.yaml"), []byte(cloudsYAML), 0644)
+		th.AssertNoErr(t, err)
 
 		// Change to an empty temp dir so cwd has no clouds.yaml.
 		emptyDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(emptyDir)
 
 		cwd, err := os.Getwd()
-		if err != nil {
-			t.Fatalf("unable to determine the current working directory: %v", err)
-		}
-		if err := os.Chdir(emptyDir); err != nil {
-			t.Fatalf("unable to move to a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
+		err = os.Chdir(emptyDir)
+		th.AssertNoErr(t, err)
 		defer func() {
 			if err := os.Chdir(cwd); err != nil {
 				panic("unable to reset the current working directory: " + err.Error())
@@ -278,13 +232,9 @@ func TestParse(t *testing.T) {
 		ao, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/home-config:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/home-config:13000", ao.IdentityEndpoint)
 	})
 
 	t.Run("falls back to the next location if clouds.yaml is not found", func(t *testing.T) {
@@ -298,43 +248,31 @@ func TestParse(t *testing.T) {
       auth_url: https://example.com/gophercloud-test-2:13000`
 
 		tmpDir0, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(tmpDir0)
 
 		tmpDir1, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(tmpDir1)
 
 		tmpDir2, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
-		if err != nil {
-			t.Fatalf("unable to create a temporary directory: %v", err)
-		}
+		th.AssertNoErr(t, err)
 		defer rmTmpDirOrPanic(tmpDir2)
 
 		cloudsPath0, cloudsPath1, cloudsPath2 := path.Join(tmpDir0, "clouds.yaml"), path.Join(tmpDir1, "clouds.yaml"), path.Join(tmpDir2, "clouds.yaml")
 
-		if err := os.WriteFile(cloudsPath1, []byte(cloudsYAML1), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file in path %q: %v", cloudsPath1, err)
-		}
-		if err := os.WriteFile(cloudsPath2, []byte(cloudsYAML2), 0644); err != nil {
-			t.Fatalf("unable to create a mock clouds.yaml file in path %q: %v", cloudsPath2, err)
-		}
+		err = os.WriteFile(cloudsPath1, []byte(cloudsYAML1), 0644)
+		th.AssertNoErr(t, err)
+		err = os.WriteFile(cloudsPath2, []byte(cloudsYAML2), 0644)
+		th.AssertNoErr(t, err)
 
 		ao, _, _, err := clouds.Parse(
 			clouds.WithCloudName("gophercloud-test"),
 			clouds.WithLocations(cloudsPath0, cloudsPath1, cloudsPath2),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/gophercloud-test-1:13000", ao.IdentityEndpoint)
 	})
 
 	t.Run("parses clouds-public.yaml if present", func(t *testing.T) {
@@ -342,12 +280,12 @@ func TestParse(t *testing.T) {
   gophercloud-test-0:
     cloud: gophercloud-test-1
     auth:
-      user_domain_name: CustomDomain`
+      domain_name: CustomDomain`
 		const cloudsPublicYAML = `public-clouds:
   gophercloud-test-1:
     auth:
       auth_url: https://example.com/gophercloud-test-1:13000
-      user_domain_name: Default`
+      domain_name: Default`
 
 		tmpDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
 		th.AssertNoErr(t, err)
@@ -371,20 +309,15 @@ func TestParse(t *testing.T) {
 		)
 		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
-
-		if got := ao.DomainName; got != "CustomDomain" {
-			t.Errorf("unexpected DomainName: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/gophercloud-test-1:13000", ao.IdentityEndpoint)
+		th.AssertEquals(t, "CustomDomain", ao.DomainName)
 	})
 	t.Run("parses clouds-public.yaml locations in order", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test-0:
     cloud: gophercloud-test-1
     auth:
-      user_domain_name: CustomDomain`
+      domain_name: CustomDomain`
 		const cloudsPublicYAML1 = `public-clouds:
   gophercloud-test-1:
     auth:
@@ -419,20 +352,15 @@ func TestParse(t *testing.T) {
 		)
 		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
-
-		if got := ao.DomainName; got != "CustomDomain" {
-			t.Errorf("unexpected DomainName: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/gophercloud-test-1:13000", ao.IdentityEndpoint)
+		th.AssertEquals(t, "CustomDomain", ao.DomainName)
 	})
 	t.Run("fall back to next location if clouds-public.yaml is not found", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test-0:
     cloud: gophercloud-test-1
     auth:
-      user_domain_name: CustomDomain`
+      domain_name: CustomDomain`
 		const cloudsPublicYAML1 = `public-clouds:
   gophercloud-test-1:
     auth:
@@ -472,13 +400,8 @@ func TestParse(t *testing.T) {
 		)
 		th.AssertNoErr(t, err)
 
-		if got := ao.IdentityEndpoint; got != "https://example.com/gophercloud-test-1:13000" {
-			t.Errorf("unexpected identity endpoint: %q", got)
-		}
-
-		if got := ao.DomainName; got != "CustomDomain" {
-			t.Errorf("unexpected DomainName: %q", got)
-		}
+		th.AssertEquals(t, "https://example.com/gophercloud-test-1:13000", ao.IdentityEndpoint)
+		th.AssertEquals(t, "CustomDomain", ao.DomainName)
 	})
 
 	t.Run("supports user in one domain and project in another domain using names", func(t *testing.T) {
@@ -496,28 +419,14 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.Username; got != "myuser" {
-			t.Errorf("unexpected username: %q", got)
-		}
-		if got := ao.DomainName; got != "Default" {
-			t.Errorf("unexpected user domain name: %q, expected 'Default'", got)
-		}
-		if got := ao.TenantName; got != "myproject" {
-			t.Errorf("unexpected project name: %q", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.ProjectName; got != "myproject" {
-			t.Errorf("unexpected scope project name: %q", got)
-		}
-		if got := ao.Scope.DomainName; got != "some_domain" {
-			t.Errorf("unexpected scope domain name: %q, expected 'some_domain'", got)
-		}
+		th.AssertEquals(t, "myuser", ao.Username)
+		th.AssertEquals(t, "", ao.DomainName)
+		th.AssertEquals(t, "myproject", ao.TenantName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "myproject", ao.Scope.ProjectName)
+		th.AssertEquals(t, "some_domain", ao.Scope.DomainName)
 	})
 
 	t.Run("supports user in one domain and project in another domain using IDs", func(t *testing.T) {
@@ -535,32 +444,18 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.Username; got != "myuser" {
-			t.Errorf("unexpected username: %q", got)
-		}
-		if got := ao.DomainID; got != "default-domain-id" {
-			t.Errorf("unexpected user domain ID: %q, expected 'default-domain-id'", got)
-		}
-		if got := ao.TenantID; got != "project-123" {
-			t.Errorf("unexpected project ID: %q", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.ProjectID; got != "project-123" {
-			t.Errorf("unexpected scope project ID: %q", got)
-		}
+		th.AssertEquals(t, "myuser", ao.Username)
+		th.AssertEquals(t, "", ao.DomainID)
+		th.AssertEquals(t, "project-123", ao.TenantID)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "project-123", ao.Scope.ProjectID)
 		// When using project_id, the domain is not needed in scope
-		if ao.Scope.DomainID != "" {
-			t.Errorf("expected scope domain ID to be empty when using project_id, got: %q", ao.Scope.DomainID)
-		}
+		th.AssertEquals(t, "", ao.Scope.DomainID)
 	})
 
-	t.Run("falls back to domain_name for both user and project when specific domains not set", func(t *testing.T) {
+	t.Run("domain_name sets user identity but does not fall back to project scope", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test:
     auth:
@@ -574,28 +469,16 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.Username; got != "myuser" {
-			t.Errorf("unexpected username: %q", got)
-		}
-		if got := ao.DomainName; got != "shared-domain" {
-			t.Errorf("unexpected user domain name: %q, expected 'shared-domain'", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.ProjectName; got != "myproject" {
-			t.Errorf("unexpected scope project name: %q", got)
-		}
-		if got := ao.Scope.DomainName; got != "shared-domain" {
-			t.Errorf("unexpected scope domain name: %q, expected 'shared-domain'", got)
-		}
+		th.AssertEquals(t, "myuser", ao.Username)
+		th.AssertEquals(t, "shared-domain", ao.DomainName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "myproject", ao.Scope.ProjectName)
+		th.AssertEquals(t, "", ao.Scope.DomainName)
 	})
 
-	t.Run("user_domain_name takes precedence over domain_name for user identity", func(t *testing.T) {
+	t.Run("domain_name sets user identity and user_domain_name is not used", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test:
     auth:
@@ -610,19 +493,11 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.DomainName; got != "user-specific-domain" {
-			t.Errorf("unexpected user domain name: %q, expected 'user-specific-domain'", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.DomainName; got != "fallback-domain" {
-			t.Errorf("unexpected scope domain name: %q, expected 'fallback-domain'", got)
-		}
+		th.AssertEquals(t, "fallback-domain", ao.DomainName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "", ao.Scope.DomainName)
 	})
 
 	t.Run("project_domain_name takes precedence over domain_name for project scope", func(t *testing.T) {
@@ -640,19 +515,11 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.DomainName; got != "fallback-domain" {
-			t.Errorf("unexpected user domain name: %q, expected 'fallback-domain'", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.DomainName; got != "project-specific-domain" {
-			t.Errorf("unexpected scope domain name: %q, expected 'project-specific-domain'", got)
-		}
+		th.AssertEquals(t, "fallback-domain", ao.DomainName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "project-specific-domain", ao.Scope.DomainName)
 	})
 
 	t.Run("project_id scoping does not require domain information", func(t *testing.T) {
@@ -669,20 +536,12 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.ProjectID; got != "unique-project-id-123" {
-			t.Errorf("unexpected scope project ID: %q", got)
-		}
-		if ao.Scope.DomainID != "" || ao.Scope.DomainName != "" {
-			t.Errorf("expected no domain information in scope when using project_id, got DomainID=%q, DomainName=%q",
-				ao.Scope.DomainID, ao.Scope.DomainName)
-		}
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "unique-project-id-123", ao.Scope.ProjectID)
+		th.AssertEquals(t, "", ao.Scope.DomainID)
+		th.AssertEquals(t, "", ao.Scope.DomainName)
 	})
 
 	t.Run("supports system_scope: all for system-level operations", func(t *testing.T) {
@@ -699,26 +558,14 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.Username; got != "admin" {
-			t.Errorf("unexpected username: %q", got)
-		}
-		if got := ao.DomainName; got != "Default" {
-			t.Errorf("unexpected user domain name: %q", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if !ao.Scope.System {
-			t.Error("expected Scope.System to be true")
-		}
-		if ao.Scope.ProjectID != "" || ao.Scope.ProjectName != "" {
-			t.Errorf("expected no project information in system scope, got ProjectID=%q, ProjectName=%q",
-				ao.Scope.ProjectID, ao.Scope.ProjectName)
-		}
+		th.AssertEquals(t, "admin", ao.Username)
+		th.AssertEquals(t, "", ao.DomainName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertTrue(t, ao.Scope.System)
+		th.AssertEquals(t, "", ao.Scope.ProjectID)
+		th.AssertEquals(t, "", ao.Scope.ProjectName)
 	})
 
 	t.Run("system_scope takes precedence over project scope", func(t *testing.T) {
@@ -737,19 +584,11 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if !ao.Scope.System {
-			t.Error("expected Scope.System to be true")
-		}
-		if ao.Scope.ProjectName != "" {
-			t.Errorf("expected project_name to be ignored when system_scope is set, got: %q", ao.Scope.ProjectName)
-		}
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertTrue(t, ao.Scope.System)
+		th.AssertEquals(t, "", ao.Scope.ProjectName)
 	})
 
 	t.Run("fails system_scope when value is not all", func(t *testing.T) {
@@ -768,9 +607,7 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err == nil {
-			t.Fatalf("an error expected, got nil")
-		}
+		th.AssertErr(t, err)
 	})
 
 	t.Run("supports domain scoping by domain_id when no project specified", func(t *testing.T) {
@@ -787,26 +624,14 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.Username; got != "domainadmin" {
-			t.Errorf("unexpected username: %q", got)
-		}
-		if got := ao.DomainName; got != "Default" {
-			t.Errorf("unexpected user domain name: %q", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.DomainID; got != "domain-123" {
-			t.Errorf("unexpected scope domain ID: %q, expected 'domain-123'", got)
-		}
-		if ao.Scope.ProjectID != "" || ao.Scope.ProjectName != "" {
-			t.Errorf("expected no project in domain scope, got ProjectID=%q, ProjectName=%q",
-				ao.Scope.ProjectID, ao.Scope.ProjectName)
-		}
+		th.AssertEquals(t, "domainadmin", ao.Username)
+		th.AssertEquals(t, "", ao.DomainName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "domain-123", ao.Scope.DomainID)
+		th.AssertEquals(t, "", ao.Scope.ProjectID)
+		th.AssertEquals(t, "", ao.Scope.ProjectName)
 	})
 
 	t.Run("supports domain scoping by domain_name when no project specified", func(t *testing.T) {
@@ -823,26 +648,14 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.Username; got != "domainadmin" {
-			t.Errorf("unexpected username: %q", got)
-		}
-		if got := ao.DomainName; got != "UserDomain" {
-			t.Errorf("unexpected user domain name: %q, expected 'UserDomain'", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.DomainName; got != "ScopeDomain" {
-			t.Errorf("unexpected scope domain name: %q, expected 'ScopeDomain'", got)
-		}
-		if ao.Scope.ProjectID != "" || ao.Scope.ProjectName != "" {
-			t.Errorf("expected no project in domain scope, got ProjectID=%q, ProjectName=%q",
-				ao.Scope.ProjectID, ao.Scope.ProjectName)
-		}
+		th.AssertEquals(t, "domainadmin", ao.Username)
+		th.AssertEquals(t, "ScopeDomain", ao.DomainName)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "ScopeDomain", ao.Scope.DomainName)
+		th.AssertEquals(t, "", ao.Scope.ProjectID)
+		th.AssertEquals(t, "", ao.Scope.ProjectName)
 	})
 
 	t.Run("project scope takes precedence over domain scope", func(t *testing.T) {
@@ -861,19 +674,11 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.ProjectName; got != "myproject" {
-			t.Errorf("expected project scope, got ProjectName=%q", got)
-		}
-		if got := ao.Scope.DomainName; got != "ProjectDomain" {
-			t.Errorf("expected project domain in scope, got DomainName=%q", got)
-		}
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "myproject", ao.Scope.ProjectName)
+		th.AssertEquals(t, "ProjectDomain", ao.Scope.DomainName)
 	})
 
 	t.Run("domain scoping with user_domain_id and domain_id", func(t *testing.T) {
@@ -890,18 +695,10 @@ func TestParse(t *testing.T) {
 			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
 			clouds.WithCloudName("gophercloud-test"),
 		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		th.AssertNoErr(t, err)
 
-		if got := ao.DomainID; got != "user-domain-id-123" {
-			t.Errorf("unexpected user domain ID: %q, expected 'user-domain-id-123'", got)
-		}
-		if ao.Scope == nil {
-			t.Fatal("expected Scope to be set")
-		}
-		if got := ao.Scope.DomainID; got != "scope-domain-id-456" {
-			t.Errorf("unexpected scope domain ID: %q, expected 'scope-domain-id-456'", got)
-		}
+		th.AssertEquals(t, "scope-domain-id-456", ao.DomainID)
+		th.AssertTrue(t, ao.Scope != nil)
+		th.AssertEquals(t, "scope-domain-id-456", ao.Scope.DomainID)
 	})
 }
