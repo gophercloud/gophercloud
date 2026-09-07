@@ -21,5 +21,14 @@ Example to list hosts
 	for _, h := range allHosts {
 		fmt.Printf("%+v\n", h)
 	}
+
+Example to get a host
+
+	host, err := hosts.Get(context.TODO(), reservationClient, "18").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", host)
 */
 package hosts
