@@ -18,7 +18,7 @@ func TestHostsList(t *testing.T) {
 	client, err := clients.NewReservationV1Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := hosts.List(client).AllPages(context.TODO())
+	allPages, err := hosts.List(client, hosts.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	allHosts, err := hosts.ExtractHosts(allPages)
