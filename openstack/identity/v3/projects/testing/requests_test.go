@@ -175,3 +175,36 @@ func TestDeleteTags(t *testing.T) {
 	err := projects.DeleteTags(context.TODO(), client.ServiceClient(fakeServer), "966b3c7d36a24facaf20b7e458bf2192").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestCheckTag(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCheckProjectTagSuccessfully(t)
+
+	projectID := "966b3c7d36a24facaf20b7e458bf2192"
+	tag := "atag"
+	err := projects.CheckTag(context.TODO(), client.ServiceClient(), projectID, tag).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestAddTag(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAddProjectTagSuccessfully(t)
+
+	projectID := "966b3c7d36a24facaf20b7e458bf2192"
+	tag := "atag"
+	err := projects.AddTag(context.TODO(), client.ServiceClient(), projectID, tag).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteTag(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteProjectTagSuccessfully(t)
+
+	projectID := "966b3c7d36a24facaf20b7e458bf2192"
+	tag := "atag"
+	err := projects.DeleteTag(context.TODO(), client.ServiceClient(), projectID, tag).ExtractErr()
+	th.AssertNoErr(t, err)
+}
