@@ -15,7 +15,7 @@ func TestListHosts(t *testing.T) {
 
 	HandleListHosts(t, fakeServer)
 
-	allPages, err := hosts.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
+	allPages, err := hosts.List(client.ServiceClient(fakeServer), hosts.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := hosts.ExtractHosts(allPages)
@@ -34,7 +34,7 @@ func TestListHostsWithCapabilities(t *testing.T) {
 
 	HandleListHostsWithCapabilities(t, fakeServer)
 
-	allPages, err := hosts.List(client.ServiceClient(fakeServer)).AllPages(context.TODO())
+	allPages, err := hosts.List(client.ServiceClient(fakeServer), hosts.ListOpts{}).AllPages(context.TODO())
 	th.AssertNoErr(t, err)
 
 	actual, err := hosts.ExtractHosts(allPages)

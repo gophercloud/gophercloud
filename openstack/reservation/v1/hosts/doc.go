@@ -6,7 +6,9 @@ on it. Listing the freepool is administrative.
 
 Example to list hosts
 
-	allPages, err := hosts.List(reservationClient).AllPages(context.TODO())
+	listOpts := hosts.ListOpts{}
+
+	allPages, err := hosts.List(reservationClient, listOpts).AllPages(context.TODO())
 	if err != nil {
 		panic(err)
 	}
