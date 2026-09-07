@@ -27,6 +27,42 @@ func TestListHosts(t *testing.T) {
 	th.AssertEquals(t, true, actual[0].UpdatedAt == nil)
 }
 
+func TestCreateHost(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleCreateHost(t, fakeServer)
+
+	createOpts := hosts.CreateOpts{
+		Name: "compute-1.example.com",
+		ExtraCapabilities: map[string]any{
+			"gpu":  "a100",
+			"rack": "b12",
+		},
+	}
+
+	actual, err := hosts.Create(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, &ExpectedHostWithCapabilities, actual)
+}
+
+// Blazar requires a name, so the request should not reach the server without one.
+func TestCreateHostWithoutName(t *testing.T) {
+	_, err := hosts.CreateOpts{}.ToHostCreateMap()
+	th.AssertEquals(t, true, err != nil)
+}
+
+// An extra capability must not be able to overwrite a host field.
+func TestCreateHostCapabilityCollision(t *testing.T) {
+	createOpts := hosts.CreateOpts{
+		Name:              "compute-1.example.com",
+		ExtraCapabilities: map[string]any{"name": "somethingelse"},
+	}
+
+	_, err := createOpts.ToHostCreateMap()
+	th.AssertEquals(t, true, err != nil)
+}
+
 func TestGetHost(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
