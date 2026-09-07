@@ -78,10 +78,10 @@ func TestHostsCRUD(t *testing.T) {
 	th.AssertEquals(t, "h100", updatedHost.ExtraCapabilities["gpu"])
 }
 
-// Blazar removes an extra capability when it is updated to null. This requires
-// the 2026.2 release or later.
+// Blazar removes an extra capability when it is updated to null.
 func TestHostsRemoveCapability(t *testing.T) {
 	clients.RequireAdmin(t)
+	clients.SkipReleasesBelow(t, "stable/2026.2")
 
 	client, err := clients.NewReservationV1Client()
 	th.AssertNoErr(t, err)
