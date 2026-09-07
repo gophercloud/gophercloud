@@ -22,6 +22,20 @@ Example to list hosts
 		fmt.Printf("%+v\n", h)
 	}
 
+Example to create a host
+
+	createOpts := hosts.CreateOpts{
+		Name: "compute-1.example.com",
+		ExtraCapabilities: map[string]any{
+			"gpu": "a100",
+		},
+	}
+
+	host, err := hosts.Create(context.TODO(), reservationClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to get a host
 
 	host, err := hosts.Get(context.TODO(), reservationClient, "18").Extract()

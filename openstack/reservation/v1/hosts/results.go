@@ -27,6 +27,12 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult is the response from a Create operation. Call its Extract
+// method to interpret it as a Host.
+type CreateResult struct {
+	commonResult
+}
+
 // Host represents a compute host enrolled in the Blazar freepool.
 type Host struct {
 	// ID is the unique identifier of the host within Blazar. It is distinct
