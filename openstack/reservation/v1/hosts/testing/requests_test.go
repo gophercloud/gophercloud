@@ -74,6 +74,16 @@ func TestGetHost(t *testing.T) {
 	th.AssertDeepEquals(t, &ExpectedHostWithCapabilities, actual)
 }
 
+func TestDeleteHost(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleDeleteHost(t, fakeServer)
+
+	err := hosts.Delete(context.TODO(), client.ServiceClient(fakeServer), "18").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 // Blazar flattens extra capabilities into the host object.
 func TestListHostsWithCapabilities(t *testing.T) {
 	fakeServer := th.SetupHTTP()

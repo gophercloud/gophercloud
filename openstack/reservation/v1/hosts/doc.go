@@ -44,5 +44,12 @@ Example to get a host
 	}
 
 	fmt.Printf("%+v\n", host)
+
+Example to delete a host
+
+	err := hosts.Delete(context.TODO(), reservationClient, "18").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package hosts

@@ -192,6 +192,16 @@ func HandleCreateHost(t *testing.T, fakeServer th.FakeServer) {
 		})
 }
 
+func HandleDeleteHost(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/18",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
 func HandleGetHost(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/os-hosts/18",
 		func(w http.ResponseWriter, r *http.Request) {

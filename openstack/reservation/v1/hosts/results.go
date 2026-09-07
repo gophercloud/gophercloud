@@ -33,6 +33,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr
+// method to determine whether the request succeeded.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Host represents a compute host enrolled in the Blazar freepool.
 type Host struct {
 	// ID is the unique identifier of the host within Blazar. It is distinct
