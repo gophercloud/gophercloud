@@ -33,6 +33,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a Host.
+type UpdateResult struct {
+	commonResult
+}
+
 // DeleteResult is the response from a Delete operation. Call its ExtractErr
 // method to determine whether the request succeeded.
 type DeleteResult struct {

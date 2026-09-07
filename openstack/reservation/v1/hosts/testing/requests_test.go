@@ -74,6 +74,47 @@ func TestGetHost(t *testing.T) {
 	th.AssertDeepEquals(t, &ExpectedHostWithCapabilities, actual)
 }
 
+func TestUpdateHost(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleUpdateHost(t, fakeServer)
+
+	updateOpts := hosts.UpdateOpts{
+		ExtraCapabilities: map[string]any{"gpu": "h100"},
+	}
+
+	actual, err := hosts.Update(context.TODO(), client.ServiceClient(fakeServer), "18", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "h100", actual.ExtraCapabilities["gpu"])
+	th.AssertEquals(t, false, actual.UpdatedAt == nil)
+}
+
+// A nil capability must reach Blazar as an explicit null, which removes it.
+func TestUpdateHostRemoveCapability(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleRemoveHostCapability(t, fakeServer)
+
+	updateOpts := hosts.UpdateOpts{
+		ExtraCapabilities: map[string]any{"gpu": nil},
+	}
+
+	actual, err := hosts.Update(context.TODO(), client.ServiceClient(fakeServer), "18", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	_, ok := actual.ExtraCapabilities["gpu"]
+	th.AssertEquals(t, false, ok)
+	th.AssertEquals(t, "b12", actual.ExtraCapabilities["rack"])
+}
+
+// Blazar rejects an empty body, so the request should not be sent at all.
+func TestUpdateHostWithoutCapabilities(t *testing.T) {
+	_, err := hosts.UpdateOpts{}.ToHostUpdateMap()
+	th.AssertEquals(t, true, err != nil)
+}
+
 func TestDeleteHost(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
