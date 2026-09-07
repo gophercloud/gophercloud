@@ -54,6 +54,18 @@ type UpdateResult struct {
 
 // Quota contains Networking quotas for a project.
 type Quota struct {
+	// BGPVPN represents a number of BGP VPNs. A "-1" value means no limit.
+	BGPVPN int `json:"bgpvpn"`
+
+	// FirewallGroup represents a number of firewall groups. A "-1" value means no limit.
+	FirewallGroup int `json:"firewall_group"`
+
+	// FirewallPolicy represents a number of firewall policies. A "-1" value means no limit.
+	FirewallPolicy int `json:"firewall_policy"`
+
+	// FirewallRule represents a number of firewall rules. A "-1" value means no limit.
+	FirewallRule int `json:"firewall_rule"`
+
 	// FloatingIP represents a number of floating IPs. A "-1" value means no limit.
 	FloatingIP int `json:"floatingip"`
 
@@ -88,6 +100,18 @@ type Quota struct {
 // QuotaDetailSet represents details of both operational limits of Networking resources for a project
 // and the current usage of those resources.
 type QuotaDetailSet struct {
+	// BGPVPN represents a number of BGP VPNs. A "-1" value means no limit.
+	BGPVPN QuotaDetail `json:"bgpvpn"`
+
+	// FirewallGroup represents a number of firewall groups. A "-1" value means no limit.
+	FirewallGroup QuotaDetail `json:"firewall_group"`
+
+	// FirewallPolicy represents a number of firewall policies. A "-1" value means no limit.
+	FirewallPolicy QuotaDetail `json:"firewall_policy"`
+
+	// FirewallRule represents a number of firewall rules. A "-1" value means no limit.
+	FirewallRule QuotaDetail `json:"firewall_rule"`
+
 	// FloatingIP represents a number of floating IPs. A "-1" value means no limit.
 	FloatingIP QuotaDetail `json:"floatingip"`
 

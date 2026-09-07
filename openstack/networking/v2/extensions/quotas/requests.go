@@ -28,6 +28,18 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents options used to update the Networking Quotas.
 type UpdateOpts struct {
+	// BGPVPN represents a number of BGP VPNs. A "-1" value means no limit.
+	BGPVPN *int `json:"bgpvpn,omitempty"`
+
+	// FirewallGroup represents a number of firewall groups. A "-1" value means no limit.
+	FirewallGroup *int `json:"firewall_group,omitempty"`
+
+	// FirewallPolicy represents a number of firewall policies. A "-1" value means no limit.
+	FirewallPolicy *int `json:"firewall_policy,omitempty"`
+
+	// FirewallRule represents a number of firewall rules. A "-1" value means no limit.
+	FirewallRule *int `json:"firewall_rule,omitempty"`
+
 	// FloatingIP represents a number of floating IPs. A "-1" value means no limit.
 	FloatingIP *int `json:"floatingip,omitempty"`
 
