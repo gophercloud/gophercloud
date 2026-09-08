@@ -20,19 +20,19 @@ type BandwidthLimitRulesListOptsBuilder interface {
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
 type BandwidthLimitRulesListOpts struct {
-	ID           string `q:"id"`
-	TenantID     string `q:"tenant_id"`
-	MaxKBps      int    `q:"max_kbps"`
-	MaxBurstKBps int    `q:"max_burst_kbps"`
-	Direction    string `q:"direction"`
-	Limit        int    `q:"limit"`
-	Marker       string `q:"marker"`
-	SortKey      string `q:"sort_key"`
-	SortDir      string `q:"sort_dir"`
-	Tags         string `q:"tags"`
-	TagsAny      string `q:"tags-any"`
-	NotTags      string `q:"not-tags"`
-	NotTagsAny   string `q:"not-tags-any"`
+	ID           string   `q:"id"`
+	TenantID     string   `q:"tenant_id"`
+	MaxKBps      int      `q:"max_kbps"`
+	MaxBurstKBps int      `q:"max_burst_kbps"`
+	Direction    string   `q:"direction"`
+	Limit        int      `q:"limit"`
+	Marker       string   `q:"marker"`
+	SortKey      string   `q:"sort_key"`
+	SortDir      string   `q:"sort_dir"`
+	Tags         []string `q:"tags" format:"comma-separated"`
+	TagsAny      []string `q:"tags-any" format:"comma-separated"`
+	NotTags      []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny   []string `q:"not-tags-any" format:"comma-separated"`
 }
 
 // ToBandwidthLimitRulesListQuery formats a ListOpts into a query string.
@@ -160,17 +160,17 @@ type DSCPMarkingRulesListOptsBuilder interface {
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
 type DSCPMarkingRulesListOpts struct {
-	ID         string `q:"id"`
-	TenantID   string `q:"tenant_id"`
-	DSCPMark   int    `q:"dscp_mark"`
-	Limit      int    `q:"limit"`
-	Marker     string `q:"marker"`
-	SortKey    string `q:"sort_key"`
-	SortDir    string `q:"sort_dir"`
-	Tags       string `q:"tags"`
-	TagsAny    string `q:"tags-any"`
-	NotTags    string `q:"not-tags"`
-	NotTagsAny string `q:"not-tags-any"`
+	ID         string   `q:"id"`
+	TenantID   string   `q:"tenant_id"`
+	DSCPMark   int      `q:"dscp_mark"`
+	Limit      int      `q:"limit"`
+	Marker     string   `q:"marker"`
+	SortKey    string   `q:"sort_key"`
+	SortDir    string   `q:"sort_dir"`
+	Tags       []string `q:"tags" format:"comma-separated"`
+	TagsAny    []string `q:"tags-any" format:"comma-separated"`
+	NotTags    []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny []string `q:"not-tags-any" format:"comma-separated"`
 }
 
 // ToDSCPMarkingRulesListQuery formats a ListOpts into a query string.
@@ -286,18 +286,18 @@ type MinimumBandwidthRulesListOptsBuilder interface {
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
 type MinimumBandwidthRulesListOpts struct {
-	ID         string `q:"id"`
-	TenantID   string `q:"tenant_id"`
-	MinKBps    int    `q:"min_kbps"`
-	Direction  string `q:"direction"`
-	Limit      int    `q:"limit"`
-	Marker     string `q:"marker"`
-	SortKey    string `q:"sort_key"`
-	SortDir    string `q:"sort_dir"`
-	Tags       string `q:"tags"`
-	TagsAny    string `q:"tags-any"`
-	NotTags    string `q:"not-tags"`
-	NotTagsAny string `q:"not-tags-any"`
+	ID         string   `q:"id"`
+	TenantID   string   `q:"tenant_id"`
+	MinKBps    int      `q:"min_kbps"`
+	Direction  string   `q:"direction"`
+	Limit      int      `q:"limit"`
+	Marker     string   `q:"marker"`
+	SortKey    string   `q:"sort_key"`
+	SortDir    string   `q:"sort_dir"`
+	Tags       []string `q:"tags" format:"comma-separated"`
+	TagsAny    []string `q:"tags-any" format:"comma-separated"`
+	NotTags    []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny []string `q:"not-tags-any" format:"comma-separated"`
 }
 
 // ToMinimumBandwidthRulesListQuery formats a ListOpts into a query string.
