@@ -15,8 +15,8 @@ type ListOptsBuilder interface {
 }
 
 // ListOpts allows the filtering of paginated collections through the API.
-//
-// Blazar accepts query parameters on this endpoint but ignores them. It returns every host.
+// Blazar accepts query parameters on this endpoint but ignores them and
+// returns every host.
 type ListOpts struct{}
 
 // ToHostListQuery formats a ListOpts into a query string.
