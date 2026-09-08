@@ -58,6 +58,9 @@ type Endpoint struct {
 	// Region is the region the Endpoint is located in.
 	Region string `json:"region"`
 
+	// RegionID is the ID of the region the Endpoint is located in.
+	RegionID string `json:"region_id"`
+
 	// ServiceID is the ID of the service the Endpoint refers to.
 	ServiceID string `json:"service_id"`
 
