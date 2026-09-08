@@ -33,6 +33,7 @@ func AccessRightToShareAccess(accessRight *shares.AccessRight) *shareaccessrules
 		AccessLevel: accessRight.AccessLevel,
 		State:       accessRight.State,
 		ID:          accessRight.ID,
+		Metadata:    accessRight.Metadata,
 	}
 }
 

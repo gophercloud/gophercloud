@@ -15,3 +15,11 @@ func getURL(c *gophercloud.ServiceClient, accessID string) string {
 func listURL(c *gophercloud.ServiceClient, shareID string) string {
 	return fmt.Sprintf("%s?share_id=%s", c.ServiceURL(shareAccessRulesEndpoint), shareID)
 }
+
+func metadataURL(c *gophercloud.ServiceClient, accessID string) string {
+	return c.ServiceURL(shareAccessRulesEndpoint, accessID, "metadata")
+}
+
+func metadatumURL(c *gophercloud.ServiceClient, accessID, key string) string {
+	return c.ServiceURL(shareAccessRulesEndpoint, accessID, "metadata", key)
+}
