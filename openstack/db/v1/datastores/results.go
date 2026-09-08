@@ -1,15 +1,54 @@
 package datastores
 
 import (
+	"encoding/json"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
+// PackageList represents packages associated with a datastore version.
+type PackageList []string
+
+// UnmarshalJSON supports Trove responses that may return packages as either a
+// list or a single string.
+func (r *PackageList) UnmarshalJSON(b []byte) error {
+	var packages []string
+	if err := json.Unmarshal(b, &packages); err == nil {
+		*r = packages
+		return nil
+	}
+
+	var pkg string
+	if err := json.Unmarshal(b, &pkg); err != nil {
+		return err
+	}
+	if pkg == "" {
+		*r = nil
+		return nil
+	}
+
+	*r = []string{pkg}
+	return nil
+}
+
 // Version represents a version API resource. Multiple versions belong to a Datastore.
 type Version struct {
-	ID    string
-	Links []gophercloud.Link
-	Name  string
+	Active           bool
+	Datastore        string
+	DatastoreID      string `json:"datastore_id"`
+	DatastoreManager string `json:"datastore_manager"`
+	DatastoreName    string `json:"datastore_name"`
+	Default          bool
+	ID               string
+	Image            string
+	ImageTags        []string `json:"image_tags"`
+	Links            []gophercloud.Link
+	Name             string
+	Packages         PackageList
+	RegistryExt      string `json:"registry_ext"`
+	ReplStrategy     string `json:"repl_strategy"`
+	Version          string
 }
 
 // Datastore represents a Datastore API resource.
@@ -38,6 +77,21 @@ type GetResult struct {
 // GetVersionResult represents the result of getting a version.
 type GetVersionResult struct {
 	gophercloud.Result
+}
+
+// CreateVersionResult represents the result of creating a version.
+type CreateVersionResult struct {
+	gophercloud.Result
+}
+
+// UpdateVersionResult represents the result of updating a version.
+type UpdateVersionResult struct {
+	gophercloud.Result
+}
+
+// DeleteVersionResult represents the result of deleting a version.
+type DeleteVersionResult struct {
+	gophercloud.ErrResult
 }
 
 // DatastorePage represents a page of datastore resources.
@@ -100,6 +154,24 @@ func ExtractVersions(r pagination.Page) ([]Version, error) {
 
 // Extract retrieves a single Version struct from an operation result.
 func (r GetVersionResult) Extract() (*Version, error) {
+	var s struct {
+		Version *Version `json:"version"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Version, err
+}
+
+// Extract retrieves a single Version struct from a create result.
+func (r CreateVersionResult) Extract() (*Version, error) {
+	var s struct {
+		Version *Version `json:"version"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Version, err
+}
+
+// Extract retrieves a single Version struct from an update result.
+func (r UpdateVersionResult) Extract() (*Version, error) {
 	var s struct {
 		Version *Version `json:"version"`
 	}

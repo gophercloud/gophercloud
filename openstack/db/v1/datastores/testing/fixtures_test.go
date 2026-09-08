@@ -41,6 +41,60 @@ const version2JSON = `
 }
 `
 
+const createVersionReq = `
+{
+	"version": {
+		"datastore_name": "mysql",
+		"datastore_manager": "mysql",
+		"name": "mysql-5.7",
+		"image_tags": ["trove", "mysql"],
+		"active": true,
+		"default": false,
+		"packages": ["mysql-server"],
+		"version": "5.7.30"
+	}
+}
+`
+
+const createdVersionJSON = `
+{
+	"active": true,
+	"datastore_id": "10000000-0000-0000-0000-000000000001",
+	"datastore_manager": "mysql",
+	"datastore_name": "mysql",
+	"default": false,
+	"id": "b00000b0-00b0-0b00-00b0-000b000000bb",
+	"image": "",
+	"image_tags": ["trove", "mysql"],
+	"name": "mysql-5.7",
+	"packages": ["mysql-server"],
+	"version": "5.7.30"
+}
+`
+
+const updateVersionReq = `
+{
+	"name": "mysql-5.7-updated",
+	"active": true
+}
+`
+
+const updatedVersionJSON = `
+{
+	"active": true,
+	"datastore_id": "10000000-0000-0000-0000-000000000001",
+	"datastore_manager": "mysql",
+	"datastore_name": "mysql",
+	"default": false,
+	"id": "b00000b0-00b0-0b00-00b0-000b000000bb",
+	"image": "",
+	"image_tags": ["trove", "mysql"],
+	"name": "mysql-5.7-updated",
+	"packages": ["mysql-server"],
+	"version": "5.7.30"
+}
+`
+
 var versionsJSON = fmt.Sprintf(`"versions": [%s, %s]`, version1JSON, version2JSON)
 
 var singleDSJSON = fmt.Sprintf(`
@@ -63,10 +117,13 @@ var singleDSJSON = fmt.Sprintf(`
 `, versionsJSON)
 
 var (
-	ListDSResp       = fmt.Sprintf(`{"datastores":[%s]}`, singleDSJSON)
-	GetDSResp        = fmt.Sprintf(`{"datastore":%s}`, singleDSJSON)
-	ListVersionsResp = fmt.Sprintf(`{%s}`, versionsJSON)
-	GetVersionResp   = fmt.Sprintf(`{"version":%s}`, version1JSON)
+	ListDSResp          = fmt.Sprintf(`{"datastores":[%s]}`, singleDSJSON)
+	GetDSResp           = fmt.Sprintf(`{"datastore":%s}`, singleDSJSON)
+	ListVersionsResp    = fmt.Sprintf(`{%s}`, versionsJSON)
+	GetVersionResp      = fmt.Sprintf(`{"version":%s}`, version1JSON)
+	CreateVersionResp   = fmt.Sprintf(`{"version":%s}`, createdVersionJSON)
+	ListAllVersionsResp = fmt.Sprintf(`{"versions":[%s]}`, createdVersionJSON)
+	UpdateVersionResp   = fmt.Sprintf(`{"version":%s}`, updatedVersionJSON)
 )
 
 var ExampleVersion1 = datastores.Version{
@@ -88,6 +145,30 @@ var exampleVersion2 = datastores.Version{
 }
 
 var ExampleVersions = []datastores.Version{ExampleVersion1, exampleVersion2}
+
+var ExampleCreatedVersion = datastores.Version{
+	Active:           true,
+	DatastoreID:      "10000000-0000-0000-0000-000000000001",
+	DatastoreManager: "mysql",
+	DatastoreName:    "mysql",
+	ID:               "b00000b0-00b0-0b00-00b0-000b000000bb",
+	ImageTags:        []string{"trove", "mysql"},
+	Name:             "mysql-5.7",
+	Packages:         datastores.PackageList{"mysql-server"},
+	Version:          "5.7.30",
+}
+
+var ExampleUpdatedVersion = datastores.Version{
+	Active:           true,
+	DatastoreID:      "10000000-0000-0000-0000-000000000001",
+	DatastoreManager: "mysql",
+	DatastoreName:    "mysql",
+	ID:               "b00000b0-00b0-0b00-00b0-000b000000bb",
+	ImageTags:        []string{"trove", "mysql"},
+	Name:             "mysql-5.7-updated",
+	Packages:         datastores.PackageList{"mysql-server"},
+	Version:          "5.7.30",
+}
 
 var ExampleDatastore = datastores.Datastore{
 	DefaultVersion: "c00000b0-00c0-0c00-00c0-000b000000cc",
