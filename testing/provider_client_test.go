@@ -267,9 +267,6 @@ func TestConcurrentReauth(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
 	reqopts.KeepResponseBody = true
-	reqopts.MoreHeaders = map[string]string{
-		"X-Auth-Token": prereauthTok,
-	}
 
 	for i := 0; i < numconc; i++ {
 		wg.Add(1)
@@ -444,9 +441,6 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
 	reqopts.KeepResponseBody = true
-	reqopts.MoreHeaders = map[string]string{
-		"X-Auth-Token": prereauthTok,
-	}
 
 	for i := 0; i < numconc; i++ {
 		wg.Add(1)

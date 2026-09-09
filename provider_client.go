@@ -419,6 +419,16 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	// Set the User-Agent header
 	req.Header.Set("User-Agent", client.UserAgent.Join())
 
+	// Keep the token snapshot for concurrent reauthentication, independent of
+	// any caller-provided authentication header.
+	authenticatedHeaders, prereqtok, err := client.authenticatedHeaders(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range authenticatedHeaders {
+		req.Header.Set(k, v)
+	}
+
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
 			req.Header.Set(k, v)
@@ -427,15 +437,6 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 
 	for _, v := range options.OmitHeaders {
 		req.Header.Del(v)
-	}
-
-	// get latest token from client
-	authenticatedHeaders, prereqtok, err := client.authenticatedHeaders(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range authenticatedHeaders {
-		req.Header.Set(k, v)
 	}
 
 	// Issue the request.
