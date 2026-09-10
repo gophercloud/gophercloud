@@ -657,6 +657,7 @@ func (pd PluginData) AsStandardData() (result inventory.StandardPluginData, err 
 // AsInspectorData interprets plugin data as coming from ironic-inspector.
 func (pd PluginData) AsInspectorData() (result introspection.Data, err error) {
 	err = json.Unmarshal(pd.RawMessage, &result)
+	result.Inventory.Compat()
 	return
 }
 
@@ -705,6 +706,7 @@ type InventoryResult struct {
 func (r InventoryResult) Extract() (*InventoryData, error) {
 	var data InventoryData
 	err := r.ExtractInto(&data)
+	data.Inventory.Compat()
 	return &data, err
 }
 
