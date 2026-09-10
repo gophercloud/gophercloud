@@ -85,6 +85,38 @@ func TestCreateLoadbalancer(t *testing.T) {
 	th.CheckDeepEquals(t, LoadbalancerDb, *actual)
 }
 
+func TestCreateLoadbalancerWithVIPSecurityGroups(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleLoadbalancerCreationWithVIPSecurityGroupsSuccessfully(t, fakeServer, SingleLoadbalancerVIPSecGroupsBody)
+
+	expectedVIPSecGroupIDs := []string{
+		"7af5d90d-0abf-4f45-ae09-15f2fc9f4cc8",
+		"f4f6cf44-8360-448a-88e8-a27f8958f143",
+	}
+
+	actual, err := loadbalancers.Create(context.TODO(), fake.ServiceClient(fakeServer), loadbalancers.CreateOpts{
+		Name:           "db_lb",
+		AdminStateUp:   gophercloud.Enabled,
+		VipPortID:      "2bf413c8-41a9-4477-b505-333d5cbe8b55",
+		VipSubnetID:    "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
+		VipAddress:     "10.30.176.48",
+		VipSecGroupIDs: expectedVIPSecGroupIDs,
+		FlavorID:       "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
+		Provider:       "haproxy",
+		Tags:           []string{"test", "stage"},
+		AdditionalVips: []loadbalancers.AdditionalVip{
+			{
+				SubnetID:  "0d4f6a08-60b7-44ab-8903-f7d76ec54095",
+				IPAddress: "192.168.10.10",
+			},
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, expectedVIPSecGroupIDs, actual.VipSecGroupIDs)
+}
+
 func TestCreateFullyPopulatedLoadbalancer(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -197,6 +229,23 @@ func TestUpdateLoadbalancer(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, LoadbalancerUpdated, *actual)
+}
+
+func TestUpdateLoadbalancerClearVIPSecurityGroups(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleLoadbalancerUpdateClearVIPSecurityGroupsSuccessfully(t, fakeServer)
+
+	client := fake.ServiceClient(fakeServer)
+	vipSecGroupIDs := []string{}
+	actual, err := loadbalancers.Update(context.TODO(), client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
+		VipSecGroupIDs: &vipSecGroupIDs,
+	}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.AssertEquals(t, 0, len(actual.VipSecGroupIDs))
 }
 
 func TestCascadingDeleteLoadbalancer(t *testing.T) {
