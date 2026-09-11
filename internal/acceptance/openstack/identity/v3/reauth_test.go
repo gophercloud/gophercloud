@@ -6,6 +6,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -17,10 +18,8 @@ import (
 func TestReauthAuthResultDeadlock(t *testing.T) {
 	clients.RequireAdmin(t)
 
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
-
-	ao.AllowReauth = true
 
 	provider, err := openstack.AuthenticatedClient(context.TODO(), ao)
 	th.AssertNoErr(t, err)
