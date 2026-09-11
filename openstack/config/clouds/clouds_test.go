@@ -340,7 +340,7 @@ func TestParse(t *testing.T) {
 	t.Run("parses clouds-public.yaml if present", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test-0:
-    cloud: gophercloud-test-1
+    profile: gophercloud-test-1
     auth:
       user_domain_name: CustomDomain`
 		const cloudsPublicYAML = `public-clouds:
@@ -478,6 +478,43 @@ func TestParse(t *testing.T) {
 
 		if got := ao.DomainName; got != "CustomDomain" {
 			t.Errorf("unexpected DomainName: %q", got)
+		}
+	})
+
+	t.Run("don't read fs secure.yaml if WithCloudsYAML is set", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/clouds:13000`
+		const secureYAMLFS = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/secure:13000`
+
+		// Create a working dir to test if fs is read
+		wDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		th.AssertNoErr(t, err)
+		defer rmTmpDirOrPanic(wDir)
+
+		th.AssertNoErr(t, os.WriteFile(path.Join(wDir, "secure.yaml"), []byte(secureYAMLFS), 0644))
+
+		cwd, err := os.Getwd()
+		th.AssertNoErr(t, err)
+		th.AssertNoErr(t, os.Chdir(wDir))
+		defer func() {
+			if err := os.Chdir(cwd); err != nil {
+				panic("unable to reset the current working directory: " + err.Error())
+			}
+		}()
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		th.AssertNoErr(t, err)
+
+		if got := ao.IdentityEndpoint; got != "https://example.com/clouds:13000" {
+			t.Errorf("unexpected identity endpoint: %q", got)
 		}
 	})
 
