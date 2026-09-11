@@ -16,6 +16,25 @@ func TestInventory(t *testing.T) {
 		t.Fatalf("Failed to unmarshal inventory: %s", err)
 	}
 
+	output.Compat()
+	th.CheckDeepEquals(t, Inventory, output)
+}
+
+func TestFrequencyAsNumber(t *testing.T) {
+	var output inventory.InventoryType
+	sample := strings.Replace(InventorySample,
+		`"frequency": "2100.084"`,
+		`"frequency": 2100.084`, 1)
+	if sample == InventorySample {
+		t.Fatal("TestFrequencyAsNumber needs updating")
+	}
+
+	err := json.Unmarshal([]byte(sample), &output)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal inventory: %s", err)
+	}
+
+	output.Compat()
 	th.CheckDeepEquals(t, Inventory, output)
 }
 
