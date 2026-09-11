@@ -3,6 +3,7 @@ package testing
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -276,80 +277,46 @@ func TestCanReauth(t *testing.T) {
 	th.CheckEquals(t, false, opts.CanReauth())
 }
 
-func TestValidationMissingIdentityProvider(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
+func TestValidationMissingInput(t *testing.T) {
+	tests := []struct {
+		argument string
+		omit     func(*oidc.AuthOptions)
+	}{
+		{"IdentityProviderName", func(opts *oidc.AuthOptions) { opts.IdentityProviderName = "" }},
+		{"Protocol", func(opts *oidc.AuthOptions) { opts.Protocol = "" }},
+		{"ClientID", func(opts *oidc.AuthOptions) { opts.ClientID = "" }},
+		{"AccessTokenEndpoint/DiscoveryEndpoint", func(opts *oidc.AuthOptions) { opts.AccessTokenEndpoint = "" }},
 	}
-
-	opts := &oidc.AuthOptions{
-		Protocol:            "openid",
-		ClientID:            "my-client-id",
-		AccessTokenEndpoint: "https://idp.example.com/oauth2/token",
+	validators := map[string]func(*oidc.AuthOptions) error{
+		"ToTokenV3CreateMap": func(opts *oidc.AuthOptions) error {
+			_, err := opts.ToTokenV3CreateMap(nil)
+			return err
+		},
+		"Create": func(opts *oidc.AuthOptions) error {
+			return oidc.Create(context.Background(), nil, opts).Err
+		},
 	}
-
-	result := oidc.Create(context.TODO(), &client, opts)
-	th.AssertErr(t, result.Err)
-}
-
-func TestValidationMissingProtocol(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
+	for _, test := range tests {
+		t.Run(test.argument, func(t *testing.T) {
+			for name, validate := range validators {
+				t.Run(name, func(t *testing.T) {
+					opts := &oidc.AuthOptions{
+						IdentityProviderName: "my-idp",
+						Protocol:             "openid",
+						ClientID:             "my-client-id",
+						AccessTokenEndpoint:  "https://idp.example.com/oauth2/token",
+					}
+					test.omit(opts)
+					err := validate(opts)
+					var missing gophercloud.ErrMissingInput
+					if !errors.As(err, &missing) {
+						t.Fatalf("Expected ErrMissingInput, got %v", err)
+					}
+					th.CheckEquals(t, test.argument, missing.Argument)
+				})
+			}
+		})
 	}
-
-	opts := &oidc.AuthOptions{
-		IdentityProviderName: "my-idp",
-		ClientID:             "my-client-id",
-		AccessTokenEndpoint:  "https://idp.example.com/oauth2/token",
-	}
-
-	result := oidc.Create(context.TODO(), &client, opts)
-	th.AssertErr(t, result.Err)
-}
-
-func TestValidationMissingClientID(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
-	}
-
-	opts := &oidc.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		AccessTokenEndpoint:  "https://idp.example.com/oauth2/token",
-	}
-
-	result := oidc.Create(context.TODO(), &client, opts)
-	th.AssertErr(t, result.Err)
-}
-
-func TestValidationMissingAccessTokenEndpoint(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
-	}
-
-	opts := &oidc.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		ClientID:             "my-client-id",
-	}
-
-	result := oidc.Create(context.TODO(), &client, opts)
-	th.AssertErr(t, result.Err)
 }
 
 func TestCreateUnscopedWithDiscovery(t *testing.T) {
@@ -575,25 +542,6 @@ func TestDiscoveryInvalidJSON(t *testing.T) {
 	th.AssertErr(t, result.Err)
 }
 
-func TestValidationRequiresEndpointOrDiscovery(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
-	}
-
-	opts := &oidc.AuthOptions{
-		IdentityProviderName: "my-idp",
-		Protocol:             "openid",
-		ClientID:             "my-client-id",
-	}
-
-	result := oidc.Create(context.TODO(), &client, opts)
-	th.AssertErr(t, result.Err)
-}
-
 func TestValidationWrongOptionsType(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -782,12 +730,30 @@ func TestToTokenV3HeadersMap(t *testing.T) {
 }
 
 func TestToTokenV3CreateMap(t *testing.T) {
-	opts := &oidc.AuthOptions{}
-
-	body, err := opts.ToTokenV3CreateMap(nil)
-	th.AssertNoErr(t, err)
-	if body != nil {
-		t.Errorf("Expected nil body, got %v", body)
+	tests := []struct {
+		name      string
+		endpoint  string
+		discovery string
+	}{
+		{name: "explicit endpoint", endpoint: "https://idp.example.com/oauth2/token"},
+		{name: "discovery", discovery: "https://idp.example.com/.well-known/openid-configuration"},
+		{name: "both endpoints", endpoint: "https://idp.example.com/oauth2/token", discovery: "https://idp.example.com/.well-known/openid-configuration"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			opts := &oidc.AuthOptions{
+				IdentityProviderName: "my-idp",
+				Protocol:             "openid",
+				ClientID:             "my-client-id",
+				AccessTokenEndpoint:  test.endpoint,
+				DiscoveryEndpoint:    test.discovery,
+			}
+			body, err := opts.ToTokenV3CreateMap(nil)
+			th.AssertNoErr(t, err)
+			if body != nil {
+				t.Errorf("Expected nil body, got %v", body)
+			}
+		})
 	}
 }
 

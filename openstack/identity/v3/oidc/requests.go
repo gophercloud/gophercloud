@@ -22,19 +22,19 @@ type discoveryDocument struct {
 // AuthOptions contains OIDC client-credentials authentication options.
 type AuthOptions struct {
 	// IdentityProviderName is the Keystone federation identity provider.
-	IdentityProviderName string
+	IdentityProviderName string `required:"true"`
 
 	// Protocol is the Keystone federation protocol.
-	Protocol string
+	Protocol string `required:"true"`
 
 	// ClientID is the OAuth 2.0 client identifier.
-	ClientID string
+	ClientID string `required:"true"`
 
 	// ClientSecret is the OAuth 2.0 client secret.
 	ClientSecret string
 
 	// AccessTokenEndpoint is the identity provider's token endpoint.
-	AccessTokenEndpoint string
+	AccessTokenEndpoint string `or:"DiscoveryEndpoint"`
 
 	// AccessTokenType selects the token response field. It defaults to "access_token".
 	AccessTokenType string
@@ -67,9 +67,10 @@ func (opts *AuthOptions) CanReauth() bool {
 	return opts.AllowReauth
 }
 
-// ToTokenV3CreateMap implements tokens.AuthOptionsBuilder.
+// ToTokenV3CreateMap validates the options. The federation request has no body.
 func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
-	return nil, nil
+	_, err := gophercloud.BuildRequestBody(opts, "")
+	return nil, err
 }
 
 // Create authenticates with OIDC client credentials.
@@ -80,7 +81,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthO
 		return
 	}
 
-	if err := validateAuthOptions(oidcOpts); err != nil {
+	if _, err := oidcOpts.ToTokenV3CreateMap(nil); err != nil {
 		r.Err = err
 		return
 	}
@@ -121,22 +122,6 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthO
 	}
 
 	return
-}
-
-func validateAuthOptions(opts *AuthOptions) error {
-	if opts.IdentityProviderName == "" {
-		return fmt.Errorf("missing required field: IdentityProviderName")
-	}
-	if opts.Protocol == "" {
-		return fmt.Errorf("missing required field: Protocol")
-	}
-	if opts.ClientID == "" {
-		return fmt.Errorf("missing required field: ClientID")
-	}
-	if opts.AccessTokenEndpoint == "" && opts.DiscoveryEndpoint == "" {
-		return fmt.Errorf("at least one of AccessTokenEndpoint or DiscoveryEndpoint must be provided")
-	}
-	return nil
 }
 
 func resolveAccessTokenEndpoint(ctx context.Context, c *gophercloud.ServiceClient, opts *AuthOptions) (string, error) {
