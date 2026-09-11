@@ -8,7 +8,6 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2credentials"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -18,34 +17,13 @@ func TestEC2CredentialsCRD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
+	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-
-	res := tokens.Create(context.TODO(), client, &authOptions)
-	th.AssertNoErr(t, res.Err)
-	token, err := res.Extract()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, token)
-
-	user, err := res.ExtractUser()
+	user, err := tokenResult.ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := res.ExtractProject()
+	project, err := tokenResult.ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 

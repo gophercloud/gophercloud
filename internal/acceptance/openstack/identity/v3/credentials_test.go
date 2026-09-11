@@ -8,7 +8,6 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/credentials"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
@@ -19,31 +18,13 @@ func TestCredentialsCRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
+	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, token)
-
-	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
+	user, err := tokenResult.ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
+	project, err := tokenResult.ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -99,31 +80,13 @@ func TestCredentialsValidateS3(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
+	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, token)
-
-	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
+	user, err := tokenResult.ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
+	project, err := tokenResult.ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -155,7 +118,7 @@ func TestCredentialsValidateS3(t *testing.T) {
 	}
 
 	// Validate a credential
-	token, err = ec2tokens.ValidateS3Token(context.TODO(), client, &opts).Extract()
+	token, err := ec2tokens.ValidateS3Token(context.TODO(), client, &opts).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 }
