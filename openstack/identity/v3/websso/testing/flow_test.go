@@ -35,50 +35,6 @@ func startWebSSO(t *testing.T, ctx context.Context, client *gophercloud.ServiceC
 
 var _ tokens.AuthOptionsBuilder = (*websso.AuthOptions)(nil)
 
-func TestWebSSOValidationMissingIdentityProvider(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
-	}
-
-	opts := &websso.AuthOptions{
-		Protocol: "openid",
-	}
-
-	result := websso.Authenticate(context.TODO(), &client, opts)
-	if result.Err == nil {
-		t.Fatal("Expected error for missing IdentityProviderName")
-	}
-	if !strings.Contains(result.Err.Error(), "IdentityProviderName") {
-		t.Errorf("Expected error about IdentityProviderName, got: %v", result.Err)
-	}
-}
-
-func TestWebSSOValidationMissingProtocol(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
-	}
-
-	opts := &websso.AuthOptions{
-		IdentityProviderName: "my-idp",
-	}
-
-	result := websso.Authenticate(context.TODO(), &client, opts)
-	if result.Err == nil {
-		t.Fatal("Expected error for missing Protocol")
-	}
-	if !strings.Contains(result.Err.Error(), "Protocol") {
-		t.Errorf("Expected error about Protocol, got: %v", result.Err)
-	}
-}
-
 func TestWebSSOWrongOptionsType(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

@@ -26,10 +26,10 @@ const (
 // AuthOptions contains WebSSO authentication options.
 type AuthOptions struct {
 	// IdentityProviderName is the Keystone federation identity provider.
-	IdentityProviderName string
+	IdentityProviderName string `required:"true"`
 
 	// Protocol is the Keystone federation protocol.
-	Protocol string
+	Protocol string `required:"true"`
 
 	// AllowReauth allows Gophercloud to reauthenticate automatically when the
 	// token expires.
@@ -48,10 +48,10 @@ type AuthOptions struct {
 	Timeout time.Duration
 
 	// BrowserOpener opens the WebSSO URL. It defaults to the OS browser.
-	BrowserOpener func(string) error
+	BrowserOpener func(string) error `json:"-"`
 
 	// TokenCache enables unscoped token reuse and requires CacheNamespace.
-	TokenCache tokencache.Cache
+	TokenCache tokencache.Cache `json:"-"`
 
 	// CacheNamespace identifies the expected browser login profile.
 	CacheNamespace string
@@ -67,9 +67,12 @@ func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]any) (map[string]string,
 	return nil, nil
 }
 
-// ToTokenV3CreateMap implements tokens.AuthOptionsBuilder.
+// ToTokenV3CreateMap validates the options without building a request body.
 func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
-	return nil, nil
+	if _, err := gophercloud.BuildRequestBody(opts, ""); err != nil {
+		return nil, err
+	}
+	return nil, opts.validate()
 }
 
 // CanReauth reports whether automatic reauthentication is enabled.
@@ -95,7 +98,7 @@ func Authenticate(ctx context.Context, client *gophercloud.ServiceClient, builde
 		r.Err = fmt.Errorf("websso: expected non-nil *websso.AuthOptions, got %T", builder)
 		return
 	}
-	if err := opts.validate(); err != nil {
+	if _, err := opts.ToTokenV3CreateMap(nil); err != nil {
 		r.Err = err
 		return
 	}
@@ -184,12 +187,6 @@ func validateToken(ctx context.Context, client *gophercloud.ServiceClient, token
 }
 
 func (opts *AuthOptions) validate() error {
-	if opts.IdentityProviderName == "" {
-		return fmt.Errorf("websso: missing required field IdentityProviderName")
-	}
-	if opts.Protocol == "" {
-		return fmt.Errorf("websso: missing required field Protocol")
-	}
 	if opts.RedirectPort < 0 || opts.RedirectPort > 65535 {
 		return fmt.Errorf("websso: RedirectPort must be 0 or between 1 and 65535")
 	}
