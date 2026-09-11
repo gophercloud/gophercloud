@@ -1,0 +1,44 @@
+name: API Coverage Check
+on:
+  pull_request:
+    paths:
+      - 'openstack/**'
+      - 'tools/apicheck/**'
+      - '.github/workflows/apicheck.yaml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apicheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Gophercloud
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Checkout OpenStack OpenAPI schemas
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: gtema/openstack
+          path: _openstack-openapi
+          persist-credentials: false
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: 'tools/apicheck/go.mod'
+          cache-dependency-path: 'tools/apicheck/go.sum'
+      - name: Run apicheck unit tests
+        run: cd tools/apicheck && go test ./...
+      - name: Check for coverage regressions vs baseline
+        run: |
+          cd tools/apicheck
+          go run . \
+            -spec-root "$GITHUB_WORKSPACE/_openstack-openapi/openstack_types/data" \
+            -baseline baseline.json
+      - name: Generate current coverage report
+        if: always()
+        run: |
+          cd tools/apicheck
+          go run . \
+            -spec-root "$GITHUB_WORKSPACE/_openstack-openapi/openstack_types/data" \
+            > "$GITHUB_STEP_SUMMARY" || true
