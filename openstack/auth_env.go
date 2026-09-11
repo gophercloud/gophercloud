@@ -24,8 +24,9 @@ OS_PROJECT_NAME and the latter are expected against a v3 auth api.
 If OS_PROJECT_ID and OS_PROJECT_NAME are set, they will still be referred
 as "tenant" in Gophercloud.
 
-If OS_PROJECT_NAME is set, it requires OS_DOMAIN_ID or OS_DOMAIN_NAME to be
-set as well to handle projects not on the default domain.
+If OS_PROJECT_NAME is set, it requires one of OS_DOMAIN_ID, OS_DOMAIN_NAME,
+OS_PROJECT_DOMAIN_NAME, or OS_PROJECT_DOMAIN_ID to be set as well to handle
+projects not on the default domain.
 
 To use this function, first set the OS_* environment variables (for example,
 by sourcing an `openrc` file), then:
@@ -47,6 +48,10 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	applicationCredentialName := os.Getenv("OS_APPLICATION_CREDENTIAL_NAME")
 	applicationCredentialSecret := os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET")
 	systemScope := os.Getenv("OS_SYSTEM_SCOPE")
+	userDomainID := os.Getenv("OS_USER_DOMAIN_ID")
+	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
+	projectDomainID := os.Getenv("OS_PROJECT_DOMAIN_ID")
+	projectDomainName := os.Getenv("OS_PROJECT_DOMAIN_NAME")
 
 	// If OS_PROJECT_ID is set, overwrite tenantID with the value.
 	if v := os.Getenv("OS_PROJECT_ID"); v != "" {
@@ -56,6 +61,15 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	// If OS_PROJECT_NAME is set, overwrite tenantName with the value.
 	if v := os.Getenv("OS_PROJECT_NAME"); v != "" {
 		tenantName = v
+	}
+
+	// Resolve user domain: OS_USER_DOMAIN_* takes precedence over OS_DOMAIN_*.
+	if userDomainID != "" {
+		domainID = userDomainID
+
+	}
+	if userDomainName != "" {
+		domainName = userDomainName
 	}
 
 	if authURL == "" {
@@ -90,13 +104,6 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 		return nilOptions, err
 	}
 
-	if domainID == "" && domainName == "" && tenantID == "" && tenantName != "" {
-		err := gophercloud.ErrMissingEnvironmentVariable{
-			EnvironmentVariable: "OS_PROJECT_ID",
-		}
-		return nilOptions, err
-	}
-
 	if applicationCredentialID == "" && applicationCredentialName != "" && applicationCredentialSecret != "" {
 		if userID == "" && username == "" {
 			return nilOptions, gophercloud.ErrMissingAnyoneOfEnvironmentVariables{
@@ -105,9 +112,27 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 		}
 		if username != "" && domainID == "" && domainName == "" {
 			return nilOptions, gophercloud.ErrMissingAnyoneOfEnvironmentVariables{
-				EnvironmentVariables: []string{"OS_DOMAIN_ID", "OS_DOMAIN_NAME"},
+				EnvironmentVariables: []string{
+					"OS_USER_DOMAIN_ID", "OS_USER_DOMAIN_NAME",
+					"OS_DOMAIN_ID", "OS_DOMAIN_NAME",
+				},
 			}
 		}
+	}
+
+	// Resolve project domain: OS_PROJECT_DOMAIN_* takes precedence over OS_DOMAIN_*.
+	scopeDomainID := projectDomainID
+	scopeDomainName := projectDomainName
+	if scopeDomainID == "" && scopeDomainName == "" {
+		scopeDomainID = domainID
+		scopeDomainName = domainName
+	}
+
+	if scopeDomainID == "" && scopeDomainName == "" && tenantID == "" && tenantName != "" {
+		err := gophercloud.ErrMissingEnvironmentVariable{
+			EnvironmentVariable: "OS_PROJECT_ID",
+		}
+		return nilOptions, err
 	}
 
 	var scope *gophercloud.AuthScope

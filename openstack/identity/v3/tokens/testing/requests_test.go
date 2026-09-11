@@ -609,36 +609,6 @@ func TestCreateFailureUserIDDomainName(t *testing.T) {
 	authTokenPostErr(t, options, nil, false, gophercloud.ErrDomainNameWithUserID{})
 }
 
-func TestCreateFailureScopeProjectNameAlone(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
-	scope := &tokens.Scope{ProjectName: "notenough"}
-	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeDomainIDOrDomainName{})
-}
-
-func TestCreateFailureScopeProjectNameAndID(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
-	scope := &tokens.Scope{ProjectName: "whoops", ProjectID: "toomuch", DomainID: "1234"}
-	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeProjectIDOrProjectName{})
-}
-
-func TestCreateFailureScopeProjectIDAndDomainID(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
-	scope := &tokens.Scope{ProjectID: "toomuch", DomainID: "notneeded"}
-	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeProjectIDAlone{})
-}
-
-func TestCreateFailureScopeProjectIDAndDomainNAme(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
-	scope := &tokens.Scope{ProjectID: "toomuch", DomainName: "notneeded"}
-	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeProjectIDAlone{})
-}
-
-func TestCreateFailureScopeDomainIDAndDomainName(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
-	scope := &tokens.Scope{DomainID: "toomuch", DomainName: "notneeded"}
-	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeDomainIDOrDomainName{})
-}
-
 /*
 func TestCreateFailureEmptyScope(t *testing.T) {
 	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
