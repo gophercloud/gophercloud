@@ -18,7 +18,7 @@ type AuthOptions struct {
 	OAuth2Endpoint string
 
 	// ClientID is the Keystone user ID associated with the client certificate.
-	ClientID string
+	ClientID string `required:"true"`
 
 	// AllowReauth enables automatic reauthentication.
 	AllowReauth bool
@@ -39,21 +39,15 @@ func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]any) (map[string]string,
 	return nil, nil
 }
 
-// ToTokenV3CreateMap implements tokens.AuthOptionsBuilder.
+// ToTokenV3CreateMap validates the options without building a request body.
 func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
-	return nil, nil
+	_, err := gophercloud.BuildRequestBody(opts, "")
+	return nil, err
 }
 
 // CanReauth reports whether automatic reauthentication is enabled.
 func (opts *AuthOptions) CanReauth() bool {
 	return opts.AllowReauth
-}
-
-func (opts *AuthOptions) validate() error {
-	if opts.ClientID == "" {
-		return gophercloud.ErrMissingInput{Argument: "ClientID"}
-	}
-	return nil
 }
 
 // Create authenticates with OAuth2 mTLS client credentials.
@@ -64,7 +58,7 @@ func Create(ctx context.Context, c *gophercloud.ServiceClient, opts tokens.AuthO
 		return
 	}
 
-	if err := mtlsOpts.validate(); err != nil {
+	if _, err := mtlsOpts.ToTokenV3CreateMap(nil); err != nil {
 		r.Err = err
 		return
 	}

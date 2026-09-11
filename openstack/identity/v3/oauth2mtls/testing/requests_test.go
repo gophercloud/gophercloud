@@ -222,6 +222,7 @@ func TestCreateValidatesInputs(t *testing.T) {
 	if !errors.As(result.Err, &missing) {
 		t.Fatalf("expected ErrMissingInput, got %v", result.Err)
 	}
+	th.CheckEquals(t, "ClientID", missing.Argument)
 
 	var opts *oauth2mtls.AuthOptions
 	result = oauth2mtls.Create(context.Background(), client, opts)
@@ -232,6 +233,27 @@ func TestCreateValidatesInputs(t *testing.T) {
 	result = oauth2mtls.Create(context.Background(), nil, &oauth2mtls.AuthOptions{ClientID: testClientID})
 	if result.Err == nil {
 		t.Fatal("expected nil client to fail")
+	}
+}
+
+func TestToTokenV3CreateMap(t *testing.T) {
+	for name, clientID := range map[string]string{"missing client ID": "", "valid": testClientID} {
+		t.Run(name, func(t *testing.T) {
+			opts := &oauth2mtls.AuthOptions{ClientID: clientID}
+			body, err := opts.ToTokenV3CreateMap(nil)
+			if clientID == "" {
+				var missing gophercloud.ErrMissingInput
+				if !errors.As(err, &missing) {
+					t.Fatalf("expected ErrMissingInput, got %v", err)
+				}
+				th.CheckEquals(t, "ClientID", missing.Argument)
+				return
+			}
+			th.AssertNoErr(t, err)
+			if body != nil {
+				t.Fatalf("expected nil body, got %v", body)
+			}
+		})
 	}
 }
 
