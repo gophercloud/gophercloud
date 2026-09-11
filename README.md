@@ -6,7 +6,8 @@ Gophercloud is a Go SDK for OpenStack.
 Join us on kubernetes slack, on [#gophercloud](https://kubernetes.slack.com/archives/C05G4NJ6P6X). Visit [slack.k8s.io](https://slack.k8s.io) for an invitation.
 
 > **Note**
-> This branch contains the current stable branch of Gophercloud: `v2`.
+> This branch contains the current development version of Gophercloud (`v3`).
+> Backward-compatible changes are backported to the current stable branch `v2`.
 > The legacy stable version can be found in the `v1` branch.
 
 ## How to install
@@ -96,8 +97,8 @@ func main() {
 
 	// Use the ProviderClient and the endpoint options fetched from
 	// `clouds.yaml` to build a service client: a compute client in this
-	// case. Note that the contructor does accept a `context.Context`
-	// to resolve supported API microversions.
+	// case. The constructor accepts a `context.Context` for endpoint
+	// resolution, cancellation, and tracing.
 	computeClient, err := openstack.NewComputeV2(ctx, providerClient, endpointOptions)
 	if err != nil {
 		panic(err)
@@ -165,7 +166,7 @@ func main() {
 	ctx := context.Background()
 
 	providerClient, err := openstack.AuthenticatedClient(ctx, gophercloud.AuthOptions{
-		IdentityEndpoint: "https://openstack.example.com:5000/v2.0",
+		IdentityEndpoint: "https://openstack.example.com:5000/v3",
 		Username:         "username",
 		Password:         "password",
 	})
@@ -201,7 +202,7 @@ func main() {
         Name:      "My new server!",
         FlavorRef: "flavor_id",
         ImageRef:  "image_id",
-    }).Extract()
+    }, nil).Extract()
 
     // [...]
 ```
@@ -227,9 +228,13 @@ The above code sample creates a new server with the parameters, and returns a
 |      Key Management      |     Barbican     |       `openstack/keymanager`       |    ✔    |    ✔    |
 |      Load Balancing      |      Octavia     |      `openstack/loadbalancer`      |    ✔    |    ✔    |
 |         Messaging        |       Zaqar      |        `openstack/messaging`       |    ✔    |    ✔    |
+|          Metric          |      Aetos       |         `openstack/metric`         |    ✘    |    ✔    |
 |        Networking        |      Neutron     |       `openstack/networking`       |    ✔    |    ✔    |
 |      Object Storage      |       Swift      |      `openstack/objectstorage`     |    ✔    |    ✔    |
+|      Orchestration       |       Heat       |     `openstack/orchestration`      |    ✔    |    ✔    |
+|        Placement         |    Placement     |       `openstack/placement`        |    ✔    |    ✔    |
 |   Shared File Systems    |      Manila      |   `openstack/sharedfilesystems`    |    ✔    |    ✔    |
+|         Workflow         |      Mistral     |        `openstack/workflow`        |    ✔    |    ✔    |
 
 ## Advanced Usage
 
