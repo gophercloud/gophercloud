@@ -68,6 +68,27 @@ func TestCreateRegisteredLimits(t *testing.T) {
 	th.CheckDeepEquals(t, ExpectedRegisteredLimitsSlice, actual)
 }
 
+func TestCreateRegisteredLimitWithZeroDefaultLimit(t *testing.T) {
+	// Keystone accepts 0 as a valid default_limit, so client-side
+	// validation must not reject it (see issue #3866).
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleCreateRegisteredLimitWithZeroDefaultLimitSuccessfully(t, fakeServer)
+
+	createOpts := registeredlimits.BatchCreateOpts{
+		registeredlimits.CreateOpts{
+			ServiceID:    "9408080f1970482aa0e38bc2d4ea34b7",
+			RegionID:     "RegionOne",
+			ResourceName: "snapshot",
+			DefaultLimit: 0,
+		},
+	}
+
+	actual, err := registeredlimits.BatchCreate(context.TODO(), client.ServiceClient(fakeServer), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, []registeredlimits.RegisteredLimit{ZeroLimitRegisteredLimit}, actual)
+}
+
 func TestGetRegisteredLimit(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
