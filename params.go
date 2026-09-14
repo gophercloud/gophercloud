@@ -88,8 +88,11 @@ func BuildRequestBody(opts any, parent string) (map[string]any, error) {
 			// if the field has a required tag that's set to "true"
 			if requiredTag := f.Tag.Get("required"); requiredTag == "true" {
 				//fmt.Printf("Checking required field [%s]:\n\tv: %+v\n\tisZero:%v\n", f.Name, v.Interface(), zero)
-				// if the field's value is zero, return a missing-argument error
-				if zero {
+				// if the field's value is zero, return a missing-argument error.
+				// Numeric zero values are exempt: zero is legitimate input for
+				// several OpenStack APIs (for example, Keystone accepts 0 as a
+				// registered limit), so range validation is left to the server.
+				if zero && !isNumeric(v) {
 					// if the field has a 'required' tag, it can't have a zero-value
 					err := ErrMissingInput{}
 					err.Argument = f.Name
@@ -301,6 +304,18 @@ func isUnderlyingStructZero(v reflect.Value) bool {
 */
 
 var t time.Time
+
+// isNumeric reports whether v holds a numeric value (integer, unsigned
+// integer or floating point number).
+func isNumeric(v reflect.Value) bool {
+	switch v.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Float32, reflect.Float64:
+		return true
+	}
+	return false
+}
 
 func isZero(v reflect.Value) bool {
 	//fmt.Printf("\n\nchecking isZero for value: %+v\n", v)

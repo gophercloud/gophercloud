@@ -287,3 +287,26 @@ func TestBuildRequestBody(t *testing.T) {
 	th.AssertDeepEquals(t, expectedComplexFields, actual)
 
 }
+
+func TestBuildRequestBodyRequiredNumericZero(t *testing.T) {
+	// Zero is legitimate input for required numeric fields (for example,
+	// Keystone accepts 0 as a registered limit), so it must not be
+	// rejected client-side. Other zero values still indicate missing input.
+	opts := struct {
+		Limit int    `json:"limit" required:"true"`
+		Name  string `json:"name" required:"true"`
+	}{
+		Limit: 0,
+		Name:  "snapshot",
+	}
+
+	actual, err := gophercloud.BuildRequestBody(opts, "")
+	th.AssertNoErr(t, err)
+	// Note: numbers come back as float64 after the JSON round-trip.
+	th.AssertEquals(t, float64(0), actual["limit"])
+	th.AssertEquals(t, "snapshot", actual["name"])
+
+	opts.Name = ""
+	_, err = gophercloud.BuildRequestBody(opts, "")
+	th.AssertTypeEquals(t, gophercloud.ErrMissingInput{}, err)
+}

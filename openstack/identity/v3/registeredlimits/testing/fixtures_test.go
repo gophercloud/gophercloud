@@ -112,6 +112,41 @@ const UpdateOutput = `
 
 const CreateOutput = ListOutput
 
+// CreateZeroLimitRequest is a create request with a default_limit of 0,
+// which Keystone accepts as a valid limit (see issue #3866).
+const CreateZeroLimitRequest = `
+{
+    "registered_limits":[
+        {
+            "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
+            "region_id": "RegionOne",
+            "resource_name": "snapshot",
+            "default_limit": 0
+        }
+    ]
+}
+`
+
+// CreateZeroLimitOutput is the response to a create request with a
+// default_limit of 0.
+const CreateZeroLimitOutput = `
+{
+    "registered_limits": [
+        {
+            "resource_name": "snapshot",
+            "region_id": "RegionOne",
+            "links": {
+                "self": "http://10.3.150.25/identity/v3/registered_limits/3229b3849f584faea483d6851f7aab05"
+            },
+            "service_id": "9408080f1970482aa0e38bc2d4ea34b7",
+            "id": "3229b3849f584faea483d6851f7aab05",
+            "default_limit": 0,
+            "description": null
+        }
+    ]
+}
+`
+
 // FirstLimit is the first limit in the List request.
 var FirstRegisteredLimit = registeredlimits.RegisteredLimit{
 	ResourceName: "volume",
@@ -153,6 +188,19 @@ var UpdatedSecondRegisteredLimit = registeredlimits.RegisteredLimit{
 // ExpectedRegisteredLimitsSlice is the slice of registered_limits expected to be returned from ListOutput.
 var ExpectedRegisteredLimitsSlice = []registeredlimits.RegisteredLimit{FirstRegisteredLimit, SecondRegisteredLimit}
 
+// ZeroLimitRegisteredLimit is the registered limit expected to be returned
+// from CreateZeroLimitOutput.
+var ZeroLimitRegisteredLimit = registeredlimits.RegisteredLimit{
+	ResourceName: "snapshot",
+	RegionID:     "RegionOne",
+	Links: map[string]any{
+		"self": "http://10.3.150.25/identity/v3/registered_limits/3229b3849f584faea483d6851f7aab05",
+	},
+	ServiceID:    "9408080f1970482aa0e38bc2d4ea34b7",
+	ID:           "3229b3849f584faea483d6851f7aab05",
+	DefaultLimit: 0,
+}
+
 // HandleListRegisteredLimitsSuccessfully creates an HTTP handler at `/registered_limits` on the
 // test handler mux that responds with a list of two registered limits.
 func HandleListRegisteredLimitsSuccessfully(t *testing.T, fakeServer th.FakeServer) {
@@ -191,6 +239,20 @@ func HandleCreateRegisteredLimitSuccessfully(t *testing.T, fakeServer th.FakeSer
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, CreateOutput)
+	})
+}
+
+// HandleCreateRegisteredLimitWithZeroDefaultLimitSuccessfully creates an HTTP
+// handler at `/registered_limits` on the test handler mux that tests
+// registered limit creation with a default_limit of 0.
+func HandleCreateRegisteredLimitWithZeroDefaultLimitSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/registered_limits", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateZeroLimitRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprint(w, CreateZeroLimitOutput)
 	})
 }
 
