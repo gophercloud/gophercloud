@@ -116,7 +116,7 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 
 	zeroLimits, err := registeredlimits.BatchCreate(context.TODO(), client, zeroCreateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertIntGreaterOrEqual(t, 1, len(zeroLimits))
+	th.AssertIntGreaterOrEqual(t, len(zeroLimits), 1)
 	th.AssertEquals(t, 0, zeroLimits[0].DefaultLimit)
 
 	del_err = registeredlimits.Delete(context.TODO(), client, zeroLimits[0].ID).ExtractErr()

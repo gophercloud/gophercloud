@@ -85,6 +85,13 @@ func TestBuildQueryString(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error: 'Options type is not a struct'")
 	}
+
+	requiredNumericZero := struct {
+		Limit int `q:"limit" required:"true"`
+	}{}
+	actual, err = gophercloud.BuildQueryString(&requiredNumericZero)
+	th.CheckNoErr(t, err)
+	th.CheckDeepEquals(t, &url.URL{RawQuery: "limit=0"}, actual)
 }
 
 func TestBuildHeaders(t *testing.T) {
@@ -105,7 +112,15 @@ func TestBuildHeaders(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 
 	testStruct.Num = 0
-	_, err = gophercloud.BuildHeaders(&testStruct)
+	actual, err = gophercloud.BuildHeaders(&testStruct)
+	th.CheckNoErr(t, err)
+	expected["Number"] = "0"
+	th.CheckDeepEquals(t, expected, actual)
+
+	missingRequired := struct {
+		Name string `h:"Name" required:"true"`
+	}{}
+	_, err = gophercloud.BuildHeaders(&missingRequired)
 	if err == nil {
 		t.Errorf("Expected error: 'Required header not set'")
 	}

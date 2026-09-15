@@ -401,8 +401,12 @@ func BuildQueryString(opts any) (*url.URL, error) {
 			if qTag != "" {
 				tags := strings.Split(qTag, ",")
 
-				// if the field is set, add it to the slice of query pieces
-				if !isZero(v) {
+				required := f.Tag.Get("required") == "true"
+
+				// if the field is set, add it to the slice of query pieces.
+				// Required numeric zero values are also set explicitly and must
+				// not be mistaken for omitted input.
+				if !isZero(v) || (required && v.Kind() == reflect.Int) {
 				loop:
 					switch v.Kind() {
 					case reflect.Pointer:
@@ -443,7 +447,7 @@ func BuildQueryString(opts any) (*url.URL, error) {
 					}
 				} else {
 					// if the field has a 'required' tag, it can't have a zero-value
-					if requiredTag := f.Tag.Get("required"); requiredTag == "true" {
+					if required {
 						return &url.URL{}, fmt.Errorf("required query parameter [%s] not set", f.Name)
 					}
 				}
@@ -506,8 +510,12 @@ func BuildHeaders(opts any) (map[string]string, error) {
 			if hTag != "" {
 				tags := strings.Split(hTag, ",")
 
-				// if the field is set, add it to the slice of query pieces
-				if !isZero(v) {
+				required := f.Tag.Get("required") == "true"
+
+				// if the field is set, add it to the map. Required numeric zero
+				// values are also set explicitly and must not be mistaken for
+				// omitted input.
+				if !isZero(v) || (required && (v.Kind() == reflect.Int || v.Kind() == reflect.Int64)) {
 					if v.Kind() == reflect.Pointer {
 						v = v.Elem()
 					}
@@ -523,7 +531,7 @@ func BuildHeaders(opts any) (map[string]string, error) {
 					}
 				} else {
 					// if the field has a 'required' tag, it can't have a zero-value
-					if requiredTag := f.Tag.Get("required"); requiredTag == "true" {
+					if required {
 						return optsMap, fmt.Errorf("required header [%s] not set", f.Name)
 					}
 				}
