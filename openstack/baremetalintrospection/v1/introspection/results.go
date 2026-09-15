@@ -193,6 +193,7 @@ type BaseInterfaceType struct {
 func (r DataResult) Extract() (*Data, error) {
 	var s Data
 	err := r.ExtractInto(&s)
+	s.Inventory.Compat()
 	return &s, err
 }
 

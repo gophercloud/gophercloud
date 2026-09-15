@@ -293,10 +293,11 @@ var Inventory = inventory.InventoryType{
 		PXEInterface:    "52:54:00:4e:3d:30",
 	},
 	CPU: inventory.CPUType{
-		Count:        2,
-		Flags:        []string{"fpu", "mmx", "fxsr", "sse", "sse2"},
-		Frequency:    "2100.084",
-		Architecture: "x86_64",
+		Count:         2,
+		Flags:         []string{"fpu", "mmx", "fxsr", "sse", "sse2"},
+		Frequency:     "2100.084",
+		Architecture:  "x86_64",
+		RealFrequency: "2100.084",
 	},
 	Disks: []inventory.RootDiskType{
 		{
