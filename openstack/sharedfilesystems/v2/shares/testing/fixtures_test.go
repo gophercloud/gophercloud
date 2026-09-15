@@ -363,6 +363,49 @@ func MockGrantAccessResponse(t *testing.T, fakeServer th.FakeServer) {
 	})
 }
 
+var grantAccessWithMetadataRequest = `{
+		"allow_access": {
+			"access_type": "ip",
+			"access_to": "0.0.0.0/0",
+			"access_level": "rw",
+			"metadata": {
+				"key1": "value1",
+				"key2": "value2"
+			}
+		}
+	}`
+
+var grantAccessWithMetadataResponse = `{
+    "access": {
+	"share_id": "011d21e2-fbc3-4e4a-9993-9ea223f73264",
+	"access_type": "ip",
+	"access_to": "0.0.0.0/0",
+	"access_key": "",
+	"access_level": "rw",
+	"state": "new",
+	"id": "a2f226a5-cee8-430b-8a03-78a59bd84ee8",
+	"metadata": {
+		"key1": "value1",
+		"key2": "value2"
+	}
+    }
+}`
+
+// MockGrantAccessWithMetadataResponse creates a mock grant access response
+// where the request and response both include access rule metadata.
+func MockGrantAccessWithMetadataResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, grantAccessWithMetadataRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, grantAccessWithMetadataResponse)
+	})
+}
+
 var revokeAccessRequest = `{
 	"deny_access": {
 		"access_id": "a2f226a5-cee8-430b-8a03-78a59bd84ee8"

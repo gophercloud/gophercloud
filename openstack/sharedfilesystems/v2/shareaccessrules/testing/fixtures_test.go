@@ -76,3 +76,40 @@ var listResponse = `{
         }
     ]
 }`
+
+var updateMetadataRequest = `{
+    "metadata": {
+        "key1": "value1",
+        "key2": "value2"
+    }
+}`
+
+var updateMetadataResponse = `{
+    "metadata": {
+        "key1": "value1",
+        "key2": "value2"
+    }
+}`
+
+// MockUpdateMetadataResponse creates a mock update share access rule metadata response
+func MockUpdateMetadataResponse(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc(shareAccessRulesEndpoint+"/"+shareAccessRuleID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, updateMetadataRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, updateMetadataResponse)
+	})
+}
+
+// MockDeleteMetadatumResponse creates a mock delete share access rule metadatum response
+func MockDeleteMetadatumResponse(t *testing.T, fakeServer th.FakeServer, key string) {
+	fakeServer.Mux.HandleFunc(shareAccessRulesEndpoint+"/"+shareAccessRuleID+"/metadata/"+key, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusOK)
+	})
+}
