@@ -1,0 +1,98 @@
+openapi: 3.1.0
+info:
+  title: Fake Widget Service
+  version: "1.0"
+paths:
+  /widgets:
+    post:
+      operationId: create_widget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/WidgetCreate'
+                - $ref: '#/components/schemas/WidgetCreate_21'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetResponse'
+    get:
+      operationId: list_widgets
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          x-openstack:
+            min-ver: "1.5"
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetsResponse'
+components:
+  schemas:
+    WidgetCreate:
+      type: object
+      properties:
+        widget:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            tags:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  value:
+                    type: string
+            metadata:
+              type: object
+              properties:
+                foo:
+                  type: string
+    WidgetCreate_21:
+      type: object
+      properties:
+        widget:
+          type: object
+          properties:
+            size:
+              type: integer
+    WidgetResponse:
+      type: object
+      properties:
+        widget:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+    WidgetsResponse:
+      type: object
+      properties:
+        widgets:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
