@@ -93,7 +93,7 @@ func BuildRequestBody(opts any, parent string) (map[string]any, error) {
 				// several OpenStack APIs (for example, Keystone accepts 0 as a
 				// registered limit), so range validation is left to the server.
 				if zero && !isNumeric(v) {
-					// if the field has a 'required' tag, it can't have a zero-value
+					// Required non-numeric fields cannot have a zero value.
 					err := ErrMissingInput{}
 					err.Argument = f.Name
 					return nil, err
@@ -368,8 +368,9 @@ converted into query parameters based on a "q" tag. For example:
 
 will be converted into "?x_bar=AAA&lorem_ipsum=BBB".
 
-The struct's fields may be strings, integers, slices, or boolean values. Fields
-left at their type's zero value will be omitted from the query.
+The struct's fields may be strings, integers, slices, or boolean values. Optional
+fields left at their type's zero value will be omitted from the query. Required
+int fields are included even when zero; other required zero values return an error.
 
 Slice are handled in one of two ways:
 
@@ -404,8 +405,8 @@ func BuildQueryString(opts any) (*url.URL, error) {
 				required := f.Tag.Get("required") == "true"
 
 				// if the field is set, add it to the slice of query pieces.
-				// Required numeric zero values are also set explicitly and must
-				// not be mistaken for omitted input.
+				// Required int fields are included even when zero. Only exempt
+				// numeric kinds supported by the serialization switch below.
 				if !isZero(v) || (required && v.Kind() == reflect.Int) {
 				loop:
 					switch v.Kind() {
@@ -446,7 +447,8 @@ func BuildQueryString(opts any) (*url.URL, error) {
 						}
 					}
 				} else {
-					// if the field has a 'required' tag, it can't have a zero-value
+					// Required fields cannot have a zero value unless they are
+					// numeric kinds supported by the serialization switch above.
 					if required {
 						return &url.URL{}, fmt.Errorf("required query parameter [%s] not set", f.Name)
 					}
@@ -485,8 +487,9 @@ will be converted into:
 	  "lorem_ipsum": "BBB",
 	}
 
-Untagged fields and fields left at their zero values are skipped. Integers,
-booleans and string values are supported.
+Untagged fields and optional fields left at their zero values are skipped.
+Integers, booleans and string values are supported. Required int and int64 fields
+are included even when zero; other required zero values return an error.
 */
 func BuildHeaders(opts any) (map[string]string, error) {
 	optsValue := reflect.ValueOf(opts)
@@ -512,9 +515,9 @@ func BuildHeaders(opts any) (map[string]string, error) {
 
 				required := f.Tag.Get("required") == "true"
 
-				// if the field is set, add it to the map. Required numeric zero
-				// values are also set explicitly and must not be mistaken for
-				// omitted input.
+				// if the field is set, add it to the map. Required int and int64
+				// fields are included even when zero. Only exempt numeric kinds
+				// supported by the serialization switch below.
 				if !isZero(v) || (required && (v.Kind() == reflect.Int || v.Kind() == reflect.Int64)) {
 					if v.Kind() == reflect.Pointer {
 						v = v.Elem()
@@ -530,7 +533,8 @@ func BuildHeaders(opts any) (map[string]string, error) {
 						optsMap[tags[0]] = strconv.FormatBool(v.Bool())
 					}
 				} else {
-					// if the field has a 'required' tag, it can't have a zero-value
+					// Required fields cannot have a zero value unless they are
+					// numeric kinds supported by the serialization switch above.
 					if required {
 						return optsMap, fmt.Errorf("required header [%s] not set", f.Name)
 					}
