@@ -78,10 +78,7 @@ func TestCredentialsCRUD(t *testing.T) {
 	th.AssertEquals(t, getCredential.ProjectID, createOpts.ProjectID)
 
 	updateOpts := credentials.UpdateOpts{
-		ProjectID: project.ID,
-		Type:      "ec2",
-		UserID:    user.ID,
-		Blob:      "{\"access\":\"181920\",\"secret\":\"mySecret\"}",
+		Blob: "{\"access\":\"181920\",\"secret\":\"mySecret\"}",
 	}
 
 	// Update a credential
