@@ -72,10 +72,29 @@ func (r Result) extractIntoPtr(to any, label string) error {
 		return r.ExtractInto(&to)
 	}
 
+	// Decode into map[string]any with UseNumber so integers that do not fit
+	// in float64 survive the extra marshal/unmarshal below. ExtractInto() is
+	// not used here because it would decode numbers into any as float64.
 	var m map[string]any
-	err := r.ExtractInto(&m)
-	if err != nil {
-		return err
+	if reader, ok := r.Body.(io.Reader); ok {
+		if readCloser, ok := reader.(io.Closer); ok {
+			defer readCloser.Close()
+		}
+		dec := json.NewDecoder(reader)
+		dec.UseNumber()
+		if err := dec.Decode(&m); err != nil {
+			return err
+		}
+	} else {
+		b, err := json.Marshal(r.Body)
+		if err != nil {
+			return err
+		}
+		dec := json.NewDecoder(bytes.NewReader(b))
+		dec.UseNumber()
+		if err := dec.Decode(&m); err != nil {
+			return err
+		}
 	}
 
 	// Check if the expected label exists in the response

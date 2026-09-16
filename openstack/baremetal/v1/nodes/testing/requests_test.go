@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"math"
 	"net/http"
 	"testing"
 
@@ -606,6 +607,28 @@ func TestListDetailBIOSSettings(t *testing.T) {
 	actual, err := nodes.ListBIOSSettings(context.TODO(), c, "1234asdf", opts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeDetailBIOSSettings, actual)
+}
+
+func TestListDetailBIOSSettingsInt64MaxBound(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleListDetailBIOSSettingsInt64BoundSuccessfully(t, fakeServer)
+
+	opts := nodes.ListBIOSSettingsOpts{
+		Detail: true,
+	}
+
+	c := client.ServiceClient(fakeServer)
+	actual, err := nodes.ListBIOSSettings(context.TODO(), c, "1234asdf", opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "CoreDisableMask_0_0", actual[0].Name)
+	th.AssertEquals(t, "0", actual[0].Value)
+	th.AssertEquals(t, "Integer", actual[0].AttributeType)
+	if actual[0].UpperBound == nil {
+		t.Fatal("expected upper_bound to be set")
+	}
+	th.AssertEquals(t, math.MaxInt, *actual[0].UpperBound)
 }
 
 func TestGetBIOSSetting(t *testing.T) {

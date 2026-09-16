@@ -72,10 +72,7 @@ var NetworkIPAvailability1 = networkipavailabilities.NetworkIPAvailability{
 			CIDR:       "fdbc:bf53:567e::/56",
 			IPVersion:  int(gophercloud.IPv6),
 			// 4722366482869645213696 is 2^72 (a /56 IPv6 subnet).
-			// After gophercloud's float64 round-trip (numbers >= 1e21 are
-			// re-encoded in scientific notation), the value loses the last
-			// few digits of precision but no longer crashes.
-			TotalIPs: "4722366482869645000000",
+			TotalIPs: "4722366482869645213696",
 			UsedIPs:  "2",
 		},
 		{
