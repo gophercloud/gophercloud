@@ -101,4 +101,25 @@ func TestRegisteredLimitsCRUD(t *testing.T) {
 
 	_, err = registeredlimits.Get(context.TODO(), client, createdRegisteredLimits[0].ID).Extract()
 	th.AssertErr(t, err)
+
+	// Create a registered limit with a default_limit of 0: Keystone
+	// accepts 0 as a valid limit (see issue #3866).
+	zeroResourceName := tools.RandomString("LIMIT-NAME-", 8)
+
+	zeroCreateOpts := registeredlimits.BatchCreateOpts{
+		registeredlimits.CreateOpts{
+			ServiceID:    serviceID,
+			ResourceName: zeroResourceName,
+			DefaultLimit: 0,
+			RegionID:     "RegionOne",
+		},
+	}
+
+	zeroLimits, err := registeredlimits.BatchCreate(context.TODO(), client, zeroCreateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertIntGreaterOrEqual(t, len(zeroLimits), 1)
+	th.AssertEquals(t, 0, zeroLimits[0].DefaultLimit)
+
+	del_err = registeredlimits.Delete(context.TODO(), client, zeroLimits[0].ID).ExtractErr()
+	th.AssertNoErr(t, del_err)
 }
