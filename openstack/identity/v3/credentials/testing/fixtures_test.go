@@ -79,10 +79,7 @@ const CreateRequest = `
 const UpdateRequest = `
 {
     "credential": {
-        "blob": "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
-        "project_id": "731fc6f265cd486d900f16e84c5cb594",
-        "type": "ec2",
-        "user_id": "bb5476fd12884539b41d5a88f838d773"
+        "blob": "{\"access\":\"181920\",\"secret\":\"secretKey\"}"
     }
 }
 `
@@ -91,12 +88,12 @@ const UpdateRequest = `
 const UpdateOutput = `
 {
     "credential": {
-        "user_id": "bb5476fd12884539b41d5a88f838d773",
+        "user_id": "6f556708d04b4ea6bc72d7df2296b71a",
         "links": {
             "self": "http://identity/v3/credentials/2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609"
         },
         "blob": "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
-        "project_id": "731fc6f265cd486d900f16e84c5cb594",
+        "project_id": "1a1d14690f3c4ec5bf5f321c5fde3c16",
         "type": "ec2",
         "id": "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609"
     }
@@ -139,9 +136,9 @@ var SecondCredential = credentials.Credential{
 // SecondCredentialUpdated is how SecondCredential should look after an Update.
 var SecondCredentialUpdated = credentials.Credential{
 	ID:        "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609",
-	ProjectID: projectID,
+	ProjectID: "1a1d14690f3c4ec5bf5f321c5fde3c16",
 	Type:      "ec2",
-	UserID:    userID,
+	UserID:    "6f556708d04b4ea6bc72d7df2296b71a",
 	Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
 	Links: map[string]any{
 		"self": "http://identity/v3/credentials/2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609",
