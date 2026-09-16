@@ -212,6 +212,29 @@ for authenticating requests to that endpoint.
 		panic(err)
 	}
 
+# OIDC client credentials authentication
+
+V3OIDCClientCredentialsOpts obtains an access token from an OpenID Connect
+identity provider with the client credentials grant and exchanges it for a
+Keystone token through the OS-FEDERATION API. Set AccessTokenEndpoint to the
+identity provider's token endpoint, or DiscoveryEndpoint to read it from the
+provider's discovery document. Both must use HTTPS, or HTTP on a loopback
+address. A nil Scope requests an unscoped token.
+
+	opts := &auth.V3OIDCClientCredentialsOpts{
+		AuthURL:              "https://identity.example.com/v3",
+		IdentityProviderName: "identity-provider",
+		Protocol:             "openid",
+		ClientID:             "client-id",
+		ClientSecret:         "client-secret",
+		DiscoveryEndpoint:    "https://idp.example.com/.well-known/openid-configuration",
+		Scope:                &auth.Scope{ProjectID: "project-id"},
+	}
+	result, err := opts.Authenticate(context.Background(), nil)
+	if err != nil {
+		panic(err)
+	}
+
 # Reauthentication
 
 Credential options supporting AllowReauth default to false. Set it to true to
