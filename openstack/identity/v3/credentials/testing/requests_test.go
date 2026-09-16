@@ -88,10 +88,7 @@ func TestUpdateCredential(t *testing.T) {
 	HandleUpdateCredentialSuccessfully(t, fakeServer)
 
 	updateOpts := credentials.UpdateOpts{
-		ProjectID: "731fc6f265cd486d900f16e84c5cb594",
-		Type:      "ec2",
-		UserID:    "bb5476fd12884539b41d5a88f838d773",
-		Blob:      "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
+		Blob: "{\"access\":\"181920\",\"secret\":\"secretKey\"}",
 	}
 
 	actual, err := credentials.Update(context.TODO(), client.ServiceClient(fakeServer), "2441494e52ab6d594a34d74586075cb299489bdd1e9389e3ab06467a4f460609", updateOpts).Extract()

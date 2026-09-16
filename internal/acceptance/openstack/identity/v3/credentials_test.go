@@ -78,10 +78,7 @@ func TestCredentialsCRUD(t *testing.T) {
 	th.AssertEquals(t, getCredential.ProjectID, createOpts.ProjectID)
 
 	updateOpts := credentials.UpdateOpts{
-		ProjectID: project.ID,
-		Type:      "ec2",
-		UserID:    user.ID,
-		Blob:      "{\"access\":\"181920\",\"secret\":\"mySecret\"}",
+		Blob: "{\"access\":\"181920\",\"secret\":\"mySecret\"}",
 	}
 
 	// Update a credential
@@ -90,9 +87,9 @@ func TestCredentialsCRUD(t *testing.T) {
 	tools.PrintResource(t, updateCredential)
 
 	th.AssertEquals(t, updateOpts.Blob, updateCredential.Blob)
-	th.AssertEquals(t, updateOpts.Type, updateCredential.Type)
-	th.AssertEquals(t, updateOpts.UserID, updateCredential.UserID)
-	th.AssertEquals(t, updateOpts.ProjectID, updateCredential.ProjectID)
+	th.AssertEquals(t, createOpts.Type, updateCredential.Type)
+	th.AssertEquals(t, createOpts.UserID, updateCredential.UserID)
+	th.AssertEquals(t, createOpts.ProjectID, updateCredential.ProjectID)
 }
 
 func TestCredentialsValidateS3(t *testing.T) {
