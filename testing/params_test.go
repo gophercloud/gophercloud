@@ -85,6 +85,13 @@ func TestBuildQueryString(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error: 'Options type is not a struct'")
 	}
+
+	requiredNumericZero := struct {
+		Limit int `q:"limit" required:"true"`
+	}{}
+	actual, err = gophercloud.BuildQueryString(&requiredNumericZero)
+	th.CheckNoErr(t, err)
+	th.CheckDeepEquals(t, &url.URL{RawQuery: "limit=0"}, actual)
 }
 
 func TestBuildHeaders(t *testing.T) {
@@ -105,7 +112,15 @@ func TestBuildHeaders(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 
 	testStruct.Num = 0
-	_, err = gophercloud.BuildHeaders(&testStruct)
+	actual, err = gophercloud.BuildHeaders(&testStruct)
+	th.CheckNoErr(t, err)
+	expected["Number"] = "0"
+	th.CheckDeepEquals(t, expected, actual)
+
+	missingRequired := struct {
+		Name string `h:"Name" required:"true"`
+	}{}
+	_, err = gophercloud.BuildHeaders(&missingRequired)
 	if err == nil {
 		t.Errorf("Expected error: 'Required header not set'")
 	}
@@ -286,4 +301,27 @@ func TestBuildRequestBody(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expectedComplexFields, actual)
 
+}
+
+func TestBuildRequestBodyRequiredNumericZero(t *testing.T) {
+	// Zero is legitimate input for required numeric fields (for example,
+	// Keystone accepts 0 as a registered limit), so it must not be
+	// rejected client-side. Other zero values still indicate missing input.
+	opts := struct {
+		Limit int    `json:"limit" required:"true"`
+		Name  string `json:"name" required:"true"`
+	}{
+		Limit: 0,
+		Name:  "snapshot",
+	}
+
+	actual, err := gophercloud.BuildRequestBody(opts, "")
+	th.AssertNoErr(t, err)
+	// Note: numbers come back as float64 after the JSON round-trip.
+	th.AssertEquals(t, float64(0), actual["limit"])
+	th.AssertEquals(t, "snapshot", actual["name"])
+
+	opts.Name = ""
+	_, err = gophercloud.BuildRequestBody(opts, "")
+	th.AssertTypeEquals(t, gophercloud.ErrMissingInput{}, err)
 }
