@@ -1,6 +1,10 @@
 package inventory
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"slices"
+)
 
 type BootInfoType struct {
 	CurrentBootMode string `json:"current_boot_mode"`
@@ -75,4 +79,37 @@ type InventoryType struct {
 
 func (inv *InventoryType) Compat() {
 	inv.CPU.Frequency = string(inv.CPU.RealFrequency)
+}
+
+var emptyFrequency = []string{``, `""`, `null`}
+
+func (t *CPUType) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 || string(data) == "null" {
+		return nil
+	}
+
+	var cpuTypeCompat struct {
+		Architecture string          `json:"architecture"`
+		Count        int             `json:"count"`
+		Flags        []string        `json:"flags"`
+		Frequency    json.RawMessage `json:"frequency"`
+		ModelName    string          `json:"model_name"`
+	}
+	if err := json.Unmarshal(data, &cpuTypeCompat); err != nil {
+		return err
+	}
+
+	// This is the main point of this function: frequency can be an empty string
+	if !slices.Contains(emptyFrequency, string(cpuTypeCompat.Frequency)) {
+		if err := json.Unmarshal(cpuTypeCompat.Frequency, &t.RealFrequency); err != nil {
+			return fmt.Errorf("unable to unmarshal frequency: %w", err)
+		}
+		t.Frequency = string(t.RealFrequency)
+	}
+
+	t.Architecture = cpuTypeCompat.Architecture
+	t.Count = cpuTypeCompat.Count
+	t.Flags = cpuTypeCompat.Flags
+	t.ModelName = cpuTypeCompat.ModelName
+	return nil
 }
