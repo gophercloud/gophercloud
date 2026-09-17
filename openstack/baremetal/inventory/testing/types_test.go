@@ -20,22 +20,53 @@ func TestInventory(t *testing.T) {
 	th.CheckDeepEquals(t, Inventory, output)
 }
 
-func TestFrequencyAsNumber(t *testing.T) {
-	var output inventory.InventoryType
-	sample := strings.Replace(InventorySample,
-		`"frequency": "2100.084"`,
-		`"frequency": 2100.084`, 1)
-	if sample == InventorySample {
-		t.Fatal("TestFrequencyAsNumber needs updating")
+func TestFrequency(t *testing.T) {
+	cases := []struct {
+		Value    string
+		Expected string
+	}{
+		{
+			Value:    `"frequency": "42"`,
+			Expected: "42",
+		},
+		{
+			Value:    `"missing frequency": 42`,
+			Expected: "",
+		},
+		{
+			Value:    `"frequency": 2100.084`,
+			Expected: "2100.084",
+		},
+		{
+			Value:    `"frequency": ""`,
+			Expected: "",
+		},
+		{
+			Value:    `"frequency": null`,
+			Expected: "",
+		},
 	}
 
-	err := json.Unmarshal([]byte(sample), &output)
-	if err != nil {
-		t.Fatalf("Failed to unmarshal inventory: %s", err)
-	}
+	for _, tc := range cases {
+		t.Run(tc.Value, func(t *testing.T) {
+			var output inventory.InventoryType
+			sample := strings.Replace(InventorySample,
+				`"frequency": "2100.084"`, tc.Value, 1)
+			if sample == InventorySample {
+				t.Fatal("TestFrequency needs updating")
+			}
 
-	output.Compat()
-	th.CheckDeepEquals(t, Inventory, output)
+			err := json.Unmarshal([]byte(sample), &output)
+			if err != nil {
+				t.Fatalf("Failed to unmarshal inventory: %s", err)
+			}
+
+			expected := Inventory
+			expected.CPU.Frequency = tc.Expected
+			expected.CPU.RealFrequency = json.Number(tc.Expected)
+			th.CheckDeepEquals(t, expected, output)
+		})
+	}
 }
 
 func TestLLDPTLVErrors(t *testing.T) {
