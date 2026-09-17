@@ -546,7 +546,13 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 			_, err = io.Copy(io.Discard, resp.Body)
 			return resp, err
 		}
-		if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
+		// UseNumber keeps integers that do not fit in float64 (for example
+		// signed 64-bit maximum BIOS bounds) exact when JSONResponse is any.
+		// Extract() round-trips Body through json.Marshal; float64 rounding
+		// makes that second unmarshal fail for int fields.
+		dec := json.NewDecoder(resp.Body)
+		dec.UseNumber()
+		if err := dec.Decode(options.JSONResponse); err != nil {
 			if client.RetryFunc != nil {
 				var e error
 				state.retries = state.retries + 1
