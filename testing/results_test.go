@@ -2,6 +2,7 @@ package testing
 
 import (
 	"encoding/json"
+	"math"
 	"strings"
 	"testing"
 
@@ -302,4 +303,29 @@ func TestExtractEmptyResponse(t *testing.T) {
 	// Should have zero values
 	th.AssertEquals(t, "", network.ID)
 	th.AssertEquals(t, "", network.Name)
+}
+
+func TestExtractIntoStructPtrPreservesInt64Max(t *testing.T) {
+	// Body as produced after Request() / pagination decode with UseNumber.
+	body := map[string]any{
+		"item": map[string]any{
+			"name":        "CoreDisableMask_0_0",
+			"upper_bound": json.Number("9223372036854775807"),
+		},
+	}
+
+	r := gophercloud.Result{Body: body}
+
+	var item struct {
+		Name       string `json:"name"`
+		UpperBound *int   `json:"upper_bound"`
+	}
+
+	err := r.ExtractIntoStructPtr(&item, "item")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "CoreDisableMask_0_0", item.Name)
+	if item.UpperBound == nil {
+		t.Fatal("expected upper_bound to be set")
+	}
+	th.AssertEquals(t, math.MaxInt, *item.UpperBound)
 }

@@ -746,6 +746,22 @@ const NodeDetailBIOSSettingsBody = `
 }
 `
 
+const NodeDetailBIOSSettingsInt64BoundBody = `
+{
+  "bios": [
+   {
+      "name": "CoreDisableMask_0_0",
+      "value": "0",
+      "attribute_type": "Integer",
+      "allowable_values": [],
+      "lower_bound": 0,
+      "upper_bound": 9223372036854775807,
+      "read_only": false
+   }
+   ]
+}
+`
+
 const NodeSingleBIOSSettingBody = `
 {
   "Setting": {
@@ -1717,6 +1733,16 @@ func HandleListDetailBIOSSettingsSuccessfully(t *testing.T, fakeServer th.FakeSe
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		fmt.Fprint(w, NodeDetailBIOSSettingsBody)
+	})
+}
+
+func HandleListDetailBIOSSettingsInt64BoundSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprint(w, NodeDetailBIOSSettingsInt64BoundBody)
 	})
 }
 
