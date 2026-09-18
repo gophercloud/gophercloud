@@ -176,11 +176,8 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		// Project scoping by name requires project domain
 		scope = &gophercloud.AuthScope{
 			ProjectName: projectName,
-			// The follow UP PR will remove the fallback to
-			// DomainID and DomainName, and will require the user
-			// to specify the project domain explicitly.
-			DomainID:   coalesce(cloud.AuthInfo.ProjectDomainID, cloud.AuthInfo.DomainID),
-			DomainName: coalesce(cloud.AuthInfo.ProjectDomainName, cloud.AuthInfo.DomainName),
+			DomainID:    cloud.AuthInfo.ProjectDomainID,
+			DomainName:  cloud.AuthInfo.ProjectDomainName,
 		}
 	} else if domainID := coalesce(options.domainID, cloud.AuthInfo.DomainID); domainID != "" {
 		// Domain scoping by ID (when no project is specified)
@@ -195,15 +192,12 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 	}
 
 	return gophercloud.AuthOptions{
-			IdentityEndpoint: coalesce(options.authURL, cloud.AuthInfo.AuthURL),
-			Username:         coalesce(options.username, cloud.AuthInfo.Username),
-			UserID:           coalesce(options.userID, cloud.AuthInfo.UserID),
-			Password:         coalesce(options.password, cloud.AuthInfo.Password),
-			// The follow UP PR will remove the fallback to
-			// DomainID and DomainName, and will require the user
-			// to specify the project domain explicitly.
-			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.UserDomainID, cloud.AuthInfo.DomainID),
-			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.UserDomainName, cloud.AuthInfo.DomainName),
+			IdentityEndpoint:            coalesce(options.authURL, cloud.AuthInfo.AuthURL),
+			Username:                    coalesce(options.username, cloud.AuthInfo.Username),
+			UserID:                      coalesce(options.userID, cloud.AuthInfo.UserID),
+			Password:                    coalesce(options.password, cloud.AuthInfo.Password),
+			DomainID:                    coalesce(options.domainID, cloud.AuthInfo.DomainID),
+			DomainName:                  coalesce(options.domainName, cloud.AuthInfo.DomainName),
 			TenantID:                    coalesce(options.projectID, cloud.AuthInfo.ProjectID),
 			TenantName:                  coalesce(options.projectName, cloud.AuthInfo.ProjectName),
 			TokenID:                     coalesce(options.token, cloud.AuthInfo.Token),
