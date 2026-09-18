@@ -148,6 +148,68 @@ func TestUserAgent(t *testing.T) {
 	th.CheckEquals(t, expected, actual)
 }
 
+func TestBearerRequestSkipsRedundantReauthentication(t *testing.T) {
+	const (
+		oldToken = "old-token"
+		newToken = "new-token"
+	)
+
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.SetToken(oldToken)
+	p.AuthenticatedHeadersFunc = func(token string) map[string]string {
+		return map[string]string{"Authorization": "Bearer " + token}
+	}
+
+	var reauths atomic.Int32
+	p.ReauthFunc = func(context.Context) error {
+		reauths.Add(1)
+		p.SetToken(newToken)
+		return nil
+	}
+
+	firstRequest := make(chan struct{})
+	releaseFirst := make(chan struct{})
+	var oldRequests atomic.Int32
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Header.Get("Authorization") {
+		case "Bearer " + oldToken:
+			if oldRequests.Add(1) == 1 {
+				close(firstRequest)
+				<-releaseFirst
+			}
+			w.WriteHeader(http.StatusUnauthorized)
+		case "Bearer " + newToken:
+			w.WriteHeader(http.StatusNoContent)
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	})
+
+	request := func(errs chan<- error) {
+		_, err := p.Request(context.Background(), http.MethodGet, fakeServer.Endpoint()+"route", &gophercloud.RequestOpts{
+			OkCodes: []int{http.StatusNoContent},
+		})
+		errs <- err
+	}
+
+	errs := make(chan error, 2)
+	go request(errs)
+	<-firstRequest
+	go request(errs)
+	if err := <-errs; err != nil {
+		t.Fatal(err)
+	}
+	close(releaseFirst)
+	if err := <-errs; err != nil {
+		t.Fatal(err)
+	}
+
+	th.AssertEquals(t, int32(1), reauths.Load())
+}
+
 func TestConcurrentReauth(t *testing.T) {
 	var info = struct {
 		numreauths  int
@@ -205,9 +267,6 @@ func TestConcurrentReauth(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
 	reqopts.KeepResponseBody = true
-	reqopts.MoreHeaders = map[string]string{
-		"X-Auth-Token": prereauthTok,
-	}
 
 	for i := 0; i < numconc; i++ {
 		wg.Add(1)
@@ -382,9 +441,6 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
 	reqopts.KeepResponseBody = true
-	reqopts.MoreHeaders = map[string]string{
-		"X-Auth-Token": prereauthTok,
-	}
 
 	for i := 0; i < numconc; i++ {
 		wg.Add(1)
