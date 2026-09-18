@@ -56,7 +56,11 @@ type Endpoint struct {
 	Name string `json:"name"`
 
 	// Region is the region the Endpoint is located in.
+	// Deprecated in v3.2 in favor of region_id.
 	Region string `json:"region"`
+
+	// RegionID is the ID of the region the Endpoint is located in.
+	RegionID string `json:"region_id"`
 
 	// ServiceID is the ID of the service the Endpoint refers to.
 	ServiceID string `json:"service_id"`
