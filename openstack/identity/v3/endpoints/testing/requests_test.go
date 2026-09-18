@@ -92,6 +92,7 @@ func TestListEndpoints(t *testing.T) {
 					},
 					"name": "the-endiest-of-points",
 					"region": "underground",
+					"region_id": "region-12",
 					"service_id": "asdfasdfasdfasdf",
 					"url": "https://1.2.3.4:9000/",
 					"description": "List endpoint1 test"
@@ -105,6 +106,7 @@ func TestListEndpoints(t *testing.T) {
 					},
 					"name": "shhhh",
 					"region": "underground",
+					"region_id": "region-13",
 					"service_id": "asdfasdfasdfasdf",
 					"url": "https://1.2.3.4:9001/",
 					"description": "List endpoint2 test"
@@ -133,6 +135,7 @@ func TestListEndpoints(t *testing.T) {
 				Enabled:      true,
 				Name:         "the-endiest-of-points",
 				Region:       "underground",
+				RegionID:     "region-12",
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9000/",
 				Description:  "List endpoint1 test",
@@ -143,6 +146,7 @@ func TestListEndpoints(t *testing.T) {
 				Enabled:      false,
 				Name:         "shhhh",
 				Region:       "underground",
+				RegionID:     "region-13",
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9001/",
 				Description:  "List endpoint2 test",
