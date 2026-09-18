@@ -340,7 +340,7 @@ func TestParse(t *testing.T) {
 	t.Run("parses clouds-public.yaml if present", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test-0:
-    cloud: gophercloud-test-1
+    profile: gophercloud-test-1
     auth:
       user_domain_name: CustomDomain`
 		const cloudsPublicYAML = `public-clouds:
@@ -478,6 +478,115 @@ func TestParse(t *testing.T) {
 
 		if got := ao.DomainName; got != "CustomDomain" {
 			t.Errorf("unexpected DomainName: %q", got)
+		}
+	})
+
+	t.Run("don't read fs secure.yaml if WithCloudsYAML is set", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/clouds:13000`
+		const secureYAMLFS = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/secure:13000`
+
+		// Create a working dir to test if fs is read
+		wDir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		th.AssertNoErr(t, err)
+		defer rmTmpDirOrPanic(wDir)
+
+		th.AssertNoErr(t, os.WriteFile(path.Join(wDir, "secure.yaml"), []byte(secureYAMLFS), 0644))
+
+		cwd, err := os.Getwd()
+		th.AssertNoErr(t, err)
+		th.AssertNoErr(t, os.Chdir(wDir))
+		defer func() {
+			if err := os.Chdir(cwd); err != nil {
+				panic("unable to reset the current working directory: " + err.Error())
+			}
+		}()
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		th.AssertNoErr(t, err)
+
+		if got := ao.IdentityEndpoint; got != "https://example.com/clouds:13000" {
+			t.Errorf("unexpected identity endpoint: %q", got)
+		}
+	})
+
+	t.Run("lookup an aside secure.yaml if WithLocations is set without WithSecureLocations", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/clouds:13000
+      password: non-secure`
+		const secureYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/secure:13000
+      password: secure`
+
+		// Create a custom dir to lookup in
+		dir, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		th.AssertNoErr(t, err)
+		defer rmTmpDirOrPanic(dir)
+
+		th.AssertNoErr(t, os.WriteFile(path.Join(dir, "clouds.yaml"), []byte(cloudsYAML), 0644))
+		th.AssertNoErr(t, os.WriteFile(path.Join(dir, "secure.yaml"), []byte(secureYAML), 0640))
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithLocations(path.Join(dir, "clouds.yaml")),
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		th.AssertNoErr(t, err)
+
+		if got := ao.Password; got != "secure" {
+			t.Errorf("unexpected password: %q", got)
+		}
+	})
+
+	t.Run("don't look up aside secure if both WithLocations and WithSecureLocations are given", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/clouds:13000
+      password: non-secure`
+		const secureYAML1 = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/secure:13000
+      password: secure-1`
+		const secureYAML2 = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com/secure:13000
+      password: secure-2`
+
+		dir1, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		th.AssertNoErr(t, err)
+		defer rmTmpDirOrPanic(dir1)
+
+		dir2, err := os.MkdirTemp(os.TempDir(), tempDirPrefix)
+		th.AssertNoErr(t, err)
+		defer rmTmpDirOrPanic(dir2)
+
+		th.AssertNoErr(t, os.WriteFile(path.Join(dir1, "clouds.yaml"), []byte(cloudsYAML), 0644))
+		th.AssertNoErr(t, os.WriteFile(path.Join(dir1, "secure.yaml"), []byte(secureYAML1), 0640))
+		th.AssertNoErr(t, os.WriteFile(path.Join(dir2, "secure.yaml"), []byte(secureYAML2), 0640))
+
+		ao, _, _, err := clouds.Parse(
+			clouds.WithLocations(path.Join(dir1, "clouds.yaml")),
+			clouds.WithSecureLocations(path.Join(dir2, "secure.yaml")),
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		th.AssertNoErr(t, err)
+
+		if got := ao.Password; got != "secure-2" {
+			t.Errorf("unexpected password: %q", got)
 		}
 	})
 
