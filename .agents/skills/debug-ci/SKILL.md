@@ -14,15 +14,7 @@ Debug failures in the Gophercloud acceptance test suite run via GitHub Actions.
 
 ## Overview
 
-Gophercloud acceptance tests run Go tests (via `gotestsum --format testname`) against real OpenStack environments deployed with [devstack](https://github.com/gophercloud/devstack-action) in GitHub Actions. Each functional workflow runs against a matrix of OpenStack versions:
-
-| Name | Branch |
-|---|---|
-| master | `master` |
-| gazpacho | `stable/2026.1` |
-| epoxy | `stable/2025.1` |
-
-> This table reflects the current CI matrix. Verify against the workflow files under `.github/workflows/functional-*.yaml` if it may be stale. Not all workflows run on every version. For example, `functional-metric` currently only runs on `master`.
+Gophercloud acceptance tests run Go tests (via `gotestsum --format testname`) against real OpenStack environments deployed with [devstack](https://github.com/gophercloud/devstack-action) in GitHub Actions. Each functional workflow runs against a matrix of OpenStack versions defined in the workflow files under `.github/workflows/functional-*.yaml`. Check the `matrix.include` entries in the relevant workflow to see the current set of versions.
 
 When a test fails, the CI uploads devstack logs as artifacts (only on failure).
 
