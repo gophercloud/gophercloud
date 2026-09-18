@@ -1,3 +1,22 @@
+## v2.15.0 (2026-09-18)
+
+* [GH-3980](https://github.com/gophercloud/gophercloud/pull/3980) [v2] fix(config/clouds): resolve reference to clouds-public.yaml
+* [GH-3992](https://github.com/gophercloud/gophercloud/pull/3992) [v2] test(db): use datastore-appropriate config parameter in TestConfigurationsCRUD
+* [GH-3996](https://github.com/gophercloud/gophercloud/pull/3996) build(deps): bump the all-github-actions group with 3 updates
+* [GH-4001](https://github.com/gophercloud/gophercloud/pull/4001) [v2] feat: add loadbalancer provider capabilities
+* [GH-4002](https://github.com/gophercloud/gophercloud/pull/4002) build(deps): bump the all-github-actions group with 3 updates
+* [GH-4004](https://github.com/gophercloud/gophercloud/pull/4004) [v2] auth: support more scope cases in clouds.yaml parser
+* [GH-4007](https://github.com/gophercloud/gophercloud/pull/4007) [v2] collectlogs: fix regex to capture all devstack service names
+* [GH-4011](https://github.com/gophercloud/gophercloud/pull/4011) [v2] baremetal: account for different types of CPU.Frequency
+* [GH-4014](https://github.com/gophercloud/gophercloud/pull/4014) [v2] fix(params): allow zero values for required numeric fields
+* [GH-4015](https://github.com/gophercloud/gophercloud/pull/4015) identity: credentials Update test sends only blob
+* [GH-4018](https://github.com/gophercloud/gophercloud/pull/4018) [v2] Preserve integer precision when decoding JSON into any
+* [GH-4019](https://github.com/gophercloud/gophercloud/pull/4019) [v2] reservation: add hosts resources
+* [GH-4021](https://github.com/gophercloud/gophercloud/pull/4021) [v2] baremetal: also account for Frequency as an empty string
+* [GH-4022](https://github.com/gophercloud/gophercloud/pull/4022) reservation: Add Blazar service client and CI job
+* [GH-4023](https://github.com/gophercloud/gophercloud/pull/4023) [v2] identity: add RegionID to endpoints
+* [GH-4024](https://github.com/gophercloud/gophercloud/pull/4024) [v2] Add CI debug skill for acceptance test failure analysis
+
 ## v2.14.0 (2026-08-20)
 
 * [GH-3797](https://github.com/gophercloud/gophercloud/pull/3797) build(deps): bump github/codeql-action from 4.36.1 to 4.36.2
