@@ -9,6 +9,10 @@ updates:
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
+  ignore:
+    # Below dependencies need a newer go version (>= 1.26):
+    - dependency-name: "golang.org/x/crypto"
+      update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
   groups:
     all-go-mod:
       patterns: [ "*" ]
@@ -33,6 +37,10 @@ updates:
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
+  ignore:
+    # Below dependencies need a newer go version (>= 1.26):
+    - dependency-name: "golang.org/x/crypto"
+      update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
   groups:
     all-go-mod:
       patterns: [ "*" ]
