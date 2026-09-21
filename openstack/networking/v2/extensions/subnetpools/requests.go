@@ -21,27 +21,27 @@ type ListOptsBuilder interface {
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
 type ListOpts struct {
-	ID               string `q:"id"`
-	Name             string `q:"name"`
-	DefaultQuota     int    `q:"default_quota"`
-	TenantID         string `q:"tenant_id"`
-	ProjectID        string `q:"project_id"`
-	DefaultPrefixLen int    `q:"default_prefixlen"`
-	MinPrefixLen     int    `q:"min_prefixlen"`
-	MaxPrefixLen     int    `q:"max_prefixlen"`
-	AddressScopeID   string `q:"address_scope_id"`
-	IPVersion        int    `q:"ip_version"`
-	Shared           *bool  `q:"shared"`
-	Description      string `q:"description"`
-	IsDefault        *bool  `q:"is_default"`
-	Limit            int    `q:"limit"`
-	Marker           string `q:"marker"`
-	SortKey          string `q:"sort_key"`
-	SortDir          string `q:"sort_dir"`
-	Tags             string `q:"tags"`
-	TagsAny          string `q:"tags-any"`
-	NotTags          string `q:"not-tags"`
-	NotTagsAny       string `q:"not-tags-any"`
+	ID               string   `q:"id"`
+	Name             string   `q:"name"`
+	DefaultQuota     int      `q:"default_quota"`
+	TenantID         string   `q:"tenant_id"`
+	ProjectID        string   `q:"project_id"`
+	DefaultPrefixLen int      `q:"default_prefixlen"`
+	MinPrefixLen     int      `q:"min_prefixlen"`
+	MaxPrefixLen     int      `q:"max_prefixlen"`
+	AddressScopeID   string   `q:"address_scope_id"`
+	IPVersion        int      `q:"ip_version"`
+	Shared           *bool    `q:"shared"`
+	Description      string   `q:"description"`
+	IsDefault        *bool    `q:"is_default"`
+	Limit            int      `q:"limit"`
+	Marker           string   `q:"marker"`
+	SortKey          string   `q:"sort_key"`
+	SortDir          string   `q:"sort_dir"`
+	Tags             []string `q:"tags" format:"comma-separated"`
+	TagsAny          []string `q:"tags-any" format:"comma-separated"`
+	NotTags          []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny       []string `q:"not-tags-any" format:"comma-separated"`
 	// type int does not allow to filter with revision_number=0
 	RevisionNumber int `q:"revision_number"`
 }
