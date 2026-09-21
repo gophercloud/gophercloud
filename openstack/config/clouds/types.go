@@ -189,6 +189,9 @@ func (r *Region) UnmarshalYAML(unmarshal func(any) error) error {
 // AuthType respresents a valid method of authentication.
 type AuthType string
 
+// CloudsType represents a kind of clouds.yaml (clouds, secure, public)
+type cloudsType string
+
 const (
 	// AuthPassword defines an unknown version of the password
 	AuthPassword AuthType = "password"
@@ -207,4 +210,8 @@ const (
 
 	// AuthV3ApplicationCredential defines version 3 of the application credential
 	AuthV3ApplicationCredential AuthType = "v3applicationcredential"
+
+	cloudsDefault cloudsType = "clouds.yaml"
+	secure        cloudsType = "secure.yaml"
+	public        cloudsType = "clouds-public.yaml"
 )
