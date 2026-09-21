@@ -21,6 +21,7 @@ var (
 	versionID          = "{versionID}"
 	paramID            = "{paramID}"
 	dsParamListURL     = "/datastores/" + dsID + "/versions/" + versionID + "/parameters"
+	dsParamCreateURL   = "/mgmt/datastores/versions/" + versionID + "/parameters"
 	dsParamGetURL      = "/datastores/" + dsID + "/versions/" + versionID + "/parameters/" + paramID
 	globalParamListURL = "/datastores/versions/" + versionID + "/parameters"
 	globalParamGetURL  = "/datastores/versions/" + versionID + "/parameters/" + paramID
@@ -190,6 +191,89 @@ func TestGetDSParam(t *testing.T) {
 	}
 
 	th.AssertDeepEquals(t, expected, param)
+}
+
+func TestCreateDatastoreVersionParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, dsParamCreateURL, "POST", CreateParamReq, CreateParamJSON, 200)
+
+	minSize := 64
+	maxSize := 65535
+	opts := configurations.CreateParamOpts{
+		Name:     "connect_timeout",
+		DataType: "integer",
+		MinSize:  &minSize,
+		MaxSize:  &maxSize,
+	}
+
+	params, err := configurations.CreateDatastoreVersionParam(context.TODO(), client.ServiceClient(fakeServer), versionID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := []configurations.Param{
+		{Max: 65535, Min: 64, Name: "connect_timeout", RestartRequired: false, Type: "integer"},
+	}
+
+	th.AssertDeepEquals(t, expected, params)
+}
+
+func TestCreateDatastoreVersionParamWithZeroSizes(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, dsParamCreateURL, "POST", CreateParamZeroReq, CreateParamZeroJSON, 200)
+
+	minSize := 0
+	maxSize := 0
+	opts := configurations.CreateParamOpts{
+		Name:     "connect_timeout",
+		DataType: "integer",
+		MinSize:  &minSize,
+		MaxSize:  &maxSize,
+	}
+
+	params, err := configurations.CreateDatastoreVersionParam(context.TODO(), client.ServiceClient(fakeServer), versionID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := []configurations.Param{
+		{Max: 0, Min: 0, Name: "connect_timeout", RestartRequired: false, Type: "integer"},
+	}
+
+	th.AssertDeepEquals(t, expected, params)
+}
+
+func TestUpdateDatastoreVersionParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, dsParamCreateURL+"/"+paramID, "PUT", UpdateParamReq, UpdateParamJSON, 200)
+
+	minSize := 64
+	maxSize := 65535
+	restartRequired := false
+	opts := configurations.UpdateParamOpts{
+		Name:            "connect_timeout",
+		DataType:        "integer",
+		MinSize:         &minSize,
+		MaxSize:         &maxSize,
+		RestartRequired: &restartRequired,
+	}
+
+	param, err := configurations.UpdateDatastoreVersionParam(context.TODO(), client.ServiceClient(fakeServer), versionID, paramID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &configurations.Param{
+		Max: 65535, Min: 64, Name: "connect_timeout", RestartRequired: false, Type: "integer",
+	}
+
+	th.AssertDeepEquals(t, expected, param)
+}
+
+func TestDeleteDatastoreVersionParam(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	fixture.SetupHandler(t, fakeServer, dsParamCreateURL+"/"+paramID, "DELETE", "", "", 204)
+
+	err := configurations.DeleteDatastoreVersionParam(context.TODO(), client.ServiceClient(fakeServer), versionID, paramID).ExtractErr()
+	th.AssertNoErr(t, err)
 }
 
 func TestListGlobalParams(t *testing.T) {
