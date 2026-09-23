@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack"
@@ -21,17 +22,23 @@ func TestOAuth1CRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
+	ao, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
 
-	user, err := tokenResult.ExtractUser()
+	tokenRes := tokens.Create(context.TODO(), client, ao.Auth)
+	token, err := tokenRes.Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, token)
+
+	user, err := tokenRes.ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	roles, err := tokenResult.ExtractRoles()
+	roles, err := tokenRes.ExtractRoles()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, roles)
 
-	project, err := tokenResult.ExtractProject()
+	project, err := tokenRes.ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -181,14 +188,17 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 	th.AssertNoErr(t, err)
 
 	// Opts to auth using an oauth1 credential
-	authOptions := &oauth1.AuthOptions{
-		OAuthConsumerKey:     consumer.ID,
-		OAuthConsumerSecret:  consumer.Secret,
-		OAuthToken:           accessToken.OAuthToken,
-		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
-		OAuthSignatureMethod: method,
+	authOptions := auth.AuthOptionsV3{
+		AuthURL: newClient.Endpoint,
+		Auth: auth.V3OAuth1Opts{
+			ConsumerKey:     consumer.ID,
+			ConsumerSecret:  consumer.Secret,
+			Token:           accessToken.OAuthToken,
+			TokenSecret:     accessToken.OAuthTokenSecret,
+			SignatureMethod: auth.OAuth1SignatureMethod(method),
+		},
 	}
-	err = openstack.AuthenticateV3(context.TODO(), newClient.ProviderClient, authOptions, gophercloud.EndpointOpts{})
+	err = openstack.Authenticate(context.TODO(), newClient.ProviderClient, authOptions)
 	th.AssertNoErr(t, err)
 
 	// Test OAuth1 token extract
