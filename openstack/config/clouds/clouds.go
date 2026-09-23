@@ -136,7 +136,7 @@ func Parse(opts ...ParseOption) (Cloud, gophercloud.EndpointOpts, *tls.Config, e
 		if secureCloud, ok := secureClouds.Clouds[options.cloudName]; ok {
 			// If secureCloud has content and it differs from the cloud entry,
 			// merge the two together.
-			if !reflect.DeepEqual((gophercloud.AuthOptions{}), secureClouds) && !reflect.DeepEqual(clouds, secureClouds) {
+			if !reflect.DeepEqual((Cloud{}), secureClouds) && !reflect.DeepEqual(clouds, secureClouds) {
 				var err error
 				cloud, err = mergeClouds(secureCloud, cloud)
 				if err != nil {

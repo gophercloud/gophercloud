@@ -20,15 +20,19 @@ func TestTokenAuthenticate(t *testing.T) {
 	client, err := clients.NewIdentityV2UnauthenticatedClient()
 	th.AssertNoErr(t, err)
 
-	authOptions, err := auth.AuthOptionsFromEnv()
+	authOptions, err := auth.AuthOptionsFromEnvV2()
 	th.AssertNoErr(t, err)
 
-	result, err := authOptions.Authenticate(context.TODO(), client.ProviderClient)
+	result := tokens.Create(context.TODO(), client, authOptions.Auth)
+	token, err := result.ExtractToken()
 	th.AssertNoErr(t, err)
 
-	tools.PrintResource(t, result)
+	tools.PrintResource(t, token)
 
-	for _, entry := range result.Catalog.Entries {
+	catalog, err := result.ExtractServiceCatalog()
+	th.AssertNoErr(t, err)
+
+	for _, entry := range catalog.Entries {
 		tools.PrintResource(t, entry)
 	}
 }
@@ -40,7 +44,16 @@ func TestTokenValidate(t *testing.T) {
 	client, err := clients.NewIdentityV2Client()
 	th.AssertNoErr(t, err)
 
-	getResult := tokens.Get(context.TODO(), client, client.TokenID)
+	authOptions, err := auth.AuthOptionsFromEnvV2()
+	th.AssertNoErr(t, err)
+
+	result := tokens.Create(context.TODO(), client, authOptions.Auth)
+	token, err := result.ExtractToken()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, token)
+
+	getResult := tokens.Get(context.TODO(), client, token.ID)
 	user, err := getResult.ExtractUser()
 	th.AssertNoErr(t, err)
 

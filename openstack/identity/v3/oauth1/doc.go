@@ -84,16 +84,19 @@ Example to Authenticate a client using OAuth1 method
 		panic(err)
 	}
 
-	authOptions := &oauth1.AuthOptions{
-		// consumer token, created earlier
-		OAuthConsumerKey:    consumer.ID,
-		OAuthConsumerSecret: consumer.Secret,
-		// access token, created earlier
-		OAuthToken:           accessToken.OAuthToken,
-		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
-		OAuthSignatureMethod: oauth1.HMACSHA1,
+	authOptions := auth.AuthOptionsV3{
+		AuthURL: "http://localhost:5000/v3",
+		Auth: auth.V3OAuth1Opts{
+			// consumer token, created earlier
+			ConsumerKey:    consumer.ID,
+			ConsumerSecret: consumer.Secret,
+			// access token, created earlier
+			Token:           accessToken.OAuthToken,
+			TokenSecret:     accessToken.OAuthTokenSecret,
+			SignatureMethod: auth.OAuth1HMACSHA1,
+		},
 	}
-	err = openstack.AuthenticateV3(context.TODO(), client, authOptions, gophercloud.EndpointOpts{})
+	err = openstack.Authenticate(context.TODO(), client, authOptions)
 	if err != nil {
 		panic(err)
 	}
@@ -105,14 +108,14 @@ Example to Create a Token using OAuth1 method
 		oauth1.TokenExt
 	}
 
-	createOpts := &oauth1.AuthOptions{
+	createOpts := auth.V3OAuth1Opts{
 		// consumer token, created earlier
-		OAuthConsumerKey:    consumer.ID,
-		OAuthConsumerSecret: consumer.Secret,
+		ConsumerKey:    consumer.ID,
+		ConsumerSecret: consumer.Secret,
 		// access token, created earlier
-		OAuthToken:           accessToken.OAuthToken,
-		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
-		OAuthSignatureMethod: oauth1.HMACSHA1,
+		Token:           accessToken.OAuthToken,
+		TokenSecret:     accessToken.OAuthTokenSecret,
+		SignatureMethod: auth.OAuth1HMACSHA1,
 	}
 	err := tokens.Create(context.TODO(), identityClient, createOpts).ExtractInto(&oauth1Token)
 	if err != nil {

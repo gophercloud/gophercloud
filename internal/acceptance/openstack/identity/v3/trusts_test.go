@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/roles"
@@ -22,8 +23,13 @@ func TestTrustCRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	// Obtain the Admin user's ID from the authenticated client's token.
-	adminUser, err := tokens.Get(context.TODO(), client, client.TokenID, nil).ExtractUser()
+	// Generate a token and obtain the Admin user's ID from it.
+	ao, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
+
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
+	th.AssertNoErr(t, err)
+	adminUser, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 
 	// Get the admin and member role IDs.
