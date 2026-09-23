@@ -9,8 +9,8 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 )
 
-// NewRequestV2 builds request options for identity v2 authentication.
-func NewRequestV2(opts AuthOptionsBuilderV2) (*gophercloud.RequestOpts, error) {
+// newRequestV2 builds request options for identity v2 authentication.
+func newRequestV2(opts AuthOptionsBuilderV2) (*gophercloud.RequestOpts, error) {
 	authData, err := opts.ToAuthBody()
 	if err != nil {
 		return nil, err
@@ -36,18 +36,18 @@ func NewRequestV2(opts AuthOptionsBuilderV2) (*gophercloud.RequestOpts, error) {
 }
 
 // RequestOption configures NewRequestV3
-type RequestOption func(*requestOptions)
+type requestOption func(*requestOptions)
 
 type requestOptions struct {
 	tokenURL string
 }
 
-func WithTokenURL(tokenURL string) RequestOption {
+func withTokenURL(tokenURL string) requestOption {
 	return func(o *requestOptions) { o.tokenURL = tokenURL }
 }
 
-// NewRequestV3 builds request options for identity v3 authentication.
-func NewRequestV3(opts AuthOptionsBuilderV3, options ...RequestOption) (*gophercloud.RequestOpts, error) {
+// newRequestV3 builds request options for identity v3 authentication.
+func newRequestV3(opts AuthOptionsBuilderV3, options ...requestOption) (*gophercloud.RequestOpts, error) {
 	authData, err := opts.ToAuthBody()
 	if err != nil {
 		return nil, err
@@ -87,16 +87,6 @@ func NewRequestV3(opts AuthOptionsBuilderV3, options ...RequestOption) (*gopherc
 		MoreHeaders: moreHeaders,
 		OmitHeaders: omitHeaders,
 	}, nil
-}
-
-// NewRequestEC2 builds request options for an ec2tokens request.
-func NewRequestEC2(opts AuthOptionsBuilderEC2) (*gophercloud.RequestOpts, error) {
-	return newRequestEC2(opts, "token")
-}
-
-// NewRequestS3 builds request options for an s3tokens request.
-func NewRequestS3(opts AuthOptionsBuilderEC2) (*gophercloud.RequestOpts, error) {
-	return newRequestEC2(opts, "body_hash", "headers", "host", "params", "path", "verb")
 }
 
 // newRequestEC2 builds request options from EC2 credentials, omitting the

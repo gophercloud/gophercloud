@@ -8,57 +8,41 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func TestV2RescopeTokenOptsToAuthBodyTenantID(t *testing.T) {
-	opts := auth.V2RescopeTokenOpts{Token: "the-token", TenantID: "tenant-id"}
-
-	authData, err := opts.ToAuthBody()
+func TestV2TokenOptsRescopeTenantID(t *testing.T) {
+	opts := auth.V2TokenOpts{Token: "the-token", TenantID: "tenant-id"}
+	body, err := opts.ToAuthBody()
 	th.AssertNoErr(t, err)
-
-	expected := map[string]map[string]any{
-		"token": {
-			"tenantId": "tenant-id",
-			"token":    map[string]any{"id": "the-token"},
-		},
-	}
-	th.AssertDeepEquals(t, expected, authData)
+	th.AssertDeepEquals(t, map[string]map[string]any{
+		"token": {"tenantId": "tenant-id", "token": map[string]any{"id": "the-token"}},
+	}, body)
 }
 
-func TestV2RescopeTokenOptsToAuthBodyTenantName(t *testing.T) {
-	opts := auth.V2RescopeTokenOpts{Token: "the-token", TenantName: "tenant-name"}
-
-	authData, err := opts.ToAuthBody()
+func TestV2TokenOptsRescopeTenantName(t *testing.T) {
+	opts := auth.V2TokenOpts{Token: "the-token", TenantName: "tenant-name"}
+	body, err := opts.ToAuthBody()
 	th.AssertNoErr(t, err)
-
-	expected := map[string]map[string]any{
-		"token": {
-			"tenantName": "tenant-name",
-			"token":      map[string]any{"id": "the-token"},
-		},
-	}
-	th.AssertDeepEquals(t, expected, authData)
+	th.AssertDeepEquals(t, map[string]map[string]any{
+		"token": {"tenantName": "tenant-name", "token": map[string]any{"id": "the-token"}},
+	}, body)
 }
 
-func TestV2RescopeTokenOptsMissingTenant(t *testing.T) {
-	opts := auth.V2RescopeTokenOpts{Token: "the-token"}
+func TestV2TokenOptsUnscoped(t *testing.T) {
+	body, err := (auth.V2TokenOpts{Token: "the-token"}).ToAuthBody()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]map[string]any{
+		"token": {"token": map[string]any{"id": "the-token"}},
+	}, body)
+}
 
-	_, err := opts.ToAuthBody()
+func TestV2TokenOptsRescopeMissingToken(t *testing.T) {
+	_, err := (auth.V2TokenOpts{TenantID: "tenant-id"}).ToAuthBody()
 	th.AssertErr(t, err)
-
-	_, ok := err.(gophercloud.ErrScopeEmpty)
+	missing, ok := err.(gophercloud.ErrMissingInput)
 	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, "Token", missing.Argument)
 }
 
-func TestV2RescopeTokenOptsMissingToken(t *testing.T) {
-	opts := auth.V2RescopeTokenOpts{TenantID: "tenant-id"}
-
-	_, err := opts.ToAuthBody()
-	th.AssertErr(t, err)
-
-	_, ok := err.(gophercloud.ErrMissingInput)
-	th.AssertEquals(t, true, ok)
-}
-
-func TestV2RescopeTokenOptsCanReauth(t *testing.T) {
-	opts := auth.V2RescopeTokenOpts{Token: "t", TenantID: "tenant-id"}
+func TestV2TokenOptsRescopeCannotReauthByDefault(t *testing.T) {
+	opts := auth.V2TokenOpts{Token: "t", TenantID: "tenant-id"}
 	th.AssertEquals(t, false, opts.CanReauth())
 }

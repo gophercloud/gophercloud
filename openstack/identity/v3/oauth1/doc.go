@@ -1,8 +1,46 @@
 /*
 Package oauth1 manages OAuth1 consumers, request tokens, and access tokens.
 
-To exchange OAuth1 credentials for a Keystone token, use
-V3OAuth1Opts in github.com/gophercloud/gophercloud/v2/auth.
+For normal Keystone authentication, use github.com/gophercloud/gophercloud/v2/auth.
+OAuth1 credential management examples below remain separate from exchanging those
+credentials for a Keystone token.
+
+# Manually creating a Keystone token
+
+Create accepts a complete request body through CreateOptsBuilder. It optionally
+accepts headers through CreateOptsHeadersBuilder. Define the request type and its
+methods at package scope; auth credential options do not implement these interfaces.
+
+	type tokenRequest struct {
+	 // Body is the complete JSON request, including its outer envelope.
+	 Body map[string]any
+	 // Headers contains additional request headers.
+	 Headers map[string]string
+	}
+
+	func (opts tokenRequest) ToTokenCreateMap() (map[string]any, error) {
+	 return opts.Body, nil
+	}
+
+	func (opts tokenRequest) ToTokenCreateHeaders(method, url string) (map[string]string, error) {
+	 return opts.Headers, nil
+	}
+
+The caller supplies the complete JSON body and any additional headers. The
+identityClient below is an already-configured Identity service client.
+
+	func createToken(ctx context.Context, identityClient *gophercloud.ServiceClient) (*tokens.Token, error) {
+	 request := tokenRequest{
+	 Body: map[string]any{"auth": map[string]any{
+	 "identity": map[string]any{"methods": []string{"oauth1"}, "oauth1": map[string]any{}},
+	}},
+	 Headers: map[string]string{"Authorization": "OAuth <precomputed signature parameters>"},
+	 }
+	 return oauth1.Create(ctx, identityClient, request).ExtractToken()
+	}
+
+The Authorization value must be an OAuth1 header signed for the actual POST URL.
+Create does not calculate signatures or assemble authentication credentials.
 
 Example to Create an OAuth1 Consumer
 

@@ -60,7 +60,6 @@ func TestV3AuthMethodsPropagateScopeErrors(t *testing.T) {
 		{name: "password", opts: auth.V3PasswordOpts{Scope: scope}},
 		{name: "TOTP", opts: auth.V3TOTPOpts{Scope: scope}},
 		{name: "token", opts: auth.V3TokenOpts{Scope: scope}},
-		{name: "rescope token", opts: auth.V3RescopeTokenOpts{Scope: scope}},
 		{name: "multifactor", opts: auth.V3MultifactorOpts{Scope: scope}},
 	}
 

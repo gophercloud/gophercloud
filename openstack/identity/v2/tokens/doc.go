@@ -1,46 +1,41 @@
 /*
-Package tokens provides information and interaction with the token API
-resource for the OpenStack Identity service.
+Package tokens provides low-level access to Identity v2 token creation and retrieval.
 
-For more information, see:
-http://developer.openstack.org/api-ref-identity-v2.html#identity-auth-v2
+For normal Keystone authentication, use github.com/gophercloud/gophercloud/v2/auth.
 
-Example to Create an Unscoped Token from a Password
+# Manually creating a Keystone token
 
-	authOpts := gophercloud.AuthOptions{
-		Username: "user",
-		Password: "pass"
+Create accepts a complete request body through CreateOptsBuilder. It optionally
+accepts headers through CreateOptsHeadersBuilder. Define the request type and its
+methods at package scope; auth credential options do not implement these interfaces.
+
+	type tokenRequest struct {
+	 // Body is the complete JSON request, including its outer envelope.
+	 Body map[string]any
+	 // Headers contains additional request headers.
+	 Headers map[string]string
 	}
 
-	token, err := tokens.Create(context.TODO(), identityClient, authOpts).ExtractToken()
-	if err != nil {
-		panic(err)
+	func (opts tokenRequest) ToTokenCreateMap() (map[string]any, error) {
+	 return opts.Body, nil
 	}
 
-Example to Create a Token from a Tenant ID and Password
-
-	authOpts := gophercloud.AuthOptions{
-		Username: "user",
-		Password: "password",
-		TenantID: "fc394f2ab2df4114bde39905f800dc57"
+	func (opts tokenRequest) ToTokenCreateHeaders(method, url string) (map[string]string, error) {
+	 return opts.Headers, nil
 	}
 
-	token, err := tokens.Create(context.TODO(), identityClient, authOpts).ExtractToken()
-	if err != nil {
-		panic(err)
-	}
+The caller supplies the complete JSON body and any additional headers. The
+identityClient below is an already-configured Identity service client.
 
-Example to Create a Token from a Tenant Name and Password
-
-	authOpts := gophercloud.AuthOptions{
-		Username:   "user",
-		Password:   "password",
-		TenantName: "tenantname"
-	}
-
-	token, err := tokens.Create(context.TODO(), identityClient, authOpts).ExtractToken()
-	if err != nil {
-		panic(err)
+	func createToken(ctx context.Context, identityClient *gophercloud.ServiceClient) (*tokens.Token, error) {
+	 request := tokenRequest{
+	 Body: map[string]any{"auth": map[string]any{
+	 "passwordCredentials": map[string]any{"username": "username", "password": "password"},
+	 "tenantId": "tenant-id",
+	}},
+	 Headers: map[string]string{"Accept": "application/json"},
+	 }
+	 return tokens.Create(ctx, identityClient, request).ExtractToken()
 	}
 */
 package tokens
