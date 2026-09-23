@@ -185,6 +185,33 @@ openstack/identity/v3/oauth1 package.
 		panic(err)
 	}
 
+# EC2 authentication
+
+AuthOptionsEC2 uses EC2TokenOpts to sign an AWS v2 or v4 request and exchange it
+for a Keystone token. ServiceProvider is a separately authenticated provider
+with permission to call Keystone's EC2 token endpoint; it remains responsible
+for authenticating requests to that endpoint.
+
+	opts := auth.AuthOptionsEC2{
+		AuthURL:         "https://identity.example.com/v3",
+		ServiceProvider: serviceProvider,
+		Auth: auth.EC2TokenOpts{
+			Access:  "access-key",
+			Secret:  "secret-key",
+			Host:    "ec2.example.com",
+			Path:    "/",
+			Verb:    "GET",
+			Params: map[string]string{
+				"SignatureVersion": "2",
+				"SignatureMethod":  auth.EC2CredentialsHmacSha256V2,
+			},
+		},
+	}
+	result, err := opts.Authenticate(context.Background(), nil)
+	if err != nil {
+		panic(err)
+	}
+
 # Reauthentication
 
 Credential options supporting AllowReauth default to false. Set it to true to

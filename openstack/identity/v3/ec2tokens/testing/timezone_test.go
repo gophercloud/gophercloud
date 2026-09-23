@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -25,38 +25,38 @@ func TestSignatureV4Timezone(t *testing.T) {
 	} {
 		t.Run(instant.Format(time.RFC3339), func(t *testing.T) {
 			bodyHash := "body-hash"
-			opts := ec2tokens.AuthOptions{
+			opts := auth.EC2TokenOpts{
 				Access: "access", Secret: "secret", Region: "region", Service: "ec2",
 				Verb: "GET", Path: "/", BodyHash: &bodyHash, Timestamp: &instant,
 				Headers: map[string]string{"Host": "localhost", "X-Amz-SignedHeaders": "host"},
 			}
-			expectedKey := ec2tokens.EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, instant)
-			expectedString := ec2tokens.EC2CredentialsBuildStringToSignV4(opts, "host", bodyHash, instant)
-			expectedSignature := ec2tokens.EC2CredentialsBuildSignatureV4(expectedKey, expectedString)
-			expectedHeader := ec2tokens.EC2CredentialsBuildAuthorizationHeaderV4(opts, "host", expectedSignature, instant)
-			expectedBody, err := opts.ToTokenV3CreateMap(nil)
+			expectedKey := auth.EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, instant)
+			expectedString := auth.EC2CredentialsBuildStringToSignV4(opts, "host", bodyHash, instant)
+			expectedSignature := auth.EC2CredentialsBuildSignatureV4(expectedKey, expectedString)
+			expectedHeader := auth.EC2CredentialsBuildAuthorizationHeaderV4(opts, "host", expectedSignature, instant)
+			expectedBody, err := opts.ToAuthBody()
 			th.AssertNoErr(t, err)
 			for _, loc := range locations {
 				t.Run(loc.String(), func(t *testing.T) {
 					timestamp := instant.In(loc)
 					original := timestamp
-					key := ec2tokens.EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, timestamp)
+					key := auth.EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, timestamp)
 					th.CheckDeepEquals(t, expectedKey, key)
-					stringToSign := ec2tokens.EC2CredentialsBuildStringToSignV4(opts, "host", bodyHash, timestamp)
+					stringToSign := auth.EC2CredentialsBuildStringToSignV4(opts, "host", bodyHash, timestamp)
 					th.CheckDeepEquals(t, expectedString, stringToSign)
 					lines := strings.Split(string(stringToSign), "\n")
 					th.AssertEquals(t, 4, len(lines))
 					th.CheckEquals(t, instant.Format("20060102T150405Z"), lines[1])
 					th.CheckEquals(t, instant.Format("20060102")+"/region/ec2/aws4_request", lines[2])
-					signature := ec2tokens.EC2CredentialsBuildSignatureV4(key, stringToSign)
+					signature := auth.EC2CredentialsBuildSignatureV4(key, stringToSign)
 					th.CheckEquals(t, expectedSignature, signature)
-					th.CheckEquals(t, expectedHeader, ec2tokens.EC2CredentialsBuildAuthorizationHeaderV4(opts, "host", expectedSignature, timestamp))
+					th.CheckEquals(t, expectedHeader, auth.EC2CredentialsBuildAuthorizationHeaderV4(opts, "host", expectedSignature, timestamp))
 					localOpts := opts
 					localOpts.Timestamp = &timestamp
-					body, err := localOpts.ToTokenV3CreateMap(nil)
+					body, err := localOpts.ToAuthBody()
 					th.AssertNoErr(t, err)
 					th.CheckDeepEquals(t, expectedBody, body)
-					headers := body["credentials"].(map[string]any)["headers"].(map[string]string)
+					headers := body["credentials"]["headers"].(map[string]string)
 					th.CheckEquals(t, instant.Format("20060102T150405Z"), headers["X-Amz-Date"])
 					th.CheckDeepEquals(t, original, timestamp)
 					th.CheckDeepEquals(t, map[string]string{"Host": "localhost", "X-Amz-SignedHeaders": "host"}, opts.Headers)
