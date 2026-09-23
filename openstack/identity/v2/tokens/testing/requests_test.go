@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string) tokens.CreateResult {
+func tokenPost(t *testing.T, options auth.AuthOptionsBuilderV2, requestJSON string) tokens.CreateResult {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	HandleTokenPost(t, fakeServer, requestJSON)
@@ -18,7 +19,7 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
 	return tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options)
 }
 
-func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
+func tokenPostErr(t *testing.T, options auth.AuthOptionsBuilderV2, expectedErr error) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	HandleTokenPost(t, fakeServer, "")
@@ -28,7 +29,7 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 }
 
 func TestCreateWithPassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Username: "me",
 		Password: "swordfish",
 	}
@@ -46,7 +47,7 @@ func TestCreateWithPassword(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantID(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Username: "me",
 		Password: "opensesame",
 		TenantID: "fc394f2ab2df4114bde39905f800dc57",
@@ -66,7 +67,7 @@ func TestCreateTokenWithTenantID(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantName(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Username:   "me",
 		Password:   "opensesame",
 		TenantName: "demo",
@@ -86,7 +87,7 @@ func TestCreateTokenWithTenantName(t *testing.T) {
 }
 
 func TestRequireUsername(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Password: "thing",
 	}
 
