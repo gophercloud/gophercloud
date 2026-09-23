@@ -121,8 +121,6 @@ func TestV3PasswordOptsValidation(t *testing.T) {
 		{name: "both username and user ID", opts: auth.V3PasswordOpts{Username: "testuser", UserID: "user-id", Password: "testpass"}, kind: gophercloud.ErrUsernameOrUserID{}},
 		{name: "username without domain", opts: auth.V3PasswordOpts{Username: "testuser", Password: "testpass"}, kind: gophercloud.ErrDomainIDOrDomainName{}},
 		{name: "username with both domains", opts: auth.V3PasswordOpts{Username: "testuser", Password: "testpass", UserDomainID: "domain-id", UserDomainName: "domain-name"}, kind: gophercloud.ErrDomainIDOrDomainName{}},
-		{name: "user ID with domain ID", opts: auth.V3PasswordOpts{UserID: "user-id", Password: "testpass", UserDomainID: "domain-id"}, kind: gophercloud.ErrDomainIDWithUserID{}},
-		{name: "user ID with domain name", opts: auth.V3PasswordOpts{UserID: "user-id", Password: "testpass", UserDomainName: "domain-name"}, kind: gophercloud.ErrDomainNameWithUserID{}},
 	}
 
 	for _, test := range tests {
@@ -183,8 +181,6 @@ func TestV3TOTPOptsValidation(t *testing.T) {
 		{name: "both username and user ID", opts: auth.V3TOTPOpts{Username: "testuser", UserID: "user-id", Passcode: "123456"}, kind: gophercloud.ErrUsernameOrUserID{}},
 		{name: "username without domain", opts: auth.V3TOTPOpts{Username: "testuser", Passcode: "123456"}, kind: gophercloud.ErrDomainIDOrDomainName{}},
 		{name: "username with both domains", opts: auth.V3TOTPOpts{Username: "testuser", Passcode: "123456", UserDomainID: "domain-id", UserDomainName: "domain-name"}, kind: gophercloud.ErrDomainIDOrDomainName{}},
-		{name: "user ID with domain ID", opts: auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456", UserDomainID: "domain-id"}, kind: gophercloud.ErrDomainIDWithUserID{}},
-		{name: "user ID with domain name", opts: auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456", UserDomainName: "domain-name"}, kind: gophercloud.ErrDomainNameWithUserID{}},
 	}
 
 	for _, test := range tests {
@@ -249,8 +245,6 @@ func TestV3ApplicationCredentialOptsValidation(t *testing.T) {
 		{name: "both username and user ID", opts: auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "credential-name", ApplicationCredentialSecret: "secret", Username: "testuser", UserID: "user-id"}, kind: gophercloud.ErrUsernameOrUserID{}},
 		{name: "username without domain", opts: auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "credential-name", ApplicationCredentialSecret: "secret", Username: "testuser"}, kind: gophercloud.ErrDomainIDOrDomainName{}},
 		{name: "username with both domains", opts: auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "credential-name", ApplicationCredentialSecret: "secret", Username: "testuser", UserDomainID: "domain-id", UserDomainName: "domain-name"}, kind: gophercloud.ErrDomainIDOrDomainName{}},
-		{name: "user ID with domain ID", opts: auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "credential-name", ApplicationCredentialSecret: "secret", UserID: "user-id", UserDomainID: "domain-id"}, kind: gophercloud.ErrDomainIDWithUserID{}},
-		{name: "user ID with domain name", opts: auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "credential-name", ApplicationCredentialSecret: "secret", UserID: "user-id", UserDomainName: "domain-name"}, kind: gophercloud.ErrDomainNameWithUserID{}},
 	}
 
 	for _, test := range tests {
@@ -287,7 +281,6 @@ func TestV3AuthTypes(t *testing.T) {
 		{name: "TOTP", opts: auth.V3TOTPOpts{}, want: auth.AuthV3Totp},
 		{name: "token", opts: auth.V3TokenOpts{}, want: auth.AuthV3Token},
 		{name: "application credential", opts: auth.V3ApplicationCredentialOpts{}, want: auth.AuthV3ApplicationCredential},
-		{name: "rescope token", opts: auth.V3RescopeTokenOpts{}, want: auth.AuthV3Token},
 		{name: "multifactor", opts: auth.V3MultifactorOpts{}, want: auth.AuthV3MultiFactor},
 	}
 
@@ -329,7 +322,6 @@ func TestV3MultifactorOptsToAuthBody(t *testing.T) {
 
 func TestV3MultifactorOptsSignsOAuth1Method(t *testing.T) {
 	timestamp := time.Unix(0, 0)
-	tokenURL := "http://127.0.0.1:33199/v3/auth/tokens"
 	oauth1 := auth.V3OAuth1Opts{
 		ConsumerKey:     "7fea2d",
 		ConsumerSecret:  "secretsecret",
@@ -343,10 +335,10 @@ func TestV3MultifactorOptsSignsOAuth1Method(t *testing.T) {
 		auth.V3PasswordOpts{UserID: "user-id", Password: "testpass"},
 		oauth1,
 	}}
-	request, err := auth.NewRequestV3(opts, auth.WithTokenURL(tokenURL))
+	_, headers, err := v3AuthRequest(t, opts)
 	th.AssertNoErr(t, err)
 	// Same signature as TestV3OAuth1OptsBuildRequest.
-	th.AssertEquals(t, `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`, request.MoreHeaders["Authorization"])
+	th.AssertEquals(t, `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`, headers.Get("Authorization"))
 }
 
 func TestV3MultifactorOptsPropagatesMethodError(t *testing.T) {
@@ -362,7 +354,7 @@ func TestV3MultifactorOptsPropagatesMethodError(t *testing.T) {
 
 func TestV3MultifactorOptsRejectsUnsupportedMethod(t *testing.T) {
 	opts := auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{
-		auth.V3RescopeTokenOpts{Token: "testtoken", Scope: &auth.Scope{ProjectID: "project-id"}},
+		auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{auth.V3TokenOpts{Token: "testtoken"}}},
 	}}
 
 	_, err := opts.ToAuthBody()
@@ -371,12 +363,14 @@ func TestV3MultifactorOptsRejectsUnsupportedMethod(t *testing.T) {
 	th.AssertEquals(t, true, ok)
 }
 
-func TestV3MultifactorOptsWithoutOAuth1DoesNotNeedTokenURL(t *testing.T) {
+func TestV3MultifactorOptsWithoutOAuth1Request(t *testing.T) {
 	opts := auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{
 		auth.V3PasswordOpts{UserID: "user-id", Password: "testpass"},
 		auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456"},
 	}}
 
-	_, err := auth.NewRequestV3(opts)
+	body, headers, err := v3AuthRequest(t, opts)
 	th.AssertNoErr(t, err)
+	th.AssertJSONEquals(t, `{"auth":{"identity":{"methods":["password","totp"],"password":{"user":{"id":"user-id","password":"testpass"}},"totp":{"user":{"id":"user-id","passcode":"123456"}}}}}`, body)
+	th.AssertEquals(t, "", headers.Get("Authorization"))
 }

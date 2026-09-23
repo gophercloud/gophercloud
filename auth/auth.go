@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
-// AuthType respresents a keystone auth plugin
+// AuthType represents a keystone auth plugin
 type AuthType string
 
 const (
@@ -80,7 +80,7 @@ type AuthOptionsBuilderV2 interface {
 
 type AuthOptionsBuilderV3 interface {
 	AuthOptionsBuilder
-	ToAuthHeaders(options ...RequestOption) (map[string]any, error)
+	ToAuthHeaders(options ...requestOption) (map[string]any, error)
 	ToAuthScope() (map[string]any, error)
 	ToAuthType() AuthType
 }
@@ -112,7 +112,7 @@ func (ao AuthOptionsV2) Authenticate(ctx context.Context, provider *gophercloud.
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
 
-	request, err := NewRequestV2(ao.Auth)
+	request, err := newRequestV2(ao.Auth)
 	if err != nil {
 		if invalid, ok := err.(gophercloud.ErrInvalidInput); ok && invalid.Value == 0 {
 			return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
@@ -174,7 +174,7 @@ func (ao AuthOptionsV3) Authenticate(ctx context.Context, provider *gophercloud.
 	tokenURL := client.ServiceURL("auth", "tokens")
 
 	// Methods that sign the request, such as OAuth1, need the URL it is sent to.
-	request, err := NewRequestV3(ao.Auth, WithTokenURL(tokenURL))
+	request, err := newRequestV3(ao.Auth, withTokenURL(tokenURL))
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +223,7 @@ func (ao AuthOptionsEC2) Authenticate(ctx context.Context, _ *gophercloud.Provid
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
 
-	request, err := NewRequestEC2(ao.Auth)
+	request, err := newRequestEC2(ao.Auth, "token")
 	if err != nil {
 		return nil, err
 	}

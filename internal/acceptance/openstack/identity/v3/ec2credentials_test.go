@@ -4,8 +4,13 @@ package v3
 
 import (
 	"context"
+	"fmt"
+	"maps"
+	"slices"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2credentials"
@@ -17,13 +22,40 @@ func TestEC2CredentialsCRD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
+	ao, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
 
-	user, err := tokenResult.ExtractUser()
+	authData, err := ao.Auth.ToAuthBody()
+	th.AssertNoErr(t, err)
+	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
+	for method, body := range authData {
+		identity[method] = body
+	}
+	authBody := map[string]any{"identity": identity}
+	scope, err := ao.Auth.ToAuthScope()
+	th.AssertNoErr(t, err)
+	if scope != nil {
+		authBody["scope"] = scope
+	}
+	authHeaders, err := ao.Auth.ToAuthHeaders()
+	th.AssertNoErr(t, err)
+	headers := make(map[string]string, len(authHeaders))
+	for name, value := range authHeaders {
+		headers[name] = fmt.Sprint(value)
+	}
+	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
+
+	res := tokens.Create(context.TODO(), client, request)
+	th.AssertNoErr(t, res.Err)
+	token, err := res.Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, token)
+
+	user, err := res.ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokenResult.ExtractProject()
+	project, err := res.ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 

@@ -38,7 +38,7 @@ func (opts V3MultifactorOpts) ToAuthBody() (map[string]map[string]any, error) {
 	return result, nil
 }
 
-func (opts V3MultifactorOpts) ToAuthHeaders(options ...RequestOption) (map[string]any, error) {
+func (opts V3MultifactorOpts) ToAuthHeaders(options ...requestOption) (map[string]any, error) {
 	result := make(map[string]any)
 	for _, authMethod := range opts.AuthMethods {
 		headers, err := authMethod.ToAuthHeaders(options...)

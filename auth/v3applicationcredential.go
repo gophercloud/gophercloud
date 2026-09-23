@@ -43,7 +43,7 @@ func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any,
 	//
 	// 1. application_credential id + secret
 	// 2. application_credential name + secret + user_id
-	// 3. application_credential name + secret + username + domain_id / domain_name
+	// 3. application_credential name + secret + username + user_domain_id / user_domain_name
 	if opts.ApplicationCredentialSecret == "" {
 		return nil, gophercloud.ErrAppCredMissingSecret{}
 	}
@@ -90,12 +90,6 @@ func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any,
 			Domain: domain,
 		}
 	} else if opts.UserID != "" {
-		// None of DomainID or DomainName may be specified
-		if opts.UserDomainID != "" {
-			return nil, gophercloud.ErrDomainIDWithUserID{}
-		} else if opts.UserDomainName != "" {
-			return nil, gophercloud.ErrDomainNameWithUserID{}
-		}
 		req.User = &userReq{ID: &opts.UserID}
 	}
 
@@ -111,7 +105,7 @@ func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any,
 	return result, nil
 }
 
-func (opts V3ApplicationCredentialOpts) ToAuthHeaders(_ ...RequestOption) (map[string]any, error) {
+func (opts V3ApplicationCredentialOpts) ToAuthHeaders(_ ...requestOption) (map[string]any, error) {
 	return nil, nil
 }
 

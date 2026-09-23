@@ -77,7 +77,7 @@ func (opts V3OAuth1Opts) ToAuthBody() (map[string]map[string]any, error) {
 }
 
 // ToAuthHeaders builds the OAuth1 Authorization header.
-func (opts V3OAuth1Opts) ToAuthHeaders(options ...RequestOption) (map[string]any, error) {
+func (opts V3OAuth1Opts) ToAuthHeaders(options ...requestOption) (map[string]any, error) {
 	var ro requestOptions
 	for _, option := range options {
 		option(&ro)
