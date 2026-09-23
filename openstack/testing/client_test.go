@@ -63,6 +63,47 @@ func TestAuthenticatedClientV3(t *testing.T) {
 	th.CheckEquals(t, ID, client.TokenID)
 }
 
+func TestAuthOptionsEC2ReauthenticatesThroughServiceProvider(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	requestCount := 0
+	fakeServer.Mux.HandleFunc("/v3/ec2tokens", func(w http.ResponseWriter, r *http.Request) {
+		requestCount++
+		th.TestMethod(t, r, http.MethodPost)
+		th.TestHeader(t, r, "X-Auth-Token", "service-token")
+		w.Header().Set("X-Subject-Token", fmt.Sprintf("ec2-token-%d", requestCount))
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"token":{"methods":["ec2credential"],"expires_at":"2030-12-01T12:00:00Z","issued_at":"2030-12-01T11:00:00Z","user":{"id":"user-id","name":"user"},"project":{"id":"project-id","name":"project"}}}`)
+	})
+
+	serviceProvider, err := openstack.NewClient(fakeServer.Endpoint())
+	th.AssertNoErr(t, err)
+	serviceProvider.SetToken("service-token")
+	options := auth.AuthOptionsEC2{
+		ServiceProvider: serviceProvider,
+		AuthURL:         fakeServer.Endpoint(),
+		Auth: auth.EC2TokenOpts{
+			Access:      "access",
+			Signature:   "signature",
+			AllowReauth: true,
+		},
+	}
+
+	provider, err := openstack.AuthenticatedClient(context.TODO(), options)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "ec2-token-1", provider.TokenID)
+	th.CheckEquals(t, "service-token", serviceProvider.TokenID)
+	if provider.ReauthFunc == nil {
+		t.Fatal("expected ReauthFunc")
+	}
+
+	th.AssertNoErr(t, provider.ReauthFunc(context.TODO()))
+	th.CheckEquals(t, "ec2-token-2", provider.TokenID)
+	th.CheckEquals(t, "service-token", serviceProvider.TokenID)
+	th.CheckEquals(t, 2, requestCount)
+}
+
 func TestAuthenticatedClientV2(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
