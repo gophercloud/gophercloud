@@ -245,3 +245,164 @@ func ExtractMinimumBandwidthRules(r pagination.Page) ([]MinimumBandwidthRule, er
 func ExtractMinimumBandwidthRulesInto(r pagination.Page, v any) error {
 	return r.(MinimumBandwidthRulePage).ExtractIntoSlicePtr(v, "minimum_bandwidth_rules")
 }
+
+// ExtractMinimumPacketRateRule is a function that accepts a result and extracts a MinimumPacketRateRule.
+func (r commonResult) ExtractMinimumPacketRateRule() (*MinimumPacketRateRule, error) {
+	var s struct {
+		MinimumPacketRateRule *MinimumPacketRateRule `json:"minimum_packet_rate_rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.MinimumPacketRateRule, err
+}
+
+// GetMinimumPacketRateRuleResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a MinimumPacketRateRule.
+type GetMinimumPacketRateRuleResult struct {
+	commonResult
+}
+
+// CreateMinimumPacketRateRuleResult represents the result of a Create operation. Call its Extract
+// method to interpret it as a MinimumPacketRateRule.
+type CreateMinimumPacketRateRuleResult struct {
+	commonResult
+}
+
+// UpdateMinimumPacketRateRuleResult represents the result of a Update operation. Call its Extract
+// method to interpret it as a MinimumPacketRateRule.
+type UpdateMinimumPacketRateRuleResult struct {
+	commonResult
+}
+
+// DeleteMinimumPacketRateRuleResult represents the result of a Delete operation. Call its Extract
+// method to interpret it as a MinimumPacketRateRule.
+type DeleteMinimumPacketRateRuleResult struct {
+	gophercloud.ErrResult
+}
+
+// MinimumPacketRateRule represents a QoS policy rule to set minimum packet rate.
+type MinimumPacketRateRule struct {
+	// ID is a unique ID of the rule.
+	ID string `json:"id"`
+
+	// TenantID is the ID of the Identity project.
+	TenantID string `json:"tenant_id"`
+
+	// MinKPps is a minimum kilopackets per second.
+	MinKPps int `json:"min_kpps"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction"`
+
+	// Tags optionally set via extensions/attributestags.
+	Tags []string `json:"tags"`
+}
+
+// MinimumPacketRateRulePage stores a single page of MinimumPacketRateRules from a List() API call.
+type MinimumPacketRateRulePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks whether a MinimumPacketRateRulePage is empty.
+func (r MinimumPacketRateRulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
+	is, err := ExtractMinimumPacketRateRules(r)
+	return len(is) == 0, err
+}
+
+// ExtractMinimumPacketRateRules accepts a MinimumPacketRateRulePage, and extracts the elements into a slice of
+// MinimumPacketRateRules.
+func ExtractMinimumPacketRateRules(r pagination.Page) ([]MinimumPacketRateRule, error) {
+	var s []MinimumPacketRateRule
+	err := ExtractMinimumPacketRateRulesInto(r, &s)
+	return s, err
+}
+
+// ExtractMinimumPacketRateRulesInto extracts the elements into a slice of MinimumPacketRateRule structs.
+func ExtractMinimumPacketRateRulesInto(r pagination.Page, v any) error {
+	return r.(MinimumPacketRateRulePage).ExtractIntoSlicePtr(v, "minimum_packet_rate_rules")
+}
+
+// ExtractPacketRateLimitRule is a function that accepts a result and extracts a PacketRateLimitRule.
+func (r commonResult) ExtractPacketRateLimitRule() (*PacketRateLimitRule, error) {
+	var s struct {
+		PacketRateLimitRule *PacketRateLimitRule `json:"packet_rate_limit_rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.PacketRateLimitRule, err
+}
+
+// GetPacketRateLimitRuleResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a PacketRateLimitRule.
+type GetPacketRateLimitRuleResult struct {
+	commonResult
+}
+
+// CreatePacketRateLimitRuleResult represents the result of a Create operation. Call its Extract
+// method to interpret it as a PacketRateLimitRule.
+type CreatePacketRateLimitRuleResult struct {
+	commonResult
+}
+
+// UpdatePacketRateLimitRuleResult represents the result of a Update operation. Call its Extract
+// method to interpret it as a PacketRateLimitRule.
+type UpdatePacketRateLimitRuleResult struct {
+	commonResult
+}
+
+// DeletePacketRateLimitRuleResult represents the result of a Delete operation. Call its Extract
+// method to interpret it as a PacketRateLimitRule.
+type DeletePacketRateLimitRuleResult struct {
+	gophercloud.ErrResult
+}
+
+// PacketRateLimitRule represents a QoS policy rule to set packet rate limits.
+type PacketRateLimitRule struct {
+	// ID is a unique ID of the rule.
+	ID string `json:"id"`
+
+	// TenantID is the ID of the Identity project.
+	TenantID string `json:"tenant_id"`
+
+	// MaxKPps is a maximum kilopackets per second.
+	MaxKPps int `json:"max_kpps"`
+
+	// MaxBurstKPps is a maximum burst size in kilopackets.
+	MaxBurstKPps int `json:"max_burst_kpps"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction"`
+
+	// Tags optionally set via extensions/attributestags.
+	Tags []string `json:"tags"`
+}
+
+// PacketRateLimitRulePage stores a single page of PacketRateLimitRules from a List() API call.
+type PacketRateLimitRulePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks whether a PacketRateLimitRulePage is empty.
+func (r PacketRateLimitRulePage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
+	is, err := ExtractPacketRateLimitRules(r)
+	return len(is) == 0, err
+}
+
+// ExtractPacketRateLimitRules accepts a PacketRateLimitRulePage, and extracts the elements into a slice of
+// PacketRateLimitRules.
+func ExtractPacketRateLimitRules(r pagination.Page) ([]PacketRateLimitRule, error) {
+	var s []PacketRateLimitRule
+	err := ExtractPacketRateLimitRulesInto(r, &s)
+	return s, err
+}
+
+// ExtractPacketRateLimitRulesInto extracts the elements into a slice of PacketRateLimitRule structs.
+func ExtractPacketRateLimitRulesInto(r pagination.Page, v any) error {
+	return r.(PacketRateLimitRulePage).ExtractIntoSlicePtr(v, "packet_rate_limit_rules")
+}
