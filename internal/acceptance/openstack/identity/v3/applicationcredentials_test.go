@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/applicationcredentials"
@@ -28,17 +29,22 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
+	ao, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
 
-	user, err := tokenResult.ExtractUser()
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, token)
+
+	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	roles, err := tokenResult.ExtractRoles()
+	roles, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractRoles()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, roles)
 
-	project, err := tokenResult.ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -153,7 +159,13 @@ func TestApplicationCredentialsAccessRules(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	user, err := tokens.Get(context.TODO(), client, client.TokenID, nil).ExtractUser()
+	ao, err := auth.AuthOptionsFromEnvV3()
+	th.AssertNoErr(t, err)
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, token)
+
+	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
