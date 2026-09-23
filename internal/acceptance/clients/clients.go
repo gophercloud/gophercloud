@@ -445,12 +445,12 @@ func NewIdentityV3Client() (*gophercloud.ServiceClient, error) {
 // for the OpenStack Identity v3 API. An error  will be returned if
 // authentication or client creation was not possible.
 func NewIdentityV3UnauthenticatedClient() (*gophercloud.ServiceClient, error) {
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := openstack.NewClient(ao.IdentityEndpoint)
+	client, err := openstack.NewClient(ao.GetAuthURL())
 	if err != nil {
 		return nil, err
 	}

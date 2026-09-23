@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 // BaseError is an error type that all other error types embed.
@@ -69,21 +68,6 @@ type ErrUnsupportedAuthType struct {
 
 func (e ErrUnsupportedAuthType) Error() string {
 	e.DefaultErrString = fmt.Sprintf("The %s auth type is not supported", e.AuthType)
-	return e.choseErrString()
-}
-
-// ErrMissingAnyoneOfEnvironmentVariables is the error when anyone of the environment variables
-// is required in a particular situation but not provided by the user
-type ErrMissingAnyoneOfEnvironmentVariables struct {
-	BaseError
-	EnvironmentVariables []string
-}
-
-func (e ErrMissingAnyoneOfEnvironmentVariables) Error() string {
-	e.DefaultErrString = fmt.Sprintf(
-		"Missing one of the following environment variables [%s]",
-		strings.Join(e.EnvironmentVariables, ", "),
-	)
 	return e.choseErrString()
 }
 
@@ -255,10 +239,6 @@ func unacceptedAttributeErr(attribute string) string {
 	return fmt.Sprintf("The base Identity V3 API does not accept authentication by %s", attribute)
 }
 
-func redundantWithTokenErr(attribute string) string {
-	return fmt.Sprintf("%s may not be provided when authenticating with a TokenID", attribute)
-}
-
 func redundantWithUserID(attribute string) string {
 	return fmt.Sprintf("%s may not be provided when authenticating with a UserID", attribute)
 }
@@ -282,34 +262,6 @@ type ErrTenantNameProvided struct{ BaseError }
 
 func (e ErrTenantNameProvided) Error() string {
 	return unacceptedAttributeErr("TenantName")
-}
-
-// ErrUsernameWithToken indicates that a Username was provided, but token authentication is being used instead.
-type ErrUsernameWithToken struct{ BaseError }
-
-func (e ErrUsernameWithToken) Error() string {
-	return redundantWithTokenErr("Username")
-}
-
-// ErrUserIDWithToken indicates that a UserID was provided, but token authentication is being used instead.
-type ErrUserIDWithToken struct{ BaseError }
-
-func (e ErrUserIDWithToken) Error() string {
-	return redundantWithTokenErr("UserID")
-}
-
-// ErrDomainIDWithToken indicates that a DomainID was provided, but token authentication is being used instead.
-type ErrDomainIDWithToken struct{ BaseError }
-
-func (e ErrDomainIDWithToken) Error() string {
-	return redundantWithTokenErr("DomainID")
-}
-
-// ErrDomainNameWithToken indicates that a DomainName was provided, but token authentication is being used instead.s
-type ErrDomainNameWithToken struct{ BaseError }
-
-func (e ErrDomainNameWithToken) Error() string {
-	return redundantWithTokenErr("DomainName")
 }
 
 // ErrUsernameOrUserID indicates that neither username nor userID are specified, or both are at once.
@@ -392,31 +344,10 @@ func (e ErrMissingPasscode) Error() string {
 	return "You must provide a passcode to authenticate"
 }
 
-// ErrScopeDomainIDOrDomainName indicates that a domain ID or Name was required in a Scope, but not present.
-type ErrScopeDomainIDOrDomainName struct{ BaseError }
-
-func (e ErrScopeDomainIDOrDomainName) Error() string {
-	return "You must provide exactly one of DomainID or DomainName in a Scope with ProjectName"
-}
-
 type ErrScopeProjectDomainIDOrProjectDomainName struct{ BaseError }
 
 func (e ErrScopeProjectDomainIDOrProjectDomainName) Error() string {
 	return "You must provide exactly one of ProjectDomainID or ProjectDomainName in a Scope with ProjectName"
-}
-
-// ErrScopeProjectIDOrProjectName indicates that both a ProjectID and a ProjectName were provided in a Scope.
-type ErrScopeProjectIDOrProjectName struct{ BaseError }
-
-func (e ErrScopeProjectIDOrProjectName) Error() string {
-	return "You must provide at most one of ProjectID or ProjectName in a Scope"
-}
-
-// ErrScopeProjectIDAlone indicates that a ProjectID was provided with other constraints in a Scope.
-type ErrScopeProjectIDAlone struct{ BaseError }
-
-func (e ErrScopeProjectIDAlone) Error() string {
-	return "ProjectID must be supplied alone in a Scope"
 }
 
 // ErrScopeEmpty indicates that no credentials were provided in a Scope.
