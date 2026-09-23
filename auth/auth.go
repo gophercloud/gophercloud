@@ -194,6 +194,12 @@ func (ao AuthOptionsV3) authenticate(ctx context.Context, provider *gophercloud.
 	request.JSONResponse = &result.Body
 	resp, err := client.Request(ctx, http.MethodPost, tokenURL, request)
 	_, result.Header, result.Err = gophercloud.ParseResponse(resp, err)
+	return v3AuthResult(result, ao.Auth.CanReauth())
+}
+
+// v3AuthResult converts an identity v3 token response, taking the token ID
+// from its X-Subject-Token header.
+func v3AuthResult(result gophercloud.Result, canReauth bool) (*AuthResult, error) {
 	if result.Err != nil {
 		return nil, result.Err
 	}
@@ -203,14 +209,16 @@ func (ao AuthOptionsV3) authenticate(ctx context.Context, provider *gophercloud.
 		return nil, err
 	}
 
-	return respBody.toAuthResult(result.Header.Get("X-Subject-Token"), ao.Auth.CanReauth()), nil
+	return respBody.toAuthResult(result.Header.Get("X-Subject-Token"), canReauth), nil
 }
 
-// AuthOptionsEC2 authenticates against the identity v3 ec2tokens endpoint
-// using EC2 credentials.
+// AuthOptionsEC2 authenticates with EC2 credentials through a separate
+// service/admin provider. Retaining that provider allows automatic
+// reauthentication to authorize every request to the ec2tokens endpoint.
 type AuthOptionsEC2 struct {
-	AuthURL string
-	Auth    AuthOptionsBuilderEC2
+	ServiceProvider *gophercloud.ProviderClient
+	AuthURL         string
+	Auth            AuthOptionsBuilderEC2
 }
 
 func (ao AuthOptionsEC2) GetAuthURL() string {
@@ -221,7 +229,7 @@ func (ao AuthOptionsEC2) GetAuthURL() string {
 	return gophercloud.NormalizeURL(base) + "v3/"
 }
 
-func (ao AuthOptionsEC2) Authenticate(ctx context.Context, provider *gophercloud.ProviderClient) (*AuthResult, error) {
+func (ao AuthOptionsEC2) Authenticate(ctx context.Context, _ *gophercloud.ProviderClient) (*AuthResult, error) {
 	if ao.Auth == nil {
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
@@ -231,6 +239,7 @@ func (ao AuthOptionsEC2) Authenticate(ctx context.Context, provider *gophercloud
 		return nil, err
 	}
 
+	provider := ao.ServiceProvider
 	if provider == nil {
 		provider = &gophercloud.ProviderClient{}
 	}
@@ -244,16 +253,7 @@ func (ao AuthOptionsEC2) Authenticate(ctx context.Context, provider *gophercloud
 	request.JSONResponse = &result.Body
 	resp, err := client.Request(ctx, http.MethodPost, client.ServiceURL("ec2tokens"), request)
 	_, result.Header, result.Err = gophercloud.ParseResponse(resp, err)
-	if result.Err != nil {
-		return nil, result.Err
-	}
-
-	var respBody v3TokenBody
-	if err := result.ExtractIntoStructPtr(&respBody, "token"); err != nil {
-		return nil, err
-	}
-
-	return respBody.toAuthResult(result.Header.Get("X-Subject-Token"), ao.Auth.CanReauth()), nil
+	return v3AuthResult(result, ao.Auth.CanReauth())
 }
 
 type AuthResult struct {
