@@ -14,9 +14,6 @@ import (
 type AuthType string
 
 const (
-	// AuthNoAuth
-	AuthNoAuth AuthType = "none"
-
 	// AuthPassword defines an unknown version of the password
 	AuthPassword AuthType = "password"
 
