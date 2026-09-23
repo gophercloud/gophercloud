@@ -1,5 +1,5 @@
 /*
-Package tokens provides information and interaction with the EC2 token API
+Package ec2tokens provides information and interaction with the EC2 token API
 resource for the OpenStack Identity service.
 
 For more information, see:
@@ -7,8 +7,7 @@ https://docs.openstack.org/api-ref/identity/v2-ext/
 
 Example to Create a Token From an EC2 access and secret keys
 
-	var authOptions tokens.AuthOptionsBuilder
-	authOptions = &ec2tokens.AuthOptions{
+	authOptions := auth.EC2TokenOpts{
 		Access: "a7f1e798b7c2417cba4a02de97dc3cdc",
 		Secret: "18f4f6761ada4e3795fa5273c30349b9",
 	}
@@ -18,21 +17,19 @@ Example to Create a Token From an EC2 access and secret keys
 		panic(err)
 	}
 
-Example to auth a client using EC2 access and secret keys
+Example auth client using EC2 access and secret keys
 
-	client, err := openstack.NewClient("http://localhost:5000/v3")
-	if err != nil {
-		panic(err)
+	ao := auth.AuthOptionsEC2{
+		ServiceProvider: serviceProvider,
+		AuthURL:         "http://localhost:5000/v3",
+		Auth: auth.EC2TokenOpts{
+			Access:      "a7f1e798b7c2417cba4a02de97dc3cdc",
+			Secret:      "18f4f6761ada4e3795fa5273c30349b9",
+			AllowReauth: true,
+		},
 	}
 
-	var authOptions tokens.AuthOptionsBuilder
-	authOptions = &ec2tokens.AuthOptions{
-		Access:      "a7f1e798b7c2417cba4a02de97dc3cdc",
-		Secret:      "18f4f6761ada4e3795fa5273c30349b9",
-		AllowReauth: true,
-	}
-
-	err = openstack.AuthenticateV3(context.TODO(), client, authOptions, gophercloud.EndpointOpts{})
+	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
 	if err != nil {
 		panic(err)
 	}
