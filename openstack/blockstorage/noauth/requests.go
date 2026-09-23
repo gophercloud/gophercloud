@@ -5,48 +5,46 @@ import (
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 )
 
 // EndpointOpts specifies a "noauth" Cinder Endpoint.
 type EndpointOpts struct {
 	// CinderEndpoint [required] is currently only used with "noauth" Cinder.
-	// A cinder endpoint with "auth_strategy=noauth" is necessary, for example:
-	// http://example.com:8776/v2.
+	// A cinder endpoint with auth_strategy=noauth is necessary, for example:
+	// http://example.com:8776/v3.
 	CinderEndpoint string
 }
 
 // NewClient prepares an unauthenticated ProviderClient instance.
-func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	if options.Username == "" {
-		options.Username = "admin"
+func NewClient(options auth.NoAuthOpts) (*gophercloud.ProviderClient, error) {
+	if options == nil {
+		return nil, gophercloud.ErrMissingInput{Argument: "options"}
 	}
-	if options.TenantName == "" {
-		options.TenantName = "admin"
-	}
-
-	client := &gophercloud.ProviderClient{
-		TokenID: fmt.Sprintf("%s:%s", options.Username, options.TenantName),
+	token, err := options.ToNoAuthToken()
+	if err != nil {
+		return nil, err
 	}
 
-	return client, nil
+	return &gophercloud.ProviderClient{TokenID: token}, nil
 }
 
 func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string) (*gophercloud.ServiceClient, error) {
-	sc := new(gophercloud.ServiceClient)
 	if eo.CinderEndpoint == "" {
 		return nil, fmt.Errorf("CinderEndpoint is required")
 	}
 
-	token := strings.Split(client.TokenID, ":")
-	if len(token) != 2 {
+	userID, projectID, found := strings.Cut(client.TokenID, ":")
+	if !found || userID == "" || projectID == "" || strings.Contains(projectID, ":") {
 		return nil, fmt.Errorf("malformed noauth token")
 	}
 
-	endpoint := fmt.Sprintf("%s%s", gophercloud.NormalizeURL(eo.CinderEndpoint), token[1])
-	sc.Endpoint = gophercloud.NormalizeURL(endpoint)
-	sc.ProviderClient = client
-	sc.Type = clientType
-	return sc, nil
+	endpoint := gophercloud.NormalizeURL(gophercloud.NormalizeURL(eo.CinderEndpoint) + projectID)
+	return &gophercloud.ServiceClient{
+		Endpoint:       endpoint,
+		ProviderClient: client,
+		Type:           clientType,
+	}, nil
 }
 
 // NewBlockStorageNoAuthV2 creates a ServiceClient that may be used to access "noauth" v2 block storage service.
