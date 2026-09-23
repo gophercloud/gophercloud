@@ -80,3 +80,57 @@ func CreateMinimumBandwidthRule(t *testing.T, client *gophercloud.ServiceClient,
 
 	return rule, nil
 }
+
+// CreateMinimumPacketRateRule will create a QoS MinimumPacketRateRule associated with the provided QoS policy.
+// An error will be returned if the QoS rule could not be created.
+func CreateMinimumPacketRateRule(t *testing.T, client *gophercloud.ServiceClient, policyID string) (*rules.MinimumPacketRateRule, error) {
+	minKPps := 1000
+	// The minimum packet rate rule supports the "any" direction, which is
+	// specific to this rule type.
+	direction := "any"
+
+	createOpts := rules.CreateMinimumPacketRateRuleOpts{
+		MinKPps:   minKPps,
+		Direction: direction,
+	}
+
+	t.Logf("Attempting to create a QoS minimum packet rate rule with min_kpps: %d, direction: %s", minKPps, direction)
+
+	rule, err := rules.CreateMinimumPacketRateRule(context.TODO(), client, policyID, createOpts).ExtractMinimumPacketRateRule()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Succesfully created a QoS minimum packet rate rule")
+
+	th.AssertEquals(t, minKPps, rule.MinKPps)
+	th.AssertEquals(t, direction, rule.Direction)
+
+	return rule, nil
+}
+
+// CreatePacketRateLimitRule will create a QoS PacketRateLimitRule associated with the provided QoS policy.
+// An error will be returned if the QoS rule could not be created.
+func CreatePacketRateLimitRule(t *testing.T, client *gophercloud.ServiceClient, policyID string) (*rules.PacketRateLimitRule, error) {
+	maxKPps := 3000
+	maxBurstKPps := 300
+
+	createOpts := rules.CreatePacketRateLimitRuleOpts{
+		MaxKPps:      maxKPps,
+		MaxBurstKPps: maxBurstKPps,
+	}
+
+	t.Logf("Attempting to create a QoS packet rate limit rule with max_kpps: %d, max_burst_kpps: %d", maxKPps, maxBurstKPps)
+
+	rule, err := rules.CreatePacketRateLimitRule(context.TODO(), client, policyID, createOpts).ExtractPacketRateLimitRule()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Succesfully created a QoS packet rate limit rule")
+
+	th.AssertEquals(t, maxKPps, rule.MaxKPps)
+	th.AssertEquals(t, maxBurstKPps, rule.MaxBurstKPps)
+
+	return rule, nil
+}
