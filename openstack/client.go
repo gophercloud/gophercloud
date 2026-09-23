@@ -3,16 +3,11 @@ package openstack
 import (
 	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/auth"
-	tokens2 "github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/oauth1"
-	tokens3 "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
@@ -25,8 +20,8 @@ import (
 //
 // A basic example of using this would be:
 //
-//	ao, err := openstack.AuthOptionsFromEnv()
-//	provider, err := openstack.NewClient(ao.IdentityEndpoint)
+//	ao, err := auth.AuthOptionsFromEnv()
+//	provider, err := openstack.NewClient(ao.GetAuthURL())
 //	client, err := openstack.NewIdentityV3(ctx, provider, gophercloud.EndpointOpts{})
 func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	base, err := utils.BaseEndpoint(endpoint)
@@ -110,190 +105,10 @@ func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, optio
 	return nil
 }
 
-// AuthenticateV2 explicitly authenticates against the identity v2 endpoint.
-func AuthenticateV2(ctx context.Context, client *gophercloud.ProviderClient, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
-	return v2auth(ctx, client, "", options, eo)
-}
-
-type v2TokenNoReauth struct {
-	tokens2.AuthOptionsBuilder
-}
-
-func (v2TokenNoReauth) CanReauth() bool { return false }
-
-func v2auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, options tokens2.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
-	v2Client, err := NewIdentityV2(ctx, client, eo)
-	if err != nil {
-		return err
-	}
-
-	if endpoint != "" {
-		v2Client.Endpoint = endpoint
-	}
-
-	result := tokens2.Create(ctx, v2Client, options)
-
-	err = client.SetTokenAndAuthResult(result)
-	if err != nil {
-		return err
-	}
-
-	catalog, err := result.ExtractServiceCatalog()
-	if err != nil {
-		return err
-	}
-
-	if options.CanReauth() {
-		// here we're creating a throw-away client (tac). it's a copy of the user's provider client, but
-		// with the token and reauth func zeroed out. combined with setting `AllowReauth` to `false`,
-		// this should retry authentication only once
-		tac := *client
-		tac.SetThrowaway(true)
-		tac.ReauthFunc = nil
-		err := tac.SetTokenAndAuthResult(nil)
-		if err != nil {
-			return err
-		}
-		client.ReauthFunc = func(ctx context.Context) error {
-			err := v2auth(ctx, &tac, endpoint, &v2TokenNoReauth{options}, eo)
-			if err != nil {
-				return err
-			}
-			client.CopyTokenFrom(&tac)
-			return nil
-		}
-	}
-	client.EndpointLocator = func(ctx context.Context, opts gophercloud.EndpointOpts) (string, error) {
-		return V2Endpoint(ctx, client, catalog, opts)
-	}
-
-	return nil
-}
-
-// AuthenticateV3 explicitly authenticates against the identity v3 service.
-func AuthenticateV3(ctx context.Context, client *gophercloud.ProviderClient, options tokens3.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
-	return v3auth(ctx, client, "", options, eo)
-}
-
-func v3auth(ctx context.Context, client *gophercloud.ProviderClient, endpoint string, opts tokens3.AuthOptionsBuilder, eo gophercloud.EndpointOpts) error {
-	// Override the generated service endpoint with the one returned by the version endpoint.
-	v3Client, err := NewIdentityV3(ctx, client, eo)
-	if err != nil {
-		return err
-	}
-
-	if endpoint != "" {
-		v3Client.Endpoint = endpoint
-	}
-
-	var catalog *tokens3.ServiceCatalog
-
-	var tokenID string
-	// passthroughToken allows to passthrough the token without a scope
-	var passthroughToken bool
-	switch v := opts.(type) {
-	case *gophercloud.AuthOptions:
-		tokenID = v.TokenID
-		passthroughToken = (v.Scope == nil || *v.Scope == gophercloud.AuthScope{})
-	case *tokens3.AuthOptions:
-		tokenID = v.TokenID
-		passthroughToken = (v.Scope == tokens3.Scope{})
-	}
-
-	if tokenID != "" && passthroughToken {
-		// passing through the token ID without requesting a new scope
-		if opts.CanReauth() {
-			return fmt.Errorf("cannot use AllowReauth, when the token ID is defined and auth scope is not set")
-		}
-
-		v3Client.SetToken(tokenID)
-		result := tokens3.Get(ctx, v3Client, tokenID, nil)
-		if result.Err != nil {
-			return result.Err
-		}
-
-		err = client.SetTokenAndAuthResult(result)
-		if err != nil {
-			return err
-		}
-
-		catalog, err = result.ExtractServiceCatalog()
-		if err != nil {
-			return err
-		}
-	} else {
-		var result tokens3.CreateResult
-		switch opts.(type) {
-		case *ec2tokens.AuthOptions:
-			result = ec2tokens.Create(ctx, v3Client, opts)
-		case *oauth1.AuthOptions:
-			result = oauth1.Create(ctx, v3Client, opts)
-		default:
-			result = tokens3.Create(ctx, v3Client, opts)
-		}
-
-		err = client.SetTokenAndAuthResult(result)
-		if err != nil {
-			return err
-		}
-
-		catalog, err = result.ExtractServiceCatalog()
-		if err != nil {
-			return err
-		}
-	}
-
-	if opts.CanReauth() {
-		// here we're creating a throw-away client (tac). it's a copy of the user's provider client, but
-		// with the token and reauth func zeroed out. combined with setting `AllowReauth` to `false`,
-		// this should retry authentication only once
-		tac := *client
-		tac.SetThrowaway(true)
-		tac.ReauthFunc = nil
-		err = tac.SetTokenAndAuthResult(nil)
-		if err != nil {
-			return err
-		}
-		var tao tokens3.AuthOptionsBuilder
-		switch ot := opts.(type) {
-		case *gophercloud.AuthOptions:
-			o := *ot
-			o.AllowReauth = false
-			tao = &o
-		case *tokens3.AuthOptions:
-			o := *ot
-			o.AllowReauth = false
-			tao = &o
-		case *ec2tokens.AuthOptions:
-			o := *ot
-			o.AllowReauth = false
-			tao = &o
-		case *oauth1.AuthOptions:
-			o := *ot
-			o.AllowReauth = false
-			tao = &o
-		default:
-			tao = opts
-		}
-		client.ReauthFunc = func(ctx context.Context) error {
-			err := v3auth(ctx, &tac, endpoint, tao, eo)
-			if err != nil {
-				return err
-			}
-			client.CopyTokenFrom(&tac)
-			return nil
-		}
-	}
-	client.EndpointLocator = func(ctx context.Context, opts gophercloud.EndpointOpts) (string, error) {
-		return V3Endpoint(ctx, client, catalog, opts)
-	}
-
-	return nil
-}
-
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the
 // v2 identity service.
 func NewIdentityV2(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	// TODO (danchild): get client.IdentityBase from ProviderClient ???
 	endpoint := client.IdentityBase + "v2.0/"
 	clientType := "identity"
 	var err error
@@ -315,6 +130,7 @@ func NewIdentityV2(ctx context.Context, client *gophercloud.ProviderClient, eo g
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3
 // identity service.
 func NewIdentityV3(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	// TODO (danchild): get client.IdentityBase from ProviderClient ???
 	endpoint := client.IdentityBase + "v3/"
 	clientType := "identity"
 	var err error

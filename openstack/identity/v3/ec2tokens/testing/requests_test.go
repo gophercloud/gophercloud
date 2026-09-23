@@ -2,21 +2,21 @@ package testing
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	tokens_testing "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens/testing"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-// authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
-func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON string) {
+// authTokenPost verifies that providing certain EC2 credentials results in an expected JSON structure.
+func authTokenPost(t *testing.T, options auth.EC2TokenOpts, requestJSON string) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
@@ -39,13 +39,13 @@ func authTokenPost(t *testing.T, options ec2tokens.AuthOptions, requestJSON stri
 		ExpiresAt: time.Date(2017, 6, 3, 2, 19, 49, 0, time.UTC),
 	}
 
-	actual, err := ec2tokens.Create(context.TODO(), &client, &options).Extract()
+	actual, err := ec2tokens.Create(context.TODO(), &client, options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestCreateV2(t *testing.T) {
-	credentials := ec2tokens.AuthOptions{
+	credentials := auth.EC2TokenOpts{
 		Access: "a7f1e798b7c2417cba4a02de97dc3cdc",
 		Host:   "localhost",
 		Path:   "/",
@@ -81,7 +81,7 @@ func TestCreateV2(t *testing.T) {
 
 func TestCreateV4(t *testing.T) {
 	bodyHash := "foo"
-	credentials := ec2tokens.AuthOptions{
+	credentials := auth.EC2TokenOpts{
 		Access:    "a7f1e798b7c2417cba4a02de97dc3cdc",
 		BodyHash:  &bodyHash,
 		Timestamp: new(time.Time),
@@ -118,7 +118,7 @@ func TestCreateV4(t *testing.T) {
 }
 
 func TestCreateV4Empty(t *testing.T) {
-	credentials := ec2tokens.AuthOptions{
+	credentials := auth.EC2TokenOpts{
 		Access:    "a7f1e798b7c2417cba4a02de97dc3cdc",
 		Secret:    "18f4f6761ada4e3795fa5273c30349b9",
 		BodyHash:  new(string),
@@ -142,7 +142,7 @@ func TestCreateV4Empty(t *testing.T) {
 }
 
 func TestCreateV4Headers(t *testing.T) {
-	credentials := ec2tokens.AuthOptions{
+	credentials := auth.EC2TokenOpts{
 		Access:    "a7f1e798b7c2417cba4a02de97dc3cdc",
 		BodyHash:  new(string),
 		Timestamp: new(time.Time),
@@ -181,7 +181,7 @@ func TestCreateV4Headers(t *testing.T) {
 }
 
 func TestCreateV4WithSignature(t *testing.T) {
-	credentials := ec2tokens.AuthOptions{
+	credentials := auth.EC2TokenOpts{
 		Access:    "a7f1e798b7c2417cba4a02de97dc3cdc",
 		BodyHash:  new(string),
 		Path:      "/",
@@ -216,73 +216,4 @@ func TestCreateV4WithSignature(t *testing.T) {
         "verb": "GET"
     }
 }`)
-}
-
-func TestEC2CredentialsBuildCanonicalQueryStringV2(t *testing.T) {
-	params := map[string]string{
-		"Action": "foo",
-		"Value":  "bar",
-	}
-	expected := "Action=foo&Value=bar"
-	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalQueryStringV2(params))
-}
-
-func TestEC2CredentialsBuildStringToSignV2(t *testing.T) {
-	opts := ec2tokens.AuthOptions{
-		Verb: "GET",
-		Host: "localhost",
-		Path: "/",
-		Params: map[string]string{
-			"Action": "foo",
-			"Value":  "bar",
-		},
-	}
-	expected := []byte("GET\nlocalhost\n/\nAction=foo&Value=bar")
-	th.CheckDeepEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts))
-}
-
-func TestEC2CredentialsBuildCanonicalQueryStringV4(t *testing.T) {
-	params := map[string]string{
-		"Action": "foo",
-		"Value":  "bar",
-	}
-	expected := "Action=foo&Value=bar"
-	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalQueryStringV4("foo", params))
-	th.CheckEquals(t, "", ec2tokens.EC2CredentialsBuildCanonicalQueryStringV4("POST", params))
-}
-
-func TestEC2CredentialsBuildCanonicalHeadersV4(t *testing.T) {
-	headers := map[string]string{
-		"Foo": "bar",
-		"Baz": "qux",
-	}
-	signedHeaders := "foo;baz"
-	expected := "foo:bar\nbaz:qux\n"
-	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildCanonicalHeadersV4(headers, signedHeaders))
-}
-
-func TestEC2CredentialsBuildSignatureKeyV4(t *testing.T) {
-	expected := "246626bd815b0a0cae4bedc3f4e124ca25e208cd75fd812d836aeae184de038a"
-	th.CheckEquals(t, expected, hex.EncodeToString((ec2tokens.EC2CredentialsBuildSignatureKeyV4("foo", "bar", "baz", time.Time{}))))
-}
-
-func TestEC2CredentialsBuildSignatureV4(t *testing.T) {
-	opts := ec2tokens.AuthOptions{
-		Verb: "GET",
-		Path: "/",
-		Headers: map[string]string{
-			"Host": "localhost",
-		},
-		Params: map[string]string{
-			"Action": "foo",
-			"Value":  "bar",
-		},
-	}
-	expected := "6a5febe41427bf601f0ae7c34dbb0fd67094776138b03fb8e65783d733d302a5"
-
-	date := time.Time{}
-	stringToSign := ec2tokens.EC2CredentialsBuildStringToSignV4(opts, "host", "foo", date)
-	key := ec2tokens.EC2CredentialsBuildSignatureKeyV4("", "", "", date)
-
-	th.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(key, stringToSign))
 }
