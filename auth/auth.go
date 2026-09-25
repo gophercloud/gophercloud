@@ -94,6 +94,24 @@ type Authenticator interface {
 	GetAuthURL() string
 }
 
+// newAuthClient returns a client for authentication requests. It uses the
+// provider's HTTP client, user agent and retry settings, but none of its
+// token or reauthentication state.
+func newAuthClient(provider *gophercloud.ProviderClient, endpoint string) *gophercloud.ServiceClient {
+	client := &gophercloud.ServiceClient{
+		ProviderClient: &gophercloud.ProviderClient{},
+		Endpoint:       endpoint,
+	}
+	if provider != nil {
+		client.HTTPClient = provider.HTTPClient
+		client.UserAgent = provider.UserAgent
+		client.RetryBackoffFunc = provider.RetryBackoffFunc
+		client.MaxBackoffRetries = provider.MaxBackoffRetries
+		client.RetryFunc = provider.RetryFunc
+	}
+	return client
+}
+
 type AuthOptionsV2 struct {
 	AuthURL string
 	Auth    AuthOptionsBuilderV2
@@ -120,14 +138,7 @@ func (ao AuthOptionsV2) Authenticate(ctx context.Context, provider *gophercloud.
 		return nil, err
 	}
 
-	if provider == nil {
-		provider = &gophercloud.ProviderClient{}
-	}
-
-	client := &gophercloud.ServiceClient{
-		ProviderClient: provider,
-		Endpoint:       gophercloud.NormalizeURL(ao.GetAuthURL()),
-	}
+	client := newAuthClient(provider, gophercloud.NormalizeURL(ao.GetAuthURL()))
 
 	var result gophercloud.Result
 	request.JSONResponse = &result.Body
@@ -163,14 +174,7 @@ func (ao AuthOptionsV3) Authenticate(ctx context.Context, provider *gophercloud.
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
 
-	if provider == nil {
-		provider = &gophercloud.ProviderClient{}
-	}
-
-	client := &gophercloud.ServiceClient{
-		ProviderClient: provider,
-		Endpoint:       gophercloud.NormalizeURL(ao.GetAuthURL()),
-	}
+	client := newAuthClient(provider, gophercloud.NormalizeURL(ao.GetAuthURL()))
 	tokenURL := client.ServiceURL("auth", "tokens")
 
 	// Methods that sign the request, such as OAuth1, need the URL it is sent to.
