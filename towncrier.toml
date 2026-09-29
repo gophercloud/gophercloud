@@ -1,0 +1,23 @@
+# Configuration for towncrier
+#
+# https://towncrier.readthedocs.io/en/stable/configuration.html
+[tool.towncrier]
+name = "Gophercloud"
+filename = "CHANGELOG.md"
+directory = "news"
+
+[[tool.towncrier.type]]
+directory = "upgrade"
+name = "Upgrade notes"
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "New features and improvements"
+
+[[tool.towncrier.type]]
+directory = "fix"
+name = "Bugfixes"
+
+[[tool.towncrier.type]]
+directory = "ci"
+name = "CI changes"
