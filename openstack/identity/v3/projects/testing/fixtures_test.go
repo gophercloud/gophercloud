@@ -415,3 +415,36 @@ func HandleDeleteProjectTagsSuccessfully(t *testing.T, fakeServer th.FakeServer)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+// HandleCheckProjectTagSuccessfully creates an HTTP handler at `/projects/966b3c7d36a24facaf20b7e458bf2192/tags/atag` on the
+// test handler mux that tests if project has a specific tag.
+func HandleCheckProjectTagSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/966b3c7d36a24facaf20b7e458bf2192/tags/atag", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleAddProjectTagSuccessfully creates an HTTP handler at `/projects/966b3c7d36a24facaf20b7e458bf2192/tags/atag` on the
+// test handler mux that tests adding a project tag succesfully.
+func HandleAddProjectTagSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/966b3c7d36a24facaf20b7e458bf2192/tags/atag", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusCreated)
+	})
+}
+
+// HandleDeleteProjectTagSuccessfully creates an HTTP handler at `/projects/966b3c7d36a24facaf20b7e458bf2192/tags/atag` on the
+// test handler mux that tests project deletion.
+func HandleDeleteProjectTagSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/966b3c7d36a24facaf20b7e458bf2192/tags/atag", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

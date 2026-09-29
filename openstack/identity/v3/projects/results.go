@@ -200,3 +200,21 @@ func (r ModifyTagsResult) Extract() (*ProjectTags, error) {
 type DeleteTagsResult struct {
 	gophercloud.ErrResult
 }
+
+// CheckProjectTag is the result of a CheckTag request. Call its Extract method to
+// interpret it.
+type CheckTagResult struct {
+	gophercloud.ErrResult
+}
+
+// AddTagResult is the result of an AddTag request. Call its ExtractErr method to
+// determine whether the request succeeded or failed.
+type AddTagResult struct {
+	gophercloud.ErrResult
+}
+
+// DeleteProjectTagResult is the result of a Delete request. Call its ExtractErr method to
+// determine if the request succeeded or failed.
+type DeleteTagResult struct {
+	gophercloud.ErrResult
+}

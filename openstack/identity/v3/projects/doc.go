@@ -89,5 +89,32 @@ Example to Delete all tags of a Project
 	if err != nil {
 		panic(err)
 	}
+
+Example to Check if a project contains a Tag
+
+	projectID := "966b3c7d36a24facaf20b7e458bf2192"
+	tag:= "atag"
+	err := projects.CheckTag(context.TODO(), identityClient, projectID, tag).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Add a Tag to a project
+
+	projectID := "966b3c7d36a24facaf20b7e458bf2192"
+	tag:= "atag"
+	err := projects.AddTag(context.TODO(), identityClient, projectID, tag).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Delete a Project Tag
+
+	projectID := "966b3c7d36a24facaf20b7e458bf2192"
+	tag:= "atag"
+	err := projects.DeleteTag(context.TODO(), identityClient, projectID, tag).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package projects
