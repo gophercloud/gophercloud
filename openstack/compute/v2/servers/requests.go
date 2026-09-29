@@ -30,6 +30,9 @@ type ListOpts struct {
 	// ChangesSince is a time/date stamp for when the server last changed status.
 	ChangesSince string `q:"changes-since"`
 
+	// Deleted is a bool to show deleted instances.
+        Deleted string `q:"deleted"`
+	
 	// Image is the name of the image in URL format.
 	Image string `q:"image"`
 
