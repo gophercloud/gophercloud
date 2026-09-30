@@ -37,6 +37,9 @@ type Cloud struct {
 	// replacing hyphens in service types with underscores.
 	DefaultMicroversions map[string]string `yaml:"-" json:"-"`
 
+	// Null defaults must survive merging, but are skipped during service lookup.
+	nullDefaultMicroversions map[string]bool
+
 	// Verify whether or not SSL API requests should be verified.
 	Verify *bool `yaml:"verify,omitempty" json:"verify,omitempty"`
 

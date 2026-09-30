@@ -26,6 +26,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"go.yaml.in/yaml/v3"
@@ -378,6 +379,10 @@ func mergeInterfaces(overridingInterface, inferiorInterface any) any {
 		}
 		for k, v := range interfaceMap {
 			if overridingValue, ok := overriding[k]; ok {
+				// Explicit empty and null microversion defaults replace inherited values.
+				if strings.HasSuffix(k, defaultMicroversionSuffix) {
+					continue
+				}
 				overriding[k] = mergeInterfaces(overridingValue, v)
 			} else {
 				overriding[k] = v

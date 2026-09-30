@@ -49,7 +49,9 @@ Keys use the service type with hyphens replaced by underscores, followed by
 `_default_microversion`. Service aliases are accepted: for block storage,
 `block_store`, `volume`, `volumev2`, and `volumev3` work as well. The canonical
 service name takes precedence; otherwise aliases are checked in
-`gophercloud.ServiceTypeAliases` order. An unset or empty value leaves the
+`gophercloud.ServiceTypeAliases` order (for Cinder: `volumev3`, `volumev2`,
+`volume`, then `block-store`). YAML `null` defaults are skipped during lookup,
+while an explicitly empty string clears the default. An unset or empty value leaves the
 client's microversion unset.
 
 Defaults survive configuration merging. For the selected region, values under

@@ -3,6 +3,7 @@ package gophercloud
 import (
 	"context"
 	"slices"
+	"strings"
 )
 
 // Availability indicates to whom a specific service endpoint is accessible:
@@ -34,7 +35,7 @@ var ServiceTypeAliases = map[string][]string{
 	"application-container":               {"container"},
 	"baremetal":                           {"bare-metal"},
 	"baremetal-introspection":             {},
-	"block-storage":                       {"block-store", "volume", "volumev2", "volumev3"},
+	"block-storage":                       {"volumev3", "volumev2", "volume", "block-store"},
 	"compute":                             {},
 	"container-infrastructure-management": {"container-infrastructure", "container-infra"},
 	"database":                            {},
@@ -153,6 +154,7 @@ func (eo EndpointOpts) MicroversionFor(serviceType string) string {
 	if eo.Microversion != "" {
 		return eo.Microversion
 	}
+	serviceType = strings.ReplaceAll(serviceType, "_", "-")
 	types := EndpointOpts{Type: serviceType}
 	types.ApplyDefaults(serviceType)
 	for _, service := range types.Types() {

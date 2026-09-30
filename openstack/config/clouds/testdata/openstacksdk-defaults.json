@@ -1,0 +1,465 @@
+{
+  "openstacksdk": "4.20.0",
+  "os_service_types": "1.9.0",
+  "cases": [
+    {
+      "name": "alias-block_storage",
+      "cloud": {
+        "block_storage_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "alias-volumev3",
+      "cloud": {
+        "volumev3_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "alias-volumev2",
+      "cloud": {
+        "volumev2_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "alias-volume",
+      "cloud": {
+        "volume_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "alias-block_store",
+      "cloud": {
+        "block_store_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "precedence-block_storage",
+      "cloud": {
+        "block_storage_default_microversion": "3.60",
+        "volumev3_default_microversion": "3.61",
+        "volumev2_default_microversion": "3.62",
+        "volume_default_microversion": "3.63",
+        "block_store_default_microversion": "3.64",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "volumev3",
+      "expected": "3.60"
+    },
+    {
+      "name": "precedence-volumev3",
+      "cloud": {
+        "volumev3_default_microversion": "3.60",
+        "volumev2_default_microversion": "3.61",
+        "volume_default_microversion": "3.62",
+        "block_store_default_microversion": "3.63",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "volumev3",
+      "expected": "3.60"
+    },
+    {
+      "name": "precedence-volumev2",
+      "cloud": {
+        "volumev2_default_microversion": "3.60",
+        "volume_default_microversion": "3.61",
+        "block_store_default_microversion": "3.62",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "volumev3",
+      "expected": "3.60"
+    },
+    {
+      "name": "precedence-volume",
+      "cloud": {
+        "volume_default_microversion": "3.60",
+        "block_store_default_microversion": "3.61",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "volumev3",
+      "expected": "3.60"
+    },
+    {
+      "name": "empty-canonical",
+      "cloud": {
+        "block_storage_default_microversion": "",
+        "volumev3_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": ""
+    },
+    {
+      "name": "null-canonical",
+      "cloud": {
+        "block_storage_default_microversion": null,
+        "volumev3_default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "missing",
+      "cloud": {
+        "compute_default_microversion": "2.87",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": ""
+    },
+    {
+      "name": "global-is-not-default",
+      "cloud": {
+        "default_microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": ""
+    },
+    {
+      "name": "unknown-service",
+      "cloud": {
+        "future_service_default_microversion": "1.4",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "future-service",
+      "expected": "1.4"
+    },
+    {
+      "name": "hyphenated-key",
+      "cloud": {
+        "block-storage-default-microversion": "3.60",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block_storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "quoted-trailing-zero",
+      "cloud": {
+        "compute_default_microversion": "2.10",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.10"
+    },
+    {
+      "name": "secure-override",
+      "cloud": {
+        "compute_default_microversion": "2.87",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {
+        "compute_default_microversion": "2.79"
+      },
+      "public": {},
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.79"
+    },
+    {
+      "name": "secure-null",
+      "cloud": {
+        "block_storage_default_microversion": "3.60",
+        "volumev3_default_microversion": "3.50",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {
+        "block_storage_default_microversion": null
+      },
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.50"
+    },
+    {
+      "name": "regional-override",
+      "cloud": {
+        "compute_default_microversion": "2.87",
+        "regions": [
+          {
+            "name": "mars",
+            "values": {
+              "compute_default_microversion": "2.79"
+            }
+          }
+        ],
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.79"
+    },
+    {
+      "name": "regional-null-inherits",
+      "cloud": {
+        "compute_default_microversion": "2.87",
+        "regions": [
+          {
+            "name": "mars",
+            "values": {
+              "compute_default_microversion": null
+            }
+          }
+        ],
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.87"
+    },
+    {
+      "name": "regional-empty-clears",
+      "cloud": {
+        "compute_default_microversion": "2.87",
+        "regions": [
+          {
+            "name": "mars",
+            "values": {
+              "compute_default_microversion": ""
+            }
+          }
+        ],
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "compute",
+      "expected": ""
+    },
+    {
+      "name": "regional-alias-vs-canonical",
+      "cloud": {
+        "block_storage_default_microversion": "3.60",
+        "regions": [
+          {
+            "name": "mars",
+            "values": {
+              "volumev3_default_microversion": "3.50"
+            }
+          }
+        ],
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {},
+      "region": "mars",
+      "service": "block-storage",
+      "expected": "3.60"
+    },
+    {
+      "name": "secure-and-region",
+      "cloud": {
+        "compute_default_microversion": "2.87",
+        "regions": [
+          {
+            "name": "mars",
+            "values": {
+              "compute_default_microversion": "2.79"
+            }
+          }
+        ],
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {
+        "compute_default_microversion": "2.80"
+      },
+      "public": {},
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.79"
+    },
+    {
+      "name": "profile-default",
+      "cloud": {
+        "profile": "example",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {
+        "compute_default_microversion": "2.87"
+      },
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.87"
+    },
+    {
+      "name": "profile-cloud-override",
+      "cloud": {
+        "profile": "example",
+        "compute_default_microversion": "2.79",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {},
+      "public": {
+        "compute_default_microversion": "2.87"
+      },
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.79"
+    },
+    {
+      "name": "profile-secure-override",
+      "cloud": {
+        "profile": "example",
+        "compute_default_microversion": "2.79",
+        "auth": {
+          "auth_url": "https://example.org/v3"
+        },
+        "region_name": "mars"
+      },
+      "secure": {
+        "compute_default_microversion": "2.80"
+      },
+      "public": {
+        "compute_default_microversion": "2.87"
+      },
+      "region": "mars",
+      "service": "compute",
+      "expected": "2.80"
+    }
+  ]
+}
