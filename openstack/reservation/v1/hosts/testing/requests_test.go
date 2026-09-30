@@ -145,3 +145,105 @@ func TestListHostsWithCapabilities(t *testing.T) {
 	_, ok = actual[0].ExtraCapabilities["updated_at"]
 	th.AssertEquals(t, false, ok)
 }
+
+func TestListAllocations(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleListAllocations(t, fakeServer)
+
+	listOpts := hosts.ListAllocationsOpts{
+		LeaseID:       "98c3544d-0afe-4251-8556-700c847a127f",
+		ReservationID: "c04d56e0-6b31-40b2-a57e-7283958100bd",
+	}
+
+	allPages, err := hosts.ListAllocations(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	actual, err := hosts.ExtractAllocations(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedAllocationsList, actual)
+}
+
+func TestGetAllocation(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleGetAllocation(t, fakeServer)
+
+	getOpts := hosts.GetAllocationOpts{
+		LeaseID:       "98c3544d-0afe-4251-8556-700c847a127f",
+		ReservationID: "c04d56e0-6b31-40b2-a57e-7283958100bd",
+	}
+
+	actual, err := hosts.GetAllocation(context.TODO(), client.ServiceClient(fakeServer), "18", getOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, &ExpectedAllocation, actual)
+}
+
+func TestListResourceProperties(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleListResourceProperties(t, fakeServer)
+
+	allPages, err := hosts.ListResourceProperties(client.ServiceClient(fakeServer), nil).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	actual, err := hosts.ExtractResourceProperties(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, []hosts.ResourceProperty{{Property: "gophercloud_test"}}, actual)
+}
+
+func TestListResourcePropertiesDetail(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleListResourceProperties(t, fakeServer)
+
+	listOpts := hosts.ListResourcePropertiesOpts{
+		Detail: true,
+		All:    true,
+	}
+
+	allPages, err := hosts.ListResourceProperties(client.ServiceClient(fakeServer), listOpts).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	actual, err := hosts.ExtractResourceProperties(allPages)
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedResourcePropertiesDetail, actual)
+}
+
+// Blazar reads detail and all as strings, so even "false" would enable them.
+// Unset options must be left out of the query.
+func TestListResourcePropertiesOptsOmitsFalse(t *testing.T) {
+	query, err := hosts.ListResourcePropertiesOpts{}.ToResourcePropertyListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", query)
+}
+
+func TestUpdateResourceProperty(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	HandleUpdateResourceProperty(t, fakeServer)
+
+	updateOpts := hosts.UpdateResourcePropertyOpts{
+		Private: true,
+	}
+
+	actual, err := hosts.UpdateResourceProperty(context.TODO(), client.ServiceClient(fakeServer), "gophercloud_test", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, &ExpectedUpdatedResourceProperty, actual)
+}
+
+// Making a property public again must send private as false rather than drop
+// it.
+func TestUpdateResourcePropertyOptsSendsFalse(t *testing.T) {
+	b, err := hosts.UpdateResourcePropertyOpts{Private: false}.ToResourcePropertyUpdateMap()
+	th.AssertNoErr(t, err)
+
+	private, ok := b["private"]
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, false, private)
+}

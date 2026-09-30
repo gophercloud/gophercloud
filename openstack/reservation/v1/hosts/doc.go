@@ -65,5 +65,59 @@ Example to delete a host
 	if err != nil {
 		panic(err)
 	}
+
+Example to list the allocations of a lease
+
+	listOpts := hosts.ListAllocationsOpts{
+		LeaseID: "98c3544d-0afe-4251-8556-700c847a127f",
+	}
+
+	allPages, err := hosts.ListAllocations(reservationClient, listOpts).AllPages(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+
+	allAllocations, err := hosts.ExtractAllocations(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, allocation := range allAllocations {
+		fmt.Printf("%+v\n", allocation)
+	}
+
+Example to get the allocations of a host
+
+	allocation, err := hosts.GetAllocation(context.TODO(), reservationClient, "18", nil).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to list the resource properties with their values
+
+	listOpts := hosts.ListResourcePropertiesOpts{
+		Detail: true,
+	}
+
+	allPages, err := hosts.ListResourceProperties(reservationClient, listOpts).AllPages(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+
+	allProperties, err := hosts.ExtractResourceProperties(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+Example to hide a resource property from users
+
+	updateOpts := hosts.UpdateResourcePropertyOpts{
+		Private: true,
+	}
+
+	property, err := hosts.UpdateResourceProperty(context.TODO(), reservationClient, "gpu", updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package hosts

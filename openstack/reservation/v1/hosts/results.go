@@ -154,3 +154,189 @@ func ExtractHosts(p pagination.Page) ([]Host, error) {
 	err := (p.(HostPage)).ExtractInto(&s)
 	return s.Hosts, err
 }
+
+// GetAllocationResult is the response from a GetAllocation operation. Call its
+// Extract method to interpret it as an Allocation.
+type GetAllocationResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetAllocationResult as an Allocation.
+func (r GetAllocationResult) Extract() (*Allocation, error) {
+	var s struct {
+		Allocation *Allocation `json:"allocation"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Allocation, err
+}
+
+// Allocation represents the reservations holding a compute host.
+type Allocation struct {
+	// ResourceID is the unique identifier of the host within Blazar.
+	ResourceID string `json:"resource_id"`
+
+	// Reservations holds the reservations of the leases that have not ended
+	// yet and hold the host.
+	Reservations []AllocationReservation `json:"reservations"`
+}
+
+// AllocationReservation represents a reservation holding a compute host.
+type AllocationReservation struct {
+	// ID is the unique identifier of the reservation.
+	ID string `json:"id"`
+
+	// LeaseID is the identifier of the lease holding the reservation.
+	LeaseID string `json:"lease_id"`
+
+	// StartDate is the time at which the lease becomes active.
+	StartDate time.Time `json:"-"`
+
+	// EndDate is the time at which the lease expires.
+	EndDate time.Time `json:"-"`
+}
+
+// UnmarshalJSON implements unmarshalling custom types
+func (r *AllocationReservation) UnmarshalJSON(b []byte) error {
+	type tmp AllocationReservation
+	var s struct {
+		tmp
+		StartDate gophercloud.JSONRFC3339MilliNoZ `json:"start_date"`
+		EndDate   gophercloud.JSONRFC3339MilliNoZ `json:"end_date"`
+	}
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+
+	*r = AllocationReservation(s.tmp)
+	r.StartDate = time.Time(s.StartDate)
+	r.EndDate = time.Time(s.EndDate)
+
+	return nil
+}
+
+// AllocationPage contains a single page of all allocations from a
+// ListAllocations call.
+type AllocationPage struct {
+	pagination.SinglePageBase
+}
+
+func (r AllocationPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
+	allocations, err := ExtractAllocations(r)
+	return len(allocations) == 0, err
+}
+
+// ExtractAllocations takes a ListAllocations result and extracts the
+// collection of allocations returned by the API.
+func ExtractAllocations(p pagination.Page) ([]Allocation, error) {
+	var s struct {
+		Allocations []Allocation `json:"allocations"`
+	}
+	err := (p.(AllocationPage)).ExtractInto(&s)
+	return s.Allocations, err
+}
+
+// ResourceProperty represents an extra capability of the compute hosts that
+// reservations can filter on.
+type ResourceProperty struct {
+	// Property is the name of the extra capability.
+	Property string `json:"property"`
+
+	// Private reports whether the property is hidden from users. It is only
+	// returned when listing with Detail. Blazar currently reports every
+	// property as public, see https://bugs.launchpad.net/blazar/+bug/2169110.
+	Private *bool `json:"private"`
+
+	// Values holds the values the hosts have for the property. It is only
+	// returned when listing with Detail.
+	Values []string `json:"values"`
+}
+
+// ResourcePropertyPage contains a single page of all resource properties from
+// a ListResourceProperties call.
+type ResourcePropertyPage struct {
+	pagination.SinglePageBase
+}
+
+func (r ResourcePropertyPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
+	properties, err := ExtractResourceProperties(r)
+	return len(properties) == 0, err
+}
+
+// ExtractResourceProperties takes a ListResourceProperties result and extracts
+// the collection of resource properties returned by the API.
+func ExtractResourceProperties(p pagination.Page) ([]ResourceProperty, error) {
+	var s struct {
+		ResourceProperties []ResourceProperty `json:"resource_properties"`
+	}
+	err := (p.(ResourcePropertyPage)).ExtractInto(&s)
+	return s.ResourceProperties, err
+}
+
+// UpdateResourcePropertyResult is the response from an UpdateResourceProperty
+// operation. Call its Extract method to interpret it as an
+// UpdatedResourceProperty.
+type UpdateResourcePropertyResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets an UpdateResourcePropertyResult as an
+// UpdatedResourceProperty.
+func (r UpdateResourcePropertyResult) Extract() (*UpdatedResourceProperty, error) {
+	var s struct {
+		ResourceProperty *UpdatedResourceProperty `json:"resource_property"`
+	}
+	err := r.ExtractInto(&s)
+	return s.ResourceProperty, err
+}
+
+// UpdatedResourceProperty represents a resource property as stored by Blazar.
+type UpdatedResourceProperty struct {
+	// ID is the unique identifier of the resource property.
+	ID string `json:"id"`
+
+	// ResourceType is the type of resource the property belongs to.
+	ResourceType string `json:"resource_type"`
+
+	// PropertyName is the name of the extra capability.
+	PropertyName string `json:"property_name"`
+
+	// Private reports whether the property is hidden from users.
+	Private bool `json:"private"`
+
+	// CreatedAt is the time at which the property was first seen.
+	CreatedAt time.Time `json:"-"`
+
+	// UpdatedAt is the time at which the property was last modified. It is nil
+	// if the property has never been modified.
+	UpdatedAt *time.Time `json:"-"`
+}
+
+// UnmarshalJSON implements unmarshalling custom types
+func (r *UpdatedResourceProperty) UnmarshalJSON(b []byte) error {
+	type tmp UpdatedResourceProperty
+	var s struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ  `json:"created_at"`
+		UpdatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	}
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+
+	*r = UpdatedResourceProperty(s.tmp)
+	r.CreatedAt = time.Time(s.CreatedAt)
+	if s.UpdatedAt != nil {
+		t := time.Time(*s.UpdatedAt)
+		r.UpdatedAt = &t
+	}
+
+	return nil
+}
