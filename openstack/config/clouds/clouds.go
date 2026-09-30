@@ -26,6 +26,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"go.yaml.in/yaml/v3"
@@ -146,6 +147,20 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, err
 	}
 
+	// Apply regional microversion defaults after merging secure.yaml.
+	region := coalesce(options.region, cloud.RegionName)
+	for _, entry := range cloud.Regions {
+		if entry.Name == region {
+			for service, version := range entry.Values.DefaultMicroversions {
+				if cloud.DefaultMicroversions == nil {
+					cloud.DefaultMicroversions = make(map[string]string)
+				}
+				cloud.DefaultMicroversions[service] = version
+			}
+			break
+		}
+	}
+
 	tlsConfig, err := computeTLSConfig(cloud, options)
 	if err != nil {
 		return gophercloud.AuthOptions{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to compute TLS configuration: %w", err)
@@ -212,8 +227,9 @@ func Parse(opts ...ParseOption) (gophercloud.AuthOptions, gophercloud.EndpointOp
 			ApplicationCredentialName:   coalesce(options.applicationCredentialName, cloud.AuthInfo.ApplicationCredentialName),
 			ApplicationCredentialSecret: coalesce(options.applicationCredentialSecret, cloud.AuthInfo.ApplicationCredentialSecret),
 		}, gophercloud.EndpointOpts{
-			Region:       coalesce(options.region, cloud.RegionName),
-			Availability: computeAvailability(endpointType),
+			Region:               region,
+			DefaultMicroversions: cloud.DefaultMicroversions,
+			Availability:         computeAvailability(endpointType),
 		},
 		tlsConfig,
 		nil
@@ -363,6 +379,10 @@ func mergeInterfaces(overridingInterface, inferiorInterface any) any {
 		}
 		for k, v := range interfaceMap {
 			if overridingValue, ok := overriding[k]; ok {
+				// Explicit empty and null microversion defaults replace inherited values.
+				if strings.HasSuffix(k, defaultMicroversionSuffix) {
+					continue
+				}
 				overriding[k] = mergeInterfaces(overridingValue, v)
 			} else {
 				overriding[k] = v
