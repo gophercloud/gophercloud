@@ -60,61 +60,20 @@ func (c Cloud) MarshalYAML() (any, error) {
 	}{plain(c), fields}, nil
 }
 
-// MarshalJSON preserves flat service keys for configuration merging.
+// MarshalJSON uses the same flat keys and scalar types as the YAML representation.
 func (c Cloud) MarshalJSON() ([]byte, error) {
-	type plain Cloud
-	data, err := json.Marshal(plain(c))
-	if err != nil {
+	var node yaml.Node
+	if err := node.Encode(c); err != nil {
 		return nil, err
 	}
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(data, &fields); err != nil {
+	var fields map[string]any
+	if err := node.Decode(&fields); err != nil {
 		return nil, err
-	}
-	for service := range c.nullDefaultMicroversions {
-		fields[strings.ReplaceAll(service, "-", "_")+defaultMicroversionSuffix] = json.RawMessage("null")
-	}
-	for service, version := range c.DefaultMicroversions {
-		data, err := json.Marshal(version)
-		if err != nil {
-			return nil, err
-		}
-		fields[strings.ReplaceAll(service, "-", "_")+defaultMicroversionSuffix] = data
 	}
 	return json.Marshal(fields)
 }
 
-// UnmarshalJSON restores service defaults after configuration merging.
+// UnmarshalJSON shares YAML's handling of service keys and nullable defaults.
 func (c *Cloud) UnmarshalJSON(data []byte) error {
-	type plain Cloud
-	var value plain
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(data, &fields); err != nil {
-		return err
-	}
-	for key, data := range fields {
-		if service, ok := strings.CutSuffix(strings.ReplaceAll(key, "-", "_"), defaultMicroversionSuffix); ok && service != "" {
-			service = strings.ReplaceAll(service, "_", "-")
-			if strings.TrimSpace(string(data)) == "null" {
-				if value.nullDefaultMicroversions == nil {
-					value.nullDefaultMicroversions = make(map[string]bool)
-				}
-				value.nullDefaultMicroversions[service] = true
-				continue
-			}
-			var version string
-			if err := json.Unmarshal(data, &version); err != nil {
-				return err
-			}
-			if value.DefaultMicroversions == nil {
-				value.DefaultMicroversions = make(map[string]string)
-			}
-			value.DefaultMicroversions[service] = version
-		}
-	}
-	*c = Cloud(value)
-	return nil
+	return yaml.Unmarshal(data, c)
 }

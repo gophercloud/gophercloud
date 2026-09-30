@@ -3,20 +3,24 @@
 Install the versions used by the checked-in fixture in a virtual environment:
     pip install openstacksdk==4.20.0 os-service-types==1.9.0 PyYAML==6.0.3
 Then regenerate:
-    python generate_openstacksdk_defaults.py > openstacksdk-defaults.json
-Go tests consume the checked-in JSON; they do not require Python or an SDK install.
+    python generate_openstacksdk_defaults.py > openstacksdk-defaults.yaml
+Go tests consume the checked-in YAML; they do not require Python or an SDK install.
 """
 import importlib.metadata
-import json
 import tempfile
 from pathlib import Path
 
 import yaml
 from openstack.config.loader import OpenStackConfig
 
+defaults = {'region': 'mars', 'service': 'block-storage', 'cloud': {'auth': {'auth_url': 'https://example.org/v3'}, 'region_name': 'mars'}}
 cases = []
 def add(name, cloud, service='block-storage', secure=None, public=None, region='mars'):
-    cases.append(dict(name=name, cloud=cloud, secure=secure or {}, public=public or {}, region=region, service=service))
+    case = dict(name=name, cloud=cloud)
+    for key, value, default in [('service', service, defaults['service']), ('region', region, defaults['region']), ('secure', secure, None), ('public', public, None)]:
+        if value != default:
+            case[key] = value
+    cases.append(case)
 
 aliases = ['block_storage', 'volumev3', 'volumev2', 'volume', 'block_store']
 for alias in aliases:
@@ -44,14 +48,11 @@ add('profile-secure-override', {'profile':'example','compute_default_microversio
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
     for case in cases:
-        cloud = dict(case['cloud'])
-        cloud.setdefault('auth', {'auth_url': 'https://example.org/v3'})
-        cloud.setdefault('region_name', 'mars')
-        case['cloud'] = cloud
+        cloud = {**defaults['cloud'], **case['cloud']}
         (root/'clouds.yaml').write_text(yaml.safe_dump({'clouds': {'test': cloud}}))
-        (root/'secure.yaml').write_text(yaml.safe_dump({'clouds': {'test': case['secure']}}))
-        (root/'clouds-public.yaml').write_text(yaml.safe_dump({'public-clouds': {'example': case['public']}}))
+        (root/'secure.yaml').write_text(yaml.safe_dump({'clouds': {'test': case.get('secure', {})}}))
+        (root/'clouds-public.yaml').write_text(yaml.safe_dump({'public-clouds': {'example': case.get('public', {})}}))
         config = OpenStackConfig(config_files=[str(root/'clouds.yaml')], secure_files=[str(root/'secure.yaml')],vendor_files=[str(root/'clouds-public.yaml')],load_envvars=False)
-        case['expected'] = config.get_one('test', region_name=case['region'], validate=False).get_default_microversion(case['service']) or ''
+        case['expected'] = config.get_one('test', region_name=case.get('region', defaults['region']), validate=False).get_default_microversion(case.get('service', defaults['service'])) or ''
 
-print(json.dumps({'openstacksdk':importlib.metadata.version('openstacksdk'),'os_service_types':importlib.metadata.version('os-service-types'),'cases':cases},indent=2))
+print(yaml.safe_dump({'openstacksdk':importlib.metadata.version('openstacksdk'),'os_service_types':importlib.metadata.version('os-service-types'),'defaults':defaults,'cases':cases},sort_keys=False),end='')
