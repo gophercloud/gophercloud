@@ -30,6 +30,34 @@ client, err := openstack.NewComputeV2(context.TODO(), providerClient, nil)
 client.Microversion = "2.52"
 ```
 
+### Defaults from clouds.yaml
+
+`openstack/config/clouds.Parse` preserves service defaults in the returned
+`EndpointOpts`. Pass those options to service constructors to apply the defaults:
+
+```yaml
+clouds:
+  example:
+    auth:
+      auth_url: https://identity.example.org/v3
+    compute_default_microversion: "2.87"
+    block_storage_default_microversion: "3.60"
+    shared_file_system_default_microversion: "2.65"
+```
+
+Keys use the service type with hyphens replaced by underscores, followed by
+`_default_microversion`. Service aliases are accepted: for block storage,
+`block_store`, `volume`, `volumev2`, and `volumev3` work as well. The canonical
+service name takes precedence; otherwise aliases are checked in
+`gophercloud.ServiceTypeAliases` order. An unset or empty value leaves the
+client's microversion unset.
+
+Defaults survive configuration merging. For the selected region, values under
+`regions[].values` override the same keys at cloud level. Set
+`endpointOptions.Microversion` before constructing a client to override its
+configured default, or set `client.Microversion` afterwards. Defaults are passed
+to the API without automatic microversion negotiation.
+
 ## Gophercloud Developer Information
 
 Microversions change several aspects about API interaction.

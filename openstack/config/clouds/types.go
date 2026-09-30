@@ -32,8 +32,10 @@ type Cloud struct {
 	IdentityAPIVersion string `yaml:"identity_api_version,omitempty" json:"identity_api_version,omitempty"`
 	VolumeAPIVersion   string `yaml:"volume_api_version,omitempty" json:"volume_api_version,omitempty"`
 
-	// Service default microversion overrides.
-	ComputeDefaultMicroversion string `yaml:"compute_default_microversion,omitempty" json:"compute_default_microversion,omitempty"`
+	// DefaultMicroversions maps service types (including aliases) to their default
+	// microversions. YAML and JSON use {service_type}_default_microversion keys,
+	// replacing hyphens in service types with underscores.
+	DefaultMicroversions map[string]string `yaml:"-" json:"-"`
 
 	// Verify whether or not SSL API requests should be verified.
 	Verify *bool `yaml:"verify,omitempty" json:"verify,omitempty"`

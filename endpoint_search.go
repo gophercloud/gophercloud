@@ -87,6 +87,13 @@ type EndpointOpts struct {
 	// multiple API versions are available.
 	Version int
 
+	// Microversion explicitly overrides the configured service default.
+	Microversion string
+
+	// DefaultMicroversions contains defaults keyed by service type or alias.
+	// Canonical service names take precedence over aliases in ServiceTypeAliases order.
+	DefaultMicroversions map[string]string
+
 	// Availability [optional] is the visibility of the endpoint to be returned.
 	// Valid types include the constants AvailabilityPublic, AvailabilityInternal,
 	// or AvailabilityAdmin from this package.
@@ -138,4 +145,20 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 
 func (eo *EndpointOpts) Types() []string {
 	return append([]string{eo.Type}, eo.Aliases...)
+}
+
+// MicroversionFor returns the explicit microversion or the default for a service.
+// Lookup uses the official service type first, followed by its known aliases.
+func (eo EndpointOpts) MicroversionFor(serviceType string) string {
+	if eo.Microversion != "" {
+		return eo.Microversion
+	}
+	types := EndpointOpts{Type: serviceType}
+	types.ApplyDefaults(serviceType)
+	for _, service := range types.Types() {
+		if version, ok := eo.DefaultMicroversions[service]; ok {
+			return version
+		}
+	}
+	return ""
 }

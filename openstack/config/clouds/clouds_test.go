@@ -85,11 +85,11 @@ func TestCloudDefaultMicroversion(t *testing.T) {
 	}
 
 	cloud := parsed.Clouds["openstack"]
-	if got := cloud.ComputeDefaultMicroversion; got != "2.87" {
+	if got := cloud.DefaultMicroversions["compute"]; got != "2.87" {
 		t.Errorf("unexpected compute default microversion: %q", got)
 	}
 
-	if got := cloud.Regions[0].Values.ComputeDefaultMicroversion; got != "2.79" {
+	if got := cloud.Regions[0].Values.DefaultMicroversions["compute"]; got != "2.79" {
 		t.Errorf("unexpected regional compute default microversion: %q", got)
 	}
 }
