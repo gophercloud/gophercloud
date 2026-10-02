@@ -18,7 +18,7 @@ func NewClientFromAuthResult(result auth.AuthResult, opts ...ProviderClientOptio
 	if err := client.SetTokenAndAuthResult(result); err != nil {
 		return nil, err
 	}
-	client.EndpointLocator = result.EndpointLocator()
+	client.EndpointLocator = result.EndpointLocator(client)
 	for _, opt := range opts {
 		opt(client)
 	}
@@ -46,7 +46,7 @@ func WithReauth(options auth.Authenticator, authResult auth.AuthResult) Provider
 			if err := client.SetTokenAndAuthResult(result); err != nil {
 				return err
 			}
-			client.EndpointLocator = result.EndpointLocator()
+			client.EndpointLocator = result.EndpointLocator(client)
 			return nil
 		}
 	}
