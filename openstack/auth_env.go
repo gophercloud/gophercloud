@@ -43,6 +43,9 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	tenantName := os.Getenv("OS_TENANT_NAME")
 	domainID := os.Getenv("OS_DOMAIN_ID")
 	domainName := os.Getenv("OS_DOMAIN_NAME")
+	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
+	userDomainID := os.Getenv("OS_USER_DOMAIN_ID")
+	defaultDomain := os.Getenv("OS_DEFAULT_DOMAIN")
 	applicationCredentialID := os.Getenv("OS_APPLICATION_CREDENTIAL_ID")
 	applicationCredentialName := os.Getenv("OS_APPLICATION_CREDENTIAL_NAME")
 	applicationCredentialSecret := os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET")
@@ -104,8 +107,16 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 			}
 		}
 		if username != "" && domainID == "" && domainName == "" {
-			return nilOptions, gophercloud.ErrMissingAnyoneOfEnvironmentVariables{
-				EnvironmentVariables: []string{"OS_DOMAIN_ID", "OS_DOMAIN_NAME"},
+			if userDomainID == "" && userDomainName == "" && defaultDomain == "" {
+				return nilOptions, gophercloud.ErrMissingAnyoneOfEnvironmentVariables{
+					EnvironmentVariables: []string{"OS_DOMAIN_ID", "OS_DOMAIN_NAME"},
+				}
+			}
+			if defaultDomain == "" {
+				domainID = userDomainID
+				domainName = userDomainName
+			} else {
+				domainID = defaultDomain
 			}
 		}
 	}
