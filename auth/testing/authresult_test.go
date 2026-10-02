@@ -2,6 +2,9 @@ package testing
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -72,7 +75,7 @@ func testCatalog() auth.ServiceCatalog {
 
 func TestAuthResultEndpointMatchesTypeAndAvailability(t *testing.T) {
 	r := auth.AuthResult{Catalog: testCatalog()}
-	url, err := r.Endpoint(gophercloud.EndpointOpts{
+	url, err := r.Endpoint(context.Background(), nil, gophercloud.EndpointOpts{
 		Type:         "compute",
 		Availability: gophercloud.AvailabilityInternal,
 		Region:       "RegionOne",
@@ -83,14 +86,14 @@ func TestAuthResultEndpointMatchesTypeAndAvailability(t *testing.T) {
 
 func TestAuthResultEndpointDefaultsToPublic(t *testing.T) {
 	r := auth.AuthResult{Catalog: testCatalog()}
-	url, err := r.Endpoint(gophercloud.EndpointOpts{Type: "compute", Region: "RegionTwo"})
+	url, err := r.Endpoint(context.Background(), nil, gophercloud.EndpointOpts{Type: "compute", Region: "RegionTwo"})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "http://public2.example.com/compute/", url)
 }
 
 func TestAuthResultEndpointNotFound(t *testing.T) {
 	r := auth.AuthResult{Catalog: testCatalog()}
-	_, err := r.Endpoint(gophercloud.EndpointOpts{Type: "does-not-exist"})
+	_, err := r.Endpoint(context.Background(), nil, gophercloud.EndpointOpts{Type: "does-not-exist"})
 	th.AssertErr(t, err)
 
 	_, ok := err.(*gophercloud.ErrEndpointNotFound)
@@ -99,7 +102,7 @@ func TestAuthResultEndpointNotFound(t *testing.T) {
 
 func TestAuthResultEndpointLocator(t *testing.T) {
 	r := auth.AuthResult{Catalog: testCatalog()}
-	locator := r.EndpointLocator()
+	locator := r.EndpointLocator(nil)
 	url, err := locator(context.TODO(), gophercloud.EndpointOpts{Type: "compute", Region: "RegionOne"})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "http://public.example.com/compute/", url)
@@ -111,7 +114,7 @@ func TestAuthResultEndpointMatchesServiceName(t *testing.T) {
 		{Type: "compute", Name: "other", Endpoints: []auth.Endpoint{{Interface: "public", URL: "https://other.example.com"}}},
 	}}}
 
-	url, err := r.Endpoint(gophercloud.EndpointOpts{Type: "compute", Name: "other"})
+	url, err := r.Endpoint(context.Background(), nil, gophercloud.EndpointOpts{Type: "compute", Name: "other"})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "https://other.example.com/", url)
 }
@@ -121,7 +124,44 @@ func TestAuthResultEndpointMatchesAliasAndRegionID(t *testing.T) {
 		{Type: "volumev3", Endpoints: []auth.Endpoint{{Interface: "public", Region: "Display Region", RegionID: "region-id", URL: "https://volume.example.com"}}},
 	}}}
 
-	url, err := r.Endpoint(gophercloud.EndpointOpts{Type: "block-storage", Region: "region-id"})
+	url, err := r.Endpoint(context.Background(), nil, gophercloud.EndpointOpts{Type: "block-storage", Region: "region-id"})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "https://volume.example.com/", url)
+}
+
+func TestAuthResultEndpointRejectsAliasWithDifferentVersion(t *testing.T) {
+	r := auth.AuthResult{Catalog: auth.ServiceCatalog{Entries: []auth.CatalogEntry{
+		{Type: "volumev3", Endpoints: []auth.Endpoint{{Interface: "public", URL: "https://volume.example.com"}}},
+	}}}
+
+	_, err := r.Endpoint(context.Background(), nil, gophercloud.EndpointOpts{Type: "block-storage", Version: 2})
+	th.AssertErr(t, err)
+	_, ok := err.(*gophercloud.ErrEndpointNotFound)
+	th.AssertEquals(t, true, ok)
+}
+
+func TestAuthResultEndpointLocatorDiscoversServiceVersion(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/first/":
+			fmt.Fprint(w, `{"versions":[{"id":"v3.0","status":"CURRENT"}]}`)
+		case "/second/":
+			fmt.Fprint(w, `{"versions":[{"id":"v2.0","status":"SUPPORTED"}]}`)
+		default:
+			t.Errorf("unexpected path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	r := auth.AuthResult{Catalog: auth.ServiceCatalog{Entries: []auth.CatalogEntry{
+		{Type: "block-storage", Endpoints: []auth.Endpoint{{Interface: "public", URL: server.URL + "/first/"}}},
+		{Type: "block-storage", Endpoints: []auth.Endpoint{{Interface: "public", URL: server.URL + "/second/"}}},
+	}}}
+	provider := &gophercloud.ProviderClient{}
+
+	url, err := r.EndpointLocator(provider)(context.Background(), gophercloud.EndpointOpts{Type: "block-storage", Version: 2})
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, server.URL+"/second/", url)
 }
