@@ -202,6 +202,16 @@ func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[str
 			}
 		}
 	}
+
+	// get headers through the auth.AuthenticatedHeaders interface
+	if result := client.GetAuthResult(); result != nil {
+		if r, ok := result.(interface{ AuthenticatedHeaders() map[string]string }); ok {
+			if id, err := result.ExtractTokenID(); err == nil && id == t {
+				return r.AuthenticatedHeaders(), nil
+			}
+		}
+	}
+
 	return map[string]string{"X-Auth-Token": t}, nil
 }
 
@@ -527,16 +537,6 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	// Set the User-Agent header
 	req.Header.Set("User-Agent", client.UserAgent.Join())
 
-	if options.MoreHeaders != nil {
-		for k, v := range options.MoreHeaders {
-			req.Header.Set(k, v)
-		}
-	}
-
-	for _, v := range options.OmitHeaders {
-		req.Header.Del(v)
-	}
-
 	// get latest token from client
 	authenticatedHeaders, err := client.authenticatedHeaders(ctx)
 	if err != nil {
@@ -547,6 +547,16 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	}
 
 	prereqtok := req.Header.Get("X-Auth-Token")
+
+	if options.MoreHeaders != nil {
+		for k, v := range options.MoreHeaders {
+			req.Header.Set(k, v)
+		}
+	}
+
+	for _, v := range options.OmitHeaders {
+		req.Header.Del(v)
+	}
 
 	// Issue the request.
 	resp, err := client.httpClientForRequest().Do(req)

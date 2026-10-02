@@ -8,8 +8,8 @@ tokens through openstack/identity.
 
 Wrap credential options in AuthOptionsV2 or AuthOptionsV3 to select the Identity
 API version. Authenticate returns an AuthResult containing the token, expiry,
-user, scope, and service catalog. A nil HTTP client uses default settings;
-pass a configured HTTP client to control HTTP transport and TLS settings.
+user, scope, and service catalog. A nil provider uses a default provider client;
+pass a configured provider to control HTTP transport and TLS settings.
 
 	opts := auth.AuthOptionsV3{
 		AuthURL: "https://identity.example.com/v3",
@@ -109,6 +109,75 @@ using V3MultifactorOpts, placing the scope on the combined options:
 				auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456"},
 			},
 			Scope: &auth.Scope{ProjectID: "project-id"},
+		},
+	}
+	result, err := opts.Authenticate(context.Background(), nil)
+	if err != nil {
+		panic(err)
+	}
+
+# Loading options and configuring a provider
+
+AuthOptionsFromEnv selects an authenticator from the OS_* environment variables.
+Use the openstack convenience functions to authenticate and configure token
+storage, endpoint lookup, and optional reauthentication together:
+
+	opts, err := auth.AuthOptionsFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	provider, err := openstack.AuthenticatedClient(context.Background(), opts)
+	if err != nil {
+		panic(err)
+	}
+
+For clouds.yaml, parse the cloud configuration, then pass it to
+AuthOptionsFromCloud. Apply the parsed TLS configuration both to authentication
+version discovery and to the provider's HTTP transport:
+
+	cloud, endpointOpts, tlsConfig, err := clouds.Parse()
+	if err != nil {
+		panic(err)
+	}
+	opts, err := auth.AuthOptionsFromCloud(cloud, auth.WithTLSConfig(tlsConfig))
+	if err != nil {
+		panic(err)
+	}
+	provider, err := config.NewProviderClient(context.Background(), opts, config.WithTLSConfig(tlsConfig))
+	if err != nil {
+		panic(err)
+	}
+	network, err := openstack.NewNetworkV2(context.Background(), provider, endpointOpts)
+	if err != nil {
+		panic(err)
+	}
+
+If authentication has already been performed, openstack.NewClientFromAuthResult
+configures a provider from the returned result. Pass
+openstack.WithReauth(opts, *result) to enable reauthentication when permitted:
+
+	provider, err := openstack.NewClientFromAuthResult(
+		*result, openstack.WithReauth(opts, *result),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+# OAuth1 authentication
+
+V3OAuth1Opts exchanges an existing OAuth1 consumer and access token for a
+Keystone token. It signs the request against the authentication endpoint.
+Manage consumers and obtain OAuth1 access tokens separately using the
+openstack/identity/v3/oauth1 package.
+
+	opts := auth.AuthOptionsV3{
+		AuthURL: "https://identity.example.com/v3",
+		Auth: auth.V3OAuth1Opts{
+			ConsumerKey:     "consumer-key",
+			ConsumerSecret:  "consumer-secret",
+			Token:           "access-token",
+			TokenSecret:     "access-secret",
+			SignatureMethod: auth.OAuth1HMACSHA1,
 		},
 	}
 	result, err := opts.Authenticate(context.Background(), nil)

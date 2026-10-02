@@ -21,36 +21,17 @@ func TestOAuth1CRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
+	tokenResult := tokens.Get(context.TODO(), client, client.TokenID, nil)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-	tokenRes := tokens.Create(context.TODO(), client, &authOptions)
-	token, err := tokenRes.Extract()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, token)
-
-	user, err := tokenRes.ExtractUser()
+	user, err := tokenResult.ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	roles, err := tokenRes.ExtractRoles()
+	roles, err := tokenResult.ExtractRoles()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, roles)
 
-	project, err := tokenRes.ExtractProject()
+	project, err := tokenResult.ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 

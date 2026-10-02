@@ -22,7 +22,7 @@ func (opts V3MultifactorOpts) ToAuthBody() (map[string]map[string]any, error) {
 		var err error
 
 		switch authMethod.(type) {
-		case V3PasswordOpts, V3TOTPOpts, V3ApplicationCredentialOpts, V3TokenOpts:
+		case V3PasswordOpts, V3TOTPOpts, V3ApplicationCredentialOpts, V3TokenOpts, V3OAuth1Opts:
 		default:
 			return nil, gophercloud.ErrUnsupportedAuthType{AuthType: string(authMethod.ToAuthType())}
 		}
@@ -38,8 +38,17 @@ func (opts V3MultifactorOpts) ToAuthBody() (map[string]map[string]any, error) {
 	return result, nil
 }
 
-func (opts V3MultifactorOpts) ToAuthHeaders() (map[string]any, error) {
-	return nil, nil
+func (opts V3MultifactorOpts) ToAuthHeaders(options ...RequestOption) (map[string]any, error) {
+	result := make(map[string]any)
+	for _, authMethod := range opts.AuthMethods {
+		headers, err := authMethod.ToAuthHeaders(options...)
+		if err != nil {
+			return nil, err
+		}
+		maps.Copy(result, headers)
+	}
+
+	return result, nil
 }
 
 func (opts V3MultifactorOpts) CanReauth() bool {

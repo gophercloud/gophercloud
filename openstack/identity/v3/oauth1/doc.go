@@ -1,5 +1,8 @@
 /*
-Package oauth1 enables management of OpenStack OAuth1 tokens and Authentication.
+Package oauth1 manages OAuth1 consumers, request tokens, and access tokens.
+
+To exchange OAuth1 credentials for a Keystone token, use
+V3OAuth1Opts in github.com/gophercloud/gophercloud/v2/auth.
 
 Example to Create an OAuth1 Consumer
 
@@ -75,48 +78,6 @@ Example to List User's OAuth1 Access Tokens
 
 	for _, accessToken := range accessTokens {
 		fmt.Printf("Access Token: %+v\n", accessToken)
-	}
-
-Example to Authenticate a client using OAuth1 method
-
-	client, err := openstack.NewClient("http://localhost:5000/v3")
-	if err != nil {
-		panic(err)
-	}
-
-	authOptions := &oauth1.AuthOptions{
-		// consumer token, created earlier
-		OAuthConsumerKey:    consumer.ID,
-		OAuthConsumerSecret: consumer.Secret,
-		// access token, created earlier
-		OAuthToken:           accessToken.OAuthToken,
-		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
-		OAuthSignatureMethod: oauth1.HMACSHA1,
-	}
-	err = openstack.AuthenticateV3(context.TODO(), client, authOptions, gophercloud.EndpointOpts{})
-	if err != nil {
-		panic(err)
-	}
-
-Example to Create a Token using OAuth1 method
-
-	var oauth1Token struct {
-		tokens.Token
-		oauth1.TokenExt
-	}
-
-	createOpts := &oauth1.AuthOptions{
-		// consumer token, created earlier
-		OAuthConsumerKey:    consumer.ID,
-		OAuthConsumerSecret: consumer.Secret,
-		// access token, created earlier
-		OAuthToken:           accessToken.OAuthToken,
-		OAuthTokenSecret:     accessToken.OAuthTokenSecret,
-		OAuthSignatureMethod: oauth1.HMACSHA1,
-	}
-	err := tokens.Create(context.TODO(), identityClient, createOpts).ExtractInto(&oauth1Token)
-	if err != nil {
-		panic(err)
 	}
 */
 package oauth1

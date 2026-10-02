@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	tokens2 "github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/oauth1"
@@ -15,22 +16,12 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
-const (
-	// v2 represents Keystone v2.
-	// It should never increase beyond 2.0.
-	v2 = "v2.0"
-
-	// v3 represents Keystone v3.
-	// The version can be anything from v3 to v3.x.
-	v3 = "v3"
-)
-
 // NewClient prepares an unauthenticated ProviderClient instance.
 // Most users will probably prefer using the AuthenticatedClient function
 // instead.
 //
-// This is useful if you wish to explicitly control the version of the identity
-// service that's used for authentication explicitly, for example.
+// This is useful when configuring a provider's HTTP transport before passing
+// it to Authenticate, or when manually calling a low-level Identity operation.
 //
 // A basic example of using this would be:
 //
@@ -58,22 +49,19 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 // specified by the options, acquires a token, and returns a Provider Client
 // instance that's ready to operate.
 //
-// If the full path to a versioned identity endpoint was specified  (example:
-// http://example.com:5000/v3), that path will be used as the endpoint to query.
-//
-// If a versionless endpoint was specified (example: http://example.com:5000/),
-// the endpoint will be queried to determine which versions of the identity service
-// are available, then chooses the most recent or most supported version.
+// The authenticator selects the Identity API version and authentication endpoint.
+// Authentication requests and token response decoding are handled by the auth
+// package, independently of the low-level Identity resource packages.
 //
 // Example:
 //
-//	ao, err := openstack.AuthOptionsFromEnv()
+//	ao, err := auth.AuthOptionsFromEnv()
 //	provider, err := openstack.AuthenticatedClient(ctx, ao)
 //	client, err := openstack.NewNetworkV2(ctx, provider, gophercloud.EndpointOpts{
 //		Region: os.Getenv("OS_REGION_NAME"),
 //	})
-func AuthenticatedClient(ctx context.Context, options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	client, err := NewClient(options.IdentityEndpoint)
+func AuthenticatedClient(ctx context.Context, options auth.Authenticator) (*gophercloud.ProviderClient, error) {
+	client, err := NewClient(options.GetAuthURL())
 	if err != nil {
 		return nil, err
 	}
@@ -85,28 +73,39 @@ func AuthenticatedClient(ctx context.Context, options gophercloud.AuthOptions) (
 	return client, nil
 }
 
-// Authenticate authenticates or re-authenticates against the most
-// recent identity service supported at the provided endpoint.
-func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
-	versions := []*utils.Version{
-		{ID: v2, Priority: 20, Suffix: "/v2.0/"},
-		{ID: v3, Priority: 30, Suffix: "/v3/"},
-	}
-
-	chosen, endpoint, err := utils.ChooseVersion(ctx, client, versions)
+// Authenticate uses the supplied authenticator to acquire a token and configure
+// endpoint lookup. It also installs a reauthentication callback when permitted
+// by the returned authentication result.
+func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, options auth.Authenticator) error {
+	result, err := options.Authenticate(ctx, client)
 	if err != nil {
 		return err
 	}
-
-	switch chosen.ID {
-	case v2:
-		return v2auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
-	case v3:
-		return v3auth(ctx, client, endpoint, &options, gophercloud.EndpointOpts{})
-	default:
-		// The switch statement must be out of date from the versions list.
-		return fmt.Errorf("unrecognized identity version: %s", chosen.ID)
+	if err := client.SetTokenAndAuthResult(result); err != nil {
+		return err
 	}
+	client.EndpointLocator = result.EndpointLocator()
+
+	if result.CanReauth {
+		throwaway := *client
+		throwaway.SetThrowaway(true)
+		throwaway.ReauthFunc = nil
+		if err := throwaway.SetTokenAndAuthResult(nil); err != nil {
+			return err
+		}
+		client.ReauthFunc = func(ctx context.Context) error {
+			result, err := options.Authenticate(ctx, &throwaway)
+			if err != nil {
+				return err
+			}
+			if err := client.SetTokenAndAuthResult(result); err != nil {
+				return err
+			}
+			client.EndpointLocator = result.EndpointLocator()
+			return nil
+		}
+	}
+	return nil
 }
 
 // AuthenticateV2 explicitly authenticates against the identity v2 endpoint.

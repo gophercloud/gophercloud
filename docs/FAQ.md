@@ -4,60 +4,61 @@
 
 Please see our dedicated document [here](MICROVERSIONS.md).
 
-## Implementing default logging and re-authentication attempts
+## Customizing HTTP transport and reauthentication
 
-You can implement custom logging and/or limit re-auth attempts by creating a custom HTTP client
-like the following and setting it as the provider client's HTTP Client (via the
-`gophercloud.HTTPClient` field):
+Use `config.WithHTTPClient` to supply an HTTP client for authentication and
+subsequent service requests, including automatic reauthentication. Whether
+reauthentication is permitted is determined by the authenticator: set
+`AllowReauth: true` on reusable manual credentials, or use the credential
+loaders' defaults. One-time passcodes cannot be reused for reauthentication.
+
+A logging transport can wrap the standard transport without keeping mutable
+per-request state. Do not log tokens, passwords, or request bodies.
 
 ```go
-//...
+package main
 
-// LogRoundTripper satisfies the http.RoundTripper interface and is used to
-// customize the default Gophercloud RoundTripper to allow for logging.
+import (
+	"context"
+	"log"
+	"net/http"
+
+	"github.com/gophercloud/gophercloud/v2/auth"
+	"github.com/gophercloud/gophercloud/v2/openstack/config"
+)
+
+// LogRoundTripper logs request methods and response status codes.
 type LogRoundTripper struct {
-	rt                http.RoundTripper
-	numReauthAttempts int
+	// Transport handles the actual HTTP requests.
+	Transport http.RoundTripper
 }
 
-// newHTTPClient return a custom HTTP client that allows for logging relevant
-// information before and after the HTTP request.
-func newHTTPClient() http.Client {
-	return http.Client{
-		Transport: &LogRoundTripper{
-			rt: http.DefaultTransport,
-		},
-	}
-}
-
-// RoundTrip performs a round-trip HTTP request and logs relevant information about it.
 func (lrt *LogRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
-	glog.Infof("Request URL: %s\n", request.URL)
-
-	response, err := lrt.rt.RoundTrip(request)
-	if response == nil {
-		return nil, err
+	response, err := lrt.Transport.RoundTrip(request)
+	if err != nil {
+		return response, err
 	}
-
-	if response.StatusCode == http.StatusUnauthorized {
-		if lrt.numReauthAttempts == 3 {
-			return response, fmt.Errorf("tried to re-authenticate 3 times with no success")
-		}
-		lrt.numReauthAttempts++
-	}
-
-	glog.Debugf("Response Status: %s\n", response.Status)
-
+	log.Printf("%s: %s", request.Method, response.Status)
 	return response, nil
 }
 
-endpoint := "https://127.0.0.1/auth"
-pc := openstack.NewClient(endpoint)
-pc.HTTPClient = newHTTPClient()
-
-//...
+func main() {
+	opts, err := auth.AuthOptionsFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	httpClient := http.Client{
+		Transport: &LogRoundTripper{Transport: http.DefaultTransport},
+	}
+	provider, err := config.NewProviderClient(
+		context.Background(), opts, config.WithHTTPClient(httpClient),
+	)
+	if err != nil {
+		panic(err)
+	}
+	_ = provider // Use the provider to construct service clients.
+}
 ```
-
 
 ## Implementing custom objects
 

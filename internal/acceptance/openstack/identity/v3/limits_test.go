@@ -4,7 +4,6 @@ package v3
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
@@ -43,9 +42,13 @@ func TestLimitsList(t *testing.T) {
 }
 
 func TestLimitsCRUD(t *testing.T) {
-	err := os.Setenv("OS_SYSTEM_SCOPE", "all")
-	th.AssertNoErr(t, err)
-	defer os.Unsetenv("OS_SYSTEM_SCOPE")
+	t.Setenv("OS_SYSTEM_SCOPE", "all")
+	t.Setenv("OS_PROJECT_ID", "")
+	t.Setenv("OS_PROJECT_NAME", "")
+	t.Setenv("OS_PROJECT_DOMAIN_ID", "")
+	t.Setenv("OS_PROJECT_DOMAIN_NAME", "")
+	t.Setenv("OS_DOMAIN_ID", "")
+	t.Setenv("OS_DOMAIN_NAME", "")
 
 	clients.RequireAdmin(t)
 

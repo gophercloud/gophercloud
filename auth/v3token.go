@@ -5,6 +5,12 @@ import "github.com/gophercloud/gophercloud/v2"
 type V3TokenOpts struct {
 	Token string `json:"token,omitempty"`
 	Scope *Scope `json:"-"`
+
+	// AllowReauth grants permission for Gophercloud to cache these
+	// credentials in memory and automatically re-authenticate when the
+	// token expires. If false, credentials are not cached and
+	// re-authentication is not possible. Defaults to false.
+	AllowReauth bool `json:"allow_reauth,omitempty"`
 }
 
 func (opts V3TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
@@ -32,12 +38,12 @@ func (opts V3TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	return result, nil
 }
 
-func (opts V3TokenOpts) ToAuthHeaders() (map[string]any, error) {
+func (opts V3TokenOpts) ToAuthHeaders(_ ...RequestOption) (map[string]any, error) {
 	return nil, nil
 }
 
 func (opts V3TokenOpts) CanReauth() bool {
-	return false
+	return opts.AllowReauth
 }
 
 func (opts V3TokenOpts) ToAuthScope() (map[string]any, error) {

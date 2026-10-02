@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack"
@@ -20,7 +21,7 @@ import (
 
 func TestAuthenticatedClient(t *testing.T) {
 	// Obtain credentials from the environment.
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnv()
 	if err != nil {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
@@ -51,31 +52,14 @@ func TestEC2AuthMethod(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
+	tokenID := client.TokenID
+	tools.PrintResource(t, tokenID)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, token)
-
-	user, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
+	user, err := tokens.Get(context.TODO(), client, tokenID, nil).ExtractUser()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, user)
 
-	project, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractProject()
+	project, err := tokens.Get(context.TODO(), client, tokenID, nil).ExtractProject()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, project)
 
@@ -110,15 +94,12 @@ func TestEC2AuthMethod(t *testing.T) {
 }
 
 func TestReauth(t *testing.T) {
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnv()
 	if err != nil {
 		t.Fatalf("Unable to obtain environment auth options: %v", err)
 	}
 
-	// Allow reauth
-	ao.AllowReauth = true
-
-	provider, err := openstack.NewClient(ao.IdentityEndpoint)
+	provider, err := openstack.NewClient(ao.GetAuthURL())
 	if err != nil {
 		t.Fatalf("Unable to create provider: %v", err)
 	}

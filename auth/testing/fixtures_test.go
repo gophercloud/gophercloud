@@ -107,6 +107,8 @@ func CleanupEnv(t *testing.T) {
 		"OS_AUTH_URL",
 		"OS_AUTH_TYPE",
 		"OS_AUTH_METHODS",
+		"OS_SYSTEM_SCOPE",
+		"OS_TRUST_ID",
 		"OS_USERNAME",
 		"OS_USERID",
 		"OS_PASSWORD",
@@ -125,6 +127,10 @@ func CleanupEnv(t *testing.T) {
 		"OS_APPLICATION_CREDENTIAL_ID",
 		"OS_APPLICATION_CREDENTIAL_NAME",
 		"OS_APPLICATION_CREDENTIAL_SECRET",
+		"OS_CONSUMER_KEY",
+		"OS_CONSUMER_SECRET",
+		"OS_ACCESS_KEY",
+		"OS_ACCESS_SECRET",
 	}
 	for _, envVar := range envVars {
 		os.Unsetenv(envVar)
