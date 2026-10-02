@@ -347,7 +347,7 @@ func (r AuthResult) WillExpireBy(d time.Duration) bool {
 	return r.ExpiresAt.Before(time.Now().Add(d))
 }
 
-func (r AuthResult) Endpoint(opts gophercloud.EndpointOpts) (string, error) {
+func (r AuthResult) Endpoint(ctx context.Context, provider *gophercloud.ProviderClient, opts gophercloud.EndpointOpts) (string, error) {
 	availability := opts.Availability
 	if availability == "" {
 		availability = gophercloud.AvailabilityPublic
@@ -369,16 +369,26 @@ func (r AuthResult) Endpoint(opts gophercloud.EndpointOpts) (string, error) {
 			if opts.Region != "" && endpoint.Region != opts.Region && endpoint.RegionID != opts.Region {
 				continue
 			}
-			return gophercloud.NormalizeURL(endpoint.URL), nil
+
+			endpointURL := gophercloud.NormalizeURL(endpoint.URL)
+			supported, err := utils.EndpointSupportsVersion(ctx, provider, entry.Type, endpointURL, opts.Version)
+			if err != nil {
+				return "", err
+			}
+			if !supported {
+				continue
+			}
+
+			return endpointURL, nil
 		}
 	}
 
 	return "", &gophercloud.ErrEndpointNotFound{}
 }
 
-func (r AuthResult) EndpointLocator() gophercloud.EndpointLocator {
-	return func(_ context.Context, opts gophercloud.EndpointOpts) (string, error) {
-		return r.Endpoint(opts)
+func (r AuthResult) EndpointLocator(provider *gophercloud.ProviderClient) gophercloud.EndpointLocator {
+	return func(ctx context.Context, opts gophercloud.EndpointOpts) (string, error) {
+		return r.Endpoint(ctx, provider, opts)
 	}
 }
 
