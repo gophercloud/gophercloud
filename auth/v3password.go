@@ -92,7 +92,7 @@ func (opts V3PasswordOpts) ToAuthBody() (map[string]map[string]any, error) {
 	return result, nil
 }
 
-func (opts V3PasswordOpts) ToAuthHeaders() (map[string]any, error) {
+func (opts V3PasswordOpts) ToAuthHeaders(_ ...RequestOption) (map[string]any, error) {
 	return nil, nil
 }
 

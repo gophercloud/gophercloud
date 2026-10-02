@@ -679,11 +679,17 @@ func TestAuthResultExtractTokenID(t *testing.T) {
 	th.CheckEquals(t, "abc123", id)
 }
 
-func TestAuthOptionsV3AuthenticateUsesProvidedHTTPClient(t *testing.T) {
+func TestAuthOptionsV3AuthenticateUsesProvidedClient(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("Authorization"); got != "" {
+			t.Errorf("authentication request disclosed Authorization header %q", got)
+		}
+		if got := r.Header.Get("X-Auth-Token"); got != "" {
+			t.Errorf("authentication request disclosed X-Auth-Token header %q", got)
+		}
 		w.Header().Add("X-Subject-Token", ID)
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, `{ "token": { "expires_at": "2013-02-02T18:30:59.000000Z" } }`)
@@ -701,13 +707,16 @@ func TestAuthOptionsV3AuthenticateUsesProvidedHTTPClient(t *testing.T) {
 		AuthURL: fakeServer.Endpoint(),
 		Auth:    auth.V3PasswordOpts{Username: "me", Password: "secret", UserDomainName: "default"},
 	}
-	result, err := opts.Authenticate(context.TODO(), httpClient)
+	provider := &gophercloud.ProviderClient{HTTPClient: *httpClient}
+	err := provider.SetTokenAndAuthResult(auth.AuthResult{TokenID: "existing-token", TokenType: "Bearer"})
+	th.AssertNoErr(t, err)
+	result, err := opts.Authenticate(context.TODO(), provider)
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, ID, result.TokenID)
 	th.CheckEquals(t, true, usedCustomTransport)
 }
 
-func TestAuthOptionsV3AuthenticateNilHTTPClientDefaults(t *testing.T) {
+func TestAuthOptionsV3AuthenticateNilClientDefaults(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 
@@ -734,6 +743,17 @@ func TestAuthOptionsV2AuthenticateRejectsEmptyAuthBody(t *testing.T) {
 	missing, ok := err.(gophercloud.ErrMissingInput)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, "Auth", missing.Argument)
+}
+
+func TestAuthOptionsV2AuthenticateRejectsMultipleAuthMethods(t *testing.T) {
+	opts := auth.AuthOptionsV2{AuthURL: "https://identity.example.com", Auth: multipleV2Auth{}}
+
+	_, err := opts.Authenticate(context.TODO(), nil)
+	th.AssertErr(t, err)
+	invalid, ok := err.(gophercloud.ErrInvalidInput)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, "AuthMethods", invalid.Argument)
+	th.AssertEquals(t, 2, invalid.Value)
 }
 
 func TestAuthOptionsV3AuthenticatePropagatesScopeError(t *testing.T) {
@@ -792,6 +812,19 @@ type emptyV2Auth struct{}
 func (emptyV2Auth) ToAuthBody() (map[string]map[string]any, error) { return nil, nil }
 func (emptyV2Auth) CanReauth() bool                                { return false }
 
+type multipleV2Auth struct{}
+
+func (multipleV2Auth) ToAuthBody() (map[string]map[string]any, error) {
+	return map[string]map[string]any{
+		"password": {"passwordCredentials": map[string]any{}},
+		"token":    {"token": map[string]any{}},
+	}, nil
+}
+
+func (multipleV2Auth) CanReauth() bool {
+	return false
+}
+
 type testV3Auth struct {
 	body      map[string]map[string]any
 	scope     map[string]any
@@ -800,11 +833,25 @@ type testV3Auth struct {
 	headerErr error
 }
 
-func (a testV3Auth) ToAuthBody() (map[string]map[string]any, error) { return a.body, nil }
-func (a testV3Auth) CanReauth() bool                                { return false }
-func (a testV3Auth) ToAuthScope() (map[string]any, error)           { return a.scope, a.scopeErr }
-func (a testV3Auth) ToAuthHeaders() (map[string]any, error)         { return a.headers, a.headerErr }
-func (a testV3Auth) ToAuthType() auth.AuthType                      { return auth.AuthV3Token }
+func (a testV3Auth) ToAuthBody() (map[string]map[string]any, error) {
+	return a.body, nil
+}
+
+func (a testV3Auth) CanReauth() bool {
+	return false
+}
+
+func (a testV3Auth) ToAuthScope() (map[string]any, error) {
+	return a.scope, a.scopeErr
+}
+
+func (a testV3Auth) ToAuthHeaders(_ ...auth.RequestOption) (map[string]any, error) {
+	return a.headers, a.headerErr
+}
+
+func (a testV3Auth) ToAuthType() auth.AuthType {
+	return auth.AuthV3Token
+}
 
 type roundTripFunc func(*http.Request) (*http.Response, error)
 
