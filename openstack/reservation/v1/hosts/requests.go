@@ -143,3 +143,155 @@ func Delete(ctx context.Context, client *gophercloud.ServiceClient, id string) (
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ListAllocationsOptsBuilder allows extensions to add parameters to the
+// ListAllocations request.
+type ListAllocationsOptsBuilder interface {
+	ToAllocationListQuery() (string, error)
+}
+
+// ListAllocationsOpts filters the allocations of the hosts in the freepool.
+type ListAllocationsOpts struct {
+	// LeaseID only returns the allocations of the given lease.
+	LeaseID string `q:"lease_id"`
+
+	// ReservationID only returns the allocations of the given reservation.
+	ReservationID string `q:"reservation_id"`
+}
+
+// ToAllocationListQuery formats a ListAllocationsOpts into a query string.
+func (opts ListAllocationsOpts) ToAllocationListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListAllocations retrieves the reservations holding each compute host, for
+// leases that have not ended yet.
+func ListAllocations(client *gophercloud.ServiceClient, opts ListAllocationsOptsBuilder) pagination.Pager {
+	url := listAllocationsURL(client)
+	if opts != nil {
+		query, err := opts.ToAllocationListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return AllocationPage{pagination.SinglePageBase(r)}
+	})
+}
+
+// GetAllocationOptsBuilder allows extensions to add parameters to the
+// GetAllocation request.
+type GetAllocationOptsBuilder interface {
+	ToAllocationGetQuery() (string, error)
+}
+
+// GetAllocationOpts filters the allocations of a compute host.
+type GetAllocationOpts struct {
+	// LeaseID only returns the allocations of the given lease.
+	LeaseID string `q:"lease_id"`
+
+	// ReservationID only returns the allocations of the given reservation.
+	ReservationID string `q:"reservation_id"`
+}
+
+// ToAllocationGetQuery formats a GetAllocationOpts into a query string.
+func (opts GetAllocationOpts) ToAllocationGetQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// GetAllocation retrieves the reservations holding a specific compute host,
+// for leases that have not ended yet.
+func GetAllocation(ctx context.Context, client *gophercloud.ServiceClient, id string, opts GetAllocationOptsBuilder) (r GetAllocationResult) {
+	url := getAllocationURL(client, id)
+	if opts != nil {
+		query, err := opts.ToAllocationGetQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
+	resp, err := client.Get(ctx, url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListResourcePropertiesOptsBuilder allows extensions to add parameters to the
+// ListResourceProperties request.
+type ListResourcePropertiesOptsBuilder interface {
+	ToResourcePropertyListQuery() (string, error)
+}
+
+// ListResourcePropertiesOpts controls which resource properties are listed.
+type ListResourcePropertiesOpts struct {
+	// Detail also returns the values each property takes.
+	Detail bool `q:"detail"`
+
+	// All also returns the private properties, for an administrator.
+	All bool `q:"all"`
+}
+
+// ToResourcePropertyListQuery formats a ListResourcePropertiesOpts into a
+// query string.
+func (opts ListResourcePropertiesOpts) ToResourcePropertyListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListResourceProperties retrieves the extra capabilities of the compute hosts
+// that reservations can filter on.
+func ListResourceProperties(client *gophercloud.ServiceClient, opts ListResourcePropertiesOptsBuilder) pagination.Pager {
+	url := listResourcePropertiesURL(client)
+	if opts != nil {
+		query, err := opts.ToResourcePropertyListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ResourcePropertyPage{pagination.SinglePageBase(r)}
+	})
+}
+
+// UpdateResourcePropertyOptsBuilder allows extensions to add parameters to the
+// UpdateResourceProperty request.
+type UpdateResourcePropertyOptsBuilder interface {
+	ToResourcePropertyUpdateMap() (map[string]any, error)
+}
+
+// UpdateResourcePropertyOpts specifies the parameters for updating a resource
+// property.
+type UpdateResourcePropertyOpts struct {
+	// Private hides the property from users who list the resource properties.
+	Private bool `json:"private"`
+}
+
+// ToResourcePropertyUpdateMap formats an UpdateResourcePropertyOpts into a
+// request body.
+func (opts UpdateResourcePropertyOpts) ToResourcePropertyUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// UpdateResourceProperty changes a resource property of the compute hosts.
+func UpdateResourceProperty(ctx context.Context, client *gophercloud.ServiceClient, name string, opts UpdateResourcePropertyOptsBuilder) (r UpdateResourcePropertyResult) {
+	b, err := opts.ToResourcePropertyUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Patch(ctx, updateResourcePropertyURL(client, name), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
