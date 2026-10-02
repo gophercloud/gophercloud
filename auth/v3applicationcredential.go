@@ -111,7 +111,7 @@ func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any,
 	return result, nil
 }
 
-func (opts V3ApplicationCredentialOpts) ToAuthHeaders() (map[string]any, error) {
+func (opts V3ApplicationCredentialOpts) ToAuthHeaders(_ ...RequestOption) (map[string]any, error) {
 	return nil, nil
 }
 
