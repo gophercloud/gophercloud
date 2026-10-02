@@ -2,6 +2,7 @@ package testing
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/auth"
@@ -312,6 +313,7 @@ func TestV3MultifactorOptsToAuthBody(t *testing.T) {
 		auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456"},
 		auth.V3TokenOpts{Token: "testtoken"},
 		auth.V3ApplicationCredentialOpts{ApplicationCredentialID: "credential-id", ApplicationCredentialSecret: "secret"},
+		auth.V3OAuth1Opts{ConsumerKey: "key", ConsumerSecret: "secret", Token: "token", TokenSecret: "secret", SignatureMethod: auth.OAuth1HMACSHA1},
 	}}
 
 	body, err := opts.ToAuthBody()
@@ -321,7 +323,30 @@ func TestV3MultifactorOptsToAuthBody(t *testing.T) {
 		"totp":                   {"user": map[string]any{"id": "user-id", "passcode": "123456"}},
 		"token":                  {"id": "testtoken"},
 		"application_credential": {"id": "credential-id", "secret": "secret"},
+		"oauth1":                 {},
 	}, body)
+}
+
+func TestV3MultifactorOptsSignsOAuth1Method(t *testing.T) {
+	timestamp := time.Unix(0, 0)
+	tokenURL := "http://127.0.0.1:33199/v3/auth/tokens"
+	oauth1 := auth.V3OAuth1Opts{
+		ConsumerKey:     "7fea2d",
+		ConsumerSecret:  "secretsecret",
+		Token:           "accd36",
+		TokenSecret:     "aa47da",
+		SignatureMethod: auth.OAuth1HMACSHA1,
+		Timestamp:       &timestamp,
+		Nonce:           "66148873158553341551586804894",
+	}
+	opts := auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{
+		auth.V3PasswordOpts{UserID: "user-id", Password: "testpass"},
+		oauth1,
+	}}
+	request, err := auth.NewRequestV3(opts, auth.WithTokenURL(tokenURL))
+	th.AssertNoErr(t, err)
+	// Same signature as TestV3OAuth1OptsBuildRequest.
+	th.AssertEquals(t, `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`, request.MoreHeaders["Authorization"])
 }
 
 func TestV3MultifactorOptsPropagatesMethodError(t *testing.T) {
@@ -344,4 +369,14 @@ func TestV3MultifactorOptsRejectsUnsupportedMethod(t *testing.T) {
 	th.AssertErr(t, err)
 	_, ok := err.(gophercloud.ErrUnsupportedAuthType)
 	th.AssertEquals(t, true, ok)
+}
+
+func TestV3MultifactorOptsWithoutOAuth1DoesNotNeedTokenURL(t *testing.T) {
+	opts := auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{
+		auth.V3PasswordOpts{UserID: "user-id", Password: "testpass"},
+		auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456"},
+	}}
+
+	_, err := auth.NewRequestV3(opts)
+	th.AssertNoErr(t, err)
 }
