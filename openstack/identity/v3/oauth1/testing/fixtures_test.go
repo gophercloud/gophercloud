@@ -440,11 +440,11 @@ func HandleGetAccessTokenRole(t *testing.T, fakeServer th.FakeServer) {
 // HandleAuthenticate creates an HTTP handler at `/auth/tokens` on the
 // test handler mux that responds with an OpenStack token.
 func HandleAuthenticate(t *testing.T, fakeServer th.FakeServer) {
-	fakeServer.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="JgMHu4e7rXGlqz3A%2FLhHDMvtjp8%3D"`)
+		th.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`)
 		th.TestJSONRequest(t, r, `{"auth": {"identity": {"oauth1": {}, "methods": ["oauth1"]}}}`)
 
 		w.Header().Set("Content-Type", "application/json")
