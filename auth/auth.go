@@ -2,8 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
-	"maps"
 	"net/http"
 	"slices"
 	"time"
@@ -16,6 +14,9 @@ import (
 type AuthType string
 
 const (
+	// AuthNoAuth
+	AuthNoAuth AuthType = "none"
+
 	// AuthPassword defines an unknown version of the password
 	AuthPassword AuthType = "password"
 
@@ -42,6 +43,13 @@ const (
 
 	// AuthV3MultiFactor defines version 3 of the multifactor
 	AuthV3MultiFactor AuthType = "v3multifactor"
+
+	// AuthV3OAuth1 defines version 3 of OAuth1 authentication.
+	AuthV3OAuth1 AuthType = "v3oauth1"
+
+	// AuthEC2Token defines any version of EC2 credentials.
+	// ec2token is not a real keystone auth plugin. Used for consistency
+	AuthEC2Token AuthType = "ec2token"
 )
 
 // Helper that returns auth method - values are used in request bodies
@@ -55,6 +63,10 @@ func (at AuthType) toAuthMethod() string {
 		return "totp"
 	case AuthV3ApplicationCredential:
 		return "application_credential"
+	case AuthV3OAuth1:
+		return "oauth1"
+	case AuthEC2Token:
+		return "credentials"
 	default: // should never happen; toAuthMethod() is never called on AuthV3MultiFactor
 		return ""
 	}
@@ -71,13 +83,17 @@ type AuthOptionsBuilderV2 interface {
 
 type AuthOptionsBuilderV3 interface {
 	AuthOptionsBuilder
-	ToAuthHeaders() (map[string]any, error)
+	ToAuthHeaders(options ...RequestOption) (map[string]any, error)
 	ToAuthScope() (map[string]any, error)
 	ToAuthType() AuthType
 }
 
+type AuthOptionsBuilderEC2 interface {
+	AuthOptionsBuilder
+}
+
 type Authenticator interface {
-	Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error)
+	Authenticate(ctx context.Context, client *gophercloud.ProviderClient) (*AuthResult, error)
 	GetAuthURL() string
 }
 
@@ -94,38 +110,35 @@ func (ao AuthOptionsV2) GetAuthURL() string {
 	return gophercloud.NormalizeURL(base) + "v2.0/"
 }
 
-func (ao AuthOptionsV2) Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error) {
+func (ao AuthOptionsV2) Authenticate(ctx context.Context, provider *gophercloud.ProviderClient) (*AuthResult, error) {
+	return ao.authenticate(ctx, provider, ao.GetAuthURL())
+}
+
+func (ao AuthOptionsV2) authenticate(ctx context.Context, provider *gophercloud.ProviderClient, endpoint string) (*AuthResult, error) {
 	if ao.Auth == nil {
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
 
-	authData, err := ao.Auth.ToAuthBody()
+	request, err := NewRequestV2(ao.Auth)
 	if err != nil {
+		if invalid, ok := err.(gophercloud.ErrInvalidInput); ok && invalid.Value == 0 {
+			return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
+		}
 		return nil, err
 	}
 
-	var body map[string]any
-	for _, v := range authData {
-		body = v
-	}
-	if body == nil {
-		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
-	}
-
-	if httpClient == nil {
-		httpClient = &http.Client{}
+	if provider == nil {
+		provider = &gophercloud.ProviderClient{}
 	}
 
 	client := &gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{HTTPClient: *httpClient},
-		Endpoint:       ao.GetAuthURL(),
+		ProviderClient: provider,
+		Endpoint:       gophercloud.NormalizeURL(endpoint),
 	}
 
 	var result gophercloud.Result
-	resp, err := client.Post(ctx, client.ServiceURL("tokens"), map[string]any{"auth": body}, &result.Body, &gophercloud.RequestOpts{
-		OkCodes:     []int{200, 203},
-		OmitHeaders: []string{"X-Auth-Token"},
-	})
+	request.JSONResponse = &result.Body
+	resp, err := client.Request(ctx, http.MethodPost, client.ServiceURL("tokens"), request)
 	_, result.Header, result.Err = gophercloud.ParseResponse(resp, err)
 	if result.Err != nil {
 		return nil, result.Err
@@ -152,55 +165,84 @@ func (ao AuthOptionsV3) GetAuthURL() string {
 	return gophercloud.NormalizeURL(base) + "v3/"
 }
 
-func (ao AuthOptionsV3) Authenticate(ctx context.Context, httpClient *http.Client) (*AuthResult, error) {
+func (ao AuthOptionsV3) Authenticate(ctx context.Context, provider *gophercloud.ProviderClient) (*AuthResult, error) {
+	return ao.authenticate(ctx, provider, ao.GetAuthURL())
+}
+
+func (ao AuthOptionsV3) authenticate(ctx context.Context, provider *gophercloud.ProviderClient, endpoint string) (*AuthResult, error) {
 	if ao.Auth == nil {
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
 
-	authData, err := ao.Auth.ToAuthBody()
-	if err != nil {
-		return nil, err
-	}
-
-	methods := slices.Collect(maps.Keys(authData))
-	slices.Sort(methods)
-	identity := map[string]any{"methods": methods}
-	for k, v := range authData {
-		identity[k] = v
-	}
-
-	body := map[string]any{"identity": identity}
-	scopeMap, err := ao.Auth.ToAuthScope()
-	if err != nil {
-		return nil, err
-	}
-	if scopeMap != nil {
-		body["scope"] = scopeMap
-	}
-
-	headers, err := ao.Auth.ToAuthHeaders()
-	if err != nil {
-		return nil, err
-	}
-	moreHeaders := make(map[string]string, len(headers))
-	for k, v := range headers {
-		moreHeaders[k] = fmt.Sprint(v)
-	}
-
-	if httpClient == nil {
-		httpClient = &http.Client{}
+	if provider == nil {
+		provider = &gophercloud.ProviderClient{}
 	}
 
 	client := &gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{HTTPClient: *httpClient},
+		ProviderClient: provider,
+		Endpoint:       gophercloud.NormalizeURL(endpoint),
+	}
+	tokenURL := client.ServiceURL("auth", "tokens")
+
+	// Methods that sign the request, such as OAuth1, need the URL it is sent to.
+	request, err := NewRequestV3(ao.Auth, WithTokenURL(tokenURL))
+	if err != nil {
+		return nil, err
+	}
+
+	var result gophercloud.Result
+	request.JSONResponse = &result.Body
+	resp, err := client.Request(ctx, http.MethodPost, tokenURL, request)
+	_, result.Header, result.Err = gophercloud.ParseResponse(resp, err)
+	if result.Err != nil {
+		return nil, result.Err
+	}
+
+	var respBody v3TokenBody
+	if err := result.ExtractIntoStructPtr(&respBody, "token"); err != nil {
+		return nil, err
+	}
+
+	return respBody.toAuthResult(result.Header.Get("X-Subject-Token"), ao.Auth.CanReauth()), nil
+}
+
+// AuthOptionsEC2 authenticates against the identity v3 ec2tokens endpoint
+// using EC2 credentials.
+type AuthOptionsEC2 struct {
+	AuthURL string
+	Auth    AuthOptionsBuilderEC2
+}
+
+func (ao AuthOptionsEC2) GetAuthURL() string {
+	base, err := utils.BaseEndpoint(ao.AuthURL)
+	if err != nil {
+		base = ao.AuthURL
+	}
+	return gophercloud.NormalizeURL(base) + "v3/"
+}
+
+func (ao AuthOptionsEC2) Authenticate(ctx context.Context, provider *gophercloud.ProviderClient) (*AuthResult, error) {
+	if ao.Auth == nil {
+		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
+	}
+
+	request, err := NewRequestEC2(ao.Auth)
+	if err != nil {
+		return nil, err
+	}
+
+	if provider == nil {
+		provider = &gophercloud.ProviderClient{}
+	}
+
+	client := &gophercloud.ServiceClient{
+		ProviderClient: provider,
 		Endpoint:       ao.GetAuthURL(),
 	}
 
 	var result gophercloud.Result
-	resp, err := client.Post(ctx, client.ServiceURL("auth", "tokens"), map[string]any{"auth": body}, &result.Body, &gophercloud.RequestOpts{
-		MoreHeaders: moreHeaders,
-		OmitHeaders: []string{"X-Auth-Token"},
-	})
+	request.JSONResponse = &result.Body
+	resp, err := client.Request(ctx, http.MethodPost, client.ServiceURL("ec2tokens"), request)
 	_, result.Header, result.Err = gophercloud.ParseResponse(resp, err)
 	if result.Err != nil {
 		return nil, result.Err

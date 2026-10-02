@@ -86,7 +86,7 @@ func (opts V3TOTPOpts) ToAuthBody() (map[string]map[string]any, error) {
 	return result, nil
 }
 
-func (opts V3TOTPOpts) ToAuthHeaders() (map[string]any, error) {
+func (opts V3TOTPOpts) ToAuthHeaders(_ ...RequestOption) (map[string]any, error) {
 	return nil, nil
 }
 
