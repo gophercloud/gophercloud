@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack"
+	tokens3 "github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 )
 
 type options struct {
@@ -45,12 +46,44 @@ func WithTLSConfig(tlsConfig *tls.Config) func(*options) {
 // service are available, then chooses the most recent or most supported
 // version.
 func NewProviderClient(ctx context.Context, authOptions gophercloud.AuthOptions, opts ...func(*options)) (*gophercloud.ProviderClient, error) {
+	client, err := newProviderClient(authOptions.IdentityEndpoint, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	err = openstack.Authenticate(ctx, client, authOptions)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+// NewProviderClientV3 logs in to an OpenStack cloud using the provided
+// Identity v3 authentication options and returns an authenticated ProviderClient.
+//
+// Unlike [NewProviderClient], the identity endpoint is passed separately so
+// callers can use any Identity v3 authentication extension that implements
+// [tokens3.AuthOptionsBuilder].
+func NewProviderClientV3(ctx context.Context, identityEndpoint string, authOptions tokens3.AuthOptionsBuilder, opts ...func(*options)) (*gophercloud.ProviderClient, error) {
+	client, err := newProviderClient(identityEndpoint, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	err = openstack.AuthenticateV3(ctx, client, authOptions, gophercloud.EndpointOpts{})
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+func newProviderClient(identityEndpoint string, opts ...func(*options)) (*gophercloud.ProviderClient, error) {
 	var options options
 	for _, apply := range opts {
 		apply(&options)
 	}
 
-	client, err := openstack.NewClient(authOptions.IdentityEndpoint)
+	client, err := openstack.NewClient(identityEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -61,10 +94,5 @@ func NewProviderClient(ctx context.Context, authOptions gophercloud.AuthOptions,
 		options.httpClient.Transport = transport
 	}
 	client.HTTPClient = options.httpClient
-
-	err = openstack.Authenticate(ctx, client, authOptions)
-	if err != nil {
-		return nil, err
-	}
 	return client, nil
 }
