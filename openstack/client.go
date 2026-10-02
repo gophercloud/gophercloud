@@ -81,7 +81,7 @@ func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, optio
 	if err := client.SetTokenAndAuthResult(result); err != nil {
 		return err
 	}
-	client.EndpointLocator = result.EndpointLocator()
+	client.EndpointLocator = result.EndpointLocator(client)
 
 	if result.CanReauth {
 		throwaway := *client
@@ -98,7 +98,7 @@ func Authenticate(ctx context.Context, client *gophercloud.ProviderClient, optio
 			if err := client.SetTokenAndAuthResult(result); err != nil {
 				return err
 			}
-			client.EndpointLocator = result.EndpointLocator()
+			client.EndpointLocator = result.EndpointLocator(client)
 			return nil
 		}
 	}
