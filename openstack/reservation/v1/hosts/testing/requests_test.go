@@ -2,6 +2,8 @@ package testing
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/reservation/v1/hosts"
@@ -246,4 +248,33 @@ func TestUpdateResourcePropertyOptsSendsFalse(t *testing.T) {
 	private, ok := b["private"]
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, false, private)
+}
+
+// Property names are free-form, so characters such as # and ? must be escaped.
+func TestUpdateResourcePropertyEscapesName(t *testing.T) {
+	for name, escaped := range map[string]string{
+		"gpu#model": "gpu%23model",
+		"gpu?model": "gpu%3Fmodel",
+	} {
+		t.Run(name, func(t *testing.T) {
+			fakeServer := th.SetupHTTP()
+			defer fakeServer.Teardown()
+
+			fakeServer.Mux.HandleFunc("/os-hosts/properties/gpu", func(w http.ResponseWriter, r *http.Request) {
+				t.Errorf("request for %q reached the gpu property", name)
+			})
+			fakeServer.Mux.HandleFunc("/os-hosts/properties/"+name, func(w http.ResponseWriter, r *http.Request) {
+				th.TestMethod(t, r, "PATCH")
+				th.AssertEquals(t, "/os-hosts/properties/"+escaped, r.URL.EscapedPath())
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				fmt.Fprint(w, ResourcePropertyUpdateResult)
+			})
+
+			_, err := hosts.UpdateResourceProperty(context.TODO(), client.ServiceClient(fakeServer), name, hosts.UpdateResourcePropertyOpts{Private: true}).Extract()
+			th.AssertNoErr(t, err)
+		})
+	}
 }
