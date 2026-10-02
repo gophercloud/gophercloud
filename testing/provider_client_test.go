@@ -167,15 +167,15 @@ func TestConcurrentReauth(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
+	throwaway := *p
+	throwaway.SetThrowaway(true)
 	p.ReauthFunc = func(_ context.Context) error {
-		p.SetThrowaway(true)
 		time.Sleep(1 * time.Second)
-		p.AuthenticatedHeaders()
+		throwaway.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
-		p.TokenID = postreauthTok
-		p.SetThrowaway(false)
+		p.SetToken(postreauthTok)
 		return nil
 	}
 
@@ -183,7 +183,9 @@ func TestConcurrentReauth(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("X-Auth-Token") != postreauthTok {
+		token := r.Header.Get("X-Auth-Token")
+		if token != postreauthTok {
+			th.CheckEquals(t, prereauthTok, token)
 			w.WriteHeader(http.StatusUnauthorized)
 			info.mut.Lock()
 			info.failedAuths++
@@ -205,9 +207,6 @@ func TestConcurrentReauth(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
 	reqopts.KeepResponseBody = true
-	reqopts.MoreHeaders = map[string]string{
-		"X-Auth-Token": prereauthTok,
-	}
 
 	for i := 0; i < numconc; i++ {
 		wg.Add(1)
@@ -337,6 +336,8 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
+	throwaway := *p
+	throwaway.SetThrowaway(true)
 	p.ReauthFunc = func(_ context.Context) error {
 		info.mut.RLock()
 		if info.numreauths == 0 {
@@ -346,13 +347,11 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		} else {
 			info.mut.RUnlock()
 		}
-		p.SetThrowaway(true)
-		p.AuthenticatedHeaders()
+		throwaway.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
-		p.TokenID = postreauthTok
-		p.SetThrowaway(false)
+		p.SetToken(postreauthTok)
 		return nil
 	}
 
@@ -360,7 +359,9 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	defer fakeServer.Teardown()
 
 	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("X-Auth-Token") != postreauthTok {
+		token := r.Header.Get("X-Auth-Token")
+		if token != postreauthTok {
+			th.CheckEquals(t, prereauthTok, token)
 			info.mut.Lock()
 			info.failedAuths++
 			info.mut.Unlock()
@@ -382,9 +383,6 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
 	reqopts.KeepResponseBody = true
-	reqopts.MoreHeaders = map[string]string{
-		"X-Auth-Token": prereauthTok,
-	}
 
 	for i := 0; i < numconc; i++ {
 		wg.Add(1)
