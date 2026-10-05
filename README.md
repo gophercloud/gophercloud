@@ -71,6 +71,7 @@ package main
 import (
 	"context"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/config"
 	"github.com/gophercloud/gophercloud/v2/openstack/config/clouds"
@@ -79,10 +80,15 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Fetch coordinates from a `cloud.yaml` in the current directory, or
+	// Fetch coordinates from a `clouds.yaml` in the current directory, or
 	// in the well-known config directories (different for each operating
 	// system).
-	authOptions, endpointOptions, tlsConfig, err := clouds.Parse()
+	cloud, endpointOptions, tlsConfig, err := clouds.Parse()
+	if err != nil {
+		panic(err)
+	}
+
+	authOptions, err := cloud.ToAuthOptions(auth.WithTLSConfig(tlsConfig))
 	if err != nil {
 		panic(err)
 	}
@@ -104,7 +110,8 @@ func main() {
 		panic(err)
 	}
 
-	// use the computeClient
+	// Use computeClient for Compute API operations (see below).
+	_ = computeClient
 }
 ```
 
@@ -120,13 +127,14 @@ import (
 	"os"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 )
 
 func main() {
 	ctx := context.Background()
 
-	opts, err := openstack.AuthOptionsFromEnv()
+	opts, err := auth.AuthOptionsFromEnv()
 	if err != nil {
 		panic(err)
 	}
@@ -143,7 +151,8 @@ func main() {
 		panic(err)
 	}
 
-	// use the computeClient
+	// Use computeClient for Compute API operations (see below).
+	_ = computeClient
 }
 ```
 
@@ -159,16 +168,21 @@ import (
 	"context"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 )
 
 func main() {
 	ctx := context.Background()
 
-	providerClient, err := openstack.AuthenticatedClient(ctx, gophercloud.AuthOptions{
-		IdentityEndpoint: "https://openstack.example.com:5000/v3",
-		Username:         "username",
-		Password:         "password",
+	providerClient, err := openstack.AuthenticatedClient(ctx, auth.AuthOptionsV3{
+		AuthURL: "https://openstack.example.com:5000/v3",
+		Auth: auth.V3PasswordOpts{
+			Username:       "username",
+			Password:       "password",
+			UserDomainName: "Default",
+			Scope:          &auth.Scope{ProjectID: "project-id"},
+		},
 	})
 	if err != nil {
 		panic(err)
@@ -181,7 +195,8 @@ func main() {
 		panic(err)
 	}
 
-	// use the computeClient
+	// Use computeClient for Compute API operations (see below).
+	_ = computeClient
 }
 ```
 
@@ -204,7 +219,11 @@ func main() {
         ImageRef:  "image_id",
     }, nil).Extract()
 
-    // [...]
+    if err != nil {
+        panic(err)
+    }
+    _ = server // Use the created server.
+}
 ```
 
 The above code sample creates a new server with the parameters, and returns a
