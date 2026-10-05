@@ -82,7 +82,12 @@ func main() {
 	// Fetch coordinates from a `cloud.yaml` in the current directory, or
 	// in the well-known config directories (different for each operating
 	// system).
-	authOptions, endpointOptions, tlsConfig, err := clouds.Parse()
+	cloud, endpointOptions, tlsConfig, err := clouds.Parse()
+	if err != nil {
+		panic(err)
+	}
+
+	authOptions, err := cloud.ToAuthOptions()
 	if err != nil {
 		panic(err)
 	}
