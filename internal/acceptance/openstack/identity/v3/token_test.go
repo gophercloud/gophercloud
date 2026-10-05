@@ -6,9 +6,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -19,24 +19,10 @@ func TestTokensGet(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 

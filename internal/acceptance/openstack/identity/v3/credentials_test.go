@@ -6,9 +6,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/credentials"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/ec2tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
@@ -19,23 +19,10 @@ func TestCredentialsCRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
@@ -96,23 +83,10 @@ func TestCredentialsValidateS3(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
@@ -144,7 +118,7 @@ func TestCredentialsValidateS3(t *testing.T) {
 	th.AssertEquals(t, credential.UserID, createOpts.UserID)
 	th.AssertEquals(t, credential.ProjectID, createOpts.ProjectID)
 
-	opts := ec2tokens.AuthOptions{
+	opts := auth.EC2TokenOpts{
 		Access: "181920",
 		Secret: "secretKey",
 		// auth will fail if this is not s3
