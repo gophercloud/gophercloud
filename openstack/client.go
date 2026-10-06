@@ -449,7 +449,9 @@ func NewDNSV2(ctx context.Context, client *gophercloud.ProviderClient, eo gopher
 	if err != nil {
 		return sc, err
 	}
-	sc.ResourceBase = sc.Endpoint + "v2/"
+	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v2") {
+		sc.ResourceBase = sc.Endpoint + "v2/"
+	}
 	return sc, nil
 }
 
