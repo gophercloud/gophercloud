@@ -3,7 +3,8 @@ Package leases manages leases in the OpenStack Reservation service.
 
 A lease reserves a set of resources over a period of time. Each lease holds one
 or more reservations, and Blazar schedules events to start and end it. Dates are
-truncated to the minute, and a lease cannot start in the past.
+truncated to the minute, and a lease cannot start in the past. A lease created
+with a zero StartDate starts immediately.
 
 Example to list leases
 
