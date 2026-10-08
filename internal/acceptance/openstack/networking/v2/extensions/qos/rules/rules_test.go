@@ -159,6 +159,7 @@ func TestMinimumPacketRateRulesCRUD(t *testing.T) {
 
 	// Skip these tests if we don't have the required extension
 	v2.RequireNeutronExtension(t, client, "qos")
+	v2.RequireNeutronExtension(t, client, "qos-pps-minimum")
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
@@ -205,6 +206,7 @@ func TestPacketRateLimitRulesCRUD(t *testing.T) {
 
 	// Skip these tests if we don't have the required extension
 	v2.RequireNeutronExtension(t, client, "qos")
+	v2.RequireNeutronExtension(t, client, "qos-pps")
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
