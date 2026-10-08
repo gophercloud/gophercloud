@@ -366,6 +366,17 @@ func initClientOpts(ctx context.Context, client *gophercloud.ProviderClient, eo 
 	return sc, nil
 }
 
+// resourceBase returns the endpoint with the given version path appended,
+// unless the endpoint already ends with that version path. This avoids
+// building URLs such as ".../v2/v2/" when the service catalog publishes an
+// already-versioned endpoint.
+func resourceBase(endpoint, version string) string {
+	if strings.HasSuffix(strings.TrimSuffix(endpoint, "/"), "/"+version) {
+		return endpoint
+	}
+	return endpoint + version + "/"
+}
+
 // NewBareMetalV1 creates a ServiceClient that may be used with the v1
 // bare metal package.
 func NewBareMetalV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
@@ -373,9 +384,7 @@ func NewBareMetalV1(ctx context.Context, client *gophercloud.ProviderClient, eo 
 	if err != nil {
 		return sc, err
 	}
-	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v1") {
-		sc.ResourceBase = sc.Endpoint + "v1/"
-	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v1")
 	return sc, nil
 }
 
@@ -404,7 +413,7 @@ func NewNetworkV2(ctx context.Context, client *gophercloud.ProviderClient, eo go
 	if err != nil {
 		return sc, err
 	}
-	sc.ResourceBase = sc.Endpoint + "v2.0/"
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v2.0")
 	return sc, nil
 }
 
@@ -449,7 +458,7 @@ func NewDNSV2(ctx context.Context, client *gophercloud.ProviderClient, eo gopher
 	if err != nil {
 		return sc, err
 	}
-	sc.ResourceBase = sc.Endpoint + "v2/"
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v2")
 	return sc, nil
 }
 
@@ -460,7 +469,7 @@ func NewImageV2(ctx context.Context, client *gophercloud.ProviderClient, eo goph
 	if err != nil {
 		return sc, err
 	}
-	sc.ResourceBase = sc.Endpoint + "v2/"
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v2")
 	return sc, nil
 }
 
@@ -486,7 +495,7 @@ func NewMetricV1(ctx context.Context, client *gophercloud.ProviderClient, eo gop
 	if err != nil {
 		return sc, err
 	}
-	sc.ResourceBase = sc.Endpoint + "api/v1/"
+	sc.ResourceBase = resourceBase(sc.Endpoint, "api/v1")
 	return sc, nil
 }
 
@@ -513,7 +522,7 @@ func NewKeyManagerV1(ctx context.Context, client *gophercloud.ProviderClient, eo
 	if err != nil {
 		return sc, err
 	}
-	sc.ResourceBase = sc.Endpoint + "v1/"
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v1")
 	return sc, nil
 }
 
@@ -539,8 +548,6 @@ func NewReservationV1(ctx context.Context, client *gophercloud.ProviderClient, e
 	if err != nil {
 		return sc, err
 	}
-	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v1") {
-		sc.ResourceBase = sc.Endpoint + "v1/"
-	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v1")
 	return sc, nil
 }

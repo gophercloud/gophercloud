@@ -314,3 +314,70 @@ func TestAuthenticatedClientV3Fails(t *testing.T) {
 func TestAuthenticatedClientV2Fails(t *testing.T) {
 	testAuthenticatedClientFails(t, "http://bad-address.example.com/v2.0")
 }
+
+func TestServiceClientResourceBase(t *testing.T) {
+	type newClientFunc func(context.Context, *gophercloud.ProviderClient, gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error)
+
+	services := []struct {
+		name      string
+		newClient newClientFunc
+		version   string
+	}{
+		{"BareMetalV1", openstack.NewBareMetalV1, "v1"},
+		{"NetworkV2", openstack.NewNetworkV2, "v2.0"},
+		{"DNSV2", openstack.NewDNSV2, "v2"},
+		{"ImageV2", openstack.NewImageV2, "v2"},
+		{"MetricV1", openstack.NewMetricV1, "api/v1"},
+		{"KeyManagerV1", openstack.NewKeyManagerV1, "v1"},
+		{"ReservationV1", openstack.NewReservationV1, "v1"},
+	}
+
+	for _, svc := range services {
+		endpoints := []struct {
+			name     string
+			endpoint string
+			expected string
+		}{
+			{
+				name:     "unversioned endpoint",
+				endpoint: "http://example.com:1234/",
+				expected: "http://example.com:1234/" + svc.version + "/",
+			},
+			{
+				name:     "unversioned endpoint with path",
+				endpoint: "http://example.com/service/",
+				expected: "http://example.com/service/" + svc.version + "/",
+			},
+			{
+				name:     "versioned endpoint",
+				endpoint: "http://example.com:1234/" + svc.version + "/",
+				expected: "http://example.com:1234/" + svc.version + "/",
+			},
+			{
+				name:     "versioned endpoint with path",
+				endpoint: "http://example.com/service/" + svc.version + "/",
+				expected: "http://example.com/service/" + svc.version + "/",
+			},
+			{
+				name:     "path segment ending with version",
+				endpoint: "http://example.com/foo" + svc.version + "/",
+				expected: "http://example.com/foo" + svc.version + "/" + svc.version + "/",
+			},
+		}
+
+		for _, ep := range endpoints {
+			t.Run(svc.name+"/"+ep.name, func(t *testing.T) {
+				pc := &gophercloud.ProviderClient{
+					EndpointLocator: func(context.Context, gophercloud.EndpointOpts) (string, error) {
+						return ep.endpoint, nil
+					},
+				}
+
+				sc, err := svc.newClient(context.TODO(), pc, gophercloud.EndpointOpts{})
+				th.AssertNoErr(t, err)
+				th.CheckEquals(t, ep.endpoint, sc.Endpoint)
+				th.CheckEquals(t, ep.expected, sc.ResourceBaseURL())
+			})
+		}
+	}
+}
