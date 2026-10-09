@@ -420,7 +420,6 @@ type MinimumPacketRateRulesListOptsBuilder interface {
 // Marker and Limit are used for the pagination.
 type MinimumPacketRateRulesListOpts struct {
 	ID         string `q:"id"`
-	TenantID   string `q:"tenant_id"`
 	MinKPps    int    `q:"min_kpps"`
 	Direction  string `q:"direction"`
 	Limit      int    `q:"limit"`
@@ -472,7 +471,7 @@ type CreateMinimumPacketRateRuleOptsBuilder interface {
 // CreateMinimumPacketRateRuleOpts specifies parameters of a new MinimumPacketRateRule.
 type CreateMinimumPacketRateRuleOpts struct {
 	// MinKPps is a minimum kilopackets per second. It's a required parameter.
-	MinKPps int `json:"min_kpps"`
+	MinKPps int `json:"min_kpps" required:"true"`
 
 	// Direction represents the direction of traffic.
 	Direction string `json:"direction,omitempty"`
@@ -552,7 +551,6 @@ type PacketRateLimitRulesListOptsBuilder interface {
 // Marker and Limit are used for the pagination.
 type PacketRateLimitRulesListOpts struct {
 	ID           string `q:"id"`
-	TenantID     string `q:"tenant_id"`
 	MaxKPps      int    `q:"max_kpps"`
 	MaxBurstKPps int    `q:"max_burst_kpps"`
 	Direction    string `q:"direction"`
@@ -606,7 +604,7 @@ type CreatePacketRateLimitRuleOptsBuilder interface {
 // CreatePacketRateLimitRuleOpts specifies parameters of a new PacketRateLimitRule.
 type CreatePacketRateLimitRuleOpts struct {
 	// MaxKPps is a maximum kilopackets per second. It's a required parameter.
-	MaxKPps int `json:"max_kpps"`
+	MaxKPps int `json:"max_kpps" required:"true"`
 
 	// MaxBurstKPps is a maximum burst size in kilopackets.
 	MaxBurstKPps int `json:"max_burst_kpps,omitempty"`
