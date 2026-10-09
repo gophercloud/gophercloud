@@ -284,9 +284,6 @@ type MinimumPacketRateRule struct {
 	// ID is a unique ID of the rule.
 	ID string `json:"id"`
 
-	// TenantID is the ID of the Identity project.
-	TenantID string `json:"tenant_id"`
-
 	// MinKPps is a minimum kilopackets per second.
 	MinKPps int `json:"min_kpps"`
 
@@ -362,9 +359,6 @@ type DeletePacketRateLimitRuleResult struct {
 type PacketRateLimitRule struct {
 	// ID is a unique ID of the rule.
 	ID string `json:"id"`
-
-	// TenantID is the ID of the Identity project.
-	TenantID string `json:"tenant_id"`
 
 	// MaxKPps is a maximum kilopackets per second.
 	MaxKPps int `json:"max_kpps"`
