@@ -18,6 +18,14 @@ func listDSParamsURL(c *gophercloud.ServiceClient, datastoreID, versionID string
 	return c.ServiceURL("datastores", datastoreID, "versions", versionID, "parameters")
 }
 
+func createDSParamURL(c *gophercloud.ServiceClient, versionID string) string {
+	return c.ServiceURL("mgmt", "datastores", "versions", versionID, "parameters")
+}
+
+func updateDSParamURL(c *gophercloud.ServiceClient, versionID, paramID string) string {
+	return c.ServiceURL("mgmt", "datastores", "versions", versionID, "parameters", paramID)
+}
+
 func getDSParamURL(c *gophercloud.ServiceClient, datastoreID, versionID, paramID string) string {
 	return c.ServiceURL("datastores", datastoreID, "versions", versionID, "parameters", paramID)
 }
