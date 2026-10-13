@@ -315,3 +315,183 @@ func HandleListHostsWithCapabilities(t *testing.T, fakeServer th.FakeServer) {
 			fmt.Fprint(w, HostsListWithCapabilitiesResult)
 		})
 }
+
+const AllocationsListResult = `
+{
+  "allocations": [
+    {
+      "reservations": [
+        {
+          "end_date": "2026-09-30T19:35:00.000000",
+          "id": "c04d56e0-6b31-40b2-a57e-7283958100bd",
+          "lease_id": "98c3544d-0afe-4251-8556-700c847a127f",
+          "start_date": "2026-09-30T18:35:00.000000"
+        }
+      ],
+      "resource_id": "18"
+    }
+  ]
+}
+`
+
+const AllocationGetResult = `
+{
+  "allocation": {
+    "reservations": [
+      {
+        "end_date": "2026-09-30T19:35:00.000000",
+        "id": "c04d56e0-6b31-40b2-a57e-7283958100bd",
+        "lease_id": "98c3544d-0afe-4251-8556-700c847a127f",
+        "start_date": "2026-09-30T18:35:00.000000"
+      }
+    ],
+    "resource_id": "18"
+  }
+}
+`
+
+const ResourcePropertiesListResult = `
+{
+  "resource_properties": [
+    {
+      "property": "gophercloud_test"
+    }
+  ]
+}
+`
+
+const ResourcePropertiesListDetailResult = `
+{
+  "resource_properties": [
+    {
+      "private": false,
+      "property": "gophercloud_test",
+      "values": [
+        "true"
+      ]
+    }
+  ]
+}
+`
+
+const ResourcePropertyUpdateRequest = `
+{
+  "private": true
+}
+`
+
+const ResourcePropertyUpdateResult = `
+{
+  "resource_property": {
+    "created_at": "2026-09-30T18:38:10.000000",
+    "id": "cd3c026a-accc-4013-b119-34032ae8b23c",
+    "private": true,
+    "property_name": "gophercloud_test",
+    "resource_type": "physical:host",
+    "updated_at": "2026-09-30T18:38:21.000000"
+  }
+}
+`
+
+var ExpectedAllocation = hosts.Allocation{
+	ResourceID: "18",
+	Reservations: []hosts.AllocationReservation{
+		{
+			ID:        "c04d56e0-6b31-40b2-a57e-7283958100bd",
+			LeaseID:   "98c3544d-0afe-4251-8556-700c847a127f",
+			StartDate: time.Date(2026, 9, 30, 18, 35, 0, 0, time.UTC),
+			EndDate:   time.Date(2026, 9, 30, 19, 35, 0, 0, time.UTC),
+		},
+	},
+}
+
+var ExpectedAllocationsList = []hosts.Allocation{ExpectedAllocation}
+
+var propertyPublic = false
+
+var ExpectedResourcePropertiesDetail = []hosts.ResourceProperty{
+	{
+		Property: "gophercloud_test",
+		Private:  &propertyPublic,
+		Values:   []string{"true"},
+	},
+}
+
+var propertyUpdatedAt = time.Date(2026, 9, 30, 18, 38, 21, 0, time.UTC)
+
+var ExpectedUpdatedResourceProperty = hosts.UpdatedResourceProperty{
+	ID:           "cd3c026a-accc-4013-b119-34032ae8b23c",
+	ResourceType: "physical:host",
+	PropertyName: "gophercloud_test",
+	Private:      true,
+	CreatedAt:    time.Date(2026, 9, 30, 18, 38, 10, 0, time.UTC),
+	UpdatedAt:    &propertyUpdatedAt,
+}
+
+func HandleListAllocations(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/allocations",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestFormValues(t, r, map[string]string{
+				"lease_id":       "98c3544d-0afe-4251-8556-700c847a127f",
+				"reservation_id": "c04d56e0-6b31-40b2-a57e-7283958100bd",
+			})
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AllocationsListResult)
+		})
+}
+
+func HandleGetAllocation(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/18/allocation",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestFormValues(t, r, map[string]string{
+				"lease_id":       "98c3544d-0afe-4251-8556-700c847a127f",
+				"reservation_id": "c04d56e0-6b31-40b2-a57e-7283958100bd",
+			})
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, AllocationGetResult)
+		})
+}
+
+func HandleListResourceProperties(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/properties",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			if r.URL.Query().Get("detail") == "true" {
+				th.TestFormValues(t, r, map[string]string{"all": "true", "detail": "true"})
+				fmt.Fprint(w, ResourcePropertiesListDetailResult)
+				return
+			}
+
+			th.TestFormValues(t, r, map[string]string{})
+			fmt.Fprint(w, ResourcePropertiesListResult)
+		})
+}
+
+func HandleUpdateResourceProperty(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/os-hosts/properties/gophercloud_test",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PATCH")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			th.TestJSONRequest(t, r, ResourcePropertyUpdateRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprint(w, ResourcePropertyUpdateResult)
+		})
+}
