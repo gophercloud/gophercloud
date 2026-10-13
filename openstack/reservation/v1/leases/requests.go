@@ -168,11 +168,12 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies the parameters for creating a lease.
 type CreateOpts struct {
-	// Name is the name of the lease. It must be unique within the project.
+	// Name is the name of the lease. Blazar does not require it to be unique.
 	Name string `json:"name" required:"true"`
 
 	// StartDate is the time at which the lease becomes active. Blazar
-	// truncates it to the minute and rejects a time in the past.
+	// truncates it to the minute and rejects a time in the past. If it is
+	// zero, the lease starts as soon as Blazar creates it.
 	StartDate time.Time `json:"-"`
 
 	// EndDate is the time at which the lease expires. It must be later than
@@ -195,9 +196,6 @@ func (opts CreateOpts) ToLeaseCreateMap() (map[string]any, error) {
 		return nil, err
 	}
 
-	if opts.StartDate.IsZero() {
-		return nil, gophercloud.ErrMissingInput{Argument: "StartDate"}
-	}
 	if opts.EndDate.IsZero() {
 		return nil, gophercloud.ErrMissingInput{Argument: "EndDate"}
 	}
@@ -205,7 +203,11 @@ func (opts CreateOpts) ToLeaseCreateMap() (map[string]any, error) {
 		return nil, gophercloud.ErrMissingInput{Argument: "Reservations"}
 	}
 
-	b["start_date"] = opts.StartDate.UTC().Format(dateFormat)
+	if opts.StartDate.IsZero() {
+		b["start_date"] = "now"
+	} else {
+		b["start_date"] = opts.StartDate.UTC().Format(dateFormat)
+	}
 	b["end_date"] = opts.EndDate.UTC().Format(dateFormat)
 	if opts.BeforeEndDate != nil {
 		b["before_end_date"] = opts.BeforeEndDate.UTC().Format(dateFormat)

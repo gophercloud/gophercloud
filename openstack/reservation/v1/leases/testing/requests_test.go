@@ -153,7 +153,7 @@ func TestCreateFlavorLease(t *testing.T) {
 	th.AssertEquals(t, true, reservation.ServerGroupID == nil)
 }
 
-// Blazar requires a name and both dates, so the request should not reach the
+// Blazar requires a name and an end date, so the request should not reach the
 // server without them.
 func TestCreateLeaseMissingRequired(t *testing.T) {
 	reservations := []leases.ReservationOptsBuilder{
@@ -162,7 +162,6 @@ func TestCreateLeaseMissingRequired(t *testing.T) {
 
 	for name, opts := range map[string]leases.CreateOpts{
 		"no name":         {StartDate: startDate, EndDate: endDate, Reservations: reservations},
-		"no start date":   {Name: "my_lease", EndDate: endDate, Reservations: reservations},
 		"no end date":     {Name: "my_lease", StartDate: startDate, Reservations: reservations},
 		"no reservations": {Name: "my_lease", StartDate: startDate, EndDate: endDate},
 	} {
@@ -171,6 +170,20 @@ func TestCreateLeaseMissingRequired(t *testing.T) {
 			th.AssertEquals(t, true, err != nil)
 		})
 	}
+}
+
+// A zero start date must be sent as "now" so that Blazar resolves it against
+// its own clock.
+func TestCreateLeaseStartNow(t *testing.T) {
+	createOpts := leases.CreateOpts{
+		Name:         "my_lease",
+		EndDate:      endDate,
+		Reservations: []leases.ReservationOptsBuilder{leases.HostReservationOpts{Min: 1, Max: 1}},
+	}
+
+	b, err := createOpts.ToLeaseCreateMap()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "now", b["start_date"])
 }
 
 // A nil reservation builder must be reported rather than panic.
