@@ -152,3 +152,97 @@ func TestMinimumBandwidthRulesCRUD(t *testing.T) {
 
 	th.AssertTrue(t, found)
 }
+
+func TestMinimumPacketRateRulesCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "qos")
+	v2.RequireNeutronExtension(t, client, "qos-pps-minimum")
+
+	// Create a QoS policy
+	policy, err := accpolicies.CreateQoSPolicy(t, client)
+	th.AssertNoErr(t, err)
+	defer policies.Delete(context.TODO(), client, policy.ID)
+
+	tools.PrintResource(t, policy)
+
+	// Create a QoS policy rule.
+	rule, err := CreateMinimumPacketRateRule(t, client, policy.ID)
+	th.AssertNoErr(t, err)
+	defer rules.DeleteMinimumPacketRateRule(context.TODO(), client, policy.ID, rule.ID)
+
+	// Update the QoS policy rule.
+	minKPps := 500
+	updateOpts := rules.UpdateMinimumPacketRateRuleOpts{
+		MinKPps: &minKPps,
+	}
+	newRule, err := rules.UpdateMinimumPacketRateRule(context.TODO(), client, policy.ID, rule.ID, updateOpts).ExtractMinimumPacketRateRule()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newRule)
+	th.AssertEquals(t, 500, newRule.MinKPps)
+
+	allPages, err := rules.ListMinimumPacketRateRules(client, policy.ID, rules.MinimumPacketRateRulesListOpts{}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRules, err := rules.ExtractMinimumPacketRateRules(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, rule := range allRules {
+		if rule.ID == newRule.ID {
+			found = true
+		}
+	}
+
+	th.AssertTrue(t, found)
+}
+
+func TestPacketRateLimitRulesCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Skip these tests if we don't have the required extension
+	v2.RequireNeutronExtension(t, client, "qos")
+	v2.RequireNeutronExtension(t, client, "qos-pps")
+
+	// Create a QoS policy
+	policy, err := accpolicies.CreateQoSPolicy(t, client)
+	th.AssertNoErr(t, err)
+	defer policies.Delete(context.TODO(), client, policy.ID)
+
+	tools.PrintResource(t, policy)
+
+	// Create a QoS policy rule.
+	rule, err := CreatePacketRateLimitRule(t, client, policy.ID)
+	th.AssertNoErr(t, err)
+	defer rules.DeletePacketRateLimitRule(context.TODO(), client, policy.ID, rule.ID)
+
+	// Update the QoS policy rule.
+	newMaxBurstKPps := 0
+	updateOpts := rules.UpdatePacketRateLimitRuleOpts{
+		MaxBurstKPps: &newMaxBurstKPps,
+	}
+	newRule, err := rules.UpdatePacketRateLimitRule(context.TODO(), client, policy.ID, rule.ID, updateOpts).ExtractPacketRateLimitRule()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newRule)
+	th.AssertEquals(t, 0, newRule.MaxBurstKPps)
+
+	allPages, err := rules.ListPacketRateLimitRules(client, policy.ID, rules.PacketRateLimitRulesListOpts{}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+
+	allRules, err := rules.ExtractPacketRateLimitRules(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, rule := range allRules {
+		if rule.ID == newRule.ID {
+			found = true
+		}
+	}
+
+	th.AssertTrue(t, found)
+}

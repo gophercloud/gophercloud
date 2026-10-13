@@ -405,3 +405,273 @@ func DeleteMinimumBandwidthRule(ctx context.Context, c *gophercloud.ServiceClien
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// MinimumPacketRateRulesListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type MinimumPacketRateRulesListOptsBuilder interface {
+	ToMinimumPacketRateRulesListQuery() (string, error)
+}
+
+// MinimumPacketRateRulesListOpts allows the filtering and sorting of paginated collections through
+// the Neutron API. Filtering is achieved by passing in struct field values
+// that map to the MinimumPacketRateRules attributes you want to see returned.
+// SortKey allows you to sort by a particular MinimumPacketRateRule attribute.
+// SortDir sets the direction, and is either `asc' or `desc'.
+// Marker and Limit are used for the pagination.
+type MinimumPacketRateRulesListOpts struct {
+	ID         string `q:"id"`
+	MinKPps    int    `q:"min_kpps"`
+	Direction  string `q:"direction"`
+	Limit      int    `q:"limit"`
+	Marker     string `q:"marker"`
+	SortKey    string `q:"sort_key"`
+	SortDir    string `q:"sort_dir"`
+	Tags       string `q:"tags"`
+	TagsAny    string `q:"tags-any"`
+	NotTags    string `q:"not-tags"`
+	NotTagsAny string `q:"not-tags-any"`
+}
+
+// ToMinimumPacketRateRulesListQuery formats a ListOpts into a query string.
+func (opts MinimumPacketRateRulesListOpts) ToMinimumPacketRateRulesListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListMinimumPacketRateRules returns a Pager which allows you to iterate over a collection of
+// MinimumPacketRateRules. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+func ListMinimumPacketRateRules(c *gophercloud.ServiceClient, policyID string, opts MinimumPacketRateRulesListOptsBuilder) pagination.Pager {
+	url := listMinimumPacketRateRulesURL(c, policyID)
+	if opts != nil {
+		query, err := opts.ToMinimumPacketRateRulesListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return MinimumPacketRateRulePage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// GetMinimumPacketRateRule retrieves a specific MinimumPacketRateRule based on its ID.
+func GetMinimumPacketRateRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r GetMinimumPacketRateRuleResult) {
+	resp, err := c.Get(ctx, getMinimumPacketRateRuleURL(c, policyID, ruleID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// CreateMinimumPacketRateRuleOptsBuilder allows to add additional parameters to the
+// CreateMinimumPacketRateRule request.
+type CreateMinimumPacketRateRuleOptsBuilder interface {
+	ToMinimumPacketRateRuleCreateMap() (map[string]any, error)
+}
+
+// CreateMinimumPacketRateRuleOpts specifies parameters of a new MinimumPacketRateRule.
+type CreateMinimumPacketRateRuleOpts struct {
+	// MinKPps is a minimum kilopackets per second. It's a required parameter.
+	MinKPps int `json:"min_kpps" required:"true"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToMinimumPacketRateRuleCreateMap constructs a request body from CreateMinimumPacketRateRuleOpts.
+func (opts CreateMinimumPacketRateRuleOpts) ToMinimumPacketRateRuleCreateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "minimum_packet_rate_rule")
+}
+
+// CreateMinimumPacketRateRule requests the creation of a new MinimumPacketRateRule on the server.
+func CreateMinimumPacketRateRule(ctx context.Context, client *gophercloud.ServiceClient, policyID string, opts CreateMinimumPacketRateRuleOptsBuilder) (r CreateMinimumPacketRateRuleResult) {
+	b, err := opts.ToMinimumPacketRateRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, createMinimumPacketRateRuleURL(client, policyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateMinimumPacketRateRuleOptsBuilder allows to add additional parameters to the
+// UpdateMinimumPacketRateRule request.
+type UpdateMinimumPacketRateRuleOptsBuilder interface {
+	ToMinimumPacketRateRuleUpdateMap() (map[string]any, error)
+}
+
+// UpdateMinimumPacketRateRuleOpts specifies parameters for the Update call.
+type UpdateMinimumPacketRateRuleOpts struct {
+	// MinKPps is a minimum kilopackets per second.
+	MinKPps *int `json:"min_kpps,omitempty"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToMinimumPacketRateRuleUpdateMap constructs a request body from UpdateMinimumPacketRateRuleOpts.
+func (opts UpdateMinimumPacketRateRuleOpts) ToMinimumPacketRateRuleUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "minimum_packet_rate_rule")
+}
+
+// UpdateMinimumPacketRateRule requests the update of an existing MinimumPacketRateRule on the server.
+func UpdateMinimumPacketRateRule(ctx context.Context, client *gophercloud.ServiceClient, policyID, ruleID string, opts UpdateMinimumPacketRateRuleOptsBuilder) (r UpdateMinimumPacketRateRuleResult) {
+	b, err := opts.ToMinimumPacketRateRuleUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, updateMinimumPacketRateRuleURL(client, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteMinimumPacketRateRule accepts policy and rule ID and deletes the MinimumPacketRateRule associated with them.
+func DeleteMinimumPacketRateRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteMinimumPacketRateRuleResult) {
+	resp, err := c.Delete(ctx, deleteMinimumPacketRateRuleURL(c, policyID, ruleID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// PacketRateLimitRulesListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type PacketRateLimitRulesListOptsBuilder interface {
+	ToPacketRateLimitRulesListQuery() (string, error)
+}
+
+// PacketRateLimitRulesListOpts allows the filtering and sorting of paginated collections through
+// the Neutron API. Filtering is achieved by passing in struct field values
+// that map to the PacketRateLimitRules attributes you want to see returned.
+// SortKey allows you to sort by a particular PacketRateLimitRule attribute.
+// SortDir sets the direction, and is either `asc' or `desc'.
+// Marker and Limit are used for the pagination.
+type PacketRateLimitRulesListOpts struct {
+	ID           string `q:"id"`
+	MaxKPps      int    `q:"max_kpps"`
+	MaxBurstKPps int    `q:"max_burst_kpps"`
+	Direction    string `q:"direction"`
+	Limit        int    `q:"limit"`
+	Marker       string `q:"marker"`
+	SortKey      string `q:"sort_key"`
+	SortDir      string `q:"sort_dir"`
+	Tags         string `q:"tags"`
+	TagsAny      string `q:"tags-any"`
+	NotTags      string `q:"not-tags"`
+	NotTagsAny   string `q:"not-tags-any"`
+}
+
+// ToPacketRateLimitRulesListQuery formats a ListOpts into a query string.
+func (opts PacketRateLimitRulesListOpts) ToPacketRateLimitRulesListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListPacketRateLimitRules returns a Pager which allows you to iterate over a collection of
+// PacketRateLimitRules. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+func ListPacketRateLimitRules(c *gophercloud.ServiceClient, policyID string, opts PacketRateLimitRulesListOptsBuilder) pagination.Pager {
+	url := listPacketRateLimitRulesURL(c, policyID)
+	if opts != nil {
+		query, err := opts.ToPacketRateLimitRulesListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return PacketRateLimitRulePage{pagination.LinkedPageBase{PageResult: r}}
+
+	})
+}
+
+// GetPacketRateLimitRule retrieves a specific PacketRateLimitRule based on its ID.
+func GetPacketRateLimitRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r GetPacketRateLimitRuleResult) {
+	resp, err := c.Get(ctx, getPacketRateLimitRuleURL(c, policyID, ruleID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// CreatePacketRateLimitRuleOptsBuilder allows to add additional parameters to the
+// CreatePacketRateLimitRule request.
+type CreatePacketRateLimitRuleOptsBuilder interface {
+	ToPacketRateLimitRuleCreateMap() (map[string]any, error)
+}
+
+// CreatePacketRateLimitRuleOpts specifies parameters of a new PacketRateLimitRule.
+type CreatePacketRateLimitRuleOpts struct {
+	// MaxKPps is a maximum kilopackets per second. It's a required parameter.
+	MaxKPps int `json:"max_kpps" required:"true"`
+
+	// MaxBurstKPps is a maximum burst size in kilopackets.
+	MaxBurstKPps int `json:"max_burst_kpps,omitempty"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToPacketRateLimitRuleCreateMap constructs a request body from CreatePacketRateLimitRuleOpts.
+func (opts CreatePacketRateLimitRuleOpts) ToPacketRateLimitRuleCreateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "packet_rate_limit_rule")
+}
+
+// CreatePacketRateLimitRule requests the creation of a new PacketRateLimitRule on the server.
+func CreatePacketRateLimitRule(ctx context.Context, client *gophercloud.ServiceClient, policyID string, opts CreatePacketRateLimitRuleOptsBuilder) (r CreatePacketRateLimitRuleResult) {
+	b, err := opts.ToPacketRateLimitRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(ctx, createPacketRateLimitRuleURL(client, policyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdatePacketRateLimitRuleOptsBuilder allows to add additional parameters to the
+// UpdatePacketRateLimitRule request.
+type UpdatePacketRateLimitRuleOptsBuilder interface {
+	ToPacketRateLimitRuleUpdateMap() (map[string]any, error)
+}
+
+// UpdatePacketRateLimitRuleOpts specifies parameters for the Update call.
+type UpdatePacketRateLimitRuleOpts struct {
+	// MaxKPps is a maximum kilopackets per second.
+	MaxKPps *int `json:"max_kpps,omitempty"`
+
+	// MaxBurstKPps is a maximum burst size in kilopackets.
+	MaxBurstKPps *int `json:"max_burst_kpps,omitempty"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToPacketRateLimitRuleUpdateMap constructs a request body from UpdatePacketRateLimitRuleOpts.
+func (opts UpdatePacketRateLimitRuleOpts) ToPacketRateLimitRuleUpdateMap() (map[string]any, error) {
+	return gophercloud.BuildRequestBody(opts, "packet_rate_limit_rule")
+}
+
+// UpdatePacketRateLimitRule requests the update of an existing PacketRateLimitRule on the server.
+func UpdatePacketRateLimitRule(ctx context.Context, client *gophercloud.ServiceClient, policyID, ruleID string, opts UpdatePacketRateLimitRuleOptsBuilder) (r UpdatePacketRateLimitRuleResult) {
+	b, err := opts.ToPacketRateLimitRuleUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(ctx, updatePacketRateLimitRuleURL(client, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeletePacketRateLimitRule accepts policy and rule ID and deletes the PacketRateLimitRule associated with them.
+func DeletePacketRateLimitRule(ctx context.Context, c *gophercloud.ServiceClient, policyID, ruleID string) (r DeletePacketRateLimitRuleResult) {
+	resp, err := c.Delete(ctx, deletePacketRateLimitRuleURL(c, policyID, ruleID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
