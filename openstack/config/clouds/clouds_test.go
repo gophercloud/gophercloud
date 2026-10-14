@@ -702,7 +702,7 @@ func TestParse(t *testing.T) {
 		}
 	})
 
-	t.Run("falls back to domain_name for both user and project when specific domains not set", func(t *testing.T) {
+	t.Run("normalizes domain_name to user and project domains when project scoped", func(t *testing.T) {
 		const cloudsYAML = `clouds:
   gophercloud-test:
     auth:
@@ -723,8 +723,14 @@ func TestParse(t *testing.T) {
 		if got := authField(cloud, "username"); got != "myuser" {
 			t.Errorf("unexpected username: %q", got)
 		}
-		if got := authField(cloud, "domain_name"); got != "shared-domain" {
+		if got := authField(cloud, "user_domain_name"); got != "shared-domain" {
 			t.Errorf("unexpected user domain name: %q, expected 'shared-domain'", got)
+		}
+		if got := authField(cloud, "project_domain_name"); got != "shared-domain" {
+			t.Errorf("unexpected project domain name: %q, expected 'shared-domain'", got)
+		}
+		if got := authField(cloud, "domain_name"); got != "" {
+			t.Errorf("expected generic domain_name to be removed, got %q", got)
 		}
 		if got := authField(cloud, "project_name"); got != "myproject" {
 			t.Errorf("unexpected scope project name: %q", got)
@@ -753,8 +759,11 @@ func TestParse(t *testing.T) {
 		if got := authField(cloud, "user_domain_name"); got != "user-specific-domain" {
 			t.Errorf("unexpected user domain name: %q, expected 'user-specific-domain'", got)
 		}
-		if got := authField(cloud, "domain_name"); got != "fallback-domain" {
-			t.Errorf("unexpected fallback domain name: %q, expected 'fallback-domain'", got)
+		if got := authField(cloud, "project_domain_name"); got != "fallback-domain" {
+			t.Errorf("unexpected project domain name: %q, expected 'fallback-domain'", got)
+		}
+		if got := authField(cloud, "domain_name"); got != "" {
+			t.Errorf("expected generic domain_name to be removed, got %q", got)
 		}
 	})
 
@@ -777,11 +786,14 @@ func TestParse(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		if got := authField(cloud, "domain_name"); got != "fallback-domain" {
-			t.Errorf("unexpected fallback domain name: %q, expected 'fallback-domain'", got)
+		if got := authField(cloud, "user_domain_name"); got != "fallback-domain" {
+			t.Errorf("unexpected user domain name: %q, expected 'fallback-domain'", got)
 		}
 		if got := authField(cloud, "project_domain_name"); got != "project-specific-domain" {
 			t.Errorf("unexpected project domain name: %q, expected 'project-specific-domain'", got)
+		}
+		if got := authField(cloud, "domain_name"); got != "" {
+			t.Errorf("expected generic domain_name to be removed, got %q", got)
 		}
 	})
 
@@ -809,6 +821,36 @@ func TestParse(t *testing.T) {
 		if authField(cloud, "domain_id") != "" || authField(cloud, "domain_name") != "" {
 			t.Errorf("expected no domain information when using project_id, got domain_id=%q, domain_name=%q",
 				authField(cloud, "domain_id"), authField(cloud, "domain_name"))
+		}
+	})
+
+	t.Run("normalizes domain_id while preserving explicit project domain", func(t *testing.T) {
+		const cloudsYAML = `clouds:
+  gophercloud-test:
+    auth:
+      auth_url: https://example.com:5000/v3
+      username: myuser
+      password: mypassword
+      domain_id: shared-domain-id
+      project_name: myproject
+      project_domain_id: project-specific-domain-id`
+
+		cloud, _, _, err := clouds.Parse(
+			clouds.WithCloudsYAML(strings.NewReader(cloudsYAML)),
+			clouds.WithCloudName("gophercloud-test"),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if got := authField(cloud, "user_domain_id"); got != "shared-domain-id" {
+			t.Errorf("unexpected user domain ID: %q, expected 'shared-domain-id'", got)
+		}
+		if got := authField(cloud, "project_domain_id"); got != "project-specific-domain-id" {
+			t.Errorf("unexpected project domain ID: %q", got)
+		}
+		if got := authField(cloud, "domain_id"); got != "" {
+			t.Errorf("expected generic domain_id to be removed, got %q", got)
 		}
 	})
 
