@@ -6,9 +6,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -20,10 +20,10 @@ func TestTokenAuthenticate(t *testing.T) {
 	client, err := clients.NewIdentityV2UnauthenticatedClient()
 	th.AssertNoErr(t, err)
 
-	authOptions, err := openstack.AuthOptionsFromEnv()
+	authOptions, err := auth.AuthOptionsFromEnvV2()
 	th.AssertNoErr(t, err)
 
-	result := tokens.Create(context.TODO(), client, authOptions)
+	result := tokens.Create(context.TODO(), client, authOptions.Auth)
 	token, err := result.ExtractToken()
 	th.AssertNoErr(t, err)
 
@@ -44,10 +44,10 @@ func TestTokenValidate(t *testing.T) {
 	client, err := clients.NewIdentityV2Client()
 	th.AssertNoErr(t, err)
 
-	authOptions, err := openstack.AuthOptionsFromEnv()
+	authOptions, err := auth.AuthOptionsFromEnvV2()
 	th.AssertNoErr(t, err)
 
-	result := tokens.Create(context.TODO(), client, authOptions)
+	result := tokens.Create(context.TODO(), client, authOptions.Auth)
 	token, err := result.ExtractToken()
 	th.AssertNoErr(t, err)
 

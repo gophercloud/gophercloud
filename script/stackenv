@@ -15,24 +15,6 @@ set +u
 source openrc admin admin
 set -u
 
-if [[ "${USE_SYSTEM_SCOPE:-}" == "true" ]]; then
-    # use system-scoped tokens
-    echo export OS_SYSTEM_SCOPE=all >> openrc
-fi
-# TODO: This should only be set when using project-scoped tokens (and we should
-# unsetting things like OS_PROJECT_NAME and OS_PROJECT_DOMAIN_ID when not using
-# these) but our tests require both which means we need to export both. This
-# causes OSC to (correctly) fail since keystoneauth (which is handling
-# authentication for OSC and most other clients) can't tell if we want project-
-# or system-scoped tokens. As such, post running this script, the 'openrc' file
-# will no longer be usable with OSC or other clients.
-#
-# The long-term fix for this likely involves a mechanism to switch between
-# different sets of auth info on a test-by-test basis. Achieving this almost
-# certainly means switching our tests to use clouds.yaml with well-known cloud
-# names rather than openrc file currently used.
-echo export OS_DOMAIN_ID=default >> openrc
-
 _FLAVOR_ID=99
 _FLAVOR_ALT_ID=98
 openstack flavor create m1.acctest --id "$_FLAVOR_ID" --ram 512 --disk 10 --vcpu 1 --ephemeral 10
@@ -87,5 +69,11 @@ set +u
 # shellcheck disable=SC1091
 source openrc admin admin
 set -u
+
+# cannot overload auth options with conflicting scopes
+if [[ "${USE_SYSTEM_SCOPE:-}" == "true" ]]; then
+    export OS_SYSTEM_SCOPE=all
+    unset OS_PROJECT_NAME OS_PROJECT_DOMAIN_ID
+fi
 
 popd
