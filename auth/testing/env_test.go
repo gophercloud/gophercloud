@@ -444,6 +444,83 @@ func TestAuthOptionsFromEnvV2UsesTenantScope(t *testing.T) {
 	}}, body)
 }
 
+func TestAuthOptionsFromEnvV3NormalizesGenericDomains(t *testing.T) {
+	testCases := []struct {
+		name string
+		env  map[string]string
+		want auth.V3PasswordOpts
+	}{
+		{
+			name: "generic domains fill user and project domains when project scoped",
+			env: map[string]string{
+				"OS_PROJECT_ID":  "project-id",
+				"OS_DOMAIN_ID":   "shared-domain-id",
+				"OS_DOMAIN_NAME": "shared-domain-name",
+			},
+			want: auth.V3PasswordOpts{
+				Username:       "testuser",
+				Password:       "testpass",
+				UserDomainID:   "shared-domain-id",
+				UserDomainName: "shared-domain-name",
+				Scope: &auth.Scope{
+					ProjectID:         "project-id",
+					ProjectDomainID:   "shared-domain-id",
+					ProjectDomainName: "shared-domain-name",
+				},
+				AllowReauth: true,
+			},
+		},
+		{
+			name: "specific domain settings take precedence",
+			env: map[string]string{
+				"OS_PROJECT_NAME":      "project-name",
+				"OS_DOMAIN_ID":         "shared-domain-id",
+				"OS_DOMAIN_NAME":       "shared-domain-name",
+				"OS_USER_DOMAIN_NAME":  "user-domain-name",
+				"OS_PROJECT_DOMAIN_ID": "project-domain-id",
+			},
+			want: auth.V3PasswordOpts{
+				Username:       "testuser",
+				Password:       "testpass",
+				UserDomainID:   "shared-domain-id",
+				UserDomainName: "user-domain-name",
+				Scope: &auth.Scope{
+					ProjectName:       "project-name",
+					ProjectDomainID:   "project-domain-id",
+					ProjectDomainName: "shared-domain-name",
+				},
+				AllowReauth: true,
+			},
+		},
+		{
+			name: "generic domain remains a domain scope without project scope",
+			env: map[string]string{
+				"OS_DOMAIN_ID": "domain-scope-id",
+			},
+			want: auth.V3PasswordOpts{
+				Username:    "testuser",
+				Password:    "testpass",
+				Scope:       &auth.Scope{DomainID: "domain-scope-id"},
+				AllowReauth: true,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			defer CleanupEnv(t)
+			SetupEnvV3Password(t)
+			for key, value := range testCase.env {
+				t.Setenv(key, value)
+			}
+
+			opts, err := auth.AuthOptionsFromEnvV3()
+			th.AssertNoErr(t, err)
+			th.AssertDeepEquals(t, testCase.want, opts.Auth)
+		})
+	}
+}
+
 func TestAuthOptionsFromEnvV3Direct(t *testing.T) {
 	defer CleanupEnv(t)
 	SetupEnvV3Password(t)
