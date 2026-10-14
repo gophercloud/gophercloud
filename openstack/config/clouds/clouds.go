@@ -133,6 +133,15 @@ func Parse(opts ...ParseOption) (Cloud, gophercloud.EndpointOpts, *tls.Config, e
 		}
 	}
 
+	// Normalize domain when project scoped
+	if cloud.Auth != nil {
+		_, hasProjectID := cloud.Auth["project_id"]
+		_, hasProjectName := cloud.Auth["project_name"]
+		if hasProjectID || hasProjectName {
+			normalizeDomain(&cloud)
+		}
+	}
+
 	tlsConfig, err := computeTLSConfig(cloud, options)
 	if err != nil {
 		return Cloud{}, gophercloud.EndpointOpts{}, nil, fmt.Errorf("unable to compute TLS configuration: %w", err)
@@ -290,6 +299,28 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 		return Cloud{}, err
 	}
 	return mergedCloud, nil
+}
+
+func normalizeDomain(cloud *Cloud) {
+	mappings := map[string][]string{
+		"domain_id":   {"user_domain_id", "project_domain_id"},
+		"domain_name": {"user_domain_name", "project_domain_name"},
+	}
+
+	for source, targets := range mappings {
+		value, ok := cloud.Auth[source]
+		if !ok {
+			continue
+		}
+
+		for _, target := range targets {
+			if _, exists := cloud.Auth[target]; !exists {
+				cloud.Auth[target] = value
+			}
+		}
+
+		delete(cloud.Auth, source)
+	}
 }
 
 // merges two interfaces. In cases where a value is defined for both 'overridingInterface' and
