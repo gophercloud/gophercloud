@@ -232,6 +232,28 @@ func AuthOptionsFromEnvV3() (AuthOptionsV3, error) {
 }
 
 func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3 {
+	// Normalize user domain for all scopes
+	userDomainID := os.Getenv("OS_USER_DOMAIN_ID")
+	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
+	if userDomainID == "" {
+		userDomainID = scope.DomainID
+	}
+	if userDomainName == "" {
+		userDomainName = scope.DomainName
+	}
+
+	// Normalize project domain when using project scope
+	if scope.ProjectID != "" || scope.ProjectName != "" {
+		if scope.ProjectDomainID == "" {
+			scope.ProjectDomainID = scope.DomainID
+		}
+		if scope.ProjectDomainName == "" {
+			scope.ProjectDomainName = scope.DomainName
+		}
+		scope.DomainID = ""
+		scope.DomainName = ""
+	}
+
 	var opts AuthOptionsBuilderV3
 
 	switch authType {
@@ -240,8 +262,8 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			Username:       os.Getenv("OS_USERNAME"),
 			UserID:         os.Getenv("OS_USERID"),
 			Password:       os.Getenv("OS_PASSWORD"),
-			UserDomainID:   os.Getenv("OS_USER_DOMAIN_ID"),
-			UserDomainName: os.Getenv("OS_USER_DOMAIN_NAME"),
+			UserDomainID:   userDomainID,
+			UserDomainName: userDomainName,
 			Scope:          scope,
 			AllowReauth:    true,
 		}
@@ -250,8 +272,8 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			Username:       os.Getenv("OS_USERNAME"),
 			UserID:         os.Getenv("OS_USERID"),
 			Passcode:       os.Getenv("OS_PASSCODE"),
-			UserDomainID:   os.Getenv("OS_USER_DOMAIN_ID"),
-			UserDomainName: os.Getenv("OS_USER_DOMAIN_NAME"),
+			UserDomainID:   userDomainID,
+			UserDomainName: userDomainName,
 			Scope:          scope,
 		}
 	case AuthV3ApplicationCredential:
@@ -261,8 +283,8 @@ func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3
 			ApplicationCredentialID:     os.Getenv("OS_APPLICATION_CREDENTIAL_ID"),
 			ApplicationCredentialName:   os.Getenv("OS_APPLICATION_CREDENTIAL_NAME"),
 			ApplicationCredentialSecret: os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET"),
-			UserDomainID:                os.Getenv("OS_USER_DOMAIN_ID"),
-			UserDomainName:              os.Getenv("OS_USER_DOMAIN_NAME"),
+			UserDomainID:                userDomainID,
+			UserDomainName:              userDomainName,
 			AllowReauth:                 true,
 		}
 	case AuthV3Token, AuthToken:
