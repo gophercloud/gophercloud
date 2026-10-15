@@ -436,6 +436,13 @@ func (r ServerPage) IsEmpty() (bool, error) {
 		return true, nil
 	}
 
+	// Body is already decoded by pagination.PageResultFrom; avoid re-encoding it.
+	if body, ok := r.Body.(map[string]any); ok {
+		if s, ok := body["servers"].([]any); ok {
+			return len(s) == 0, nil
+		}
+	}
+
 	s, err := ExtractServers(r)
 	return len(s) == 0, err
 }
@@ -443,6 +450,20 @@ func (r ServerPage) IsEmpty() (bool, error) {
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
 func (r ServerPage) NextPageURL(endpointURL string) (string, error) {
+	if body, ok := r.Body.(map[string]any); ok {
+		var links []gophercloud.Link
+		if raw, ok := body["servers_links"].([]any); ok {
+			for _, l := range raw {
+				if m, ok := l.(map[string]any); ok {
+					href, _ := m["href"].(string)
+					rel, _ := m["rel"].(string)
+					links = append(links, gophercloud.Link{Href: href, Rel: rel})
+				}
+			}
+		}
+		return gophercloud.ExtractNextURL(links)
+	}
+
 	var s struct {
 		Links []gophercloud.Link `json:"servers_links"`
 	}
