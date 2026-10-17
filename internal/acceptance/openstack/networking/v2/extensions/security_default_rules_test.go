@@ -60,8 +60,7 @@ func TestDefaultSecurityGroupRulesCreateGetListDelete(t *testing.T) {
 
 	getRule, err := defaultrules.Get(context.TODO(), client, rule.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, rule.ID, getRule.ID)
-	th.AssertEquals(t, description, getRule.Description)
+	th.AssertDeepEquals(t, rule, getRule)
 
 	listOpts := defaultrules.ListOpts{
 		Protocol: string(rules.ProtocolTCP),
