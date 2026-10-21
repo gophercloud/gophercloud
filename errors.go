@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 // BaseError is an error type that all other error types embed.
@@ -61,18 +60,14 @@ func (e ErrMissingEnvironmentVariable) Error() string {
 	return e.choseErrString()
 }
 
-// ErrMissingAnyoneOfEnvironmentVariables is the error when anyone of the environment variables
-// is required in a particular situation but not provided by the user
-type ErrMissingAnyoneOfEnvironmentVariables struct {
+// ErrUnsupportedAuthType indicates that the auth type provided is not supported.
+type ErrUnsupportedAuthType struct {
 	BaseError
-	EnvironmentVariables []string
+	AuthType string
 }
 
-func (e ErrMissingAnyoneOfEnvironmentVariables) Error() string {
-	e.DefaultErrString = fmt.Sprintf(
-		"Missing one of the following environment variables [%s]",
-		strings.Join(e.EnvironmentVariables, ", "),
-	)
+func (e ErrUnsupportedAuthType) Error() string {
+	e.DefaultErrString = fmt.Sprintf("The %s auth type is not supported", e.AuthType)
 	return e.choseErrString()
 }
 
@@ -244,10 +239,6 @@ func unacceptedAttributeErr(attribute string) string {
 	return fmt.Sprintf("The base Identity V3 API does not accept authentication by %s", attribute)
 }
 
-func redundantWithTokenErr(attribute string) string {
-	return fmt.Sprintf("%s may not be provided when authenticating with a TokenID", attribute)
-}
-
 func redundantWithUserID(attribute string) string {
 	return fmt.Sprintf("%s may not be provided when authenticating with a UserID", attribute)
 }
@@ -273,39 +264,57 @@ func (e ErrTenantNameProvided) Error() string {
 	return unacceptedAttributeErr("TenantName")
 }
 
-// ErrUsernameWithToken indicates that a Username was provided, but token authentication is being used instead.
-type ErrUsernameWithToken struct{ BaseError }
-
-func (e ErrUsernameWithToken) Error() string {
-	return redundantWithTokenErr("Username")
-}
-
-// ErrUserIDWithToken indicates that a UserID was provided, but token authentication is being used instead.
-type ErrUserIDWithToken struct{ BaseError }
-
-func (e ErrUserIDWithToken) Error() string {
-	return redundantWithTokenErr("UserID")
-}
-
-// ErrDomainIDWithToken indicates that a DomainID was provided, but token authentication is being used instead.
-type ErrDomainIDWithToken struct{ BaseError }
-
-func (e ErrDomainIDWithToken) Error() string {
-	return redundantWithTokenErr("DomainID")
-}
-
-// ErrDomainNameWithToken indicates that a DomainName was provided, but token authentication is being used instead.s
-type ErrDomainNameWithToken struct{ BaseError }
-
-func (e ErrDomainNameWithToken) Error() string {
-	return redundantWithTokenErr("DomainName")
-}
-
 // ErrUsernameOrUserID indicates that neither username nor userID are specified, or both are at once.
 type ErrUsernameOrUserID struct{ BaseError }
 
 func (e ErrUsernameOrUserID) Error() string {
 	return "Exactly one of Username and UserID must be provided for password authentication"
+}
+
+// ErrAppCredNameOrAppCredID indicates that neither ApplicationCredentialName nor ApplicationCredentialID
+// are specified, or both are at once.
+type ErrAppCredNameOrAppCredID struct{ BaseError }
+
+func (e ErrAppCredNameOrAppCredID) Error() string {
+	return "Exactly one of ApplicationCredentialName and ApplicationCredentialID must be provided for authentication"
+}
+
+// ErrInvalidSystemScope indicates that the requested system scope is unsupported.
+type ErrInvalidSystemScope struct{ BaseError }
+
+func (e ErrInvalidSystemScope) Error() string {
+	e.DefaultErrString = "Only system scope of all is supported"
+	return e.choseErrString()
+}
+
+// ErrSystemScopeAndOtherScope indicates that system scoped information
+// was provided with another authorization scope
+type ErrSystemScopeAndOtherScope struct{ BaseError }
+
+func (e ErrSystemScopeAndOtherScope) Error() string {
+	e.DefaultErrString = "You cannot use system scope with either project, domain, or trust scope"
+	return e.choseErrString()
+}
+
+// ErrTrustScopeAndOtherScope indicates that trust scoped information
+// was provided with another authorization scope
+type ErrTrustScopeAndOtherScope struct{ BaseError }
+
+func (e ErrTrustScopeAndOtherScope) Error() string {
+	e.DefaultErrString = "You cannot use trust scope with either project, domain, or system scope"
+	return e.choseErrString()
+}
+
+// ErrProjectScopeAndDomainScope indicates that both project and domain scoped information was provided
+type ErrProjectScopeAndDomainScope struct {
+	BaseError
+	DomainOption  string
+	ProjectOption string
+}
+
+func (e ErrProjectScopeAndDomainScope) Error() string {
+	e.DefaultErrString = fmt.Sprintf("%s and %s cannot be used to scope at the same time", e.ProjectOption, e.DomainOption)
+	return e.choseErrString()
 }
 
 // ErrDomainIDWithUserID indicates that a DomainID was provided, but unnecessary because a UserID is being used.
@@ -337,25 +346,17 @@ func (e ErrMissingPassword) Error() string {
 	return "You must provide a password to authenticate"
 }
 
-// ErrScopeDomainIDOrDomainName indicates that a domain ID or Name was required in a Scope, but not present.
-type ErrScopeDomainIDOrDomainName struct{ BaseError }
+// ErrMissingPasscode indicates that no password was provided and no token is available.
+type ErrMissingPasscode struct{ BaseError }
 
-func (e ErrScopeDomainIDOrDomainName) Error() string {
-	return "You must provide exactly one of DomainID or DomainName in a Scope with ProjectName"
+func (e ErrMissingPasscode) Error() string {
+	return "You must provide a passcode to authenticate"
 }
 
-// ErrScopeProjectIDOrProjectName indicates that both a ProjectID and a ProjectName were provided in a Scope.
-type ErrScopeProjectIDOrProjectName struct{ BaseError }
+type ErrScopeProjectDomainIDOrProjectDomainName struct{ BaseError }
 
-func (e ErrScopeProjectIDOrProjectName) Error() string {
-	return "You must provide at most one of ProjectID or ProjectName in a Scope"
-}
-
-// ErrScopeProjectIDAlone indicates that a ProjectID was provided with other constraints in a Scope.
-type ErrScopeProjectIDAlone struct{ BaseError }
-
-func (e ErrScopeProjectIDAlone) Error() string {
-	return "ProjectID must be supplied alone in a Scope"
+func (e ErrScopeProjectDomainIDOrProjectDomainName) Error() string {
+	return "You must provide exactly one of ProjectDomainID or ProjectDomainName in a Scope with ProjectName"
 }
 
 // ErrScopeEmpty indicates that no credentials were provided in a Scope.
