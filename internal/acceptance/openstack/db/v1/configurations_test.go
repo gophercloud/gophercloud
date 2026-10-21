@@ -35,10 +35,13 @@ func TestConfigurationsCRUD(t *testing.T) {
 	createOpts.Datastore = &datastore
 
 	values := make(map[string]any)
-	if choices.DBDatastoreType == "postgresql" {
+	// Using redis-based common configuration or fallback to
+	// max_connections which is a SQL common config.
+	switch choices.DBDatastoreType {
+	case "redis", "keydb", "valkey":
+		values["maxclients"] = 200
+	default:
 		values["max_connections"] = 200
-	} else {
-		values["collation_server"] = "latin1_swedish_ci"
 	}
 	createOpts.Values = values
 
@@ -56,7 +59,7 @@ func TestConfigurationsCRUD(t *testing.T) {
 	th.AssertEquals(t, readCgroup.Name, createOpts.Name)
 	th.AssertEquals(t, readCgroup.Description, createOpts.Description)
 	// TODO: verify datastore
-	//th.AssertDeepEquals(t, readCgroup.Datastore, datastore)
+	// th.AssertDeepEquals(t, readCgroup.Datastore, datastore)
 
 	// Update cgroup
 	newCgroupName := "New configuration name"
