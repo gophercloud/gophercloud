@@ -366,14 +366,26 @@ func initClientOpts(client *gophercloud.ProviderClient, eo gophercloud.EndpointO
 	return sc, nil
 }
 
+// resourceBase returns the endpoint with the given version path appended,
+// unless the endpoint already ends with that version path. This avoids
+// building URLs such as ".../v2/v2/" when the service catalog publishes an
+// already-versioned endpoint.
+func resourceBase(endpoint, version string) string {
+	if strings.HasSuffix(strings.TrimSuffix(endpoint, "/"), "/"+version) {
+		return endpoint
+	}
+	return endpoint + version + "/"
+}
+
 // NewBareMetalV1 creates a ServiceClient that may be used with the v1
 // bare metal package.
 func NewBareMetalV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "baremetal", 1)
-	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v1") {
-		sc.ResourceBase = sc.Endpoint + "v1/"
+	if err != nil {
+		return sc, err
 	}
-	return sc, err
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v1")
+	return sc, nil
 }
 
 // NewBareMetalIntrospectionV1 creates a ServiceClient that may be used with the v1
@@ -398,8 +410,11 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 // package.
 func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "network", 2)
-	sc.ResourceBase = sc.Endpoint + "v2.0/"
-	return sc, err
+	if err != nil {
+		return sc, err
+	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v2.0")
+	return sc, nil
 }
 
 // TODO(stephenfin): Remove this in v3. We no longer support the V1 Block Storage service.
@@ -440,44 +455,59 @@ func NewDBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*
 // service.
 func NewDNSV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "dns", 2)
-	sc.ResourceBase = sc.Endpoint + "v2/"
-	return sc, err
+	if err != nil {
+		return sc, err
+	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v2")
+	return sc, nil
 }
 
 // NewImageV2 creates a ServiceClient that may be used to access the v2 image
 // service.
 func NewImageV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "image", 2)
-	sc.ResourceBase = sc.Endpoint + "v2/"
-	return sc, err
+	if err != nil {
+		return sc, err
+	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v2")
+	return sc, nil
 }
 
 // NewLoadBalancerV2 creates a ServiceClient that may be used to access the v2
 // load balancer service.
 func NewLoadBalancerV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "load-balancer", 2)
+	if err != nil {
+		return sc, err
+	}
 
 	// Fixes edge case having an OpenStack lb endpoint with trailing version number.
 	endpoint := strings.ReplaceAll(sc.Endpoint, "v2.0/", "")
 
 	sc.ResourceBase = endpoint + "v2.0/"
-	return sc, err
+	return sc, nil
 }
 
 // NewMetricV1 creates a ServiceClient that may be used with the v1 metric-storage
 // service (Aetos).
 func NewMetricV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "metric-storage", 1)
-	sc.ResourceBase = sc.Endpoint + "api/v1/"
-	return sc, err
+	if err != nil {
+		return sc, err
+	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "api/v1")
+	return sc, nil
 }
 
 // NewMessagingV2 creates a ServiceClient that may be used with the v2 messaging
 // service.
 func NewMessagingV2(client *gophercloud.ProviderClient, clientID string, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "message", 2)
+	if err != nil {
+		return sc, err
+	}
 	sc.MoreHeaders = map[string]string{"Client-ID": clientID}
-	return sc, err
+	return sc, nil
 }
 
 // NewContainerV1 creates a ServiceClient that may be used with v1 container package
@@ -489,8 +519,11 @@ func NewContainerV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointO
 // manager service.
 func NewKeyManagerV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "key-manager", 1)
-	sc.ResourceBase = sc.Endpoint + "v1/"
-	return sc, err
+	if err != nil {
+		return sc, err
+	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v1")
+	return sc, nil
 }
 
 // NewContainerInfraV1 creates a ServiceClient that may be used with the v1 container infra management
@@ -515,8 +548,6 @@ func NewReservationV1(client *gophercloud.ProviderClient, eo gophercloud.Endpoin
 	if err != nil {
 		return sc, err
 	}
-	if !strings.HasSuffix(strings.TrimSuffix(sc.Endpoint, "/"), "v1") {
-		sc.ResourceBase = sc.Endpoint + "v1/"
-	}
+	sc.ResourceBase = resourceBase(sc.Endpoint, "v1")
 	return sc, nil
 }
