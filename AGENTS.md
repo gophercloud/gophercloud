@@ -7,9 +7,11 @@ Quick reference guide for AI coding agents working in the Gophercloud repository
 **Language:** Go (see version in [go.mod](go.mod))
 **Stable Branch:** v2 (main development on `main`)
 
-## Build, Test & Lint Commands
+Cite patterns as `AGENTS.md § N` using the numbered headings below.
 
-### Running Tests
+## 1. Build, Test & Lint Commands
+
+### 1.1 Running Tests
 
 **Unit tests (default):**
 ```bash
@@ -44,7 +46,7 @@ cd internal/acceptance/openstack/compute/v2
 go test -timeout 60m -tags "acceptance" -run TestServersList
 ```
 
-### Linting & Formatting
+### 1.2 Linting & Formatting
 
 ```bash
 make lint     # Run golangci-lint in container (Docker/Podman)
@@ -57,9 +59,9 @@ chcon -Rt svirt_sandbox_file_t .
 chcon -Rt svirt_sandbox_file_t ~/.cache/golangci-lint
 ```
 
-## Code Style Guidelines
+## 2. Code Style Guidelines
 
-### Import Organization
+### 2.1 Import Organization
 
 Group imports in this order (separated by blank lines):
 1. Standard library (alphabetically)
@@ -78,7 +80,7 @@ import (
 )
 ```
 
-### File Structure
+### 2.2 File Structure
 
 Standard package structure under `openstack/<service>/<service_version>/<resource>/`:
 - **`requests.go`** - HTTP request functions and OptsBuilder types
@@ -87,7 +89,9 @@ Standard package structure under `openstack/<service>/<service_version>/<resourc
 - **`microversions.go`** - Microversion-specific types (when needed)
 - **`testing/`** - Unit tests with HTTP mocking
 
-### Naming Conventions
+Not every file is required. A package may omit `results.go` when it reuses an existing result type and defines no new response structs (for example, authentication plugins that return `tokens.CreateResult`). Check sibling packages before treating a missing file as an error.
+
+### 2.3 Naming Conventions
 
 **Result receivers and variables:**
 - Result method receiver: `r`
@@ -114,19 +118,19 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 }
 ```
 
-### Types & Pointers
+### 2.4 Types & Pointers
 
 - **New response fields (microversions):** Use pointer types to allow nil-checking
 - **Optional request fields:** Always use `omitempty` JSON tag
 - **Required fields:** No `omitempty` tag
 
-### Error Handling
+### 2.5 Error Handling
 
 - Use `gophercloud.Result` and `gophercloud.ErrResult` types
 - Extract errors with `.ExtractErr()` method
 - Return errors directly, don't wrap unless adding context
 
-### Documentation
+### 2.6 Documentation
 
 - **All struct fields** must have GoDoc comments
 - **Microversion-dependent fields** must document required version in GoDoc
@@ -140,7 +144,7 @@ Example:
 Tags []string `json:"tags,omitempty"`
 ```
 
-### Testing Requirements
+### 2.7 Testing Requirements
 
 **Unit tests (in `testing/` subdirectory):**
 - Use `testhelper` package to mock HTTP
@@ -156,7 +160,7 @@ Tags []string `json:"tags,omitempty"`
 - Test against real OpenStack APIs
 - Cover all operation variants
 
-## Microversions
+## 3. Microversions
 
 Set microversion on ServiceClient:
 ```go
@@ -170,7 +174,7 @@ client.Microversion = "2.52"
 
 See `docs/MICROVERSIONS.md` for details.
 
-## Pull Request Requirements
+## 4. Pull Request Requirements
 
 **Before opening PR:**
 1. **GitHub issue must exist** with core contributor approval
@@ -187,9 +191,10 @@ See `docs/MICROVERSIONS.md` for details.
 - Follow existing patterns in codebase
 - Address all reviewer feedback
 
-## Common Patterns
+## 5. Common Patterns
 
-**Context usage:**
+### 5.1 Context
+
 Always pass `context.Context` to API operations:
 ```go
 servers.List(client, opts).EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
@@ -197,7 +202,8 @@ servers.List(client, opts).EachPage(ctx, func(ctx context.Context, page paginati
 })
 ```
 
-**Pagination:**
+### 5.2 Pagination
+
 ```go
 pager := servers.List(client, servers.ListOpts{})
 err := pager.EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
@@ -207,7 +213,23 @@ err := pager.EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool
 })
 ```
 
-## Key Reminders
+### 5.3 KeyedPage interface
+
+`AllPages` concatenates list bodies. By default it picks the first top-level JSON key that is not `*links` and whose value is an array.
+
+If a list response has **more than one top-level key** besides `*links` (for example Placement resource-provider inventories: `inventories` plus `resource_provider_generation`), the `Page` type must implement `pagination.KeyedPage` and return the collection envelope from `ResourceKey()`:
+
+```go
+func (r InventoryPage) ResourceKey() string {
+    return "inventories"
+}
+```
+
+Without `ResourceKey()`, `AllPages` may pick the wrong key when more than one top-level value is an array. When extra keys are scalars, the heuristic may still work; still specify `ResourceKey()`.
+
+See `pagination/pager.go` and [gophercloud#3947](https://github.com/gophercloud/gophercloud/pull/3947).
+
+## 6. Key Reminders
 
 - Module path: `github.com/gophercloud/gophercloud/v2` (note the `/v2`)
 - Gophercloud does NOT validate microversion compatibility
