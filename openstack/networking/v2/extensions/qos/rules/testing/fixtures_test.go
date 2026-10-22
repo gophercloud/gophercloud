@@ -189,3 +189,133 @@ const MinimumBandwidthRulesUpdateResult = `
     }
 }
 `
+
+// MinimumPacketRateRulesListResult represents a raw result of a List call to MinimumPacketRateRules.
+const MinimumPacketRateRulesListResult = `
+{
+    "minimum_packet_rate_rules": [
+        {
+            "min_kpps": 3000,
+            "direction": "egress",
+            "id": "30a57f4a-336b-4382-8275-d708babd2241"
+        }
+    ]
+}
+`
+
+// MinimumPacketRateRulesGetResult represents a raw result of a Get call to a specific MinimumPacketRateRule.
+const MinimumPacketRateRulesGetResult = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 3000,
+        "direction": "egress",
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
+
+// MinimumPacketRateRulesCreateRequest represents a raw body of a Create MinimumPacketRateRule call.
+const MinimumPacketRateRulesCreateRequest = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 2000
+    }
+}
+`
+
+// MinimumPacketRateRulesCreateResult represents a raw result of a Create MinimumPacketRateRule call.
+const MinimumPacketRateRulesCreateResult = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 2000,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
+
+// MinimumPacketRateRulesUpdateRequest represents a raw body of a Update MinimumPacketRateRule call.
+const MinimumPacketRateRulesUpdateRequest = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 500
+    }
+}
+`
+
+// MinimumPacketRateRulesUpdateResult represents a raw result of a Update MinimumPacketRateRule call.
+const MinimumPacketRateRulesUpdateResult = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 500,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
+
+// PacketRateLimitRulesListResult represents a raw result of a List call to PacketRateLimitRules.
+const PacketRateLimitRulesListResult = `
+{
+    "packet_rate_limit_rules": [
+        {
+            "max_kpps": 3000,
+            "max_burst_kpps": 300,
+            "direction": "egress",
+            "id": "30a57f4a-336b-4382-8275-d708babd2241"
+        }
+    ]
+}
+`
+
+// PacketRateLimitRulesGetResult represents a raw result of a Get call to a specific PacketRateLimitRule.
+const PacketRateLimitRulesGetResult = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 3000,
+        "max_burst_kpps": 300,
+        "direction": "egress",
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
+
+// PacketRateLimitRulesCreateRequest represents a raw body of a Create PacketRateLimitRule call.
+const PacketRateLimitRulesCreateRequest = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 2000,
+        "max_burst_kpps": 200
+    }
+}
+`
+
+// PacketRateLimitRulesCreateResult represents a raw result of a Create PacketRateLimitRule call.
+const PacketRateLimitRulesCreateResult = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 2000,
+        "max_burst_kpps": 200,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
+
+// PacketRateLimitRulesUpdateRequest represents a raw body of a Update PacketRateLimitRule call.
+const PacketRateLimitRulesUpdateRequest = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 500,
+        "max_burst_kpps": 50
+    }
+}
+`
+
+// PacketRateLimitRulesUpdateResult represents a raw result of a Update PacketRateLimitRule call.
+const PacketRateLimitRulesUpdateResult = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 500,
+        "max_burst_kpps": 50,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
