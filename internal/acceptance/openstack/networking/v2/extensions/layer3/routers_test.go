@@ -31,7 +31,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := routers.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &newDescription,
 	}
 
@@ -100,7 +100,7 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := routers.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &newDescription,
 		GatewayInfo: &gatewayInfo,
 	}
@@ -187,7 +187,7 @@ func TestLayer3RouterAgents(t *testing.T) {
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := routers.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &newDescription,
 	}
 
@@ -239,7 +239,7 @@ func TestLayer3RouterRevision(t *testing.T) {
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := &routers.UpdateOpts{
-		Name:        newName,
+		Name:        &newName,
 		Description: &newDescription,
 	}
 	router, err = routers.Update(context.TODO(), client, router.ID, updateOpts).Extract()
@@ -250,7 +250,6 @@ func TestLayer3RouterRevision(t *testing.T) {
 	// This should fail due to an old revision number.
 	newDescription = "new description"
 	updateOpts = &routers.UpdateOpts{
-		Name:           newName,
 		Description:    &newDescription,
 		RevisionNumber: &oldRevisionNumber,
 	}
@@ -269,7 +268,7 @@ func TestLayer3RouterRevision(t *testing.T) {
 	// This should work because now we do provide a valid revision number.
 	newDescription = "new description"
 	updateOpts = &routers.UpdateOpts{
-		Name:           newName,
+		Name:           new(string),
 		Description:    &newDescription,
 		RevisionNumber: &router.RevisionNumber,
 	}
@@ -278,7 +277,7 @@ func TestLayer3RouterRevision(t *testing.T) {
 
 	tools.PrintResource(t, router)
 
-	th.AssertEquals(t, router.Name, newName)
+	th.AssertEquals(t, router.Name, "")
 	th.AssertEquals(t, router.Description, newDescription)
 }
 

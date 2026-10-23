@@ -126,7 +126,7 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a router.
 type UpdateOpts struct {
-	Name         string       `json:"name,omitempty"`
+	Name         *string      `json:"name,omitempty"`
 	Description  *string      `json:"description,omitempty"`
 	AdminStateUp *bool        `json:"admin_state_up,omitempty"`
 	Distributed  *bool        `json:"distributed,omitempty"`
