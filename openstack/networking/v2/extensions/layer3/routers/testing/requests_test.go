@@ -341,7 +341,8 @@ func TestUpdate(t *testing.T) {
 		QoSPolicyID: "01ba32e5-f15a-4687-8be9-ddec92a2f8a8",
 	}
 	r := []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}
-	options := routers.UpdateOpts{Name: "new_name", GatewayInfo: &gwi, Routes: &r}
+	name := "new_name"
+	options := routers.UpdateOpts{Name: &name, GatewayInfo: &gwi, Routes: &r}
 
 	n, err := routers.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
@@ -401,13 +402,60 @@ func TestUpdateWithoutRoutes(t *testing.T) {
 		`)
 	})
 
-	options := routers.UpdateOpts{Name: "new_name"}
+	name := "new_name"
+	options := routers.UpdateOpts{Name: &name}
 
 	n, err := routers.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "new_name", n.Name)
 	th.AssertDeepEquals(t, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}, n.Routes)
+}
+
+func TestUpdateEmptyName(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "router": {
+        "name": ""
+    }
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, `
+{
+    "router": {
+        "status": "ACTIVE",
+        "external_gateway_info": {
+            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b"
+        },
+        "name": "",
+        "admin_state_up": true,
+        "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
+        "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
+        "routes": []
+    }
+}
+		`)
+	})
+
+	options := routers.UpdateOpts{Name: new(string)}
+
+	n, err := routers.Update(context.TODO(), fake.ServiceClient(fakeServer), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "", n.Name)
 }
 
 func TestAllRoutesRemoved(t *testing.T) {
