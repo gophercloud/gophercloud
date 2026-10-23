@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/fwaas_v2/groups"
@@ -39,7 +40,9 @@ func TestList(t *testing.T) {
       ],
       "status": "ACTIVE",
       "shared": false,
-      "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+      "project_id": "9f98fc0e5f944cd1b51798b668dc8778",
+      "created_at": "2019-06-04T12:28:30Z",
+      "updated_at": "2019-06-04T12:30:15Z"
     },
     {
       "id": "f9fbb80c-eeb4-4f3f-aa50-1032960c08ea",
@@ -59,7 +62,9 @@ func TestList(t *testing.T) {
       ],
       "status": "ACTIVE",
       "shared": false,
-      "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+      "project_id": "9f98fc0e5f944cd1b51798b668dc8778",
+      "created_at": "2019-06-04T12:28:30",
+      "updated_at": "2019-06-04T12:30:15"
     }
   ]
 }
@@ -91,6 +96,8 @@ func TestList(t *testing.T) {
 				Status:    "ACTIVE",
 				Shared:    false,
 				ProjectID: "9f98fc0e5f944cd1b51798b668dc8778",
+				CreatedAt: time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
+				UpdatedAt: time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 			},
 			{
 				ID:                      "f9fbb80c-eeb4-4f3f-aa50-1032960c08ea",
@@ -111,6 +118,8 @@ func TestList(t *testing.T) {
 				Status:    "ACTIVE",
 				Shared:    false,
 				ProjectID: "9f98fc0e5f944cd1b51798b668dc8778",
+				CreatedAt: time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
+				UpdatedAt: time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 			},
 		}
 
@@ -151,7 +160,9 @@ func TestGet(t *testing.T) {
     ],
     "status": "ACTIVE",
     "shared": false,
-    "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+    "project_id": "9f98fc0e5f944cd1b51798b668dc8778",
+    "created_at": "2019-06-04T12:28:30Z",
+    "updated_at": "2019-06-04T12:30:15Z"
   }
 }
         `)
@@ -172,6 +183,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "ACTIVE", group.Status)
 	th.AssertFalse(t, group.Shared)
 	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", group.TenantID)
+	th.AssertEquals(t, time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC), group.CreatedAt)
+	th.AssertEquals(t, time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC), group.UpdatedAt)
 }
 
 func TestCreate(t *testing.T) {

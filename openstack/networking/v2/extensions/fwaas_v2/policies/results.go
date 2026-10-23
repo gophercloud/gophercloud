@@ -1,20 +1,63 @@
 package policies
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // Policy is a firewall policy.
 type Policy struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	TenantID    string   `json:"tenant_id"`
-	ProjectID   string   `json:"project_id"`
-	Audited     bool     `json:"audited"`
-	Shared      bool     `json:"shared"`
-	Rules       []string `json:"firewall_rules,omitempty"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	TenantID    string    `json:"tenant_id"`
+	ProjectID   string    `json:"project_id"`
+	Audited     bool      `json:"audited"`
+	Shared      bool      `json:"shared"`
+	Rules       []string  `json:"firewall_rules,omitempty"`
+	CreatedAt   time.Time `json:"-"`
+	UpdatedAt   time.Time `json:"-"`
+}
+
+func (r *Policy) UnmarshalJSON(b []byte) error {
+	type tmp Policy
+
+	// Support for older neutron time format
+	var s1 struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339NoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339NoZ `json:"updated_at"`
+	}
+
+	err := json.Unmarshal(b, &s1)
+	if err == nil {
+		*r = Policy(s1.tmp)
+		r.CreatedAt = time.Time(s1.CreatedAt)
+		r.UpdatedAt = time.Time(s1.UpdatedAt)
+
+		return nil
+	}
+
+	// Support for newer neutron time format
+	var s2 struct {
+		tmp
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+	}
+
+	err = json.Unmarshal(b, &s2)
+	if err != nil {
+		return err
+	}
+
+	*r = Policy(s2.tmp)
+	r.CreatedAt = time.Time(s2.CreatedAt)
+	r.UpdatedAt = time.Time(s2.UpdatedAt)
+
+	return nil
 }
 
 type commonResult struct {
