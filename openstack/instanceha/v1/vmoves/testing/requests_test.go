@@ -1,0 +1,112 @@
+package vmoves_test
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"reflect"
+	"testing"
+
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/vmoves"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+)
+
+const fixture = `{"id":7,"uuid":"move","notification_uuid":"notification","instance_uuid":"vm","instance_name":"instance","source_host":"compute-1","dest_host":null,"type":"evacuation","status":"pending","start_time":null,"end_time":null,"message":null}`
+
+func check(t *testing.T, actual, expected string) {
+	t.Helper()
+	if actual != expected {
+		t.Errorf("expected %q, got %q", expected, actual)
+	}
+}
+
+func TestListAndGet(t *testing.T) {
+	calls := 0
+	server := th.SetupHTTP()
+	defer server.Teardown()
+	server.Mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		check(t, req.Method, "GET")
+		check(t, req.Header.Get("OpenStack-API-Version"), "instance-ha 1.3")
+		w.Header().Set("Content-Type", "application/json")
+		if req.URL.Path == "/notifications/notification/vmoves/resource" {
+			fmt.Fprint(w, `{"vmove":`+fixture+`}`)
+			return
+		}
+		check(t, req.URL.Path, "/notifications/notification/vmoves")
+		calls++
+		q := req.URL.Query()
+		check(t, q.Get("limit"), "1")
+		check(t, q.Get("sort_key"), "id")
+		check(t, q.Get("sort_dir"), "asc")
+		check(t, q.Get("type"), "evacuation")
+		check(t, q.Get("status"), "pending")
+		switch q.Get("marker") {
+		case "":
+			fmt.Fprint(w, `{"vmoves":[`+fixture+`]}`)
+		case "7":
+			fmt.Fprint(w, `{"vmoves":[]}`)
+		default:
+			t.Errorf("unexpected marker %q", q.Get("marker"))
+		}
+	})
+	client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint(), Type: "instance-ha", Microversion: "1.3"}
+
+	opts := vmoves.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", Type: "evacuation", Status: "pending"}
+	pages, err := vmoves.List(client, "notification", opts).AllPages(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	items, err := vmoves.ExtractVMoves(pages)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var expected vmoves.VMove
+	if err := json.Unmarshal([]byte(fixture), &expected); err != nil {
+		t.Fatal(err)
+	}
+	if len(items) != 1 || !reflect.DeepEqual(items[0], expected) {
+		t.Fatalf("unexpected resources: %#v", items)
+	}
+	if calls != 2 {
+		t.Fatalf("expected two pages, got %d", calls)
+	}
+	item, err := vmoves.Get(context.Background(), client, "notification", "resource").Extract()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(*item, expected) {
+		t.Fatalf("unexpected resource: %#v", item)
+	}
+}
+
+func TestListErrors(t *testing.T) {
+	for _, tc := range []struct {
+		name, body string
+		status     int
+		wantError  bool
+	}{
+		{"forbidden", "{}", 403, true},
+		{"invalid JSON", "{", 200, true},
+		{"invalid resource", `{"vmoves":[{"id":"invalid"}]}`, 200, true},
+		{"missing marker", `{"vmoves":[{}]}`, 200, true},
+		{"repeated marker", `{"vmoves":[{"id":7}]}`, 200, true},
+		{"empty", `{"vmoves":[]}`, 200, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			server := th.SetupHTTP()
+			defer server.Teardown()
+			server.Mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(tc.status)
+				fmt.Fprint(w, tc.body)
+			})
+			client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint()}
+			_, err := vmoves.List(client, "notification", nil).AllPages(context.Background())
+			if (err != nil) != tc.wantError {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+}
