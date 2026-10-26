@@ -55,7 +55,28 @@ type DeleteResult struct {
 
 // SnapshotPage is a pagination.Pager that is returned from a call to the List function.
 type SnapshotPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r SnapshotPage) ResourceKey() string {
+	return "snapshots"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r SnapshotPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"snapshots_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 func (r *Snapshot) UnmarshalJSON(b []byte) error {
