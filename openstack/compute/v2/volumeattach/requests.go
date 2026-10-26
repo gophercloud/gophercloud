@@ -7,8 +7,9 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
-// List returns a Pager that allows you to iterate over a collection of
-// VolumeAttachments.
+// List returns a single page of VolumeAttachments. Automatic pagination is not
+// supported because Nova applies pagination before filtering out non-volume
+// block-device mappings. Results are subject to the server's page-size limit.
 func List(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
 	return pagination.NewPager(client, listURL(client, serverID), func(r pagination.PageResult) pagination.Page {
 		return VolumeAttachmentPage{pagination.SinglePageBase(r)}

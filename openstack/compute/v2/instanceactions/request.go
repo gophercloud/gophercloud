@@ -67,7 +67,7 @@ func List(client *gophercloud.ServiceClient, id string, opts ListOptsBuilder) pa
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return InstanceActionPage{pagination.SinglePageBase(r)}
+		return InstanceActionPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
