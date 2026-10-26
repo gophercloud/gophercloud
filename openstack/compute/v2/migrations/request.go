@@ -68,6 +68,6 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	}
 
 	return pagination.NewPager(client, reqUrl, func(r pagination.PageResult) pagination.Page {
-		return MigrationPage{pagination.SinglePageBase(r)}
+		return MigrationPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }

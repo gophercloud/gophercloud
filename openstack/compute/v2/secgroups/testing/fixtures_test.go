@@ -31,6 +31,10 @@ func mockListGroupsResponse(t *testing.T, fakeServer th.FakeServer) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
+		if r.URL.Query().Get("offset") != "" {
+			fmt.Fprint(w, `{"security_groups": []}`)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprint(w, listGroupsJSON)

@@ -1,6 +1,8 @@
 package servergroups
 
 import (
+	"strconv"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -59,7 +61,40 @@ type Rules struct {
 // ServerGroupPage stores a single page of all ServerGroups results from a
 // List call.
 type ServerGroupPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r ServerGroupPage) ResourceKey() string {
+	return "server_groups"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r ServerGroupPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	items, err := ExtractServerGroups(r)
+	if err != nil {
+		return "", err
+	}
+	if len(items) == 0 {
+		return "", nil
+	}
+
+	currentURL := r.URL
+	q := currentURL.Query()
+	offset := 0
+	if value := q.Get("offset"); value != "" {
+		offset, err = strconv.Atoi(value)
+		if err != nil {
+			return "", err
+		}
+	}
+	q.Set("offset", strconv.Itoa(offset+len(items)))
+	currentURL.RawQuery = q.Encode()
+	return currentURL.String(), nil
 }
 
 // IsEmpty determines whether or not a ServerGroupsPage is empty.

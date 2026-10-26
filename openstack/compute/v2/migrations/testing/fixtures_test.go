@@ -58,6 +58,10 @@ func HandleMigrationListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
+		if r.URL.Query().Get("marker") != "" {
+			fmt.Fprint(w, `{"migrations": []}`)
+			return
+		}
 		fmt.Fprintf(w, `{
 			"migrations": [
 				{
@@ -100,9 +104,9 @@ func HandleMigrationListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 			"migrations_links": [
 				{
 					"rel": "next",
-					"href": "http://192.168.122.161:8774/v2.1/os-migrations?instance_uuid=6ba1f91a-50cc-48cd-9ce6-310991acb08d&limit=1&marker=dde90a82-3059-4369-8bda-e0ba92713c54"
+					"href": "%s/os-migrations?instance_uuid=6ba1f91a-50cc-48cd-9ce6-310991acb08d&limit=2&marker=dde90a82-3059-4369-8bda-e0ba92713c54"
 				}
 			]
-		}`)
+		}`, fakeServer.Server.URL)
 	})
 }
