@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
@@ -38,7 +39,9 @@ func TestList(t *testing.T) {
             "audited": true,
 			"shared": false,
             "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
-            "description": "Firewall policy 1"
+            "description": "Firewall policy 1",
+            "created_at": "2019-06-04T12:28:30Z",
+            "updated_at": "2019-06-04T12:30:15Z"
         },
         {
             "name": "policy2",
@@ -50,7 +53,9 @@ func TestList(t *testing.T) {
             "audited": false,
 			"shared": true,
             "id": "c854fab5-bdaf-4a86-9359-78de93e5df01",
-            "description": "Firewall policy 2"
+            "description": "Firewall policy 2",
+            "created_at": "2019-06-04T12:28:30",
+            "updated_at": "2019-06-04T12:30:15"
         }
     ]
 }
@@ -80,6 +85,8 @@ func TestList(t *testing.T) {
 				Shared:      false,
 				ID:          "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
 				Description: "Firewall policy 1",
+				CreatedAt:   time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
+				UpdatedAt:   time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 			},
 			{
 				Name: "policy2",
@@ -92,6 +99,8 @@ func TestList(t *testing.T) {
 				Shared:      true,
 				ID:          "c854fab5-bdaf-4a86-9359-78de93e5df01",
 				Description: "Firewall policy 2",
+				CreatedAt:   time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
+				UpdatedAt:   time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 			},
 		}
 
@@ -265,7 +274,9 @@ func TestGet(t *testing.T) {
 		"project_id": "9145d91459d248b1b02fdaca97c6a75d",
         "audited": false,
         "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
-        "description": "Firewall policy web"
+        "description": "Firewall policy web",
+        "created_at": "2019-06-04T12:28:30Z",
+        "updated_at": "2019-06-04T12:30:15Z"
     }
 }
         `)
@@ -283,6 +294,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "03d2a6ad-633f-431a-8463-4370d06a22c8", policy.Rules[2])
 	th.AssertEquals(t, "9145d91459d248b1b02fdaca97c6a75d", policy.TenantID)
 	th.AssertEquals(t, "9145d91459d248b1b02fdaca97c6a75d", policy.ProjectID)
+	th.AssertEquals(t, time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC), policy.CreatedAt)
+	th.AssertEquals(t, time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC), policy.UpdatedAt)
 }
 
 func TestUpdate(t *testing.T) {

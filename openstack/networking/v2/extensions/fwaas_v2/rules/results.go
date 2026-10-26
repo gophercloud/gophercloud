@@ -1,27 +1,70 @@
 package rules
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
 // Rule represents a firewall rule
 type Rule struct {
-	ID                   string   `json:"id"`
-	Name                 string   `json:"name,omitempty"`
-	Description          string   `json:"description,omitempty"`
-	Protocol             string   `json:"protocol"`
-	Action               string   `json:"action"`
-	IPVersion            int      `json:"ip_version,omitempty"`
-	SourceIPAddress      string   `json:"source_ip_address,omitempty"`
-	DestinationIPAddress string   `json:"destination_ip_address,omitempty"`
-	SourcePort           string   `json:"source_port,omitempty"`
-	DestinationPort      string   `json:"destination_port,omitempty"`
-	Shared               bool     `json:"shared,omitempty"`
-	Enabled              bool     `json:"enabled,omitempty"`
-	FirewallPolicyID     []string `json:"firewall_policy_id"`
-	TenantID             string   `json:"tenant_id"`
-	ProjectID            string   `json:"project_id"`
+	ID                   string    `json:"id"`
+	Name                 string    `json:"name,omitempty"`
+	Description          string    `json:"description,omitempty"`
+	Protocol             string    `json:"protocol"`
+	Action               string    `json:"action"`
+	IPVersion            int       `json:"ip_version,omitempty"`
+	SourceIPAddress      string    `json:"source_ip_address,omitempty"`
+	DestinationIPAddress string    `json:"destination_ip_address,omitempty"`
+	SourcePort           string    `json:"source_port,omitempty"`
+	DestinationPort      string    `json:"destination_port,omitempty"`
+	Shared               bool      `json:"shared,omitempty"`
+	Enabled              bool      `json:"enabled,omitempty"`
+	FirewallPolicyID     []string  `json:"firewall_policy_id"`
+	TenantID             string    `json:"tenant_id"`
+	ProjectID            string    `json:"project_id"`
+	CreatedAt            time.Time `json:"-"`
+	UpdatedAt            time.Time `json:"-"`
+}
+
+func (r *Rule) UnmarshalJSON(b []byte) error {
+	type tmp Rule
+
+	// Support for older neutron time format
+	var s1 struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339NoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339NoZ `json:"updated_at"`
+	}
+
+	err := json.Unmarshal(b, &s1)
+	if err == nil {
+		*r = Rule(s1.tmp)
+		r.CreatedAt = time.Time(s1.CreatedAt)
+		r.UpdatedAt = time.Time(s1.UpdatedAt)
+
+		return nil
+	}
+
+	// Support for newer neutron time format
+	var s2 struct {
+		tmp
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+	}
+
+	err = json.Unmarshal(b, &s2)
+	if err != nil {
+		return err
+	}
+
+	*r = Rule(s2.tmp)
+	r.CreatedAt = time.Time(s2.CreatedAt)
+	r.UpdatedAt = time.Time(s2.UpdatedAt)
+
+	return nil
 }
 
 // RulePage is the page returned by a pager when traversing over a

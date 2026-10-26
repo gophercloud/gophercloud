@@ -31,6 +31,8 @@ func TestRuleCRUD(t *testing.T) {
 	defer DeleteRule(t, client, rule.ID)
 
 	tools.PrintResource(t, rule)
+	th.AssertFalse(t, rule.CreatedAt.IsZero())
+	th.AssertFalse(t, rule.UpdatedAt.IsZero())
 
 	ruleDescription := "Some rule description"
 	ruleSourcePortInt := strconv.Itoa(tools.RandomInt(1, 100))
