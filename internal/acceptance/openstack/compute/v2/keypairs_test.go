@@ -5,15 +5,88 @@ package v2
 import (
 	"context"
 	"testing"
+	"time"
+
+	"golang.org/x/crypto/ssh"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	identity "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/keypairs"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
-	"golang.org/x/crypto/ssh"
 )
+
+// keyPairsPaginationOpts supplies the page size missing from keypairs.ListOpts.
+type keyPairsPaginationOpts struct{}
+
+func (keyPairsPaginationOpts) ToKeyPairListQuery() (string, error) {
+	return "?limit=1", nil
+}
+
+func TestKeyPairsPagination(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "2.35"
+
+	expected := make(map[string]int)
+	for range 2 {
+		keyPair, err := keypairs.Create(ctx, client, keypairs.CreateOpts{
+			Name: tools.RandomString("keypair_pagination_", 16),
+		}).Extract()
+		th.AssertNoErr(t, err)
+		t.Cleanup(func() {
+			cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cleanupCancel()
+			if err := keypairs.Delete(cleanupCtx, client, keyPair.Name, nil).ExtractErr(); err != nil {
+				t.Errorf("Unable to delete keypair %s: %v", keyPair.Name, err)
+			}
+		})
+		expected[keyPair.Name] = 1
+		t.Logf("Created keypair %s", keyPair.Name)
+	}
+
+	t.Run("EachPage", func(t *testing.T) {
+		actual := make(map[string]int)
+		pages := 0
+		err := keypairs.List(client, keyPairsPaginationOpts{}).EachPage(ctx, func(_ context.Context, page pagination.Page) (bool, error) {
+			items, err := keypairs.ExtractKeyPairs(page)
+			if err != nil {
+				return false, err
+			}
+			pages++
+			th.CheckEquals(t, 1, len(items))
+			for _, item := range items {
+				if _, ok := expected[item.Name]; ok {
+					actual[item.Name]++
+				}
+			}
+			return true, nil
+		})
+		th.AssertNoErr(t, err)
+		t.Logf("Visited %d non-empty pages", pages)
+		th.CheckTrue(t, pages >= 2)
+		th.CheckDeepEquals(t, expected, actual)
+	})
+
+	t.Run("AllPages", func(t *testing.T) {
+		page, err := keypairs.List(client, keyPairsPaginationOpts{}).AllPages(ctx)
+		th.AssertNoErr(t, err)
+		items, err := keypairs.ExtractKeyPairs(page)
+		th.AssertNoErr(t, err)
+		actual := make(map[string]int)
+		for _, item := range items {
+			if _, ok := expected[item.Name]; ok {
+				actual[item.Name]++
+			}
+		}
+		th.CheckDeepEquals(t, expected, actual)
+	})
+}
 
 func TestKeyPairsParse(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
