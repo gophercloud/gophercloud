@@ -89,6 +89,21 @@ func TestAdd(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestAddEscapesTag(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/networks/fakeid/tags/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.AssertEquals(t, "/v2.0/networks/fakeid/tags/a%2Fb%20c", r.URL.EscapedPath())
+
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	err := attributestags.Add(context.TODO(), fake.ServiceClient(fakeServer), "networks", "fakeid", "a/b c").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 func TestDelete(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
