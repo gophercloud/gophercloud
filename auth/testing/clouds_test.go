@@ -270,7 +270,7 @@ func TestAuthOptionsFromCloudDispatchesExplicitAuthTypes(t *testing.T) {
 		{name: "v2 token", authType: auth.AuthV2Token, data: map[string]any{"token": "testtoken"}, wantAuth: auth.V2TokenOpts{Token: "testtoken", AllowReauth: true}, wantV2: true},
 		{name: "v3 password", authType: auth.AuthV3Password, data: map[string]any{"username": "testuser", "password": "testpass"}, wantAuth: auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}},
 		{name: "v3 TOTP", authType: auth.AuthV3Totp, data: map[string]any{"username": "testuser", "passcode": "123456"}, wantAuth: auth.V3TOTPOpts{Username: "testuser", Passcode: "123456", Scope: &auth.Scope{}}},
-		{name: "v3 token", authType: auth.AuthV3Token, data: map[string]any{"token": "testtoken"}, wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}}},
+		{name: "v3 token", authType: auth.AuthV3Token, data: map[string]any{"token": "testtoken"}, wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}, AllowReauth: true}},
 		{name: "v3 application credential", authType: auth.AuthV3ApplicationCredential, data: map[string]any{"application_credential_id": "credential-id", "application_credential_secret": "secret"}, wantAuth: auth.V3ApplicationCredentialOpts{ApplicationCredentialID: "credential-id", ApplicationCredentialSecret: "secret", AllowReauth: true}},
 		{
 			name:     "v3 OAuth1",
@@ -324,7 +324,7 @@ func TestAuthOptionsFromCloudInfersV3AuthType(t *testing.T) {
 	}{
 		{name: "password", data: map[string]any{"username": "testuser", "password": "testpass"}, wantAuth: auth.V3PasswordOpts{Username: "testuser", Password: "testpass", Scope: &auth.Scope{}, AllowReauth: true}},
 		{name: "TOTP", data: map[string]any{"username": "testuser", "passcode": "123456"}, wantAuth: auth.V3TOTPOpts{Username: "testuser", Passcode: "123456", Scope: &auth.Scope{}}},
-		{name: "token", data: map[string]any{"token": "testtoken"}, wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}}},
+		{name: "token", data: map[string]any{"token": "testtoken"}, wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}, AllowReauth: true}},
 		{name: "application credential ID", data: map[string]any{"application_credential_id": "credential-id", "application_credential_secret": "secret"}, wantAuth: auth.V3ApplicationCredentialOpts{ApplicationCredentialID: "credential-id", ApplicationCredentialSecret: "secret", AllowReauth: true}},
 		{name: "application credential name", data: map[string]any{"application_credential_name": "credential-name", "application_credential_secret": "secret"}, wantAuth: auth.V3ApplicationCredentialOpts{ApplicationCredentialName: "credential-name", ApplicationCredentialSecret: "secret", AllowReauth: true}},
 		{name: "fallback password", data: map[string]any{}, wantAuth: auth.V3PasswordOpts{Scope: &auth.Scope{}, AllowReauth: true}},

@@ -14,6 +14,9 @@ func TestCanReauthRespectsAllowReauth(t *testing.T) {
 	th.AssertEquals(t, false, auth.V2TokenOpts{}.CanReauth())
 	th.AssertEquals(t, true, auth.V2TokenOpts{AllowReauth: true}.CanReauth())
 
+	th.AssertEquals(t, false, auth.V3TokenOpts{}.CanReauth())
+	th.AssertEquals(t, true, auth.V3TokenOpts{AllowReauth: true}.CanReauth())
+
 	th.AssertEquals(t, false, auth.V3PasswordOpts{}.CanReauth())
 	th.AssertEquals(t, true, auth.V3PasswordOpts{AllowReauth: true}.CanReauth())
 
@@ -22,13 +25,9 @@ func TestCanReauthRespectsAllowReauth(t *testing.T) {
 }
 
 // TestCanReauthHardcodedFalseMechanismsIgnoreAllowReauth guards against a
-// future edit accidentally adding AllowReauth to one of these — their
-// CanReauth is false for documented safety reasons (see v3rescopetoken.go
-// and v3totp.go), not because nobody's wired it up yet.
+// future edit accidentally enabling automatic reauthentication for these
+// mechanisms.
 func TestCanReauthHardcodedFalseMechanismsIgnoreAllowReauth(t *testing.T) {
-	th.AssertEquals(t, false, auth.V3TokenOpts{}.CanReauth())
 	th.AssertEquals(t, false, auth.V3TOTPOpts{}.CanReauth())
 	th.AssertEquals(t, false, auth.V3MultifactorOpts{}.CanReauth())
-	th.AssertEquals(t, false, auth.V2RescopeTokenOpts{}.CanReauth())
-	th.AssertEquals(t, false, auth.V3RescopeTokenOpts{}.CanReauth())
 }

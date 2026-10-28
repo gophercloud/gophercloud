@@ -287,7 +287,6 @@ func TestV3AuthTypes(t *testing.T) {
 		{name: "TOTP", opts: auth.V3TOTPOpts{}, want: auth.AuthV3Totp},
 		{name: "token", opts: auth.V3TokenOpts{}, want: auth.AuthV3Token},
 		{name: "application credential", opts: auth.V3ApplicationCredentialOpts{}, want: auth.AuthV3ApplicationCredential},
-		{name: "rescope token", opts: auth.V3RescopeTokenOpts{}, want: auth.AuthV3Token},
 		{name: "multifactor", opts: auth.V3MultifactorOpts{}, want: auth.AuthV3MultiFactor},
 	}
 
@@ -362,7 +361,7 @@ func TestV3MultifactorOptsPropagatesMethodError(t *testing.T) {
 
 func TestV3MultifactorOptsRejectsUnsupportedMethod(t *testing.T) {
 	opts := auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{
-		auth.V3RescopeTokenOpts{Token: "testtoken", Scope: &auth.Scope{ProjectID: "project-id"}},
+		auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{auth.V3TokenOpts{Token: "testtoken"}}},
 	}}
 
 	_, err := opts.ToAuthBody()
