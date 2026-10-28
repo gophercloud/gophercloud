@@ -160,7 +160,7 @@ func TestAuthOptionsV2AuthenticateRescope(t *testing.T) {
 
 	opts := auth.AuthOptionsV2{
 		AuthURL: fakeServer.Endpoint(),
-		Auth:    auth.V2RescopeTokenOpts{Token: "existing-token", TenantID: "new-tenant-id"},
+		Auth:    auth.V2TokenOpts{Token: "existing-token", TenantID: "new-tenant-id"},
 	}
 
 	result, err := opts.Authenticate(context.TODO(), nil)
@@ -540,7 +540,7 @@ func TestAuthOptionsV3AuthenticateRescope(t *testing.T) {
 
 	opts := auth.AuthOptionsV3{
 		AuthURL: fakeServer.Endpoint(),
-		Auth: auth.V3RescopeTokenOpts{
+		Auth: auth.V3TokenOpts{
 			Token: "existing-token",
 			Scope: &auth.Scope{ProjectID: "new-project-id"},
 		},
@@ -550,19 +550,6 @@ func TestAuthOptionsV3AuthenticateRescope(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "rescoped-token", result.TokenID)
 	th.AssertEquals(t, "new-project-id", result.Project.ID)
-}
-
-func TestAuthOptionsV3AuthenticateRescopeMissingScope(t *testing.T) {
-	opts := auth.AuthOptionsV3{
-		AuthURL: "http://example.com:5000/v3",
-		Auth:    auth.V3RescopeTokenOpts{Token: "existing-token"},
-	}
-
-	_, err := opts.Authenticate(context.TODO(), nil)
-	th.AssertErr(t, err)
-
-	_, ok := err.(gophercloud.ErrScopeEmpty)
-	th.AssertEquals(t, true, ok)
 }
 
 func TestAuthOptionsV3AuthenticateSystemScoped(t *testing.T) {

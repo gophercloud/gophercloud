@@ -126,14 +126,6 @@ func TestAuthOptionsFromCloudExplicitFalseDisablesReauth(t *testing.T) {
 
 func TestAuthOptionsFromCloudCannotEnableReauthForNonReusableMechanisms(t *testing.T) {
 	testCases := map[string]clouds.Cloud{
-		"v3 token": {
-			AuthType: auth.AuthV3Token,
-			Auth: map[string]any{
-				"auth_url":     "http://example.com:5000",
-				"token":        "testtoken",
-				"allow_reauth": true,
-			},
-		},
 		"v3 TOTP": {
 			AuthType: auth.AuthV3Totp,
 			Auth: map[string]any{
@@ -342,7 +334,7 @@ func TestAuthOptionsFromCloudExplicitAuthTypes(t *testing.T) {
 					"token":    "testtoken",
 				},
 			},
-			wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}},
+			wantAuth: auth.V3TokenOpts{Token: "testtoken", Scope: &auth.Scope{}, AllowReauth: true},
 		},
 		{
 			name: "v3applicationcredential",
@@ -625,7 +617,7 @@ func TestCloudOptionOverrides(t *testing.T) {
 		opts, err := baseCloud().ToAuthOptions(auth.WithToken("override-token"))
 		th.AssertNoErr(t, err)
 		v3Opts := opts.(auth.AuthOptionsV3)
-		th.AssertDeepEquals(t, auth.V3TokenOpts{Token: "override-token", Scope: &auth.Scope{}}, v3Opts.Auth)
+		th.AssertDeepEquals(t, auth.V3TokenOpts{Token: "override-token", Scope: &auth.Scope{}, AllowReauth: true}, v3Opts.Auth)
 	})
 
 	t.Run("WithDomainID", func(t *testing.T) {
