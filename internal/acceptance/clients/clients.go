@@ -15,7 +15,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack"
 	baremetalHTTPBasic "github.com/gophercloud/gophercloud/v2/openstack/baremetal/httpbasic"
 	baremetalNoAuth "github.com/gophercloud/gophercloud/v2/openstack/baremetal/noauth"
-	blockstorageNoAuth "github.com/gophercloud/gophercloud/v2/openstack/blockstorage/noauth"
 )
 
 // AcceptanceTestChoices contains image and flavor selections for use by the acceptance tests.
@@ -192,44 +191,6 @@ func NewBlockStorageV3Client() (*gophercloud.ServiceClient, error) {
 
 	return openstack.NewBlockStorageV3(context.TODO(), client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
-	})
-}
-
-// NewBlockStorageV2NoAuthClient returns a noauth *ServiceClient for
-// making calls to the OpenStack Block Storage v2 API. An error will be
-// returned if client creation was not possible.
-func NewBlockStorageV2NoAuthClient() (*gophercloud.ServiceClient, error) {
-	client, err := blockstorageNoAuth.NewClient(auth.NoAuthV2Opts{
-		Username:   os.Getenv("OS_USERNAME"),
-		TenantName: os.Getenv("OS_TENANT_NAME"),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	client = configureDebug(client)
-
-	return blockstorageNoAuth.NewBlockStorageNoAuthV2(client, blockstorageNoAuth.EndpointOpts{
-		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
-	})
-}
-
-// NewBlockStorageV3NoAuthClient returns a noauth *ServiceClient for
-// making calls to the OpenStack Block Storage v3 API. An error will be
-// returned if client creation was not possible.
-func NewBlockStorageV3NoAuthClient() (*gophercloud.ServiceClient, error) {
-	client, err := blockstorageNoAuth.NewClient(auth.NoAuthV3Opts{
-		UserID:    os.Getenv("OS_USER_ID"),
-		ProjectID: os.Getenv("OS_PROJECT_ID"),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	client = configureDebug(client)
-
-	return blockstorageNoAuth.NewBlockStorageNoAuthV3(client, blockstorageNoAuth.EndpointOpts{
-		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
 	})
 }
 
