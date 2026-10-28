@@ -130,14 +130,14 @@ func (l ListFilter) String() string {
 }
 
 // ListDateFilter allows to filter date parameters with different filters.
-// Empty value for Filter checks for equality.
+// Empty value for Filter checks for equality. Values are serialized in UTC.
 type ListDateFilter struct {
 	Filter FilterType
 	Value  time.Time
 }
 
 func (l ListDateFilter) String() string {
-	v := l.Value.Format(gophercloud.RFC3339ZNoTNoZ)
+	v := l.Value.UTC().Format(gophercloud.RFC3339ZNoTNoZ)
 	if l.Filter != "" {
 		return fmt.Sprintf("%s:%s", l.Filter, v)
 	}

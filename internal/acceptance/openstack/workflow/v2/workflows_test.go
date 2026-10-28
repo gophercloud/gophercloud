@@ -38,8 +38,8 @@ func TestWorkflowsList(t *testing.T) {
 		},
 		Tags: []string{"tag1"},
 		CreatedAt: &workflows.ListDateFilter{
-			Filter: workflows.FilterGT,
-			Value:  time.Now().AddDate(-1, 0, 0),
+			Filter: workflows.FilterGTE,
+			Value:  workflow.CreatedAt.In(time.FixedZone("UTC+5:45", 5*3600+45*60)),
 		},
 	})
 	th.AssertNoErr(t, err)

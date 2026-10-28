@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -105,6 +106,7 @@ type DownloadOptsBuilder interface {
 }
 
 // DownloadOpts is a structure that holds parameters for downloading an object.
+// Conditional timestamps are serialized as UTC HTTP dates.
 type DownloadOpts struct {
 	IfMatch           string    `h:"If-Match"`
 	IfModifiedSince   time.Time `h:"If-Modified-Since"`
@@ -130,10 +132,10 @@ func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, er
 		return nil, q.String(), err
 	}
 	if !opts.IfModifiedSince.IsZero() {
-		h["If-Modified-Since"] = opts.IfModifiedSince.Format(time.RFC1123)
+		h["If-Modified-Since"] = opts.IfModifiedSince.UTC().Format(http.TimeFormat)
 	}
 	if !opts.IfUnmodifiedSince.IsZero() {
-		h["If-Unmodified-Since"] = opts.IfUnmodifiedSince.Format(time.RFC1123)
+		h["If-Unmodified-Since"] = opts.IfUnmodifiedSince.UTC().Format(http.TimeFormat)
 	}
 	return h, q.String(), nil
 }

@@ -9,6 +9,7 @@ import (
 )
 
 // SingleTenantOpts are options for fetching usage of a single tenant.
+// Start and End are serialized in UTC.
 type SingleTenantOpts struct {
 	// The ending time to calculate usage statistics on compute and storage resources.
 	End *time.Time `q:"end"`
@@ -41,11 +42,11 @@ func (opts SingleTenantOpts) ToUsageSingleTenantQuery() (string, error) {
 	params := q.Query()
 
 	if opts.Start != nil {
-		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))
+		params.Add("start", opts.Start.UTC().Format(gophercloud.RFC3339MilliNoZ))
 	}
 
 	if opts.End != nil {
-		params.Add("end", opts.End.Format(gophercloud.RFC3339MilliNoZ))
+		params.Add("end", opts.End.UTC().Format(gophercloud.RFC3339MilliNoZ))
 	}
 
 	q = &url.URL{RawQuery: params.Encode()}
@@ -68,6 +69,7 @@ func SingleTenant(client *gophercloud.ServiceClient, tenantID string, opts Singl
 }
 
 // AllTenantsOpts are options for fetching usage of all tenants.
+// Start and End are serialized in UTC.
 type AllTenantsOpts struct {
 	// Detailed will return detailed results.
 	Detailed bool
@@ -103,11 +105,11 @@ func (opts AllTenantsOpts) ToUsageAllTenantsQuery() (string, error) {
 	params := q.Query()
 
 	if opts.Start != nil {
-		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))
+		params.Add("start", opts.Start.UTC().Format(gophercloud.RFC3339MilliNoZ))
 	}
 
 	if opts.End != nil {
-		params.Add("end", opts.End.Format(gophercloud.RFC3339MilliNoZ))
+		params.Add("end", opts.End.UTC().Format(gophercloud.RFC3339MilliNoZ))
 	}
 
 	if opts.Detailed {

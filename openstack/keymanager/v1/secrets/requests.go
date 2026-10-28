@@ -222,7 +222,7 @@ type CreateOpts struct {
 	// SecretType is the type of secret.
 	SecretType SecretType `json:"secret_type,omitempty"`
 
-	// Expiration is the expiration date of the secret.
+	// Expiration is the expiration date of the secret. It is serialized in UTC.
 	Expiration *time.Time `json:"-"`
 }
 
@@ -234,7 +234,7 @@ func (opts CreateOpts) ToSecretCreateMap() (map[string]any, error) {
 	}
 
 	if opts.Expiration != nil {
-		b["expiration"] = opts.Expiration.Format(gophercloud.RFC3339NoZ)
+		b["expiration"] = opts.Expiration.UTC().Format(gophercloud.RFC3339NoZ)
 	}
 
 	return b, nil
