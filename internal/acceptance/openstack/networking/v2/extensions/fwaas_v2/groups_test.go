@@ -29,6 +29,8 @@ func TestGroupCRUD(t *testing.T) {
 	defer DeleteGroup(t, client, createdGroup.ID)
 
 	tools.PrintResource(t, createdGroup)
+	th.AssertFalse(t, createdGroup.CreatedAt.IsZero())
+	th.AssertFalse(t, createdGroup.UpdatedAt.IsZero())
 
 	createdRule, err := CreateRule(t, client)
 	th.AssertNoErr(t, err)

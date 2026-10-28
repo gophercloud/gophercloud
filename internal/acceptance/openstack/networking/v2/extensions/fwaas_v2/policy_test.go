@@ -44,6 +44,8 @@ func TestPolicyCRUD(t *testing.T) {
 	defer DeletePolicy(t, client, policy.ID)
 
 	tools.PrintResource(t, policy)
+	th.AssertFalse(t, policy.CreatedAt.IsZero())
+	th.AssertFalse(t, policy.UpdatedAt.IsZero())
 
 	// Inject the second rule
 	AddRule(t, client, policy.ID, ruleToInsert.ID, rule.ID)
