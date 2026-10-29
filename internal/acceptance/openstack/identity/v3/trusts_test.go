@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/roles"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/trusts"
@@ -24,24 +24,10 @@ func TestTrustCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Generate a token and obtain the Admin user's ID from it.
-	ao, err := openstack.AuthOptionsFromEnv()
+	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	authOptions := tokens.AuthOptions{
-		Username:   ao.Username,
-		UserID:     ao.UserID,
-		Password:   ao.Password,
-		DomainName: ao.DomainName,
-		DomainID:   ao.DomainID,
-		Scope: tokens.Scope{
-			ProjectID:   ao.TenantID,
-			ProjectName: ao.TenantName,
-			DomainID:    ao.DomainID,
-			DomainName:  ao.DomainName,
-		},
-	}
-
-	token, err := tokens.Create(context.TODO(), client, &authOptions).Extract()
+	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
 	th.AssertNoErr(t, err)
 	adminUser, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)

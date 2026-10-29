@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/oauth1"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -255,17 +256,19 @@ func TestAuthenticate(t *testing.T) {
 	}
 
 	ts := time.Unix(0, 0)
-	options := &oauth1.AuthOptions{
-		OAuthConsumerKey:     Consumer.ID,
-		OAuthConsumerSecret:  Consumer.Secret,
-		OAuthToken:           AccessToken.OAuthToken,
-		OAuthTokenSecret:     AccessToken.OAuthTokenSecret,
-		OAuthSignatureMethod: oauth1.HMACSHA1,
-		OAuthTimestamp:       &ts,
-		OAuthNonce:           "66148873158553341551586804894",
+	serviceClient := client.ServiceClient(fakeServer)
+	serviceClient.Endpoint += "v3/"
+	options := auth.V3OAuth1Opts{
+		ConsumerKey:     Consumer.ID,
+		ConsumerSecret:  Consumer.Secret,
+		Token:           AccessToken.OAuthToken,
+		TokenSecret:     AccessToken.OAuthTokenSecret,
+		SignatureMethod: auth.OAuth1HMACSHA1,
+		Timestamp:       &ts,
+		Nonce:           "66148873158553341551586804894",
 	}
 
-	actual, err := oauth1.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
+	actual, err := oauth1.Create(context.TODO(), serviceClient, options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
