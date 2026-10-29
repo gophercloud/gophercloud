@@ -15,10 +15,6 @@ set +u
 source openrc admin admin
 set -u
 
-if [[ "${USE_SYSTEM_SCOPE:-}" == "true" ]]; then
-    # use system-scoped tokens
-    echo export OS_SYSTEM_SCOPE=all >> openrc
-fi
 # TODO: This should only be set when using project-scoped tokens (and we should
 # unsetting things like OS_PROJECT_NAME and OS_PROJECT_DOMAIN_ID when not using
 # these) but our tests require both which means we need to export both. This
@@ -87,5 +83,11 @@ set +u
 # shellcheck disable=SC1091
 source openrc admin admin
 set -u
+
+# cannot overload auth options with conflicting scopes
+if [[ "${USE_SYSTEM_SCOPE:-}" == "true" ]]; then
+    export OS_SYSTEM_SCOPE=all
+    unset OS_PROJECT_NAME OS_PROJECT_DOMAIN_ID
+fi
 
 popd
