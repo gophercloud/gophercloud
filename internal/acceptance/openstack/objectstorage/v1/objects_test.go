@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/containers"
@@ -150,7 +151,9 @@ func TestObjects(t *testing.T) {
 
 	// Download the another object that was create above.
 	downloadOpts := objects.DownloadOpts{
-		Newest: true,
+		Newest:            true,
+		IfModifiedSince:   time.Now().Add(-24 * time.Hour).In(time.FixedZone("UTC-7", -7*3600)),
+		IfUnmodifiedSince: time.Now().Add(24 * time.Hour).In(time.FixedZone("UTC+5:45", 5*3600+45*60)),
 	}
 	downloadres = objects.Download(context.TODO(), client, cName, oNames[1], downloadOpts)
 	th.AssertNoErr(t, downloadres.Err)
@@ -159,6 +162,29 @@ func TestObjects(t *testing.T) {
 
 	// Compare the two object's contents to test that the copy worked.
 	th.AssertEquals(t, string(o2Content), string(o1Content))
+
+	lastModified, err := http.ParseTime(downloadres.Header.Get("Last-Modified"))
+	th.AssertNoErr(t, err)
+	t.Run("not_modified_timezone", func(t *testing.T) {
+		opts := objects.DownloadOpts{
+			IfModifiedSince: lastModified.Add(time.Second).In(time.FixedZone("UTC-7", -7*3600)),
+		}
+		res := objects.Download(context.TODO(), client, cName, oNames[1], opts)
+		th.AssertNoErr(t, res.Err)
+		content, err := res.ExtractContent()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, 0, len(content))
+	})
+	t.Run("precondition_failed_timezone", func(t *testing.T) {
+		opts := objects.DownloadOpts{
+			IfUnmodifiedSince: lastModified.Add(-time.Second).In(time.FixedZone("UTC+5:45", 5*3600+45*60)),
+		}
+		res := objects.Download(context.TODO(), client, cName, oNames[1], opts)
+		if res.Body != nil {
+			defer res.Body.Close()
+		}
+		th.AssertEquals(t, true, gophercloud.ResponseCodeIs(res.Err, http.StatusPreconditionFailed))
+	})
 
 	// Update an object's metadata.
 	metadata := map[string]string{

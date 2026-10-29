@@ -72,6 +72,7 @@ type AuthOptions struct {
 	// is not set, a random hash is generated. Optional.
 	BodyHash *string `json:"body_hash"`
 	// Timestamp is a timestamp to calculate a V4 signature. Optional.
+	// It is converted to UTC for signing.
 	Timestamp *time.Time `json:"-"`
 	// Token is a []byte string (encoded to base64 automatically) which was
 	// signed by an EC2 secret key. Used by S3 tokens for validation only.
@@ -147,6 +148,7 @@ func EC2CredentialsBuildCanonicalHeadersV4(headers map[string]string, signedHead
 // input parameters.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L169
 func EC2CredentialsBuildSignatureKeyV4(secret, region, service string, date time.Time) []byte {
+	date = date.UTC()
 	kDate := sumHMAC256([]byte("AWS4"+secret), []byte(date.Format(EC2CredentialsDateFormatV4)))
 	kRegion := sumHMAC256(kDate, []byte(region))
 	kService := sumHMAC256(kRegion, []byte(service))
@@ -157,6 +159,7 @@ func EC2CredentialsBuildSignatureKeyV4(secret, region, service string, date time
 // based on input parameters.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L251
 func EC2CredentialsBuildStringToSignV4(opts AuthOptions, signedHeaders string, bodyHash string, date time.Time) []byte {
+	date = date.UTC()
 	scope := strings.Join([]string{
 		date.Format(EC2CredentialsDateFormatV4),
 		opts.Region,
@@ -192,6 +195,7 @@ func EC2CredentialsBuildSignatureV4(key []byte, stringToSign []byte) string {
 // EC2CredentialsBuildAuthorizationHeaderV4 builds an AWS v4 Authorization
 // header based on auth parameters, date and signature
 func EC2CredentialsBuildAuthorizationHeaderV4(opts AuthOptions, signedHeaders string, signature string, date time.Time) string {
+	date = date.UTC()
 	return fmt.Sprintf("%s Credential=%s/%s/%s/%s/%s, SignedHeaders=%s, Signature=%s",
 		EC2CredentialsAwsHmacV4,
 		opts.Access,
@@ -263,7 +267,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, err
 	// it is not a signature v2, but a signature v4
 	date := time.Now().UTC()
 	if opts.Timestamp != nil {
-		date = *opts.Timestamp
+		date = opts.Timestamp.UTC()
 	}
 	if v := c["body_hash"]; v == nil {
 		// when body_hash is not set, generate a random one

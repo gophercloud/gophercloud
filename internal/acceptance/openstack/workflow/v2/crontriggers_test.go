@@ -50,8 +50,8 @@ func TestCronTriggersList(t *testing.T) {
 			Value: "0 0 1 1 *",
 		},
 		CreatedAt: &crontriggers.ListDateFilter{
-			Filter: crontriggers.FilterGT,
-			Value:  time.Now().AddDate(-1, 0, 0),
+			Filter: crontriggers.FilterGTE,
+			Value:  trigger.CreatedAt.In(time.FixedZone("UTC+5:45", 5*3600+45*60)),
 		},
 	})
 	th.AssertNoErr(t, err)

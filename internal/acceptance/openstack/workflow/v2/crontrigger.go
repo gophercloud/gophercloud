@@ -17,7 +17,7 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 	crontriggerName := tools.RandomString("crontrigger_", 5)
 	t.Logf("Attempting to create cron trigger: %s", crontriggerName)
 
-	firstExecution := time.Now().AddDate(1, 0, 0)
+	firstExecution := time.Now().AddDate(1, 0, 0).Truncate(time.Minute).In(time.FixedZone("UTC+5:45", 5*3600+45*60))
 	createOpts := crontriggers.CreateOpts{
 		WorkflowID: workflow.ID,
 		Name:       crontriggerName,
@@ -35,6 +35,8 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 	th.AssertEquals(t, crontriggerName, crontrigger.Name)
 	th.AssertEquals(t, workflow.ID, crontrigger.WorkflowID)
 	th.AssertEquals(t, "0 0 1 1 *", crontrigger.Pattern)
+	th.AssertEquals(t, true, crontrigger.FirstExecutionTime != nil)
+	th.AssertEquals(t, firstExecution.UTC(), *crontrigger.FirstExecutionTime)
 	return crontrigger, nil
 }
 

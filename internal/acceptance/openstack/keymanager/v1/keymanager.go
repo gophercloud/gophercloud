@@ -29,7 +29,7 @@ func CreateAsymmetricOrder(t *testing.T, client *gophercloud.ServiceClient) (*or
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create order %s", name)
 
-	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC)
+	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC).In(time.FixedZone("UTC+5:45", 5*3600+45*60))
 	createOpts := orders.CreateOpts{
 		Type: orders.AsymmetricOrder,
 		Meta: orders.MetaOpts{
@@ -64,6 +64,7 @@ func CreateAsymmetricOrder(t *testing.T, client *gophercloud.ServiceClient) (*or
 
 	th.AssertEquals(t, order.Meta.Name, name)
 	th.AssertEquals(t, "asymmetric", order.Type)
+	th.AssertEquals(t, expiration.UTC(), order.Meta.Expiration)
 
 	return order, nil
 }
@@ -125,7 +126,7 @@ func CreateKeyOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Or
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create order %s", name)
 
-	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC)
+	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC).In(time.FixedZone("UTC+5:45", 5*3600+45*60))
 	createOpts := orders.CreateOpts{
 		Type: orders.KeyOrder,
 		Meta: orders.MetaOpts{
@@ -157,6 +158,7 @@ func CreateKeyOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Or
 
 	th.AssertEquals(t, order.Meta.Name, name)
 	th.AssertEquals(t, "key", order.Type)
+	th.AssertEquals(t, expiration.UTC(), order.Meta.Expiration)
 
 	return order, nil
 }
@@ -528,7 +530,7 @@ func CreateSecretWithPayload(t *testing.T, client *gophercloud.ServiceClient, pa
 
 	t.Logf("Attempting to create secret %s", secretName)
 
-	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC)
+	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC).In(time.FixedZone("UTC+5:45", 5*3600+45*60))
 	createOpts := secrets.CreateOpts{
 		Algorithm:          "aes",
 		BitLength:          256,
@@ -564,7 +566,7 @@ func CreateSecretWithPayload(t *testing.T, client *gophercloud.ServiceClient, pa
 	th.AssertEquals(t, 256, secret.BitLength)
 	th.AssertEquals(t, "cbc", secret.Mode)
 	th.AssertEquals(t, "opaque", secret.SecretType)
-	th.AssertEquals(t, secret.Expiration, expiration)
+	th.AssertEquals(t, expiration.UTC(), secret.Expiration)
 
 	return secret, nil
 }
