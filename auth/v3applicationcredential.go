@@ -43,7 +43,7 @@ func (opts V3ApplicationCredentialOpts) ToAuthBody() (map[string]map[string]any,
 	//
 	// 1. application_credential id + secret
 	// 2. application_credential name + secret + user_id
-	// 3. application_credential name + secret + username + domain_id / domain_name
+	// 3. application_credential name + secret + username + user_domain_id / user_domain_name
 	if opts.ApplicationCredentialSecret == "" {
 		return nil, gophercloud.ErrAppCredMissingSecret{}
 	}
