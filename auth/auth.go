@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
-// AuthType respresents a keystone auth plugin
+// AuthType represents a keystone auth plugin
 type AuthType string
 
 const (

@@ -26,11 +26,11 @@ func (opts *Scope) ToScopeMap() (map[string]any, error) {
 		return nil, nil
 	}
 
-	if opts.System && (opts.ProjectID != "" || opts.ProjectName != "" || opts.DomainID != "" || opts.DomainName != "" || opts.TrustID != "") {
-		return nil, gophercloud.ErrSystemScopeAndOtherScope{}
-	}
-
 	if opts.System {
+		if opts.ProjectID != "" || opts.ProjectName != "" || opts.DomainID != "" || opts.DomainName != "" || opts.TrustID != "" {
+			return nil, gophercloud.ErrSystemScopeAndOtherScope{}
+		}
+
 		return map[string]any{
 			"system": map[string]any{
 				"all": true,
@@ -38,11 +38,11 @@ func (opts *Scope) ToScopeMap() (map[string]any, error) {
 		}, nil
 	}
 
-	if opts.TrustID != "" && (opts.ProjectID != "" || opts.ProjectName != "" || opts.DomainID != "" || opts.DomainName != "" || opts.System) {
-		return nil, gophercloud.ErrTrustScopeAndOtherScope{}
-	}
-
 	if opts.TrustID != "" {
+		if opts.ProjectID != "" || opts.ProjectName != "" || opts.DomainID != "" || opts.DomainName != "" || opts.System {
+			return nil, gophercloud.ErrTrustScopeAndOtherScope{}
+		}
+
 		return map[string]any{
 			"OS-TRUST:trust": map[string]string{
 				"id": opts.TrustID,
@@ -50,49 +50,43 @@ func (opts *Scope) ToScopeMap() (map[string]any, error) {
 		}, nil
 	}
 
-	// Prioritize project ID over project name
-	if opts.ProjectID != "" {
+	if opts.ProjectID != "" || opts.ProjectName != "" {
 		// Domain scoped options cannot be set with project scoped options
 		if opts.DomainID != "" || opts.DomainName != "" {
+			var projectOption string
+			if opts.ProjectID != "" {
+				projectOption = "ProjectID"
+			} else {
+				projectOption = "ProjectName"
+			}
+
 			var domainOption string
 			if opts.DomainID != "" {
 				domainOption = "DomainID"
 			} else {
 				domainOption = "DomainName"
 			}
+
 			return nil, gophercloud.ErrProjectScopeAndDomainScope{
 				DomainOption:  domainOption,
-				ProjectOption: "ProjectID",
+				ProjectOption: projectOption,
 			}
 		}
 
-		// ProjectID
-		return map[string]any{
-			"project": map[string]any{
-				"id": &opts.ProjectID,
-			},
-		}, nil
-
-	} else if opts.ProjectName != "" {
-		// Domain scoped options cannot be set with project scoped options
-		if opts.DomainID != "" || opts.DomainName != "" {
-			var domainOption string
-			if opts.DomainID != "" {
-				domainOption = "DomainID"
-			} else {
-				domainOption = "DomainName"
-			}
-			return nil, gophercloud.ErrProjectScopeAndDomainScope{
-				DomainOption:  domainOption,
-				ProjectOption: "ProjectName",
-			}
+		// Prioritize ProjectID over ProjectName
+		if opts.ProjectID != "" {
+			return map[string]any{
+				"project": map[string]any{
+					"id": &opts.ProjectID,
+				},
+			}, nil
 		}
 
 		if opts.ProjectDomainID == "" && opts.ProjectDomainName == "" {
 			return nil, gophercloud.ErrScopeProjectDomainIDOrProjectDomainName{}
 		}
 
-		// Prioritize ProjectDomainID
+		// Prioritize ProjectDomainID over ProjectDomainName
 		var k, v string
 		if opts.ProjectDomainID != "" {
 			k = "id"
@@ -109,7 +103,7 @@ func (opts *Scope) ToScopeMap() (map[string]any, error) {
 			},
 		}, nil
 
-	} else if opts.DomainID != "" {
+	} else if opts.DomainID != "" || opts.DomainName != "" {
 		if opts.ProjectDomainID != "" || opts.ProjectDomainName != "" {
 			var projectOption string
 			if opts.ProjectDomainID != "" {
@@ -117,39 +111,36 @@ func (opts *Scope) ToScopeMap() (map[string]any, error) {
 			} else {
 				projectOption = "ProjectDomainName"
 			}
-			return nil, gophercloud.ErrProjectScopeAndDomainScope{
-				DomainOption:  "DomainID",
-				ProjectOption: projectOption,
-			}
-		}
 
-		// DomainID
-		return map[string]any{
-			"domain": map[string]any{
-				"id": &opts.DomainID,
-			},
-		}, nil
-
-	} else if opts.DomainName != "" {
-		if opts.ProjectDomainID != "" || opts.ProjectDomainName != "" {
-			var projectOption string
-			if opts.ProjectDomainID != "" {
-				projectOption = "ProjectDomainID"
+			var domainOption string
+			if opts.DomainID != "" {
+				domainOption = "DomainID"
 			} else {
-				projectOption = "ProjectDomainName"
+				domainOption = "DomainName"
 			}
+
 			return nil, gophercloud.ErrProjectScopeAndDomainScope{
-				DomainOption:  "DomainName",
+				DomainOption:  domainOption,
 				ProjectOption: projectOption,
 			}
 		}
 
-		// DomainName
+		// Prioritize DomainID over DomainName
+		if opts.DomainID != "" {
+			return map[string]any{
+				"domain": map[string]any{
+					"id": &opts.DomainID,
+				},
+			}, nil
+		}
+
+		// Fallback to DomainName
 		return map[string]any{
 			"domain": map[string]any{
 				"name": &opts.DomainName,
 			},
 		}, nil
+
 	}
 
 	return nil, nil
