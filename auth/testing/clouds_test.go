@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -136,6 +137,7 @@ func TestResolveCloudOptions(t *testing.T) {
 		auth.WithConsumerSecret("consumer-secret"),
 		auth.WithAccessKey("access-key"),
 		auth.WithAccessSecret("access-secret"),
+		auth.WithOAuth1SignatureMethod(auth.OAuth1Plaintext),
 		auth.WithAllowReauth(false),
 		auth.WithAuthMethods(auth.AuthV3Password, auth.AuthV3Totp),
 		auth.WithScope(scope),
@@ -167,6 +169,7 @@ func TestResolveCloudOptions(t *testing.T) {
 		ConsumerSecret:              "consumer-secret",
 		AccessKey:                   "access-key",
 		AccessSecret:                "access-secret",
+		OAuth1SignatureMethod:       auth.OAuth1Plaintext,
 		AllowReauth:                 &allowReauth,
 		AuthMethods:                 []auth.AuthType{auth.AuthV3Password, auth.AuthV3Totp},
 		Scope:                       scope,
@@ -256,6 +259,52 @@ func TestAuthOptionsFromCloudV3Overrides(t *testing.T) {
 		_, ok := methods[0].(auth.V3TOTPOpts)
 		th.AssertEquals(t, true, ok)
 	})
+}
+
+func TestOAuth1SignatureMethodCloudOption(t *testing.T) {
+	cloud := clouds.Cloud{AuthType: auth.AuthV3OAuth1, Auth: map[string]any{
+		"auth_url": "https://identity.example.com", "consumer_key": "key",
+		"consumer_secret": "secret", "access_key": "token", "access_secret": "token-secret",
+		"signature_method": "PLAINTEXT", // Not an OpenStack clouds.yaml auth option.
+	}}
+
+	defaultOpts, err := cloud.ToAuthOptions()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, auth.OAuth1HMACSHA1, defaultOpts.(auth.AuthOptionsV3).Auth.(auth.V3OAuth1Opts).SignatureMethod)
+
+	opts, err := cloud.ToAuthOptions(auth.WithOAuth1SignatureMethod(auth.OAuth1Plaintext))
+	th.AssertNoErr(t, err)
+	oauthOpts := opts.(auth.AuthOptionsV3).Auth.(auth.V3OAuth1Opts)
+	th.AssertEquals(t, auth.OAuth1Plaintext, oauthOpts.SignatureMethod)
+	headers, err := oauthOpts.ToAuthHeaders(auth.WithTokenURL("https://identity.example.com/v3/auth/tokens"))
+	th.AssertNoErr(t, err)
+	if !strings.Contains(headers["Authorization"].(string), `oauth_signature_method="PLAINTEXT"`) {
+		t.Fatalf("expected PLAINTEXT in OAuth1 authorization header, got %v", headers["Authorization"])
+	}
+}
+
+func TestOAuth1SignatureMethodCloudOptionMultifactor(t *testing.T) {
+	cloud := clouds.Cloud{AuthType: auth.AuthV3MultiFactor, Auth: map[string]any{
+		"auth_url": "https://identity.example.com", "auth_methods": []string{"v3password", "v3oauth1"},
+		"username": "user", "password": "password", "consumer_key": "key",
+		"consumer_secret": "secret", "access_key": "token", "access_secret": "token-secret",
+	}}
+
+	opts, err := cloud.ToAuthOptions(auth.WithOAuth1SignatureMethod(auth.OAuth1Plaintext))
+	th.AssertNoErr(t, err)
+	methods := opts.(auth.AuthOptionsV3).Auth.(auth.V3MultifactorOpts).AuthMethods
+	th.AssertEquals(t, 2, len(methods))
+	th.AssertEquals(t, auth.OAuth1Plaintext, methods[1].(auth.V3OAuth1Opts).SignatureMethod)
+}
+
+func TestOAuth1SignatureMethodCloudOptionRejectsUnknownMethod(t *testing.T) {
+	cloud := clouds.Cloud{AuthType: auth.AuthV3OAuth1, Auth: map[string]any{
+		"auth_url": "https://identity.example.com",
+	}}
+	_, err := cloud.ToAuthOptions(auth.WithOAuth1SignatureMethod("UNKNOWN"))
+	if _, ok := err.(gophercloud.ErrInvalidInput); !ok {
+		t.Fatalf("expected ErrInvalidInput for unknown OAuth1 signature method, got %v", err)
+	}
 }
 
 func TestAuthOptionsFromCloudDispatchesExplicitAuthTypes(t *testing.T) {

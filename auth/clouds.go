@@ -36,6 +36,7 @@ type CloudOptions struct {
 	ConsumerSecret              string
 	AccessKey                   string
 	AccessSecret                string
+	OAuth1SignatureMethod       OAuth1SignatureMethod
 	AllowReauth                 *bool
 	AuthMethods                 []AuthType
 	Scope                       *Scope
@@ -169,6 +170,11 @@ func WithAccessSecret(accessSecret string) CloudOption {
 	return func(co *CloudOptions) { co.AccessSecret = accessSecret }
 }
 
+// WithOAuth1SignatureMethod allows configuration of the OAuth1 signature method.
+func WithOAuth1SignatureMethod(method OAuth1SignatureMethod) CloudOption {
+	return func(co *CloudOptions) { co.OAuth1SignatureMethod = method }
+}
+
 // WithAllowReauth overrides whether credentials may be cached for
 // re-authentication (allow_reauth), which otherwise defaults to true.
 func WithAllowReauth(allowReauth bool) CloudOption {
@@ -210,7 +216,7 @@ func AuthOptionsFromCloud(c CloudSource, opts ...CloudOption) (Authenticator, er
 		return authenticator{v2: v2, v3: v3}, nil
 	}
 
-	// Fallback to identity v3 if v2 isn't set explicitly
+	// When AuthType plugin is not provided, default to identity v3 unless v2 is explicitly set
 	switch c.GetIdentityAPIVersion() {
 	case "2", "2.0":
 		return AuthOptionsFromCloudV2(c, opts...)
@@ -306,98 +312,10 @@ func AuthOptionsFromCloudV3(c CloudSource, cloudOpts ...CloudOption) (AuthOption
 
 	var opts AuthOptionsBuilderV3
 
-	switch authType {
-	case AuthV3Password, AuthPassword:
-		var o V3PasswordOpts
-		if err := decode(m, &o); err != nil {
-			return AuthOptionsV3{}, err
-		}
-		o.Scope = scope
-		opts = o
-	case AuthV3Totp:
-		var o V3TOTPOpts
-		if err := decode(m, &o); err != nil {
-			return AuthOptionsV3{}, err
-		}
-		o.Scope = scope
-		opts = o
-	case AuthV3Token, AuthToken:
-		var o V3TokenOpts
-		if err := decode(m, &o); err != nil {
-			return AuthOptionsV3{}, err
-		}
-		o.Scope = scope
-		opts = o
-	case AuthV3ApplicationCredential:
-		var o V3ApplicationCredentialOpts
-		if err := decode(m, &o); err != nil {
-			return AuthOptionsV3{}, err
-		}
-		opts = o
-	case AuthV3OAuth1:
-		o := V3OAuth1Opts{SignatureMethod: OAuth1HMACSHA1}
-		if err := decode(m, &o); err != nil {
-			return AuthOptionsV3{}, err
-		}
-		opts = o
-	case AuthV3MultiFactor:
-		var config struct {
-			AuthMethods []AuthType `json:"auth_methods"`
-		}
-		b, err := json.Marshal(m)
-		if err != nil {
-			return AuthOptionsV3{}, err
-		}
-		if err := json.Unmarshal(b, &config); err != nil {
-			return AuthOptionsV3{}, err
-		}
-		if len(config.AuthMethods) == 0 {
-			return AuthOptionsV3{}, gophercloud.ErrMissingInput{Argument: "AuthMethods"}
-		}
+	opts, err := resolveAuthOptionsV3(m, authType, scope, cloudOpts...)
 
-		o := V3MultifactorOpts{Scope: scope}
-		for _, authType := range config.AuthMethods {
-			switch authType {
-			case AuthV3Password:
-				var authOpts V3PasswordOpts
-				if err := decode(m, &authOpts); err != nil {
-					return AuthOptionsV3{}, err
-				}
-				authOpts.Scope = scope
-				o.AuthMethods = append(o.AuthMethods, authOpts)
-			case AuthV3Totp:
-				var authOpts V3TOTPOpts
-				if err := decode(m, &authOpts); err != nil {
-					return AuthOptionsV3{}, err
-				}
-				authOpts.Scope = scope
-				o.AuthMethods = append(o.AuthMethods, authOpts)
-			case AuthV3ApplicationCredential:
-				var authOpts V3ApplicationCredentialOpts
-				if err := decode(m, &authOpts); err != nil {
-					return AuthOptionsV3{}, err
-				}
-				o.AuthMethods = append(o.AuthMethods, authOpts)
-			case AuthV3Token:
-				var authOpts V3TokenOpts
-				if err := decode(m, &authOpts); err != nil {
-					return AuthOptionsV3{}, err
-				}
-				authOpts.Scope = scope
-				o.AuthMethods = append(o.AuthMethods, authOpts)
-			case AuthV3OAuth1:
-				authOpts := V3OAuth1Opts{SignatureMethod: OAuth1HMACSHA1}
-				if err := decode(m, &authOpts); err != nil {
-					return AuthOptionsV3{}, err
-				}
-				o.AuthMethods = append(o.AuthMethods, authOpts)
-			default:
-				return AuthOptionsV3{}, gophercloud.ErrUnsupportedAuthType{AuthType: string(authType)}
-			}
-		}
-		opts = o
-	default:
-		return AuthOptionsV3{}, gophercloud.ErrUnsupportedAuthType{AuthType: string(authType)}
+	if err != nil {
+		return AuthOptionsV3{}, err
 	}
 
 	ao := AuthOptionsV3{
@@ -468,4 +386,83 @@ func decode(m map[string]any, target AuthOptionsBuilder) error {
 		return err
 	}
 	return json.Unmarshal(b, target)
+}
+
+func resolveAuthOptionsV3(m map[string]any, authType AuthType, scope *Scope, cloudOpts ...CloudOption) (AuthOptionsBuilderV3, error) {
+	switch authType {
+	case AuthV3Password, AuthPassword:
+		var o V3PasswordOpts
+		if err := decode(m, &o); err != nil {
+			return nil, err
+		}
+		o.Scope = scope
+		return o, nil
+	case AuthV3Totp:
+		var o V3TOTPOpts
+		if err := decode(m, &o); err != nil {
+			return nil, err
+		}
+		o.Scope = scope
+		return o, nil
+	case AuthV3Token, AuthToken:
+		var o V3TokenOpts
+		if err := decode(m, &o); err != nil {
+			return nil, err
+		}
+		o.Scope = scope
+		return o, nil
+	case AuthV3ApplicationCredential:
+		var o V3ApplicationCredentialOpts
+		if err := decode(m, &o); err != nil {
+			return nil, err
+		}
+		return o, nil
+	case AuthV3OAuth1:
+		// OAuth1HMACSHA1 is the default and can be overridden with cloudOpts
+		o := V3OAuth1Opts{SignatureMethod: OAuth1HMACSHA1}
+		if err := decode(m, &o); err != nil {
+			return nil, err
+		}
+		signatureMethod := ResolveCloudOptions(cloudOpts...).OAuth1SignatureMethod
+		if signatureMethod != "" {
+			if signatureMethod != OAuth1HMACSHA1 && signatureMethod != OAuth1Plaintext {
+				return nil, gophercloud.ErrInvalidInput{
+					ErrMissingInput: gophercloud.ErrMissingInput{Argument: "OAuth1SignatureMethod"},
+					Value:           signatureMethod,
+				}
+			}
+			o.SignatureMethod = signatureMethod
+		}
+		return o, nil
+	case AuthV3MultiFactor:
+		var config struct {
+			AuthMethods []AuthType `json:"auth_methods"`
+		}
+		b, err := json.Marshal(m)
+		if err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(b, &config); err != nil {
+			return nil, err
+		}
+		if len(config.AuthMethods) == 0 {
+			return nil, gophercloud.ErrMissingInput{Argument: "AuthMethods"}
+		}
+
+		o := V3MultifactorOpts{Scope: scope}
+		for _, authType := range config.AuthMethods {
+			authOpts, err := resolveAuthOptionsV3(m, authType, scope, cloudOpts...)
+
+			if err != nil {
+				return nil, err
+			}
+
+			o.AuthMethods = append(o.AuthMethods, authOpts)
+		}
+
+		return o, nil
+
+	default:
+		return nil, gophercloud.ErrUnsupportedAuthType{AuthType: string(authType)}
+	}
 }
