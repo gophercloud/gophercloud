@@ -1377,3 +1377,45 @@ func HandleServerHostnameUpdateSuccessfully(t *testing.T, fakeServer th.FakeServ
 		fmt.Fprint(w, SingleServerBody)
 	})
 }
+
+// HandleServerListPaginatedSuccessfully sets up the test server to respond to
+// a server List request with two pages linked through servers_links.
+func HandleServerListPaginatedSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		if err := r.ParseForm(); err != nil {
+			t.Errorf("Failed to parse request form %v", err)
+		}
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `
+				{
+					"servers": [
+						{"id": "ef079b0c-e610-4dfb-b1aa-b49f07ac48e5", "name": "herp"},
+						{"id": "9e5476bd-a4ec-4653-93d6-72c93aa682ba", "name": "derp"}
+					],
+					"servers_links": [
+						{
+							"href": "%s/servers/detail?marker=9e5476bd-a4ec-4653-93d6-72c93aa682ba",
+							"rel": "next"
+						}
+					]
+				}
+			`, fakeServer.Server.URL)
+		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
+			fmt.Fprint(w, `
+				{
+					"servers": [
+						{"id": "9e5476bd-a4ec-4653-93d6-72c93aa682bb", "name": "merp"}
+					]
+				}
+			`)
+		default:
+			t.Fatalf("/servers/detail invoked with unexpected marker=[%s]", marker)
+		}
+	})
+}

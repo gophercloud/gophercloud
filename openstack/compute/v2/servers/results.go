@@ -436,6 +436,17 @@ func (r ServerPage) IsEmpty() (bool, error) {
 		return true, nil
 	}
 
+	if r.Err != nil {
+		return true, r.Err
+	}
+
+	// Body is already decoded by pagination.PageResultFrom; avoid re-encoding it.
+	if body, ok := r.Body.(map[string]any); ok {
+		if n, ok := decodedServerCount(body["servers"]); ok {
+			return n == 0, nil
+		}
+	}
+
 	s, err := ExtractServers(r)
 	return len(s) == 0, err
 }
@@ -443,6 +454,16 @@ func (r ServerPage) IsEmpty() (bool, error) {
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
 func (r ServerPage) NextPageURL(endpointURL string) (string, error) {
+	if r.Err != nil {
+		return "", r.Err
+	}
+
+	if body, ok := r.Body.(map[string]any); ok {
+		if links, ok := decodedServerLinks(body["servers_links"]); ok {
+			return gophercloud.ExtractNextURL(links)
+		}
+	}
+
 	var s struct {
 		Links []gophercloud.Link `json:"servers_links"`
 	}
@@ -451,6 +472,53 @@ func (r ServerPage) NextPageURL(endpointURL string) (string, error) {
 		return "", err
 	}
 	return gophercloud.ExtractNextURL(s.Links)
+}
+
+// decodedServerCount counts the servers in an already decoded body. The
+// second return is false when the value needs the generic decode path, which
+// also reports its errors.
+func decodedServerCount(raw any) (int, bool) {
+	items, ok := raw.([]any)
+	if !ok {
+		return 0, false
+	}
+
+	for _, item := range items {
+		if _, ok := item.(map[string]any); !ok {
+			return 0, false
+		}
+	}
+	return len(items), true
+}
+
+// decodedServerLinks reads servers_links from an already decoded body. The
+// second return is false when the value needs the generic decode path.
+func decodedServerLinks(raw any) ([]gophercloud.Link, bool) {
+	if raw == nil {
+		return nil, true
+	}
+
+	items, ok := raw.([]any)
+	if !ok {
+		return nil, false
+	}
+
+	links := make([]gophercloud.Link, 0, len(items))
+	for _, item := range items {
+		m, ok := item.(map[string]any)
+		if !ok {
+			return nil, false
+		}
+
+		href, hrefOK := m["href"].(string)
+		rel, relOK := m["rel"].(string)
+		if !hrefOK || !relOK {
+			return nil, false
+		}
+
+		links = append(links, gophercloud.Link{Href: href, Rel: rel})
+	}
+	return links, true
 }
 
 // ExtractServers interprets the results of a single page from a List() call,

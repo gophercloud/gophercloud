@@ -4,11 +4,13 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 	"golang.org/x/crypto/ssh"
@@ -110,4 +112,98 @@ func TestListAddressesAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	_, err = servers.ExtractAddresses(allPages)
 	th.AssertNoErr(t, err)
+}
+
+type marshalCounter struct {
+	n *int
+}
+
+func (m marshalCounter) MarshalJSON() ([]byte, error) {
+	*m.n++
+	return []byte("null"), nil
+}
+
+// ExtractInto re-encodes the whole page body before decoding it again, so
+// each MarshalJSON call on the probe is one extra pass over the page.
+func TestServerPageIsEmptyNextPageURLNoReencode(t *testing.T) {
+	reencodes := 0
+	page := servers.ServerPage{LinkedPageBase: pagination.LinkedPageBase{PageResult: pagination.PageResult{Result: gophercloud.Result{
+		Body: map[string]any{
+			"servers": []any{
+				map[string]any{"id": "ef079b0c-e610-4dfb-b1aa-b49f07ac48e5", "name": "herp"},
+			},
+			"servers_links": []any{
+				map[string]any{"href": "http://example.com/servers/detail?marker=ef079b0c-e610-4dfb-b1aa-b49f07ac48e5", "rel": "next"},
+			},
+			"probe": marshalCounter{&reencodes},
+		},
+	}}}}
+
+	empty, err := page.IsEmpty()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, empty)
+
+	next, err := page.NextPageURL("")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "http://example.com/servers/detail?marker=ef079b0c-e610-4dfb-b1aa-b49f07ac48e5", next)
+	th.AssertEquals(t, 0, reencodes)
+
+	actual, err := servers.ExtractServers(page)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(actual))
+	th.AssertEquals(t, "herp", actual[0].Name)
+	th.AssertEquals(t, 1, reencodes)
+}
+
+func serverPage(body any) servers.ServerPage {
+	return servers.ServerPage{LinkedPageBase: pagination.LinkedPageBase{PageResult: pagination.PageResult{Result: gophercloud.Result{Body: body}}}}
+}
+
+func TestServerPageIsEmptyNextPageURLErr(t *testing.T) {
+	boom := errors.New("boom")
+	page := serverPage(map[string]any{"servers": []any{}})
+	page.Err = boom
+
+	empty, err := page.IsEmpty()
+	th.AssertErrIs(t, err, boom)
+	th.AssertEquals(t, true, empty)
+
+	_, err = page.NextPageURL("")
+	th.AssertErrIs(t, err, boom)
+}
+
+func TestServerPageNextPageURLTypedLinks(t *testing.T) {
+	page := serverPage(map[string]any{
+		"servers": []any{},
+		"servers_links": []gophercloud.Link{
+			{Href: "http://example.com/servers/detail?marker=123", Rel: "next"},
+		},
+	})
+
+	next, err := page.NextPageURL("")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "http://example.com/servers/detail?marker=123", next)
+}
+
+func TestServerPageMalformedBody(t *testing.T) {
+	for name, body := range map[string]any{
+		"servers not a list":   map[string]any{"servers": "oops"},
+		"server not an object": map[string]any{"servers": []any{"oops"}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := serverPage(body).IsEmpty()
+			th.AssertErr(t, err)
+		})
+	}
+
+	for name, body := range map[string]any{
+		"links not a list":   map[string]any{"servers_links": "oops"},
+		"link not an object": map[string]any{"servers_links": []any{"oops"}},
+		"href not a string":  map[string]any{"servers_links": []any{map[string]any{"href": 1, "rel": "next"}}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := serverPage(body).NextPageURL("")
+			th.AssertErr(t, err)
+		})
+	}
 }
