@@ -102,6 +102,24 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// CreateParamResult represents the result of creating a configuration
+// parameter.
+type CreateParamResult struct {
+	gophercloud.Result
+}
+
+// UpdateParamResult represents the result of updating a configuration
+// parameter.
+type UpdateParamResult struct {
+	gophercloud.Result
+}
+
+// DeleteParamResult represents the result of deleting a configuration
+// parameter.
+type DeleteParamResult struct {
+	gophercloud.ErrResult
+}
+
 // Param represents a configuration parameter API resource.
 type Param struct {
 	Max             float64
@@ -109,6 +127,29 @@ type Param struct {
 	Name            string
 	RestartRequired bool `json:"restart_required"`
 	Type            string
+}
+
+// UnmarshalJSON supports Trove responses that may return max/min fields as
+// either max/min or max_size/min_size.
+func (r *Param) UnmarshalJSON(b []byte) error {
+	type tmp Param
+	var s struct {
+		tmp
+		MaxSize *float64 `json:"max_size"`
+		MinSize *float64 `json:"min_size"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Param(s.tmp)
+	if s.MaxSize != nil {
+		r.Max = *s.MaxSize
+	}
+	if s.MinSize != nil {
+		r.Min = *s.MinSize
+	}
+	return nil
 }
 
 // ParamPage contains a page of Param resources in a paginated collection.
@@ -143,6 +184,22 @@ type ParamResult struct {
 
 // Extract will retrieve a param from an operation result.
 func (r ParamResult) Extract() (*Param, error) {
+	var s *Param
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// Extract will retrieve created params from an operation result.
+func (r CreateParamResult) Extract() ([]Param, error) {
+	var s struct {
+		Params []Param `json:"configuration-parameters"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Params, err
+}
+
+// Extract will retrieve an updated param from an operation result.
+func (r UpdateParamResult) Extract() (*Param, error) {
 	var s *Param
 	err := r.ExtractInto(&s)
 	return s, err
