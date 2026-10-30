@@ -49,7 +49,28 @@ type BGPPeer struct {
 // BGPPeerPage is the page returned by a pager when traversing over a
 // collection of bgp peers.
 type BGPPeerPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r BGPPeerPage) ResourceKey() string {
+	return "bgp_peers"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r BGPPeerPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"bgp_peers_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a BGPPage struct is empty.

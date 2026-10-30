@@ -58,7 +58,28 @@ type BGPSpeaker struct {
 // BGPSpeakerPage is the page returned by a pager when traversing over a
 // collection of bgp speakers.
 type BGPSpeakerPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r BGPSpeakerPage) ResourceKey() string {
+	return "bgp_speakers"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r BGPSpeakerPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"bgp_speakers_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a BGPSpeakerPage struct is empty.

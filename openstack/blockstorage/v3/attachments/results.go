@@ -58,6 +58,33 @@ type AttachmentPage struct {
 	pagination.LinkedPageBase
 }
 
+// ResourceKey returns the JSON object key for the resource collection.
+func (r AttachmentPage) ResourceKey() string {
+	return "attachments"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r AttachmentPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	items, err := ExtractAttachments(r)
+	if err != nil {
+		return "", err
+	}
+	if len(items) == 0 {
+		return "", nil
+	}
+
+	currentURL := r.URL
+	q := currentURL.Query()
+	q.Set("marker", items[len(items)-1].ID)
+	q.Del("offset")
+	currentURL.RawQuery = q.Encode()
+	return currentURL.String(), nil
+}
+
 // IsEmpty returns true if a ListResult contains no Attachments.
 func (r AttachmentPage) IsEmpty() (bool, error) {
 	if r.StatusCode == 204 {

@@ -7,22 +7,22 @@ import (
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
 
-func commonList(client *gophercloud.ServiceClient, url string) pagination.Pager {
+func commonList(client *gophercloud.ServiceClient, url string, singlePage bool) pagination.Pager {
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return SecurityGroupPage{pagination.SinglePageBase(r)}
+		return SecurityGroupPage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}, singlePage: singlePage}
 	})
 }
 
 // List will return a collection of all the security groups for a particular
 // tenant.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
-	return commonList(client, rootURL(client))
+	return commonList(client, rootURL(client), false)
 }
 
 // ListByServer will return a collection of all the security groups which are
 // associated with a particular server.
 func ListByServer(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
-	return commonList(client, listByServerURL(client, serverID))
+	return commonList(client, listByServerURL(client, serverID), true)
 }
 
 // CreateOpts is the struct responsible for creating a security group.
