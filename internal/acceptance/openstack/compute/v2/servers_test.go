@@ -511,6 +511,67 @@ func TestServersTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, []string{"tag1", "tag2"}, allTags)
 
+	// Check tag filters using multiple tags to exercise comma-separated queries.
+	for _, test := range []struct {
+		name  string
+		opts  servers.ListOpts
+		found bool
+	}{
+		{
+			name:  "tags matching all",
+			opts:  servers.ListOpts{Tags: []string{"tag1", "tag2"}},
+			found: true,
+		},
+		{
+			name: "tags missing one",
+			opts: servers.ListOpts{Tags: []string{"tag1", "tag3"}},
+		},
+		{
+			name:  "tags-any matching one",
+			opts:  servers.ListOpts{TagsAny: []string{"tag1", "tag3"}},
+			found: true,
+		},
+		{
+			name: "tags-any matching none",
+			opts: servers.ListOpts{TagsAny: []string{"tag3", "tag4"}},
+		},
+		{
+			name:  "not-tags missing one",
+			opts:  servers.ListOpts{NotTags: []string{"tag1", "tag3"}},
+			found: true,
+		},
+		{
+			name: "not-tags matching all",
+			opts: servers.ListOpts{NotTags: []string{"tag1", "tag2"}},
+		},
+		{
+			name:  "not-tags-any matching none",
+			opts:  servers.ListOpts{NotTagsAny: []string{"tag3", "tag4"}},
+			found: true,
+		},
+		{
+			name: "not-tags-any matching one",
+			opts: servers.ListOpts{NotTagsAny: []string{"tag1", "tag3"}},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			allPages, err := servers.List(client, test.opts).AllPages(context.TODO())
+			th.AssertNoErr(t, err)
+
+			allServers, err := servers.ExtractServers(allPages)
+			th.AssertNoErr(t, err)
+
+			found := false
+			for _, listedServer := range allServers {
+				if listedServer.ID == server.ID {
+					found = true
+					break
+				}
+			}
+			th.AssertEquals(t, test.found, found)
+		})
+	}
+
 	// Check single tag.
 	exists, err := tags.Check(context.TODO(), client, server.ID, "tag2").Extract()
 	th.AssertNoErr(t, err)

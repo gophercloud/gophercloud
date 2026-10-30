@@ -37,10 +37,10 @@ type ListOpts struct {
 	Marker         string   `q:"marker"`
 	SortKey        string   `q:"sort_key"`
 	SortDir        string   `q:"sort_dir"`
-	Tags           string   `q:"tags"`
-	TagsAny        string   `q:"tags-any"`
-	NotTags        string   `q:"not-tags"`
-	NotTagsAny     string   `q:"not-tags-any"`
+	Tags           []string `q:"tags" format:"comma-separated"`
+	TagsAny        []string `q:"tags-any" format:"comma-separated"`
+	NotTags        []string `q:"not-tags" format:"comma-separated"`
+	NotTagsAny     []string `q:"not-tags-any" format:"comma-separated"`
 	RevisionNumber *int     `q:"revision_number"`
 	SecurityGroups []string `q:"security_groups"`
 	FixedIPs       []FixedIPOpts
