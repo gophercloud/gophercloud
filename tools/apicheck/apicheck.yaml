@@ -1,0 +1,81 @@
+# apicheck configuration: maps Gophercloud service packages onto the OpenStack
+# OpenAPI schema files shipped in the gtema/openstack repository
+# (https://github.com/gtema/openstack, under openstack_types/data).
+#
+# spec_root must point at a local checkout of that data directory. There is no
+# portable default, so it is left unset here and must be supplied per-machine via
+# -spec-root (or the APICHECK_SPEC_ROOT make variable). Clone the schemas with:
+#
+#   git clone https://github.com/gtema/openstack
+#
+# and pass <clone>/openstack_types/data.
+#
+# gophercloud_root is left unset and defaults to this repository's root (resolved
+# relative to this config file); override it with -gc-root if needed.
+spec_root: null
+gophercloud_root: null
+
+services:
+  - name: compute
+    gophercloud_pkg: openstack/compute/v2
+    spec_file: compute/v2.yaml
+    path_prefix: /v2.1
+
+  - name: network
+    gophercloud_pkg: openstack/networking/v2
+    spec_file: network/v2.yaml
+    path_prefix: /v2.0
+
+  - name: block-storage
+    gophercloud_pkg: openstack/blockstorage/v3
+    spec_file: block-storage/v3.yaml
+    path_prefix: /v3
+    # Cinder's spec lists every path twice: project-scoped
+    # (/v3/{project_id}/volumes) and project-less (/v3/volumes). Gophercloud
+    # only builds the project-less form (the project ID lives in the catalog
+    # endpoint), so collapse the leading {project_id} and dedupe the pairs.
+    strip_project_id: true
+
+  - name: identity
+    gophercloud_pkg: openstack/identity/v3
+    spec_file: identity/v3.yaml
+    path_prefix: /v3
+
+  - name: image
+    gophercloud_pkg: openstack/image/v2
+    spec_file: image/v2.yaml
+    path_prefix: /v2
+
+  - name: load-balancer
+    gophercloud_pkg: openstack/loadbalancer/v2
+    spec_file: load-balancer/v2.yaml
+    path_prefix: /v2
+
+  - name: dns
+    gophercloud_pkg: openstack/dns/v2
+    spec_file: dns/v2.yaml
+    path_prefix: /v2
+
+  - name: placement
+    gophercloud_pkg: openstack/placement/v1
+    spec_file: placement/v1.yaml
+    path_prefix: ""
+
+  - name: shared-file-system
+    gophercloud_pkg: openstack/sharedfilesystems/v2
+    spec_file: shared-file-system/v2.yaml
+    path_prefix: /v2
+
+  - name: container-infra
+    gophercloud_pkg: openstack/containerinfra/v1
+    spec_file: container-infrastructure-management/v1.yaml
+    path_prefix: /v1
+
+  - name: object-store
+    gophercloud_pkg: openstack/objectstorage/v1
+    spec_file: object-store/v1.yaml
+    # Swift's service-catalog endpoint already includes /v1/{account}, so
+    # Gophercloud's ServiceURL builds paths relative to the account. Strip the
+    # whole version+account prefix (the literal {account} matches because the
+    # prefix is removed before path params are normalised to {}).
+    path_prefix: /v1/{account}
