@@ -393,3 +393,27 @@ func TestProjectsTagsCRUD(t *testing.T) {
 	err = projects.DeleteTags(context.TODO(), client, projectMain.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestTagCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	projectMain, err := CreateProject(t, client, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, client, projectMain.ID)
+
+	err = projects.AddTag(context.TODO(), client, projectMain.ID, "Tag1").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = projects.CheckTag(context.TODO(), client, projectMain.ID, "Tag1").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = projects.DeleteTag(context.TODO(), client, projectMain.ID, "Tag1").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = projects.CheckTag(context.TODO(), client, projectMain.ID, "Tag1").ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
