@@ -20,3 +20,14 @@ const RemoteConsoleCreateResult = `
     }
 }
 `
+
+// ConsoleGetResult represents a raw server response to using the console auth token
+const ConsoleGetResult = `
+{
+    "console": {
+        "instance_uuid": "933c8963-8a83-43bb-9618-98ee8025044d",
+        "host": "10.0.2.224",
+        "port": 5900,
+        "tls_port": 5901,
+        "internal_access_path": "null"}
+}`
