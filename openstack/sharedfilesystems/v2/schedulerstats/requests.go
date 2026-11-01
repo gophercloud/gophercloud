@@ -11,20 +11,21 @@ type ListOptsBuilder interface {
 	ToPoolsListQuery() (string, error)
 }
 
-// ListOpts controls the view of data returned (e.g globally or per project).
+// ListOpts filters the storage pools returned by List.
 type ListOpts struct {
-	// The pool name for the back end.
+	// Deprecated: ProjectID is part of the service endpoint, not a query filter.
 	ProjectID string `json:"project_id,omitempty"`
 	// The pool name for the back end.
-	PoolName string `json:"pool_name"`
+	PoolName string `json:"pool_name" q:"pool"`
 	// The host name for the back end.
-	HostName string `json:"host_name"`
+	HostName string `json:"host_name" q:"host"`
 	// The name of the back end.
-	BackendName string `json:"backend_name"`
+	BackendName string `json:"backend_name" q:"backend"`
 	// The capabilities for the storage back end.
-	Capabilities string `json:"capabilities"`
+	Capabilities string `json:"capabilities" q:"capabilities"`
 	// The share type name or UUID. Allows filtering back end pools based on the extra-specs in the share type.
-	ShareType string `json:"share_type,omitempty"`
+	// This requires microversion 2.23 or later.
+	ShareType string `json:"share_type,omitempty" q:"share_type"`
 }
 
 // ToPoolsListQuery formats a ListOpts into a query string.
@@ -54,20 +55,21 @@ type ListDetailOptsBuilder interface {
 	ToPoolsListQuery() (string, error)
 }
 
-// ListOpts controls the view of data returned (e.g globally or per project).
+// ListDetailOpts filters the storage pools returned by ListDetail.
 type ListDetailOpts struct {
-	// The pool name for the back end.
+	// Deprecated: ProjectID is part of the service endpoint, not a query filter.
 	ProjectID string `json:"project_id,omitempty"`
 	// The pool name for the back end.
-	PoolName string `json:"pool_name"`
+	PoolName string `json:"pool_name" q:"pool"`
 	// The host name for the back end.
-	HostName string `json:"host_name"`
+	HostName string `json:"host_name" q:"host"`
 	// The name of the back end.
-	BackendName string `json:"backend_name"`
+	BackendName string `json:"backend_name" q:"backend"`
 	// The capabilities for the storage back end.
-	Capabilities string `json:"capabilities"`
+	Capabilities string `json:"capabilities" q:"capabilities"`
 	// The share type name or UUID. Allows filtering back end pools based on the extra-specs in the share type.
-	ShareType string `json:"share_type,omitempty"`
+	// This requires microversion 2.23 or later.
+	ShareType string `json:"share_type,omitempty" q:"share_type"`
 }
 
 // ToPoolsListQuery formats a ListDetailOpts into a query string.
