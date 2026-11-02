@@ -1,6 +1,10 @@
 package attributestags
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"net/url"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 const (
 	tagsPath = "tags"
@@ -19,13 +23,13 @@ func deleteAllURL(c *gophercloud.ServiceClient, r_type string, id string) string
 }
 
 func addURL(c *gophercloud.ServiceClient, r_type string, id string, tag string) string {
-	return c.ServiceURL(r_type, id, tagsPath, tag)
+	return c.ServiceURL(r_type, id, tagsPath, url.PathEscape(tag))
 }
 
 func deleteURL(c *gophercloud.ServiceClient, r_type string, id string, tag string) string {
-	return c.ServiceURL(r_type, id, tagsPath, tag)
+	return c.ServiceURL(r_type, id, tagsPath, url.PathEscape(tag))
 }
 
 func confirmURL(c *gophercloud.ServiceClient, r_type string, id string, tag string) string {
-	return c.ServiceURL(r_type, id, tagsPath, tag)
+	return c.ServiceURL(r_type, id, tagsPath, url.PathEscape(tag))
 }
