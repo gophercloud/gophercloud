@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/nodes"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/portgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/ports"
+	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/runbooks"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -262,4 +264,43 @@ func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Por
 
 	t.Logf("Deleted port: %s", port.UUID)
 
+}
+
+// CreateRunbook creates a runbook with a random trait-style name, which
+// every microversion from 1.92 accepts.
+func CreateRunbook(t *testing.T, client *gophercloud.ServiceClient) (*runbooks.Runbook, error) {
+	name := strings.ToUpper(tools.RandomString("CUSTOM_ACPTTEST_", 8))
+	t.Logf("Attempting to create bare metal runbook: %s", name)
+
+	runbook, err := runbooks.Create(context.TODO(), client, runbooks.CreateOpts{
+		Name:  name,
+		Extra: map[string]any{"purpose": "acceptance"},
+		Steps: []runbooks.Step{
+			{
+				Interface: nodes.InterfaceBIOS,
+				Step:      "apply_configuration",
+				Args:      map[string]any{"settings": []any{}},
+				Order:     0,
+			},
+		},
+	}).Extract()
+	if err != nil {
+		return runbook, err
+	}
+
+	th.AssertEquals(t, name, runbook.Name)
+	th.AssertEquals(t, 1, len(runbook.Steps))
+	th.AssertEquals(t, "apply_configuration", runbook.Steps[0].Step)
+
+	return runbook, nil
+}
+
+// DeleteRunbook deletes a runbook and fails the test if it cannot.
+func DeleteRunbook(t *testing.T, client *gophercloud.ServiceClient, runbook *runbooks.Runbook) {
+	err := runbooks.Delete(context.TODO(), client, runbook.UUID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete runbook %s: %s", runbook.UUID, err)
+	}
+
+	t.Logf("Deleted runbook: %s", runbook.UUID)
 }
