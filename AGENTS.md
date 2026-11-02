@@ -120,6 +120,13 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 - **Optional request fields:** Always use `omitempty` JSON tag
 - **Required fields:** No `omitempty` tag
 
+### Timestamps & Timezones
+
+- Verify timestamp formats and timezone semantics against the relevant OpenStack API documentation or implementation before adding serialization.
+- For fields representing an instant, accept non-UTC `time.Time` inputs without shifting that instant. If the API requires UTC clock values without an offset or with a literal `Z`, use `timestamp.UTC().Format(layout)`. Formatting alone does not convert the timezone.
+- Follow the API's requirements for offset-bearing timestamps and calendar dates; do not apply blanket UTC conversion.
+- Preserve API-specific precision and nil/zero handling. Do not mutate caller-owned timestamps or change shared layout constants to fix a service-specific serialization issue.
+
 ### Error Handling
 
 - Use `gophercloud.Result` and `gophercloud.ErrResult` types
