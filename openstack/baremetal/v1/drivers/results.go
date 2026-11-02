@@ -149,17 +149,14 @@ func (r DriverPage) IsEmpty() (bool, error) {
 	return len(s) == 0, err
 }
 
-// NextPageURL uses the response's embedded link reference to navigate to the
-// next page of results.
+// NextPageURL returns the URL of the next page, which Ironic returns as the
+// top-level "next" field when more results are available.
 func (r DriverPage) NextPageURL() (string, error) {
 	var s struct {
-		Links []gophercloud.Link `json:"drivers_links"`
+		Next string `json:"next"`
 	}
 	err := r.ExtractInto(&s)
-	if err != nil {
-		return "", err
-	}
-	return gophercloud.ExtractNextURL(s.Links)
+	return s.Next, err
 }
 
 // ExtractDrivers interprets the results of a single page from ListDrivers()
