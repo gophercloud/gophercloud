@@ -329,3 +329,30 @@ func TestNodesVirtualInterfaces(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, len(vifs))
 }
+
+func TestNodesPagination(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.50"
+
+	var created []string
+	for range 3 {
+		node, err := CreateFakeNode(t, client)
+		th.AssertNoErr(t, err)
+		t.Cleanup(func() { DeleteNode(t, client, node) })
+		created = append(created, node.UUID)
+	}
+
+	CheckPagination(t, func(limit int) pagination.Pager {
+		return nodes.List(client, nodes.ListOpts{Limit: limit})
+	}, func(page pagination.Page) ([]string, error) {
+		list, err := nodes.ExtractNodes(page)
+		var ids []string
+		for _, n := range list {
+			ids = append(ids, n.UUID)
+		}
+		return ids, err
+	}, created)
+}
