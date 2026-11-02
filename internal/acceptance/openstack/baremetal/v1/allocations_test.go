@@ -43,3 +43,30 @@ func TestAllocationsCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertTrue(t, found)
 }
+
+func TestAllocationsPagination(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.52"
+
+	var created []string
+	for range 3 {
+		allocation, err := CreateAllocation(t, client)
+		th.AssertNoErr(t, err)
+		t.Cleanup(func() { DeleteAllocation(t, client, allocation) })
+		created = append(created, allocation.UUID)
+	}
+
+	CheckPagination(t, func(limit int) pagination.Pager {
+		return allocations.List(client, allocations.ListOpts{Limit: limit})
+	}, func(page pagination.Page) ([]string, error) {
+		list, err := allocations.ExtractAllocations(page)
+		var ids []string
+		for _, a := range list {
+			ids = append(ids, a.UUID)
+		}
+		return ids, err
+	}, created)
+}

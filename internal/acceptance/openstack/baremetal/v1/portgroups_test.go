@@ -48,3 +48,34 @@ func TestPortGroupsCreateDestroy(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 }
+
+func TestPortGroupsPagination(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.50"
+
+	node, err := CreateFakeNode(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node)
+
+	var created []string
+	for range 3 {
+		portgroup, err := CreatePortGroup(t, client, node)
+		th.AssertNoErr(t, err)
+		t.Cleanup(func() { DeletePortGroup(t, client, portgroup) })
+		created = append(created, portgroup.UUID)
+	}
+
+	CheckPagination(t, func(limit int) pagination.Pager {
+		return portgroups.List(client, portgroups.ListOpts{Limit: limit})
+	}, func(page pagination.Page) ([]string, error) {
+		list, err := portgroups.ExtractPortGroups(page)
+		var ids []string
+		for _, pg := range list {
+			ids = append(ids, pg.UUID)
+		}
+		return ids, err
+	}, created)
+}
