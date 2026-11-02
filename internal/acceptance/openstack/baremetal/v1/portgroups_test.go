@@ -58,7 +58,8 @@ func TestPortGroupsPagination(t *testing.T) {
 
 	node, err := CreateFakeNode(t, client)
 	th.AssertNoErr(t, err)
-	defer DeleteNode(t, client, node)
+	// Cleanups run last-in first-out, so the node goes after its ports.
+	t.Cleanup(func() { DeleteNode(t, client, node) })
 
 	var created []string
 	for range 3 {
