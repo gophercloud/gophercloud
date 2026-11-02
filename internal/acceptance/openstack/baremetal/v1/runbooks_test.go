@@ -47,11 +47,14 @@ func TestRunbooksCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, runbook.UUID, byName.UUID)
 
+	// Every runbook microversion can patch name and extra; disable_ramdisk
+	// is only patchable from Ironic 2026.2.
+	newName := runbook.Name + "_RENAMED"
 	updated, err := runbooks.Update(context.TODO(), client, runbook.UUID, runbooks.UpdateOpts{
 		runbooks.UpdateOperation{
 			Op:    runbooks.ReplaceOp,
-			Path:  "/disable_ramdisk",
-			Value: true,
+			Path:  "/name",
+			Value: newName,
 		},
 		runbooks.UpdateOperation{
 			Op:   runbooks.RemoveOp,
@@ -59,7 +62,7 @@ func TestRunbooksCRUD(t *testing.T) {
 		},
 	}).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, updated.DisableRamdisk)
+	th.AssertEquals(t, newName, updated.Name)
 	th.AssertEquals(t, 0, len(updated.Extra))
 }
 
