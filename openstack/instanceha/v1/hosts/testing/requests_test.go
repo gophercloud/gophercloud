@@ -2,18 +2,31 @@ package hosts_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/hosts"
+	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/segments"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-const fixture = `{"id":7,"uuid":"host","name":"compute-1","type":"COMPUTE_HOST","control_attributes":"SSH","reserved":true,"on_maintenance":false,"failover_segment_id":"segment"}`
+const fixture = `{
+    "id":7,"uuid":"host","name":"compute-1","type":"COMPUTE_HOST",
+    "control_attributes":"SSH","reserved":true,"on_maintenance":false,
+    "failover_segment_id":"segment","deleted":false,
+    "created_at":"2026-10-01T12:30:00.123456",
+    "updated_at":"2026-10-02T12:30:00.654321","deleted_at":null,
+    "failover_segment":{
+        "id":3,"uuid":"segment","name":"segment-1","description":"test segment",
+        "service_type":"COMPUTE","recovery_method":"auto","enabled":true,
+        "created_at":"2026-10-01T12:30:00.123456","updated_at":null,
+        "deleted_at":null,"deleted":false
+    }
+}`
 
 func check(t *testing.T, actual, expected string) {
 	t.Helper()
@@ -65,9 +78,18 @@ func TestListAndGet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var expected hosts.Host
-	if err := json.Unmarshal([]byte(fixture), &expected); err != nil {
-		t.Fatal(err)
+	enabled := true
+	created := gophercloud.JSONRFC3339MilliNoZ(time.Date(2026, 10, 1, 12, 30, 0, 123456000, time.UTC))
+	updated := gophercloud.JSONRFC3339MilliNoZ(time.Date(2026, 10, 2, 12, 30, 0, 654321000, time.UTC))
+	expected := hosts.Host{
+		ID: 7, UUID: "host", Name: "compute-1", Type: "COMPUTE_HOST",
+		ControlAttributes: "SSH", Reserved: true, OnMaintenance: false,
+		FailoverSegmentID: "segment", CreatedAt: created, UpdatedAt: updated,
+		FailoverSegment: &segments.Segment{
+			ID: 3, UUID: "segment", Name: "segment-1", Description: "test segment",
+			ServiceType: "COMPUTE", RecoveryMethod: "auto", Enabled: &enabled,
+			CreatedAt: created,
+		},
 	}
 	if len(items) != 1 || !reflect.DeepEqual(items[0], expected) {
 		t.Fatalf("unexpected resources: %#v", items)
@@ -109,6 +131,51 @@ func TestListErrors(t *testing.T) {
 			_, err := hosts.List(client, "segment", nil).AllPages(context.Background())
 			if (err != nil) != tc.wantError {
 				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
+func TestGetTimestampsAndNullableFields(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		body      string
+		wantError bool
+	}{
+		{"null fields", `{"host":{"created_at":null,"updated_at":null,"deleted_at":null,"failover_segment":null}}`, false},
+		{"deleted host", `{"host":{"deleted":true,"deleted_at":"2026-10-03T12:30:00.123456","failover_segment":{"deleted":true,"deleted_at":"2026-10-03T12:30:00.123456"}}}`, false},
+		{"invalid host timestamp", `{"host":{"created_at":"invalid"}}`, true},
+		{"invalid segment timestamp", `{"host":{"failover_segment":{"updated_at":"invalid"}}}`, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			server := th.SetupHTTP()
+			defer server.Teardown()
+			server.Mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Fprint(w, tc.body)
+			})
+			client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint()}
+			host, err := hosts.Get(context.Background(), client, "segment", "host").Extract()
+			if tc.wantError {
+				if err == nil {
+					t.Fatal("expected a timestamp decoding error")
+				}
+				return
+			}
+			th.AssertNoErr(t, err)
+			if tc.name == "null fields" {
+				if host.FailoverSegment != nil || !time.Time(host.CreatedAt).IsZero() || !time.Time(host.UpdatedAt).IsZero() || !time.Time(host.DeletedAt).IsZero() {
+					t.Fatalf("unexpected nullable fields: %#v", host)
+				}
+			} else {
+				expected := time.Date(2026, 10, 3, 12, 30, 0, 123456000, time.UTC)
+				th.AssertEquals(t, true, host.Deleted)
+				th.AssertEquals(t, expected, time.Time(host.DeletedAt))
+				if host.FailoverSegment == nil {
+					t.Fatal("missing embedded segment")
+				}
+				th.AssertEquals(t, true, host.FailoverSegment.Deleted)
+				th.AssertEquals(t, expected, time.Time(host.FailoverSegment.DeletedAt))
 			}
 		})
 	}
