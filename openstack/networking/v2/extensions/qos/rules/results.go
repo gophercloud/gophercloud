@@ -68,6 +68,27 @@ type BandwidthLimitRulePage struct {
 	pagination.LinkedPageBase
 }
 
+// ResourceKey returns the JSON object key for the resource collection.
+func (r BandwidthLimitRulePage) ResourceKey() string {
+	return "bandwidth_limit_rules"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r BandwidthLimitRulePage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"bandwidth_limit_rules_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
 // IsEmpty checks whether a BandwidthLimitRulePage is empty.
 func (r BandwidthLimitRulePage) IsEmpty() (bool, error) {
 	if r.StatusCode == 204 {
@@ -142,6 +163,27 @@ type DSCPMarkingRule struct {
 // DSCPMarkingRulePage stores a single page of DSCPMarkingRules from a List() API call.
 type DSCPMarkingRulePage struct {
 	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r DSCPMarkingRulePage) ResourceKey() string {
+	return "dscp_marking_rules"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r DSCPMarkingRulePage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"dscp_marking_rules_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a DSCPMarkingRulePage is empty.
@@ -221,6 +263,27 @@ type MinimumBandwidthRule struct {
 // MinimumBandwidthRulePage stores a single page of MinimumBandwidthRules from a List() API call.
 type MinimumBandwidthRulePage struct {
 	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r MinimumBandwidthRulePage) ResourceKey() string {
+	return "minimum_bandwidth_rules"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r MinimumBandwidthRulePage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"minimum_bandwidth_rules_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a MinimumBandwidthRulePage is empty.

@@ -64,10 +64,36 @@ func (i *Migration) UnmarshalJSON(b []byte) error {
 }
 
 type MigrationPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r MigrationPage) ResourceKey() string {
+	return "migrations"
+}
+
+// NextPageURL returns the URL for the next page of results.
+// Pagination links are available from microversion 2.59.
+func (r MigrationPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"migrations_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 func (r MigrationPage) IsEmpty() (bool, error) {
+	if r.StatusCode == 204 {
+		return true, nil
+	}
+
 	migrations, err := ExtractMigrations(r)
 	return len(migrations) == 0, err
 }

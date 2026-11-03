@@ -37,7 +37,28 @@ type AdoptResult struct {
 
 // StackPage is a pagination.Pager that is returned from a call to the List function.
 type StackPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r StackPage) ResourceKey() string {
+	return "stacks"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r StackPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty returns true if a ListResult contains no Stacks.

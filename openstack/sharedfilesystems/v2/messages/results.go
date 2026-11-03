@@ -2,6 +2,7 @@ package messages
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -60,7 +61,41 @@ type commonResult struct {
 
 // MessagePage is a pagination.pager that is returned from a call to the List function.
 type MessagePage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r MessagePage) ResourceKey() string {
+	return "messages"
+}
+
+// NextPageURL returns the URL for the next page of results.
+// The API uses offsets even when its next link contains a marker.
+func (r MessagePage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	items, err := ExtractMessages(r)
+	if err != nil {
+		return "", err
+	}
+	if len(items) == 0 {
+		return "", nil
+	}
+
+	currentURL := r.URL
+	q := currentURL.Query()
+	offset := 0
+	if value := q.Get("offset"); value != "" {
+		offset, err = strconv.Atoi(value)
+		if err != nil {
+			return "", err
+		}
+	}
+	q.Set("offset", strconv.Itoa(offset+len(items)))
+	currentURL.RawQuery = q.Encode()
+	return currentURL.String(), nil
 }
 
 // IsEmpty returns true if a ListResult contains no Messages.

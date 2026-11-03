@@ -105,7 +105,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return SnapshotPage{pagination.SinglePageBase(r)}
+		return SnapshotPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 

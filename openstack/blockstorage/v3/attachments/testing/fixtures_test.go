@@ -41,7 +41,7 @@ func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `
+			fmt.Fprint(w, `
   {
     "attachments": [
         {
@@ -54,17 +54,11 @@ func MockListResponse(t *testing.T, fakeServer th.FakeServer) {
             "volume_id": "289da7f8-6440-407c-9fb4-7db01ec49164",
             "id": "05551600-a936-4d4a-ba42-79a037c1-c91a"
         }
-    ],
-	"attachments_links": [
-	{
-		"href": "%s/attachments/detail?marker=1",
-		"rel": "next"
-	}
     ]
 }
-  `, fakeServer.Server.URL)
-		case "1":
-			fmt.Fprint(w, `{"volumes": []}`)
+  `)
+		case "05551600-a936-4d4a-ba42-79a037c1-c91a":
+			fmt.Fprint(w, `{"attachments": []}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}

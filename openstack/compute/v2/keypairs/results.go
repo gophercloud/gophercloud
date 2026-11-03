@@ -32,11 +32,33 @@ type KeyPair struct {
 	Type string `json:"type"`
 }
 
-// KeyPairPage stores a single page of all KeyPair results from a List call.
+// KeyPairPage stores a single page of KeyPair results from a List call.
 // Use the ExtractKeyPairs function to convert the results to a slice of
 // KeyPairs.
 type KeyPairPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r KeyPairPage) ResourceKey() string {
+	return "keypairs"
+}
+
+// NextPageURL returns the URL for the next page of results.
+// Pagination links are available from microversion 2.35.
+func (r KeyPairPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"keypairs_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty determines whether or not a KeyPairPage is empty.
