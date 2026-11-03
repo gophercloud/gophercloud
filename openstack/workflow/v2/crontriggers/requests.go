@@ -42,6 +42,7 @@ type CreateOpts struct {
 	WorkflowInput map[string]any `json:"workflow_input,omitempty"`
 
 	// FirstExecutionTime defines the first execution time of the trigger.
+	// It is serialized in UTC with minute precision.
 	FirstExecutionTime *time.Time `json:"-"`
 }
 
@@ -53,7 +54,7 @@ func (opts CreateOpts) ToCronTriggerCreateMap() (map[string]any, error) {
 	}
 
 	if opts.FirstExecutionTime != nil {
-		b["first_execution_time"] = opts.FirstExecutionTime.Format("2006-01-02 15:04")
+		b["first_execution_time"] = opts.FirstExecutionTime.UTC().Format("2006-01-02 15:04")
 	}
 
 	return b, nil
@@ -151,14 +152,14 @@ func (l ListFilter) String() string {
 }
 
 // ListDateFilter allows to filter date parameters with different filters.
-// Empty value for Filter checks for equality.
+// Empty value for Filter checks for equality. Values are serialized in UTC.
 type ListDateFilter struct {
 	Filter FilterType
 	Value  time.Time
 }
 
 func (l ListDateFilter) String() string {
-	v := l.Value.Format(gophercloud.RFC3339ZNoTNoZ)
+	v := l.Value.UTC().Format(gophercloud.RFC3339ZNoTNoZ)
 	if l.Filter != "" {
 		return fmt.Sprintf("%s:%s", l.Filter, v)
 	}

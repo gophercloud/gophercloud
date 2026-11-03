@@ -73,6 +73,7 @@ type CreateOpts struct {
 	// A list of access rules objects.
 	AccessRules []AccessRule `json:"access_rules,omitempty"`
 	// The expiration time of the application credential, if one was specified.
+	// It is serialized in UTC.
 	ExpiresAt *time.Time `json:"-"`
 }
 
@@ -86,7 +87,7 @@ func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]any, error
 
 	if opts.ExpiresAt != nil {
 		if v, ok := b[parent].(map[string]any); ok {
-			v["expires_at"] = opts.ExpiresAt.Format(gophercloud.RFC3339MilliNoZ)
+			v["expires_at"] = opts.ExpiresAt.UTC().Format(gophercloud.RFC3339MilliNoZ)
 		}
 	}
 
