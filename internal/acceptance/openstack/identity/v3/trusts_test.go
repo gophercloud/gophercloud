@@ -89,7 +89,7 @@ func TestTrustCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteUser(t, client, trusteeUser.ID)
 
-	expiresAt := time.Now().Add(time.Minute).Truncate(time.Second).UTC()
+	expiresAt := time.Now().Add(time.Minute).Truncate(time.Second).In(time.FixedZone("UTC+5:45", 5*3600+45*60))
 	// Create a trust.
 	trust, err := CreateTrust(t, client, trusts.CreateOpts{
 		TrusteeUserID: trusteeUser.ID,
@@ -111,7 +111,7 @@ func TestTrustCRUD(t *testing.T) {
 	// Get trust
 	p, err := trusts.Get(context.TODO(), client, trust.ID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, p.ExpiresAt, expiresAt)
+	th.AssertEquals(t, expiresAt.UTC(), p.ExpiresAt)
 	th.AssertTrue(t, p.DeletedAt.IsZero())
 	th.AssertEquals(t, trusteeUser.ID, p.TrusteeUserID)
 	th.AssertEquals(t, adminUser.ID, p.TrustorUserID)

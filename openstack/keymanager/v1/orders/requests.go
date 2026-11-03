@@ -73,7 +73,7 @@ type MetaOpts struct {
 	// BitLength is the bit length of the secret.
 	BitLength int `json:"bit_length"`
 
-	// Expiration is the expiration date of the order.
+	// Expiration is the expiration date of the order. It is serialized in UTC.
 	Expiration *time.Time `json:"-"`
 
 	// Mode is the mode of the secret.
@@ -104,7 +104,7 @@ func (opts CreateOpts) ToOrderCreateMap() (map[string]any, error) {
 
 	if opts.Meta.Expiration != nil {
 		meta := b["meta"].(map[string]any)
-		meta["expiration"] = opts.Meta.Expiration.Format(gophercloud.RFC3339NoZ)
+		meta["expiration"] = opts.Meta.Expiration.UTC().Format(gophercloud.RFC3339NoZ)
 		b["meta"] = meta
 	}
 

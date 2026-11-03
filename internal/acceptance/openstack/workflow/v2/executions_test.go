@@ -4,6 +4,7 @@ package v2
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -44,7 +45,7 @@ func TestExecutionsList(t *testing.T) {
 		},
 		CreatedAt: &executions.ListDateFilter{
 			Filter: executions.FilterGTE,
-			Value:  execution.CreatedAt,
+			Value:  execution.CreatedAt.In(time.FixedZone("UTC+5:45", 5*3600+45*60)),
 		},
 		Input: execution.Input,
 	})
