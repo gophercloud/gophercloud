@@ -705,3 +705,45 @@ func TestDeletePacketRateLimitRule(t *testing.T) {
 	res := rules.DeletePacketRateLimitRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241")
 	th.AssertNoErr(t, res.Err)
 }
+
+// TestMinimumPacketRateRulesListQueryZeroValue verifies that a zero value for
+// the MinKPps filter is included in the query string. Because the Neutron API
+// accepts min_kpps in the range [0, max], MinKPps is a pointer so that an
+// explicit 0 can be distinguished from "unset".
+func TestMinimumPacketRateRulesListQueryZeroValue(t *testing.T) {
+	zero := 0
+
+	// Explicit zero must be serialized.
+	q, err := rules.MinimumPacketRateRulesListOpts{MinKPps: &zero}.ToMinimumPacketRateRulesListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "?min_kpps=0", q)
+
+	// Unset (nil) must be omitted.
+	q, err = rules.MinimumPacketRateRulesListOpts{}.ToMinimumPacketRateRulesListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", q)
+
+	// A non-zero value must be serialized.
+	three := 3000
+	q, err = rules.MinimumPacketRateRulesListOpts{MinKPps: &three}.ToMinimumPacketRateRulesListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "?min_kpps=3000", q)
+}
+
+// TestPacketRateLimitRulesListQueryZeroValue verifies that zero values for the
+// MaxKPps and MaxBurstKPps filters are included in the query string. Both
+// accept 0 in the Neutron API (max_burst_kpps even defaults to 0), so they are
+// pointers to distinguish an explicit 0 from "unset".
+func TestPacketRateLimitRulesListQueryZeroValue(t *testing.T) {
+	zero := 0
+
+	// Explicit zeros must be serialized.
+	q, err := rules.PacketRateLimitRulesListOpts{MaxKPps: &zero, MaxBurstKPps: &zero}.ToPacketRateLimitRulesListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "?max_burst_kpps=0&max_kpps=0", q)
+
+	// Unset (nil) must be omitted.
+	q, err = rules.PacketRateLimitRulesListOpts{}.ToPacketRateLimitRulesListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", q)
+}
