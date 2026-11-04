@@ -420,7 +420,7 @@ type MinimumPacketRateRulesListOptsBuilder interface {
 // Marker and Limit are used for the pagination.
 type MinimumPacketRateRulesListOpts struct {
 	ID         string `q:"id"`
-	MinKPps    int    `q:"min_kpps"`
+	MinKPps    *int   `q:"min_kpps"`
 	Direction  string `q:"direction"`
 	Limit      int    `q:"limit"`
 	Marker     string `q:"marker"`
@@ -551,8 +551,8 @@ type PacketRateLimitRulesListOptsBuilder interface {
 // Marker and Limit are used for the pagination.
 type PacketRateLimitRulesListOpts struct {
 	ID           string `q:"id"`
-	MaxKPps      int    `q:"max_kpps"`
-	MaxBurstKPps int    `q:"max_burst_kpps"`
+	MaxKPps      *int   `q:"max_kpps"`
+	MaxBurstKPps *int   `q:"max_burst_kpps"`
 	Direction    string `q:"direction"`
 	Limit        int    `q:"limit"`
 	Marker       string `q:"marker"`
