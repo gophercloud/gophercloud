@@ -28,6 +28,7 @@ func TestStacksCRUD(t *testing.T) {
 	updateOpts := stacks.UpdateOpts{
 		TemplateOpts: template,
 		Timeout:      20,
+		Tags:         []string{"tag1", "tag2"},
 	}
 
 	err = stacks.Update(context.TODO(), client, createdStack.Name, createdStack.ID, updateOpts).ExtractErr()
@@ -49,4 +50,65 @@ func TestStacksCRUD(t *testing.T) {
 	}
 
 	th.AssertTrue(t, found)
+
+	// Check tag filters using multiple tags to exercise comma-separated queries.
+	for _, test := range []struct {
+		name  string
+		opts  stacks.ListOpts
+		found bool
+	}{
+		{
+			name:  "tags matching all",
+			opts:  stacks.ListOpts{Tags: []string{"tag1", "tag2"}},
+			found: true,
+		},
+		{
+			name: "tags missing one",
+			opts: stacks.ListOpts{Tags: []string{"tag1", "tag3"}},
+		},
+		{
+			name:  "tags-any matching one",
+			opts:  stacks.ListOpts{TagsAny: []string{"tag1", "tag3"}},
+			found: true,
+		},
+		{
+			name: "tags-any matching none",
+			opts: stacks.ListOpts{TagsAny: []string{"tag3", "tag4"}},
+		},
+		{
+			name:  "not-tags missing one",
+			opts:  stacks.ListOpts{NotTags: []string{"tag1", "tag3"}},
+			found: true,
+		},
+		{
+			name: "not-tags matching all",
+			opts: stacks.ListOpts{NotTags: []string{"tag1", "tag2"}},
+		},
+		{
+			name:  "not-tags-any matching none",
+			opts:  stacks.ListOpts{NotTagsAny: []string{"tag3", "tag4"}},
+			found: true,
+		},
+		{
+			name: "not-tags-any matching one",
+			opts: stacks.ListOpts{NotTagsAny: []string{"tag1", "tag3"}},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			allPages, err := stacks.List(client, test.opts).AllPages(context.TODO())
+			th.AssertNoErr(t, err)
+
+			allStacks, err := stacks.ExtractStacks(allPages)
+			th.AssertNoErr(t, err)
+
+			found := false
+			for _, stack := range allStacks {
+				if stack.ID == createdStack.ID {
+					found = true
+					break
+				}
+			}
+			th.AssertEquals(t, test.found, found)
+		})
+	}
 }

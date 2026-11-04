@@ -255,16 +255,16 @@ type ListOpts struct {
 	ShowHidden bool `q:"show_hidden"`
 
 	// Tags lists stacks that contain one or more simple string tags.
-	Tags string `q:"tags"`
+	Tags []string `q:"tags" format:"comma-separated"`
 
 	// TagsAny lists stacks that contain one or more simple string tags.
-	TagsAny string `q:"tags_any"`
+	TagsAny []string `q:"tags_any" format:"comma-separated"`
 
 	// NotTags lists stacks that do not contain one or more simple string tags.
-	NotTags string `q:"not_tags"`
+	NotTags []string `q:"not_tags" format:"comma-separated"`
 
 	// NotTagsAny lists stacks that do not contain one or more simple string tags.
-	NotTagsAny string `q:"not_tags_any"`
+	NotTagsAny []string `q:"not_tags_any" format:"comma-separated"`
 }
 
 // ToStackListQuery formats a ListOpts into a query string.
