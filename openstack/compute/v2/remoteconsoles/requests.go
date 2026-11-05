@@ -84,3 +84,14 @@ func Create(ctx context.Context, client *gophercloud.ServiceClient, serverID str
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Get requests console connection information, using the console authentication token from a specified server.
+func Get(ctx context.Context, client *gophercloud.ServiceClient, console_token string) (r GetResult) {
+	url := getConsoleURL(client, console_token)
+
+	resp, err := client.Get(ctx, url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
