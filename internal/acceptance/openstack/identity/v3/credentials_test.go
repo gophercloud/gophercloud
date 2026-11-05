@@ -5,8 +5,12 @@ package v3
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"maps"
+	"slices"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -35,7 +39,27 @@ func TestCredentialsCRUD(t *testing.T) {
 	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
+	authData, err := ao.Auth.ToAuthBody()
+	th.AssertNoErr(t, err)
+	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
+	for method, body := range authData {
+		identity[method] = body
+	}
+	authBody := map[string]any{"identity": identity}
+	scope, err := ao.Auth.ToAuthScope()
+	th.AssertNoErr(t, err)
+	if scope != nil {
+		authBody["scope"] = scope
+	}
+	authHeaders, err := ao.Auth.ToAuthHeaders()
+	th.AssertNoErr(t, err)
+	headers := make(map[string]string, len(authHeaders))
+	for name, value := range authHeaders {
+		headers[name] = fmt.Sprint(value)
+	}
+	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
+
+	token, err := tokens.Create(context.TODO(), client, request).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
@@ -99,7 +123,27 @@ func TestCredentialsValidateS3(t *testing.T) {
 	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
+	authData, err := ao.Auth.ToAuthBody()
+	th.AssertNoErr(t, err)
+	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
+	for method, body := range authData {
+		identity[method] = body
+	}
+	authBody := map[string]any{"identity": identity}
+	scope, err := ao.Auth.ToAuthScope()
+	th.AssertNoErr(t, err)
+	if scope != nil {
+		authBody["scope"] = scope
+	}
+	authHeaders, err := ao.Auth.ToAuthHeaders()
+	th.AssertNoErr(t, err)
+	headers := make(map[string]string, len(authHeaders))
+	for name, value := range authHeaders {
+		headers[name] = fmt.Sprint(value)
+	}
+	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
+
+	token, err := tokens.Create(context.TODO(), client, request).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 
@@ -139,7 +183,15 @@ func TestCredentialsValidateS3(t *testing.T) {
 	}
 
 	// Validate a credential
-	token, err = ec2tokens.ValidateS3Token(context.TODO(), client, &opts).Extract()
+	credentialsBody, err := opts.ToAuthBody()
+	th.AssertNoErr(t, err)
+	credentials := credentialsBody["credentials"]
+	for _, field := range []string{"body_hash", "headers", "host", "params", "path", "verb"} {
+		delete(credentials, field)
+	}
+	token, err = ec2tokens.ValidateS3Token(context.TODO(), client, gophercloud.RawRequest{
+		Body: map[string]any{"credentials": credentials},
+	}).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)
 }

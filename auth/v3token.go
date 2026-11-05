@@ -38,7 +38,7 @@ func (opts V3TokenOpts) ToAuthBody() (map[string]map[string]any, error) {
 	return result, nil
 }
 
-func (opts V3TokenOpts) ToAuthHeaders(_ ...RequestOption) (map[string]any, error) {
+func (opts V3TokenOpts) ToAuthHeaders(_ ...requestOption) (map[string]any, error) {
 	return nil, nil
 }
 

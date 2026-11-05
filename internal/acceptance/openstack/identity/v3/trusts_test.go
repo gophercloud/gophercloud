@@ -4,9 +4,13 @@ package v3
 
 import (
 	"context"
+	"fmt"
+	"maps"
+	"slices"
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
@@ -27,7 +31,27 @@ func TestTrustCRUD(t *testing.T) {
 	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	token, err := tokens.Create(context.TODO(), client, ao.Auth).Extract()
+	authData, err := ao.Auth.ToAuthBody()
+	th.AssertNoErr(t, err)
+	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
+	for method, body := range authData {
+		identity[method] = body
+	}
+	authBody := map[string]any{"identity": identity}
+	scope, err := ao.Auth.ToAuthScope()
+	th.AssertNoErr(t, err)
+	if scope != nil {
+		authBody["scope"] = scope
+	}
+	authHeaders, err := ao.Auth.ToAuthHeaders()
+	th.AssertNoErr(t, err)
+	headers := make(map[string]string, len(authHeaders))
+	for name, value := range authHeaders {
+		headers[name] = fmt.Sprint(value)
+	}
+	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
+
+	token, err := tokens.Create(context.TODO(), client, request).Extract()
 	th.AssertNoErr(t, err)
 	adminUser, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
 	th.AssertNoErr(t, err)

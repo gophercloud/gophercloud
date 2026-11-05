@@ -4,6 +4,9 @@ package v3
 
 import (
 	"context"
+	"fmt"
+	"maps"
+	"slices"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -25,7 +28,27 @@ func TestOAuth1CRUD(t *testing.T) {
 	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	tokenRes := tokens.Create(context.TODO(), client, ao.Auth)
+	authData, err := ao.Auth.ToAuthBody()
+	th.AssertNoErr(t, err)
+	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
+	for method, body := range authData {
+		identity[method] = body
+	}
+	authBody := map[string]any{"identity": identity}
+	scope, err := ao.Auth.ToAuthScope()
+	th.AssertNoErr(t, err)
+	if scope != nil {
+		authBody["scope"] = scope
+	}
+	authHeaders, err := ao.Auth.ToAuthHeaders()
+	th.AssertNoErr(t, err)
+	headers := make(map[string]string, len(authHeaders))
+	for name, value := range authHeaders {
+		headers[name] = fmt.Sprint(value)
+	}
+	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
+
+	tokenRes := tokens.Create(context.TODO(), client, request)
 	token, err := tokenRes.Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, token)

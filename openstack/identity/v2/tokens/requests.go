@@ -5,22 +5,21 @@ import (
 	"net/http"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/auth"
 )
 
 // Create authenticates to the identity service and attempts to acquire a Token.
 // Generally, rather than interact with this call directly, end users should
 // call openstack.AuthenticatedClient(), which abstracts all of the gory details
 // about navigating service catalogs and such.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts auth.AuthOptionsBuilderV2) (r CreateResult) {
-	request, err := auth.NewRequestV2(opts)
-	if err != nil {
-		r.Err = err
-		return
+func Create(ctx context.Context, client *gophercloud.ServiceClient, request gophercloud.RawRequest) (r CreateResult) {
+	requestOpts := &gophercloud.RequestOpts{
+		JSONBody:     request.Body,
+		MoreHeaders:  request.Headers,
+		OmitHeaders:  []string{"X-Auth-Token", "Authorization"},
+		OkCodes:      []int{200, 203},
+		JSONResponse: &r.Body,
 	}
-
-	request.JSONResponse = &r.Body
-	resp, err := client.Request(ctx, http.MethodPost, CreateURL(client), request)
+	resp, err := client.Request(ctx, http.MethodPost, CreateURL(client), requestOpts)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

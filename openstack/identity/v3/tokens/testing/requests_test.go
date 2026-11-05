@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"testing"
 	"time"
 
@@ -13,6 +14,31 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
+
+func rawRequest(options auth.AuthOptionsBuilderV3) (gophercloud.RawRequest, error) {
+	data, err := options.ToAuthBody()
+	if err != nil {
+		return gophercloud.RawRequest{}, err
+	}
+	methods := make([]string, 0, len(data))
+	identity := map[string]any{}
+	for method, body := range data {
+		methods = append(methods, method)
+		identity[method] = body
+	}
+	slices.Sort(methods)
+	identity["methods"] = methods
+
+	scope, err := options.ToAuthScope()
+	if err != nil {
+		return gophercloud.RawRequest{}, err
+	}
+	authBody := map[string]any{"identity": identity}
+	if scope != nil {
+		authBody["scope"] = scope
+	}
+	return gophercloud.RawRequest{Body: map[string]any{"auth": authBody}}, nil
+}
 
 // authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
 func authTokenPost(t *testing.T, options auth.AuthOptionsBuilderV3, requestJSON string) {
@@ -41,26 +67,20 @@ func authTokenPost(t *testing.T, options auth.AuthOptionsBuilderV3, requestJSON 
 	expected := &tokens.Token{
 		ExpiresAt: time.Date(2014, 10, 2, 13, 45, 0, 0, time.UTC),
 	}
-	actual, err := tokens.Create(context.TODO(), &client, options).Extract()
+	request, err := rawRequest(options)
+	th.AssertNoErr(t, err)
+	actual, err := tokens.Create(context.TODO(), &client, request).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func authTokenPostErr(t *testing.T, options auth.AuthOptionsBuilderV3, expectedErr error) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       fakeServer.Endpoint(),
-	}
-
-	_, err := tokens.Create(context.TODO(), &client, options).Extract()
+	_, err := rawRequest(options)
 	if err == nil {
-		t.Errorf("Create did NOT return an error")
+		t.Errorf("building request did NOT return an error")
 	}
 	if err != expectedErr {
-		t.Errorf("Create returned an unexpected error: wanted %v, got %v", expectedErr, err)
+		t.Errorf("building request returned an unexpected error: wanted %v, got %v", expectedErr, err)
 	}
 }
 
@@ -432,7 +452,9 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 		},
 	}
 
-	rsp := tokens.Create(context.TODO(), client.ServiceClient(fakeServer), opts)
+	request, err := rawRequest(opts)
+	th.AssertNoErr(t, err)
+	rsp := tokens.Create(context.TODO(), client.ServiceClient(fakeServer), request)
 
 	token, err := rsp.Extract()
 	th.AssertNoErr(t, err)
@@ -619,7 +641,9 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 		Password: "shhh",
 	}
 
-	token, err := tokens.Create(context.TODO(), &client, opts).Extract()
+	request, err := rawRequest(opts)
+	th.AssertNoErr(t, err)
+	token, err := tokens.Create(context.TODO(), &client, request).Extract()
 	if err != nil {
 		t.Fatalf("Create returned an error: %v", err)
 	}
@@ -951,6 +975,8 @@ func TestNoTokenInResponse(t *testing.T) {
 		Password: "squirrel!",
 	}
 
-	_, err := tokens.Create(context.TODO(), &client, opts).Extract()
+	request, err := rawRequest(opts)
+	th.AssertNoErr(t, err)
+	_, err = tokens.Create(context.TODO(), &client, request).Extract()
 	th.AssertNoErr(t, err)
 }

@@ -179,9 +179,9 @@ func TestAuthOptionsLoadersV3OAuth1(t *testing.T) {
 			oauth1.Timestamp = &timestamp
 			oauth1.Nonce = "66148873158553341551586804894"
 
-			request, err := auth.NewRequestV3(oauth1, auth.WithTokenURL("http://127.0.0.1:33199/v3/auth/tokens"))
+			_, headers, err := v3AuthRequest(t, oauth1)
 			th.AssertNoErr(t, err)
-			th.AssertEquals(t, want, request.MoreHeaders["Authorization"])
+			th.AssertEquals(t, want, headers.Get("Authorization"))
 		})
 	}
 }
@@ -228,10 +228,10 @@ func TestAuthOptionsLoadersV3OAuth1InMultifactor(t *testing.T) {
 			oauth1.Nonce = "66148873158553341551586804894"
 			multifactor.AuthMethods[1] = oauth1
 
-			request, err := auth.NewRequestV3(multifactor, auth.WithTokenURL("http://127.0.0.1:33199/v3/auth/tokens"))
+			body, headers, err := v3AuthRequest(t, multifactor)
 			th.AssertNoErr(t, err)
-			th.AssertJSONEquals(t, `{"auth":{"identity":{"methods":["oauth1","password"],"oauth1":{},"password":{"user":{"id":"user-id","password":"testpass"}}}}}`, request.JSONBody)
-			th.AssertEquals(t, wantHeader, request.MoreHeaders["Authorization"])
+			th.AssertJSONEquals(t, `{"auth":{"identity":{"methods":["oauth1","password"],"oauth1":{},"password":{"user":{"id":"user-id","password":"testpass"}}}}}`, body)
+			th.AssertEquals(t, wantHeader, headers.Get("Authorization"))
 		})
 	}
 }

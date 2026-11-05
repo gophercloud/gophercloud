@@ -10,7 +10,7 @@ import (
 
 func TestV3TokenOptsRescopeBodyAndScope(t *testing.T) {
 	opts := auth.V3TokenOpts{Token: "the-token", Scope: &auth.Scope{ProjectID: "project-id"}}
-	request, err := auth.NewRequestV3(opts)
+	body, _, err := v3AuthRequest(t, opts)
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, map[string]any{
 		"auth": map[string]any{
@@ -18,13 +18,13 @@ func TestV3TokenOptsRescopeBodyAndScope(t *testing.T) {
 				"methods": []string{"token"},
 				"token":   map[string]any{"id": "the-token"},
 			},
-			"scope": map[string]any{"project": map[string]any{"id": &opts.Scope.ProjectID}},
+			"scope": map[string]any{"project": map[string]any{"id": "project-id"}},
 		},
-	}, request.JSONBody)
+	}, body)
 }
 
 func TestV3TokenOptsUnscoped(t *testing.T) {
-	request, err := auth.NewRequestV3(auth.V3TokenOpts{Token: "the-token"})
+	body, _, err := v3AuthRequest(t, auth.V3TokenOpts{Token: "the-token"})
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, map[string]any{
 		"auth": map[string]any{
@@ -33,7 +33,7 @@ func TestV3TokenOptsUnscoped(t *testing.T) {
 				"token":   map[string]any{"id": "the-token"},
 			},
 		},
-	}, request.JSONBody)
+	}, body)
 }
 
 func TestV3TokenOptsRescopeMissingToken(t *testing.T) {

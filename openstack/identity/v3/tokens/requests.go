@@ -4,24 +4,30 @@ import (
 	"context"
 	"maps"
 	"net/http"
+	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/auth"
 )
 
 const xSubjectTokenHeader = "X-Subject-Token"
 
 // Create authenticates and either generates a new token, or changes the Scope
 // of an existing token.
-func Create(ctx context.Context, c *gophercloud.ServiceClient, opts auth.AuthOptionsBuilderV3) (r CreateResult) {
-	request, err := auth.NewRequestV3(opts, auth.WithTokenURL(tokenURL(c)))
-	if err != nil {
-		r.Err = err
-		return
+func Create(ctx context.Context, c *gophercloud.ServiceClient, request gophercloud.RawRequest) (r CreateResult) {
+	omitHeaders := []string{"X-Auth-Token", "Authorization"}
+	for name := range request.Headers {
+		if strings.EqualFold(name, "Authorization") {
+			omitHeaders = omitHeaders[:1]
+			break
+		}
 	}
-
-	request.JSONResponse = &r.Body
-	resp, err := c.Request(ctx, http.MethodPost, tokenURL(c), request)
+	requestOpts := &gophercloud.RequestOpts{
+		JSONBody:     request.Body,
+		MoreHeaders:  request.Headers,
+		OmitHeaders:  omitHeaders,
+		JSONResponse: &r.Body,
+	}
+	resp, err := c.Request(ctx, http.MethodPost, tokenURL(c), requestOpts)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

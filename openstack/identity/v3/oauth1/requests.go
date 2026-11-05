@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
-	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -39,15 +38,14 @@ const (
 
 // Create authenticates and generates a new OpenStack token from OAuth1
 // credentials.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts auth.AuthOptionsBuilderV3) (r tokens.CreateResult) {
-	request, err := auth.NewRequestV3(opts, auth.WithTokenURL(authURL(client)))
-	if err != nil {
-		r.Err = err
-		return
+func Create(ctx context.Context, client *gophercloud.ServiceClient, request gophercloud.RawRequest) (r tokens.CreateResult) {
+	requestOpts := &gophercloud.RequestOpts{
+		JSONBody:     request.Body,
+		MoreHeaders:  request.Headers,
+		OmitHeaders:  []string{"X-Auth-Token"},
+		JSONResponse: &r.Body,
 	}
-
-	request.JSONResponse = &r.Body
-	resp, err := client.Request(ctx, http.MethodPost, authURL(client), request)
+	resp, err := client.Request(ctx, http.MethodPost, authURL(client), requestOpts)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

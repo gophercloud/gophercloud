@@ -39,7 +39,10 @@ func authTokenPost(t *testing.T, options auth.EC2TokenOpts, requestJSON string) 
 		ExpiresAt: time.Date(2017, 6, 3, 2, 19, 49, 0, time.UTC),
 	}
 
-	actual, err := ec2tokens.Create(context.TODO(), &client, options).Extract()
+	data, err := options.ToAuthBody()
+	th.AssertNoErr(t, err)
+	delete(data["credentials"], "token")
+	actual, err := ec2tokens.Create(context.TODO(), &client, gophercloud.RawRequest{Body: map[string]any{"credentials": data["credentials"]}}).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }

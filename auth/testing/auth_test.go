@@ -2,7 +2,6 @@ package testing
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -743,57 +742,6 @@ func TestAuthOptionsV2AuthenticateRejectsMultipleAuthMethods(t *testing.T) {
 	th.AssertEquals(t, 2, invalid.Value)
 }
 
-func TestAuthOptionsV3AuthenticatePropagatesScopeError(t *testing.T) {
-	expected := errors.New("scope failure")
-	opts := auth.AuthOptionsV3{
-		AuthURL: "https://identity.example.com",
-		Auth: testV3Auth{
-			body:     map[string]map[string]any{"token": {"id": "testtoken"}},
-			scopeErr: expected,
-		},
-	}
-
-	_, err := opts.Authenticate(context.TODO(), nil)
-	th.AssertEquals(t, expected, err)
-}
-
-func TestAuthOptionsV3AuthenticatePropagatesHeaderError(t *testing.T) {
-	expected := errors.New("header failure")
-	opts := auth.AuthOptionsV3{
-		AuthURL: "https://identity.example.com",
-		Auth: testV3Auth{
-			body:      map[string]map[string]any{"token": {"id": "testtoken"}},
-			headerErr: expected,
-		},
-	}
-
-	_, err := opts.Authenticate(context.TODO(), nil)
-	th.AssertEquals(t, expected, err)
-}
-
-func TestAuthOptionsV3AuthenticateAddsBuilderHeaders(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-	fakeServer.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
-		th.TestHeader(t, r, "X-Test-Number", "123")
-		w.Header().Set("X-Subject-Token", "testtoken")
-		w.WriteHeader(http.StatusCreated)
-		fmt.Fprint(w, `{"token": {}}`)
-	})
-
-	opts := auth.AuthOptionsV3{
-		AuthURL: fakeServer.Endpoint(),
-		Auth: testV3Auth{
-			body:    map[string]map[string]any{"token": {"id": "testtoken"}},
-			headers: map[string]any{"X-Test-Number": 123},
-		},
-	}
-
-	result, err := opts.Authenticate(context.TODO(), nil)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "testtoken", result.TokenID)
-}
-
 type emptyV2Auth struct{}
 
 func (emptyV2Auth) ToAuthBody() (map[string]map[string]any, error) { return nil, nil }
@@ -811,23 +759,6 @@ func (multipleV2Auth) ToAuthBody() (map[string]map[string]any, error) {
 func (multipleV2Auth) CanReauth() bool {
 	return false
 }
-
-type testV3Auth struct {
-	body      map[string]map[string]any
-	scope     map[string]any
-	headers   map[string]any
-	scopeErr  error
-	headerErr error
-}
-
-func (a testV3Auth) ToAuthBody() (map[string]map[string]any, error) { return a.body, nil }
-func (a testV3Auth) CanReauth() bool                                { return false }
-func (a testV3Auth) ToAuthScope() (map[string]any, error)           { return a.scope, a.scopeErr }
-func (a testV3Auth) ToAuthHeaders(_ ...auth.RequestOption) (map[string]any, error) {
-	return a.headers, a.headerErr
-}
-
-func (a testV3Auth) ToAuthType() auth.AuthType { return auth.AuthV3Token }
 
 type roundTripFunc func(*http.Request) (*http.Response, error)
 

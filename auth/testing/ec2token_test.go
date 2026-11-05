@@ -215,53 +215,6 @@ func TestEC2TokenOptsCanReauth(t *testing.T) {
 	th.AssertEquals(t, true, auth.EC2TokenOpts{AllowReauth: true}.CanReauth())
 }
 
-// TestNewRequestEC2 verifies that the token, which is only used to validate S3
-// tokens, is left out of an ec2tokens request.
-func TestNewRequestEC2(t *testing.T) {
-	request, err := auth.NewRequestEC2(ec2V4Opts())
-	th.AssertNoErr(t, err)
-
-	th.AssertDeepEquals(t, []int{200}, request.OkCodes)
-	th.AssertDeepEquals(t, []string(nil), request.OmitHeaders)
-	th.AssertJSONEquals(t, fmt.Sprintf(`
-		{
-			"credentials": {
-				"access": "a7f1e798b7c2417cba4a02de97dc3cdc",
-				"body_hash": "foo",
-				"host": "",
-				"path": "/",
-				"verb": "GET",
-				"headers": {
-					"Host": "localhost",
-					"Authorization": "AWS4-HMAC-SHA256 Credential=a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request, SignedHeaders=, Signature=%s",
-					"X-Amz-Date": "00010101T000000Z"
-				},
-				"params": {"Action": "Test"},
-				"signature": "%s"
-			}
-		}
-	`, ec2V4Signature, ec2V4Signature), request.JSONBody)
-}
-
-// TestNewRequestS3 verifies that the elements which are only used by the
-// ec2tokens endpoint are left out of an s3tokens request.
-func TestNewRequestS3(t *testing.T) {
-	request, err := auth.NewRequestS3(ec2V4Opts())
-	th.AssertNoErr(t, err)
-
-	th.AssertDeepEquals(t, []int{200}, request.OkCodes)
-	th.AssertDeepEquals(t, []string(nil), request.OmitHeaders)
-	th.AssertJSONEquals(t, fmt.Sprintf(`
-		{
-			"credentials": {
-				"access": "a7f1e798b7c2417cba4a02de97dc3cdc",
-				"signature": "%s",
-				"token": "%s"
-			}
-		}
-	`, ec2V4Signature, ec2V4Token), request.JSONBody)
-}
-
 func TestAuthOptionsEC2Authenticate(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

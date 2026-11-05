@@ -276,10 +276,10 @@ func TestOAuth1SignatureMethodCloudOption(t *testing.T) {
 	th.AssertNoErr(t, err)
 	oauthOpts := opts.(auth.AuthOptionsV3).Auth.(auth.V3OAuth1Opts)
 	th.AssertEquals(t, auth.OAuth1Plaintext, oauthOpts.SignatureMethod)
-	headers, err := oauthOpts.ToAuthHeaders(auth.WithTokenURL("https://identity.example.com/v3/auth/tokens"))
+	_, headers, err := v3AuthRequest(t, oauthOpts)
 	th.AssertNoErr(t, err)
-	if !strings.Contains(headers["Authorization"].(string), `oauth_signature_method="PLAINTEXT"`) {
-		t.Fatalf("expected PLAINTEXT in OAuth1 authorization header, got %v", headers["Authorization"])
+	if !strings.Contains(headers.Get("Authorization"), `oauth_signature_method="PLAINTEXT"`) {
+		t.Fatalf("expected PLAINTEXT in OAuth1 authorization header, got %v", headers.Get("Authorization"))
 	}
 }
 

@@ -328,7 +328,6 @@ func TestV3MultifactorOptsToAuthBody(t *testing.T) {
 
 func TestV3MultifactorOptsSignsOAuth1Method(t *testing.T) {
 	timestamp := time.Unix(0, 0)
-	tokenURL := "http://127.0.0.1:33199/v3/auth/tokens"
 	oauth1 := auth.V3OAuth1Opts{
 		ConsumerKey:     "7fea2d",
 		ConsumerSecret:  "secretsecret",
@@ -342,10 +341,10 @@ func TestV3MultifactorOptsSignsOAuth1Method(t *testing.T) {
 		auth.V3PasswordOpts{UserID: "user-id", Password: "testpass"},
 		oauth1,
 	}}
-	request, err := auth.NewRequestV3(opts, auth.WithTokenURL(tokenURL))
+	_, headers, err := v3AuthRequest(t, opts)
 	th.AssertNoErr(t, err)
 	// Same signature as TestV3OAuth1OptsBuildRequest.
-	th.AssertEquals(t, `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`, request.MoreHeaders["Authorization"])
+	th.AssertEquals(t, `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`, headers.Get("Authorization"))
 }
 
 func TestV3MultifactorOptsPropagatesMethodError(t *testing.T) {
@@ -370,12 +369,14 @@ func TestV3MultifactorOptsRejectsUnsupportedMethod(t *testing.T) {
 	th.AssertEquals(t, true, ok)
 }
 
-func TestV3MultifactorOptsWithoutOAuth1DoesNotNeedTokenURL(t *testing.T) {
+func TestV3MultifactorOptsWithoutOAuth1Request(t *testing.T) {
 	opts := auth.V3MultifactorOpts{AuthMethods: []auth.AuthOptionsBuilderV3{
 		auth.V3PasswordOpts{UserID: "user-id", Password: "testpass"},
 		auth.V3TOTPOpts{UserID: "user-id", Passcode: "123456"},
 	}}
 
-	_, err := auth.NewRequestV3(opts)
+	body, headers, err := v3AuthRequest(t, opts)
 	th.AssertNoErr(t, err)
+	th.AssertJSONEquals(t, `{"auth":{"identity":{"methods":["password","totp"],"password":{"user":{"id":"user-id","password":"testpass"}},"totp":{"user":{"id":"user-id","passcode":"123456"}}}}}`, body)
+	th.AssertEquals(t, "", headers.Get("Authorization"))
 }

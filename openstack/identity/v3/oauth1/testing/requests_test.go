@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/v2/auth"
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/oauth1"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/pagination"
@@ -255,20 +255,18 @@ func TestAuthenticate(t *testing.T) {
 		ExpiresAt: time.Date(2017, 6, 3, 2, 19, 49, 0, time.UTC),
 	}
 
-	ts := time.Unix(0, 0)
 	serviceClient := client.ServiceClient(fakeServer)
 	serviceClient.Endpoint += "v3/"
-	options := auth.V3OAuth1Opts{
-		ConsumerKey:     Consumer.ID,
-		ConsumerSecret:  Consumer.Secret,
-		Token:           AccessToken.OAuthToken,
-		TokenSecret:     AccessToken.OAuthTokenSecret,
-		SignatureMethod: auth.OAuth1HMACSHA1,
-		Timestamp:       &ts,
-		Nonce:           "66148873158553341551586804894",
+	request := gophercloud.RawRequest{
+		Body: map[string]any{"auth": map[string]any{"identity": map[string]any{
+			"methods": []string{"oauth1"}, "oauth1": map[string]any{},
+		}}},
+		Headers: map[string]string{
+			"Authorization": `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="b4fZNXFnxnmjPa9lGMUrLOYlznM%3D"`,
+		},
 	}
 
-	actual, err := oauth1.Create(context.TODO(), serviceClient, options).Extract()
+	actual, err := oauth1.Create(context.TODO(), serviceClient, request).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }

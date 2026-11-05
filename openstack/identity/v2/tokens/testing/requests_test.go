@@ -16,16 +16,13 @@ func tokenPost(t *testing.T, options auth.AuthOptionsBuilderV2, requestJSON stri
 	defer fakeServer.Teardown()
 	HandleTokenPost(t, fakeServer, requestJSON)
 
-	return tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options)
-}
-
-func tokenPostErr(t *testing.T, options auth.AuthOptionsBuilderV2, expectedErr error) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-	HandleTokenPost(t, fakeServer, "")
-
-	actualErr := tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options).Err
-	th.CheckDeepEquals(t, expectedErr, actualErr)
+	data, err := options.ToAuthBody()
+	th.AssertNoErr(t, err)
+	var body map[string]any
+	for _, methodBody := range data {
+		body = methodBody
+	}
+	return tokens.Create(context.TODO(), client.ServiceClient(fakeServer), gophercloud.RawRequest{Body: map[string]any{"auth": body}})
 }
 
 func TestCreateWithPassword(t *testing.T) {
@@ -84,14 +81,6 @@ func TestCreateTokenWithTenantName(t *testing.T) {
       }
     }
   `))
-}
-
-func TestRequireUsername(t *testing.T) {
-	options := auth.V2PasswordOpts{
-		Password: "thing",
-	}
-
-	tokenPostErr(t, options, gophercloud.ErrMissingInput{Argument: "Username"})
 }
 
 func tokenGet(t *testing.T, tokenId string) tokens.GetResult {
