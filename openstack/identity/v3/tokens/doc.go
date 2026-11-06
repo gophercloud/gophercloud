@@ -7,9 +7,10 @@ http://developer.openstack.org/api-ref-identity-v3.html#tokens-v3
 
 Example to Create a Token From a Username and Password
 
-	authOptions := tokens.AuthOptions{
-		UserID:   "username",
-		Password: "password",
+	authOptions := auth.V3PasswordOpts{
+		Username:       "username",
+		Password:       "password",
+		UserDomainName: "Default",
 	}
 
 	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
@@ -19,10 +20,10 @@ Example to Create a Token From a Username and Password
 
 Example to Create a Token From a Username, Password, and Domain
 
-	authOptions := tokens.AuthOptions{
-		UserID:   "username",
-		Password: "password",
-		DomainID: "default",
+	authOptions := auth.V3PasswordOpts{
+		Username:     "username",
+		Password:     "password",
+		UserDomainID: "default",
 	}
 
 	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
@@ -30,10 +31,10 @@ Example to Create a Token From a Username, Password, and Domain
 		panic(err)
 	}
 
-	authOptions = tokens.AuthOptions{
-		UserID:     "username",
-		Password:   "password",
-		DomainName: "default",
+	authOptions = auth.V3PasswordOpts{
+		Username:       "username",
+		Password:       "password",
+		UserDomainName: "default",
 	}
 
 	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
@@ -43,8 +44,8 @@ Example to Create a Token From a Username, Password, and Domain
 
 Example to Create a Token From a Token
 
-	authOptions := tokens.AuthOptions{
-		TokenID: "token_id",
+	authOptions := auth.V3TokenOpts{
+		Token: "token_id",
 	}
 
 	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
@@ -54,14 +55,15 @@ Example to Create a Token From a Token
 
 Example to Create a Token from a Username and Password with Project ID Scope
 
-	scope := tokens.Scope{
+	scope := auth.Scope{
 		ProjectID: "0fe36e73809d46aeae6705c39077b1b3",
 	}
 
-	authOptions := tokens.AuthOptions{
-		Scope:    &scope,
-		UserID:   "username",
-		Password: "password",
+	authOptions := auth.V3PasswordOpts{
+		Scope:          &scope,
+		Username:       "username",
+		Password:       "password",
+		UserDomainName: "Default",
 	}
 
 	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
@@ -71,14 +73,15 @@ Example to Create a Token from a Username and Password with Project ID Scope
 
 Example to Create a Token from a Username and Password with Domain ID Scope
 
-	scope := tokens.Scope{
+	scope := auth.Scope{
 		DomainID: "default",
 	}
 
-	authOptions := tokens.AuthOptions{
-		Scope:    &scope,
-		UserID:   "username",
-		Password: "password",
+	authOptions := auth.V3PasswordOpts{
+		Scope:          &scope,
+		Username:       "username",
+		Password:       "password",
+		UserDomainName: "Default",
 	}
 
 	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
@@ -88,15 +91,16 @@ Example to Create a Token from a Username and Password with Domain ID Scope
 
 Example to Create a Token from a Username and Password with Project Name Scope
 
-	scope := tokens.Scope{
-		ProjectName: "project_name",
-		DomainID:    "default",
+	scope := auth.Scope{
+		ProjectName:     "project_name",
+		ProjectDomainID: "default",
 	}
 
-	authOptions := tokens.AuthOptions{
-		Scope:    &scope,
-		UserID:   "username",
-		Password: "password",
+	authOptions := auth.V3PasswordOpts{
+		Scope:          &scope,
+		Username:       "username",
+		Password:       "password",
+		UserDomainName: "Default",
 	}
 
 	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()

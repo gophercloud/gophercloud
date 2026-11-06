@@ -147,13 +147,13 @@ func (f *reauthFuture) Get(ctx context.Context) error {
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests. Blocks if Reauthenticate is in progress.
 func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
-	headers, _ := client.authenticatedHeaders(context.Background())
+	headers, _, _ := client.authenticatedHeaders(context.Background())
 	return headers
 }
 
-func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[string]string, error) {
+func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[string]string, string, error) {
 	if client.IsThrowaway() {
-		return nil, nil
+		return nil, "", nil
 	}
 	if client.reauthmut != nil {
 		// If a Reauthenticate is in progress, wait for it to complete.
@@ -162,15 +162,24 @@ func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[str
 		client.reauthmut.Unlock()
 		if ongoing != nil {
 			if err := ongoing.Get(ctx); err != nil && ctx.Err() != nil {
-				return nil, ctx.Err()
+				return nil, "", ctx.Err()
 			}
 		}
 	}
-	t := client.Token()
-	if t == "" {
-		return nil, nil
+	if client.mut != nil {
+		client.mut.RLock()
+		defer client.mut.RUnlock()
 	}
-	return map[string]string{"X-Auth-Token": t}, nil
+	t := client.TokenID
+	if t == "" {
+		return nil, "", nil
+	}
+	if result, ok := client.authResult.(interface{ AuthenticatedHeaders() map[string]string }); ok {
+		if id, err := client.authResult.ExtractTokenID(); err == nil && id == t {
+			return result.AuthenticatedHeaders(), t, nil
+		}
+	}
+	return map[string]string{"X-Auth-Token": t}, t, nil
 }
 
 // UseTokenLock creates a mutex that is used to allow safe concurrent access to the auth token.
@@ -410,6 +419,15 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	// Set the User-Agent header
 	req.Header.Set("User-Agent", client.UserAgent.Join())
 
+	// get latest token from client
+	authenticatedHeaders, prereqtok, err := client.authenticatedHeaders(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range authenticatedHeaders {
+		req.Header.Set(k, v)
+	}
+
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
 			req.Header.Set(k, v)
@@ -419,17 +437,6 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	for _, v := range options.OmitHeaders {
 		req.Header.Del(v)
 	}
-
-	// get latest token from client
-	authenticatedHeaders, err := client.authenticatedHeaders(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range authenticatedHeaders {
-		req.Header.Set(k, v)
-	}
-
-	prereqtok := req.Header.Get("X-Auth-Token")
 
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
