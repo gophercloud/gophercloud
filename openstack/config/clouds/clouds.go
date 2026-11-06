@@ -133,13 +133,8 @@ func Parse(opts ...ParseOption) (Cloud, gophercloud.EndpointOpts, *tls.Config, e
 		}
 	}
 
-	// Normalize domain when project scoped
 	if cloud.Auth != nil {
-		_, hasProjectID := cloud.Auth["project_id"]
-		_, hasProjectName := cloud.Auth["project_name"]
-		if hasProjectID || hasProjectName {
-			normalizeDomain(&cloud)
-		}
+		normalizeDomain(&cloud)
 	}
 
 	tlsConfig, err := computeTLSConfig(cloud, options)
@@ -302,24 +297,29 @@ func mergeClouds(override, cloud Cloud) (Cloud, error) {
 }
 
 func normalizeDomain(cloud *Cloud) {
-	mappings := map[string][]string{
-		"domain_id":   {"user_domain_id", "project_domain_id"},
-		"domain_name": {"user_domain_name", "project_domain_name"},
-	}
+	projectID, _ := cloud.Auth["project_id"].(string)
+	projectName, _ := cloud.Auth["project_name"].(string)
+	userID, _ := cloud.Auth["user_id"].(string)
+	projectScoped := projectID != "" || projectName != ""
 
-	for source, targets := range mappings {
-		value, ok := cloud.Auth[source]
-		if !ok {
-			continue
-		}
-
-		for _, target := range targets {
-			if _, exists := cloud.Auth[target]; !exists {
-				cloud.Auth[target] = value
+	for _, mapping := range []struct{ source, user, project string }{
+		{"domain_id", "user_domain_id", "project_domain_id"},
+		{"domain_name", "user_domain_name", "project_domain_name"},
+	} {
+		value := cloud.Auth[mapping.source]
+		if value != nil && value != "" {
+			if userID == "" &&
+				(cloud.Auth["user_domain_id"] == nil || cloud.Auth["user_domain_id"] == "") &&
+				(cloud.Auth["user_domain_name"] == nil || cloud.Auth["user_domain_name"] == "") {
+				cloud.Auth[mapping.user] = value
+			}
+			if projectScoped && (cloud.Auth[mapping.project] == nil || cloud.Auth[mapping.project] == "") {
+				cloud.Auth[mapping.project] = value
 			}
 		}
-
-		delete(cloud.Auth, source)
+		if projectScoped {
+			delete(cloud.Auth, mapping.source)
+		}
 	}
 }
 

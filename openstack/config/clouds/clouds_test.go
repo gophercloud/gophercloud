@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack/config/clouds"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
@@ -1030,4 +1031,93 @@ func TestParse(t *testing.T) {
 			t.Errorf("unexpected scope domain ID: %q, expected 'scope-domain-id-456'", got)
 		}
 	})
+}
+
+func TestParseDomainFallbackAuthBody(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		auth         string
+		wantUserID   string
+		wantUserName string
+	}{
+		{"user ID and domain ID", "user_id: user-123\n      domain_id: scope-id", "", ""},
+		{"user ID and domain name", "user_id: user-123\n      domain_name: scope-name", "", ""},
+		{"explicit user domain ID and scope domain name", "username: alice\n      user_domain_id: user-id\n      domain_name: scope-name", "user-id", ""},
+		{"explicit user domain name and scope domain ID", "username: alice\n      user_domain_name: user-name\n      domain_id: scope-id", "", "user-name"},
+		{"both generic domains select user domain ID", "username: alice\n      domain_id: scope-id\n      domain_name: scope-name", "scope-id", ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cloud, _, _, err := clouds.Parse(
+				clouds.WithCloudsYAML(strings.NewReader("clouds:\n  test:\n    auth:\n      auth_url: https://example.com/v3\n      password: secret\n      "+tc.auth+"\n")),
+				clouds.WithCloudName("test"),
+			)
+			if err != nil {
+				t.Fatalf("parse: %v", err)
+			}
+			opts, err := cloud.ToAuthOptions()
+			if err != nil {
+				t.Fatalf("auth options: %v", err)
+			}
+			password := opts.(auth.AuthOptionsV3).Auth.(auth.V3PasswordOpts)
+			if password.UserDomainID != tc.wantUserID || password.UserDomainName != tc.wantUserName {
+				t.Errorf("user domains = (%q, %q), want (%q, %q)", password.UserDomainID, password.UserDomainName, tc.wantUserID, tc.wantUserName)
+			}
+			if _, err := password.ToAuthBody(); err != nil {
+				t.Errorf("build auth body: %v", err)
+			}
+		})
+	}
+}
+
+func TestParseDomainFallbacks(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		auth   string
+		want   map[string]string
+		absent []string
+	}{
+		{
+			name:   "domain scope supplies user domain while retaining scope",
+			auth:   "domain_id: scope-id\n      domain_name: scope-name",
+			want:   map[string]string{"domain_id": "scope-id", "domain_name": "scope-name", "user_domain_id": "scope-id"},
+			absent: []string{"user_domain_name"},
+		},
+		{
+			name: "empty user domain falls back without project scope",
+			auth: "domain_name: fallback\n      user_domain_name: ''",
+			want: map[string]string{"domain_name": "fallback", "user_domain_name": "fallback"},
+		},
+		{
+			name:   "empty project key does not select project scope",
+			auth:   "domain_name: scope\n      project_name: ''",
+			want:   map[string]string{"domain_name": "scope", "user_domain_name": "scope"},
+			absent: []string{"project_domain_name"},
+		},
+		{
+			name:   "empty project and user domains fall back when project scoped",
+			auth:   "domain_id: fallback\n      project_id: project-123\n      user_domain_id: ''\n      project_domain_id: ''",
+			want:   map[string]string{"user_domain_id": "fallback", "project_domain_id": "fallback", "project_id": "project-123"},
+			absent: []string{"domain_id"},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cloud, _, _, err := clouds.Parse(
+				clouds.WithCloudsYAML(strings.NewReader("clouds:\n  test:\n    auth:\n      auth_url: https://example.com/v3\n      "+tc.auth+"\n")),
+				clouds.WithCloudName("test"),
+			)
+			if err != nil {
+				t.Fatalf("unexpected parse error: %v", err)
+			}
+			for key, want := range tc.want {
+				if got := authField(cloud, key); got != want {
+					t.Errorf("auth[%q] = %q, want %q", key, got, want)
+				}
+			}
+			for _, key := range tc.absent {
+				if _, ok := cloud.Auth[key]; ok {
+					t.Errorf("auth[%q] should be absent, got %v", key, cloud.Auth[key])
+				}
+			}
+		})
+	}
 }
