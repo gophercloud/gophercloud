@@ -179,16 +179,18 @@ func AuthOptionsFromEnvV3() (AuthOptionsV3, error) {
 }
 
 func authMechanismFromType(authType AuthType, scope *Scope) AuthOptionsBuilderV3 {
-	// Normalize domain when project scoped
+	// Normalize user domain for all scopes
 	userDomainID := os.Getenv("OS_USER_DOMAIN_ID")
 	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
+	if userDomainID == "" {
+		userDomainID = scope.DomainID
+	}
+	if userDomainName == "" {
+		userDomainName = scope.DomainName
+	}
+
+	// Normalize project domain when using project scope
 	if scope.ProjectID != "" || scope.ProjectName != "" {
-		if userDomainID == "" {
-			userDomainID = scope.DomainID
-		}
-		if userDomainName == "" {
-			userDomainName = scope.DomainName
-		}
 		if scope.ProjectDomainID == "" {
 			scope.ProjectDomainID = scope.DomainID
 		}

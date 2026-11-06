@@ -13,16 +13,11 @@ import (
 // TestAuthOptionsLoadersGenerateSameRequest checks that equivalent
 // environment and cloud configurations produce the same auth body and scope.
 func TestAuthOptionsLoadersGenerateSameRequest(t *testing.T) {
-	credentials := map[string]string{
-		"username":       "testuser",
-		"password":       "testpass",
-		"user_domain_id": "user-domain",
-	}
-
 	testCases := []struct {
-		name      string
-		settings  map[string]string
-		wantScope string
+		name           string
+		settings       map[string]string
+		userDomainName bool
+		wantScope      string
 	}{
 		{
 			name:      "domain scope",
@@ -30,9 +25,10 @@ func TestAuthOptionsLoadersGenerateSameRequest(t *testing.T) {
 			wantScope: `{"domain":{"id":"scope-domain"}}`,
 		},
 		{
-			name:      "domain name scope",
-			settings:  map[string]string{"domain_name": "scope-domain"},
-			wantScope: `{"domain":{"name":"scope-domain"}}`,
+			name:           "domain name scope",
+			settings:       map[string]string{"domain_name": "scope-domain"},
+			userDomainName: true,
+			wantScope:      `{"domain":{"name":"scope-domain"}}`,
 		},
 		{
 			name:      "project scope",
@@ -65,6 +61,17 @@ func TestAuthOptionsLoadersGenerateSameRequest(t *testing.T) {
 			defer CleanupEnv(t)
 			CleanupEnv(t)
 
+			credentials := map[string]string{
+				"username": "testuser",
+				"password": "testpass",
+			}
+			wantBody := `{"password":{"user":{"name":"testuser","password":"testpass","domain":{"id":"user-domain"}}}}`
+			if testCase.userDomainName {
+				credentials["user_domain_name"] = "user-domain"
+				wantBody = `{"password":{"user":{"name":"testuser","password":"testpass","domain":{"name":"user-domain"}}}}`
+			} else {
+				credentials["user_domain_id"] = "user-domain"
+			}
 			cloudData := map[string]any{"auth_url": "http://example.com:5000/v3"}
 			t.Setenv("OS_AUTH_URL", "http://example.com:5000/v3")
 			for _, settings := range []map[string]string{credentials, testCase.settings} {
@@ -83,8 +90,8 @@ func TestAuthOptionsLoadersGenerateSameRequest(t *testing.T) {
 			th.AssertNoErr(t, err)
 			cloudBody, err := cloudOpts.Auth.ToAuthBody()
 			th.AssertNoErr(t, err)
-			th.AssertJSONEquals(t, `{"password":{"user":{"name":"testuser","password":"testpass","domain":{"id":"user-domain"}}}}`, envBody)
-			th.AssertJSONEquals(t, `{"password":{"user":{"name":"testuser","password":"testpass","domain":{"id":"user-domain"}}}}`, cloudBody)
+			th.AssertJSONEquals(t, wantBody, envBody)
+			th.AssertJSONEquals(t, wantBody, cloudBody)
 
 			envScope, err := envOpts.Auth.ToAuthScope()
 			th.AssertNoErr(t, err)

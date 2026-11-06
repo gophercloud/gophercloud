@@ -498,10 +498,11 @@ func TestAuthOptionsFromEnvV3NormalizesGenericDomains(t *testing.T) {
 				"OS_DOMAIN_ID": "domain-scope-id",
 			},
 			want: auth.V3PasswordOpts{
-				Username:    "testuser",
-				Password:    "testpass",
-				Scope:       &auth.Scope{DomainID: "domain-scope-id"},
-				AllowReauth: true,
+				Username:     "testuser",
+				Password:     "testpass",
+				UserDomainID: "domain-scope-id",
+				Scope:        &auth.Scope{DomainID: "domain-scope-id"},
+				AllowReauth:  true,
 			},
 		},
 	}
@@ -510,6 +511,86 @@ func TestAuthOptionsFromEnvV3NormalizesGenericDomains(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			defer CleanupEnv(t)
 			SetupEnvV3Password(t)
+			for key, value := range testCase.env {
+				t.Setenv(key, value)
+			}
+
+			opts, err := auth.AuthOptionsFromEnvV3()
+			th.AssertNoErr(t, err)
+			th.AssertDeepEquals(t, testCase.want, opts.Auth)
+		})
+	}
+}
+
+func TestAuthOptionsFromEnvV3DomainScopeUserDomain(t *testing.T) {
+	testCases := []struct {
+		name string
+		env  map[string]string
+		want auth.AuthOptionsBuilderV3
+	}{
+		{
+			name: "password falls back to generic domain name",
+			env: map[string]string{
+				"OS_AUTH_TYPE": "v3password", "OS_PASSWORD": "testpass",
+				"OS_DOMAIN_NAME": "scope-domain",
+			},
+			want: auth.V3PasswordOpts{
+				Username: "testuser", Password: "testpass", UserDomainName: "scope-domain",
+				Scope: &auth.Scope{DomainName: "scope-domain"}, AllowReauth: true,
+			},
+		},
+		{
+			name: "password explicit user domain ID takes precedence",
+			env: map[string]string{
+				"OS_AUTH_TYPE": "v3password", "OS_PASSWORD": "testpass",
+				"OS_DOMAIN_ID": "scope-id", "OS_USER_DOMAIN_ID": "user-id",
+			},
+			want: auth.V3PasswordOpts{
+				Username: "testuser", Password: "testpass", UserDomainID: "user-id",
+				Scope: &auth.Scope{DomainID: "scope-id"}, AllowReauth: true,
+			},
+		},
+		{
+			name: "password explicit user domain name takes precedence",
+			env: map[string]string{
+				"OS_AUTH_TYPE": "v3password", "OS_PASSWORD": "testpass",
+				"OS_DOMAIN_NAME": "scope-name", "OS_USER_DOMAIN_NAME": "user-name",
+			},
+			want: auth.V3PasswordOpts{
+				Username: "testuser", Password: "testpass", UserDomainName: "user-name",
+				Scope: &auth.Scope{DomainName: "scope-name"}, AllowReauth: true,
+			},
+		},
+		{
+			name: "TOTP falls back to generic domain ID",
+			env: map[string]string{
+				"OS_AUTH_TYPE": "v3totp", "OS_PASSCODE": "123456",
+				"OS_DOMAIN_ID": "scope-id",
+			},
+			want: auth.V3TOTPOpts{
+				Username: "testuser", Passcode: "123456", UserDomainID: "scope-id",
+				Scope: &auth.Scope{DomainID: "scope-id"},
+			},
+		},
+		{
+			name: "application credential falls back to generic domain name",
+			env: map[string]string{
+				"OS_AUTH_TYPE": "v3applicationcredential", "OS_APPLICATION_CREDENTIAL_NAME": "credential",
+				"OS_DOMAIN_NAME": "scope-name",
+			},
+			want: auth.V3ApplicationCredentialOpts{
+				Username: "testuser", ApplicationCredentialName: "credential",
+				UserDomainName: "scope-name", AllowReauth: true,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			defer CleanupEnv(t)
+			CleanupEnv(t)
+			t.Setenv("OS_AUTH_URL", "http://example.com:5000/v3")
+			t.Setenv("OS_USERNAME", "testuser")
 			for key, value := range testCase.env {
 				t.Setenv(key, value)
 			}
