@@ -27,10 +27,29 @@ func extractServiceTypeVersion(serviceType string) int {
 // major API version. A nil client limits the check to versions implied by
 // legacy service type aliases such as volumev2 and volumev3.
 func EndpointSupportsVersion(ctx context.Context, client *gophercloud.ProviderClient, serviceType, endpointURL string, expectedVersion int) (bool, error) {
-	// Swift doesn't support version discovery.
+	// Swift doesn't support version discovery :(
 	if expectedVersion == 0 || serviceType == "object-store" {
 		return true, nil
 	}
+
+	// Repeating verbatim from keystoneauth1 [1]:
+	//
+	// > The sins of our fathers become the blood on our hands.
+	// > If a user requests an old-style service type such as volumev2, then they
+	// > are inherently requesting the major API version 2. It's not a good
+	// > interface, but it's the one that was imposed on the world years ago
+	// > because the client libraries all hid the version discovery document.
+	// > In order to be able to ensure that a user who requests volumev2 does not
+	// > get a block-storage endpoint that only provides v3 of the block-storage
+	// > service, we need to pull the version out of the service_type. The
+	// > service-types-authority will prevent the growth of new monstrosities such
+	// > as this, but in order to move forward without breaking people, we have
+	// > to just cry in the corner while striking ourselves with thorned branches.
+	// > That said, for sure only do this hack for officially known service_types.
+	//
+	// So yeah, what mordred said.
+	//
+	// https://github.com/openstack/keystoneauth/blob/5.10.0/keystoneauth1/discover.py#L270-L290
 
 	// Legacy service types such as volumev2 imply a specific major version.
 	impliedVersion := extractServiceTypeVersion(serviceType)
