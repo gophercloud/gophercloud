@@ -2,9 +2,13 @@ package testing
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -501,6 +505,102 @@ func TestAuthOptionsFromCloudErrors(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAuthOptionsFromCloudGenericTLS(t *testing.T) {
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodGet)
+		fmt.Fprintf(w, `{"versions":{"values":[{"id":"v2.0","status":"stable","links":[{"href":%q,"rel":"self"}]}]}}`, "https://"+r.Host+"/v2.0/")
+	}))
+	defer server.Close()
+
+	cloud := cloudSource{authType: auth.AuthPassword, authData: map[string]any{
+		"auth_url": server.URL, "username": "user", "password": "secret",
+	}}
+	_, err := auth.AuthOptionsFromCloud(cloud)
+	if err == nil {
+		t.Fatal("discovery without the custom CA should fail")
+	}
+
+	pool := x509.NewCertPool()
+	pool.AddCert(server.Certificate())
+	got, err := auth.AuthOptionsFromCloud(cloud, auth.WithTLSConfig(&tls.Config{RootCAs: pool}))
+	th.AssertNoErr(t, err)
+	if _, ok := got.(auth.AuthOptionsV2); !ok {
+		t.Fatalf("expected v2 options from discovery, got %T", got)
+	}
+}
+
+func TestAuthOptionsFromCloudGenericDiscoverySelectsV3Endpoint(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprintf(w, `{"versions":{"values":[{"id":"v3.0","status":"stable","links":[{"rel":"self","href":%q}]}]}}`, server.URL+"/v3/")
+		case "/v3/auth/tokens":
+			w.Header().Set("X-Subject-Token", "discovered-token")
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprint(w, `{"token":{}}`)
+		default:
+			t.Errorf("unexpected path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	plugin, err := auth.AuthOptionsFromCloud(cloudSource{
+		authType: auth.AuthPassword,
+		authData: map[string]any{
+			"auth_url": server.URL,
+			"user_id":  "user",
+			"password": "password",
+		},
+	})
+	th.AssertNoErr(t, err)
+	result, err := plugin.Authenticate(context.Background(), nil)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "discovered-token", result.TokenID)
+}
+
+func TestAuthOptionsFromCloudGenericDiscoveryUsesConfiguredCAAtConstruction(t *testing.T) {
+	var calls atomic.Int32
+	var server *httptest.Server
+	server = httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprintf(w, `{"versions":{"values":[{"id":"v3.0","status":"stable","links":[{"rel":"self","href":%q}]}]}}`, server.URL+"/v3/")
+		case "/v3/auth/tokens":
+			w.Header().Set("X-Subject-Token", "discovered-token")
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprint(w, `{"token":{"user":{"id":"user"},"expires_at":"2099-01-01T00:00:00Z"}}`)
+		default:
+			t.Errorf("unexpected path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	pool := x509.NewCertPool()
+	pool.AddCert(server.Certificate())
+	plugin, err := auth.AuthOptionsFromCloud(cloudSource{
+		authType: auth.AuthPassword,
+		authData: map[string]any{
+			"auth_url": server.URL,
+			"user_id":  "user",
+			"password": "password",
+		},
+	}, auth.WithTLSConfig(&tls.Config{RootCAs: pool}))
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, int32(1), calls.Load())
+
+	provider := &gophercloud.ProviderClient{HTTPClient: *server.Client()}
+	result, err := plugin.Authenticate(context.Background(), provider)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "discovered-token", result.TokenID)
+	th.AssertEquals(t, int32(2), calls.Load())
 }
 
 func TestAuthOptionsFromCloudDiscoversIdentityVersion(t *testing.T) {

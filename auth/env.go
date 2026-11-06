@@ -1,10 +1,18 @@
 package auth
 
 import (
+	"bytes"
+	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
 func AuthOptionsFromEnv() (Authenticator, error) {
@@ -15,15 +23,59 @@ func AuthOptionsFromEnv() (Authenticator, error) {
 	case AuthV3Password, AuthV3Totp, AuthV3Token, AuthV3ApplicationCredential, AuthV3MultiFactor, AuthV3OAuth1:
 		return AuthOptionsFromEnvV3()
 	case AuthPassword, AuthToken:
-		v2, err := AuthOptionsFromEnvV2()
+		authURL := os.Getenv("OS_AUTH_URL")
+		caCertPath := os.Getenv("OS_CACERT")
+
+		if authURL == "" {
+			return nil, gophercloud.ErrMissingEnvironmentVariable{
+				EnvironmentVariable: "OS_AUTH_URL",
+			}
+		}
+
+		base, err := utils.BaseEndpoint(authURL)
 		if err != nil {
 			return nil, err
 		}
-		v3, err := AuthOptionsFromEnvV3()
+
+		client := &gophercloud.ProviderClient{
+			IdentityBase:     gophercloud.NormalizeURL(base),
+			IdentityEndpoint: gophercloud.NormalizeURL(authURL),
+		}
+		if caCertPath != "" {
+			if after, ok := strings.CutPrefix(caCertPath, "~/"); ok {
+				home, err := os.UserHomeDir()
+				if err != nil {
+					return nil, fmt.Errorf("failed to resolve user home directory: %w", err)
+				}
+				caCertPath = path.Join(home, after)
+			}
+
+			caCert, err := os.ReadFile(caCertPath)
+			if err != nil {
+				return nil, fmt.Errorf("failed to open the CA cert file: %w", err)
+			}
+			caCertPool := x509.NewCertPool()
+			if ok := caCertPool.AppendCertsFromPEM(bytes.TrimSpace(caCert)); !ok {
+				return nil, fmt.Errorf("failed to parse the CA Cert from %q", caCertPath)
+			}
+			transport := http.DefaultTransport.(*http.Transport).Clone()
+			transport.TLSClientConfig = &tls.Config{RootCAs: caCertPool}
+			client.HTTPClient.Transport = transport
+		}
+
+		version, _, err := utils.ChooseVersion(context.Background(), client, []*utils.Version{
+			{ID: "v2.0", Priority: 20, Suffix: "/v2.0/"},
+			{ID: "v3", Priority: 30, Suffix: "/v3/"},
+		})
 		if err != nil {
 			return nil, err
 		}
-		return authenticator{v2: v2, v3: v3}, nil
+
+		if version.ID == "v2.0" {
+			return AuthOptionsFromEnvV2()
+		}
+
+		return AuthOptionsFromEnvV3()
 	}
 
 	// Fallback to identity v3 if v2 isn't set explicitly.

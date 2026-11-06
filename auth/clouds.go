@@ -1,10 +1,14 @@
 package auth
 
 import (
+	"context"
+	"crypto/tls"
 	"encoding/json"
 	"maps"
+	"net/http"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack/utils"
 )
 
 // CloudOption overrides a single credential in clouds.yaml.
@@ -40,6 +44,7 @@ type CloudOptions struct {
 	AllowReauth                 *bool
 	AuthMethods                 []AuthType
 	Scope                       *Scope
+	TLSConfig                   *tls.Config
 }
 
 // ResolveCloudOptions applies opts in order and returns the result.
@@ -49,6 +54,11 @@ func ResolveCloudOptions(opts ...CloudOption) CloudOptions {
 		opt(&co)
 	}
 	return co
+}
+
+// WithTLSConfig configures TLS for identity version discovery with a generic auth type.
+func WithTLSConfig(tlsConfig *tls.Config) CloudOption {
+	return func(co *CloudOptions) { co.TLSConfig = tlsConfig }
 }
 
 // WithAuthURL overrides the identity endpoint (auth_url).
@@ -205,15 +215,42 @@ func AuthOptionsFromCloud(c CloudSource, opts ...CloudOption) (Authenticator, er
 	case AuthV3Password, AuthV3Totp, AuthV3Token, AuthV3ApplicationCredential, AuthV3MultiFactor, AuthV3OAuth1:
 		return AuthOptionsFromCloudV3(c, opts...)
 	case AuthPassword, AuthToken:
-		v2, err := AuthOptionsFromCloudV2(c, opts...)
+		co := ResolveCloudOptions(opts...)
+		authURL := co.AuthURL
+		if authURL == "" {
+			authURL = str(c.GetAuthData(), "auth_url")
+		}
+		if authURL == "" {
+			return nil, gophercloud.ErrMissingInput{Argument: "AuthURL"}
+		}
+		base, err := utils.BaseEndpoint(authURL)
 		if err != nil {
 			return nil, err
 		}
-		v3, err := AuthOptionsFromCloudV3(c, opts...)
+
+		client := &gophercloud.ProviderClient{
+			IdentityBase:     gophercloud.NormalizeURL(base),
+			IdentityEndpoint: gophercloud.NormalizeURL(authURL),
+		}
+		if co.TLSConfig != nil {
+			transport := http.DefaultTransport.(*http.Transport).Clone()
+			transport.TLSClientConfig = co.TLSConfig
+			client.HTTPClient.Transport = transport
+		}
+
+		version, _, err := utils.ChooseVersion(context.Background(), client, []*utils.Version{
+			{ID: "v2.0", Priority: 20, Suffix: "/v2.0/"},
+			{ID: "v3", Priority: 30, Suffix: "/v3/"},
+		})
 		if err != nil {
 			return nil, err
 		}
-		return authenticator{v2: v2, v3: v3}, nil
+
+		if version.ID == "v2.0" {
+			return AuthOptionsFromCloudV2(c, opts...)
+		}
+
+		return AuthOptionsFromCloudV3(c, opts...)
 	}
 
 	// When AuthType plugin is not provided, default to identity v3 unless v2 is explicitly set

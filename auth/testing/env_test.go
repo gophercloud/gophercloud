@@ -3,8 +3,13 @@ package testing
 import (
 	"context"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"sync/atomic"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -107,6 +112,146 @@ func TestAuthOptionsFromEnvExplicitV2AuthType(t *testing.T) {
 			th.AssertEquals(t, true, ok)
 			th.AssertDeepEquals(t, testCase.expected, v2Opts.Auth)
 		})
+	}
+}
+
+func TestAuthOptionsFromEnvGenericDiscoverySelectsV3Endpoint(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprintf(w, `{"versions":{"values":[{"id":"v3.0","status":"stable","links":[{"rel":"self","href":%q}]}]}}`, server.URL+"/v3/")
+		case "/v3/auth/tokens":
+			w.Header().Set("X-Subject-Token", "discovered-token")
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprint(w, `{"token":{}}`)
+		default:
+			t.Errorf("unexpected path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	t.Setenv("OS_AUTH_TYPE", "password")
+	t.Setenv("OS_AUTH_URL", server.URL)
+	t.Setenv("OS_USERID", "user")
+	t.Setenv("OS_PASSWORD", "password")
+	plugin, err := auth.AuthOptionsFromEnv()
+	th.AssertNoErr(t, err)
+	result, err := plugin.Authenticate(context.Background(), nil)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "discovered-token", result.TokenID)
+}
+
+func TestAuthOptionsFromEnvGenericDiscoveryFailsAtConstructionOnServerError(t *testing.T) {
+	var discoveryCalls atomic.Int32
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/":
+			if discoveryCalls.Add(1) == 1 {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			fmt.Fprintf(w, `{"versions":{"values":[{"id":"v3.0","status":"stable","links":[{"rel":"self","href":%q}]}]}}`, server.URL+"/v3/")
+		case "/v3/auth/tokens":
+			w.Header().Set("X-Subject-Token", "discovered-token")
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprint(w, `{"token":{}}`)
+		default:
+			t.Errorf("unexpected path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	t.Setenv("OS_AUTH_TYPE", "password")
+	t.Setenv("OS_AUTH_URL", server.URL)
+	t.Setenv("OS_USERID", "user")
+	t.Setenv("OS_PASSWORD", "password")
+	_, err := auth.AuthOptionsFromEnv()
+	if err == nil {
+		t.Fatal("expected construction to fail on discovery HTTP error")
+	}
+	th.AssertEquals(t, int32(1), discoveryCalls.Load())
+}
+
+func TestAuthOptionsFromEnvGenericDiscoveryUsesConfiguredCAAtConstruction(t *testing.T) {
+	var calls atomic.Int32
+	var server *httptest.Server
+	server = httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprintf(w, `{"versions":{"values":[{"id":"v3.0","status":"stable","links":[{"rel":"self","href":%q}]}]}}`, server.URL+"/v3/")
+		case "/v3/auth/tokens":
+			w.Header().Set("X-Subject-Token", "discovered-token")
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprint(w, `{"token":{"user":{"id":"user"},"expires_at":"2099-01-01T00:00:00Z"}}`)
+		default:
+			t.Errorf("unexpected path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	t.Setenv("OS_AUTH_TYPE", "password")
+	t.Setenv("OS_AUTH_URL", server.URL)
+	t.Setenv("OS_USERID", "user")
+	t.Setenv("OS_PASSWORD", "password")
+	certPath := filepath.Join(t.TempDir(), "ca.pem")
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: server.Certificate().Raw})
+	th.AssertNoErr(t, os.WriteFile(certPath, certPEM, 0600))
+	t.Setenv("OS_CACERT", certPath)
+	plugin, err := auth.AuthOptionsFromEnv()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, int32(1), calls.Load())
+
+	provider := &gophercloud.ProviderClient{HTTPClient: *server.Client()}
+	result, err := plugin.Authenticate(context.Background(), provider)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "discovered-token", result.TokenID)
+	th.AssertEquals(t, int32(2), calls.Load())
+}
+
+func TestAuthOptionsFromEnvGenericTLS(t *testing.T) {
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodGet)
+		fmt.Fprintf(w, `{"versions":{"values":[{"id":"v2.0","status":"stable","links":[{"href":%q,"rel":"self"}]}]}}`, "https://"+r.Host+"/v2.0/")
+	}))
+	defer server.Close()
+
+	t.Setenv("OS_AUTH_TYPE", "password")
+	t.Setenv("OS_AUTH_URL", server.URL)
+	t.Setenv("OS_USERNAME", "user")
+	t.Setenv("OS_PASSWORD", "secret")
+	certPath := filepath.Join(t.TempDir(), "ca.pem")
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: server.Certificate().Raw})
+	th.AssertNoErr(t, os.WriteFile(certPath, certPEM, 0600))
+	t.Setenv("OS_CACERT", certPath)
+
+	got, err := auth.AuthOptionsFromEnv()
+	th.AssertNoErr(t, err)
+	if _, ok := got.(auth.AuthOptionsV2); !ok {
+		t.Fatalf("expected v2 options from TLS discovery, got %T", got)
+	}
+
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	th.AssertNoErr(t, os.WriteFile(filepath.Join(home, "ca.pem"), certPEM, 0600))
+	t.Setenv("OS_CACERT", "~/ca.pem")
+	got, err = auth.AuthOptionsFromEnv()
+	th.AssertNoErr(t, err)
+	if _, ok := got.(auth.AuthOptionsV2); !ok {
+		t.Fatalf("expected v2 options with tilde-expanded CA path, got %T", got)
+	}
+
+	t.Setenv("OS_CACERT", filepath.Join(t.TempDir(), "missing.pem"))
+	if _, err := auth.AuthOptionsFromEnv(); err == nil {
+		t.Fatal("expected invalid CA path to fail")
 	}
 }
 

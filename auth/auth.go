@@ -108,10 +108,6 @@ func (ao AuthOptionsV2) GetAuthURL() string {
 }
 
 func (ao AuthOptionsV2) Authenticate(ctx context.Context, provider *gophercloud.ProviderClient) (*AuthResult, error) {
-	return ao.authenticate(ctx, provider, ao.GetAuthURL())
-}
-
-func (ao AuthOptionsV2) authenticate(ctx context.Context, provider *gophercloud.ProviderClient, endpoint string) (*AuthResult, error) {
 	if ao.Auth == nil {
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
@@ -130,7 +126,7 @@ func (ao AuthOptionsV2) authenticate(ctx context.Context, provider *gophercloud.
 
 	client := &gophercloud.ServiceClient{
 		ProviderClient: provider,
-		Endpoint:       gophercloud.NormalizeURL(endpoint),
+		Endpoint:       gophercloud.NormalizeURL(ao.GetAuthURL()),
 	}
 
 	var result gophercloud.Result
@@ -163,10 +159,6 @@ func (ao AuthOptionsV3) GetAuthURL() string {
 }
 
 func (ao AuthOptionsV3) Authenticate(ctx context.Context, provider *gophercloud.ProviderClient) (*AuthResult, error) {
-	return ao.authenticate(ctx, provider, ao.GetAuthURL())
-}
-
-func (ao AuthOptionsV3) authenticate(ctx context.Context, provider *gophercloud.ProviderClient, endpoint string) (*AuthResult, error) {
 	if ao.Auth == nil {
 		return nil, gophercloud.ErrMissingInput{Argument: "Auth"}
 	}
@@ -177,7 +169,7 @@ func (ao AuthOptionsV3) authenticate(ctx context.Context, provider *gophercloud.
 
 	client := &gophercloud.ServiceClient{
 		ProviderClient: provider,
-		Endpoint:       gophercloud.NormalizeURL(endpoint),
+		Endpoint:       gophercloud.NormalizeURL(ao.GetAuthURL()),
 	}
 	tokenURL := client.ServiceURL("auth", "tokens")
 
