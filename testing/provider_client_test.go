@@ -167,15 +167,15 @@ func TestConcurrentReauth(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
+	throwaway := *p
+	throwaway.SetThrowaway(true)
 	p.ReauthFunc = func(_ context.Context) error {
-		p.SetThrowaway(true)
 		time.Sleep(1 * time.Second)
-		p.AuthenticatedHeaders()
+		throwaway.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
-		p.TokenID = postreauthTok
-		p.SetThrowaway(false)
+		p.SetToken(postreauthTok)
 		return nil
 	}
 
@@ -336,6 +336,8 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
+	throwaway := *p
+	throwaway.SetThrowaway(true)
 	p.ReauthFunc = func(_ context.Context) error {
 		info.mut.RLock()
 		if info.numreauths == 0 {
@@ -345,13 +347,11 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		} else {
 			info.mut.RUnlock()
 		}
-		p.SetThrowaway(true)
-		p.AuthenticatedHeaders()
+		throwaway.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
-		p.TokenID = postreauthTok
-		p.SetThrowaway(false)
+		p.SetToken(postreauthTok)
 		return nil
 	}
 
