@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -365,6 +366,61 @@ func (client *ProviderClient) Request(ctx context.Context, method, url string, o
 	})
 }
 
+// httpClientForRequest returns a copy of client.HTTPClient to issue one request
+// with. When the caller has not set a redirect policy, the copy gets
+// stripTokenOnCrossOriginRedirect, so the token never travels to another
+// origin than the one it was sent to. A CheckRedirect set by the caller is
+// used as is.
+func (client *ProviderClient) httpClientForRequest() *http.Client {
+	httpClient := client.HTTPClient
+	if httpClient.CheckRedirect == nil {
+		httpClient.CheckRedirect = stripTokenOnCrossOriginRedirect
+	}
+	return &httpClient
+}
+
+// stripTokenOnCrossOriginRedirect is the redirect policy applied when the
+// caller sets none. It keeps net/http's limit of ten redirects and follows
+// every redirect, but a redirect to another origin (scheme, host or port)
+// than the original request goes out without X-Auth-Token.
+//
+// net/http removes Authorization on a cross-host redirect by itself and knows
+// nothing about the OpenStack token header. Without this policy a redirect
+// from a configured endpoint, for example from a proxy or load balancer
+// rewrite, a lapsed DNS name a service still redirects to, or an https to
+// http downgrade, hands the token to whatever host the Location header
+// names. The original request is the reference, so a chain that leaves the
+// origin and comes back does not regain the token.
+func stripTokenOnCrossOriginRedirect(req *http.Request, via []*http.Request) error {
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 redirects")
+	}
+	if !sameOrigin(via[0].URL, req.URL) {
+		req.Header.Del("X-Auth-Token")
+	}
+	return nil
+}
+
+// sameOrigin reports whether two URLs share scheme, host and effective port.
+func sameOrigin(a, b *url.URL) bool {
+	return strings.EqualFold(a.Scheme, b.Scheme) &&
+		strings.EqualFold(a.Hostname(), b.Hostname()) &&
+		portOrDefault(a) == portOrDefault(b)
+}
+
+func portOrDefault(u *url.URL) string {
+	if port := u.Port(); port != "" {
+		return port
+	}
+	switch strings.ToLower(u.Scheme) {
+	case "http":
+		return "80"
+	case "https":
+		return "443"
+	}
+	return ""
+}
+
 func (client *ProviderClient) doRequest(ctx context.Context, method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {
 	var body io.Reader
 	var contentType *string
@@ -432,7 +488,7 @@ func (client *ProviderClient) doRequest(ctx context.Context, method, url string,
 	prereqtok := req.Header.Get("X-Auth-Token")
 
 	// Issue the request.
-	resp, err := client.HTTPClient.Do(req)
+	resp, err := client.httpClientForRequest().Do(req)
 	if err != nil {
 		if client.RetryFunc != nil {
 			var e error
