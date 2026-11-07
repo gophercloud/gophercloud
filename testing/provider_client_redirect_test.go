@@ -96,6 +96,34 @@ func TestTokenFollowsSameOriginRedirect(t *testing.T) {
 	th.AssertEquals(t, "TOKEN", target.header("/landed/servers", "X-Auth-Token"))
 }
 
+// net/http rebuilds every redirected request from the original one, so a
+// chain that leaves the origin and comes back must not regain the token.
+func TestTokenStaysOffWhenChainReturnsToOrigin(t *testing.T) {
+	target := &redirectTarget{seen: map[string]http.Header{}}
+	var origin, other *httptest.Server
+	mux := http.NewServeMux()
+	mux.Handle("/landed/", target)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, other.URL+"/bounce"+r.URL.Path, http.StatusFound)
+	})
+	origin = httptest.NewServer(mux)
+	defer origin.Close()
+	other = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, localhostURL(t, origin)+"landed"+r.URL.Path[len("/bounce"):], http.StatusFound)
+	}))
+	defer other.Close()
+
+	endpoint := localhostURL(t, origin)
+	provider := &gophercloud.ProviderClient{IdentityBase: endpoint, IdentityEndpoint: endpoint}
+	provider.SetToken("TOKEN")
+	client := &gophercloud.ServiceClient{ProviderClient: provider, Endpoint: endpoint}
+
+	var out map[string]any
+	_, err := client.Get(context.Background(), endpoint+"servers", &out, nil)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", target.header("/landed/servers", "X-Auth-Token"))
+}
+
 func TestCallerRedirectPolicyIsKept(t *testing.T) {
 	target := &redirectTarget{seen: map[string]http.Header{}}
 	targetServer := httptest.NewServer(target)

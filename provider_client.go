@@ -395,10 +395,24 @@ func stripTokenOnCrossOriginRedirect(req *http.Request, via []*http.Request) err
 	if len(via) >= 10 {
 		return errors.New("stopped after 10 redirects")
 	}
-	if !sameOrigin(via[0].URL, req.URL) {
+	if leftOrigin(via, req) {
 		req.Header.Del("X-Auth-Token")
 	}
 	return nil
+}
+
+// leftOrigin reports whether req, or any redirect before it, is on another
+// origin than the original request. net/http rebuilds every redirected
+// request from the original one, so once a chain has left the origin the
+// token must stay off even on a hop that comes back.
+func leftOrigin(via []*http.Request, req *http.Request) bool {
+	origin := via[0].URL
+	for _, hop := range via[1:] {
+		if !sameOrigin(origin, hop.URL) {
+			return true
+		}
+	}
+	return !sameOrigin(origin, req.URL)
 }
 
 // sameOrigin reports whether two URLs share scheme, host and effective port.
