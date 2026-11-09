@@ -50,7 +50,8 @@ func TestSecurityServiceList(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	th.AssertNoErr(t, err)
 
-	expected := make(map[string]int)
+	expected := make(map[string]bool)
+	var expectedIDs []string
 	for range 2 {
 		service, err := securityservices.Create(ctx, client, securityservices.CreateOpts{
 			Name: tools.RandomString("ACPTTEST-list-", 16),
@@ -64,45 +65,24 @@ func TestSecurityServiceList(t *testing.T) {
 				t.Errorf("Unable to delete security service %s: %v", service.ID, err)
 			}
 		})
-		expected[service.ID] = 1
+		expected[service.ID] = true
+		expectedIDs = append(expectedIDs, service.ID)
 	}
 
-	for _, allPages := range []bool{false, true} {
-		name := "EachPage"
-		if allPages {
-			name = "AllPages"
+	// Require one actual collection GET per traversal, not only one callback.
+	// Unrelated services may exist in the acceptance project.
+	tools.CheckSinglePage(t, ctx, client, client.ServiceURL("security-services", "detail"), func() pagination.Pager {
+		return securityservices.List(client, nil)
+	}, func(page pagination.Page) ([]string, error) {
+		items, err := securityservices.ExtractSecurityServices(page)
+		var ids []string
+		for _, item := range items {
+			if expected[item.ID] {
+				ids = append(ids, item.ID)
+			}
 		}
-		t.Run(name, func(t *testing.T) {
-			actual := make(map[string]int)
-			collect := func(page pagination.Page) error {
-				items, err := securityservices.ExtractSecurityServices(page)
-				if err != nil {
-					return err
-				}
-				for _, item := range items {
-					if _, ok := expected[item.ID]; ok {
-						actual[item.ID]++
-					}
-				}
-				return nil
-			}
-			pager := securityservices.List(client, nil)
-			if allPages {
-				page, err := pager.AllPages(ctx)
-				th.AssertNoErr(t, err)
-				th.AssertNoErr(t, collect(page))
-			} else {
-				pages := 0
-				err := pager.EachPage(ctx, func(_ context.Context, page pagination.Page) (bool, error) {
-					pages++
-					return true, collect(page)
-				})
-				th.AssertNoErr(t, err)
-				th.CheckEquals(t, 1, pages)
-			}
-			th.CheckDeepEquals(t, expected, actual)
-		})
-	}
+		return ids, err
+	}, expectedIDs)
 }
 
 // The test creates 2 security services and verifies that only the one(s) with
