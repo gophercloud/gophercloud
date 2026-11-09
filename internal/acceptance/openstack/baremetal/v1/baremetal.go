@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"slices"
 	"testing"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/nodes"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/portgroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/ports"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -262,4 +264,60 @@ func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Por
 
 	t.Logf("Deleted port: %s", port.UUID)
 
+}
+
+// CheckPagination lists a resource with a page size of one and checks that
+// EachPage and AllPages follow every "next" link. list returns a new pager for
+// the given page size, where 0 means the server default. ids returns the UUIDs
+// on a page. created holds the UUIDs of the resources the test made.
+func CheckPagination(t *testing.T, list func(limit int) pagination.Pager, ids func(pagination.Page) ([]string, error), created []string) {
+	ctx := context.TODO()
+
+	// The default page size is 1000, so a single request returns the whole
+	// collection without relying on the "next" link.
+	page, err := list(0).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	expected, err := ids(page)
+	th.AssertNoErr(t, err)
+	slices.Sort(expected)
+	for _, id := range created {
+		if !slices.Contains(expected, id) {
+			t.Fatalf("Created resource %s is missing from the unpaginated list", id)
+		}
+	}
+	if len(expected) < len(created) {
+		t.Fatalf("Expected at least %d resources, got %d", len(created), len(expected))
+	}
+
+	t.Run("EachPage", func(t *testing.T) {
+		var actual []string
+		pages := 0
+		err := list(1).EachPage(ctx, func(_ context.Context, page pagination.Page) (bool, error) {
+			pageIDs, err := ids(page)
+			if err != nil {
+				return false, err
+			}
+			pages++
+			th.CheckEquals(t, 1, len(pageIDs))
+			actual = append(actual, pageIDs...)
+			if pages > len(expected) {
+				return false, fmt.Errorf("got more than %d pages", len(expected))
+			}
+			return true, nil
+		})
+		th.AssertNoErr(t, err)
+		slices.Sort(actual)
+		t.Logf("EachPage visited %d pages", pages)
+		th.CheckEquals(t, len(expected), pages)
+		th.CheckDeepEquals(t, expected, actual)
+	})
+
+	t.Run("AllPages", func(t *testing.T) {
+		page, err := list(1).AllPages(ctx)
+		th.AssertNoErr(t, err)
+		actual, err := ids(page)
+		th.AssertNoErr(t, err)
+		slices.Sort(actual)
+		th.CheckDeepEquals(t, expected, actual)
+	})
 }
