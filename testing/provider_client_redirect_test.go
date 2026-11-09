@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -11,6 +12,10 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
+
+// landedPath is where every redirect in these tests lands: the "servers"
+// request, under the target's /landed/ prefix.
+const landedPath = "/landed/servers"
 
 // redirectTarget records the headers of every request it receives.
 type redirectTarget struct {
@@ -23,13 +28,14 @@ func (t *redirectTarget) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.seen[r.URL.Path] = r.Header.Clone()
 	t.mu.Unlock()
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{}`))
+	fmt.Fprint(w, "{}")
 }
 
-func (t *redirectTarget) header(path, name string) string {
+// header returns a header of the request that landed on landedPath.
+func (t *redirectTarget) header(name string) string {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	return t.seen[path].Get(name)
+	return t.seen[landedPath].Get(name)
 }
 
 // localhostURL re-addresses an httptest server, which listens on 127.0.0.1,
@@ -68,9 +74,9 @@ func TestTokenDoesNotFollowCrossOriginRedirect(t *testing.T) {
 	_, err := client.Get(context.Background(), client.Endpoint+"servers", &out, nil)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, "", target.header("/landed/servers", "X-Auth-Token"))
+	th.AssertEquals(t, "", target.header("X-Auth-Token"))
 	// Other headers still follow the redirect.
-	th.AssertEquals(t, true, target.header("/landed/servers", "User-Agent") != "")
+	th.AssertEquals(t, true, target.header("User-Agent") != "")
 }
 
 func TestTokenFollowsSameOriginRedirect(t *testing.T) {
@@ -93,7 +99,7 @@ func TestTokenFollowsSameOriginRedirect(t *testing.T) {
 	_, err := client.Get(context.Background(), endpoint+"servers", &out, nil)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, "TOKEN", target.header("/landed/servers", "X-Auth-Token"))
+	th.AssertEquals(t, "TOKEN", target.header("X-Auth-Token"))
 }
 
 // net/http rebuilds every redirected request from the original one, so a
@@ -121,7 +127,7 @@ func TestTokenStaysOffWhenChainReturnsToOrigin(t *testing.T) {
 	var out map[string]any
 	_, err := client.Get(context.Background(), endpoint+"servers", &out, nil)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "", target.header("/landed/servers", "X-Auth-Token"))
+	th.AssertEquals(t, "", target.header("X-Auth-Token"))
 }
 
 func TestCallerRedirectPolicyIsKept(t *testing.T) {
