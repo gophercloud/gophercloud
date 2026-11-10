@@ -19,10 +19,11 @@ import (
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
-func TestInstanceHAReadOnly(t *testing.T) {
+func setupInstanceHAReadOnly(t *testing.T) (context.Context, *gophercloud.ServiceClient) {
+	t.Helper()
 	clients.RequireAdmin(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
-	defer cancel()
+	t.Cleanup(cancel)
 	opts, err := openstack.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
 	provider, err := openstack.AuthenticatedClient(ctx, opts)
@@ -30,7 +31,11 @@ func TestInstanceHAReadOnly(t *testing.T) {
 	client, err := openstack.NewInstanceHAV1(ctx, provider, gophercloud.EndpointOpts{Region: os.Getenv("OS_REGION_NAME")})
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.3"
-	hostCount, moveCount := 0, 0
+	return ctx, client
+}
+
+func TestInstanceHASegmentsReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
 	segmentPages, err := segments.List(client, segments.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
 	th.AssertNoErr(t, err)
 	segmentItems, err := segments.ExtractSegments(segmentPages)
@@ -56,6 +61,21 @@ func TestInstanceHAReadOnly(t *testing.T) {
 		detail, err := segments.Get(ctx, client, segment.UUID).Extract()
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, segment.UUID, detail.UUID)
+	}
+	if len(segmentItems) == 0 {
+		t.Log("No segments available for filter and detail checks")
+	}
+	t.Logf("Read %d segments", len(segmentItems))
+}
+
+func TestInstanceHAHostsReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
+	segmentPages, err := segments.List(client, segments.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	segmentItems, err := segments.ExtractSegments(segmentPages)
+	th.AssertNoErr(t, err)
+	hostCount := 0
+	for _, segment := range segmentItems {
 		pages, err := hosts.List(client, segment.UUID, hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
 		th.AssertNoErr(t, err)
 		items, err := hosts.ExtractHosts(pages)
@@ -89,6 +109,14 @@ func TestInstanceHAReadOnly(t *testing.T) {
 			}
 		}
 	}
+	if hostCount == 0 {
+		t.Log("No hosts available for filter and detail checks")
+	}
+	t.Logf("Read %d hosts across %d segments", hostCount, len(segmentItems))
+}
+
+func TestInstanceHANotificationsReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
 	pages, err := notifications.List(client, notifications.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", GeneratedSince: time.Now().Add(-24 * time.Hour).UTC().Format(time.RFC3339)}).AllPages(ctx)
 	th.AssertNoErr(t, err)
 	items, err := notifications.ExtractNotifications(pages)
@@ -109,6 +137,21 @@ func TestInstanceHAReadOnly(t *testing.T) {
 		detail, err := notifications.Get(ctx, client, notification.UUID).Extract()
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, notification.UUID, detail.UUID)
+	}
+	if len(items) == 0 {
+		t.Log("No recent notifications available for filter and detail checks")
+	}
+	t.Logf("Read %d recent notifications", len(items))
+}
+
+func TestInstanceHAVMovesReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
+	pages, err := notifications.List(client, notifications.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", GeneratedSince: time.Now().Add(-24 * time.Hour).UTC().Format(time.RFC3339)}).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	items, err := notifications.ExtractNotifications(pages)
+	th.AssertNoErr(t, err)
+	moveCount := 0
+	for _, notification := range items {
 		if notification.Type != "COMPUTE_HOST" {
 			continue
 		}
@@ -134,5 +177,8 @@ func TestInstanceHAReadOnly(t *testing.T) {
 			th.AssertEquals(t, move.UUID, detail.UUID)
 		}
 	}
-	t.Logf("Read %d segments, %d hosts, %d recent notifications and %d VM moves", len(segmentItems), hostCount, len(items), moveCount)
+	if moveCount == 0 {
+		t.Log("No VM moves available for filter and detail checks; listing requires an existing COMPUTE_HOST notification")
+	}
+	t.Logf("Read %d VM moves across %d recent notifications", moveCount, len(items))
 }
