@@ -492,6 +492,9 @@ type ProvisionStateOpts struct {
 	DeploySteps    []DeployStep         `json:"deploy_steps,omitempty"`
 	ServiceSteps   []ServiceStep        `json:"service_steps,omitempty"`
 	RescuePassword string               `json:"rescue_password,omitempty"`
+	// Runbook is the UUID or name of a runbook to run instead of CleanSteps
+	// or ServiceSteps. This requires microversion 1.92 or later.
+	Runbook string `json:"runbook,omitempty"`
 }
 
 // ToProvisionStateMap assembles a request body based on the contents of a CreateOpts.

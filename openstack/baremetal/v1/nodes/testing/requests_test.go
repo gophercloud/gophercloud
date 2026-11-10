@@ -414,6 +414,20 @@ func TestNodeChangeProvisionStateService(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestNodeChangeProvisionStateServiceWithRunbook(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleNodeChangeProvisionStateServiceWithRunbook(t, fakeServer)
+
+	c := client.ServiceClient(fakeServer)
+	err := nodes.ChangeProvisionState(context.TODO(), c, "1234asdf", nodes.ProvisionStateOpts{
+		Target:  nodes.TargetService,
+		Runbook: "CUSTOM_AWESOME",
+	}).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
+
 func TestChangePowerState(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()

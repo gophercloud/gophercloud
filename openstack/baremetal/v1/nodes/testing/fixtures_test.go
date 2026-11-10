@@ -1648,6 +1648,15 @@ func HandleNodeChangeProvisionStateService(t *testing.T, fakeServer th.FakeServe
 	})
 }
 
+func HandleNodeChangeProvisionStateServiceWithRunbook(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{"target": "service", "runbook": "CUSTOM_AWESOME"}`)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
 // HandleChangePowerStateSuccessfully sets up the test server to respond to a change power state request for a node
 func HandleChangePowerStateSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 	fakeServer.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
