@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
 	"time"
 
@@ -28,36 +27,24 @@ const fixture = `{
     }
 }`
 
-func check(t *testing.T, actual, expected string) {
-	t.Helper()
-	if actual != expected {
-		t.Errorf("expected %q, got %q", expected, actual)
-	}
-}
-
-func TestListAndGet(t *testing.T) {
+func TestList(t *testing.T) {
 	calls := 0
 	server := th.SetupHTTP()
 	defer server.Teardown()
-	server.Mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		check(t, req.Method, "GET")
-		check(t, req.Header.Get("OpenStack-API-Version"), "instance-ha 1.3")
+	server.Mux.HandleFunc("/segments/segment/hosts", func(w http.ResponseWriter, req *http.Request) {
+		th.TestMethod(t, req, "GET")
+		th.TestHeader(t, req, "OpenStack-API-Version", "instance-ha 1.3")
 		w.Header().Set("Content-Type", "application/json")
-		if req.URL.Path == "/segments/segment/hosts/resource" {
-			fmt.Fprint(w, `{"host":`+fixture+`}`)
-			return
-		}
-		check(t, req.URL.Path, "/segments/segment/hosts")
 		calls++
 		q := req.URL.Query()
-		check(t, q.Get("limit"), "1")
-		check(t, q.Get("sort_key"), "id")
-		check(t, q.Get("sort_dir"), "asc")
-		check(t, q.Get("name"), "compute-1")
-		check(t, q.Get("type"), "COMPUTE_HOST")
-		check(t, q.Get("control_attributes"), "SSH")
-		check(t, q.Get("reserved"), "false")
-		check(t, q.Get("on_maintenance"), "false")
+		th.CheckEquals(t, "1", q.Get("limit"))
+		th.CheckEquals(t, "id", q.Get("sort_key"))
+		th.CheckEquals(t, "asc", q.Get("sort_dir"))
+		th.CheckEquals(t, "compute-1", q.Get("name"))
+		th.CheckEquals(t, "COMPUTE_HOST", q.Get("type"))
+		th.CheckEquals(t, "SSH", q.Get("control_attributes"))
+		th.CheckEquals(t, "false", q.Get("reserved"))
+		th.CheckEquals(t, "false", q.Get("on_maintenance"))
 		switch q.Get("marker") {
 		case "":
 			fmt.Fprint(w, `{"hosts":[`+fixture+`]}`)
@@ -71,17 +58,34 @@ func TestListAndGet(t *testing.T) {
 	disabled := false
 	opts := hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", Name: "compute-1", Type: "COMPUTE_HOST", ControlAttributes: "SSH", Reserved: &disabled, OnMaintenance: &disabled}
 	pages, err := hosts.List(client, "segment", opts).AllPages(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 	items, err := hosts.ExtractHosts(pages)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, len(items))
+	th.CheckDeepEquals(t, expectedHost(), items[0])
+	th.CheckEquals(t, 2, calls)
+}
+
+func TestGet(t *testing.T) {
+	server := th.SetupHTTP()
+	defer server.Teardown()
+	server.Mux.HandleFunc("/segments/segment/hosts/resource", func(w http.ResponseWriter, req *http.Request) {
+		th.TestMethod(t, req, "GET")
+		th.TestHeader(t, req, "OpenStack-API-Version", "instance-ha 1.3")
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"host":`+fixture+`}`)
+	})
+	client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint(), Type: "instance-ha", Microversion: "1.3"}
+	item, err := hosts.Get(context.Background(), client, "segment", "resource").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expectedHost(), *item)
+}
+
+func expectedHost() hosts.Host {
 	enabled := true
 	created := gophercloud.JSONRFC3339MilliNoZ(time.Date(2026, 10, 1, 12, 30, 0, 123456000, time.UTC))
 	updated := gophercloud.JSONRFC3339MilliNoZ(time.Date(2026, 10, 2, 12, 30, 0, 654321000, time.UTC))
-	expected := hosts.Host{
+	return hosts.Host{
 		ID: 7, UUID: "host", Name: "compute-1", Type: "COMPUTE_HOST",
 		ControlAttributes: "SSH", Reserved: true, OnMaintenance: false,
 		FailoverSegmentID: "segment", CreatedAt: created, UpdatedAt: updated,
@@ -90,19 +94,6 @@ func TestListAndGet(t *testing.T) {
 			ServiceType: "COMPUTE", RecoveryMethod: "auto", Enabled: &enabled,
 			CreatedAt: created,
 		},
-	}
-	if len(items) != 1 || !reflect.DeepEqual(items[0], expected) {
-		t.Fatalf("unexpected resources: %#v", items)
-	}
-	if calls != 2 {
-		t.Fatalf("expected two pages, got %d", calls)
-	}
-	item, err := hosts.Get(context.Background(), client, "segment", "resource").Extract()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(*item, expected) {
-		t.Fatalf("unexpected resource: %#v", item)
 	}
 }
 
@@ -129,8 +120,10 @@ func TestListErrors(t *testing.T) {
 			})
 			client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint()}
 			_, err := hosts.List(client, "segment", nil).AllPages(context.Background())
-			if (err != nil) != tc.wantError {
-				t.Fatalf("unexpected error: %v", err)
+			if tc.wantError {
+				th.AssertErr(t, err)
+			} else {
+				th.AssertNoErr(t, err)
 			}
 		})
 	}
@@ -157,23 +150,17 @@ func TestGetTimestampsAndNullableFields(t *testing.T) {
 			client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint()}
 			host, err := hosts.Get(context.Background(), client, "segment", "host").Extract()
 			if tc.wantError {
-				if err == nil {
-					t.Fatal("expected a timestamp decoding error")
-				}
+				th.AssertErr(t, err)
 				return
 			}
 			th.AssertNoErr(t, err)
 			if tc.name == "null fields" {
-				if host.FailoverSegment != nil || !time.Time(host.CreatedAt).IsZero() || !time.Time(host.UpdatedAt).IsZero() || !time.Time(host.DeletedAt).IsZero() {
-					t.Fatalf("unexpected nullable fields: %#v", host)
-				}
+				th.CheckDeepEquals(t, hosts.Host{}, *host)
 			} else {
 				expected := time.Date(2026, 10, 3, 12, 30, 0, 123456000, time.UTC)
 				th.AssertEquals(t, true, host.Deleted)
 				th.AssertEquals(t, expected, time.Time(host.DeletedAt))
-				if host.FailoverSegment == nil {
-					t.Fatal("missing embedded segment")
-				}
+				th.AssertTrue(t, host.FailoverSegment != nil)
 				th.AssertEquals(t, true, host.FailoverSegment.Deleted)
 				th.AssertEquals(t, expected, time.Time(host.FailoverSegment.DeletedAt))
 			}
