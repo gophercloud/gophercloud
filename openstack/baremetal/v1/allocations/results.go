@@ -79,17 +79,14 @@ func (r AllocationPage) IsEmpty() (bool, error) {
 	return len(s) == 0, err
 }
 
-// NextPageURL uses the response's embedded link reference to navigate to the
-// next page of results.
+// NextPageURL returns the URL of the next page, which Ironic returns as the
+// top-level "next" field when more results are available.
 func (r AllocationPage) NextPageURL() (string, error) {
 	var s struct {
-		Links []gophercloud.Link `json:"allocations_links"`
+		Next string `json:"next"`
 	}
 	err := r.ExtractInto(&s)
-	if err != nil {
-		return "", err
-	}
-	return gophercloud.ExtractNextURL(s.Links)
+	return s.Next, err
 }
 
 // ExtractAllocations interprets the results of a single page from a List() call,
