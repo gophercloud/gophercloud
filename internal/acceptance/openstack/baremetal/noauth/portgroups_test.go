@@ -1,3 +1,5 @@
+//go:build acceptance || baremetal || portgroups
+
 package noauth
 
 import (
@@ -13,8 +15,9 @@ import (
 
 func TestPortGroupsCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
+	RequireIronicNoAuth(t)
 
-	client, err := clients.NewBareMetalV1Client()
+	client, err := clients.NewBareMetalV1NoAuthClient()
 	th.AssertNoErr(t, err)
 
 	// NOTE(sharpz7) - increased due to create fake node requiring it.

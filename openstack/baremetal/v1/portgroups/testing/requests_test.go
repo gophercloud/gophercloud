@@ -6,18 +6,17 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/baremetal/v1/portgroups"
 	"github.com/gophercloud/gophercloud/v2/pagination"
-	"github.com/gophercloud/gophercloud/v2/testhelper/client"
-
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
+	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
 func TestListPortGroups(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortGroupListSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortGroupListSuccessfully(t, fakeServer)
 
 	pages := 0
-	err := portgroups.List(client.ServiceClient(), portgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+	err := portgroups.List(client.ServiceClient(fakeServer), portgroups.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := portgroups.ExtractPortGroups(page)
@@ -44,11 +43,11 @@ func TestListPortGroups(t *testing.T) {
 }
 
 func TestCreatePortGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortGroupCreationSuccessfully(t, SinglePortGroupBody)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortGroupCreationSuccessfully(t, fakeServer, SinglePortGroupBody)
 
-	actual, err := portgroups.Create(context.TODO(), client.ServiceClient(), portgroups.CreateOpts{
+	actual, err := portgroups.Create(context.TODO(), client.ServiceClient(fakeServer), portgroups.CreateOpts{
 		Name:                     "bond0",
 		NodeUUID:                 "f9c9a846-c53f-4b17-9f0c-dd9f459d35c8",
 		Address:                  "00:1a:2b:3c:4d:5e",
@@ -71,20 +70,20 @@ func TestCreatePortGroup(t *testing.T) {
 }
 
 func TestDeletePortGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortGroupDeletionSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortGroupDeletionSuccessfully(t, fakeServer)
 
-	res := portgroups.Delete(context.TODO(), client.ServiceClient(), "d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796")
+	res := portgroups.Delete(context.TODO(), client.ServiceClient(fakeServer), "d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetPortGroup(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePortGroupGetSuccessfully(t)
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandlePortGroupGetSuccessfully(t, fakeServer)
 
-	c := client.ServiceClient()
+	c := client.ServiceClient(fakeServer)
 	actual, err := portgroups.Get(context.TODO(), c, "d2b42f0d-c7e6-4f08-b9bc-e8b23a6ee796").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
