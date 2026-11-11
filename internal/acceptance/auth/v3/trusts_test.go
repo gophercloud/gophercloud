@@ -4,18 +4,14 @@ package v3
 
 import (
 	"context"
-	"fmt"
-	"maps"
-	"slices"
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	identityv3 "github.com/gophercloud/gophercloud/v2/internal/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/roles"
-	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/trusts"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/users"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
@@ -31,30 +27,10 @@ func TestTrustCRUD(t *testing.T) {
 	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	authData, err := ao.Auth.ToAuthBody()
+	result, err := ao.Authenticate(context.TODO(), client.ProviderClient)
 	th.AssertNoErr(t, err)
-	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
-	for method, body := range authData {
-		identity[method] = body
-	}
-	authBody := map[string]any{"identity": identity}
-	scope, err := ao.Auth.ToAuthScope()
-	th.AssertNoErr(t, err)
-	if scope != nil {
-		authBody["scope"] = scope
-	}
-	authHeaders, err := ao.Auth.ToAuthHeaders()
-	th.AssertNoErr(t, err)
-	headers := make(map[string]string, len(authHeaders))
-	for name, value := range authHeaders {
-		headers[name] = fmt.Sprint(value)
-	}
-	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
 
-	token, err := tokens.Create(context.TODO(), client, request).Extract()
-	th.AssertNoErr(t, err)
-	adminUser, err := tokens.Get(context.TODO(), client, token.ID, nil).ExtractUser()
-	th.AssertNoErr(t, err)
+	adminUser := &result.User
 
 	// Get the admin and member role IDs.
 	adminRoleID := ""
@@ -75,9 +51,9 @@ func TestTrustCRUD(t *testing.T) {
 	}
 
 	// Create a project to apply the trust.
-	trusteeProject, err := CreateProject(t, client, nil)
+	trusteeProject, err := identityv3.CreateProject(t, client, nil)
 	th.AssertNoErr(t, err)
-	defer DeleteProject(t, client, trusteeProject.ID)
+	defer identityv3.DeleteProject(t, client, trusteeProject.ID)
 
 	tools.PrintResource(t, trusteeProject)
 
@@ -95,13 +71,13 @@ func TestTrustCRUD(t *testing.T) {
 		Password: "secret",
 		DomainID: "default",
 	}
-	trusteeUser, err := CreateUser(t, client, &trusteeUserCreateOpts)
+	trusteeUser, err := identityv3.CreateUser(t, client, &trusteeUserCreateOpts)
 	th.AssertNoErr(t, err)
-	defer DeleteUser(t, client, trusteeUser.ID)
+	defer identityv3.DeleteUser(t, client, trusteeUser.ID)
 
 	expiresAt := time.Now().Add(time.Minute).Truncate(time.Second).In(time.FixedZone("UTC+5:45", 5*3600+45*60))
 	// Create a trust.
-	trust, err := CreateTrust(t, client, trusts.CreateOpts{
+	trust, err := identityv3.CreateTrust(t, client, trusts.CreateOpts{
 		TrusteeUserID: trusteeUser.ID,
 		TrustorUserID: adminUser.ID,
 		ProjectID:     trusteeProject.ID,
@@ -113,9 +89,9 @@ func TestTrustCRUD(t *testing.T) {
 		},
 	})
 	th.AssertNoErr(t, err)
-	defer DeleteTrust(t, client, trust.ID)
+	defer identityv3.DeleteTrust(t, client, trust.ID)
 
-	trust, err = FindTrust(t, client)
+	trust, err = identityv3.FindTrust(t, client)
 	th.AssertNoErr(t, err)
 
 	// Get trust

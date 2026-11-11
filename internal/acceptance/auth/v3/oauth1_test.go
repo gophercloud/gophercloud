@@ -4,9 +4,6 @@ package v3
 
 import (
 	"context"
-	"fmt"
-	"maps"
-	"slices"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -28,42 +25,19 @@ func TestOAuth1CRUD(t *testing.T) {
 	ao, err := auth.AuthOptionsFromEnvV3()
 	th.AssertNoErr(t, err)
 
-	authData, err := ao.Auth.ToAuthBody()
+	result, err := ao.Authenticate(context.TODO(), client.ProviderClient)
 	th.AssertNoErr(t, err)
-	identity := map[string]any{"methods": slices.Sorted(maps.Keys(authData))}
-	for method, body := range authData {
-		identity[method] = body
-	}
-	authBody := map[string]any{"identity": identity}
-	scope, err := ao.Auth.ToAuthScope()
-	th.AssertNoErr(t, err)
-	if scope != nil {
-		authBody["scope"] = scope
-	}
-	authHeaders, err := ao.Auth.ToAuthHeaders()
-	th.AssertNoErr(t, err)
-	headers := make(map[string]string, len(authHeaders))
-	for name, value := range authHeaders {
-		headers[name] = fmt.Sprint(value)
-	}
-	request := gophercloud.RawRequest{Body: map[string]any{"auth": authBody}, Headers: headers}
 
-	tokenRes := tokens.Create(context.TODO(), client, request)
-	token, err := tokenRes.Extract()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, token)
-
-	user, err := tokenRes.ExtractUser()
-	th.AssertNoErr(t, err)
+	tools.PrintResource(t, result)
+	user := &result.User
 	tools.PrintResource(t, user)
-
-	roles, err := tokenRes.ExtractRoles()
-	th.AssertNoErr(t, err)
-	tools.PrintResource(t, roles)
-
-	project, err := tokenRes.ExtractProject()
-	th.AssertNoErr(t, err)
+	project := result.Project
+	if project == nil {
+		t.Fatal("authentication did not return a project")
+	}
 	tools.PrintResource(t, project)
+	roles := result.Roles
+	tools.PrintResource(t, roles)
 
 	// Create a consumer
 	createConsumerOpts := oauth1.CreateConsumerOpts{
@@ -110,7 +84,7 @@ func TestOAuth1CRUD(t *testing.T) {
 	}
 }
 
-func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer *oauth1.Consumer, method oauth1.SignatureMethod, user *tokens.User, project *tokens.Project, roles []tokens.Role) {
+func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer *oauth1.Consumer, method oauth1.SignatureMethod, user *auth.User, project *auth.Project, roles []auth.Role) {
 	// Request a token
 	requestTokenOpts := oauth1.RequestTokenOpts{
 		OAuthConsumerKey:     consumer.ID,
