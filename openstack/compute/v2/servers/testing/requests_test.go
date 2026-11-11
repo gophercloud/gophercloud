@@ -1232,3 +1232,20 @@ func TestListServersPaginated(t *testing.T) {
 	th.AssertEquals(t, 2, pages)
 	th.AssertDeepEquals(t, []string{"herp", "derp", "merp"}, names)
 }
+
+func TestListServersMalformedPage(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerListMalformedSuccessfully(t, fakeServer)
+
+	err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		_, err := servers.ExtractServers(page)
+		return err == nil, err
+	})
+	th.AssertErr(t, err)
+
+	allPages, err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	_, err = servers.ExtractServers(allPages)
+	th.AssertErr(t, err)
+}

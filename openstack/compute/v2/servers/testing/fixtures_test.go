@@ -1419,3 +1419,15 @@ func HandleServerListPaginatedSuccessfully(t *testing.T, fakeServer th.FakeServe
 		}
 	})
 }
+
+// HandleServerListMalformedSuccessfully sets up the test server to respond to
+// a server List request with a server whose id is not a string.
+func HandleServerListMalformedSuccessfully(t *testing.T, fakeServer th.FakeServer) {
+	fakeServer.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, `{"servers": [{"id": 5, "name": "herp"}]}`)
+	})
+}
