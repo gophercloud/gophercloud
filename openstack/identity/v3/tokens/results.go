@@ -248,6 +248,16 @@ type Token struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
+// TokenExpiry returns the timestamp at which the token in this result expires,
+// or the zero time if the token is unknown.
+func (r commonResult) TokenExpiry() time.Time {
+	token, err := r.ExtractToken()
+	if err != nil {
+		return time.Time{}
+	}
+	return token.ExpiresAt
+}
+
 func (r commonResult) ExtractInto(v any) error {
 	return r.ExtractIntoStructPtr(v, "token")
 }
