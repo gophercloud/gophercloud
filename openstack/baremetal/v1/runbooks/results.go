@@ -88,7 +88,7 @@ func (r RunbookPage) IsEmpty() (bool, error) {
 
 // NextPageURL returns the URL of the next page, which Ironic returns as
 // "next" when more results are available.
-func (r RunbookPage) NextPageURL(endpointURL string) (string, error) {
+func (r RunbookPage) NextPageURL() (string, error) {
 	var s struct {
 		Next string `json:"next"`
 	}
