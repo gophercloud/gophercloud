@@ -1,0 +1,176 @@
+//go:build acceptance || instanceha
+
+package v1
+
+import (
+	"context"
+	"slices"
+	"testing"
+	"time"
+
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
+	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/hosts"
+	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/notifications"
+	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/segments"
+	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/vmoves"
+	th "github.com/gophercloud/gophercloud/v2/testhelper"
+)
+
+func setupInstanceHAReadOnly(t *testing.T) (context.Context, *gophercloud.ServiceClient) {
+	t.Helper()
+	clients.RequireAdmin(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	t.Cleanup(cancel)
+	client, err := clients.NewInstanceHAV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.3"
+	return ctx, client
+}
+
+func TestInstanceHASegmentsReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
+	segmentPages, err := segments.List(client, segments.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	segmentItems, err := segments.ExtractSegments(segmentPages)
+	th.AssertNoErr(t, err)
+	for segmentIndex, segment := range segmentItems {
+		if segmentIndex == 0 {
+			pages, err := segments.List(client, segments.ListOpts{Limit: 1, SortKey: "id", SortDir: "desc", RecoveryMethod: segment.RecoveryMethod, ServiceType: segment.ServiceType, Enabled: segment.Enabled}).AllPages(ctx)
+			th.AssertNoErr(t, err)
+			filtered, err := segments.ExtractSegments(pages)
+			th.AssertNoErr(t, err)
+			th.AssertEquals(t, true, slices.ContainsFunc(filtered, func(item segments.Segment) bool { return item.UUID == segment.UUID }))
+			for _, item := range filtered {
+				th.AssertEquals(t, segment.RecoveryMethod, item.RecoveryMethod)
+				th.AssertEquals(t, segment.ServiceType, item.ServiceType)
+				if segment.Enabled != nil {
+					if item.Enabled == nil {
+						t.Fatal("filtered segment is missing enabled")
+					}
+					th.AssertEquals(t, *segment.Enabled, *item.Enabled)
+				}
+			}
+		}
+		detail, err := segments.Get(ctx, client, segment.UUID).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, segment.UUID, detail.UUID)
+	}
+	if len(segmentItems) == 0 {
+		t.Log("No segments available for filter and detail checks")
+	}
+	t.Logf("Read %d segments", len(segmentItems))
+}
+
+func TestInstanceHAHostsReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
+	segmentPages, err := segments.List(client, segments.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	segmentItems, err := segments.ExtractSegments(segmentPages)
+	th.AssertNoErr(t, err)
+	hostCount := 0
+	for _, segment := range segmentItems {
+		pages, err := hosts.List(client, segment.UUID, hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
+		th.AssertNoErr(t, err)
+		items, err := hosts.ExtractHosts(pages)
+		th.AssertNoErr(t, err)
+		hostCount += len(items)
+		for hostIndex, host := range items {
+			if hostIndex == 0 {
+				pages, err := hosts.List(client, segment.UUID, hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "desc", Type: host.Type, Reserved: &host.Reserved, OnMaintenance: &host.OnMaintenance}).AllPages(ctx)
+				th.AssertNoErr(t, err)
+				filtered, err := hosts.ExtractHosts(pages)
+				th.AssertNoErr(t, err)
+				th.AssertEquals(t, true, slices.ContainsFunc(filtered, func(item hosts.Host) bool { return item.UUID == host.UUID }))
+				for _, item := range filtered {
+					th.AssertEquals(t, host.Type, item.Type)
+					th.AssertEquals(t, host.Reserved, item.Reserved)
+					th.AssertEquals(t, host.OnMaintenance, item.OnMaintenance)
+				}
+			}
+			detail, err := hosts.Get(ctx, client, segment.UUID, host.UUID).Extract()
+			th.AssertNoErr(t, err)
+			th.AssertEquals(t, host.UUID, detail.UUID)
+			th.AssertEquals(t, segment.UUID, detail.FailoverSegmentID)
+			if detail.FailoverSegment == nil {
+				t.Fatal("host response is missing its embedded failover segment")
+			}
+			th.AssertEquals(t, segment.UUID, detail.FailoverSegment.UUID)
+			if time.Time(detail.CreatedAt).IsZero() || time.Time(detail.FailoverSegment.CreatedAt).IsZero() {
+				t.Fatal("host or embedded segment creation time is missing")
+			}
+		}
+	}
+	if hostCount == 0 {
+		t.Log("No hosts available for filter and detail checks")
+	}
+	t.Logf("Read %d hosts across %d segments", hostCount, len(segmentItems))
+}
+
+func TestInstanceHANotificationsReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
+	pages, err := notifications.List(client, notifications.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", GeneratedSince: time.Now().Add(-24 * time.Hour).UTC().Format(time.RFC3339)}).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	items, err := notifications.ExtractNotifications(pages)
+	th.AssertNoErr(t, err)
+	for notificationIndex, notification := range items {
+		if notificationIndex == 0 {
+			pages, err := notifications.List(client, notifications.ListOpts{Limit: 1, SortKey: "id", SortDir: "desc", Status: notification.Status, Type: notification.Type, SourceHostUUID: notification.SourceHostUUID, GeneratedSince: time.Time(notification.GeneratedTime).Add(-time.Second).Format(time.RFC3339)}).AllPages(ctx)
+			th.AssertNoErr(t, err)
+			filtered, err := notifications.ExtractNotifications(pages)
+			th.AssertNoErr(t, err)
+			th.AssertEquals(t, true, slices.ContainsFunc(filtered, func(item notifications.Notification) bool { return item.UUID == notification.UUID }))
+			for _, item := range filtered {
+				th.AssertEquals(t, notification.Status, item.Status)
+				th.AssertEquals(t, notification.Type, item.Type)
+				th.AssertEquals(t, notification.SourceHostUUID, item.SourceHostUUID)
+			}
+		}
+		detail, err := notifications.Get(ctx, client, notification.UUID).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, notification.UUID, detail.UUID)
+	}
+	if len(items) == 0 {
+		t.Log("No recent notifications available for filter and detail checks")
+	}
+	t.Logf("Read %d recent notifications", len(items))
+}
+
+func TestInstanceHAVMovesReadOnly(t *testing.T) {
+	ctx, client := setupInstanceHAReadOnly(t)
+	pages, err := notifications.List(client, notifications.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", GeneratedSince: time.Now().Add(-24 * time.Hour).UTC().Format(time.RFC3339)}).AllPages(ctx)
+	th.AssertNoErr(t, err)
+	items, err := notifications.ExtractNotifications(pages)
+	th.AssertNoErr(t, err)
+	moveCount := 0
+	for _, notification := range items {
+		if notification.Type != "COMPUTE_HOST" {
+			continue
+		}
+		pages, err := vmoves.List(client, notification.UUID, vmoves.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc"}).AllPages(ctx)
+		th.AssertNoErr(t, err)
+		moves, err := vmoves.ExtractVMoves(pages)
+		th.AssertNoErr(t, err)
+		moveCount += len(moves)
+		for moveIndex, move := range moves {
+			if moveIndex == 0 {
+				pages, err := vmoves.List(client, notification.UUID, vmoves.ListOpts{Limit: 1, SortKey: "id", SortDir: "desc", Status: move.Status, Type: move.Type}).AllPages(ctx)
+				th.AssertNoErr(t, err)
+				filtered, err := vmoves.ExtractVMoves(pages)
+				th.AssertNoErr(t, err)
+				th.AssertEquals(t, true, slices.ContainsFunc(filtered, func(item vmoves.VMove) bool { return item.UUID == move.UUID }))
+				for _, item := range filtered {
+					th.AssertEquals(t, move.Status, item.Status)
+					th.AssertEquals(t, move.Type, item.Type)
+				}
+			}
+			detail, err := vmoves.Get(ctx, client, notification.UUID, move.UUID).Extract()
+			th.AssertNoErr(t, err)
+			th.AssertEquals(t, move.UUID, detail.UUID)
+		}
+	}
+	if moveCount == 0 {
+		t.Log("No VM moves available for filter and detail checks; listing requires an existing COMPUTE_HOST notification")
+	}
+	t.Logf("Read %d VM moves across %d recent notifications", moveCount, len(items))
+}
