@@ -578,46 +578,14 @@ func TestRequestFallsBackToCurrentTokenWhenProactiveReauthFails(t *testing.T) {
 	}
 }
 
-func TestRequestReauthsBeforeTokenExpirationByDefault(t *testing.T) {
+func TestRequestDoesNotReauthBeforeTokenExpirationByDefault(t *testing.T) {
 	var reauthCounter int
 	var reauthCounterMutex sync.Mutex
 
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
-	// ReauthBeforeTokenExpiration is left at its zero value: the default
-	// margin applies.
-	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(time.Minute)}); err != nil {
-		t.Fatalf("failed to set token: %v", err)
-	}
-	p.ReauthFunc = func(_ context.Context) error {
-		reauthCounterMutex.Lock()
-		reauthCounter++
-		reauthCounterMutex.Unlock()
-		return p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: "new-token", expiry: time.Now().Add(24 * time.Hour)})
-	}
-
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-
-	var gotToken string
-	if err := doRequestWithTokenCapture(p, fakeServer, &gotToken); err != nil {
-		t.Fatalf("request failed: %v", err)
-	}
-	if reauthCounter != 1 {
-		t.Errorf("expected 1 proactive reauthentication by default, got %d", reauthCounter)
-	}
-	if gotToken != "new-token" {
-		t.Errorf("expected request to carry the refreshed token %q, got %q", "new-token", gotToken)
-	}
-}
-
-func TestRequestDoesNotReauthBeforeTokenExpirationWhenDisabled(t *testing.T) {
-	var reauthCounter int
-	var reauthCounterMutex sync.Mutex
-
-	p := new(gophercloud.ProviderClient)
-	p.UseTokenLock()
-	p.ReauthBeforeTokenExpiration = -time.Second
+	// ReauthBeforeTokenExpiration is left at its zero value: proactive
+	// reauthentication is disabled by default.
 	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(time.Minute)}); err != nil {
 		t.Fatalf("failed to set token: %v", err)
 	}
@@ -636,7 +604,7 @@ func TestRequestDoesNotReauthBeforeTokenExpirationWhenDisabled(t *testing.T) {
 		t.Fatalf("request failed: %v", err)
 	}
 	if reauthCounter != 0 {
-		t.Errorf("expected no proactive reauthentication when disabled, got %d", reauthCounter)
+		t.Errorf("expected no proactive reauthentication by default, got %d", reauthCounter)
 	}
 	if gotToken != client.TokenID {
 		t.Errorf("expected request to carry the original token %q, got %q", client.TokenID, gotToken)

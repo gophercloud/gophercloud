@@ -20,12 +20,6 @@ const (
 	DefaultMaxBackoffRetries = 60
 )
 
-// defaultReauthBeforeTokenExpiration is the margin before token expiration at
-// which a client with a ReauthFunc proactively reauthenticates. It is smaller
-// than any realistic token lifetime, so it never causes reauthentication on
-// every request.
-const defaultReauthBeforeTokenExpiration = 5 * time.Minute
-
 // UserAgent represents a User-Agent header.
 type UserAgent struct {
 	// prepend is the slice of User-Agent strings to prepend to DefaultUserAgent.
@@ -94,16 +88,15 @@ type ProviderClient struct {
 
 	// ReauthBeforeTokenExpiration specifies how long before the token expires
 	// the client should reauthenticate proactively, before issuing a request
-	// that would carry the expiring token. On every request for which the
-	// token's expiration time is known, a request made within this window of
-	// the expiration triggers ReauthFunc before it is sent. If the
+	// that would carry the expiring token. If non-zero and the token's
+	// expiration time is known, a request made within this window of the
+	// expiration triggers ReauthFunc before it is sent. If the
 	// reauthentication fails, the request proceeds with the current token and
-	// a 401 response triggers the existing reauth-and-retry behavior.
+	// a 401 response triggers the existing reauth-and-retry behavior. A zero
+	// value disables proactive reauthentication.
 	//
-	// Proactive reauthentication is only active when ReauthFunc is set. A zero
-	// value uses the default margin (5 minutes); a negative value disables it.
-	//
-	// The margin should be smaller than the token lifetime; otherwise every
+	// Proactive reauthentication is only active when ReauthFunc is set. The
+	// margin should be smaller than the token lifetime; otherwise every
 	// request triggers a reauthentication.
 	ReauthBeforeTokenExpiration time.Duration
 
@@ -198,12 +191,8 @@ func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[str
 	if t == "" {
 		return nil, nil
 	}
-	margin := client.ReauthBeforeTokenExpiration
-	if client.ReauthFunc != nil && margin >= 0 {
-		if margin == 0 {
-			margin = defaultReauthBeforeTokenExpiration
-		}
-		if expiry := client.TokenExpiry(); !expiry.IsZero() && !time.Now().Add(margin).Before(expiry) {
+	if client.ReauthFunc != nil && client.ReauthBeforeTokenExpiration > 0 {
+		if expiry := client.TokenExpiry(); !expiry.IsZero() && !time.Now().Add(client.ReauthBeforeTokenExpiration).Before(expiry) {
 			// The token expires within the margin (or already did): reauthenticate
 			// before sending. If the reauthentication fails, proceed with the
 			// current token; a 401 response triggers the existing reauth-and-retry
