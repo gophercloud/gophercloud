@@ -90,7 +90,7 @@ func CreateMinimumPacketRateRule(t *testing.T, client *gophercloud.ServiceClient
 	direction := "any"
 
 	createOpts := rules.CreateMinimumPacketRateRuleOpts{
-		MinKPps:   minKPps,
+		MinKPps:   &minKPps,
 		Direction: direction,
 	}
 
@@ -116,8 +116,8 @@ func CreatePacketRateLimitRule(t *testing.T, client *gophercloud.ServiceClient, 
 	maxBurstKPps := 300
 
 	createOpts := rules.CreatePacketRateLimitRuleOpts{
-		MaxKPps:      maxKPps,
-		MaxBurstKPps: maxBurstKPps,
+		MaxKPps:      &maxKPps,
+		MaxBurstKPps: &maxBurstKPps,
 	}
 
 	t.Logf("Attempting to create a QoS packet rate limit rule with max_kpps: %d, max_burst_kpps: %d", maxKPps, maxBurstKPps)

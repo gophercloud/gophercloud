@@ -319,3 +319,48 @@ const PacketRateLimitRulesUpdateResult = `
     }
 }
 `
+
+// MinimumPacketRateRulesCreateZeroRequest represents a raw body of a Create
+// MinimumPacketRateRule call with a zero min_kpps value, which is valid input.
+const MinimumPacketRateRulesCreateZeroRequest = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 0
+    }
+}
+`
+
+// MinimumPacketRateRulesCreateZeroResult represents a raw result of a Create
+// MinimumPacketRateRule call with a zero min_kpps value.
+const MinimumPacketRateRulesCreateZeroResult = `
+{
+    "minimum_packet_rate_rule": {
+        "min_kpps": 0,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
+
+// PacketRateLimitRulesCreateZeroRequest represents a raw body of a Create
+// PacketRateLimitRule call with zero max_kpps and max_burst_kpps values. Even
+// though max_burst_kpps uses omitempty, an explicit 0 must still be sent.
+const PacketRateLimitRulesCreateZeroRequest = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 0,
+        "max_burst_kpps": 0
+    }
+}
+`
+
+// PacketRateLimitRulesCreateZeroResult represents a raw result of a Create
+// PacketRateLimitRule call with zero max_kpps and max_burst_kpps values.
+const PacketRateLimitRulesCreateZeroResult = `
+{
+    "packet_rate_limit_rule": {
+        "max_kpps": 0,
+        "max_burst_kpps": 0,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
