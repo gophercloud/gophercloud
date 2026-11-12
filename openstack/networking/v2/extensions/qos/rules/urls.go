@@ -5,9 +5,11 @@ import "github.com/gophercloud/gophercloud/v2"
 const (
 	rootPath = "qos/policies"
 
-	bandwidthLimitRulesResourcePath   = "bandwidth_limit_rules"
-	dscpMarkingRulesResourcePath      = "dscp_marking_rules"
-	minimumBandwidthRulesResourcePath = "minimum_bandwidth_rules"
+	bandwidthLimitRulesResourcePath    = "bandwidth_limit_rules"
+	dscpMarkingRulesResourcePath       = "dscp_marking_rules"
+	minimumBandwidthRulesResourcePath  = "minimum_bandwidth_rules"
+	minimumPacketRateRulesResourcePath = "minimum_packet_rate_rules"
+	packetRateLimitRulesResourcePath   = "packet_rate_limit_rules"
 )
 
 func bandwidthLimitRulesRootURL(c *gophercloud.ServiceClient, policyID string) string {
@@ -92,4 +94,60 @@ func updateMinimumBandwidthRuleURL(c *gophercloud.ServiceClient, policyID, ruleI
 
 func deleteMinimumBandwidthRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
 	return minimumBandwidthRulesResourceURL(c, policyID, ruleID)
+}
+
+func minimumPacketRateRulesRootURL(c *gophercloud.ServiceClient, policyID string) string {
+	return c.ServiceURL(rootPath, policyID, minimumPacketRateRulesResourcePath)
+}
+
+func minimumPacketRateRulesResourceURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return c.ServiceURL(rootPath, policyID, minimumPacketRateRulesResourcePath, ruleID)
+}
+
+func listMinimumPacketRateRulesURL(c *gophercloud.ServiceClient, policyID string) string {
+	return minimumPacketRateRulesRootURL(c, policyID)
+}
+
+func getMinimumPacketRateRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return minimumPacketRateRulesResourceURL(c, policyID, ruleID)
+}
+
+func createMinimumPacketRateRuleURL(c *gophercloud.ServiceClient, policyID string) string {
+	return minimumPacketRateRulesRootURL(c, policyID)
+}
+
+func updateMinimumPacketRateRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return minimumPacketRateRulesResourceURL(c, policyID, ruleID)
+}
+
+func deleteMinimumPacketRateRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return minimumPacketRateRulesResourceURL(c, policyID, ruleID)
+}
+
+func packetRateLimitRulesRootURL(c *gophercloud.ServiceClient, policyID string) string {
+	return c.ServiceURL(rootPath, policyID, packetRateLimitRulesResourcePath)
+}
+
+func packetRateLimitRulesResourceURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return c.ServiceURL(rootPath, policyID, packetRateLimitRulesResourcePath, ruleID)
+}
+
+func listPacketRateLimitRulesURL(c *gophercloud.ServiceClient, policyID string) string {
+	return packetRateLimitRulesRootURL(c, policyID)
+}
+
+func getPacketRateLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return packetRateLimitRulesResourceURL(c, policyID, ruleID)
+}
+
+func createPacketRateLimitRuleURL(c *gophercloud.ServiceClient, policyID string) string {
+	return packetRateLimitRulesRootURL(c, policyID)
+}
+
+func updatePacketRateLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return packetRateLimitRulesResourceURL(c, policyID, ruleID)
+}
+
+func deletePacketRateLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return packetRateLimitRulesResourceURL(c, policyID, ruleID)
 }
