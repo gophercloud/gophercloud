@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"time"
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
@@ -85,6 +86,20 @@ type ProviderClient struct {
 	// authentication functions for different Identity service versions.
 	ReauthFunc func(context.Context) error
 
+	// ReauthBeforeTokenExpiration specifies how long before the token expires
+	// the client should reauthenticate proactively, before issuing a request
+	// that would carry the expiring token. If non-zero and the token's
+	// expiration time is known, a request made within this window of the
+	// expiration triggers ReauthFunc before it is sent. If the
+	// reauthentication fails, the request proceeds with the current token and
+	// a 401 response triggers the existing reauth-and-retry behavior. A zero
+	// value disables proactive reauthentication.
+	//
+	// Proactive reauthentication is only active when ReauthFunc is set. The
+	// margin should be smaller than the token lifetime; otherwise every
+	// request triggers a reauthentication.
+	ReauthBeforeTokenExpiration time.Duration
+
 	// Throwaway determines whether if this client is a throw-away client. It's a copy of user's provider client
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
 	Throwaway bool
@@ -108,6 +123,11 @@ type ProviderClient struct {
 	reauthmut *reauthlock
 
 	authResult AuthResult
+
+	// tokenExpiry is the expiration time of the currently cached token, if
+	// known. It is populated from the AuthResult when the result exposes the
+	// token's expiration.
+	tokenExpiry time.Time
 }
 
 // reauthlock represents a set of attributes used to help in the reauthentication process.
@@ -171,6 +191,17 @@ func (client *ProviderClient) authenticatedHeaders(ctx context.Context) (map[str
 	if t == "" {
 		return nil, nil
 	}
+	if client.ReauthFunc != nil && client.ReauthBeforeTokenExpiration > 0 {
+		if expiry := client.TokenExpiry(); !expiry.IsZero() && !time.Now().Add(client.ReauthBeforeTokenExpiration).Before(expiry) {
+			// The token expires within the margin (or already did): reauthenticate
+			// before sending. If the reauthentication fails, proceed with the
+			// current token; a 401 response triggers the existing reauth-and-retry
+			// behavior.
+			if err := client.Reauthenticate(ctx, t); err == nil {
+				t = client.Token()
+			}
+		}
+	}
 	return map[string]string{"X-Auth-Token": t}, nil
 }
 
@@ -205,6 +236,16 @@ func (client *ProviderClient) Token() string {
 	return client.TokenID
 }
 
+// TokenExpiry safely returns the expiration time of the cached token, or the
+// zero time if it is unknown.
+func (client *ProviderClient) TokenExpiry() time.Time {
+	if client.mut != nil {
+		client.mut.RLock()
+		defer client.mut.RUnlock()
+	}
+	return client.tokenExpiry
+}
+
 // SetToken safely sets the value of the auth token in the ProviderClient. Applications may
 // use this method in a custom ReauthFunc.
 //
@@ -216,6 +257,7 @@ func (client *ProviderClient) SetToken(t string) {
 	}
 	client.TokenID = t
 	client.authResult = nil
+	client.tokenExpiry = time.Time{}
 }
 
 // SetTokenAndAuthResult safely sets the value of the auth token in the
@@ -237,6 +279,10 @@ func (client *ProviderClient) SetTokenAndAuthResult(r AuthResult) error {
 	}
 	client.TokenID = tokenID
 	client.authResult = r
+	client.tokenExpiry = time.Time{}
+	if e, ok := r.(interface{ TokenExpiry() time.Time }); ok {
+		client.tokenExpiry = e.TokenExpiry()
+	}
 	return nil
 }
 
@@ -253,6 +299,7 @@ func (client *ProviderClient) CopyTokenFrom(other *ProviderClient) {
 	}
 	client.TokenID = other.TokenID
 	client.authResult = other.authResult
+	client.tokenExpiry = other.tokenExpiry
 }
 
 // IsThrowaway safely reads the value of the client Throwaway field.
