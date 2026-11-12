@@ -513,13 +513,41 @@ func TestCreateMinimumPacketRateRule(t *testing.T) {
 		fmt.Fprint(w, MinimumPacketRateRulesCreateResult)
 	})
 
+	minKPps := 2000
 	opts := rules.CreateMinimumPacketRateRuleOpts{
-		MinKPps: 2000,
+		MinKPps: &minKPps,
 	}
 	r, err := rules.CreateMinimumPacketRateRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", opts).ExtractMinimumPacketRateRule()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, 2000, r.MinKPps)
+}
+
+func TestCreateMinimumPacketRateRuleZero(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/minimum_packet_rate_rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, MinimumPacketRateRulesCreateZeroRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprint(w, MinimumPacketRateRulesCreateZeroResult)
+	})
+
+	minKPps := 0
+	opts := rules.CreateMinimumPacketRateRuleOpts{
+		MinKPps: &minKPps,
+	}
+	r, err := rules.CreateMinimumPacketRateRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", opts).ExtractMinimumPacketRateRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, 0, r.MinKPps)
 }
 
 func TestUpdateMinimumPacketRateRule(t *testing.T) {
@@ -651,15 +679,47 @@ func TestCreatePacketRateLimitRule(t *testing.T) {
 		fmt.Fprint(w, PacketRateLimitRulesCreateResult)
 	})
 
+	maxKPps := 2000
+	maxBurstKPps := 200
 	opts := rules.CreatePacketRateLimitRuleOpts{
-		MaxKPps:      2000,
-		MaxBurstKPps: 200,
+		MaxKPps:      &maxKPps,
+		MaxBurstKPps: &maxBurstKPps,
 	}
 	r, err := rules.CreatePacketRateLimitRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", opts).ExtractPacketRateLimitRule()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, 2000, r.MaxKPps)
 	th.AssertEquals(t, 200, r.MaxBurstKPps)
+}
+
+func TestCreatePacketRateLimitRuleZero(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	fakeServer.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/packet_rate_limit_rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, PacketRateLimitRulesCreateZeroRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprint(w, PacketRateLimitRulesCreateZeroResult)
+	})
+
+	maxKPps := 0
+	maxBurstKPps := 0
+	opts := rules.CreatePacketRateLimitRuleOpts{
+		MaxKPps:      &maxKPps,
+		MaxBurstKPps: &maxBurstKPps,
+	}
+	r, err := rules.CreatePacketRateLimitRule(context.TODO(), fake.ServiceClient(fakeServer), "501005fa-3b56-4061-aaca-3f24995112e1", opts).ExtractPacketRateLimitRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, 0, r.MaxKPps)
+	th.AssertEquals(t, 0, r.MaxBurstKPps)
 }
 
 func TestUpdatePacketRateLimitRule(t *testing.T) {
