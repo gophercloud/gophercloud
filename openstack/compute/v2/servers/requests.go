@@ -77,19 +77,19 @@ type ListOpts struct {
 
 	// This requires the client to be set to microversion 2.26 or later.
 	// Tags filters on specific server tags. All tags must be present for the server.
-	Tags string `q:"tags"`
+	Tags []string `q:"tags" format:"comma-separated"`
 
 	// This requires the client to be set to microversion 2.26 or later.
 	// TagsAny filters on specific server tags. At least one of the tags must be present for the server.
-	TagsAny string `q:"tags-any"`
+	TagsAny []string `q:"tags-any" format:"comma-separated"`
 
 	// This requires the client to be set to microversion 2.26 or later.
 	// NotTags filters on specific server tags. All tags must be absent for the server.
-	NotTags string `q:"not-tags"`
+	NotTags []string `q:"not-tags" format:"comma-separated"`
 
 	// This requires the client to be set to microversion 2.26 or later.
 	// NotTagsAny filters on specific server tags. At least one of the tags must be absent for the server.
-	NotTagsAny string `q:"not-tags-any"`
+	NotTagsAny []string `q:"not-tags-any" format:"comma-separated"`
 
 	// Display servers based on their availability zone (Admin only until microversion 2.82).
 	AvailabilityZone string `q:"availability_zone"`
