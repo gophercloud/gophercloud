@@ -1208,3 +1208,44 @@ func TestUpdateServerHostname(t *testing.T) {
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
+
+func TestListServersPaginated(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerListPaginatedSuccessfully(t, fakeServer)
+
+	var names []string
+	pages := 0
+	err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := servers.ExtractServers(page)
+		if err != nil {
+			return false, err
+		}
+		for _, s := range actual {
+			names = append(names, s.Name)
+		}
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 2, pages)
+	th.AssertDeepEquals(t, []string{"herp", "derp", "merp"}, names)
+}
+
+func TestListServersMalformedPage(t *testing.T) {
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+	HandleServerListMalformedSuccessfully(t, fakeServer)
+
+	err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).EachPage(context.TODO(), func(_ context.Context, page pagination.Page) (bool, error) {
+		_, err := servers.ExtractServers(page)
+		return err == nil, err
+	})
+	th.AssertErr(t, err)
+
+	allPages, err := servers.List(client.ServiceClient(fakeServer), servers.ListOpts{}).AllPages(context.TODO())
+	th.AssertNoErr(t, err)
+	_, err = servers.ExtractServers(allPages)
+	th.AssertErr(t, err)
+}
