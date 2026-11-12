@@ -253,6 +253,27 @@ func NewComputeV2Client() (*gophercloud.ServiceClient, error) {
 	})
 }
 
+// NewInstanceHAV1Client returns a *ServiceClient for making calls
+// to the OpenStack Instance HA v1 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewInstanceHAV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(context.TODO(), ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewInstanceHAV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
 // NewBareMetalV1Client returns a *ServiceClient for making calls
 // to the OpenStack Bare Metal v1 API. An error will be returned
 // if authentication or client creation was not possible.

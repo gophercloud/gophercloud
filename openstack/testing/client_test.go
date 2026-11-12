@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -313,6 +314,64 @@ func TestAuthenticatedClientV3Fails(t *testing.T) {
 
 func TestAuthenticatedClientV2Fails(t *testing.T) {
 	testAuthenticatedClientFails(t, "http://bad-address.example.com/v2.0")
+}
+
+func TestNewInstanceHAV1(t *testing.T) {
+	for _, version := range []int{0, 1} {
+		t.Run(fmt.Sprintf("version %d", version), func(t *testing.T) {
+			const endpoint = "http://example.com/instance-ha/v1/"
+			var located bool
+			pc := &gophercloud.ProviderClient{
+				EndpointLocator: func(opts gophercloud.EndpointOpts) (string, error) {
+					located = true
+					th.CheckDeepEquals(t, gophercloud.EndpointOpts{
+						Type:         "instance-ha",
+						Name:         "masakari",
+						Region:       "RegionOne",
+						Version:      1,
+						Availability: gophercloud.AvailabilityPublic,
+					}, opts)
+					return endpoint, nil
+				},
+			}
+
+			sc, err := openstack.NewInstanceHAV1(pc, gophercloud.EndpointOpts{
+				Name:    "masakari",
+				Region:  "RegionOne",
+				Version: version,
+			})
+			th.AssertNoErr(t, err)
+			th.CheckEquals(t, true, located)
+			th.CheckEquals(t, pc, sc.ProviderClient)
+			th.CheckEquals(t, endpoint, sc.Endpoint)
+			th.CheckEquals(t, "instance-ha", sc.Type)
+		})
+	}
+}
+
+func TestNewInstanceHAV1EndpointError(t *testing.T) {
+	endpointErr := errors.New("endpoint not found")
+	pc := &gophercloud.ProviderClient{
+		EndpointLocator: func(gophercloud.EndpointOpts) (string, error) {
+			return "", endpointErr
+		},
+	}
+
+	_, err := openstack.NewInstanceHAV1(pc, gophercloud.EndpointOpts{})
+	th.AssertEquals(t, endpointErr, err)
+}
+
+func TestNewInstanceHAV1VersionConflict(t *testing.T) {
+	pc := &gophercloud.ProviderClient{
+		EndpointLocator: func(gophercloud.EndpointOpts) (string, error) {
+			t.Error("endpoint lookup must not run for a conflicting version")
+			return "http://example.com/instance-ha/v1/", nil
+		},
+	}
+
+	_, err := openstack.NewInstanceHAV1(pc, gophercloud.EndpointOpts{Version: 2})
+	th.AssertErr(t, err)
+	th.CheckEquals(t, "conflict between requested service major version and manually set version", err.Error())
 }
 
 func TestServiceClientResourceBase(t *testing.T) {
