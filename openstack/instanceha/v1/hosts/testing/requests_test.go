@@ -40,9 +40,7 @@ func TestList(t *testing.T) {
 		th.CheckEquals(t, "1", q.Get("limit"))
 		th.CheckEquals(t, "id", q.Get("sort_key"))
 		th.CheckEquals(t, "asc", q.Get("sort_dir"))
-		th.CheckEquals(t, "compute-1", q.Get("name"))
 		th.CheckEquals(t, "COMPUTE_HOST", q.Get("type"))
-		th.CheckEquals(t, "SSH", q.Get("control_attributes"))
 		th.CheckEquals(t, "false", q.Get("reserved"))
 		th.CheckEquals(t, "false", q.Get("on_maintenance"))
 		switch q.Get("marker") {
@@ -56,7 +54,7 @@ func TestList(t *testing.T) {
 	})
 	client := &gophercloud.ServiceClient{ProviderClient: &gophercloud.ProviderClient{}, Endpoint: server.Endpoint(), Type: "instance-ha", Microversion: "1.3"}
 	disabled := false
-	opts := hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", Name: "compute-1", Type: "COMPUTE_HOST", ControlAttributes: "SSH", Reserved: &disabled, OnMaintenance: &disabled}
+	opts := hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "asc", Type: "COMPUTE_HOST", Reserved: &disabled, OnMaintenance: &disabled}
 	pages, err := hosts.List(client, "segment", opts).AllPages(context.Background())
 	th.AssertNoErr(t, err)
 	items, err := hosts.ExtractHosts(pages)

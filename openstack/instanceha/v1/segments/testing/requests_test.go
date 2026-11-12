@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 
@@ -42,7 +43,7 @@ func TestListAndGet(t *testing.T) {
 		check(t, q.Get("sort_dir"), "asc")
 		check(t, q.Get("recovery_method"), "reserved_host")
 		check(t, q.Get("service_type"), "COMPUTE")
-		check(t, q.Get("enabled"), "false")
+		check(t, q.Get("enabled"), "0")
 		switch q.Get("marker") {
 		case "":
 			fmt.Fprint(w, `{"segments":[`+fixture+`]}`)
@@ -79,6 +80,28 @@ func TestListAndGet(t *testing.T) {
 	}
 	if !reflect.DeepEqual(*item, expected) {
 		t.Fatalf("unexpected resource: %#v", item)
+	}
+}
+
+func TestListEnabledQuery(t *testing.T) {
+	enabled, disabled := true, false
+	for _, tc := range []struct {
+		name    string
+		enabled *bool
+		want    string
+	}{
+		{"omitted", nil, ""},
+		{"enabled", &enabled, "1"},
+		{"disabled", &disabled, "0"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			query, err := (segments.ListOpts{Enabled: tc.enabled}).ToSegmentListQuery()
+			th.AssertNoErr(t, err)
+			u, err := url.Parse(query)
+			th.AssertNoErr(t, err)
+			th.AssertEquals(t, tc.want, u.Query().Get("enabled"))
+			th.AssertEquals(t, tc.enabled != nil, u.Query().Has("enabled"))
+		})
 	}
 }
 

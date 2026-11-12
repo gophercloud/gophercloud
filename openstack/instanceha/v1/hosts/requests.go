@@ -20,12 +20,8 @@ type ListOpts struct {
 	SortKey string `q:"sort_key"`
 	// SortDir is the sort direction: asc or desc.
 	SortDir string `q:"sort_dir"`
-	// Name filters by the host name.
-	Name string `q:"name"`
 	// Type filters by the host type, such as COMPUTE_HOST.
 	Type string `q:"type"`
-	// ControlAttributes filters by the host access mechanism, such as SSH.
-	ControlAttributes string `q:"control_attributes"`
 	// Reserved filters by whether the host is reserved for recovery.
 	Reserved *bool `q:"reserved"`
 	// OnMaintenance filters by whether the host is in maintenance mode.
