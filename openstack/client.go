@@ -543,8 +543,8 @@ func NewPlacementV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointO
 }
 
 // NewInstanceHAV1 creates a client for the Masakari instance-ha v1 API.
-func NewInstanceHAV1(ctx context.Context, client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(ctx, client, eo, "instance-ha", 1)
+func NewInstanceHAV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return initClientOpts(client, eo, "instance-ha", 1)
 }
 
 // NewReservationV1 creates a ServiceClient that may be used with the reservation package.

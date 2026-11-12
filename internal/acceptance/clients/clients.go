@@ -269,7 +269,7 @@ func NewInstanceHAV1Client() (*gophercloud.ServiceClient, error) {
 
 	client = configureDebug(client)
 
-	return openstack.NewInstanceHAV1(context.TODO(), client, gophercloud.EndpointOpts{
+	return openstack.NewInstanceHAV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
