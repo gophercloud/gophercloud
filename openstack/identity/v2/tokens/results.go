@@ -135,6 +135,16 @@ func (r CreateResult) ExtractToken() (*Token, error) {
 	}, nil
 }
 
+// TokenExpiry returns the timestamp at which the token in this result expires,
+// or the zero time if the token is unknown.
+func (r CreateResult) TokenExpiry() time.Time {
+	token, err := r.ExtractToken()
+	if err != nil {
+		return time.Time{}
+	}
+	return token.ExpiresAt
+}
+
 // ExtractTokenID implements the gophercloud.AuthResult interface. The returned
 // string is the same as the ID field of the Token struct returned from
 // ExtractToken().

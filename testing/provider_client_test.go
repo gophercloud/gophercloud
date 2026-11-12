@@ -470,6 +470,166 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	}
 }
 
+// fakeAuthResult is a minimal gophercloud.AuthResult with a known token
+// expiration time.
+type fakeAuthResult struct {
+	tokenID string
+	expiry  time.Time
+}
+
+func (r *fakeAuthResult) ExtractTokenID() (string, error) { return r.tokenID, nil }
+func (r *fakeAuthResult) TokenExpiry() time.Time          { return r.expiry }
+
+// doRequestWithTokenCapture performs a GET against the fake server and returns
+// the X-Auth-Token the server saw.
+func doRequestWithTokenCapture(p *gophercloud.ProviderClient, fakeServer th.FakeServer, gotToken *string) error {
+	fakeServer.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+		*gotToken = r.Header.Get("X-Auth-Token")
+		w.WriteHeader(http.StatusOK)
+	})
+	_, err := p.Request(context.TODO(), "GET", fakeServer.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	return err
+}
+
+func TestRequestReauthsBeforeTokenExpiration(t *testing.T) {
+	var reauthCounter int
+	var reauthCounterMutex sync.Mutex
+
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.ReauthBeforeTokenExpiration = time.Hour
+	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(10 * time.Second)}); err != nil {
+		t.Fatalf("failed to set token: %v", err)
+	}
+	p.ReauthFunc = func(_ context.Context) error {
+		reauthCounterMutex.Lock()
+		reauthCounter++
+		reauthCounterMutex.Unlock()
+		return p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: "new-token", expiry: time.Now().Add(24 * time.Hour)})
+	}
+
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	var gotToken string
+	if err := doRequestWithTokenCapture(p, fakeServer, &gotToken); err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	if reauthCounter != 1 {
+		t.Errorf("expected 1 proactive reauthentication, got %d", reauthCounter)
+	}
+	if gotToken != "new-token" {
+		t.Errorf("expected request to carry the refreshed token %q, got %q", "new-token", gotToken)
+	}
+}
+
+func TestRequestDoesNotReauthBeforeTokenExpiration(t *testing.T) {
+	var reauthCounter int
+	var reauthCounterMutex sync.Mutex
+
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.ReauthBeforeTokenExpiration = time.Hour
+	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(24 * time.Hour)}); err != nil {
+		t.Fatalf("failed to set token: %v", err)
+	}
+	p.ReauthFunc = func(_ context.Context) error {
+		reauthCounterMutex.Lock()
+		reauthCounter++
+		reauthCounterMutex.Unlock()
+		return nil
+	}
+
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	var gotToken string
+	if err := doRequestWithTokenCapture(p, fakeServer, &gotToken); err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	if reauthCounter != 0 {
+		t.Errorf("expected no proactive reauthentication, got %d", reauthCounter)
+	}
+	if gotToken != client.TokenID {
+		t.Errorf("expected request to carry the original token %q, got %q", client.TokenID, gotToken)
+	}
+}
+
+func TestRequestFallsBackToCurrentTokenWhenProactiveReauthFails(t *testing.T) {
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.ReauthBeforeTokenExpiration = time.Hour
+	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(10 * time.Second)}); err != nil {
+		t.Fatalf("failed to set token: %v", err)
+	}
+	p.ReauthFunc = func(_ context.Context) error {
+		return errors.New("keystone unavailable")
+	}
+
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	var gotToken string
+	if err := doRequestWithTokenCapture(p, fakeServer, &gotToken); err != nil {
+		t.Fatalf("request should have proceeded with the current token, got error: %v", err)
+	}
+	if gotToken != client.TokenID {
+		t.Errorf("expected request to carry the current token %q, got %q", client.TokenID, gotToken)
+	}
+}
+
+func TestRequestDoesNotReauthBeforeTokenExpirationByDefault(t *testing.T) {
+	var reauthCounter int
+	var reauthCounterMutex sync.Mutex
+
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	// ReauthBeforeTokenExpiration is left at its zero value: proactive
+	// reauthentication is disabled by default.
+	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(time.Minute)}); err != nil {
+		t.Fatalf("failed to set token: %v", err)
+	}
+	p.ReauthFunc = func(_ context.Context) error {
+		reauthCounterMutex.Lock()
+		reauthCounter++
+		reauthCounterMutex.Unlock()
+		return nil
+	}
+
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	var gotToken string
+	if err := doRequestWithTokenCapture(p, fakeServer, &gotToken); err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	if reauthCounter != 0 {
+		t.Errorf("expected no proactive reauthentication by default, got %d", reauthCounter)
+	}
+	if gotToken != client.TokenID {
+		t.Errorf("expected request to carry the original token %q, got %q", client.TokenID, gotToken)
+	}
+}
+
+func TestRequestDoesNotReauthBeforeTokenExpirationWithoutReauthFunc(t *testing.T) {
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	if err := p.SetTokenAndAuthResult(&fakeAuthResult{tokenID: client.TokenID, expiry: time.Now().Add(time.Minute)}); err != nil {
+		t.Fatalf("failed to set token: %v", err)
+	}
+
+	fakeServer := th.SetupHTTP()
+	defer fakeServer.Teardown()
+
+	var gotToken string
+	if err := doRequestWithTokenCapture(p, fakeServer, &gotToken); err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	if gotToken != client.TokenID {
+		t.Errorf("expected request to carry the original token %q, got %q", client.TokenID, gotToken)
+	}
+}
+
 func TestRequestWithContext(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "OK")
