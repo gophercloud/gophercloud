@@ -289,7 +289,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		url += query
 	}
 	createPage := func(r pagination.PageResult) pagination.Page {
-		return StackPage{pagination.SinglePageBase(r)}
+		return StackPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 	return pagination.NewPager(c, url, createPage)
 }

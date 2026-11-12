@@ -111,6 +111,27 @@ type TrunkPage struct {
 	pagination.LinkedPageBase
 }
 
+// ResourceKey returns the JSON object key for the resource collection.
+func (r TrunkPage) ResourceKey() string {
+	return "trunks"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r TrunkPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"trunks_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
 func (page TrunkPage) IsEmpty() (bool, error) {
 	if page.StatusCode == 204 {
 		return true, nil

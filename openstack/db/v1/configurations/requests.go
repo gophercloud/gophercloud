@@ -11,7 +11,7 @@ import (
 // List will list all of the available configurations.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(client, baseURL(client), func(r pagination.PageResult) pagination.Page {
-		return ConfigPage{pagination.SinglePageBase(r)}
+		return ConfigPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
