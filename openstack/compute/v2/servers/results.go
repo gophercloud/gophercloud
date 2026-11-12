@@ -474,9 +474,11 @@ func (r ServerPage) NextPageURL() (string, error) {
 	return gophercloud.ExtractNextURL(s.Links)
 }
 
-// decodedServerCount counts the servers in an already decoded body. The
-// second return is false when the value needs the generic decode path, which
-// also reports its errors.
+// decodedServerCount counts the servers in an already decoded body. It only
+// checks that servers is a list of objects and does not validate the fields of
+// each server; a type mismatch inside a server surfaces from ExtractServers.
+// The second return is false when the value needs the generic decode path,
+// which also reports its errors.
 func decodedServerCount(raw any) (int, bool) {
 	items, ok := raw.([]any)
 	if !ok {
