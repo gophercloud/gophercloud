@@ -31,7 +31,20 @@ type ListOpts struct {
 // ToSegmentListQuery formats ListOpts as a URL query string.
 func (opts ListOpts) ToSegmentListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return q.String(), err
+	if err != nil {
+		return "", err
+	}
+	if opts.Enabled != nil {
+		// Masakari compares this filter directly against its database boolean.
+		values := q.Query()
+		value := "0"
+		if *opts.Enabled {
+			value = "1"
+		}
+		values.Set("enabled", value)
+		q.RawQuery = values.Encode()
+	}
+	return q.String(), nil
 }
 
 // List returns a pager over failover segments.

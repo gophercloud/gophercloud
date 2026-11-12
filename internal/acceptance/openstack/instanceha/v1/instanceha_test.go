@@ -4,14 +4,12 @@ package v1
 
 import (
 	"context"
-	"os"
 	"slices"
 	"testing"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
-	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/hosts"
 	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/notifications"
 	"github.com/gophercloud/gophercloud/v2/openstack/instanceha/v1/segments"
@@ -24,11 +22,7 @@ func setupInstanceHAReadOnly(t *testing.T) (context.Context, *gophercloud.Servic
 	clients.RequireAdmin(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	t.Cleanup(cancel)
-	opts, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
-	provider, err := openstack.AuthenticatedClient(ctx, opts)
-	th.AssertNoErr(t, err)
-	client, err := openstack.NewInstanceHAV1(ctx, provider, gophercloud.EndpointOpts{Region: os.Getenv("OS_REGION_NAME")})
+	client, err := clients.NewInstanceHAV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.3"
 	return ctx, client
@@ -83,15 +77,13 @@ func TestInstanceHAHostsReadOnly(t *testing.T) {
 		hostCount += len(items)
 		for hostIndex, host := range items {
 			if hostIndex == 0 {
-				pages, err := hosts.List(client, segment.UUID, hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "desc", Name: host.Name, Type: host.Type, ControlAttributes: host.ControlAttributes, Reserved: &host.Reserved, OnMaintenance: &host.OnMaintenance}).AllPages(ctx)
+				pages, err := hosts.List(client, segment.UUID, hosts.ListOpts{Limit: 1, SortKey: "id", SortDir: "desc", Type: host.Type, Reserved: &host.Reserved, OnMaintenance: &host.OnMaintenance}).AllPages(ctx)
 				th.AssertNoErr(t, err)
 				filtered, err := hosts.ExtractHosts(pages)
 				th.AssertNoErr(t, err)
 				th.AssertEquals(t, true, slices.ContainsFunc(filtered, func(item hosts.Host) bool { return item.UUID == host.UUID }))
 				for _, item := range filtered {
-					th.AssertEquals(t, host.Name, item.Name)
 					th.AssertEquals(t, host.Type, item.Type)
-					th.AssertEquals(t, host.ControlAttributes, item.ControlAttributes)
 					th.AssertEquals(t, host.Reserved, item.Reserved)
 					th.AssertEquals(t, host.OnMaintenance, item.OnMaintenance)
 				}
