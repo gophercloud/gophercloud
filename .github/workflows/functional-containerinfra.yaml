@@ -45,7 +45,7 @@ jobs:
           persist-credentials: false
 
       - name: Check changed files
-        uses: ./.github/actions/file-filter
+        uses: $/.github/actions/file-filter
         id: changed-files
         with:
           patterns: |
