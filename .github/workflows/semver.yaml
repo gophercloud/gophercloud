@@ -39,6 +39,9 @@ jobs:
       # can be set later. We check for actual errors in the next step.
       continue-on-error: true
       uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685 # v0.8.3
+      with:
+        # Compare against the same ref used for the rebase, not the event's base SHA.
+        base-ref: origin/${{ github.base_ref }}
 
     # go-apidiff returns RC=1 when semver=major, which makes the workflow to return
     # a failure. Instead let's just return a failure if go-apidiff failed to run.
