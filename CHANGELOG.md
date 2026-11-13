@@ -1,3 +1,37 @@
+## v2.16.0 (2026-11-13)
+
+* [GH-4026](https://github.com/gophercloud/gophercloud/pull/4026) build(deps): bump the all-github-actions group with 3 updates
+* [GH-4032](https://github.com/gophercloud/gophercloud/pull/4032) [v2] reservation: add leases resources
+* [GH-4033](https://github.com/gophercloud/gophercloud/pull/4033) build(deps): bump the all-github-actions group with 3 updates
+* [GH-4034](https://github.com/gophercloud/gophercloud/pull/4034) [v2] Add the Security Group for Virtual IP
+* [GH-4036](https://github.com/gophercloud/gophercloud/pull/4036) build(deps): bump the all-github-actions group with 3 updates
+* [GH-4043](https://github.com/gophercloud/gophercloud/pull/4043) [v2] identity: compare blob values instead of the literal string
+* [GH-4045](https://github.com/gophercloud/gophercloud/pull/4045) [v2] reservation: start a lease now when StartDate is zero
+* [GH-4046](https://github.com/gophercloud/gophercloud/pull/4046) [v2] reservation: add host allocations and resource properties
+* [GH-4048](https://github.com/gophercloud/gophercloud/pull/4048) [v2] fix(config/clouds): find the clouds config file independently of each…
+* [GH-4049](https://github.com/gophercloud/gophercloud/pull/4049) [v2] Return early on initClientOpts error in service client constructors
+* [GH-4050](https://github.com/gophercloud/gophercloud/pull/4050) [v2] openstack: don't add version suffix to versioned endpoints
+* [GH-4051](https://github.com/gophercloud/gophercloud/pull/4051) build(deps): bump the all-github-actions group with 5 updates
+* [GH-4055](https://github.com/gophercloud/gophercloud/pull/4055) [v2] identity: fix role assignment to target domain
+* [GH-4057](https://github.com/gophercloud/gophercloud/pull/4057) [v2] db: change functional tests to accept common configs
+* [GH-4060](https://github.com/gophercloud/gophercloud/pull/4060) build(deps): bump the all-github-actions group with 3 updates
+* [GH-4062](https://github.com/gophercloud/gophercloud/pull/4062) [v2] networking/v2/fwaas_v2: add created_at and updated_at
+* [GH-4065](https://github.com/gophercloud/gophercloud/pull/4065) CI: Update tag comments
+* [GH-4066](https://github.com/gophercloud/gophercloud/pull/4066) [v2] ci: add hibiscus release, drop epoxy
+* [GH-4071](https://github.com/gophercloud/gophercloud/pull/4071) [v2] networking/v2/attributestags: escape the tag in the URL
+* [GH-4073](https://github.com/gophercloud/gophercloud/pull/4073) [v2] Conditionally set `OS_SYSTEM_SCOPE` through env instead of openrc
+* [GH-4078](https://github.com/gophercloud/gophercloud/pull/4078) build(deps): bump the all-github-actions group across 1 directory with 4 updates
+* [GH-4081](https://github.com/gophercloud/gophercloud/pull/4081) [v2] Normalize timestamp serialization to UTC
+* [GH-4083](https://github.com/gophercloud/gophercloud/pull/4083) [v2] Do not send X-Auth-Token on a redirect to another origin
+* [GH-4084](https://github.com/gophercloud/gophercloud/pull/4084) [v2] Added support for baremetal portgroups
+* [GH-4085](https://github.com/gophercloud/gophercloud/pull/4085) [v2] baremetal: follow the next link when listing
+* [GH-4086](https://github.com/gophercloud/gophercloud/pull/4086) [v2] Add Ironic runbooks API
+* [GH-4089](https://github.com/gophercloud/gophercloud/pull/4089) [v2] networking/v2/qos: add minimum packet rate and packet rate limit rules
+* [GH-4092](https://github.com/gophercloud/gophercloud/pull/4092) [v2] Add read-only Masakari Instance HA API support
+* [GH-4093](https://github.com/gophercloud/gophercloud/pull/4093) [v2] Reauthenticate before token expires
+* [GH-4094](https://github.com/gophercloud/gophercloud/pull/4094) [v2] Fix semver comparison baseline
+* [GH-4095](https://github.com/gophercloud/gophercloud/pull/4095) [v2] compute: stop re-decoding server list pages in IsEmpty and NextPageURL
+
 ## v2.15.0 (2026-09-18)
 
 * [GH-3980](https://github.com/gophercloud/gophercloud/pull/3980) [v2] fix(config/clouds): resolve reference to clouds-public.yaml
