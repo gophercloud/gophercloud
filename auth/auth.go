@@ -332,6 +332,10 @@ func (r AuthResult) Expired() bool {
 	return r.ExpiresAt.Before(time.Now())
 }
 
+func (r AuthResult) TokenExpiry() time.Time {
+	return r.ExpiresAt
+}
+
 func (r AuthResult) WillExpireBy(d time.Duration) bool {
 	return r.ExpiresAt.Before(time.Now().Add(d))
 }
