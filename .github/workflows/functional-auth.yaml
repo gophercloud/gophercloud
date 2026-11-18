@@ -40,6 +40,7 @@ jobs:
             openstack/client.go
             openstack/endpoint.go
             openstack/endpoint_location.go
+            gophercloud/requests.go
             openstack/config/provider_client.go
             openstack/utils/choose_version.go
             openstack/utils/discovery.go
