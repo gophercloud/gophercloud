@@ -51,7 +51,7 @@ func TestSchedulerStatsFilters(t *testing.T) {
 	// A share type exercises capability filtering through Manila's supported API.
 	shareType, err := sharetypes.Create(context.TODO(), client, sharetypes.CreateOpts{
 		Name:       tools.RandomString("ACPTTEST", 16),
-		ExtraSpecs: sharetypes.ExtraSpecsOpts{DriverHandlesShareServers: &pool.Capabilities.DriverHandlesShareServers},
+		ExtraSpecs: sharetypes.ExtraSpecsOpts{DriverHandlesShareServers: pool.Capabilities.DriverHandlesShareServers},
 	}).Extract()
 	th.AssertNoErr(t, err)
 	defer DeleteShareType(t, client, shareType)
