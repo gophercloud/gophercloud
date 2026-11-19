@@ -66,15 +66,15 @@ func TestSchedulerStatsFilters(t *testing.T) {
 				name string
 				opts schedulerstats.ListOpts
 			}{
-				{"pool", schedulerstats.ListOpts{PoolName: "^" + regexp.QuoteMeta(pool.Pool) + "$"}},
-				{"host", schedulerstats.ListOpts{HostName: "^" + regexp.QuoteMeta(pool.Host) + "$"}},
-				{"backend", schedulerstats.ListOpts{BackendName: "^" + regexp.QuoteMeta(pool.Backend) + "$"}},
+				{"pool", schedulerstats.ListOpts{Pool: "^" + regexp.QuoteMeta(pool.Pool) + "$"}},
+				{"host", schedulerstats.ListOpts{Host: "^" + regexp.QuoteMeta(pool.Host) + "$"}},
+				{"backend", schedulerstats.ListOpts{Backend: "^" + regexp.QuoteMeta(pool.Backend) + "$"}},
 				{"share_type", schedulerstats.ListOpts{ShareType: shareType.ID}},
 			} {
 				t.Run(test.name, func(t *testing.T) {
 					var pager pagination.Pager
 					if detail {
-						pager = schedulerstats.ListDetail(client, schedulerstats.ListDetailOpts(test.opts))
+						pager = schedulerstats.ListDetail(client, test.opts)
 					} else {
 						pager = schedulerstats.List(client, test.opts)
 					}
@@ -103,12 +103,12 @@ func TestSchedulerStatsFilters(t *testing.T) {
 	}
 
 	for name, pager := range map[string]pagination.Pager{
-		"pool":           schedulerstats.List(client, schedulerstats.ListOpts{PoolName: "a^"}),
-		"host":           schedulerstats.List(client, schedulerstats.ListOpts{HostName: "a^"}),
-		"backend":        schedulerstats.List(client, schedulerstats.ListOpts{BackendName: "a^"}),
-		"detail_pool":    schedulerstats.ListDetail(client, schedulerstats.ListDetailOpts{PoolName: "a^"}),
-		"detail_host":    schedulerstats.ListDetail(client, schedulerstats.ListDetailOpts{HostName: "a^"}),
-		"detail_backend": schedulerstats.ListDetail(client, schedulerstats.ListDetailOpts{BackendName: "a^"}),
+		"pool":           schedulerstats.List(client, schedulerstats.ListOpts{Pool: "a^"}),
+		"host":           schedulerstats.List(client, schedulerstats.ListOpts{Host: "a^"}),
+		"backend":        schedulerstats.List(client, schedulerstats.ListOpts{Backend: "a^"}),
+		"detail_pool":    schedulerstats.ListDetail(client, schedulerstats.ListOpts{Pool: "a^"}),
+		"detail_host":    schedulerstats.ListDetail(client, schedulerstats.ListOpts{Host: "a^"}),
+		"detail_backend": schedulerstats.ListDetail(client, schedulerstats.ListOpts{Backend: "a^"}),
 	} {
 		t.Run("no_match/"+name, func(t *testing.T) {
 			pages, err := pager.AllPages(context.TODO())
@@ -121,7 +121,7 @@ func TestSchedulerStatsFilters(t *testing.T) {
 
 	for name, pager := range map[string]pagination.Pager{
 		"summary": schedulerstats.List(client, schedulerstats.ListOpts{ShareType: tools.RandomString("missing-", 16)}),
-		"detail":  schedulerstats.ListDetail(client, schedulerstats.ListDetailOpts{ShareType: tools.RandomString("missing-", 16)}),
+		"detail":  schedulerstats.ListDetail(client, schedulerstats.ListOpts{ShareType: tools.RandomString("missing-", 16)}),
 	} {
 		t.Run("missing_share_type/"+name, func(t *testing.T) {
 			_, err := pager.AllPages(context.TODO())
