@@ -2,6 +2,8 @@ package testing
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/v2"
@@ -36,31 +38,69 @@ func TestCreate(t *testing.T) {
 	th.AssertTrue(t, st.IsPublic)
 }
 
-// Verifies that a share type can't be created if the required parameters are missing
+func TestCreateExtraSpecs(t *testing.T) {
+	falseValue, trueValue := false, true
+	for _, driverHandlesShareServers := range []bool{false, true} {
+		for _, snapshot := range []struct {
+			name  string
+			value *bool
+		}{
+			{name: "omitted"},
+			{name: "false", value: &falseValue},
+			{name: "true", value: &trueValue},
+		} {
+			t.Run(fmt.Sprintf("driver_handles_share_servers=%t/snapshot_support=%s", driverHandlesShareServers, snapshot.name), func(t *testing.T) {
+				fakeServer := th.SetupHTTP()
+				defer fakeServer.Teardown()
+
+				snapshotJSON := ""
+				if snapshot.value != nil {
+					snapshotJSON = fmt.Sprintf(`,"snapshot_support":%t`, *snapshot.value)
+				}
+				fakeServer.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+					th.TestMethod(t, r, "POST")
+					th.TestJSONRequest(t, r, fmt.Sprintf(`{
+						"share_type": {
+							"name": "my_new_share_type",
+							"os-share-type-access:is_public": false,
+							"extra_specs": {"driver_handles_share_servers": %t%s}
+						}
+					}`, driverHandlesShareServers, snapshotJSON))
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusAccepted)
+					fmt.Fprint(w, `{"share_type":{"id":"share-type-id"}}`)
+				})
+
+				opts := sharetypes.CreateOpts{
+					Name: "my_new_share_type",
+					ExtraSpecs: sharetypes.ExtraSpecsOpts{
+						DriverHandlesShareServers: driverHandlesShareServers,
+						SnapshotSupport:           snapshot.value,
+					},
+				}
+				shareType, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), opts).Extract()
+				th.AssertNoErr(t, err)
+				th.AssertEquals(t, "share-type-id", shareType.ID)
+			})
+		}
+	}
+}
+
+// Verifies that a share type can't be created without a name.
 func TestRequiredCreateOpts(t *testing.T) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
+	for _, driverHandlesShareServers := range []bool{false, true} {
+		t.Run(fmt.Sprintf("driver_handles_share_servers=%t", driverHandlesShareServers), func(t *testing.T) {
+			fakeServer := th.SetupHTTP()
+			defer fakeServer.Teardown()
 
-	options := &sharetypes.CreateOpts{
-		Name: "my_new_share_type",
-	}
-
-	_, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
-	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
-		t.Fatal("ErrMissingInput was expected to occur")
-	}
-
-	extraSpecs := sharetypes.ExtraSpecsOpts{
-		DriverHandlesShareServers: true,
-	}
-
-	options = &sharetypes.CreateOpts{
-		ExtraSpecs: extraSpecs,
-	}
-
-	_, err = sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
-	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
-		t.Fatal("ErrMissingInput was expected to occur")
+			options := &sharetypes.CreateOpts{
+				ExtraSpecs: sharetypes.ExtraSpecsOpts{
+					DriverHandlesShareServers: driverHandlesShareServers,
+				},
+			}
+			_, err := sharetypes.Create(context.TODO(), client.ServiceClient(fakeServer), options).Extract()
+			th.AssertDeepEquals(t, gophercloud.ErrMissingInput{Argument: "Name"}, err)
+		})
 	}
 }
 
