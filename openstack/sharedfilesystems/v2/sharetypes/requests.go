@@ -22,13 +22,14 @@ type CreateOpts struct {
 	// Indicates whether a share type is publicly accessible
 	IsPublic bool `json:"os-share-type-access:is_public"`
 	// The extra specifications for the share type
-	ExtraSpecs ExtraSpecsOpts `json:"extra_specs" required:"true"`
+	ExtraSpecs ExtraSpecsOpts `json:"extra_specs"`
 }
 
 // ExtraSpecsOpts represent the extra specifications that can be selected for a share type
 type ExtraSpecsOpts struct {
-	// An extra specification that defines the driver mode for share server, or storage, life cycle management
-	DriverHandlesShareServers bool `json:"driver_handles_share_servers" required:"true"`
+	// An extra specification that defines the driver mode for share server, or storage, life cycle management.
+	// False is included in the request rather than treated as missing.
+	DriverHandlesShareServers bool `json:"driver_handles_share_servers"`
 	// An extra specification that filters back ends by whether they do or do not support share snapshots
 	SnapshotSupport *bool `json:"snapshot_support,omitempty"`
 }
