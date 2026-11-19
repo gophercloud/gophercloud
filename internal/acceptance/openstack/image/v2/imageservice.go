@@ -83,7 +83,7 @@ func DeleteImage(t *testing.T, client *gophercloud.ServiceClient, image *images.
 }
 
 // ImportImageURL contains an URL of a test image that can be imported.
-const ImportImageURL = "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+const ImportImageURL = "https://github.com/cirros-dev/cirros/releases/download/0.4.0/cirros-0.4.0-x86_64-disk.img"
 
 // CreateTask will create a task to import the CirrOS image.
 // An error will be returned if a task couldn't be created.
