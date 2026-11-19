@@ -9,7 +9,9 @@ const AddressGroupListResponse = `
             "name": "ADDR_GP_1",
             "addresses": [
             "132.168.4.12/24"
-            ]
+            ],
+            "created_at": "2019-06-04T12:28:30Z",
+            "updated_at": "2019-06-04T12:30:15Z"
         }
     ]
 }
@@ -24,7 +26,9 @@ const AddressGroupGetResponse = `
         "project_id": "45977fa2dbd7482098dd68d0d8970117",
         "addresses": [
            "132.168.4.12/24"
-        ]
+        ],
+        "created_at": "2019-06-04T12:28:30",
+        "updated_at": "2019-06-04T12:30:15"
     }
 }
 `

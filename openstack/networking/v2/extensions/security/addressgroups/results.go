@@ -1,6 +1,9 @@
 package addressgroups
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 )
@@ -22,6 +25,50 @@ type AddressGroup struct {
 	// Array of address. It supports both CIDR and IP range objects.
 	// An example of addresses: [“132.168.4.12/24”, “132.168.5.12-132.168.5.24”, “2001::db8::f00/64”]
 	Addresses []string `json:"addresses"`
+
+	// Timestamp when the address group was created
+	CreatedAt time.Time `json:"-"`
+
+	// Timestamp when the address group was last updated
+	UpdatedAt time.Time `json:"-"`
+}
+
+func (r *AddressGroup) UnmarshalJSON(b []byte) error {
+	type tmp AddressGroup
+
+	// Support for older neutron time format
+	var s1 struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339NoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339NoZ `json:"updated_at"`
+	}
+
+	err := json.Unmarshal(b, &s1)
+	if err == nil {
+		*r = AddressGroup(s1.tmp)
+		r.CreatedAt = time.Time(s1.CreatedAt)
+		r.UpdatedAt = time.Time(s1.UpdatedAt)
+
+		return nil
+	}
+
+	// Support for newer neutron time format
+	var s2 struct {
+		tmp
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+	}
+
+	err = json.Unmarshal(b, &s2)
+	if err != nil {
+		return err
+	}
+
+	*r = AddressGroup(s2.tmp)
+	r.CreatedAt = time.Time(s2.CreatedAt)
+	r.UpdatedAt = time.Time(s2.UpdatedAt)
+
+	return nil
 }
 
 // AddressGroupPage is the page returned by a pager when traversing over a
