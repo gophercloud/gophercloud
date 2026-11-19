@@ -14,6 +14,9 @@ import (
 )
 
 func TestTasksListEachPage(t *testing.T) {
+	// Glance 2027.1 returns 410 Gone for the Tasks API.
+	clients.SkipReleasesAbove(t, "stable/2026.2")
+
 	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
@@ -36,6 +39,9 @@ func TestTasksListEachPage(t *testing.T) {
 }
 
 func TestTasksListAllPages(t *testing.T) {
+	// Glance 2027.1 returns 410 Gone for the Tasks API.
+	clients.SkipReleasesAbove(t, "stable/2026.2")
+
 	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
@@ -53,6 +59,9 @@ func TestTasksListAllPages(t *testing.T) {
 }
 
 func TestTaskCreate(t *testing.T) {
+	// Glance 2027.1 returns 410 Gone for the Tasks API.
+	clients.SkipReleasesAbove(t, "stable/2026.2")
+
 	client, err := clients.NewImageV2Client()
 	th.AssertNoErr(t, err)
 
