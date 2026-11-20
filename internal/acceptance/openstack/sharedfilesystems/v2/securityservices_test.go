@@ -5,10 +5,12 @@ package v2
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/clients"
 	"github.com/gophercloud/gophercloud/v2/internal/acceptance/tools"
 	"github.com/gophercloud/gophercloud/v2/openstack/sharedfilesystems/v2/securityservices"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 )
 
@@ -40,24 +42,47 @@ func TestSecurityServiceCreateDelete(t *testing.T) {
 }
 
 func TestSecurityServiceList(t *testing.T) {
+	clients.RequireLong(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+
 	client, err := clients.NewSharedFileSystemV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a shared file system client: %v", err)
+	th.AssertNoErr(t, err)
+
+	expected := make(map[string]bool)
+	var expectedIDs []string
+	for range 2 {
+		service, err := securityservices.Create(ctx, client, securityservices.CreateOpts{
+			Name: tools.RandomString("ACPTTEST-list-", 16),
+			Type: securityservices.Kerberos,
+		}).Extract()
+		th.AssertNoErr(t, err)
+		t.Cleanup(func() {
+			cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cleanupCancel()
+			if err := securityservices.Delete(cleanupCtx, client, service.ID).ExtractErr(); err != nil {
+				t.Errorf("Unable to delete security service %s: %v", service.ID, err)
+			}
+		})
+		expected[service.ID] = true
+		expectedIDs = append(expectedIDs, service.ID)
 	}
 
-	allPages, err := securityservices.List(client, securityservices.ListOpts{}).AllPages(context.TODO())
-	if err != nil {
-		t.Fatalf("Unable to retrieve security services: %v", err)
-	}
-
-	allSecurityServices, err := securityservices.ExtractSecurityServices(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract security services: %v", err)
-	}
-
-	for _, securityService := range allSecurityServices {
-		tools.PrintResource(t, &securityService)
-	}
+	// Require one actual collection GET per traversal, not only one callback.
+	// Unrelated services may exist in the acceptance project.
+	tools.CheckSinglePage(t, ctx, client, client.ServiceURL("security-services", "detail"), func() pagination.Pager {
+		return securityservices.List(client, nil)
+	}, func(page pagination.Page) ([]string, error) {
+		items, err := securityservices.ExtractSecurityServices(page)
+		var ids []string
+		for _, item := range items {
+			if expected[item.ID] {
+				ids = append(ids, item.ID)
+			}
+		}
+		return ids, err
+	}, expectedIDs)
 }
 
 // The test creates 2 security services and verifies that only the one(s) with

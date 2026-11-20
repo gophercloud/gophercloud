@@ -11,7 +11,7 @@ import (
 func List(c *gophercloud.ServiceClient) pagination.Pager {
 	url := listURL(c)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-		return BGPSpeakerPage{pagination.SinglePageBase(r)}
+		return BGPSpeakerPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 

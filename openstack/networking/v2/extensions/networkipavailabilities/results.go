@@ -158,7 +158,28 @@ func (r *SubnetIPAvailability) UnmarshalJSON(b []byte) error {
 // NetworkIPAvailabilityPage stores a single page of NetworkIPAvailabilities
 // from the List call.
 type NetworkIPAvailabilityPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r NetworkIPAvailabilityPage) ResourceKey() string {
+	return "network_ip_availabilities"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r NetworkIPAvailabilityPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"network_ip_availabilities_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty determines whether or not a NetworkIPAvailability is empty.
