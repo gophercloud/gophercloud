@@ -1,10 +1,6 @@
 package testing
 
-import (
-	"time"
-
-	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/bgpvpns"
-)
+import "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/bgpvpns"
 
 const ListBGPVPNsResult = `
 {
@@ -32,9 +28,7 @@ const ListBGPVPNsResult = `
       "id": "0f9d472a-908f-40f5-8574-b4e8a63ccbf0",
       "networks": [],
       "local_pref": null,
-      "vni": 1000,
-      "created_at": "2019-06-04T12:28:30Z",
-      "updated_at": "2019-06-04T12:30:15Z"
+      "vni": 1000
     }
   ]
 }
@@ -54,8 +48,6 @@ var BGPVPN = bgpvpns.BGPVPN{
 	Type:                "l3",
 	Routers:             []string{},
 	Networks:            []string{},
-	CreatedAt:           time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
-	UpdatedAt:           time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 }
 
 const GetBGPVPNResult = `
@@ -75,9 +67,7 @@ const GetBGPVPNResult = `
          "a4f2b8df-cb42-4893-a333-d0b5c36ade17"
        ],
        "local_pref": null,
-       "vni": 1000,
-       "created_at": "2019-06-04T12:28:30",
-       "updated_at": "2019-06-04T12:30:15"
+       "vni": 1000
     }
 }
 `
@@ -96,8 +86,6 @@ var GetBGPVPN = bgpvpns.BGPVPN{
 	Type:                "l3",
 	Routers:             []string{},
 	Networks:            []string{"a4f2b8df-cb42-4893-a333-d0b5c36ade17"},
-	CreatedAt:           time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
-	UpdatedAt:           time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 }
 
 const CreateRequest = `
