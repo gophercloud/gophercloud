@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"net/http"
 	"net/url"
 	"sort"
 	"strconv"
@@ -35,129 +36,16 @@ const (
 	OAuth1TokenContentType = "application/x-www-form-urlencoded"
 )
 
-// AuthOptions represents options for authenticating a user using OAuth1 tokens.
-type AuthOptions struct {
-	// OAuthConsumerKey is the OAuth1 Consumer Key.
-	OAuthConsumerKey string `q:"oauth_consumer_key" required:"true"`
-
-	// OAuthConsumerSecret is the OAuth1 Consumer Secret. Used to generate
-	// an OAuth1 request signature.
-	OAuthConsumerSecret string `required:"true"`
-
-	// OAuthToken is the OAuth1 Request Token.
-	OAuthToken string `q:"oauth_token" required:"true"`
-
-	// OAuthTokenSecret is the OAuth1 Request Token Secret. Used to generate
-	// an OAuth1 request signature.
-	OAuthTokenSecret string `required:"true"`
-
-	// OAuthSignatureMethod is the OAuth1 signature method the Consumer used
-	// to sign the request. Supported values are "HMAC-SHA1" or "PLAINTEXT".
-	// "PLAINTEXT" is not recommended for production usage.
-	OAuthSignatureMethod SignatureMethod `q:"oauth_signature_method" required:"true"`
-
-	// OAuthTimestamp is an OAuth1 request timestamp. If nil, current Unix
-	// timestamp will be used.
-	OAuthTimestamp *time.Time
-
-	// OAuthNonce is an OAuth1 request nonce. Nonce must be a random string,
-	// uniquely generated for each request. Will be generated automatically
-	// when it is not set.
-	OAuthNonce string `q:"oauth_nonce"`
-
-	// AllowReauth allows Gophercloud to re-authenticate automatically
-	// if/when your token expires.
-	AllowReauth bool
-}
-
-// ToTokenV3HeadersMap builds the headers required for an OAuth1-based create
-// request.
-func (opts AuthOptions) ToTokenV3HeadersMap(headerOpts map[string]any) (map[string]string, error) {
-	q, err := buildOAuth1QueryString(opts, opts.OAuthTimestamp, "")
-	if err != nil {
-		return nil, err
+// Create authenticates and generates a new OpenStack token from OAuth1
+// credentials.
+func Create(ctx context.Context, client *gophercloud.ServiceClient, request gophercloud.RawRequest) (r tokens.CreateResult) {
+	requestOpts := &gophercloud.RequestOpts{
+		JSONBody:     request.Body,
+		MoreHeaders:  request.Headers,
+		OmitHeaders:  []string{"X-Auth-Token"},
+		JSONResponse: &r.Body,
 	}
-
-	signatureKeys := []string{opts.OAuthConsumerSecret, opts.OAuthTokenSecret}
-
-	method := headerOpts["method"].(string)
-	u := headerOpts["url"].(string)
-	stringToSign := buildStringToSign(method, u, q.Query())
-	signature := url.QueryEscape(signString(opts.OAuthSignatureMethod, stringToSign, signatureKeys))
-
-	authHeader := buildAuthHeader(q.Query(), signature)
-
-	headers := map[string]string{
-		"Authorization": authHeader,
-		"X-Auth-Token":  "",
-	}
-
-	return headers, nil
-}
-
-// ToTokenV3ScopeMap allows AuthOptions to satisfy the tokens.AuthOptionsBuilder
-// interface.
-func (opts AuthOptions) ToTokenV3ScopeMap() (map[string]any, error) {
-	return nil, nil
-}
-
-// CanReauth allows AuthOptions to satisfy the tokens.AuthOptionsBuilder
-// interface.
-func (opts AuthOptions) CanReauth() bool {
-	return opts.AllowReauth
-}
-
-// ToTokenV3CreateMap builds a create request body.
-func (opts AuthOptions) ToTokenV3CreateMap(map[string]any) (map[string]any, error) {
-	// identityReq defines the "identity" portion of an OAuth1-based authentication
-	// create request body.
-	type identityReq struct {
-		Methods []string `json:"methods"`
-		OAuth1  struct{} `json:"oauth1"`
-	}
-
-	// authReq defines the "auth" portion of an OAuth1-based authentication
-	// create request body.
-	type authReq struct {
-		Identity identityReq `json:"identity"`
-	}
-
-	// oauth1Request defines how  an OAuth1-based authentication create
-	// request body looks.
-	type oauth1Request struct {
-		Auth authReq `json:"auth"`
-	}
-
-	var req oauth1Request
-
-	req.Auth.Identity.Methods = []string{"oauth1"}
-	return gophercloud.BuildRequestBody(req, "")
-}
-
-// Create authenticates and either generates a new OpenStack token
-// from an OAuth1 token.
-func Create(ctx context.Context, client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
-	b, err := opts.ToTokenV3CreateMap(nil)
-	if err != nil {
-		r.Err = err
-		return
-	}
-
-	headerOpts := map[string]any{
-		"method": "POST",
-		"url":    authURL(client),
-	}
-
-	h, err := opts.ToTokenV3HeadersMap(headerOpts)
-	if err != nil {
-		r.Err = err
-		return
-	}
-
-	resp, err := client.Post(ctx, authURL(client), b, &r.Body, &gophercloud.RequestOpts{
-		MoreHeaders: h,
-		OkCodes:     []int{201},
-	})
+	resp, err := client.Request(ctx, http.MethodPost, authURL(client), requestOpts)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

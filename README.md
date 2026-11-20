@@ -82,7 +82,12 @@ func main() {
 	// Fetch coordinates from a `cloud.yaml` in the current directory, or
 	// in the well-known config directories (different for each operating
 	// system).
-	authOptions, endpointOptions, tlsConfig, err := clouds.Parse()
+	cloud, endpointOptions, tlsConfig, err := clouds.Parse()
+	if err != nil {
+		panic(err)
+	}
+
+	authOptions, err := cloud.ToAuthOptions()
 	if err != nil {
 		panic(err)
 	}
@@ -120,13 +125,14 @@ import (
 	"os"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 )
 
 func main() {
 	ctx := context.Background()
 
-	opts, err := openstack.AuthOptionsFromEnv()
+	opts, err := auth.AuthOptionsFromEnv()
 	if err != nil {
 		panic(err)
 	}
@@ -159,16 +165,20 @@ import (
 	"context"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 )
 
 func main() {
 	ctx := context.Background()
 
-	providerClient, err := openstack.AuthenticatedClient(ctx, gophercloud.AuthOptions{
-		IdentityEndpoint: "https://openstack.example.com:5000/v3",
-		Username:         "username",
-		Password:         "password",
+	providerClient, err := openstack.AuthenticatedClient(ctx, auth.AuthOptionsV3{
+		AuthURL: "https://openstack.example.com:5000/v3",
+		Auth: auth.V3PasswordOpts{
+			Username:       "username",
+			Password:       "password",
+			UserDomainName: "Default",
+		},
 	})
 	if err != nil {
 		panic(err)
