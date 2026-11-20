@@ -73,6 +73,29 @@ func TestGetServiceVersions(t *testing.T) {
 			},
 		},
 		{
+			name:             "load-balancer unversioned endpoint with non-standard version IDs",
+			endpoint:         fakeServer.Endpoint() + "load-balancer/",
+			discoverVersions: true,
+			// "v2.14.1" and "v2.14.5" are not valid version IDs and are skipped
+			expectedVersions: []utils.SupportedVersion{
+				{
+					Major:  2,
+					Minor:  14,
+					Status: utils.StatusSupported,
+				},
+				{
+					Major:  2,
+					Minor:  1,
+					Status: utils.StatusSupported,
+				},
+				{
+					Major:  2,
+					Minor:  0,
+					Status: utils.StatusSupported,
+				},
+			},
+		},
+		{
 			name:             "compute unversioned endpoint",
 			endpoint:         fakeServer.Endpoint() + "compute/",
 			discoverVersions: true,

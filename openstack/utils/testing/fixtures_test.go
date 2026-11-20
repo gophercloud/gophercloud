@@ -63,6 +63,46 @@ func setupMultiServiceVersionHandler(fakeServer th.FakeServer) {
 			}
 		`, fakeServer.Server.URL)
 	})
+	// Load balancer root API with non-standard version IDs mixed in, as
+	// returned by some deployments.
+	fakeServer.Mux.HandleFunc("/load-balancer/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `
+			{
+				"versions": [
+					{
+						"id": "v2.0",
+						"status": "SUPPORTED",
+						"updated": "2016-12-11T00:00:00Z",
+						"links": [{"rel": "self", "href": "%[1]s/load-balancer/v2"}]
+					},
+					{
+						"id": "v2.1",
+						"status": "SUPPORTED",
+						"updated": "2018-04-20T00:00:00Z",
+						"links": [{"rel": "self", "href": "%[1]s/load-balancer/v2"}]
+					},
+					{
+						"id": "v2.14",
+						"status": "SUPPORTED",
+						"updated": "2019-11-10T00:00:00Z",
+						"links": [{"rel": "self", "href": "%[1]s/load-balancer/v2"}]
+					},
+					{
+						"id": "v2.14.1",
+						"status": "SUPPORTED",
+						"updated": "2022-10-10T00:00:00Z",
+						"links": [{"rel": "self", "href": "%[1]s/load-balancer/v2"}]
+					},
+					{
+						"id": "v2.14.5",
+						"status": "CURRENT",
+						"updated": "2025-04-04T00:00:00Z",
+						"links": [{"rel": "self", "href": "%[1]s/load-balancer/v2"}]
+					}
+				]
+			}
+		`, fakeServer.Server.URL)
+	})
 	// Identity v3 API
 	fakeServer.Mux.HandleFunc("/identity/v3/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
