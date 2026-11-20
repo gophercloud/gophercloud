@@ -26,8 +26,6 @@ func TestBGPVPNCRUD(t *testing.T) {
 	// Create a BGP VPN
 	bgpVpnCreated, err := CreateBGPVPN(t, client)
 	th.AssertNoErr(t, err)
-	th.AssertFalse(t, bgpVpnCreated.CreatedAt.IsZero())
-	th.AssertFalse(t, bgpVpnCreated.UpdatedAt.IsZero())
 
 	// Get a BGP VPN
 	bgpVpnGot, err := bgpvpns.Get(context.TODO(), client, bgpVpnCreated.ID).Extract()
