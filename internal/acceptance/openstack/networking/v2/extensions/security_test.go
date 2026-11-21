@@ -166,6 +166,8 @@ func TestSecurityAddressGroups(t *testing.T) {
 	defer DeleteSecurityAddressGroup(t, client, group.ID)
 
 	tools.PrintResource(t, group)
+	th.AssertFalse(t, group.CreatedAt.IsZero())
+	th.AssertFalse(t, group.UpdatedAt.IsZero())
 
 	name := "Update group"
 	description := ""
