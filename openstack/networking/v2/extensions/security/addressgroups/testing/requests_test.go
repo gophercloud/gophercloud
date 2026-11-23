@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/addressgroups"
@@ -45,6 +46,8 @@ func TestList(t *testing.T) {
 				Addresses: []string{
 					"132.168.4.12/24",
 				},
+				CreatedAt: time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC),
+				UpdatedAt: time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC),
 			},
 		}
 
@@ -117,6 +120,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "45977fa2dbd7482098dd68d0d8970117", sr.ProjectID)
 	th.CheckDeepEquals(t, []string{"132.168.4.12/24"}, sr.Addresses)
 	th.AssertEquals(t, "ADDR_GP_1", sr.Name)
+	th.AssertEquals(t, time.Date(2019, 6, 4, 12, 28, 30, 0, time.UTC), sr.CreatedAt)
+	th.AssertEquals(t, time.Date(2019, 6, 4, 12, 30, 15, 0, time.UTC), sr.UpdatedAt)
 }
 
 func TestUpdate(t *testing.T) {
