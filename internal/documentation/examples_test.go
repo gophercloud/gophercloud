@@ -16,7 +16,7 @@ import (
 // functions, so no cloud configuration or live OpenStack service is needed.
 func TestMarkdownExamples(t *testing.T) {
 	blocks := regexp.MustCompile("(?s)```go\\n(.*?)```")
-	for _, path := range []string{"README.md", "docs/FAQ.md"} {
+	for _, path := range []string{"README.md", "docs/FAQ.md", "docs/MIGRATING.md"} {
 		t.Run(path, func(t *testing.T) {
 			contents, err := os.ReadFile(filepath.Join("..", "..", path))
 			if err != nil {

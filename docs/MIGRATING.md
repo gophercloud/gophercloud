@@ -5,6 +5,192 @@ a number of changes breaking backward compatibility. This guide details those
 changes and explains how to migrate from one major version of Gophercloud to
 another.
 
+## From v2 to v3
+
+The following describes the authentication changes on the development branch.
+The module path is still `github.com/gophercloud/gophercloud/v2` on this branch;
+the examples below use that path.
+
+### Authentication options and entry points
+
+Keystone authentication now lives in the standalone `auth` package. It does not
+depend on the low-level `openstack/identity` resource packages.
+
+Replace the old authentication APIs as follows:
+
+| Previous API | Replacement |
+| --- | --- |
+| `gophercloud.AuthOptions` | `auth.AuthOptionsV2` or `auth.AuthOptionsV3`, containing mechanism-specific options |
+| `openstack.AuthOptionsFromEnv` | `auth.AuthOptionsFromEnv` |
+| `openstack.AuthenticateV2` / `openstack.AuthenticateV3` | `openstack.Authenticate` with an explicit versioned authenticator |
+| Identity token authentication options | Mechanism-specific options in `auth` |
+| `gophercloud.AuthScope` / Identity v3 `tokens.Scope` | `auth.Scope` |
+
+`openstack.AuthenticatedClient` and `openstack.Authenticate` now accept an
+`auth.Authenticator`. The authenticator selects the Identity version and
+constructs and submits the authentication request.
+
+For example, password authentication with a project-scoped Identity v3 token
+becomes:
+
+```go
+package main
+
+import (
+	"context"
+
+	"github.com/gophercloud/gophercloud/v2/auth"
+	"github.com/gophercloud/gophercloud/v2/openstack"
+)
+
+func main() {
+	opts := auth.AuthOptionsV3{
+		AuthURL: "https://identity.example.com/v3",
+		Auth: auth.V3PasswordOpts{
+			Username:       "username",
+			Password:       "password",
+			UserDomainName: "Default",
+			Scope:          &auth.Scope{ProjectID: "project-id"},
+			AllowReauth:    true,
+		},
+	}
+	provider, err := openstack.AuthenticatedClient(context.Background(), opts)
+	if err != nil {
+		panic(err)
+	}
+	_ = provider // Use the provider to construct service clients.
+}
+```
+
+Move `IdentityEndpoint` to the versioned wrapper's `AuthURL` field. Move
+credentials and `AllowReauth` into the mechanism options. Rename `TokenID` to
+`Token` for token authentication. For Identity v3, replace `TenantID` and
+`TenantName` with `Scope.ProjectID` and `Scope.ProjectName`, supplying a project
+domain when identifying the project by name.
+
+For Identity v2, use `auth.AuthOptionsV2` with `auth.V2PasswordOpts` or
+`auth.V2TokenOpts`. Its scope is selected using `TenantID` or `TenantName`.
+
+For Identity v3, the mechanism options include `V3PasswordOpts`, `V3TokenOpts`,
+`V3ApplicationCredentialOpts`, `V3TOTPOpts`, `V3MultifactorOpts`, and
+`V3OAuth1Opts`. EC2 authentication uses `AuthOptionsEC2` with `EC2TokenOpts`
+and a separately authenticated `ServiceProvider` for Keystone's EC2 endpoint.
+See the [auth package documentation](../auth/doc.go) for these workflows.
+
+### User domains and token scope
+
+The user's domain and the requested token scope are separate:
+
+- Set `UserDomainID` or `UserDomainName` when identifying a user by username.
+- Use `Scope.ProjectID`, or `Scope.ProjectName` together with
+  `Scope.ProjectDomainID` or `Scope.ProjectDomainName`, for project scope.
+- Use `Scope.DomainID` or `Scope.DomainName` for domain scope.
+- Use `Scope.System` or `Scope.TrustID` for system or trust scope.
+
+Do not use a user domain as a substitute for an explicit project scope when
+creating clients for project services such as Compute. Application credentials
+carry their own scope and do not take a separate `Scope`.
+
+### Credential loaders and TLS
+
+Use `auth.AuthOptionsFromEnv()` for environment variables. For parsed
+`clouds.yaml` configurations, `cloud.ToAuthOptions()` remains available as a
+thin wrapper around `auth.AuthOptionsFromCloud`.
+
+Generic authentication types such as `password` and `token` can perform
+Identity version discovery while loading options. Supply the parsed TLS
+configuration to this step, not just to provider creation:
+
+```go
+cloud, endpointOpts, tlsConfig, err := clouds.Parse()
+if err != nil {
+	panic(err)
+}
+opts, err := cloud.ToAuthOptions(auth.WithTLSConfig(tlsConfig))
+if err != nil {
+	panic(err)
+}
+provider, err := config.NewProviderClient(ctx, opts, config.WithTLSConfig(tlsConfig))
+if err != nil {
+	panic(err)
+}
+```
+
+Use `endpointOpts` when constructing service clients. Explicit versioned auth
+types select that version without requiring discovery in the loader.
+
+### Reauthentication and direct authentication
+
+Automatic reauthentication is installed by the `openstack` provider helpers
+when the authenticator permits credential reuse. Reusable options constructed
+manually default to `AllowReauth: false`; set it explicitly if required. The
+environment and cloud loaders enable reuse by default for reusable mechanisms,
+unless disabled through their supported configuration. TOTP and multifactor
+authentication do not permit automatic reauthentication.
+
+For applications that only need a token or catalog, call
+`opts.Authenticate(ctx, provider)` directly. A nil provider uses default HTTP
+settings. This returns an `*auth.AuthResult`, without installing a provider
+reauthentication callback. To build a provider from that result:
+
+```go
+result, err := opts.Authenticate(ctx, nil)
+if err != nil {
+	panic(err)
+}
+provider, err := openstack.NewClientFromAuthResult(
+	*result, openstack.WithReauth(opts, *result),
+)
+if err != nil {
+	panic(err)
+}
+```
+
+`ProviderClient.GetAuthResult()` now normally contains an `auth.AuthResult`
+value or pointer, rather than an Identity token `CreateResult`. Update type
+assertions and catalog/user extraction accordingly. The result exposes decoded
+token, expiry, user, scope, and catalog fields.
+
+### Catalog lookup
+
+The `openstack.V2Endpoint`, `openstack.V3Endpoint`,
+`openstack.V2EndpointURL`, and `openstack.V3EndpointURL` helpers have been
+removed. Use `auth.AuthResult.Endpoint(ctx, provider, endpointOpts)` for direct
+catalog lookup, or `result.EndpointLocator(provider)` to obtain a locator.
+Provider helpers configure `ProviderClient.EndpointLocator` automatically.
+
+Service constructors such as `openstack.NewComputeV2` now take a
+`context.Context` as their first argument so endpoint discovery can make
+cancellable HTTP requests.
+
+### Low-level Identity requests
+
+Normal authentication should no longer call `tokens.Create`,
+`ec2tokens.Create`, or `oauth1.Create`. Those remain low-level operations for
+callers submitting complete requests, not authentication orchestrators.
+
+Manual callers must implement `CreateOptsBuilder.ToTokenCreateMap` and supply
+the complete JSON body, including its outer envelope. Implement
+`CreateOptsHeadersBuilder.ToTokenCreateHeaders(method, url)` when additional
+headers or URL-dependent signatures are needed. The `auth` credential options
+deliberately do not implement these Identity interfaces.
+
+S3 validation similarly uses `ValidateS3TokenOptsBuilder` and the optional
+`ValidateS3TokenOptsHeadersBuilder`. Callers must supply any required signatures.
+See the Identity package examples for complete manual requests.
+
+Token inspection, validation, revocation, and OAuth1 credential management remain
+Identity resource operations. These have not moved into `auth`.
+
+### Block Storage no-auth clients
+
+The Block Storage no-auth helpers have been removed. For authenticated clouds,
+use normal provider authentication and the corresponding Block Storage service
+constructor. For a deployment genuinely using no-auth, construct the provider
+and service clients explicitly, supplying the full endpoint and any headers
+required by that deployment. Other services' no-auth helpers and non-Keystone
+Swift Swauth authentication are not removed by this authentication refactor.
+
 ## From v1 to v2
 
 ### Change import path
