@@ -71,18 +71,25 @@ example, to pass in
 
 ```go
 type MyCreateServerOpts struct {
+	// Name is the server's display name.
 	Name string
-	Size int
+	// FlavorRef is the flavor ID.
+	FlavorRef string
+	// ImageRef is the image ID.
+	ImageRef string
 }
 ```
 
 to `servers.Create`, simply implement the `servers.CreateOptsBuilder` interface:
 
 ```go
-func (o MyCreateServeropts) ToServerCreateMap() (map[string]interface{}, error) {
-	return map[string]interface{}{
-		"name": o.Name,
-		"size": o.Size,
+func (o MyCreateServerOpts) ToServerCreateMap() (map[string]any, error) {
+	return map[string]any{
+		"server": map[string]any{
+			"name": o.Name,
+			"flavorRef": o.FlavorRef,
+			"imageRef": o.ImageRef,
+		},
 	}, nil
 }
 ```
@@ -92,23 +99,29 @@ create an instance of your custom options object, and pass it to `servers.Create
 ```go
 // ...
 myOpts := MyCreateServerOpts{
-	Name: "s1",
-	Size: "100",
+	Name:      "s1",
+	FlavorRef: "flavor-id",
+	ImageRef:  "image-id",
 }
-server, err := servers.Create(context.TODO(), computeClient, myOpts).Extract()
+server, err := servers.Create(context.TODO(), computeClient, myOpts, nil).Extract()
 // ...
 ```
 
 ### Custom response objects
 
-Some OpenStack services have extensions. Extensions that are supported in Gophercloud can be
-combined to create a custom object:
+Define a custom response object when a deployment returns additional fields
+that are not represented by Gophercloud's standard response types. For example,
+a deployment might add a `custom_field` attribute to a volume:
 
 ```go
 // ...
 type MyVolume struct {
-  volumes.Volume
-  tenantattr.VolumeExt
+	// ID is the volume ID.
+	ID string `json:"id"`
+	// Name is the volume's display name.
+	Name string `json:"name"`
+	// CustomField is an additional deployment-specific attribute.
+	CustomField string `json:"custom_field"`
 }
 
 var v struct {
@@ -129,8 +142,10 @@ method on the type:
 ```go
 // ...
 type MyVolume struct {
-	ID string `json: "id"`
-	TimeCreated time.Time `json: "-"`
+	// ID is the volume ID.
+	ID string `json:"id"`
+	// TimeCreated is decoded by UnmarshalJSON.
+	TimeCreated time.Time `json:"-"`
 }
 
 func (r *MyVolume) UnmarshalJSON(b []byte) error {
@@ -143,9 +158,9 @@ func (r *MyVolume) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*r = Volume(s.tmp)
+	*r = MyVolume(s.tmp)
 
-	r.TimeCreated = time.Time(s.CreatedAt)
+	r.TimeCreated = time.Time(s.TimeCreated)
 
 	return err
 }
