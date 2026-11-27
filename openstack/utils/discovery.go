@@ -190,7 +190,10 @@ func GetServiceVersions(ctx context.Context, client *gophercloud.ProviderClient,
 	for _, version := range versions {
 		majorVersion, minorVersion, err := ParseVersion(version.ID)
 		if err != nil {
-			return supportedVersions, err
+			// Some deployments advertise non-standard version IDs (for example
+			// "v2.14.1") next to standard ones. Skip what we cannot parse
+			// rather than failing the whole discovery.
+			continue
 		}
 
 		status, err := ParseStatus(version.Status)
