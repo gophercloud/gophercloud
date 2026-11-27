@@ -4,7 +4,6 @@ package extensions
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"testing"
 
@@ -108,26 +107,30 @@ func TestQueryByTags(t *testing.T) {
 
 	// Tags - Networks that match all tags will be returned
 	listOpts := networks.ListOpts{
-		Tags: fmt.Sprintf("a,b,c,%s", testtag)}
+		Tags: []string{"a", "b", "c", testtag}}
 	ids := listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network1.ID}, ids)
 
 	// TagsAny - Networks that match any tag will be returned
 	listOpts = networks.ListOpts{
 		SortKey: "id", SortDir: "asc",
-		TagsAny: fmt.Sprintf("a,b,c,%s", testtag)}
+		TagsAny: []string{"a", "b", "c", testtag}}
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	expected_ids := []string{network1.ID, network2.ID}
 	sort.Strings(expected_ids)
 	th.AssertDeepEquals(t, expected_ids, ids)
 
 	// NotTags - Networks that match all tags will be excluded
-	listOpts = networks.ListOpts{Tags: testtag, NotTags: "a,b,c"}
+	listOpts = networks.ListOpts{
+		Tags:    []string{testtag},
+		NotTags: []string{"a", "b", "c"}}
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network2.ID}, ids)
 
 	// NotTagsAny - Networks that match any tag will be excluded.
-	listOpts = networks.ListOpts{Tags: testtag, NotTagsAny: "d"}
+	listOpts = networks.ListOpts{
+		Tags:       []string{testtag},
+		NotTagsAny: []string{"d"}}
 	ids = listNetworkWithTagOpts(t, client, listOpts)
 	th.AssertDeepEquals(t, []string{network1.ID}, ids)
 }
