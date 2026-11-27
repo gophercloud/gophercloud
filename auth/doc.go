@@ -212,6 +212,29 @@ for authenticating requests to that endpoint.
 		panic(err)
 	}
 
+# WebSSO authentication
+
+V3WebSSOOpts authenticates a person through Keystone's WebSSO federation
+flow. It is interactive: it opens the identity provider's login page in a
+browser on the same machine and receives the resulting unscoped token on a
+loopback address, which must be one of Keystone's trusted dashboards. With a
+Scope, it then exchanges that token for a scoped one.
+
+	opts := &auth.V3WebSSOOpts{
+		AuthURL:              "https://identity.example.com/v3",
+		IdentityProviderName: "my-idp",
+		Protocol:             "openid",
+		Scope:                &auth.Scope{ProjectID: "project-id"},
+	}
+	result, err := opts.Authenticate(context.Background(), nil)
+	if err != nil {
+		panic(err)
+	}
+
+The callback defaults to http://localhost:9990/auth/websso/; RedirectHost and
+RedirectPort change it. Set BrowserOpener to open the login page some other
+way than the operating system's default browser.
+
 # Reauthentication
 
 Credential options supporting AllowReauth default to false. Set it to true to
