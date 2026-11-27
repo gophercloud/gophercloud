@@ -4,31 +4,42 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack/identity/v2/tokens"
 	th "github.com/gophercloud/gophercloud/v2/testhelper"
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
-func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string) tokens.CreateResult {
+// tokenCreateOpts supplies an already-assembled request to the Identity API.
+type tokenCreateOpts struct {
+	Body    map[string]any
+	Headers map[string]string
+}
+
+func (opts tokenCreateOpts) ToTokenCreateMap() (map[string]any, error) {
+	return opts.Body, nil
+}
+
+func (opts tokenCreateOpts) ToTokenCreateHeaders(method, url string) (map[string]string, error) {
+	return opts.Headers, nil
+}
+
+func tokenPost(t *testing.T, options auth.AuthOptionsBuilderV2, requestJSON string) tokens.CreateResult {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
 	HandleTokenPost(t, fakeServer, requestJSON)
 
-	return tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options)
-}
-
-func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
-	fakeServer := th.SetupHTTP()
-	defer fakeServer.Teardown()
-	HandleTokenPost(t, fakeServer, "")
-
-	actualErr := tokens.Create(context.TODO(), client.ServiceClient(fakeServer), options).Err
-	th.CheckDeepEquals(t, expectedErr, actualErr)
+	data, err := options.ToAuthBody()
+	th.AssertNoErr(t, err)
+	var body map[string]any
+	for _, methodBody := range data {
+		body = methodBody
+	}
+	return tokens.Create(context.TODO(), client.ServiceClient(fakeServer), tokenCreateOpts{Body: map[string]any{"auth": body}})
 }
 
 func TestCreateWithPassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Username: "me",
 		Password: "swordfish",
 	}
@@ -46,7 +57,7 @@ func TestCreateWithPassword(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantID(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Username: "me",
 		Password: "opensesame",
 		TenantID: "fc394f2ab2df4114bde39905f800dc57",
@@ -66,7 +77,7 @@ func TestCreateTokenWithTenantID(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantName(t *testing.T) {
-	options := gophercloud.AuthOptions{
+	options := auth.V2PasswordOpts{
 		Username:   "me",
 		Password:   "opensesame",
 		TenantName: "demo",
@@ -83,14 +94,6 @@ func TestCreateTokenWithTenantName(t *testing.T) {
       }
     }
   `))
-}
-
-func TestRequireUsername(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Password: "thing",
-	}
-
-	tokenPostErr(t, options, gophercloud.ErrMissingInput{Argument: "Username"})
 }
 
 func tokenGet(t *testing.T, tokenId string) tokens.GetResult {

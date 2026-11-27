@@ -1,107 +1,44 @@
 /*
-Package tokens provides information and interaction with the token API
-resource for the OpenStack Identity service.
+Package tokens provides low-level access to Identity v3 token creation, retrieval, validation, and revocation.
 
-For more information, see:
-http://developer.openstack.org/api-ref-identity-v3.html#tokens-v3
+For normal Keystone authentication, use github.com/gophercloud/gophercloud/v2/auth.
 
-Example to Create a Token From a Username and Password
+# Manually creating a Keystone token
 
-	authOptions := tokens.AuthOptions{
-		UserID:   "username",
-		Password: "password",
+Create accepts a complete request body through CreateOptsBuilder. It optionally
+accepts headers through CreateOptsHeadersBuilder. Define the request type and its
+methods at package scope; auth credential options do not implement these interfaces.
+
+	type tokenRequest struct {
+	 // Body is the complete JSON request, including its outer envelope.
+	 Body map[string]any
+	 // Headers contains additional request headers.
+	 Headers map[string]string
 	}
 
-	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
+	func (opts tokenRequest) ToTokenCreateMap() (map[string]any, error) {
+	 return opts.Body, nil
 	}
 
-Example to Create a Token From a Username, Password, and Domain
-
-	authOptions := tokens.AuthOptions{
-		UserID:   "username",
-		Password: "password",
-		DomainID: "default",
+	func (opts tokenRequest) ToTokenCreateHeaders(method, url string) (map[string]string, error) {
+	 return opts.Headers, nil
 	}
 
-	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
-	}
+The caller supplies the complete JSON body and any additional headers. The
+identityClient below is an already-configured Identity service client.
 
-	authOptions = tokens.AuthOptions{
-		UserID:     "username",
-		Password:   "password",
-		DomainName: "default",
-	}
-
-	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Create a Token From a Token
-
-	authOptions := tokens.AuthOptions{
-		TokenID: "token_id",
-	}
-
-	token, err := tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Create a Token from a Username and Password with Project ID Scope
-
-	scope := tokens.Scope{
-		ProjectID: "0fe36e73809d46aeae6705c39077b1b3",
-	}
-
-	authOptions := tokens.AuthOptions{
-		Scope:    &scope,
-		UserID:   "username",
-		Password: "password",
-	}
-
-	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Create a Token from a Username and Password with Domain ID Scope
-
-	scope := tokens.Scope{
-		DomainID: "default",
-	}
-
-	authOptions := tokens.AuthOptions{
-		Scope:    &scope,
-		UserID:   "username",
-		Password: "password",
-	}
-
-	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Create a Token from a Username and Password with Project Name Scope
-
-	scope := tokens.Scope{
-		ProjectName: "project_name",
-		DomainID:    "default",
-	}
-
-	authOptions := tokens.AuthOptions{
-		Scope:    &scope,
-		UserID:   "username",
-		Password: "password",
-	}
-
-	token, err = tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
+	func createToken(ctx context.Context, identityClient *gophercloud.ServiceClient) (*tokens.Token, error) {
+	 request := tokenRequest{
+	 Body: map[string]any{"auth": map[string]any{
+	 "identity": map[string]any{
+	  "methods": []string{"password"},
+	  "password": map[string]any{"user": map[string]any{"id": "user-id", "password": "password"}},
+	 },
+	 "scope": map[string]any{"project": map[string]any{"id": "project-id"}},
+	}},
+	 Headers: map[string]string{"Accept": "application/json"},
+	 }
+	 return tokens.Create(ctx, identityClient, request).ExtractToken()
 	}
 
 Example to Get a Token
@@ -150,6 +87,13 @@ Example to Validate a Token Created with Application Credentials Access Rules
 
 	if ok {
 		fmt.Println("Token is valid")
+	}
+
+# Revoking a token
+
+	err := tokens.Revoke(context.Background(), identityClient, "token-id").Err
+	if err != nil {
+		panic(err)
 	}
 */
 package tokens

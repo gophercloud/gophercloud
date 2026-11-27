@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth"
 	"github.com/gophercloud/gophercloud/v2/openstack"
 )
 
@@ -36,21 +37,17 @@ func WithTLSConfig(tlsConfig *tls.Config) func(*options) {
 // endpoint specified by the options, acquires a token, and returns a Provider
 // Client instance that's ready to operate.
 //
-// If the full path to a versioned identity endpoint was specified  (example:
-// http://example.com:5000/v3), that path will be used as the endpoint to
-// query.
-//
-// If a versionless endpoint was specified (example: http://example.com:5000/),
-// the endpoint will be queried to determine which versions of the identity
-// service are available, then chooses the most recent or most supported
-// version.
-func NewProviderClient(ctx context.Context, authOptions gophercloud.AuthOptions, opts ...func(*options)) (*gophercloud.ProviderClient, error) {
+// The authenticator selects the Identity API version and authentication endpoint.
+// Configure any version discovery performed while loading authentication options
+// separately, for example with auth.WithTLSConfig when loading a cloud. The
+// options passed here configure authentication and subsequent service requests.
+func NewProviderClient(ctx context.Context, authOptions auth.Authenticator, opts ...func(*options)) (*gophercloud.ProviderClient, error) {
 	var options options
 	for _, apply := range opts {
 		apply(&options)
 	}
 
-	client, err := openstack.NewClient(authOptions.IdentityEndpoint)
+	client, err := openstack.NewClient(authOptions.GetAuthURL())
 	if err != nil {
 		return nil, err
 	}

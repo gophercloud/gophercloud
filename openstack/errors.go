@@ -1,10 +1,6 @@
 package openstack
 
-import (
-	"fmt"
-
-	"github.com/gophercloud/gophercloud/v2"
-)
+import "github.com/gophercloud/gophercloud/v2"
 
 // ErrEndpointNotFound is the error when no suitable endpoint can be found
 // in the user's catalog
@@ -12,14 +8,6 @@ type ErrEndpointNotFound struct{ gophercloud.BaseError }
 
 func (e ErrEndpointNotFound) Error() string {
 	return "No suitable endpoint could be found in the service catalog."
-}
-
-// ErrInvalidAvailabilityProvided is the error when an invalid endpoint
-// availability is provided
-type ErrInvalidAvailabilityProvided struct{ gophercloud.ErrInvalidInput }
-
-func (e ErrInvalidAvailabilityProvided) Error() string {
-	return fmt.Sprintf("Unexpected availability in endpoint query: %s", e.Value)
 }
 
 // ErrNoAuthURL is the error when the OS_AUTH_URL environment variable is not

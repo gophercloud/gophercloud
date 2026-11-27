@@ -1,40 +1,51 @@
 /*
-Package tokens provides information and interaction with the EC2 token API
-resource for the OpenStack Identity service.
+Package ec2tokens provides low-level access to Keystone's EC2 and S3 token endpoints.
 
-For more information, see:
-https://docs.openstack.org/api-ref/identity/v2-ext/
+For normal Keystone authentication, use github.com/gophercloud/gophercloud/v2/auth.
 
-Example to Create a Token From an EC2 access and secret keys
+# Manually creating a Keystone token
 
-	var authOptions tokens.AuthOptionsBuilder
-	authOptions = &ec2tokens.AuthOptions{
-		Access: "a7f1e798b7c2417cba4a02de97dc3cdc",
-		Secret: "18f4f6761ada4e3795fa5273c30349b9",
+Create accepts a complete request body through CreateOptsBuilder. It optionally
+accepts headers through CreateOptsHeadersBuilder. Define the request type and its
+methods at package scope; auth credential options do not implement these interfaces.
+
+	type tokenRequest struct {
+	 // Body is the complete JSON request, including its outer envelope.
+	 Body map[string]any
+	 // Headers contains additional request headers.
+	 Headers map[string]string
 	}
 
-	token, err := ec2tokens.Create(context.TODO(), identityClient, authOptions).ExtractToken()
-	if err != nil {
-		panic(err)
+	func (opts tokenRequest) ToTokenCreateMap() (map[string]any, error) {
+	 return opts.Body, nil
 	}
 
-Example to auth a client using EC2 access and secret keys
-
-	client, err := openstack.NewClient("http://localhost:5000/v3")
-	if err != nil {
-		panic(err)
+	func (opts tokenRequest) ToTokenCreateHeaders(method, url string) (map[string]string, error) {
+	 return opts.Headers, nil
 	}
 
-	var authOptions tokens.AuthOptionsBuilder
-	authOptions = &ec2tokens.AuthOptions{
-		Access:      "a7f1e798b7c2417cba4a02de97dc3cdc",
-		Secret:      "18f4f6761ada4e3795fa5273c30349b9",
-		AllowReauth: true,
+The caller supplies the complete JSON body and any additional headers. The
+identityClient below is an already-configured Identity service client, including
+the service credentials needed to authorize the EC2 token endpoint.
+
+	func createToken(ctx context.Context, identityClient *gophercloud.ServiceClient) (*tokens.Token, error) {
+	 request := tokenRequest{
+	 Body: map[string]any{"credentials": map[string]any{
+	 "access": "access-key",
+	 "host": "ec2.example.com",
+	 "path": "/",
+	 "verb": "GET",
+	 "params": map[string]string{"SignatureVersion": "2", "SignatureMethod": "HmacSHA256"},
+	 "signature": "precomputed-signature",
+	}},
+	 Headers: map[string]string{"Accept": "application/json"},
+	 }
+	 return ec2tokens.Create(ctx, identityClient, request).ExtractToken()
 	}
 
-	err = openstack.AuthenticateV3(context.TODO(), client, authOptions, gophercloud.EndpointOpts{})
-	if err != nil {
-		panic(err)
-	}
+The signature must have been computed for the supplied AWS request. This package
+does not sign credentials. ValidateS3Token similarly accepts a complete body via
+ValidateS3TokenOptsBuilder and optional headers via
+ValidateS3TokenOptsHeadersBuilder.
 */
 package ec2tokens
