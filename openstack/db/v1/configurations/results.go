@@ -42,7 +42,28 @@ func (r *Config) UnmarshalJSON(b []byte) error {
 
 // ConfigPage contains a page of Config resources in a paginated collection.
 type ConfigPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r ConfigPage) ResourceKey() string {
+	return "configurations"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r ConfigPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty indicates whether a ConfigPage is empty.

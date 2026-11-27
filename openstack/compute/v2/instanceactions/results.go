@@ -55,7 +55,29 @@ func (i *InstanceAction) UnmarshalJSON(b []byte) error {
 // of structures returned to the client, you may only safely access the data
 // provided through the ExtractInstanceActions call.
 type InstanceActionPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
+}
+
+// ResourceKey returns the JSON object key for the resource collection.
+func (r InstanceActionPage) ResourceKey() string {
+	return "instanceActions"
+}
+
+// NextPageURL returns the URL for the next page of results.
+// Pagination links are available from microversion 2.58.
+func (r InstanceActionPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty returns true if an InstanceActionPage contains no instance actions.

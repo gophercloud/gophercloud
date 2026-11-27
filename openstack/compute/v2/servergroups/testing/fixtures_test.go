@@ -176,6 +176,10 @@ func HandleListSuccessfully(t *testing.T, fakeServer th.FakeServer) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
+		if r.URL.Query().Get("offset") != "" {
+			fmt.Fprint(w, `{"server_groups": []}`)
+			return
+		}
 		fmt.Fprint(w, ListOutput)
 	})
 }

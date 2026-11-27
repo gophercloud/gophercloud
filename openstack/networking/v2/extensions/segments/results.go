@@ -26,6 +26,27 @@ type SegmentPage struct {
 	pagination.LinkedPageBase
 }
 
+// ResourceKey returns the JSON object key for the resource collection.
+func (r SegmentPage) ResourceKey() string {
+	return "segments"
+}
+
+// NextPageURL returns the URL for the next page of results.
+func (r SegmentPage) NextPageURL(endpointURL string) (string, error) {
+	if r.StatusCode == 204 {
+		return "", nil
+	}
+
+	var s struct {
+		Links []gophercloud.Link `json:"segments_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
 func (r SegmentPage) IsEmpty() (bool, error) {
 	if r.StatusCode == 204 {
 		return true, nil

@@ -112,7 +112,10 @@ func (opts ListOpts) ToSecurityServiceListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List returns SecurityServices optionally limited by the conditions provided in ListOpts.
+// List returns a single page of SecurityServices optionally limited by the
+// conditions provided in ListOpts. Automatic pagination is not supported because
+// Manila treats pagination parameters as resource filters for admin requests.
+// Results are subject to the server's page-size limit.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
