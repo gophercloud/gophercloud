@@ -212,6 +212,25 @@ for authenticating requests to that endpoint.
 		panic(err)
 	}
 
+# OAuth2 mutual TLS authentication
+
+V3OAuth2MTLSOpts obtains a token from Keystone's OS-OAUTH2 endpoint with the
+OAuth 2.0 client credentials grant, authenticating with a TLS client
+certificate. Configure the certificate on the provider's HTTP client. The
+token is bound to the certificate and is sent to services as both
+X-Auth-Token and Authorization: Bearer.
+
+	opts := &auth.V3OAuth2MTLSOpts{
+		AuthURL:  "https://identity.example.com/v3",
+		ClientID: "user-id",
+	}
+	provider, err := config.NewProviderClient(
+		context.Background(), opts, config.WithTLSConfig(tlsConfig),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 # Reauthentication
 
 Credential options supporting AllowReauth default to false. Set it to true to
