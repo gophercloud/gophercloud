@@ -39,8 +39,8 @@ package main
 import (
 	"context"
 
-	"github.com/gophercloud/gophercloud/v2/auth"
-	"github.com/gophercloud/gophercloud/v2/openstack"
+	"github.com/gophercloud/gophercloud/v3/auth"
+	"github.com/gophercloud/gophercloud/v3/openstack"
 )
 
 func main() {
