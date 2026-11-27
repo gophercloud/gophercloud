@@ -363,6 +363,7 @@ func initClientOpts(ctx context.Context, client *gophercloud.ProviderClient, eo 
 	sc.ProviderClient = client
 	sc.Endpoint = url
 	sc.Type = clientType
+	sc.Microversion = eo.MicroversionFor(clientType)
 	return sc, nil
 }
 
