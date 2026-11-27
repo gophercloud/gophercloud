@@ -235,6 +235,12 @@ The callback defaults to http://localhost:9990/auth/websso/; RedirectHost and
 RedirectPort change it. Set BrowserOpener to open the login page some other
 way than the operating system's default browser.
 
+Set TokenCache, with a CacheNamespace, to keep the unscoped token between
+authentications. A cached token that Keystone still accepts is reused for
+any scope without opening the browser. The auth/tokencache package defines
+the Cache interface; an implementation holds bearer tokens and must protect
+them accordingly.
+
 # Reauthentication
 
 Credential options supporting AllowReauth default to false. Set it to true to

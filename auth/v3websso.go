@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/auth/tokencache"
 )
 
 const (
@@ -50,6 +51,26 @@ type V3WebSSOOpts struct {
 	// BrowserOpener opens the WebSSO URL. It defaults to the operating
 	// system's browser.
 	BrowserOpener func(string) error `json:"-"`
+
+	// TokenCache stores the unscoped token, so that later authentications,
+	// for any scope, do not open the browser. It requires CacheNamespace.
+	TokenCache tokencache.Cache `json:"-"`
+
+	// CacheNamespace separates the cached tokens of different browser
+	// logins, such as two accounts at the same identity provider.
+	CacheNamespace string
+}
+
+// WebSSOCacheKey returns the TokenCache key for opts at identityEndpoint. It
+// does not depend on the scope.
+func WebSSOCacheKey(identityEndpoint string, opts *V3WebSSOOpts) string {
+	return tokencache.Key(tokencache.KeyOptions{
+		Flow:             "websso",
+		Principal:        opts.CacheNamespace,
+		IdentityEndpoint: identityEndpoint,
+		IdentityProvider: opts.IdentityProviderName,
+		Protocol:         opts.Protocol,
+	})
 }
 
 func (opts *V3WebSSOOpts) GetAuthURL() string {
@@ -77,13 +98,27 @@ func (opts *V3WebSSOOpts) Authenticate(ctx context.Context, provider *gopherclou
 	}
 	client := &gophercloud.ServiceClient{ProviderClient: provider, Endpoint: opts.GetAuthURL()}
 
-	token, err := captureWebSSOToken(ctx, client, opts)
-	if err != nil {
-		return nil, err
+	var result *AuthResult
+	cacheKey := ""
+	if opts.TokenCache != nil {
+		cacheKey = WebSSOCacheKey(client.Endpoint, opts)
+		result, err = cachedWebSSOToken(ctx, client, opts.TokenCache, cacheKey)
+		if err != nil {
+			return nil, err
+		}
 	}
-	result, err := webSSOTokenDetails(ctx, client, token)
-	if err != nil {
-		return nil, err
+	if result == nil {
+		token, err := captureWebSSOToken(ctx, client, opts)
+		if err != nil {
+			return nil, err
+		}
+		result, err = webSSOTokenDetails(ctx, client, token)
+		if err != nil {
+			return nil, err
+		}
+		if opts.TokenCache != nil {
+			tokencache.Persist(opts.TokenCache, cacheKey, client.Endpoint, result.TokenID, result.ExpiresAt)
+		}
 	}
 
 	if scope != nil {
@@ -97,6 +132,21 @@ func (opts *V3WebSSOOpts) Authenticate(ctx context.Context, provider *gopherclou
 	return result, nil
 }
 
+// cachedWebSSOToken returns the details of the cached unscoped token, or nil
+// when there is none or Keystone no longer accepts it.
+func cachedWebSSOToken(ctx context.Context, client *gophercloud.ServiceClient, cache tokencache.Cache, key string) (*AuthResult, error) {
+	token, ok := tokencache.Load(cache, key, client.Endpoint)
+	if !ok {
+		return nil, nil
+	}
+	result, err := webSSOTokenDetails(ctx, client, token)
+	if gophercloud.ResponseCodeIs(err, http.StatusUnauthorized) || gophercloud.ResponseCodeIs(err, http.StatusNotFound) {
+		_ = cache.Delete(key)
+		return nil, nil
+	}
+	return result, err
+}
+
 func (opts *V3WebSSOOpts) validate() error {
 	if _, err := gophercloud.BuildRequestBody(opts, ""); err != nil {
 		return err
@@ -106,6 +156,9 @@ func (opts *V3WebSSOOpts) validate() error {
 	}
 	if opts.Timeout < 0 {
 		return fmt.Errorf("websso: Timeout must not be negative")
+	}
+	if opts.TokenCache != nil && opts.CacheNamespace == "" {
+		return fmt.Errorf("websso: CacheNamespace is required when TokenCache is enabled")
 	}
 	if opts.RedirectHost != "" && opts.RedirectHost != "localhost" {
 		ip := net.ParseIP(opts.RedirectHost)
