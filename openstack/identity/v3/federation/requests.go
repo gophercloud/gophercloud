@@ -464,7 +464,8 @@ type UpdateServiceProviderOpts struct {
 
 	// RelayStatePrefix is the relay state prefix used in ECP-wrapped SAML
 	// messages.
-	// Set this to an empty string to reset the relay state prefix.
+	// Set this to an empty string to clear the prefix. If nil, the prefix is
+	// left unchanged.
 	RelayStatePrefix *string `json:"relay_state_prefix,omitempty"`
 
 	// SPURL is the URL at the remote peer where the assertion is sent.
@@ -481,12 +482,9 @@ func (opts UpdateServiceProviderOpts) ToServiceProviderUpdateMap() (map[string]a
 
 	m := b["service_provider"].(map[string]any)
 
-	// Empty strings are used as sentinels for nullable fields.
+	// An empty string is used as the sentinel for a null description.
 	if opts.Description != nil && *opts.Description == "" {
 		m["description"] = nil
-	}
-	if opts.RelayStatePrefix != nil && *opts.RelayStatePrefix == "" {
-		m["relay_state_prefix"] = nil
 	}
 
 	return b, nil

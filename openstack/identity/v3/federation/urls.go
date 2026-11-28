@@ -1,6 +1,10 @@
 package federation
 
-import "github.com/gophercloud/gophercloud/v2"
+import (
+	"net/url"
+
+	"github.com/gophercloud/gophercloud/v2"
+)
 
 const (
 	rootPath              = "OS-FEDERATION"
@@ -15,7 +19,7 @@ func identityProvidersRootURL(c *gophercloud.ServiceClient) string {
 }
 
 func identityProvidersResourceURL(c *gophercloud.ServiceClient, identityProviderID string) string {
-	return c.ServiceURL(rootPath, identityProvidersPath, identityProviderID)
+	return c.ServiceURL(rootPath, identityProvidersPath, url.PathEscape(identityProviderID))
 }
 
 func mappingsRootURL(c *gophercloud.ServiceClient) string {
@@ -27,11 +31,11 @@ func mappingsResourceURL(c *gophercloud.ServiceClient, mappingID string) string 
 }
 
 func protocolsRootURL(c *gophercloud.ServiceClient, identityProviderID string) string {
-	return c.ServiceURL(rootPath, identityProvidersPath, identityProviderID, protocolsPath)
+	return c.ServiceURL(rootPath, identityProvidersPath, url.PathEscape(identityProviderID), protocolsPath)
 }
 
 func protocolsResourceURL(c *gophercloud.ServiceClient, identityProviderID, protocolID string) string {
-	return c.ServiceURL(rootPath, identityProvidersPath, identityProviderID, protocolsPath, protocolID)
+	return c.ServiceURL(rootPath, identityProvidersPath, url.PathEscape(identityProviderID), protocolsPath, url.PathEscape(protocolID))
 }
 
 func serviceProvidersRootURL(c *gophercloud.ServiceClient) string {
@@ -39,5 +43,5 @@ func serviceProvidersRootURL(c *gophercloud.ServiceClient) string {
 }
 
 func serviceProvidersResourceURL(c *gophercloud.ServiceClient, serviceProviderID string) string {
-	return c.ServiceURL(rootPath, serviceProvidersPath, serviceProviderID)
+	return c.ServiceURL(rootPath, serviceProvidersPath, url.PathEscape(serviceProviderID))
 }

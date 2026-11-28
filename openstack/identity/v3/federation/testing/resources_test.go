@@ -12,6 +12,64 @@ import (
 	"github.com/gophercloud/gophercloud/v2/testhelper/client"
 )
 
+func TestFederationResourceIDEscaping(t *testing.T) {
+	ctx := t.Context()
+	tests := []struct {
+		name string
+		path string
+		run  func(*gophercloud.ServiceClient) error
+	}{
+		{
+			name: "identity provider",
+			path: "/OS-FEDERATION/identity_providers/ACME%23EU",
+			run: func(c *gophercloud.ServiceClient) error {
+				return federation.DeleteIdentityProvider(ctx, c, "ACME#EU").ExtractErr()
+			},
+		},
+		{
+			name: "protocol collection",
+			path: "/OS-FEDERATION/identity_providers/ACME%23EU/protocols",
+			run: func(c *gophercloud.ServiceClient) error {
+				_, err := federation.ListProtocols(c, "ACME#EU").AllPages(ctx)
+				return err
+			},
+		},
+		{
+			name: "protocol",
+			path: "/OS-FEDERATION/identity_providers/ACME%23EU/protocols/oidc%3Fdev",
+			run: func(c *gophercloud.ServiceClient) error {
+				return federation.DeleteProtocol(ctx, c, "ACME#EU", "oidc?dev").ExtractErr()
+			},
+		},
+		{
+			name: "service provider",
+			path: "/OS-FEDERATION/service_providers/corp%23eu",
+			run: func(c *gophercloud.ServiceClient) error {
+				return federation.DeleteServiceProvider(ctx, c, "corp#eu").ExtractErr()
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fakeServer := th.SetupHTTP()
+			defer fakeServer.Teardown()
+
+			fakeServer.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+				th.CheckEquals(t, tt.path, r.URL.EscapedPath())
+				th.CheckEquals(t, "", r.URL.RawQuery)
+				if r.Method == http.MethodGet {
+					w.Header().Set("Content-Type", "application/json")
+					fmt.Fprint(w, `{"protocols":[]}`)
+					return
+				}
+				w.WriteHeader(http.StatusNoContent)
+			})
+
+			th.AssertNoErr(t, tt.run(client.ServiceClient(fakeServer)))
+		})
+	}
+}
+
 func TestIdentityProviders(t *testing.T) {
 	fakeServer := th.SetupHTTP()
 	defer fakeServer.Teardown()
@@ -487,7 +545,7 @@ func TestServiceProviders(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestServiceProviderUpdateOptsNullableFields(t *testing.T) {
+func TestServiceProviderUpdateOptsEmptyFields(t *testing.T) {
 	actual, err := (federation.UpdateServiceProviderOpts{}).ToServiceProviderUpdateMap()
 	th.AssertNoErr(t, err)
 	th.AssertJSONEquals(t, `{"service_provider": {}}`, actual)
@@ -503,7 +561,7 @@ func TestServiceProviderUpdateOptsNullableFields(t *testing.T) {
 	th.AssertJSONEquals(t, `{
 		"service_provider": {
 			"description": null,
-			"relay_state_prefix": null
+			"relay_state_prefix": ""
 		}
 	}`, actual)
 }
